@@ -1,0 +1,35 @@
+# Azure DevOps pipeline template used to build bundle.
+parameters:
+
+  - name: 'site_key'
+    type: string
+    default: ''
+
+  - name: 'api_host'
+    type: string
+    default: ''
+
+  - name: 'env'
+    type: string
+    default: ''
+
+steps:
+- bash: |
+    echo 'IO_PAY_PORTAL_API_HOST: $IO_PAY_PORTAL_API_HOST'
+    echo 'IO_PAY_PORTAL_API_REQUEST_TIMEOUT: $IO_PAY_PORTAL_API_REQUEST_TIMEOUT'
+    echo 'IO_PAY_PORTAL_PAY_WL_POLLING_INTERVAL: $IO_PAY_PORTAL_PAY_WL_POLLING_INTERVAL'
+    echo 'IO_PAY_PORTAL_PAY_WL_POLLING_ATTEMPTS: $IO_PAY_PORTAL_PAY_WL_POLLING_ATTEMPTS'
+    echo 'IO_PAY_PORTAL_ENV: $IO_PAY_PORTAL_ENV'
+    echo 'IO_PAY_PORTAL_SITE_KEY: $IO_PAY_PORTAL_SITE_KEY'
+    chmod +x env.sh && source env.sh
+    yarn build
+  workingDirectory: io-pay-portal-fe
+  env:
+    IO_PAY_PORTAL_API_HOST: ${{ parameters.api_host }}
+    IO_PAY_PORTAL_API_REQUEST_TIMEOUT: $(IO_PAY_PORTAL_API_REQUEST_TIMEOUT)
+    IO_PAY_PORTAL_PAY_WL_POLLING_INTERVAL: $(IO_PAY_PORTAL_PAY_WL_POLLING_INTERVAL)
+    IO_PAY_PORTAL_PAY_WL_POLLING_ATTEMPTS: $(IO_PAY_PORTAL_PAY_WL_POLLING_ATTEMPTS)
+    IO_PAY_PORTAL_ENV: ${{ parameters.env }}
+    IO_PAY_PORTAL_SITE_KEY: ${{ parameters.site_key }}
+  displayName: 'Build files'
+  
