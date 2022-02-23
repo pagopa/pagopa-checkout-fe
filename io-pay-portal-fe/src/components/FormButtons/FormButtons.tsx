@@ -1,3 +1,4 @@
+/* eslint-disable functional/immutable-data */
 import { Button, Grid } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import { default as React } from "react";
@@ -7,6 +8,7 @@ import { useSmallDevice } from "../../hooks/useSmallDevice";
 export function FormButtons(props: {
   handleSubmit: () => void;
   handleCancel: () => void;
+  type?: "submit" | "button";
   disabled: boolean;
   loading?: boolean;
   submitTitle: string;
@@ -48,9 +50,11 @@ export function FormButtons(props: {
         </Grid>
         <Grid xs={8} style={useSmallDevice() ? { paddingTop: 0 } : {}} item>
           <LoadingButton
+            type={props.type}
+            onSubmit={props.handleSubmit}
             loading={props.loading || false}
             variant="contained"
-            onClick={props.handleSubmit}
+            onClick={props.type === "button" ? props.handleSubmit : undefined}
             disabled={props.disabled}
             style={{
               width: "100%",
@@ -65,3 +69,7 @@ export function FormButtons(props: {
     </React.Fragment>
   );
 }
+
+FormButtons.defaultProps = {
+  type: "button",
+};
