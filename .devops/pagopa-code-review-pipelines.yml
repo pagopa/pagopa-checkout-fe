@@ -1,0 +1,104 @@
+# Azure DevOps pipeline to build, check source codes and run tests.
+#
+# To make Danger JS run on a pull request you need to add the following pipeline 
+# variable and set it with a GitHub access token (scope public_repo); otherwise 
+# set its value to 'skip' without marking it secret: 
+# - DANGER_GITHUB_API_TOKEN
+# 
+
+variables:
+  NODE_VERSION: '14.16.0'
+  YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
+
+# Automatically triggered on PR
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&tabs=schema%2Cparameter-schema#pr-trigger
+trigger:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - io-pay-portal-fe
+
+# Execute agents (jobs) on latest Ubuntu version.
+# To change OS for a specific, ovverride "pool" attribute inside the job definition
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+  - stage: Build
+    dependsOn: []
+    jobs:
+      - job: make_build  
+        pool:
+          # As we deploy on Windows machines, we use Windows to build
+          vmImage: 'windows-2019'  
+        steps:
+        - template: azure-templates/setup-project.yml
+
+        - template: azure-templates/setup-env.yml
+            parameters:
+              site_key: $(CHECKOUT_CAPTCHA_ID_DEV)
+              api_host: $(CHECKOUT_API_HOST_DEV)
+              env:  'DEV'
+              api_basepath: '/checkout/payments/v1'
+              polling_attempts: '16'
+              polling_interval: '6000'
+              timeout: '10000'
+
+        - script: |
+            yarn build
+          displayName: 'Build'
+  
+  - stage: Static_Analysis
+    dependsOn: []
+    jobs:
+      - job: lint     
+        steps:
+        - template: azure-templates/setup-project.yml
+        - script: yarn lint
+          workingDirectory: io-pay-portal-fe
+          displayName: 'Lint'
+      - job: danger
+        condition: 
+          and(
+            succeeded(),
+            ne(variables['DANGER_GITHUB_API_TOKEN'], 'skip')
+          )
+        steps:
+          - template: azure-templates/setup-project.yml
+
+          - bash: yarn danger ci
+            env:
+              DANGER_GITHUB_API_TOKEN: '$(DANGER_GITHUB_API_TOKEN)'
+            workingDirectory: io-pay-portal-fe
+            displayName: 'Danger CI'
+  # B) Run unit tests if there is a push or pull request on any branch.
+  - stage: Test
+    dependsOn: []
+    jobs:
+      - job: unit_tests
+        steps:
+        - template: azure-templates/setup-project.yml
+        
+        - script: yarn generate
+          workingDirectory: io-pay-portal-fe
+          displayName: 'Generate definitions'
+
+        - script: yarn test:coverage
+          workingDirectory: io-pay-portal-fe
+          displayName: 'Unit tests exec'
+        
+        - task: PublishTestResults@2
+          displayName: 'Publish test results from Jest tests'
+          inputs:
+            testResultsFormat: 'JUnit'
+            testResultsFiles: '**/junit.xml' 
+            searchFolder: '$(System.DefaultWorkingDirectory)'
+            failTaskOnFailedTests: true
+
+        - task: PublishCodeCoverageResults@1
+          displayName: 'Publish code coverage from Jest tests'
+          inputs:
+            codeCoverageTool: Cobertura
+            summaryFileLocation: 'io-pay-portal-fe/coverage/cobertura-coverage.xml'
