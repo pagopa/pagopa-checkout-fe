@@ -12,6 +12,7 @@ export enum SessionItems {
   paymentInfo = "paymentInfo",
   noticeInfo = "rptId",
   email = "email",
+  useremail = "useremail",
   paymentId = "paymentId",
   checkData = "checkData",
   securityCode = "securityCode",
