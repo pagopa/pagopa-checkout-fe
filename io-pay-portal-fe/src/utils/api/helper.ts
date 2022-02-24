@@ -60,6 +60,11 @@ import {
   PAYMENT_START_SESSION_RESP_ERR,
   PAYMENT_START_SESSION_SUCCESS,
   PAYMENT_START_SESSION_SVR_ERR,
+  PAYMENT_UPD_WALLET_INIT,
+  PAYMENT_UPD_WALLET_NET_ERR,
+  PAYMENT_UPD_WALLET_RESP_ERR,
+  PAYMENT_UPD_WALLET_SUCCESS,
+  PAYMENT_UPD_WALLET_SVR_ERR,
   PAYMENT_WALLET_INIT,
   PAYMENT_WALLET_NET_ERR,
   PAYMENT_WALLET_RESP_ERR,
@@ -596,6 +601,71 @@ export const getSessionWallet = async (
         );
         onResponse();
       }
+    )
+    .run();
+};
+
+export const updateWallet = async (
+  idPsp: number,
+  onError: (e: string) => void,
+  onResponse: () => void
+) => {
+  const walletStored = sessionStorage.getItem("wallet") || "";
+  const sessionToken = sessionStorage.getItem("sessionToken") || "";
+
+  const wallet = JSON.parse(walletStored);
+
+  const Bearer = `Bearer ${sessionToken}`;
+  const idWallet = wallet.idWallet;
+
+  mixpanel.track(PAYMENT_UPD_WALLET_INIT.value, {
+    EVENT_ID: PAYMENT_UPD_WALLET_INIT.value,
+  });
+  await TE.tryCatch(
+    () =>
+      pmClient.updateWalletUsingPUT({
+        Bearer,
+        id: idWallet,
+        walletRequest: {
+          data: {
+            idPsp,
+          },
+        },
+      }),
+    (e) => {
+      onError(ErrorsType.GENERIC_ERROR);
+      mixpanel.track(PAYMENT_UPD_WALLET_NET_ERR.value, {
+        EVENT_ID: PAYMENT_UPD_WALLET_NET_ERR.value,
+      });
+      return toError;
+    }
+  )
+    .fold(
+      (r) => {
+        onError(ErrorsType.GENERIC_ERROR);
+        mixpanel.track(PAYMENT_UPD_WALLET_SVR_ERR.value, {
+          EVENT_ID: PAYMENT_UPD_WALLET_SVR_ERR.value,
+        });
+      },
+      (myResExt) =>
+        myResExt.fold(
+          () =>
+            mixpanel.track(PAYMENT_UPD_WALLET_RESP_ERR.value, {
+              EVENT_ID: PAYMENT_UPD_WALLET_RESP_ERR.value,
+            }),
+          (res) => {
+            WalletSession.decode(res.value?.data).fold(
+              (_) => undefined,
+              (wallet) => {
+                mixpanel.track(PAYMENT_UPD_WALLET_SUCCESS.value, {
+                  EVENT_ID: PAYMENT_UPD_WALLET_SUCCESS.value,
+                });
+                sessionStorage.setItem("wallet", JSON.stringify(wallet));
+                onResponse();
+              }
+            );
+          }
+        )
     )
     .run();
 };

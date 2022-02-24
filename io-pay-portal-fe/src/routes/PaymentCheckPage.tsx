@@ -11,7 +11,6 @@ import { default as React } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import sprite from "../assets/images/app.svg";
-import pagopaLogo from "../assets/images/pagopa-logo.svg";
 import { FormButtons } from "../components/FormButtons/FormButtons";
 import { CustomDrawer } from "../components/modals/CustomDrawer";
 import InformationModal from "../components/modals/InformationModal";
@@ -22,6 +21,7 @@ import FieldContainer from "../components/TextFormField/FieldContainer";
 import PspFieldContainer from "../components/TextFormField/PspFieldContainer";
 import { PspList } from "../features/payment/models/paymentModel";
 import { getCheckData, getEmailInfo, getWallet } from "../utils/api/apiService";
+import { getPaymentPSPList, updateWallet } from "../utils/api/helper";
 import { moneyFormat } from "../utils/form/formatters";
 
 const defaultStyle = {
@@ -48,6 +48,7 @@ export default function PaymentCheckPage() {
   const [modalOpen, setModalOpen] = React.useState(false);
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
+  const [pspLoading, setPspLoading] = React.useState(false);
   const [pspList, setPspList] = React.useState<Array<PspList>>([]);
 
   const checkData = getCheckData();
@@ -71,38 +72,32 @@ export default function PaymentCheckPage() {
     );
   };
 
+  const onError = () => {
+    setLoading(false);
+  };
+  const onResponse = (list: Array<PspList>) => {
+    setPspList(list.sort((a, b) => (a.commission > b.commission ? 1 : -1)));
+    setLoading(false);
+  };
+
   const onPspEditClick = () => {
     setDrawerOpen(true);
     setLoading(true);
-    // change settimeout with api binding
-    setTimeout(() => {
-      setPspList(
-        [
-          {
-            name: "Poste Italiane",
-            image: pagopaLogo,
-            commission: 500,
-            label: "",
-            idPsp: 1,
-          },
-          {
-            name: "Unicredit SPA",
-            image: pagopaLogo,
-            commission: 200,
-            label: "",
-            idPsp: 1,
-          },
-          {
-            name: "Intesa Sanpaolo spa",
-            image: pagopaLogo,
-            commission: 300,
-            label: "",
-            idPsp: 1,
-          },
-        ].sort((a, b) => (a.commission > b.commission ? 1 : -1))
-      );
-      setLoading(false);
-    }, 3000);
+    void getPaymentPSPList({ onError, onResponse });
+  };
+
+  const onPspError = () => {
+    setPspLoading(false);
+  };
+
+  const onPspResponse = () => {
+    setPspLoading(false);
+  };
+
+  const updateWalletPSP = (id: number) => {
+    setDrawerOpen(false);
+    setPspLoading(true);
+    void updateWallet(id, onPspError, onPspResponse);
   };
 
   return (
@@ -281,7 +276,7 @@ export default function PaymentCheckPage() {
                   </Typography>
                 }
                 onClick={() => {
-                  // call change psp api
+                  updateWalletPSP(psp.idPsp || 0);
                 }}
               />
             ))}
