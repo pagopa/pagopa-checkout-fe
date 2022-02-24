@@ -105,7 +105,7 @@ export interface Wallet {
   idWallet: number;
   psp: {
     businessName: string;
-    directAcquire: false;
+    directAcquire: boolean;
     fixedCost: {
       currency: string;
       amount: number;
@@ -114,7 +114,7 @@ export interface Wallet {
     logoPSP: string;
     serviceAvailability: string;
   };
-  pspEditable: false;
+  pspEditable: boolean;
   type: string;
 }
 
