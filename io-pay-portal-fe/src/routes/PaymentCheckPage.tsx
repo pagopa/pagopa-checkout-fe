@@ -21,11 +21,7 @@ import ClickableFieldContainer from "../components/TextFormField/ClickableFieldC
 import FieldContainer from "../components/TextFormField/FieldContainer";
 import PspFieldContainer from "../components/TextFormField/PspFieldContainer";
 import { PspList } from "../features/payment/models/paymentModel";
-import {
-  getCheckData,
-  getEmailInfo,
-  getMockedWallet,
-} from "../utils/api/apiService";
+import { getCheckData, getEmailInfo, getWallet } from "../utils/api/apiService";
 import { moneyFormat } from "../utils/form/formatters";
 
 const defaultStyle = {
@@ -55,7 +51,7 @@ export default function PaymentCheckPage() {
   const [pspList, setPspList] = React.useState<Array<PspList>>([]);
 
   const checkData = getCheckData();
-  const wallet = getMockedWallet();
+  const wallet = getWallet();
   const email = getEmailInfo();
 
   const onSubmit = React.useCallback(() => {}, []);
