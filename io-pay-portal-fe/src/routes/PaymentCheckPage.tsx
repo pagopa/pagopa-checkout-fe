@@ -22,6 +22,7 @@ import FieldContainer from "../components/TextFormField/FieldContainer";
 import PspFieldContainer from "../components/TextFormField/PspFieldContainer";
 import { PspList } from "../features/payment/models/paymentModel";
 import { getCheckData, getEmailInfo, getWallet } from "../utils/api/apiService";
+import { confirmPayment } from "../utils/api/helper";
 import { moneyFormat } from "../utils/form/formatters";
 
 const defaultStyle = {
@@ -48,13 +49,25 @@ export default function PaymentCheckPage() {
   const [modalOpen, setModalOpen] = React.useState(false);
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
+  const [payLoading, setPayLoading] = React.useState(false);
   const [pspList, setPspList] = React.useState<Array<PspList>>([]);
 
   const checkData = getCheckData();
   const wallet = getWallet();
   const email = getEmailInfo();
 
-  const onSubmit = React.useCallback(() => {}, []);
+  const onError = () => {
+    setPayLoading(false);
+  };
+
+  const onResponse = () => {
+    setPayLoading(false);
+  };
+
+  const onSubmit = React.useCallback(() => {
+    setPayLoading(true);
+    void confirmPayment({ checkData, wallet }, onError, onResponse);
+  }, []);
   const getWalletIcon = () => {
     if (
       !wallet.creditCard.brand ||
@@ -199,12 +212,12 @@ export default function PaymentCheckPage() {
       />
 
       <FormButtons
+        loading={payLoading}
         submitTitle={`${t("paymentCheckPage.buttons.submit")} ${moneyFormat(
           checkData.amount.amount
         )}`}
         cancelTitle="paymentCheckPage.buttons.cancel"
         disabled={false}
-        loading={false}
         handleSubmit={onSubmit}
         handleCancel={() => {}}
       />
