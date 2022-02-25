@@ -207,6 +207,7 @@ export const TRANSLATIONS_IT = {
     buttons: {
       cancel: "Annulla",
       submit: "Paga",
+      wait: "Attendi...",
     },
     drawer: {
       title: "Con quale gestore vuoi pagare?",

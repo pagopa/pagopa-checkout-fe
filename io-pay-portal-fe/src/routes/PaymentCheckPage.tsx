@@ -6,7 +6,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
-import { Box, Button, SvgIcon, Typography } from "@mui/material";
+import { Box, Button, Skeleton, SvgIcon, Typography } from "@mui/material";
 import { default as React } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
@@ -88,35 +88,35 @@ export default function PaymentCheckPage() {
     );
   };
 
-  const onPspUpdateError = () => {
-    setPspUpdateLoading(false);
+  const onPspEditError = () => {
+    setPspEditLoading(false);
   };
-  const onPspUpdateResponse = (list: Array<PspList>) => {
+  const onPspEditResponse = (list: Array<PspList>) => {
     setPspList(list.sort((a, b) => (a.commission > b.commission ? 1 : -1)));
-    setPspUpdateLoading(false);
+    setPspEditLoading(false);
   };
 
   const onPspEditClick = () => {
     setDrawerOpen(true);
     setPspEditLoading(true);
     void getPaymentPSPList({
-      onError: onPspUpdateError,
-      onResponse: onPspUpdateResponse,
+      onError: onPspEditError,
+      onResponse: onPspEditResponse,
     });
   };
 
-  const onPspError = () => {
+  const onPspUpdateError = () => {
     setPspUpdateLoading(false);
   };
 
-  const onPspResponse = () => {
+  const onPspUpdateResponse = () => {
     setPspUpdateLoading(false);
   };
 
   const updateWalletPSP = (id: number) => {
     setDrawerOpen(false);
     setPspUpdateLoading(true);
-    void updateWallet(id, onPspError, onPspResponse);
+    void updateWallet(id, onPspUpdateError, onPspUpdateResponse);
   };
 
   return (
@@ -132,7 +132,11 @@ export default function PaymentCheckPage() {
           {t("paymentCheckPage.total")}
         </Typography>
         <Typography variant="h6" component={"div"}>
-          {moneyFormat(checkData.amount.amount)}
+          {pspUpdateLoading ? (
+            <Skeleton variant="text" width="125px" height="40px" />
+          ) : (
+            moneyFormat(checkData.amount.amount)
+          )}
         </Typography>
       </Box>
       <ClickableFieldContainer
@@ -183,6 +187,7 @@ export default function PaymentCheckPage() {
         }
       />
       <FieldContainer
+        loading={pspUpdateLoading}
         titleVariant="sidenav"
         bodyVariant="body2"
         title={moneyFormat(wallet.psp.fixedCost.amount)}
@@ -199,6 +204,7 @@ export default function PaymentCheckPage() {
             variant="text"
             onClick={onPspEditClick}
             startIcon={<EditIcon />}
+            disabled={pspUpdateLoading}
           >
             {t("clipboard.edit")}
           </Button>
@@ -214,11 +220,15 @@ export default function PaymentCheckPage() {
 
       <FormButtons
         loading={payLoading}
-        submitTitle={`${t("paymentCheckPage.buttons.submit")} ${moneyFormat(
-          checkData.amount.amount
-        )}`}
+        submitTitle={
+          pspUpdateLoading
+            ? t("paymentCheckPage.buttons.wait")
+            : `${t("paymentCheckPage.buttons.submit")} ${moneyFormat(
+                checkData.amount.amount
+              )}`
+        }
         cancelTitle="paymentCheckPage.buttons.cancel"
-        disabled={false}
+        disabled={pspUpdateLoading}
         handleSubmit={onSubmit}
         handleCancel={() => {}}
       />
