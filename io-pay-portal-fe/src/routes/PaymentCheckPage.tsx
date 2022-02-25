@@ -21,7 +21,11 @@ import FieldContainer from "../components/TextFormField/FieldContainer";
 import PspFieldContainer from "../components/TextFormField/PspFieldContainer";
 import { PspList } from "../features/payment/models/paymentModel";
 import { getCheckData, getEmailInfo, getWallet } from "../utils/api/apiService";
-import { getPaymentPSPList, updateWallet } from "../utils/api/helper";
+import {
+  confirmPayment,
+  getPaymentPSPList,
+  updateWallet,
+} from "../utils/api/helper";
 import { moneyFormat } from "../utils/form/formatters";
 
 const defaultStyle = {
@@ -47,15 +51,27 @@ export default function PaymentCheckPage() {
   const navigate = useNavigate();
   const [modalOpen, setModalOpen] = React.useState(false);
   const [drawerOpen, setDrawerOpen] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
-  const [pspLoading, setPspLoading] = React.useState(false);
+  const [pspEditLoading, setPspEditLoading] = React.useState(false);
+  const [pspUpdateLoading, setPspUpdateLoading] = React.useState(false);
+  const [payLoading, setPayLoading] = React.useState(false);
   const [pspList, setPspList] = React.useState<Array<PspList>>([]);
 
   const checkData = getCheckData();
   const wallet = getWallet();
   const email = getEmailInfo();
 
-  const onSubmit = React.useCallback(() => {}, []);
+  const onError = () => {
+    setPayLoading(false);
+  };
+
+  const onResponse = () => {
+    setPayLoading(false);
+  };
+
+  const onSubmit = React.useCallback(() => {
+    setPayLoading(true);
+    void confirmPayment({ checkData, wallet }, onError, onResponse);
+  }, []);
   const getWalletIcon = () => {
     if (
       !wallet.creditCard.brand ||
@@ -72,31 +88,34 @@ export default function PaymentCheckPage() {
     );
   };
 
-  const onError = () => {
-    setLoading(false);
+  const onPspUpdateError = () => {
+    setPspUpdateLoading(false);
   };
-  const onResponse = (list: Array<PspList>) => {
+  const onPspUpdateResponse = (list: Array<PspList>) => {
     setPspList(list.sort((a, b) => (a.commission > b.commission ? 1 : -1)));
-    setLoading(false);
+    setPspUpdateLoading(false);
   };
 
   const onPspEditClick = () => {
     setDrawerOpen(true);
-    setLoading(true);
-    void getPaymentPSPList({ onError, onResponse });
+    setPspEditLoading(true);
+    void getPaymentPSPList({
+      onError: onPspUpdateError,
+      onResponse: onPspUpdateResponse,
+    });
   };
 
   const onPspError = () => {
-    setPspLoading(false);
+    setPspUpdateLoading(false);
   };
 
   const onPspResponse = () => {
-    setPspLoading(false);
+    setPspUpdateLoading(false);
   };
 
   const updateWalletPSP = (id: number) => {
     setDrawerOpen(false);
-    setPspLoading(true);
+    setPspUpdateLoading(true);
     void updateWallet(id, onPspError, onPspResponse);
   };
 
@@ -194,12 +213,12 @@ export default function PaymentCheckPage() {
       />
 
       <FormButtons
+        loading={payLoading}
         submitTitle={`${t("paymentCheckPage.buttons.submit")} ${moneyFormat(
           checkData.amount.amount
         )}`}
         cancelTitle="paymentCheckPage.buttons.cancel"
         disabled={false}
-        loading={false}
         handleSubmit={onSubmit}
         handleCancel={() => {}}
       />
@@ -252,7 +271,7 @@ export default function PaymentCheckPage() {
             </Typography>
           </Box>
         </Box>
-        {loading
+        {pspEditLoading
           ? Array(3)
               .fill(1)
               .map((_, index) => (
