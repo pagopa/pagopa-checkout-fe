@@ -46,6 +46,7 @@ const pspContainerStyle = {
 export default function PaymentCheckPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const currentPath = location.pathname.split("/")[1];
   const [modalOpen, setModalOpen] = React.useState(false);
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
@@ -62,6 +63,7 @@ export default function PaymentCheckPage() {
 
   const onResponse = () => {
     setPayLoading(false);
+    navigate(`/${currentPath}/response`);
   };
 
   const onSubmit = React.useCallback(() => {
