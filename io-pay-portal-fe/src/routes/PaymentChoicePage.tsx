@@ -3,8 +3,10 @@
 import { Box, CircularProgress } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { useDispatch } from "react-redux";
 import PageContainer from "../components/PageContent/PageContainer";
 import { PaymentChoice } from "../features/payment/components/PaymentChoice/PaymentChoice";
+import { setCheckData as setData } from "../redux/slices/checkData";
 import {
   getCheckData,
   getPaymentId,
@@ -17,6 +19,7 @@ export default function PaymentChoicePage() {
   const [loading, setLoading] = React.useState(false);
   const paymentId = getPaymentId();
   const checkData = getCheckData();
+  const dispatch = useDispatch();
 
   React.useEffect(() => {
     if (!checkData.idPayment) {
@@ -26,6 +29,7 @@ export default function PaymentChoicePage() {
         onError: () => setLoading(false), // handle error on response,
         onResponse: (r) => {
           setCheckData(r);
+          dispatch(setData(r));
           setLoading(false);
         },
         onNavigate: () => {}, // navigate to ko page,
