@@ -1,6 +1,6 @@
 /* eslint-disable functional/immutable-data */
-import { Button, Grid } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
+import { Grid } from "@mui/material";
 import { default as React } from "react";
 import { useTranslation } from "react-i18next";
 import { useSmallDevice } from "../../hooks/useSmallDevice";
@@ -10,7 +10,8 @@ export function FormButtons(props: {
   handleCancel: () => void;
   type?: "submit" | "button";
   disabled: boolean;
-  loading?: boolean;
+  loadingSubmit?: boolean;
+  loadingCancel?: boolean;
   submitTitle: string;
   cancelTitle: string;
 }) {
@@ -36,9 +37,10 @@ export function FormButtons(props: {
         spacing={2}
       >
         <Grid xs={4} style={useSmallDevice() ? { paddingTop: 0 } : {}} item>
-          <Button
+          <LoadingButton
             variant="outlined"
             onClick={props.handleCancel}
+            loading={props.loadingCancel || false}
             style={{
               width: "100%",
               height: "100%",
@@ -46,13 +48,13 @@ export function FormButtons(props: {
             }}
           >
             {t(props.cancelTitle)}
-          </Button>
+          </LoadingButton>
         </Grid>
         <Grid xs={8} style={useSmallDevice() ? { paddingTop: 0 } : {}} item>
           <LoadingButton
             type={props.type}
             onSubmit={props.handleSubmit}
-            loading={props.loading || false}
+            loading={props.loadingSubmit || false}
             variant="contained"
             onClick={props.type === "button" ? props.handleSubmit : undefined}
             disabled={props.disabled}

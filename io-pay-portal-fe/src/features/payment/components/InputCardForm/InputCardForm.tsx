@@ -259,7 +259,7 @@ export function InputCardForm(props: {
               />
             </Box>
             <FormButtons
-              loading={props.loading}
+              loadingSubmit={props.loading}
               type="submit"
               submitTitle="paymentNoticePage.formButtons.submit"
               cancelTitle="paymentNoticePage.formButtons.cancel"

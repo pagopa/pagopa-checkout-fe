@@ -6,7 +6,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
-import { Box, Button, Skeleton, SvgIcon, Typography } from "@mui/material";
+import { Box, Button, SvgIcon, Typography } from "@mui/material";
 import { default as React } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
@@ -22,6 +22,7 @@ import PspFieldContainer from "../components/TextFormField/PspFieldContainer";
 import { PspList } from "../features/payment/models/paymentModel";
 import { getCheckData, getEmailInfo, getWallet } from "../utils/api/apiService";
 import {
+  cancelPayment,
   confirmPayment,
   getPaymentPSPList,
   updateWallet,
@@ -55,6 +56,7 @@ export default function PaymentCheckPage() {
   const [pspEditLoading, setPspEditLoading] = React.useState(false);
   const [pspUpdateLoading, setPspUpdateLoading] = React.useState(false);
   const [payLoading, setPayLoading] = React.useState(false);
+  const [cancelLoading, setCancelLoading] = React.useState(false);
   const [pspList, setPspList] = React.useState<Array<PspList>>([]);
 
   const checkData = getCheckData();
@@ -71,25 +73,24 @@ export default function PaymentCheckPage() {
     navigate(`/${currentPath}/response`);
   };
 
+  const onCancelError = () => {
+    setCancelLoading(false);
+  };
+
+  const onCancelResponse = () => {
+    setCancelLoading(false);
+    navigate("/");
+  };
+
   const onSubmit = React.useCallback(() => {
     setPayLoading(true);
     void confirmPayment({ checkData, wallet }, onError, onResponse);
   }, []);
-  const getWalletIcon = () => {
-    if (
-      !wallet.creditCard.brand ||
-      wallet.creditCard.brand.toLowerCase() === "other"
-    ) {
-      return <CreditCardIcon color="action" />;
-    }
-    return (
-      <SvgIcon color="action">
-        <use
-          href={sprite + `#icons-${wallet.creditCard.brand.toLowerCase()}-mini`}
-        />
-      </SvgIcon>
-    );
-  };
+
+  const onCancel = React.useCallback(() => {
+    setCancelLoading(true);
+    void cancelPayment(onCancelError, onCancelResponse);
+  }, []);
 
   const onPspEditError = () => {
     setPspEditLoading(false);
@@ -121,6 +122,25 @@ export default function PaymentCheckPage() {
     setPspUpdateLoading(true);
     void updateWallet(id, onPspUpdateError, onPspUpdateResponse);
   };
+
+  const getWalletIcon = () => {
+    if (
+      !wallet.creditCard.brand ||
+      wallet.creditCard.brand.toLowerCase() === "other"
+    ) {
+      return <CreditCardIcon color="action" />;
+    }
+    return (
+      <SvgIcon color="action">
+        <use
+          href={sprite + `#icons-${wallet.creditCard.brand.toLowerCase()}-mini`}
+        />
+      </SvgIcon>
+    );
+  };
+
+  const isDisabled = () =>
+    pspEditLoading || payLoading || cancelLoading || pspUpdateLoading;
 
   return (
     <PageContainer>
@@ -163,6 +183,7 @@ export default function PaymentCheckPage() {
             variant="text"
             onClick={() => navigate(-1)}
             startIcon={<EditIcon />}
+            disabled={isDisabled()}
           >
             {t("clipboard.edit")}
           </Button>
@@ -203,7 +224,7 @@ export default function PaymentCheckPage() {
             variant="text"
             onClick={onPspEditClick}
             startIcon={<EditIcon />}
-            disabled={pspUpdateLoading}
+            disabled={isDisabled()}
           >
             {t("clipboard.edit")}
           </Button>
@@ -218,14 +239,15 @@ export default function PaymentCheckPage() {
       />
 
       <FormButtons
-        loading={payLoading}
+        loadingSubmit={payLoading}
+        loadingCancel={cancelLoading}
         submitTitle={`${t("paymentCheckPage.buttons.submit")} ${moneyFormat(
           totalAmount
         )}`}
         cancelTitle="paymentCheckPage.buttons.cancel"
-        disabled={pspUpdateLoading}
+        disabled={isDisabled()}
         handleSubmit={onSubmit}
-        handleCancel={() => {}}
+        handleCancel={onCancel}
       />
       <InformationModal
         open={modalOpen}
