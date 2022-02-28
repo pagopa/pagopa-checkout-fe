@@ -1,15 +1,14 @@
 /* eslint-disable functional/immutable-data */
 /* eslint-disable @typescript-eslint/ban-types */
 import CloseIcon from "@mui/icons-material/Close";
-import { Box, Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
+import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
-import { t } from "i18next";
 import React from "react";
 
 function InformationModal(props: {
   open: boolean;
   onClose: () => void;
-  content?: "default" | "alternative";
+  hideIcon?: boolean;
   children?: React.ReactNode;
   style?: React.CSSProperties;
   maxWidth?: "xs" | "sm" | "lg";
@@ -31,7 +30,7 @@ function InformationModal(props: {
       onClose={props.onClose}
     >
       <DialogTitle sx={{ m: 0, p: 2 }}>
-        {props.content === "default" && (
+        {!props.hideIcon && (
           <IconButton
             aria-label="close"
             onClick={() => props.onClose()}
@@ -46,23 +45,13 @@ function InformationModal(props: {
           </IconButton>
         )}
       </DialogTitle>
-      <DialogContent sx={{ p: 4 }}>
-        {props.children}
-        {props.content === "alternative" && (
-          <Box display="flex" justifyContent="end" sx={{ mt: 3 }}>
-            <Button variant="contained" onClick={props.onClose}>
-              {t("errorButton.close")}
-            </Button>
-          </Box>
-        )}
-      </DialogContent>
+      <DialogContent sx={{ p: 4 }}>{props.children}</DialogContent>
     </Dialog>
   );
 }
 
 InformationModal.defaultProps = {
   maxWidth: "lg",
-  content: "default",
 };
 
 export default InformationModal;

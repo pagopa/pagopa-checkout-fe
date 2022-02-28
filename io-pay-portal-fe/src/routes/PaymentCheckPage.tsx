@@ -52,6 +52,7 @@ export default function PaymentCheckPage() {
   const navigate = useNavigate();
   const currentPath = location.pathname.split("/")[1];
   const [modalOpen, setModalOpen] = React.useState(false);
+  const [cancelModalOpen, setCancelModalOpen] = React.useState(false);
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const [pspEditLoading, setPspEditLoading] = React.useState(false);
   const [pspUpdateLoading, setPspUpdateLoading] = React.useState(false);
@@ -66,20 +67,14 @@ export default function PaymentCheckPage() {
 
   const onError = () => {
     setPayLoading(false);
+    setCancelLoading(false);
+    setPspEditLoading(false);
+    setPspUpdateLoading(false);
   };
 
   const onResponse = () => {
     setPayLoading(false);
     navigate(`/${currentPath}/response`);
-  };
-
-  const onCancelError = () => {
-    setCancelLoading(false);
-  };
-
-  const onCancelResponse = () => {
-    setCancelLoading(false);
-    navigate(`/${currentPath}/cancelled`);
   };
 
   const onSubmit = React.useCallback(() => {
@@ -88,13 +83,20 @@ export default function PaymentCheckPage() {
   }, []);
 
   const onCancel = React.useCallback(() => {
-    setCancelLoading(true);
-    void cancelPayment(onCancelError, onCancelResponse);
+    setCancelModalOpen(true);
   }, []);
 
-  const onPspEditError = () => {
-    setPspEditLoading(false);
+  const onCancelResponse = () => {
+    setCancelLoading(false);
+    navigate(`/${currentPath}/cancelled`);
   };
+
+  const onCancelPaymentSubmit = () => {
+    setCancelModalOpen(false);
+    setCancelLoading(true);
+    void cancelPayment(onError, onCancelResponse);
+  };
+
   const onPspEditResponse = (list: Array<PspList>) => {
     setPspList(list.sort((a, b) => (a.commission > b.commission ? 1 : -1)));
     setPspEditLoading(false);
@@ -104,13 +106,9 @@ export default function PaymentCheckPage() {
     setDrawerOpen(true);
     setPspEditLoading(true);
     void getPaymentPSPList({
-      onError: onPspEditError,
+      onError,
       onResponse: onPspEditResponse,
     });
-  };
-
-  const onPspUpdateError = () => {
-    setPspUpdateLoading(false);
   };
 
   const onPspUpdateResponse = () => {
@@ -120,7 +118,7 @@ export default function PaymentCheckPage() {
   const updateWalletPSP = (id: number) => {
     setDrawerOpen(false);
     setPspUpdateLoading(true);
-    void updateWallet(id, onPspUpdateError, onPspUpdateResponse);
+    void updateWallet(id, onError, onPspUpdateResponse);
   };
 
   const getWalletIcon = () => {
@@ -253,7 +251,7 @@ export default function PaymentCheckPage() {
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         maxWidth="sm"
-        content="alternative"
+        hideIcon={true}
       >
         <Typography variant="h6" component={"div"} sx={{ pb: 2 }}>
           {t("paymentCheckPage.modal.title")}
@@ -265,6 +263,43 @@ export default function PaymentCheckPage() {
         >
           {t("paymentCheckPage.modal.body")}
         </Typography>
+        <Box display="flex" justifyContent="end" sx={{ mt: 3 }}>
+          <Button variant="contained" onClick={() => setModalOpen(false)}>
+            {t("errorButton.close")}
+          </Button>
+        </Box>
+      </InformationModal>
+
+      <InformationModal
+        open={cancelModalOpen}
+        onClose={() => setCancelModalOpen(false)}
+        maxWidth="sm"
+        hideIcon={true}
+        style={{ width: "444px" }}
+      >
+        <Typography variant="h6" component={"div"} sx={{ pb: 2 }}>
+          {t("paymentCheckPage.modal.cancelTitle")}
+        </Typography>
+        <Typography
+          variant="body1"
+          component={"div"}
+          sx={{ whiteSpace: "pre-line" }}
+        >
+          {t("paymentCheckPage.modal.cancelBody")}
+        </Typography>
+        <Box
+          display="flex"
+          flexDirection={{ xs: "column", sm: "row" }}
+          justifyContent="end"
+          sx={{ mt: 3, gap: 2 }}
+        >
+          <Button variant="text" onClick={() => setCancelModalOpen(false)}>
+            {t("paymentCheckPage.modal.cancelButton")}
+          </Button>
+          <Button variant="contained" onClick={onCancelPaymentSubmit}>
+            {t("paymentCheckPage.modal.submitButton")}
+          </Button>
+        </Box>
       </InformationModal>
 
       <CustomDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)}>
