@@ -44,6 +44,11 @@ import {
   PAYMENT_VERIFY_SVR_ERR,
 } from "../config/mixpanelHelperInit";
 import {
+  PAYMENT_ACTION_DELETE_INIT,
+  PAYMENT_ACTION_DELETE_NET_ERR,
+  PAYMENT_ACTION_DELETE_RESP_ERR,
+  PAYMENT_ACTION_DELETE_SUCCESS,
+  PAYMENT_ACTION_DELETE_SVR_ERR,
   PAYMENT_APPROVE_TERMS_INIT,
   PAYMENT_APPROVE_TERMS_NET_ERR,
   PAYMENT_APPROVE_TERMS_RESP_ERR,
@@ -779,4 +784,55 @@ export const confirmPayment = async (
       }
     )
     .run();
+};
+
+export const cancelPayment = async (
+  onError: (e: string) => void,
+  onResponse: () => void
+) => {
+  const checkData = JSON.parse(sessionStorage.getItem("checkData") || "");
+
+  // Payment action DELETE
+  mixpanel.track(PAYMENT_ACTION_DELETE_INIT.value, {
+    EVENT_ID: PAYMENT_ACTION_DELETE_INIT.value,
+  });
+
+  const eventResult:
+    | PAYMENT_ACTION_DELETE_NET_ERR
+    | PAYMENT_ACTION_DELETE_SVR_ERR
+    | PAYMENT_ACTION_DELETE_RESP_ERR
+    | PAYMENT_ACTION_DELETE_SUCCESS = await TE.tryCatch(
+    () =>
+      pmClient.deleteBySessionCookieExpiredUsingDELETE({
+        Bearer: `Bearer ${sessionStorage.getItem("sessionToken")}`,
+        id: checkData.idPayment,
+        koReason: "ANNUTE",
+        showWallet: false,
+      }),
+    () => PAYMENT_ACTION_DELETE_NET_ERR.value
+  )
+    .fold(
+      () => PAYMENT_ACTION_DELETE_SVR_ERR.value,
+      (myResExt) =>
+        myResExt.fold(
+          () => PAYMENT_ACTION_DELETE_RESP_ERR.value,
+          (myRes) =>
+            myRes.status === 200
+              ? PAYMENT_ACTION_DELETE_SUCCESS.value
+              : PAYMENT_ACTION_DELETE_RESP_ERR.value
+        )
+    )
+    .run();
+
+  mixpanel.track(eventResult, { EVENT_ID: eventResult });
+
+  if (PAYMENT_ACTION_DELETE_SUCCESS.decode(eventResult).isRight()) {
+    onResponse();
+  } else if (PAYMENT_ACTION_DELETE_NET_ERR.decode(eventResult).isRight()) {
+    onError(ErrorsType.CONNECTION);
+  } else if (PAYMENT_ACTION_DELETE_SVR_ERR.decode(eventResult).isRight()) {
+    onError(ErrorsType.SERVER);
+  } else {
+    onError(ErrorsType.GENERIC_ERROR);
+  }
 };

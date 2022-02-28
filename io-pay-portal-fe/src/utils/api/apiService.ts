@@ -1,4 +1,3 @@
-import { loadState, SessionItems } from "../storage/sessionStorage";
 import {
   PaymentCheckData,
   PaymentEmailFormFields,
@@ -7,6 +6,7 @@ import {
   PaymentInfo,
   Wallet,
 } from "../../features/payment/models/paymentModel";
+import { loadState, SessionItems } from "../storage/sessionStorage";
 
 export function getNoticeInfo() {
   const noticeInfo = loadState(SessionItems.noticeInfo) as PaymentFormFields;

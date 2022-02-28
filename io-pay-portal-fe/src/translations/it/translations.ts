@@ -203,6 +203,10 @@ export const TRANSLATIONS_IT = {
       title: "Perché c'è un costo di transazione?",
       body:
         "Qualsiasi operazione di trasferimento di denaro (in contanti o in moneta elettronica) ha un costo, che serve a garantirti che quel pagamento sia sicuro e arrivi a buon fine.\n\nOgni gestore(o PSP, Prestatore di Servizi di Pagamento), propone un costo di transazione, a seconda delle proprie politiche commerciali e condizioni contrattuali.\n\nCon pagoPA, questi costi sono trasparenti e il cittadino può scegliere liberamente l'opzione più comoda e conveniente. Verifica l'importo applicato dal PSP che hai scelto, prima di procedere al pagamento.",
+      cancelTitle: "Uscire dal pagamento in corso?",
+      cancelBody: "Tutti i dati inseriti andranno persi.",
+      cancelButton: "No, ho cambiato idea",
+      submitButton: "Esci",
     },
     buttons: {
       cancel: "Annulla",
@@ -256,5 +260,9 @@ export const TRANSLATIONS_IT = {
       body:
         "Probabilmente hai superato il massimale della tua carta. Verifica con la tua banca prima di riprovare.",
     },
+  },
+  cancelledPage: {
+    body: "L'operazione è stata annullata",
+    button: "Chiudi",
   },
 };

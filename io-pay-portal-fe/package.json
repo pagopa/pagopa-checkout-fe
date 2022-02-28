@@ -27,6 +27,7 @@
     "@mui/icons-material": "^5.2.5",
     "@mui/lab": "^5.0.0-alpha.69",
     "@pagopa/mui-italia": "^0.4.3",
+    "@reduxjs/toolkit": "^1.7.2",
     "@types/dotenv": "^8.2.0",
     "@types/mixpanel-browser": "^2.35.6",
     "abort-controller": "^3.0.0",
@@ -41,6 +42,7 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-i18next": "^11.15.3",
+    "react-redux": "^7.2.6",
     "react-router-dom": "6",
     "set-value": "^4.0.1"
   },

@@ -110,7 +110,7 @@ export default function PaymentSummaryPage() {
         submitTitle="paymentSummaryPage.buttons.submit"
         cancelTitle="paymentSummaryPage.buttons.cancel"
         disabled={false}
-        loading={loading}
+        loadingSubmit={loading}
         handleSubmit={onSubmit}
         handleCancel={() => {
           navigate(-1);

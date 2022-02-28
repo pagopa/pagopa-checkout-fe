@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import PageContainer from "../components/PageContent/PageContainer";
 import { InputCardForm } from "../features/payment/components/InputCardForm/InputCardForm";
 import { InputCardFormFields } from "../features/payment/models/paymentModel";
@@ -8,6 +8,7 @@ import { getSessionWallet } from "../utils/api/helper";
 
 export default function InputCardPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const currentPath = location.pathname.split("/")[1];
   const [loading, setLoading] = React.useState(false);
 
