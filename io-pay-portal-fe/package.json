@@ -10,7 +10,7 @@
     "lint": "eslint . -c .eslintrc.js --ext .ts,.tsx",
     "lint-autofix": "eslint . -c .eslintrc.js --ext .ts,.tsx --fix",
     "prebuild": "npm-run-all generate type-check",
-    "build": "rimraf .cache && rimraf dist && parcel build src/index.ts --public-url / && cp robots.txt dist/robots.txt",
+    "build": "rimraf .cache && rimraf dist && parcel build src/index.tsx --public-url / && cp robots.txt dist/robots.txt",
     "dev": "rimraf .cache && rimraf dist && npm-run-all generate type-check dev:env dev:server",
     "proxy": "npm-run-all generate type-check dev:env dev:proxy",
     "dev:env": "export $(grep -v '^#' .env.io-pay-portal.development | xargs) && chmod +x env.sh && source env.sh",

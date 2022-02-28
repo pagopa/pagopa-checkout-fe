@@ -15,7 +15,7 @@ const { createProxyMiddleware } = require("http-proxy-middleware");
 
 const app = express();
 
-const apiHost = "http://localhost:8080";
+const apiHost = "http://127.0.0.1:8080";
 const basepath = "/checkout/payments/v1";
 
 app.use(
