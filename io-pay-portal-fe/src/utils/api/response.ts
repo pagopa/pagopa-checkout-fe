@@ -118,6 +118,9 @@ export const callServices = async (
   window.addEventListener(
     "message",
     async function (e) {
+      if((/^react-devtools/gi).test(e.data.source)) {
+        return;
+        }
       fromPredicate<Error, MessageEvent<any>>(
         // Addresses must be static
         (e1) =>
