@@ -6,12 +6,11 @@ import EditIcon from "@mui/icons-material/Edit";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
-import { Box, Button, SvgIcon, Typography } from "@mui/material";
+import { Box, Button, Skeleton, SvgIcon, Typography } from "@mui/material";
 import { default as React } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import sprite from "../assets/images/app.svg";
-import pagopaLogo from "../assets/images/pagopa-logo.svg";
 import { FormButtons } from "../components/FormButtons/FormButtons";
 import { CustomDrawer } from "../components/modals/CustomDrawer";
 import InformationModal from "../components/modals/InformationModal";
@@ -22,7 +21,11 @@ import FieldContainer from "../components/TextFormField/FieldContainer";
 import PspFieldContainer from "../components/TextFormField/PspFieldContainer";
 import { PspList } from "../features/payment/models/paymentModel";
 import { getCheckData, getEmailInfo, getWallet } from "../utils/api/apiService";
-import { confirmPayment } from "../utils/api/helper";
+import {
+  confirmPayment,
+  getPaymentPSPList,
+  updateWallet,
+} from "../utils/api/helper";
 import { moneyFormat } from "../utils/form/formatters";
 
 const defaultStyle = {
@@ -49,13 +52,15 @@ export default function PaymentCheckPage() {
   const currentPath = location.pathname.split("/")[1];
   const [modalOpen, setModalOpen] = React.useState(false);
   const [drawerOpen, setDrawerOpen] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
+  const [pspEditLoading, setPspEditLoading] = React.useState(false);
+  const [pspUpdateLoading, setPspUpdateLoading] = React.useState(false);
   const [payLoading, setPayLoading] = React.useState(false);
   const [pspList, setPspList] = React.useState<Array<PspList>>([]);
 
   const checkData = getCheckData();
   const wallet = getWallet();
   const email = getEmailInfo();
+  const totalAmount = checkData.amount.amount + wallet.psp.fixedCost.amount;
 
   const onError = () => {
     setPayLoading(false);
@@ -86,38 +91,35 @@ export default function PaymentCheckPage() {
     );
   };
 
+  const onPspEditError = () => {
+    setPspEditLoading(false);
+  };
+  const onPspEditResponse = (list: Array<PspList>) => {
+    setPspList(list.sort((a, b) => (a.commission > b.commission ? 1 : -1)));
+    setPspEditLoading(false);
+  };
+
   const onPspEditClick = () => {
     setDrawerOpen(true);
-    setLoading(true);
-    // change settimeout with api binding
-    setTimeout(() => {
-      setPspList(
-        [
-          {
-            name: "Poste Italiane",
-            image: pagopaLogo,
-            commission: 500,
-            label: "",
-            idPsp: 1,
-          },
-          {
-            name: "Unicredit SPA",
-            image: pagopaLogo,
-            commission: 200,
-            label: "",
-            idPsp: 1,
-          },
-          {
-            name: "Intesa Sanpaolo spa",
-            image: pagopaLogo,
-            commission: 300,
-            label: "",
-            idPsp: 1,
-          },
-        ].sort((a, b) => (a.commission > b.commission ? 1 : -1))
-      );
-      setLoading(false);
-    }, 3000);
+    setPspEditLoading(true);
+    void getPaymentPSPList({
+      onError: onPspEditError,
+      onResponse: onPspEditResponse,
+    });
+  };
+
+  const onPspUpdateError = () => {
+    setPspUpdateLoading(false);
+  };
+
+  const onPspUpdateResponse = () => {
+    setPspUpdateLoading(false);
+  };
+
+  const updateWalletPSP = (id: number) => {
+    setDrawerOpen(false);
+    setPspUpdateLoading(true);
+    void updateWallet(id, onPspUpdateError, onPspUpdateResponse);
   };
 
   return (
@@ -133,7 +135,7 @@ export default function PaymentCheckPage() {
           {t("paymentCheckPage.total")}
         </Typography>
         <Typography variant="h6" component={"div"}>
-          {moneyFormat(checkData.amount.amount)}
+          {moneyFormat(totalAmount)}
         </Typography>
       </Box>
       <ClickableFieldContainer
@@ -184,6 +186,7 @@ export default function PaymentCheckPage() {
         }
       />
       <FieldContainer
+        loading={pspUpdateLoading}
         titleVariant="sidenav"
         bodyVariant="body2"
         title={moneyFormat(wallet.psp.fixedCost.amount)}
@@ -200,6 +203,7 @@ export default function PaymentCheckPage() {
             variant="text"
             onClick={onPspEditClick}
             startIcon={<EditIcon />}
+            disabled={pspUpdateLoading}
           >
             {t("clipboard.edit")}
           </Button>
@@ -216,10 +220,10 @@ export default function PaymentCheckPage() {
       <FormButtons
         loading={payLoading}
         submitTitle={`${t("paymentCheckPage.buttons.submit")} ${moneyFormat(
-          checkData.amount.amount
+          totalAmount
         )}`}
         cancelTitle="paymentCheckPage.buttons.cancel"
-        disabled={false}
+        disabled={pspUpdateLoading}
         handleSubmit={onSubmit}
         handleCancel={() => {}}
       />
@@ -272,7 +276,7 @@ export default function PaymentCheckPage() {
             </Typography>
           </Box>
         </Box>
-        {loading
+        {pspEditLoading
           ? Array(3)
               .fill(1)
               .map((_, index) => (
@@ -296,7 +300,7 @@ export default function PaymentCheckPage() {
                   </Typography>
                 }
                 onClick={() => {
-                  // call change psp api
+                  updateWalletPSP(psp.idPsp || 0);
                 }}
               />
             ))}

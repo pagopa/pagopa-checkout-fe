@@ -33,10 +33,10 @@ export function getPaymentInfo() {
 }
 
 export function getEmailInfo() {
-  const emailInfo = loadState(SessionItems.email) as PaymentEmailFormFields;
+  const emailInfo = loadState(SessionItems.useremail) as string;
   return {
-    email: emailInfo?.email || "",
-    confirmEmail: emailInfo?.confirmEmail || "",
+    email: emailInfo || "",
+    confirmEmail: emailInfo || "",
   };
 }
 
@@ -96,32 +96,6 @@ export function getWallet() {
   };
 }
 
-export function getMockedWallet() {
-  return {
-    creditCard: {
-      brand: "mastercard",
-      pan: "**********4242",
-      holder: "Mario Rossi",
-      expireMonth: "09",
-      expireYear: "26",
-    },
-    idWallet: 0,
-    psp: {
-      businessName: "Banca Monte dei Paschi di Siena",
-      directAcquire: false,
-      fixedCost: {
-        currency: "EUR",
-        amount: 100,
-        decimalDigits: 2,
-      },
-      logoPSP: "",
-      serviceAvailability: "",
-    },
-    pspEditable: false,
-    type: "",
-  };
-}
-
 export function setWaller(item: Wallet) {
   sessionStorage.setItem(SessionItems.wallet, JSON.stringify(item));
 }
@@ -131,7 +105,6 @@ export function setPaymentId(item: PaymentId) {
 }
 
 export function setEmailInfo(item: PaymentEmailFormFields) {
-  sessionStorage.setItem(SessionItems.email, JSON.stringify(item));
   sessionStorage.setItem(SessionItems.useremail, JSON.stringify(item.email));
 }
 

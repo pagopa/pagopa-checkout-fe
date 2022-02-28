@@ -1,6 +1,6 @@
 /* eslint-disable functional/immutable-data */
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { Box, SxProps, Typography } from "@mui/material";
+import { Box, SxProps, Typography, Skeleton } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
@@ -13,6 +13,7 @@ function FieldContainer(props: {
   bodyVariant?: "body2" | "sidenav";
   sx?: SxProps;
   endAdornment?: React.ReactNode;
+  loading?: boolean;
 }) {
   const { t } = useTranslation();
   const defaultStyle = {
@@ -45,10 +46,18 @@ function FieldContainer(props: {
           }}
         >
           <Typography variant={props.titleVariant} component={"div"}>
-            {t(props.title)}
+            {props.loading ? (
+              <Skeleton variant="text" width="125px" height="30px" />
+            ) : (
+              t(props.title)
+            )}
           </Typography>
           <Typography variant={props.bodyVariant} component={"div"}>
-            {props.body}
+            {props.loading ? (
+              <Skeleton variant="text" width="188px" height="24px" />
+            ) : (
+              props.body
+            )}
           </Typography>
         </Box>
       </Box>
