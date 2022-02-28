@@ -79,7 +79,7 @@ export default function PaymentCheckPage() {
 
   const onCancelResponse = () => {
     setCancelLoading(false);
-    navigate("/");
+    navigate(`/${currentPath}/cancelled`);
   };
 
   const onSubmit = React.useCallback(() => {

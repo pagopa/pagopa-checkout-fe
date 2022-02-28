@@ -257,4 +257,8 @@ export const TRANSLATIONS_IT = {
         "Probabilmente hai superato il massimale della tua carta. Verifica con la tua banca prima di riprovare.",
     },
   },
+  cancelledPage: {
+    body: "L'operazione è stata annullata",
+    button: "Chiudi",
+  },
 };
