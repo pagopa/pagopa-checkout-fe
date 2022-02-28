@@ -9,22 +9,15 @@
  * and apiHost with the host api (for example http://localhost:80).
  */
 
-const Bundler = require("parcel-bundler");
-const express = require("express");
-const { createProxyMiddleware } = require("http-proxy-middleware");
-
-const app = express();
+const {createProxyMiddleware} = require("http-proxy-middleware");
 
 const apiHost = "http://127.0.0.1:8080";
 const basepath = "/checkout/payments/v1";
 
-app.use(
-  createProxyMiddleware(basepath, {
-    target: apiHost,
-  })
-);
-
-const bundler = new Bundler("src/index.html");
-app.use(bundler.middleware());
-
-app.listen(Number(1234));
+if (process.env.USE_PROXY === 'true') {
+    module.exports = function (app) {
+        app.use(createProxyMiddleware(basepath, {
+            target: apiHost,
+        }));
+    }
+}
