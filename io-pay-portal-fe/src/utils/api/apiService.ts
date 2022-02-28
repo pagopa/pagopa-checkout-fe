@@ -33,10 +33,10 @@ export function getPaymentInfo() {
 }
 
 export function getEmailInfo() {
-  const emailInfo = loadState(SessionItems.email) as PaymentEmailFormFields;
+  const emailInfo = loadState(SessionItems.useremail) as string;
   return {
-    email: emailInfo?.email || "",
-    confirmEmail: emailInfo?.confirmEmail || "",
+    email: emailInfo || "",
+    confirmEmail: emailInfo || "",
   };
 }
 
@@ -105,7 +105,6 @@ export function setPaymentId(item: PaymentId) {
 }
 
 export function setEmailInfo(item: PaymentEmailFormFields) {
-  sessionStorage.setItem(SessionItems.email, JSON.stringify(item));
   sessionStorage.setItem(SessionItems.useremail, JSON.stringify(item.email));
 }
 

@@ -74,7 +74,7 @@ export function App() {
               <Route
                 path="inputcard"
                 element={
-                  <Guard item={SessionItems.email}>
+                  <Guard item={SessionItems.useremail}>
                     <InputCardPage />
                   </Guard>
                 }
