@@ -59,6 +59,7 @@ export default function PaymentCheckPage() {
   const checkData = getCheckData();
   const wallet = getWallet();
   const email = getEmailInfo();
+  const totalAmount = checkData.amount.amount + wallet.psp.fixedCost.amount;
 
   const onError = () => {
     setPayLoading(false);
@@ -132,11 +133,7 @@ export default function PaymentCheckPage() {
           {t("paymentCheckPage.total")}
         </Typography>
         <Typography variant="h6" component={"div"}>
-          {pspUpdateLoading ? (
-            <Skeleton variant="text" width="125px" height="40px" />
-          ) : (
-            moneyFormat(checkData.amount.amount)
-          )}
+          {moneyFormat(totalAmount)}
         </Typography>
       </Box>
       <ClickableFieldContainer
@@ -220,13 +217,9 @@ export default function PaymentCheckPage() {
 
       <FormButtons
         loading={payLoading}
-        submitTitle={
-          pspUpdateLoading
-            ? t("paymentCheckPage.buttons.wait")
-            : `${t("paymentCheckPage.buttons.submit")} ${moneyFormat(
-                checkData.amount.amount
-              )}`
-        }
+        submitTitle={`${t("paymentCheckPage.buttons.submit")} ${moneyFormat(
+          totalAmount
+        )}`}
         cancelTitle="paymentCheckPage.buttons.cancel"
         disabled={pspUpdateLoading}
         handleSubmit={onSubmit}
