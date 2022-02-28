@@ -64,9 +64,7 @@ export default function PaymentCheckPage() {
         idStatus,
         outcome,
       });
-      if (isDirectAcquirer !== undefined) {
-        showFinalResult(outcome);
-      }
+      showFinalResult(outcome);
     };
 
     const showFinalResult = (outcome: OutcomeEnumType) => {
