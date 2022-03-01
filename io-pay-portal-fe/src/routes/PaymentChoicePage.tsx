@@ -1,9 +1,12 @@
+/* eslint-disable functional/immutable-data */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable sonarjs/cognitive-complexity */
 import { Box, CircularProgress } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { CancelPayment } from "../components/modals/CancelPayment";
 import PageContainer from "../components/PageContent/PageContainer";
 import { PaymentChoice } from "../features/payment/components/PaymentChoice/PaymentChoice";
 import { setCheckData as setData } from "../redux/slices/checkData";
@@ -12,14 +15,38 @@ import {
   getPaymentId,
   setCheckData,
 } from "../utils/api/apiService";
-import { getPaymentCheckData } from "../utils/api/helper";
+import { cancelPayment, getPaymentCheckData } from "../utils/api/helper";
+import { onBrowserUnload } from "../utils/eventListeners";
 
 export default function PaymentChoicePage() {
   const { t } = useTranslation();
+  const currentPath = location.pathname.split("/")[1];
   const [loading, setLoading] = React.useState(false);
+  const [cancelModalOpen, setCancelModalOpen] = React.useState(false);
   const paymentId = getPaymentId();
   const checkData = getCheckData();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const onError = () => {
+    setLoading(false);
+  };
+
+  const onCancelResponse = () => {
+    setLoading(false);
+    navigate(`/${currentPath}/cancelled`);
+  };
+
+  const onCancelPaymentSubmit = () => {
+    setCancelModalOpen(false);
+    setLoading(true);
+    void cancelPayment(onError, onCancelResponse);
+  };
+
+  const onBrowserBackEvent = (e: any) => {
+    e.preventDefault();
+    setCancelModalOpen(true);
+  };
 
   React.useEffect(() => {
     if (!checkData.idPayment) {
@@ -35,6 +62,10 @@ export default function PaymentChoicePage() {
         onNavigate: () => {}, // navigate to ko page,
       });
     }
+    window.addEventListener("beforeunload", onBrowserUnload);
+    window.history.pushState(null, "", window.location.pathname);
+    window.addEventListener("popstate", onBrowserBackEvent);
+    return () => window.removeEventListener("popstate", onBrowserBackEvent);
   }, [checkData.idPayment]);
 
   return loading ? (
@@ -57,6 +88,11 @@ export default function PaymentChoicePage() {
       <Box sx={{ mt: 6 }}>
         <PaymentChoice />
       </Box>
+      <CancelPayment
+        open={cancelModalOpen}
+        onCancel={() => setCancelModalOpen(false)}
+        onSubmit={onCancelPaymentSubmit}
+      />
     </PageContainer>
   );
 }

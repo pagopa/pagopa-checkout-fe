@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import cancelled from "../assets/images/response-unrecognized.svg";
 import PageContainer from "../components/PageContent/PageContainer";
 import { resetCheckData } from "../redux/slices/checkData";
+import { onBrowserUnload } from "../utils/eventListeners";
 
 export default function CancelledPage() {
   const { t } = useTranslation();
@@ -14,6 +15,7 @@ export default function CancelledPage() {
 
   React.useEffect(() => {
     dispatch(resetCheckData());
+    window.removeEventListener("beforeunload", onBrowserUnload);
   }, []);
   sessionStorage.clear();
 
