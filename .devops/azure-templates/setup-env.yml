@@ -39,7 +39,6 @@ steps:
     echo 'IO_PAY_PORTAL_SITE_KEY: $IO_PAY_PORTAL_SITE_KEY'
     echo 'IO_PAY_PORTAL_API_BASEPATH : $IO_PAY_PORTAL_API_BASEPATH'
     chmod +x env.sh && source env.sh
-  workingDirectory: io-pay-portal-fe
   env:
     IO_PAY_PORTAL_API_HOST: ${{ parameters.api_host }}
     IO_PAY_PORTAL_API_REQUEST_TIMEOUT: ${{ parameters.timeout }}
