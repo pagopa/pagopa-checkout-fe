@@ -48,5 +48,5 @@ steps:
     IO_PAY_PORTAL_ENV: ${{ parameters.env }}
     IO_PAY_PORTAL_SITE_KEY: ${{ parameters.site_key }}
     IO_PAY_PORTAL_API_BASEPATH: ${{ parameters.api_basepath }}
-  displayName: 'Build files'
+  displayName: 'Populate environment file'
   
