@@ -35,6 +35,7 @@ import {
 } from "../../models/paymentModel";
 
 export function InputCardForm(props: {
+  loading: boolean;
   onCancel: () => void;
   onSubmit: (emailInfo: InputCardFormFields) => void;
 }) {
@@ -258,6 +259,8 @@ export function InputCardForm(props: {
               />
             </Box>
             <FormButtons
+              loadingSubmit={props.loading}
+              type="submit"
               submitTitle="paymentNoticePage.formButtons.submit"
               cancelTitle="paymentNoticePage.formButtons.cancel"
               disabled={disabled}

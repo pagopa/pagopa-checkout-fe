@@ -110,6 +110,7 @@ export function PaymentEmailForm(props: {
               />
             </Box>
             <FormButtons
+              type="submit"
               submitTitle="paymentEmailPage.formButtons.submit"
               cancelTitle="paymentEmailPage.formButtons.cancel"
               disabled={disabled}

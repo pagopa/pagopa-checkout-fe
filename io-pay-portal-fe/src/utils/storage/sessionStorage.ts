@@ -1,6 +1,5 @@
 import {
   PaymentCheckData,
-  PaymentEmailFormFields,
   PaymentFormFields,
   PaymentId,
   PaymentInfo,
@@ -11,7 +10,7 @@ import {
 export enum SessionItems {
   paymentInfo = "paymentInfo",
   noticeInfo = "rptId",
-  email = "email",
+  useremail = "useremail",
   paymentId = "paymentId",
   checkData = "checkData",
   securityCode = "securityCode",
@@ -26,9 +25,9 @@ export const loadState = (item: string) => {
     }
 
     return JSON.parse(serializedState) as
+      | string
       | PaymentInfo
       | PaymentFormFields
-      | PaymentEmailFormFields
       | PaymentId
       | PaymentCheckData
       | Wallet

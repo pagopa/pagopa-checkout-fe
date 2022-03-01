@@ -114,10 +114,11 @@ export function PaymentNoticeForm(props: {
               />
             </Box>
             <FormButtons
+              type="submit"
               submitTitle="paymentNoticePage.formButtons.submit"
               cancelTitle="paymentNoticePage.formButtons.cancel"
               disabled={disabled}
-              loading={props.loading}
+              loadingSubmit={props.loading}
               handleSubmit={() => handleSubmit()}
               handleCancel={props.onCancel}
             />

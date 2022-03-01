@@ -16,6 +16,8 @@ import "./translations/i18n";
 import PaymentQrPage from "./routes/PaymentQrPage";
 import { SessionItems } from "./utils/storage/sessionStorage";
 import PaymentCheckPage from "./routes/PaymentCheckPage";
+import PaymentResponsePage from "./routes/PaymentResponsePage";
+import CancelledPage from "./routes/CancelledPage";
 
 const checkoutTheme = createTheme({
   ...theme,
@@ -42,7 +44,7 @@ const checkoutTheme = createTheme({
 });
 
 export function App() {
-  const fixedFooterPages = ["payment", "qrcode"];
+  const fixedFooterPages = ["payment", "qrcode", "cancelled"];
 
   return (
     <ThemeProvider theme={checkoutTheme}>
@@ -74,7 +76,7 @@ export function App() {
               <Route
                 path="inputcard"
                 element={
-                  <Guard item={SessionItems.email}>
+                  <Guard item={SessionItems.useremail}>
                     <InputCardPage />
                   </Guard>
                 }
@@ -95,6 +97,15 @@ export function App() {
                   </Guard>
                 }
               />
+              <Route
+                path="response"
+                element={
+                  <Guard item={SessionItems.paymentId}>
+                    <PaymentResponsePage />
+                  </Guard>
+                }
+              />
+              <Route path="cancelled" element={<CancelledPage />} />
               <Route path="*" element={<Navigate replace to="/" />} />
             </Route>
             <Route path="*" element={<Navigate replace to="/" />} />

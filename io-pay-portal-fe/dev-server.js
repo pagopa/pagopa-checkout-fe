@@ -6,11 +6,6 @@
  */
 
 const Bundler = require("parcel-bundler");
-const express = require("express");
-
-const app = express();
-
-app.use(express.json()) 
 
 app.get("/api/checkout/payments/v1/payment-requests/:rptId", (_, res) => {
   // test scenario for an error message
