@@ -450,7 +450,7 @@ export const getSessionWallet = async (
           },
         },
       }),
-    (e) => {
+    (_e) => {
       onError(ErrorsType.CONNECTION);
       mixpanel.track(PAYMENT_START_SESSION_NET_ERR.value, {
         EVENT_ID: PAYMENT_START_SESSION_NET_ERR.value,
@@ -459,7 +459,7 @@ export const getSessionWallet = async (
     }
   )
     .fold(
-      (r) => {
+      (_r) => {
         onError(ErrorsType.SERVER);
         mixpanel.track(PAYMENT_START_SESSION_SVR_ERR.value, {
           EVENT_ID: PAYMENT_START_SESSION_SVR_ERR.value,
@@ -507,7 +507,7 @@ export const getSessionWallet = async (
           },
         },
       }),
-    (e) => {
+    (_e) => {
       onError(ErrorsType.CONNECTION);
       mixpanel.track(PAYMENT_APPROVE_TERMS_NET_ERR.value, {
         EVENT_ID: PAYMENT_APPROVE_TERMS_NET_ERR.value,
@@ -516,7 +516,7 @@ export const getSessionWallet = async (
     }
   )
     .fold(
-      (r) => {
+      (_r) => {
         onError(ErrorsType.SERVER);
         mixpanel.track(PAYMENT_APPROVE_TERMS_SVR_ERR.value, {
           EVENT_ID: PAYMENT_APPROVE_TERMS_SVR_ERR.value,
@@ -568,7 +568,7 @@ export const getSessionWallet = async (
         },
         language: "it",
       }),
-    (e) => {
+    (_e) => {
       onError(ErrorsType.CONNECTION);
       mixpanel.track(PAYMENT_WALLET_NET_ERR.value, {
         EVENT_ID: PAYMENT_WALLET_NET_ERR.value,
@@ -577,7 +577,7 @@ export const getSessionWallet = async (
     }
   )
     .fold(
-      (r) => {
+      (_r) => {
         onError(ErrorsType.SERVER);
         mixpanel.track(PAYMENT_WALLET_SVR_ERR.value, {
           EVENT_ID: PAYMENT_WALLET_SVR_ERR.value,
@@ -647,7 +647,7 @@ export const updateWallet = async (
           },
         },
       }),
-    (e) => {
+    (_e) => {
       onError(ErrorsType.GENERIC_ERROR);
       mixpanel.track(PAYMENT_UPD_WALLET_NET_ERR.value, {
         EVENT_ID: PAYMENT_UPD_WALLET_NET_ERR.value,
@@ -656,7 +656,7 @@ export const updateWallet = async (
     }
   )
     .fold(
-      (r) => {
+      (_r) => {
         onError(ErrorsType.GENERIC_ERROR);
         mixpanel.track(PAYMENT_UPD_WALLET_SVR_ERR.value, {
           EVENT_ID: PAYMENT_UPD_WALLET_SVR_ERR.value,
@@ -746,7 +746,7 @@ export const confirmPayment = async (
         },
         language: "it",
       }),
-    (e) => {
+    (_e) => {
       onError(ErrorsType.CONNECTION);
       mixpanel.track(PAYMENT_PAY3DS2_NET_ERR.value, {
         EVENT_ID: PAYMENT_PAY3DS2_NET_ERR.value,
@@ -755,7 +755,7 @@ export const confirmPayment = async (
     }
   )
     .fold(
-      (r) => {
+      (_r) => {
         onError(ErrorsType.SERVER);
         mixpanel.track(PAYMENT_PAY3DS2_SVR_ERR.value, {
           EVENT_ID: PAYMENT_PAY3DS2_SVR_ERR.value,
