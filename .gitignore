@@ -1,5 +1,35 @@
 
 .DS_Store
-io-functions-pay-portal/test_reports/io-functions-pay-portal-TEST.xml
-io-pay-portal-fe/test_reports/io-pay-portal-fe-TEST.xml
-io-pay-portal-fe/src/env-config.js
+test_reports/io-functions-pay-portal-TEST.xml
+test_reports/io-pay-portal-fe-TEST.xml
+src/env-config.js
+# dependencies
+/node_modules
+/generated
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# production
+/build
+/dist
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+.env
+
+.cache
+
+# Parcel
+.parcel-cache
