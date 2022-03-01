@@ -137,12 +137,14 @@ stages:
   # Activated when ONE OF these are met:
   # - is on branch main
   # - is a tag in the form v{version}-RELEASE
+
+  # TODO: Remove `false` in condition when enabling `pagopa-checkout-fe` deploys on UAT and PROD
   - stage: Release
     dependsOn: []
     condition:
       and(
         succeeded(),
-        false, # TODO: Remove this when enabling `pagopa-checkout-fe` deploys on UAT and PROD
+        false,
         eq(${{parameters.UAT_PROD_DEPLOY}}, true),
         or(
           eq(variables['Build.SourceBranch'], 'refs/heads/main'),
@@ -275,7 +277,6 @@ stages:
               scriptLocation: inlineScript
               inlineScript: |
                 call az cdn endpoint purge -g pagopa-u-checkout-fe-rg -n pagopa-u-checkout-cdn-endpoint --profile-name pagopa-u-checkout-cdn-profile --content-paths "/*"
- to UAT-pagoPA
 
   - stage: UAT_to_PROD_promotion
     dependsOn:
