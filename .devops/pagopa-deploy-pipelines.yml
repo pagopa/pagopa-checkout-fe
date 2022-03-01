@@ -68,7 +68,7 @@ stages:
           - template: azure-templates/setup-env.yml
             parameters:
               site_key: $(CHECKOUT_CAPTCHA_ID_DEV)
-              api_host: $(CHECKOUT_API_HOST_DEV)
+              api_host: $(CHECKOUT_API_HOST_UAT)
               env:  'DEV'
               api_basepath: '/checkout/payments/v1'
               polling_attempts: '16'
