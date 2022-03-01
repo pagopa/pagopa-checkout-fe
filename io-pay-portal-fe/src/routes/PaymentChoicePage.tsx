@@ -1,12 +1,12 @@
 /* eslint-disable functional/immutable-data */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable sonarjs/cognitive-complexity */
-import { Box, Button, CircularProgress, Typography } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import InformationModal from "../components/modals/InformationModal";
+import { CancelPayment } from "../components/modals/CancelPayment";
 import PageContainer from "../components/PageContent/PageContainer";
 import { PaymentChoice } from "../features/payment/components/PaymentChoice/PaymentChoice";
 import { setCheckData as setData } from "../redux/slices/checkData";
@@ -88,37 +88,11 @@ export default function PaymentChoicePage() {
       <Box sx={{ mt: 6 }}>
         <PaymentChoice />
       </Box>
-      <InformationModal
+      <CancelPayment
         open={cancelModalOpen}
-        onClose={() => setCancelModalOpen(false)}
-        maxWidth="sm"
-        hideIcon={true}
-        style={{ width: "444px" }}
-      >
-        <Typography variant="h6" component={"div"} sx={{ pb: 2 }}>
-          {t("paymentCheckPage.modal.cancelTitle")}
-        </Typography>
-        <Typography
-          variant="body1"
-          component={"div"}
-          sx={{ whiteSpace: "pre-line" }}
-        >
-          {t("paymentCheckPage.modal.cancelBody")}
-        </Typography>
-        <Box
-          display="flex"
-          flexDirection={{ xs: "column", sm: "row" }}
-          justifyContent="end"
-          sx={{ mt: 3, gap: 2 }}
-        >
-          <Button variant="text" onClick={() => setCancelModalOpen(false)}>
-            {t("paymentCheckPage.modal.cancelButton")}
-          </Button>
-          <Button variant="contained" onClick={onCancelPaymentSubmit}>
-            {t("paymentCheckPage.modal.submitButton")}
-          </Button>
-        </Box>
-      </InformationModal>
+        onCancel={() => setCancelModalOpen(false)}
+        onSubmit={onCancelPaymentSubmit}
+      />
     </PageContainer>
   );
 }

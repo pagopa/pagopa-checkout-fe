@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import sprite from "../assets/images/app.svg";
 import { FormButtons } from "../components/FormButtons/FormButtons";
+import { CancelPayment } from "../components/modals/CancelPayment";
 import { CustomDrawer } from "../components/modals/CustomDrawer";
 import InformationModal from "../components/modals/InformationModal";
 import PageContainer from "../components/PageContent/PageContainer";
@@ -269,38 +270,11 @@ export default function PaymentCheckPage() {
           </Button>
         </Box>
       </InformationModal>
-
-      <InformationModal
+      <CancelPayment
         open={cancelModalOpen}
-        onClose={() => setCancelModalOpen(false)}
-        maxWidth="sm"
-        hideIcon={true}
-        style={{ width: "444px" }}
-      >
-        <Typography variant="h6" component={"div"} sx={{ pb: 2 }}>
-          {t("paymentCheckPage.modal.cancelTitle")}
-        </Typography>
-        <Typography
-          variant="body1"
-          component={"div"}
-          sx={{ whiteSpace: "pre-line" }}
-        >
-          {t("paymentCheckPage.modal.cancelBody")}
-        </Typography>
-        <Box
-          display="flex"
-          flexDirection={{ xs: "column", sm: "row" }}
-          justifyContent="end"
-          sx={{ mt: 3, gap: 2 }}
-        >
-          <Button variant="text" onClick={() => setCancelModalOpen(false)}>
-            {t("paymentCheckPage.modal.cancelButton")}
-          </Button>
-          <Button variant="contained" onClick={onCancelPaymentSubmit}>
-            {t("paymentCheckPage.modal.submitButton")}
-          </Button>
-        </Box>
-      </InformationModal>
+        onCancel={() => setCancelModalOpen(false)}
+        onSubmit={onCancelPaymentSubmit}
+      />
 
       <CustomDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)}>
         <Box
