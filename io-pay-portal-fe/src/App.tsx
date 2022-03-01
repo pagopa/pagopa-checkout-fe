@@ -18,6 +18,7 @@ import { SessionItems } from "./utils/storage/sessionStorage";
 import PaymentCheckPage from "./routes/PaymentCheckPage";
 import PaymentResponsePage from "./routes/PaymentResponsePage";
 import CancelledPage from "./routes/CancelledPage";
+import KOPage from "./routes/KOPage";
 
 const checkoutTheme = createTheme({
   ...theme,
@@ -106,6 +107,7 @@ export function App() {
                 }
               />
               <Route path="cancelled" element={<CancelledPage />} />
+              <Route path="ko" element={<KOPage />} />
               <Route path="*" element={<Navigate replace to="/" />} />
             </Route>
             <Route path="*" element={<Navigate replace to="/" />} />
