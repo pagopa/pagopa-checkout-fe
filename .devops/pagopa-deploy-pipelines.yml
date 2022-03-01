@@ -79,29 +79,7 @@ stages:
               yarn build
             displayName: 'Build'
 
-          - task: CopyFiles@2
-            inputs:
-              SourceFolder: '$(System.DefaultWorkingDirectory)'
-              TargetFolder: '$(System.DefaultWorkingDirectory)/bundle'
-              Contents: |
-                **/*
-                !.git/**/*
-                !**/*.js.map
-                !**/*.ts
-                !.vscode/**/*
-                !.devops/**/*
-                !.gitignore
-                !README.md
-                !tsconfig.json
-                !tslint.json
-                !yarn.lock
-                !Dangerfile.js
-                !CODEOWNERS
-                !preview.hbs
-                !__*/**/*
-            displayName: 'Copy bundle files'
-
-          - publish: $(System.DefaultWorkingDirectory)/bundle
+          - publish: $(System.DefaultWorkingDirectory)/dist
             artifact: Bundle_DEV
 
   - stage: Deploy_DEV_pagoPA
@@ -203,37 +181,8 @@ stages:
           - script: |
               yarn build
             displayName: 'Build'
-          - task: CopyFiles@2
-            inputs:
-              SourceFolder: '$(System.DefaultWorkingDirectory)'
-              TargetFolder: '$(System.DefaultWorkingDirectory)/bundle'
-              Contents: |
-                **/*
-                web.config
-                !.git/**/*
-                !**/*.js.map
-                !**/*.ts
-                !.vscode/**/*
-                !.devops/**/*
-                !.prettierrc
-                !.gitignore
-                !README.md
-                !jest.integration.js
-                !test
-                !tsconfig.json
-                !tslint.json
-                !yarn.lock
-                !Dangerfile.js
-                !CODEOWNERS
-                !Dockerfile
-                !preview.hbs
-                !.auto-changelog.json
-                !api_pagopa.yaml
-                !io-pagopa-node-mock/**/*
-                !__*/**/*
-            displayName: 'Copy bundle files'
-          
-          - publish: $(System.DefaultWorkingDirectory)/bundle
+
+          - publish: $(System.DefaultWorkingDirectory)/dist
             artifact: Bundle_UAT
 
   - stage: UAT_Deploy_approval
@@ -320,38 +269,9 @@ stages:
           - script: |
               yarn build
             displayName: 'Build'
-          - task: CopyFiles@2
-            inputs:
-              SourceFolder: '$(System.DefaultWorkingDirectory)'
-              TargetFolder: '$(System.DefaultWorkingDirectory)/bundle'
-              Contents: |
-                **/*
-                web.config
-                !.git/**/*
-                !**/*.js.map
-                !**/*.ts
-                !.vscode/**/*
-                !.devops/**/*
-                !.prettierrc
-                !.gitignore
-                !README.md
-                !jest.integration.js
-                !test
-                !tsconfig.json
-                !tslint.json
-                !yarn.lock
-                !Dangerfile.js
-                !CODEOWNERS
-                !Dockerfile
-                !preview.hbs
-                !.auto-changelog.json
-                !api_pagopa.yaml
-                !io-pagopa-node-mock/**/*
-                !__*/**/*
-            displayName: 'Copy bundle files'
-          
-          - publish: $(System.DefaultWorkingDirectory)/bundle
-            artifact: Bundle_PROD
+
+          - publish: $(System.DefaultWorkingDirectory)/dist
+            artifact: Bundle
 
   - stage: Deploy_PROD_pagoPA
     dependsOn:
@@ -370,7 +290,7 @@ stages:
               azureSubscription: 'PROD-PAGOPA-SERVICE-CONN'
               scriptLocation: inlineScript
               inlineScript: |
-                call az storage blob sync --container $web --account-name pagopapcheckoutsa -s "$(Pipeline.Workspace)\Bundle_PROD" --exclude-path p
+                call az storage blob sync --container $web --account-name pagopapcheckoutsa -s "$(Pipeline.Workspace)\Bundle" --exclude-path p
 
           - task: AzureCLI@1
             displayName: 'Purge CDN endpoint on PROD'
