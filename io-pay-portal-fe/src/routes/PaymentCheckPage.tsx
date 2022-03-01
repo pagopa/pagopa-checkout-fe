@@ -11,7 +11,6 @@ import { default as React } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import sprite from "../assets/images/app.svg";
-import pagopaLogo from "../assets/images/pagopa-logo.svg";
 import { FormButtons } from "../components/FormButtons/FormButtons";
 import { CustomDrawer } from "../components/modals/CustomDrawer";
 import InformationModal from "../components/modals/InformationModal";
@@ -21,11 +20,13 @@ import ClickableFieldContainer from "../components/TextFormField/ClickableFieldC
 import FieldContainer from "../components/TextFormField/FieldContainer";
 import PspFieldContainer from "../components/TextFormField/PspFieldContainer";
 import { PspList } from "../features/payment/models/paymentModel";
+import { getCheckData, getEmailInfo, getWallet } from "../utils/api/apiService";
 import {
-  getCheckData,
-  getEmailInfo,
-  getMockedWallet,
-} from "../utils/api/apiService";
+  cancelPayment,
+  confirmPayment,
+  getPaymentPSPList,
+  updateWallet,
+} from "../utils/api/helper";
 import { moneyFormat } from "../utils/form/formatters";
 
 const defaultStyle = {
@@ -49,16 +50,77 @@ const pspContainerStyle = {
 export default function PaymentCheckPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const currentPath = location.pathname.split("/")[1];
   const [modalOpen, setModalOpen] = React.useState(false);
+  const [cancelModalOpen, setCancelModalOpen] = React.useState(false);
   const [drawerOpen, setDrawerOpen] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
+  const [pspEditLoading, setPspEditLoading] = React.useState(false);
+  const [pspUpdateLoading, setPspUpdateLoading] = React.useState(false);
+  const [payLoading, setPayLoading] = React.useState(false);
+  const [cancelLoading, setCancelLoading] = React.useState(false);
   const [pspList, setPspList] = React.useState<Array<PspList>>([]);
 
   const checkData = getCheckData();
-  const wallet = getMockedWallet();
+  const wallet = getWallet();
   const email = getEmailInfo();
+  const totalAmount = checkData.amount.amount + wallet.psp.fixedCost.amount;
 
-  const onSubmit = React.useCallback(() => {}, []);
+  const onError = () => {
+    setPayLoading(false);
+    setCancelLoading(false);
+    setPspEditLoading(false);
+    setPspUpdateLoading(false);
+  };
+
+  const onResponse = () => {
+    setPayLoading(false);
+    navigate(`/${currentPath}/response`);
+  };
+
+  const onSubmit = React.useCallback(() => {
+    setPayLoading(true);
+    void confirmPayment({ checkData, wallet }, onError, onResponse);
+  }, []);
+
+  const onCancel = React.useCallback(() => {
+    setCancelModalOpen(true);
+  }, []);
+
+  const onCancelResponse = () => {
+    setCancelLoading(false);
+    navigate(`/${currentPath}/cancelled`);
+  };
+
+  const onCancelPaymentSubmit = () => {
+    setCancelModalOpen(false);
+    setCancelLoading(true);
+    void cancelPayment(onError, onCancelResponse);
+  };
+
+  const onPspEditResponse = (list: Array<PspList>) => {
+    setPspList(list.sort((a, b) => (a.commission > b.commission ? 1 : -1)));
+    setPspEditLoading(false);
+  };
+
+  const onPspEditClick = () => {
+    setDrawerOpen(true);
+    setPspEditLoading(true);
+    void getPaymentPSPList({
+      onError,
+      onResponse: onPspEditResponse,
+    });
+  };
+
+  const onPspUpdateResponse = () => {
+    setPspUpdateLoading(false);
+  };
+
+  const updateWalletPSP = (id: number) => {
+    setDrawerOpen(false);
+    setPspUpdateLoading(true);
+    void updateWallet(id, onError, onPspUpdateResponse);
+  };
+
   const getWalletIcon = () => {
     if (
       !wallet.creditCard.brand ||
@@ -75,39 +137,8 @@ export default function PaymentCheckPage() {
     );
   };
 
-  const onPspEditClick = () => {
-    setDrawerOpen(true);
-    setLoading(true);
-    // change settimeout with api binding
-    setTimeout(() => {
-      setPspList(
-        [
-          {
-            name: "Poste Italiane",
-            image: pagopaLogo,
-            commission: 500,
-            label: "",
-            idPsp: 1,
-          },
-          {
-            name: "Unicredit SPA",
-            image: pagopaLogo,
-            commission: 200,
-            label: "",
-            idPsp: 1,
-          },
-          {
-            name: "Intesa Sanpaolo spa",
-            image: pagopaLogo,
-            commission: 300,
-            label: "",
-            idPsp: 1,
-          },
-        ].sort((a, b) => (a.commission > b.commission ? 1 : -1))
-      );
-      setLoading(false);
-    }, 3000);
-  };
+  const isDisabled = () =>
+    pspEditLoading || payLoading || cancelLoading || pspUpdateLoading;
 
   return (
     <PageContainer>
@@ -122,7 +153,7 @@ export default function PaymentCheckPage() {
           {t("paymentCheckPage.total")}
         </Typography>
         <Typography variant="h6" component={"div"}>
-          {moneyFormat(checkData.amount.amount)}
+          {moneyFormat(totalAmount)}
         </Typography>
       </Box>
       <ClickableFieldContainer
@@ -150,6 +181,7 @@ export default function PaymentCheckPage() {
             variant="text"
             onClick={() => navigate(-1)}
             startIcon={<EditIcon />}
+            disabled={isDisabled()}
           >
             {t("clipboard.edit")}
           </Button>
@@ -173,6 +205,7 @@ export default function PaymentCheckPage() {
         }
       />
       <FieldContainer
+        loading={pspUpdateLoading}
         titleVariant="sidenav"
         bodyVariant="body2"
         title={moneyFormat(wallet.psp.fixedCost.amount)}
@@ -189,6 +222,7 @@ export default function PaymentCheckPage() {
             variant="text"
             onClick={onPspEditClick}
             startIcon={<EditIcon />}
+            disabled={isDisabled()}
           >
             {t("clipboard.edit")}
           </Button>
@@ -203,20 +237,21 @@ export default function PaymentCheckPage() {
       />
 
       <FormButtons
+        loadingSubmit={payLoading}
+        loadingCancel={cancelLoading}
         submitTitle={`${t("paymentCheckPage.buttons.submit")} ${moneyFormat(
-          checkData.amount.amount
+          totalAmount
         )}`}
         cancelTitle="paymentCheckPage.buttons.cancel"
-        disabled={false}
-        loading={false}
+        disabled={isDisabled()}
         handleSubmit={onSubmit}
-        handleCancel={() => {}}
+        handleCancel={onCancel}
       />
       <InformationModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         maxWidth="sm"
-        content="alternative"
+        hideIcon={true}
       >
         <Typography variant="h6" component={"div"} sx={{ pb: 2 }}>
           {t("paymentCheckPage.modal.title")}
@@ -228,6 +263,43 @@ export default function PaymentCheckPage() {
         >
           {t("paymentCheckPage.modal.body")}
         </Typography>
+        <Box display="flex" justifyContent="end" sx={{ mt: 3 }}>
+          <Button variant="contained" onClick={() => setModalOpen(false)}>
+            {t("errorButton.close")}
+          </Button>
+        </Box>
+      </InformationModal>
+
+      <InformationModal
+        open={cancelModalOpen}
+        onClose={() => setCancelModalOpen(false)}
+        maxWidth="sm"
+        hideIcon={true}
+        style={{ width: "444px" }}
+      >
+        <Typography variant="h6" component={"div"} sx={{ pb: 2 }}>
+          {t("paymentCheckPage.modal.cancelTitle")}
+        </Typography>
+        <Typography
+          variant="body1"
+          component={"div"}
+          sx={{ whiteSpace: "pre-line" }}
+        >
+          {t("paymentCheckPage.modal.cancelBody")}
+        </Typography>
+        <Box
+          display="flex"
+          flexDirection={{ xs: "column", sm: "row" }}
+          justifyContent="end"
+          sx={{ mt: 3, gap: 2 }}
+        >
+          <Button variant="text" onClick={() => setCancelModalOpen(false)}>
+            {t("paymentCheckPage.modal.cancelButton")}
+          </Button>
+          <Button variant="contained" onClick={onCancelPaymentSubmit}>
+            {t("paymentCheckPage.modal.submitButton")}
+          </Button>
+        </Box>
       </InformationModal>
 
       <CustomDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)}>
@@ -261,7 +333,7 @@ export default function PaymentCheckPage() {
             </Typography>
           </Box>
         </Box>
-        {loading
+        {pspEditLoading
           ? Array(3)
               .fill(1)
               .map((_, index) => (
@@ -285,7 +357,7 @@ export default function PaymentCheckPage() {
                   </Typography>
                 }
                 onClick={() => {
-                  // call change psp api
+                  updateWalletPSP(psp.idPsp || 0);
                 }}
               />
             ))}

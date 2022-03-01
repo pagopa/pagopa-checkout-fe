@@ -1,16 +1,21 @@
-import { Grid, Box, Typography } from "@mui/material";
-import React from "react";
+/* eslint-disable sonarjs/cognitive-complexity */
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import { Box, Grid, Typography } from "@mui/material";
+import React from "react";
+import { useSelector } from "react-redux";
 import pagopaLogo from "../../assets/images/pagopa-logo.svg";
-import { loadState, SessionItems } from "../../utils/storage/sessionStorage";
-import { PaymentCheckData } from "../../features/payment/models/paymentModel";
+import { RootState } from "../../redux/store";
+import { getCheckData } from "../../utils/api/apiService";
 import { moneyFormat } from "../../utils/form/formatters";
 import DrawerDetail from "../Header/DrawerDetail";
 
 export default function Header() {
-  const PaymentCheckData = loadState(
-    SessionItems.checkData
-  ) as PaymentCheckData;
+  const PaymentCheckData = useSelector((state: RootState) => {
+    if (!state.checkData.idPayment) {
+      return getCheckData();
+    }
+    return state.checkData;
+  });
   const [drawstate, setDrawstate] = React.useState(false);
 
   const toggleDrawer = (open: boolean) => (
@@ -43,7 +48,7 @@ export default function Header() {
             component="div"
             sx={{ textAlign: "center" }}
           >
-            {PaymentCheckData ? PaymentCheckData.receiver : ""}
+            {PaymentCheckData.idPayment ? PaymentCheckData.receiver : ""}
           </Typography>
           <Typography
             fontWeight={600}
@@ -51,7 +56,7 @@ export default function Header() {
             component="div"
             sx={{ textAlign: "center" }}
           >
-            {PaymentCheckData ? PaymentCheckData.subject : ""}
+            {PaymentCheckData.idPayment ? PaymentCheckData.subject : ""}
           </Typography>
           <Typography
             color="primary.main"
@@ -60,7 +65,7 @@ export default function Header() {
             fontWeight={600}
             sx={{ textAlign: "center" }}
           >
-            {PaymentCheckData
+            {PaymentCheckData.idPayment
               ? `€ ${moneyFormat(PaymentCheckData.amount.amount)}`
               : ""}
           </Typography>

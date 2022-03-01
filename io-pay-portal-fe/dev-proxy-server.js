@@ -15,7 +15,7 @@ const { createProxyMiddleware } = require("http-proxy-middleware");
 
 const app = express();
 
-const apiHost = "http://localhost:8080";
+const apiHost = "http://127.0.0.1:8080";
 const basepath = "/checkout/payments/v1";
 
 app.use(
@@ -26,5 +26,24 @@ app.use(
 
 const bundler = new Bundler("src/index.html");
 app.use(bundler.middleware());
+
+const pmBasePath = "/pp-restapi";
+
+app.use(
+  createProxyMiddleware(pmBasePath, {
+    target: apiHost,
+  })
+);
+
+const proxyBasePath = "/api/checkout/";
+
+app.use(
+  createProxyMiddleware(proxyBasePath, {
+    pathRewrite: {
+      "^/api/checkout/payments/v1": "/checkout/payment-transactions/v1",
+    },
+    target: apiHost,
+  })
+);
 
 app.listen(Number(1234));

@@ -36,3 +36,9 @@ export const pmClient = createPmClient({
   baseUrl: conf.IO_PAY_PAYMENT_MANAGER_HOST,
   fetchApi: retryingFetch(fetch, conf.IO_PAY_API_TIMEOUT as Millisecond, 3),
 });
+
+export const iopayportalClient = createClient({
+  baseUrl: conf.IO_PAY_FUNCTIONS_HOST,
+  basePath: getConfig("IO_PAY_PORTAL_API_BASEPATH") as string,
+  fetchApi: retryingFetch(fetch, conf.IO_PAY_API_TIMEOUT as Millisecond, 3),
+});
