@@ -76,7 +76,7 @@ stages:
               timeout: '10000'
 
           - script: |
-              yarn build
+              cd io-pay-portal-fe && yarn build
             displayName: 'Build'
 
           - task: CopyFiles@2
@@ -202,7 +202,7 @@ stages:
               timeout: '10000'
 
           - script: |
-              yarn build
+              cd io-pay-portal-fe && yarn build
             displayName: 'Build'
           - task: CopyFiles@2
             inputs:
@@ -319,7 +319,7 @@ stages:
               timeout: '10000'
 
           - script: |
-              yarn build
+              cd io-pay-portal-fe && yarn build
             displayName: 'Build'
           - task: CopyFiles@2
             inputs:
