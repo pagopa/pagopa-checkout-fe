@@ -121,7 +121,7 @@ stages:
               azureSubscription: 'DEV-PAGOPA-SERVICE-CONN'
               scriptLocation: inlineScript
               inlineScript: |
-                call az storage blob sync --container $web --account-name pagopaucheckoutsa -s "$(Pipeline.Workspace)\Bundle_DEV" --exclude-path p
+                call az storage blob sync --container $web --account-name pagopadcheckoutsa -s "$(Pipeline.Workspace)\Bundle_DEV" --exclude-path p
 
           - task: AzureCLI@1
             displayName: 'Purge CDN endpoint on DEV'
@@ -370,7 +370,7 @@ stages:
               azureSubscription: 'PROD-PAGOPA-SERVICE-CONN'
               scriptLocation: inlineScript
               inlineScript: |
-                call az storage blob sync --container $web --account-name pagopaucheckoutsa -s "$(Pipeline.Workspace)\Bundle_PROD" --exclude-path p
+                call az storage blob sync --container $web --account-name pagopapcheckoutsa -s "$(Pipeline.Workspace)\Bundle_PROD" --exclude-path p
 
           - task: AzureCLI@1
             displayName: 'Purge CDN endpoint on PROD'
