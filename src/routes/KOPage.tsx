@@ -3,17 +3,19 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import cancelled from "../assets/images/response-unrecognized.svg";
+import ko from "../assets/images/response-umbrella.svg";
 import PageContainer from "../components/PageContent/PageContainer";
 import { resetCheckData } from "../redux/slices/checkData";
+import { onBrowserUnload } from "../utils/eventListeners";
 
-export default function CancelledPage() {
+export default function KOPage() {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   React.useEffect(() => {
     dispatch(resetCheckData());
+    window.removeEventListener("beforeunload", onBrowserUnload);
   }, []);
   sessionStorage.clear();
 
@@ -26,13 +28,24 @@ export default function CancelledPage() {
         sx={{ mt: 6 }}
       >
         <img
-          src={cancelled}
-          alt="cancelled"
+          src={ko}
+          alt="ko-image"
           style={{ width: "80px", height: "80px" }}
         />
-        <Box mt={3} mb={3}>
+        <Box
+          mt={3}
+          mb={3}
+          gap={2}
+          display="flex"
+          flexDirection="column"
+          justifyContent="space-between"
+          alignItems="center"
+        >
           <Typography variant="h6" component="div">
-            {t("cancelledPage.body")}
+            {t("koPage.title")}
+          </Typography>
+          <Typography variant="body2" component="div">
+            {t("koPage.body")}
           </Typography>
         </Box>
         <Box pr={8} pl={8} sx={{ width: "100%", height: "100%" }}>
@@ -46,7 +59,7 @@ export default function CancelledPage() {
               minHeight: 45,
             }}
           >
-            {t("cancelledPage.button")}
+            {t("koPage.button")}
           </Button>
         </Box>
       </Box>

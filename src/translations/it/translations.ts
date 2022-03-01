@@ -265,4 +265,9 @@ export const TRANSLATIONS_IT = {
     body: "L'operazione è stata annullata",
     button: "Chiudi",
   },
+  koPage: {
+    title: "Spiacenti, si è verificato un errore imprevisto",
+    body: "Non è stato addebitato alcun importo.",
+    button: "Chiudi",
+  },
 };
