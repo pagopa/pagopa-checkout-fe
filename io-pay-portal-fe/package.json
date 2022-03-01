@@ -15,13 +15,13 @@
     "proxy": "npm-run-all generate type-check dev:env dev:proxy",
     "dev:env": "export $(grep -v '^#' .env.io-pay-portal.development | xargs) && chmod +x env.sh && source env.sh",
     "dev:server": "parcel src/index.html",
-    "dev:proxy": "USE_PROXY=true parcel src/index.html",
+    "dev:proxy": "parcel src/index.html",
     "test": "jest",
     "test:coverage": "jest --coverage",
     "preversion": "auto-changelog  --config .auto-changelog.json --unreleased --commit-limit false --stdout --template preview.hbs",
     "version": "auto-changelog -p --config .auto-changelog.json --unreleased && git add CHANGELOG.md",
     "prestart-mock": "export $(grep -v '^#' .env.io-pay-portal.development | xargs) && chmod +x env.sh && source env.sh && ts-node script/generateTestingUrlMock.ts",
-    "start-mock": "USE_PROXY=true parcel src/index.html"
+    "start-mock": "parcel src/index.html"
   },
   "dependencies": {
     "@mui/icons-material": "^5.2.5",

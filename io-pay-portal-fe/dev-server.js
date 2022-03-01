@@ -5,30 +5,31 @@
  * Note: to run the development server must be set IO_PAY_PORTAL_API_HOST=http://localhost:1234
  */
 
-const Bundler = require("parcel-bundler");
+const express = require("express");
 
-app.get("/api/checkout/payments/v1/payment-requests/:rptId", (_, res) => {
+const app = express();
+
+app.get("/checkout/payments/v1/payment-requests/:rptId", (_, res) => {
   // test scenario for an error message
-  if (_.params.rptId == "00000000000000000000000000000" ) {
+  if (_.params.rptId == "00000000000000000000000000000") {
     res.status(500).send("Error!");
-  } else if (_.params.rptId == "00000000000000000000000000009" ) {
-    res.status(400).send( { detail: "PAA_PAGAMENTO_DUPLICATO" } );
-  } else if (_.params.rptId == "00000000000000000000000000008" ) {
-    res.status(400).send( { detail: "PAA_PAGAMENTO_IN_CORSO" } );
-  } else if (_.params.rptId == "00000000000000000000000000007" ) {
-    res.status(400).send( { detail: "PAA_PAGAMENTO_SCADUTO" } );
-  } else if (_.params.rptId == "00000000000000000000000000006" ) {
-    res.status(400).send( { detail: "PPT_DOMINIO_SCONOSCIUTO" } );
-  } else if (_.params.rptId == "00000000000000000000000000005" ) {
-    res.status(400).send( { detail: "PPT_SINTASSI_EXTRAXSD" } );
-  } else if (_.params.rptId == "00000000000000000000000000004" ) {
-    res.status(400).send( { detail: "UNKNOWN_ERROR" } );
+  } else if (_.params.rptId == "00000000000000000000000000009") {
+    res.status(400).send({ detail: "PAA_PAGAMENTO_DUPLICATO" });
+  } else if (_.params.rptId == "00000000000000000000000000008") {
+    res.status(400).send({ detail: "PAA_PAGAMENTO_IN_CORSO" });
+  } else if (_.params.rptId == "00000000000000000000000000007") {
+    res.status(400).send({ detail: "PAA_PAGAMENTO_SCADUTO" });
+  } else if (_.params.rptId == "00000000000000000000000000006") {
+    res.status(400).send({ detail: "PPT_DOMINIO_SCONOSCIUTO" });
+  } else if (_.params.rptId == "00000000000000000000000000005") {
+    res.status(400).send({ detail: "PPT_SINTASSI_EXTRAXSD" });
+  } else if (_.params.rptId == "00000000000000000000000000004") {
+    res.status(400).send({ detail: "UNKNOWN_ERROR" });
   } else if (_.params.rptId == "00000000000000000000000000010") {
-    res.status(400).send( { detail: "PPT_PAGAMENTO_DUPLICATO" } );
-  }else if (_.params.rptId == "00000000000000000000000000011") {
-    res.status(400).send( { detail: "PPT_PAGAMENTO_IN_CORSO" } );
-  }
-  else {
+    res.status(400).send({ detail: "PPT_PAGAMENTO_DUPLICATO" });
+  } else if (_.params.rptId == "00000000000000000000000000011") {
+    res.status(400).send({ detail: "PPT_PAGAMENTO_IN_CORSO" });
+  } else {
     res.send({
       importoSingoloVersamento: 1100,
       codiceContestoPagamento: "6f69d150541e11ebb70c7b05c53756dd",
@@ -42,10 +43,9 @@ app.get("/api/checkout/payments/v1/payment-requests/:rptId", (_, res) => {
   }
 });
 
-app.post("/api/payportal/v1/payment-activations", (_, res) => {
-
-  if (_.body.rptId == "00000000000000000000000000099" ) {
-    res.status(400).send( { detail: "PAA_PAGAMENTO_DUPLICATO" } );
+app.post("/payportal/v1/payment-activations", (_, res) => {
+  if (_.body.rptId == "00000000000000000000000000099") {
+    res.status(400).send({ detail: "PAA_PAGAMENTO_DUPLICATO" });
   } else {
     res.send({
       codiceContestoPagamento: "6f69d150541e11ebb70c7b05c53756dd",
@@ -58,11 +58,10 @@ app.post("/api/payportal/v1/payment-activations", (_, res) => {
       importoSingoloVersamento: 1100,
     });
   }
-
 });
 
 app.get(
-  "/api/payportal/v1/payment-activations/:codiceContestoPagamento",
+  "/payportal/v1/payment-activations/:codiceContestoPagamento",
   (_, res) => {
     res.send({
       idPagamento: "123455",
@@ -70,7 +69,4 @@ app.get(
   }
 );
 
-const bundler = new Bundler("src/*.html");
-app.use(bundler.middleware());
-
-app.listen(Number(1234));
+app.listen(Number(8080));
