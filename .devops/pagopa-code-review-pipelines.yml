@@ -16,9 +16,6 @@ trigger:
   branches:
     include:
     - main
-  paths:
-    include:
-    - io-pay-portal-fe
 
 # Execute agents (jobs) on latest Ubuntu version.
 # To change OS for a specific, ovverride "pool" attribute inside the job definition
@@ -34,7 +31,7 @@ stages:
           # As we deploy on Windows machines, we use Windows to build
           vmImage: 'windows-2019'  
         steps:
-        - template: azure-templates/setup-project.yml
+        - template: templates/node-job-setup/template.yaml@pagopaCommons
 
         - template: azure-templates/setup-env.yml
             parameters:
@@ -55,9 +52,8 @@ stages:
     jobs:
       - job: lint     
         steps:
-        - template: azure-templates/setup-project.yml
+        - template: templates/node-job-setup/template.yaml@pagopaCommons
         - script: yarn lint
-          workingDirectory: io-pay-portal-fe
           displayName: 'Lint'
       - job: danger
         condition: 
@@ -66,12 +62,11 @@ stages:
             ne(variables['DANGER_GITHUB_API_TOKEN'], 'skip')
           )
         steps:
-          - template: azure-templates/setup-project.yml
+          - template: templates/node-job-setup/template.yaml@pagopaCommons
 
           - bash: yarn danger ci
             env:
               DANGER_GITHUB_API_TOKEN: '$(DANGER_GITHUB_API_TOKEN)'
-            workingDirectory: io-pay-portal-fe
             displayName: 'Danger CI'
   # B) Run unit tests if there is a push or pull request on any branch.
   - stage: Test
@@ -79,14 +74,12 @@ stages:
     jobs:
       - job: unit_tests
         steps:
-        - template: azure-templates/setup-project.yml
+        - template: templates/node-job-setup/template.yaml@pagopaCommons
         
         - script: yarn generate
-          workingDirectory: io-pay-portal-fe
           displayName: 'Generate definitions'
 
         - script: yarn test:coverage
-          workingDirectory: io-pay-portal-fe
           displayName: 'Unit tests exec'
         
         - task: PublishTestResults@2
@@ -101,4 +94,4 @@ stages:
           displayName: 'Publish code coverage from Jest tests'
           inputs:
             codeCoverageTool: Cobertura
-            summaryFileLocation: 'io-pay-portal-fe/coverage/cobertura-coverage.xml'
+            summaryFileLocation: 'coverage/cobertura-coverage.xml'
