@@ -1,36 +1,30 @@
 /* eslint-disable functional/immutable-data */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/restrict-plus-operands */
-import { Box, CircularProgress, Typography, Button } from "@mui/material";
+import { Box, Button, CircularProgress, Typography } from "@mui/material";
 import { default as React, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-
 import PageContainer from "../components/PageContent/PageContainer";
+import { PaymentCheckData } from "../features/payment/models/paymentModel";
 import {
-  OutcomeEnumType,
-  ViewOutcomeEnum,
-  ViewOutcomeEnumType,
-  getOutcomeFromAuthcodeAndIsDirectAcquirer,
-} from "../utils/transactions/TransactionResultUtil";
-
+  responseMessage,
+  responseOutcome,
+} from "../features/payment/models/responseOutcome";
+import { getCheckData, getEmailInfo, getWallet } from "../utils/api/apiService";
 import { callServices } from "../utils/api/response";
-
 import {
   mixpanel,
   PAYMENT_OUTCOME_CODE,
 } from "../utils/config/pmMixpanelHelperInit";
-
-import { GENERIC_STATUS } from "../utils/transactions/TransactionStatesTypes";
-import { loadState, SessionItems } from "../utils/storage/sessionStorage";
-
-import {
-  responseOutcome,
-  responseMessage,
-} from "../features/payment/models/responseOutcome";
-
-import { PaymentCheckData } from "../features/payment/models/paymentModel";
-
+import { onBrowserUnload } from "../utils/eventListeners";
 import { moneyFormat } from "../utils/form/formatters";
+import {
+  getOutcomeFromAuthcodeAndIsDirectAcquirer,
+  OutcomeEnumType,
+  ViewOutcomeEnum,
+  ViewOutcomeEnumType,
+} from "../utils/transactions/TransactionResultUtil";
+import { GENERIC_STATUS } from "../utils/transactions/TransactionStatesTypes";
 
 type printData = {
   useremail: string;
@@ -41,12 +35,14 @@ export default function PaymentCheckPage() {
   const [loading, setLoading] = useState(true);
   const [outcomeMessage, setOutcomeMessage] = useState<responseMessage>();
   const originUrlRedirect = sessionStorage.getItem("originUrlRedirect") || "";
-  const PaymentCheckData = loadState(
-    SessionItems.checkData
-  ) as PaymentCheckData;
+  const PaymentCheckData = getCheckData() as PaymentCheckData;
+  const wallet = getWallet();
+  const email = getEmailInfo();
+  const totalAmount =
+    PaymentCheckData.amount.amount + wallet.psp.fixedCost.amount;
   const usefulPrintData: printData = {
-    useremail: JSON.parse(sessionStorage.getItem("useremail") || ""),
-    amount: moneyFormat(PaymentCheckData.amount.amount) || "",
+    useremail: email.email,
+    amount: moneyFormat(totalAmount),
   };
 
   useEffect(() => {
@@ -55,10 +51,11 @@ export default function PaymentCheckPage() {
       authorizationCode?: string,
       isDirectAcquirer?: boolean
     ) => {
-      const outcome: OutcomeEnumType = getOutcomeFromAuthcodeAndIsDirectAcquirer(
-        authorizationCode,
-        isDirectAcquirer
-      );
+      const outcome: OutcomeEnumType =
+        getOutcomeFromAuthcodeAndIsDirectAcquirer(
+          authorizationCode,
+          isDirectAcquirer
+        );
       mixpanel.track(PAYMENT_OUTCOME_CODE.value, {
         EVENT_ID: PAYMENT_OUTCOME_CODE.value,
         idStatus,
@@ -75,6 +72,7 @@ export default function PaymentCheckPage() {
       setOutcomeMessage(message);
       setLoading(false);
       sessionStorage.clear();
+      window.removeEventListener("beforeunload", onBrowserUnload);
     };
 
     void callServices(handleFinalStatusResult);
@@ -110,8 +108,14 @@ export default function PaymentCheckPage() {
               justifyContent: "center",
               width: "100%",
               flexDirection: "column",
+              alignItems: "center",
             }}
           >
+            <img
+              src={outcomeMessage?.icon}
+              alt="cancelled"
+              style={{ width: "80px", height: "80px" }}
+            />
             <Typography variant="h6" py={3} textAlign="center">
               {outcomeMessage ? t(outcomeMessage.title, usefulPrintData) : ""}
             </Typography>
@@ -120,18 +124,20 @@ export default function PaymentCheckPage() {
                 ? t(outcomeMessage.body, usefulPrintData)
                 : ""}
             </Typography>
-            <Button
-              variant="outlined"
-              onClick={() => window.location.replace(originUrlRedirect)}
-              sx={{
-                width: "100%",
-                height: "100%",
-                minHeight: 45,
-                my: 4,
-              }}
-            >
-              {t("errorButton.close")}
-            </Button>
+            <Box px={8} sx={{ width: "100%", height: "100%" }}>
+              <Button
+                variant="outlined"
+                onClick={() => window.location.replace(originUrlRedirect)}
+                sx={{
+                  width: "100%",
+                  height: "100%",
+                  minHeight: 45,
+                  my: 4,
+                }}
+              >
+                {t("errorButton.close")}
+              </Button>
+            </Box>
           </Box>
         )}
       </Box>
