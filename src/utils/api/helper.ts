@@ -143,7 +143,8 @@ export const getPaymentInfoTask = (
 export const activePaymentTask = (
   amountSinglePayment: ImportoEuroCents,
   paymentContextCode: CodiceContestoPagamento,
-  rptId: RptId
+  rptId: RptId,
+  recaptchaResponse: string
 ): TaskEither<string, PaymentActivationsPostResponse> =>
   tryCatch(
     () => {
@@ -609,7 +610,7 @@ export const getSessionWallet = async (
         );
 
         sessionStorage.setItem("securityCode", creditCard.cvv);
-        WalletSession.decode(JSON.parse((walletResp as any) as string)).map(
+        WalletSession.decode(JSON.parse(walletResp as any as string)).map(
           (wallet) => {
             sessionStorage.setItem("wallet", JSON.stringify(wallet));
           }
@@ -714,9 +715,11 @@ export const confirmPayment = async (
     browserAcceptHeader: browserInfo.accept,
     browserIP: browserInfo.ip,
     browserUserAgent: navigator.userAgent,
-    acctID: `ACCT_${(JSON.parse(
-      fromNullable(sessionStorage.getItem("wallet")).getOrElse("")
-    ) as Wallet).idWallet
+    acctID: `ACCT_${(
+      JSON.parse(
+        fromNullable(sessionStorage.getItem("wallet")).getOrElse("")
+      ) as Wallet
+    ).idWallet
       ?.toString()
       .trim()}`,
     deliveryEmailAddress: fromNullable(

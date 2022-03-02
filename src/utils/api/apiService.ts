@@ -8,6 +8,10 @@ import {
 } from "../../features/payment/models/paymentModel";
 import { loadState, SessionItems } from "../storage/sessionStorage";
 
+export function getReCaptchaKey() {
+  return "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"; // test key
+}
+
 export function getNoticeInfo() {
   const noticeInfo = loadState(SessionItems.noticeInfo) as PaymentFormFields;
   return {
