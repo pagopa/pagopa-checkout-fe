@@ -36,7 +36,6 @@ export default function PaymentQrPage() {
       .fold(onError, (paymentInfo) => {
         setPaymentInfo(paymentInfo as PaymentInfo);
         setRptId(notice);
-        setLoading(false);
         navigate(`/${currentPath}/summary`);
       })
       .run();
@@ -54,16 +53,24 @@ export default function PaymentQrPage() {
         alignItems="center"
         sx={{ gap: 2 }}
       >
-        <Box sx={{ mt: 2, mb: 2, width: "100%" }}>
+        <Box sx={{ my: 2, width: "100%" }}>
           {loading ? (
-            <CircularProgress />
+            <Box
+              display="flex"
+              flexDirection="column"
+              justifyContent="center"
+              alignItems="center"
+              my={10}
+            >
+              <CircularProgress />
+            </Box>
           ) : (
             <QrCodeReader
               // eslint-disable-next-line @typescript-eslint/no-empty-function
               onError={onError}
               onScan={(data) => {
-                if (data) {
-                  onSubmit({
+                if (data && !loading) {
+                  void onSubmit({
                     billCode: data?.split("|")[2] || "",
                     cf: data?.split("|")[3] || "",
                   });
