@@ -43,13 +43,15 @@ stages:
 
         - template: azure-templates/setup-env.yml
             parameters:
-              site_key: $(CHECKOUT_CAPTCHA_ID_DEV)
               api_host: $(CHECKOUT_API_HOST_DEV)
-              env:  'DEV'
-              api_basepath: '/checkout/payments/v1'
-              polling_attempts: '16'
+              request_timeout: '5000'
               polling_interval: '6000'
-              timeout: '10000'
+              polling_attempts: '16'
+              env: 'DEV'
+              site_key: $(CHECKOUT_CAPTCHA_ID_DEV)
+              functions_host: $(CHECKOUT_API_HOST_DEV)
+              api_timeout: '10000'
+              api_basepath: '/checkout/payments/v1'
 
         - script: |
             yarn build
