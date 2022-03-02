@@ -17,7 +17,7 @@
     "dev:server": "parcel src/index.html",
     "dev:proxy": "parcel src/index.html",
     "test": "jest",
-    "test:coverage": "jest --coverage",
+    "test:coverage": "jest --coverage --passWithNoTests",
     "preversion": "auto-changelog  --config .auto-changelog.json --unreleased --commit-limit false --stdout --template preview.hbs",
     "version": "auto-changelog -p --config .auto-changelog.json --unreleased && git add CHANGELOG.md",
     "prestart-mock": "export $(grep -v '^#' .env.io-pay-portal.development | xargs) && chmod +x env.sh && source env.sh && ts-node script/generateTestingUrlMock.ts",
