@@ -42,16 +42,16 @@ stages:
         - template: templates/node-job-setup/template.yaml@pagopaCommons
 
         - template: azure-templates/setup-env.yml
-            parameters:
-              api_host: $(CHECKOUT_API_HOST_DEV)
-              request_timeout: '5000'
-              polling_interval: '6000'
-              polling_attempts: '16'
-              env: 'DEV'
-              site_key: $(CHECKOUT_CAPTCHA_ID_DEV)
-              functions_host: $(CHECKOUT_API_HOST_DEV)
-              api_timeout: '10000'
-              api_basepath: '/checkout/payments/v1'
+          parameters:
+            api_host: $(CHECKOUT_API_HOST_DEV)
+            request_timeout: '5000'
+            polling_interval: '6000'
+            polling_attempts: '16'
+            env: 'DEV'
+            site_key: $(CHECKOUT_CAPTCHA_ID_DEV)
+            functions_host: $(CHECKOUT_API_HOST_DEV)
+            api_timeout: '10000'
+            api_basepath: '/checkout/payments/v1'
 
         - script: |
             yarn build
