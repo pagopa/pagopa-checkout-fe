@@ -14,7 +14,6 @@ module.exports = {
       'plugin:react/recommended',
       'plugin:sonarjs/recommended',
       'prettier',
-      'prettier/@typescript-eslint',
       'plugin:prettier/recommended',
     ],
     rules: {
