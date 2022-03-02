@@ -9,7 +9,7 @@
     "generate:payment-activations-api": "rimraf generated/definitions/payment-activations-api && shx mkdir -p generated/definitions/payment-activations-api && gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/io-pagopa-proxy/main/api-spec/api-for-io.yaml --no-strict --out-dir ./generated/definitions/payment-activations-api --request-types --response-decoders --client",
     "lint": "eslint . -c .eslintrc.js --ext .ts,.tsx",
     "lint-autofix": "eslint . -c .eslintrc.js --ext .ts,.tsx --fix",
-    "prebuild": "npm-run-all generate type-check",
+    "prebuild": "npm-run-all generate type-check lint",
     "build": "rimraf .cache && rimraf dist && parcel build src/index.html && cp robots.txt dist/robots.txt",
     "dev": "rimraf .cache && rimraf dist && npm-run-all generate type-check dev:env dev:server",
     "proxy": "npm-run-all generate type-check dev:env dev:proxy",
