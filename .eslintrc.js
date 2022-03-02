@@ -18,6 +18,7 @@ module.exports = {
       'plugin:prettier/recommended',
     ],
     rules: {
+      'linebreak-style': ["error", "unix"],
       'no-case-declarations': 'off',
       'no-inner-declarations': 'off',
       'prefer-const': 'error',
