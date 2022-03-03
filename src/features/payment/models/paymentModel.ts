@@ -53,12 +53,14 @@ export const SecureCodeLabels: {
 export interface PaymentInfo {
   importoSingoloVersamento: number;
   codiceContestoPagamento: string;
-  ibanAccredito: string;
-  causaleVersamento: string;
-  enteBeneficiario: {
-    identificativoUnivocoBeneficiario: string;
-    denominazioneBeneficiario: string;
-  };
+  ibanAccredito: string | undefined;
+  causaleVersamento: string | undefined;
+  enteBeneficiario:
+    | {
+        identificativoUnivocoBeneficiario: string;
+        denominazioneBeneficiario: string;
+      }
+    | undefined;
 }
 
 export interface PaymentId {
