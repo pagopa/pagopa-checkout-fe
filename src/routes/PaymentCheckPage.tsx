@@ -6,7 +6,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
-import { Box, Button, SvgIcon, Typography } from "@mui/material";
+import { Box, Button, Skeleton, SvgIcon, Typography } from "@mui/material";
 import { default as React } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
@@ -153,9 +153,13 @@ export default function PaymentCheckPage() {
         <Typography variant="h6" component={"div"} pr={2}>
           {t("paymentCheckPage.total")}
         </Typography>
-        <Typography variant="h6" component={"div"}>
-          {moneyFormat(totalAmount)}
-        </Typography>
+        {pspUpdateLoading ? (
+          <Skeleton variant="text" width="110px" height="40px" />
+        ) : (
+          <Typography variant="h6" component={"div"}>
+            {moneyFormat(totalAmount)}
+          </Typography>
+        )}
       </Box>
       <ClickableFieldContainer
         title="paymentCheckPage.creditCard"
@@ -244,7 +248,8 @@ export default function PaymentCheckPage() {
           totalAmount
         )}`}
         cancelTitle="paymentCheckPage.buttons.cancel"
-        disabled={isDisabled()}
+        disabledSubmit={isDisabled()}
+        disabledCancel={isDisabled()}
         handleSubmit={onSubmit}
         handleCancel={onCancel}
       />
