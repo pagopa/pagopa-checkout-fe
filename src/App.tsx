@@ -45,7 +45,7 @@ const checkoutTheme = createTheme({
 });
 
 export function App() {
-  const fixedFooterPages = ["payment", "qrcode", "cancelled"];
+  const fixedFooterPages = ["payment", "qr-reader", "cancelled"];
 
   return (
     <ThemeProvider theme={checkoutTheme}>
