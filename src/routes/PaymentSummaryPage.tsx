@@ -53,7 +53,6 @@ export default function PaymentSummaryPage() {
   const onSubmit = React.useCallback(() => {
     const rptId: RptId = `${noticeInfo.cf}${noticeInfo.billCode}`;
     setLoading(true);
-
     PaymentRequestsGetResponse.decode(paymentInfo).fold(
       () => onError(""),
       async (paymentInfo) =>

@@ -20,15 +20,22 @@ export function getPaymentInfo() {
   const paymentInfo = loadState(SessionItems.paymentInfo) as PaymentInfo;
   return {
     importoSingoloVersamento: paymentInfo?.importoSingoloVersamento || 0,
-    enteBeneficiario: {
-      denominazioneBeneficiario:
-        paymentInfo?.enteBeneficiario?.denominazioneBeneficiario || "",
-      identificativoUnivocoBeneficiario:
-        paymentInfo?.enteBeneficiario?.identificativoUnivocoBeneficiario || "",
-    },
-    causaleVersamento: paymentInfo?.causaleVersamento || "",
+    enteBeneficiario: paymentInfo.enteBeneficiario
+      ? {
+          denominazioneBeneficiario:
+            paymentInfo?.enteBeneficiario?.denominazioneBeneficiario || "",
+          identificativoUnivocoBeneficiario:
+            paymentInfo?.enteBeneficiario?.identificativoUnivocoBeneficiario ||
+            "",
+        }
+      : undefined,
+    causaleVersamento: paymentInfo.causaleVersamento
+      ? paymentInfo.causaleVersamento
+      : undefined,
     codiceContestoPagamento: paymentInfo?.codiceContestoPagamento || "",
-    ibanAccredito: paymentInfo?.ibanAccredito || "",
+    ibanAccredito: paymentInfo.ibanAccredito
+      ? paymentInfo.ibanAccredito
+      : undefined,
   };
 }
 
