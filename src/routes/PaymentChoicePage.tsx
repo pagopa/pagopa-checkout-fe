@@ -69,7 +69,15 @@ export default function PaymentChoicePage() {
   }, [checkData.idPayment]);
 
   return loading ? (
-    <CircularProgress />
+    <Box
+      display="flex"
+      flexDirection="column"
+      justifyContent="center"
+      alignItems="center"
+      my={30}
+    >
+      <CircularProgress />
+    </Box>
   ) : (
     <PageContainer
       title="paymentChoicePage.title"
