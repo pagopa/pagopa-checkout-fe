@@ -70,7 +70,7 @@ export const TRANSLATIONS_IT = {
     },
     formButtons: {
       submit: "Continua",
-      cancel: "Indietro",
+      cancel: "Annulla",
     },
   },
   indexPage: {
@@ -184,6 +184,7 @@ export const TRANSLATIONS_IT = {
     bank: "Conto corrente",
     others: "Altri metodi",
     incoming: "In arrivo",
+    button: "Indietro",
   },
   paymentQrPage: {
     title: "Inquadra il Codice QR",

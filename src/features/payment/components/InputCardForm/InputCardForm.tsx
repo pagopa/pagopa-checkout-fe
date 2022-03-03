@@ -263,7 +263,7 @@ export function InputCardForm(props: {
               type="submit"
               submitTitle="paymentNoticePage.formButtons.submit"
               cancelTitle="paymentNoticePage.formButtons.cancel"
-              disabled={disabled}
+              disabledSubmit={disabled}
               handleSubmit={() => handleSubmit()}
               handleCancel={props.onCancel}
             />

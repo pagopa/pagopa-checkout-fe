@@ -113,7 +113,7 @@ export function PaymentEmailForm(props: {
               type="submit"
               submitTitle="paymentEmailPage.formButtons.submit"
               cancelTitle="paymentEmailPage.formButtons.cancel"
-              disabled={disabled}
+              disabledSubmit={disabled}
               handleSubmit={() => handleSubmit()}
               handleCancel={props.onCancel}
             />
