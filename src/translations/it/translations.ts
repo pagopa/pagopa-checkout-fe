@@ -143,8 +143,7 @@ export const TRANSLATIONS_IT = {
   },
   PAA_PAGAMENTO_DUPLICATO: {
     title: "Questo avviso è stato già pagato!",
-    body:
-      "La ricevuta è stata inviata all'indirizzo email che hai indicato durante il pagamento.",
+    body: "La ricevuta è stata inviata all'indirizzo email che hai indicato durante il pagamento.",
   },
   PAA_PAGAMENTO_IN_CORSO: {
     title: "Il pagamento è già in corso, riprova tra qualche minuto",
@@ -152,8 +151,7 @@ export const TRANSLATIONS_IT = {
   },
   PPT_PAGAMENTO_DUPLICATO: {
     title: "Questo avviso è stato già pagato!",
-    body:
-      "La ricevuta è stata inviata all'indirizzo email che hai indicato durante il pagamento.",
+    body: "La ricevuta è stata inviata all'indirizzo email che hai indicato durante il pagamento.",
   },
   PPT_PAGAMENTO_IN_CORSO: {
     title: "Il pagamento è già in corso, riprova tra qualche minuto",
@@ -201,8 +199,7 @@ export const TRANSLATIONS_IT = {
     email: "Invia esito a:",
     modal: {
       title: "Perché c'è un costo di transazione?",
-      body:
-        "Qualsiasi operazione di trasferimento di denaro (in contanti o in moneta elettronica) ha un costo, che serve a garantirti che quel pagamento sia sicuro e arrivi a buon fine.\n\nOgni gestore(o PSP, Prestatore di Servizi di Pagamento), propone un costo di transazione, a seconda delle proprie politiche commerciali e condizioni contrattuali.\n\nCon pagoPA, questi costi sono trasparenti e il cittadino può scegliere liberamente l'opzione più comoda e conveniente. Verifica l'importo applicato dal PSP che hai scelto, prima di procedere al pagamento.",
+      body: "Qualsiasi operazione di trasferimento di denaro (in contanti o in moneta elettronica) ha un costo, che serve a garantirti che quel pagamento sia sicuro e arrivi a buon fine.\n\nOgni gestore(o PSP, Prestatore di Servizi di Pagamento), propone un costo di transazione, a seconda delle proprie politiche commerciali e condizioni contrattuali.\n\nCon pagoPA, questi costi sono trasparenti e il cittadino può scegliere liberamente l'opzione più comoda e conveniente. Verifica l'importo applicato dal PSP che hai scelto, prima di procedere al pagamento.",
       cancelTitle: "Uscire dal pagamento in corso?",
       cancelBody: "Tutti i dati inseriti andranno persi.",
       cancelButton: "No, ho cambiato idea",
@@ -215,8 +212,7 @@ export const TRANSLATIONS_IT = {
     },
     drawer: {
       title: "Con quale gestore vuoi pagare?",
-      body:
-        "In questa lista trovi tutti i gestori compatibili con il tuo metodo, anche se non sei loro cliente.",
+      body: "In questa lista trovi tutti i gestori compatibili con il tuo metodo, anche se non sei loro cliente.",
       header: {
         name: "Gestore",
         amount: "Costo transazione",
@@ -234,31 +230,26 @@ export const TRANSLATIONS_IT = {
     },
     "2": {
       title: "Autorizzazione negata",
-      body:
-        "La tua banca non ha autorizzato l'operazione. Controlla di aver inserito correttamente i vari codici richiesti dalla tua banca.",
+      body: "La tua banca non ha autorizzato l'operazione. Controlla di aver inserito correttamente i vari codici richiesti dalla tua banca.",
     },
     "3": {
       title: "I dati della carta non risultano corretti",
-      body:
-        "Controlla di aver inserito correttamente i dati della tua carta. L'intestatario deve coincidere esattamente con quanto riportato sulla carta.",
+      body: "Controlla di aver inserito correttamente i dati della tua carta. L'intestatario deve coincidere esattamente con quanto riportato sulla carta.",
     },
     "4": {
       title: "Spiacenti, la sessione è scaduta",
-      body:
-        "Non è stato addebitato alcun importo. Per la tua sicurezza, hai a disposizione 5 minuti per completare l'operazione.",
+      body: "Non è stato addebitato alcun importo. Per la tua sicurezza, hai a disposizione 5 minuti per completare l'operazione.",
     },
     "7": {
       title: "C’è un problema con la tua carta",
-      body:
-        "Non è stato addebitato alcun importo. Per maggiori informazioni, contatta la tua banca.",
+      body: "Non è stato addebitato alcun importo. Per maggiori informazioni, contatta la tua banca.",
     },
     "8": {
       title: "L’operazione è stata annullata",
     },
     "10": {
       title: "Autorizzazione negata",
-      body:
-        "Probabilmente hai superato il massimale della tua carta. Verifica con la tua banca prima di riprovare.",
+      body: "Probabilmente hai superato il massimale della tua carta. Verifica con la tua banca prima di riprovare.",
     },
   },
   cancelledPage: {

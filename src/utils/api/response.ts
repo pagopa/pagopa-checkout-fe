@@ -140,21 +140,20 @@ export const callServices = async (
           });
           void getStringFromSessionStorageTask("idTransaction")
             .chain((idTransaction) =>
-              getStringFromSessionStorageTask(
-                "sessionToken"
-              ).chain((sessionToken) =>
-                resumeTransactionTask(
-                  "Y",
-                  sessionToken,
-                  idTransaction,
-                  pmClient
-                ).chain((_) =>
-                  checkStatusTask(
-                    idTransaction,
+              getStringFromSessionStorageTask("sessionToken").chain(
+                (sessionToken) =>
+                  resumeTransactionTask(
+                    "Y",
                     sessionToken,
-                    paymentManagerClientWithPolling
+                    idTransaction,
+                    pmClient
+                  ).chain((_) =>
+                    checkStatusTask(
+                      idTransaction,
+                      sessionToken,
+                      paymentManagerClientWithPolling
+                    )
                   )
-                )
               )
             )
             .fold(
