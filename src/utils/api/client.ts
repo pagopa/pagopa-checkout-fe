@@ -7,6 +7,7 @@ import {
 import { Millisecond } from "italia-ts-commons/lib/units";
 import { createClient } from "../../../generated/definitions/payment-activations-api/client";
 import { createClient as createPmClient } from "../../../generated/definitions/payment-manager-api/client";
+import { createClient as createFnClient } from "../../../generated/definitions/payment-fn-api/client";
 import { getConfig } from "../config/config";
 import { retryingFetch } from "../config/fetch";
 import { getConfigOrThrow } from "../config/pmConfig";
@@ -38,7 +39,7 @@ export const pmClient = createPmClient({
   fetchApi: retryingFetch(fetch, conf.IO_PAY_API_TIMEOUT as Millisecond, 3),
 });
 
-export const iopayportalClient = createClient({
+export const iopayportalClient = createFnClient({
   baseUrl: conf.IO_PAY_FUNCTIONS_HOST,
   basePath: getConfig("IO_PAY_PORTAL_API_BASEPATH") as string,
   fetchApi: retryingFetch(fetch, conf.IO_PAY_API_TIMEOUT as Millisecond, 3),
