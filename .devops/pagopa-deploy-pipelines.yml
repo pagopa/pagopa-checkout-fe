@@ -1,27 +1,34 @@
 # Azure DevOps pipeline to release a new version and deploy to production.
 
-variables:
-  NODE_VERSION: '12.19.1'
-  YARN_CACHE_FOLDER: $(Pipeline.Workspace)/io-pay-portal-fe/.yarn
-
-resources:
-  repositories:
-    - repository: e2e_test
-      type: github
-      name: pagopa/pagopa-checkout-tests
-      ref: main
-      endpoint: 'io-azure-devops-github-rw'
-
 parameters:
+  - name: 'DEV_DEPLOY'
+    displayName: 'Deploy on DEV environment'
+    type: boolean
+    default: True
+    values:
+      - False
+      - True
+  - name: 'UAT_PROD_DEPLOY'
+    displayName: 'Deploy on UAT then PROD environments [DISABLED]'
+    type: boolean
+    default: False
+    values:
+      - False
+      - True
   - name: 'RELEASE_SEMVER'
-    displayName: 'When packing a release, define the version bump to apply'
+    displayName: 'When packing a release, define the version bump to apply (release is done automatically when deploying on UAT and skipped on DEV) '
     type: string
     values:
       - major
       - minor
       - patch
     default: minor
-  
+
+
+variables:
+  NODE_VERSION: 14.16.0
+  YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
+
 # Only manual activations are intended
 trigger: none
 pr: none
@@ -34,16 +41,90 @@ pr: none
 pool:
   vmImage: 'windows-2019'
 
+resources:
+  repositories:
+    - repository: pagopaCommons
+      type: github
+      name: pagopa/azure-pipeline-templates
+      ref: refs/tags/v19
+      endpoint: 'io-azure-devops-github-ro'
+
 stages:
+  - stage: Prepare_artifact_dev
+    condition: and(succeeded(), eq(${{parameters.DEV_DEPLOY}}, true))
+    dependsOn: []
+    jobs:
+      - job: make_build
+        steps:
+          - template: templates/node-job-setup/template.yaml@pagopaCommons
+            parameters:
+              # On the assumption that this stage is executed only when Relase stage is,
+              #  with this parameter we set the reference the deploy script must pull changes from.
+              # The branch/tag name is calculated from the source branch
+              #  ex: Build.SourceBranch=refs/heads/release/pagopa-porting --> release/pagopa-porting
+              #  ex: Build.SourceBranch=refs/tags/v1.2.3-RELEASE --> v1.2.3-RELEASE
+              gitReference: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/tags/', ''), 'refs/heads/', '') }}
+
+          - template: azure-templates/setup-env.yml
+            parameters:
+              api_host: $(CHECKOUT_API_HOST_UAT)
+              request_timeout: '5000'
+              polling_interval: '6000'
+              polling_attempts: '16'
+              env: 'DEV'
+              site_key: $(CHECKOUT_CAPTCHA_ID_DEV)
+              functions_host: $(CHECKOUT_API_HOST_UAT)
+              api_timeout: '10000'
+              api_basepath: '/checkout/payments/v1'
+
+          - script: |
+              yarn build
+            displayName: 'Build'
+
+          - publish: $(System.DefaultWorkingDirectory)/dist
+            artifact: Bundle_DEV
+
+  - stage: Deploy_DEV_pagoPA
+    dependsOn:
+      - Prepare_artifact_dev
+    jobs:
+      - job: 'deploy'
+        steps:
+          - checkout: none
+
+          - download: current
+            artifact: Bundle_DEV
+
+          - task: AzureCLI@1
+            displayName: 'Sync checkout storage on DEV'
+            inputs:
+              azureSubscription: 'DEV-PAGOPA-SERVICE-CONN'
+              scriptLocation: inlineScript
+              inlineScript: |
+                call az storage blob sync --container $web --account-name pagopadcheckoutsa -s "$(Pipeline.Workspace)\Bundle_DEV"
+
+          - task: AzureCLI@1
+            displayName: 'Purge CDN endpoint on DEV'
+            inputs:
+              azureSubscription: 'DEV-PAGOPA-SERVICE-CONN'
+              scriptLocation: inlineScript
+              inlineScript: |
+                call az cdn endpoint purge -g pagopa-d-checkout-fe-rg -n pagopa-d-checkout-cdn-endpoint --profile-name pagopa-d-checkout-cdn-profile --content-paths "/*"
+
 
   # Create a relase
   # Activated when ONE OF these are met:
-  # - is on branch master 
+  # - is on branch main
   # - is a tag in the form v{version}-RELEASE
+
+  # TODO: Remove `false` in condition when enabling `pagopa-checkout-fe` deploys on UAT and PROD
   - stage: Release
+    dependsOn: []
     condition:
       and(
         succeeded(),
+        false,
+        eq(${{parameters.UAT_PROD_DEPLOY}}, true),
         or(
           eq(variables['Build.SourceBranch'], 'refs/heads/main'),
           and(
@@ -58,168 +139,167 @@ stages:
       - job: make_release
         steps:
         - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
-          - template: azure-templates/node-github-release.yaml
+          - template: templates/node-job-setup/template.yaml@pagopaCommons
             parameters:
-              release_branch: 'main'
-              project_folder: 'io-pay-portal-fe'
+              persistCredentials: true
+          - template: templates/node-github-release/template.yaml@pagopaCommons
+            parameters:
               semver: '${{ parameters.RELEASE_SEMVER }}'
               gitEmail: $(GIT_EMAIL)
               gitUsername: $(GIT_USERNAME)
               gitHubConnection: $(GITHUB_CONNECTION)
-              nodeVersion: $(NODE_VERSION)
-              pkg_cache_version_id: $(CACHE_VERSION_ID)
-              pkg_cache_folder: $(YARN_CACHE_FOLDER)
+              release_branch: main
 
         - ${{ if ne(variables['Build.SourceBranch'], 'refs/heads/main') }}:
           - script: |
               echo "We assume this reference to be a valid release: $(Build.SourceBranch). Therefore, there is no need to bundle a new release."
             displayName: 'Skip release bundle'
-
-
-  # Prepare Artifact UAT with application bundle
-  - stage: Prepare_artifact_UAT
+  # Prepare Artifact
+  - stage: Prepare_artifact_uat
     dependsOn:
       - Release
     jobs:
-      - job: 'make_build'
+      - job: make_build
         steps:
-          # Build application
-          - template: azure-templates/setup-project.yml
+          - template: templates/node-job-setup/template.yaml@pagopaCommons
             parameters:
               # On the assumption that this stage is executed only when Relase stage is,
               #  with this parameter we set the reference the deploy script must pull changes from.
               # The branch/tag name is calculated from the source branch
-              #  ex: Build.SourceBranch=refs/heads/master --> master
+              #  ex: Build.SourceBranch=refs/heads/main --> main
               #  ex: Build.SourceBranch=refs/tags/v1.2.3-RELEASE --> v1.2.3-RELEASE
               gitReference: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/tags/', ''), 'refs/heads/', '') }}
-          
-          - template: azure-templates/make-build.yml
-            parameters:
-              site_key: $(CHECKOUT_CAPTCHA_ID_UAT)
-              api_host: $(CHECKOUT_API_HOST_UAT)
-              env:  'UAT'
-              
-          - publish: $(System.DefaultWorkingDirectory)/io-pay-portal-fe/dist
-            artifact: BundleUAT
 
-  # Deploy bundle to the UAT
-  - stage: Deploy_UAT
+          - template: azure-templates/setup-env.yml
+            parameters:
+              api_host: $(CHECKOUT_API_HOST_UAT)
+              request_timeout: '5000'
+              polling_interval: '6000'
+              polling_attempts: '16'
+              env: 'UAT'
+              site_key: $(CHECKOUT_CAPTCHA_ID_UAT)
+              functions_host: $(CHECKOUT_API_HOST_UAT)
+              api_timeout: '10000'
+              api_basepath: '/checkout/payments/v1'
+
+          - script: |
+              yarn build
+            displayName: 'Build'
+
+          - publish: $(System.DefaultWorkingDirectory)/dist
+            artifact: Bundle_UAT
+
+  - stage: UAT_Deploy_approval
     dependsOn:
-      - Prepare_artifact_UAT
+      - Prepare_artifact_uat
     jobs:
-      - job: 'Deploy_UAT'       
+      - job: Deploy_UAT_WaitForApproval
+        displayName: Wait for UAT approval
+        pool: server
+        timeoutInMinutes: 4320 # 3 days
+        steps:
+        - task: ManualValidation@0
+          timeoutInMinutes: 4320 # 3 days
+          inputs:
+            onTimeout: 'skip'
+
+  - stage: Deploy_UAT_pagoPA
+    dependsOn:
+      - UAT_Deploy_approval
+    jobs:
+      - job: 'deploy'
         steps:
           - checkout: none
 
           - download: current
-            artifact: BundleUAT
+            artifact: Bundle
 
           - task: AzureCLI@1
-            displayName: 'Sync checkout storage'
+            displayName: 'Sync checkout storage on UAT'
             inputs:
               azureSubscription: 'UAT-PAGOPA-SERVICE-CONN'
               scriptLocation: inlineScript
               inlineScript: |
-                call az storage blob sync --container $web --account-name pagopaucheckoutsa -s "$(Pipeline.Workspace)\BundleUAT" --exclude-path p
+                call az storage blob sync --container $web --account-name pagopaucheckoutsa -s "$(Pipeline.Workspace)\Bundle_UAT"
 
           - task: AzureCLI@1
-            displayName: 'Purge CDN endpoint'
+            displayName: 'Purge CDN endpoint on UAT'
             inputs:
               azureSubscription: 'UAT-PAGOPA-SERVICE-CONN'
               scriptLocation: inlineScript
               inlineScript: |
                 call az cdn endpoint purge -g pagopa-u-checkout-fe-rg -n pagopa-u-checkout-cdn-endpoint --profile-name pagopa-u-checkout-cdn-profile --content-paths "/*"
 
-  - stage: E2E_Tests
+  - stage: UAT_to_PROD_promotion
     dependsOn:
-      - Deploy_UAT
-    pool:
-      vmImage: 'ubuntu-latest'
+      - Deploy_UAT_pagoPA
     jobs:
-      - job: e2e_tests
-        steps:
-          - checkout: e2e_test
-            displayName: 'Checkout tests'
-          - script: |
-             docker build -t e2e_test e2e-tests
-            displayName: 'Build test image'
-          - script: |
-              docker run --name=e2e_test e2e_test
-            displayName: 'Run e2e test container'
-            continueOnError: true 
-          - script: |
-              docker cp e2e_test:/puppeteer/test_reports  test_reports
-            displayName: 'Copy test result'
-            continueOnError: true 
-          - task: PublishTestResults@2
-            inputs:
-              testResultsFormat: 'JUnit'
-              testResultsFiles: '**/*-TEST.xml' 
-              searchFolder: '$(System.DefaultWorkingDirectory)'
-
-  # PROD promotion
-  - stage: UAT_TO_PROD_PROMOTION
-    # dependsOn:
-    #   - Deploy_UAT
-    jobs:
-      - job: Deploy_PROD_WaitForApproval
+      - job: Deploy_Prod_WaitForApproval
         displayName: Wait for PROD approval
         pool: server
-        timeoutInMinutes: 4320 # job times out in 3 days
+        timeoutInMinutes: 4320 # 3 days
         steps:
         - task: ManualValidation@0
-          timeoutInMinutes: 4320 # job times out in 3 days
+          timeoutInMinutes: 4320 # 3 days
           inputs:
             onTimeout: 'skip'
-
-# Prepare Artifact PROD with application bundle
-  - stage: Prepare_artifact_PROD
+ 
+    # Prepare Artifact
+  - stage: Prepare_artifact_prod
     dependsOn:
-      - UAT_TO_PROD_PROMOTION
+      - UAT_to_PROD_promotion
     jobs:
-      - job: 'make_build'
+      - job: make_build
         steps:
-          # Build application
-          - template: azure-templates/setup-project.yml
+          - template: templates/node-job-setup/template.yaml@pagopaCommons
             parameters:
               # On the assumption that this stage is executed only when Relase stage is,
               #  with this parameter we set the reference the deploy script must pull changes from.
               # The branch/tag name is calculated from the source branch
-              #  ex: Build.SourceBranch=refs/heads/master --> master
+              #  ex: Build.SourceBranch=refs/heads/main --> main
               #  ex: Build.SourceBranch=refs/tags/v1.2.3-RELEASE --> v1.2.3-RELEASE
               gitReference: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/tags/', ''), 'refs/heads/', '') }}
-          
-          - template: azure-templates/make-build.yml
+
+          - template: azure-templates/setup-env.yml
             parameters:
-              site_key: $(CHECKOUT_CAPTCHA_ID_PROD)
               api_host: $(CHECKOUT_API_HOST_PROD)
+              request_timeout: '5000'
+              polling_interval: '6000'
+              polling_attempts: '16'
               env: 'PROD'
+              site_key: $(CHECKOUT_CAPTCHA_ID_PROD)
+              functions_host: $(CHECKOUT_API_HOST_PROD)
+              api_timeout: '10000'
+              api_basepath: '/checkout/payments/v1'
 
-          - publish: $(System.DefaultWorkingDirectory)/io-pay-portal-fe/dist
-            artifact: BundlePROD
+          - script: |
+              yarn build
+            displayName: 'Build'
 
-  # PROD deploy
-  - stage: Deploy_PROD
+          - publish: $(System.DefaultWorkingDirectory)/dist
+            artifact: Bundle
+
+  - stage: Deploy_PROD_pagoPA
     dependsOn:
-      - Prepare_artifact_PROD
+      - Prepare_artifact_prod
     jobs:
-      - job: 'Deploy_PROD'
+      - job: 'deploy'
         steps:
           - checkout: none
 
           - download: current
-            artifact: BundlePROD
+            artifact: Bundle
 
           - task: AzureCLI@1
-            displayName: 'Sync checkout storage'
+            displayName: 'Sync checkout storage on PROD'
             inputs:
               azureSubscription: 'PROD-PAGOPA-SERVICE-CONN'
               scriptLocation: inlineScript
               inlineScript: |
-                call az storage blob sync --container $web --account-name pagopapcheckoutsa -s "$(Pipeline.Workspace)\BundlePROD" --exclude-path p
+                call az storage blob sync --container $web --account-name pagopapcheckoutsa -s "$(Pipeline.Workspace)\Bundle"
 
           - task: AzureCLI@1
-            displayName: 'Purge CDN endpoint'
+            displayName: 'Purge CDN endpoint on PROD'
             inputs:
               azureSubscription: 'PROD-PAGOPA-SERVICE-CONN'
               scriptLocation: inlineScript
