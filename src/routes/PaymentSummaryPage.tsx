@@ -4,6 +4,9 @@ import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import { Box, Typography } from "@mui/material";
 import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
+import * as E from "fp-ts/Either";
+import * as TE from "fp-ts/TaskEither";
+import { pipe } from "fp-ts/function";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router";
 import { PaymentRequestsGetResponse } from "../../generated/definitions/payment-activations-api/PaymentRequestsGetResponse";
@@ -76,27 +79,37 @@ export default function PaymentSummaryPage() {
     setLoading(true);
     const token = await (ref.current as any).executeAsync();
 
-    PaymentRequestsGetResponse.decode(paymentInfo).fold(
-      () => onError(""),
-      async (paymentInfo) =>
-        await activePaymentTask(
-          paymentInfo.importoSingoloVersamento,
-          paymentInfo.codiceContestoPagamento,
-          rptId,
-          token
-        )
-          .fold(onError, () => {
-            void pollingActivationStatus(
-              paymentInfo.codiceContestoPagamento,
-              config.CHECKOUT_POLLING_ACTIVATION_ATTEMPTS as number,
-              (res) => {
-                setPaymentId(res);
-                setLoading(false);
-                navigate(`/${currentPath}/email`);
+    pipe(
+      PaymentRequestsGetResponse.decode(paymentInfo),
+      E.fold(
+        () => onError(""),
+        (response) =>
+          pipe(
+            activePaymentTask(
+              response.importoSingoloVersamento,
+              response.codiceContestoPagamento,
+              rptId,
+              token
+            ),
+            TE.fold(
+              () => async () => {
+                onError("");
+              },
+              () => async () => {
+                void pollingActivationStatus(
+                  response.codiceContestoPagamento,
+                  getConfig("IO_PAY_PORTAL_PAY_WL_POLLING_ATTEMPTS") as number,
+
+                  (res) => {
+                    setPaymentId(res);
+                    setLoading(false);
+                    navigate(`/${currentPath}/paymentchoice`);
+                  }
+                );
               }
-            );
-          })
-          .run()
+            )
+          )()
+      )
     );
   }, [ref]);
 

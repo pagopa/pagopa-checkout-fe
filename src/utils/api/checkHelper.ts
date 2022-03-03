@@ -1,28 +1,22 @@
-import {
-  fromLeft,
-  taskEither,
-  TaskEither,
-  tryCatch,
-} from "fp-ts/lib/TaskEither";
+import * as TE from "fp-ts/TaskEither";
+import * as E from "fp-ts/Either";
+import { pipe } from "fp-ts/function";
 import { BrowserInfoResponse } from "../../../generated/definitions/payment-transactions-api/BrowserInfoResponse";
 import { Client } from "../../../generated/definitions/payment-transactions-api/client";
 
 export const getBrowserInfoTask = (
   iopayportalClient: Client
-): TaskEither<string, BrowserInfoResponse> =>
-  tryCatch(
+): TE.TaskEither<string, BrowserInfoResponse> =>
+  pipe(
     () => iopayportalClient.GetBrowsersInfo({}),
-    () => "Errore recupero browserInfo"
-  ).foldTaskEither(
-    (err) => fromLeft(err),
-    (errorOrResponse) =>
-      errorOrResponse.fold(
-        () => fromLeft("Errore recupero browserInfo"),
-        (responseType) =>
-          responseType.status !== 200
-            ? fromLeft(`Errore recupero browserInfo : ${responseType.status}`)
-            : taskEither.of(responseType.value)
-      )
+    TE.mapLeft(() => "Errore recupero browserInfo"),
+    TE.chainEitherK((response) => {
+      if (response.status !== 200) {
+        return E.left("Errore recupero browserInfo");
+      } else {
+        return E.right(response.value as BrowserInfoResponse);
+      }
+    })
   );
 
 /**
