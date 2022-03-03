@@ -4,7 +4,7 @@
   "scripts": {
     "type-check": "tsc",
     "generate": "npm-run-all generate:*",
-    "generate:payment-transactions-api": "rimraf generated/definitions/payment-transactions-api && mkdir -p generated/definitions/payment-transactions-api && gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/pagopa-functions-checkout/v1.1.2/openapi/index.yaml --no-strict --out-dir ./generated/definitions/payment-transactions-api --request-types --response-decoders --client",
+    "generate:payment-transactions-api": "rimraf generated/definitions/payment-transactions-api && mkdir -p generated/definitions/payment-transactions-api && gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/pagopa-functions-checkout/v1.1.5/api-spec/api-fn-for-checkout.yml --no-strict --out-dir ./generated/definitions/payment-transactions-api --request-types --response-decoders --client",
     "generate:payment-manager-api": "rimraf generated/definitions/payment-manager-api && mkdir -p generated/definitions/payment-manager-api && gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/io-pay/master/openapi/api.yml --no-strict --out-dir ./generated/definitions/payment-manager-api --request-types --response-decoders --client",
     "generate:payment-activations-api": "rimraf generated/definitions/payment-activations-api && mkdir -p generated/definitions/payment-activations-api && gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/io-pagopa-proxy/main/api-spec/api-for-io.yaml --no-strict --out-dir ./generated/definitions/payment-activations-api --request-types --response-decoders --client",
     "lint": "eslint . -c .eslintrc.js --ext .ts,.tsx",
