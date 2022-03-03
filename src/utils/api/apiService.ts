@@ -6,10 +6,11 @@ import {
   PaymentInfo,
   Wallet,
 } from "../../features/payment/models/paymentModel";
+import { getConfig } from "../config/config";
 import { loadState, SessionItems } from "../storage/sessionStorage";
 
 export function getReCaptchaKey() {
-  return "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"; // test key
+  return getConfig("IO_PAY_PORTAL_SITE_KEY");
 }
 
 export function getNoticeInfo() {
