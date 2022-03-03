@@ -5,7 +5,7 @@ import {
   tryCatch,
 } from "fp-ts/lib/TaskEither";
 import { BrowserInfoResponse } from "../../../generated/definitions/payment-transactions-api/BrowserInfoResponse";
-import { Client } from "../../../generated/definitions/payment-transactions-api/client";
+import { Client } from "../../../generated/definitions/payment-fn-api/client";
 
 export const getBrowserInfoTask = (
   iopayportalClient: Client
