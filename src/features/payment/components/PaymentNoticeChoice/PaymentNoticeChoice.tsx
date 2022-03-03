@@ -49,7 +49,10 @@ export function PaymentNoticeChoice() {
               pr: 2,
             }}
           >
-            <QrCodeScannerIcon sx={{ color: "primary.main" }} />
+            <QrCodeScannerIcon
+              id="qrCodeScanBtn"
+              sx={{ color: "primary.main" }}
+            />
             <Box
               sx={{
                 ...defaultStyle,
@@ -98,7 +101,7 @@ export function PaymentNoticeChoice() {
               pr: 2,
             }}
           >
-            <KeyboardIcon sx={{ color: "primary.main" }} />
+            <KeyboardIcon id="keyboardFormBtn" sx={{ color: "primary.main" }} />
             <Box
               sx={{
                 ...defaultStyle,
