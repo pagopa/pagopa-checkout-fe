@@ -92,7 +92,7 @@ export function retryLogicOnPromisePredicate(
               () => p(r),
               () => TransientError
             ),
-            TE.chain<Error | TransientError, boolean, Response>((d) =>
+            TE.chain((d) =>
               TE.fromEither(d ? E.left(TransientError) : E.right(r))
             )
           )

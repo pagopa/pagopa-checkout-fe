@@ -1,5 +1,7 @@
-import { fromNullable, none } from "fp-ts/lib/Option";
-import { fromPredicate, toError } from "fp-ts/lib/Either";
+import * as O from "fp-ts/Option";
+import * as E from "fp-ts/Either";
+import * as TE from "fp-ts/TaskEither";
+import { pipe } from "fp-ts/function";
 import { DeferredPromise } from "@pagopa/ts-commons//lib/promises";
 import { Millisecond } from "@pagopa/ts-commons//lib/units";
 import {
@@ -24,7 +26,6 @@ import {
   resumeXpayTransactionTask,
   nextTransactionStep,
 } from "../transactions/transactionHelper";
-import { TransactionStatus } from "../../../generated/definitions/payment-manager-api/TransactionStatus";
 import {
   createIFrame,
   start3DS2AcsChallengeStep,
@@ -67,9 +68,9 @@ const paymentManagerClientWithPolling: Client = createPmClient({
       const myJson = (await r.clone().json()) as TransactionStatusResponse;
       return (
         myJson.data.finalStatus === false &&
-        fromNullable(myJson.data.methodUrl).isNone() &&
-        fromNullable(myJson.data.xpayHtml).isNone() &&
-        fromNullable(myJson.data.acsUrl).isNone()
+        O.isNone(O.fromNullable(myJson.data.methodUrl)) &&
+        O.isNone(O.fromNullable(myJson.data.xpayHtml)) &&
+        O.isNone(O.fromNullable(myJson.data.acsUrl))
       );
     }
   ),
@@ -107,262 +108,302 @@ export const callServices = async (
   ) => void
 ) => {
   // set isDirectAcquirer to decide the final outcome
-  const isDirectAcquirer: boolean | undefined = WalletSession.decode(
-    JSON.parse(sessionStorage.getItem("wallet") || "")
-  ).fold(
-    (_) => undefined,
-    (wallet) => wallet.psp.directAcquirer
+  const isDirectAcquirer: boolean | undefined = pipe(
+    WalletSession.decode(JSON.parse(sessionStorage.getItem("wallet") || "")),
+    E.fold(
+      (_) => undefined,
+      (wallet) => wallet.psp.directAcquirer
+    )
   );
 
   // 2. METHOD RESUME and ACS CHALLENGE step on 3ds2
   window.addEventListener(
     "message",
-    async function (e) {
+    async function (e: MessageEvent<any>) {
       if (/^react-devtools/gi.test(e.data.source)) {
         return;
       }
-      fromPredicate<Error, MessageEvent<any>>(
-        // Addresses must be static
-        (e1) =>
-          e1.origin === config.CHECKOUT_PAGOPA_APIM_HOST &&
-          e1.data === "3DS.Notification.Received",
-        toError
-      )(e).fold(
-        () => {
-          mixpanel.track(THREEDSMETHODURL_STEP1_RESP_ERR.value, {
-            EVENT_ID: THREEDSMETHODURL_STEP1_RESP_ERR.value,
-          });
-          handleFinalStatusResult(UNKNOWN.value);
-        },
-        (_) => {
-          mixpanel.track(THREEDSMETHODURL_STEP1_SUCCESS.value, {
-            EVENT_ID: THREEDSMETHODURL_STEP1_SUCCESS.value,
-          });
-          void getStringFromSessionStorageTask("idTransaction")
-            .chain((idTransaction) =>
-              getStringFromSessionStorageTask("sessionToken").chain(
-                (sessionToken) =>
-                  resumeTransactionTask(
-                    "Y",
-                    sessionToken,
-                    idTransaction,
-                    pmClient
-                  ).chain((_) =>
-                    checkStatusTask(
-                      idTransaction,
-                      sessionToken,
-                      paymentManagerClientWithPolling
-                    )
-                  )
-              )
-            )
-            .fold(
-              // eslint-disable-next-line sonarjs/no-identical-functions
-              () => {
-                mixpanel.track(THREEDSMETHODURL_STEP1_RESP_ERR.value, {
-                  EVENT_ID: THREEDSMETHODURL_STEP1_RESP_ERR.value,
-                });
-                handleFinalStatusResult(UNKNOWN.value);
-              },
-              (transactionStatus) =>
-                fromPredicate<Error, TransactionStatus>(
-                  (data) => data.finalStatus === false,
-                  toError
-                )(transactionStatus.data).fold(
-                  () =>
-                    handleFinalStatusResult(
-                      transactionStatus.data.idStatus,
-                      transactionStatus.data.authorizationCode,
-                      isDirectAcquirer
-                    ),
-                  () =>
-                    start3DS2AcsChallengeStep(
-                      transactionStatus.data.acsUrl,
-                      transactionStatus.data.params,
-                      document.body
-                    )
-                )
-            )
-            .run();
-        }
-      );
-    },
-
-    false
-  );
-
-  await fromPredicate<Error, string>(
-    (idTransaction) => idTransaction !== "",
-    toError
-  )(getUrlParameter("id")).fold(
-    async (_) => {
-      // 1. Challenge or METHOD or XPAY step on 3ds2 or final status
-      await getStringFromSessionStorageTask("sessionToken")
-        .chain((sessionToken) =>
-          getStringFromSessionStorageTask(
-            "idTransaction"
-            // eslint-disable-next-line sonarjs/no-identical-functions
-          ).chain((idTransaction) =>
-            checkStatusTask(
-              idTransaction,
-              sessionToken,
-              paymentManagerClientWithPolling
-            )
-          )
-        )
-        .fold(
-          // eslint-disable-next-line sonarjs/no-identical-functions
+      pipe(
+        E.fromPredicate(
+          // Addresses must be static
+          (e1: MessageEvent<any>) =>
+            e1.origin === config.CHECKOUT_PAGOPA_APIM_HOST &&
+            e1.data === "3DS.Notification.Received",
+          E.toError
+        )(e),
+        E.fold(
           () => {
             mixpanel.track(THREEDSMETHODURL_STEP1_RESP_ERR.value, {
               EVENT_ID: THREEDSMETHODURL_STEP1_RESP_ERR.value,
             });
             handleFinalStatusResult(UNKNOWN.value);
           },
-          (transactionStatus) =>
-            fromPredicate<Error, TransactionStatus>(
-              (data) => data.finalStatus === false,
-              toError
-            )(transactionStatus.data).fold(
-              // eslint-disable-next-line sonarjs/no-identical-functions
-              (_) =>
-                // 1.0 final status
-                handleFinalStatusResult(
-                  transactionStatus.data.idStatus,
-                  transactionStatus.data.authorizationCode,
-                  isDirectAcquirer
-                ),
-              (_) => {
-                switch (nextTransactionStep(transactionStatus)) {
-                  // 1.1 METHOD step 3ds2
-                  case "method": {
-                    fromNullable(transactionStatus.data.threeDSMethodData).fold(
-                      none,
-                      (threeDSMethodData) => {
-                        sessionStorage.setItem(
-                          "threeDSMethodData",
-                          threeDSMethodData
-                        );
-                        return start3DS2MethodStep(
-                          transactionStatus.data.methodUrl,
-                          transactionStatus.data.threeDSMethodData,
-                          createIFrame(
-                            document.body,
-                            "myIdFrame",
-                            "myFrameName"
-                          )
-                        );
-                      }
-                    );
-                    break;
-                  }
-                  // 1.2 Challenge step 3ds2 (without a previous method 3ds2 step)
-                  case "challenge": {
-                    start3DS2AcsChallengeStep(
-                      transactionStatus.data.acsUrl,
-                      transactionStatus.data.params,
-                      document.body
-                    );
-                    break;
-                  }
-                  // 1.3 Xpay step 3ds2
-                  case "xpay": {
-                    fromNullable(transactionStatus.data.xpayHtml).map(
-                      (xpayHtml) => {
-                        document.write(xpayHtml);
-                      }
-                    );
-                    break;
-                  }
-                  default: {
-                    handleFinalStatusResult(UNKNOWN.value);
-                    break;
-                  }
-                }
-              }
-            )
-        )
-        .run();
-    },
-    async (idTransaction) =>
-      getXpay3DSResponseFromUrl()
-        .fold(
-          async (_) => {
-            // 3. ACS RESUME and CHECK FINAL STATUS POLLING step on 3ds2
-            await getStringFromSessionStorageTask("sessionToken")
-              .chain((sessionToken) =>
-                resumeTransactionTask(
-                  undefined,
-                  sessionToken,
-                  idTransaction,
-                  pmClient
-                ).chain((_) =>
-                  checkStatusTask(
-                    idTransaction,
-                    sessionToken,
-                    paymentManagerClientWithPollingOnFinalStatus
+          (_) => {
+            mixpanel.track(THREEDSMETHODURL_STEP1_SUCCESS.value, {
+              EVENT_ID: THREEDSMETHODURL_STEP1_SUCCESS.value,
+            });
+            void pipe(
+              getStringFromSessionStorageTask("idTransaction"),
+              TE.chain((idTransaction: string) =>
+                pipe(
+                  getStringFromSessionStorageTask("sessionToken"),
+                  TE.chain((sessionToken: string) =>
+                    pipe(
+                      resumeTransactionTask(
+                        "Y",
+                        sessionToken,
+                        idTransaction,
+                        pmClient
+                      ),
+                      TE.chain((_) =>
+                        checkStatusTask(
+                          idTransaction,
+                          sessionToken,
+                          paymentManagerClientWithPolling
+                        )
+                      )
+                    )
                   )
                 )
-              )
-              .fold(
-                (_) => {
-                  mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_RESP_ERR.value, {
-                    EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_RESP_ERR.value,
+              ),
+              TE.fold(
+                // eslint-disable-next-line sonarjs/no-identical-functions
+                () => async () => {
+                  mixpanel.track(THREEDSMETHODURL_STEP1_RESP_ERR.value, {
+                    EVENT_ID: THREEDSMETHODURL_STEP1_RESP_ERR.value,
                   });
                   handleFinalStatusResult(UNKNOWN.value);
                 },
-                (transactionStatusResponse) => {
-                  mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value, {
-                    EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value,
-                  });
-                  handleFinalStatusResult(
-                    transactionStatusResponse.data.idStatus,
-                    transactionStatusResponse.data.authorizationCode,
-                    isDirectAcquirer
-                  );
-                }
-              )
-              .run();
-          },
-          async (xpay3DSResponse) => {
-            // 4. XPAY transaction resume
-            await getStringFromSessionStorageTask("sessionToken")
-              .chain((sessionToken) =>
-                resumeXpayTransactionTask(
-                  xpay3DSResponse,
-                  getUrlParameter("outcome"),
-                  sessionToken,
-                  idTransaction,
-                  pmClient
-                  // eslint-disable-next-line sonarjs/no-identical-functions
-                ).chain((_) =>
-                  checkStatusTask(
-                    idTransaction,
-                    sessionToken,
-                    paymentManagerClientWithPollingOnFinalStatus
+                (transactionStatus) =>
+                  pipe(
+                    TE.fromPredicate(
+                      (data) => data.finalStatus === false,
+                      E.toError
+                    )(transactionStatus.data),
+                    TE.fold(
+                      () => async () =>
+                        handleFinalStatusResult(
+                          transactionStatus.data.idStatus,
+                          transactionStatus.data.authorizationCode,
+                          isDirectAcquirer
+                        ),
+                      () => async () =>
+                        start3DS2AcsChallengeStep(
+                          transactionStatus.data.acsUrl,
+                          transactionStatus.data.params,
+                          document.body
+                        )
+                    )
                   )
-                )
               )
-              .fold(
-                (_) => {
-                  mixpanel.track(THREEDS_CHECK_XPAY_RESP_ERR.value, {
-                    EVENT_ID: THREEDS_CHECK_XPAY_RESP_ERR.value,
-                  });
-                  handleFinalStatusResult(UNKNOWN.value);
-                },
-                (transactionStatusResponse) => {
-                  mixpanel.track(THREEDS_CHECK_XPAY_RESP_SUCCESS.value, {
-                    EVENT_ID: THREEDS_CHECK_XPAY_RESP_SUCCESS.value,
-                  });
-                  handleFinalStatusResult(
-                    transactionStatusResponse.data.idStatus,
-                    transactionStatusResponse.data.authorizationCode,
-                    isDirectAcquirer
-                  );
-                }
-              )
-              .run();
+            )();
           }
         )
-        .run()
+      );
+    },
+
+    false
   );
+
+  await pipe(
+    TE.fromPredicate(
+      (idTransaction) => idTransaction !== "",
+      E.toError
+    )(getUrlParameter("id")),
+    TE.fold(
+      (_) => async () => {
+        // 1. Challenge or METHOD or XPAY step on 3ds2 or final status
+        await pipe(
+          getStringFromSessionStorageTask("sessionToken"),
+          TE.chain((sessionToken) =>
+            pipe(
+              getStringFromSessionStorageTask(
+                "idTransaction"
+                // eslint-disable-next-line sonarjs/no-identical-functions
+              ),
+              // eslint-disable-next-line sonarjs/no-identical-functions
+              TE.chain((idTransaction) =>
+                checkStatusTask(
+                  idTransaction,
+                  sessionToken,
+                  paymentManagerClientWithPolling
+                )
+              )
+            )
+          ),
+          TE.fold(
+            // eslint-disable-next-line sonarjs/no-identical-functions
+            () => async () => {
+              mixpanel.track(THREEDSMETHODURL_STEP1_RESP_ERR.value, {
+                EVENT_ID: THREEDSMETHODURL_STEP1_RESP_ERR.value,
+              });
+              handleFinalStatusResult(UNKNOWN.value);
+            },
+            (transactionStatus) =>
+              pipe(
+                TE.fromPredicate(
+                  (data) => data.finalStatus === false,
+                  E.toError
+                )(transactionStatus.data),
+                TE.fold(
+                  // eslint-disable-next-line sonarjs/no-identical-functions
+                  (_) => async () =>
+                    // 1.0 final status
+                    handleFinalStatusResult(
+                      transactionStatus.data.idStatus,
+                      transactionStatus.data.authorizationCode,
+                      isDirectAcquirer
+                    ),
+                  (_) => async () => {
+                    switch (nextTransactionStep(transactionStatus)) {
+                      // 1.1 METHOD step 3ds2
+                      case "method": {
+                        pipe(
+                          O.fromNullable(
+                            transactionStatus.data.threeDSMethodData
+                          ),
+                          O.map((threeDSMethodData) => {
+                            sessionStorage.setItem(
+                              "threeDSMethodData",
+                              threeDSMethodData
+                            );
+                            return start3DS2MethodStep(
+                              transactionStatus.data.methodUrl,
+                              transactionStatus.data.threeDSMethodData,
+                              createIFrame(
+                                document.body,
+                                "myIdFrame",
+                                "myFrameName"
+                              )
+                            );
+                          })
+                        );
+                        break;
+                      }
+                      // 1.2 Challenge step 3ds2 (without a previous method 3ds2 step)
+                      case "challenge": {
+                        start3DS2AcsChallengeStep(
+                          transactionStatus.data.acsUrl,
+                          transactionStatus.data.params,
+                          document.body
+                        );
+                        break;
+                      }
+                      // 1.3 Xpay step 3ds2
+                      case "xpay": {
+                        pipe(
+                          O.fromNullable(transactionStatus.data.xpayHtml),
+                          O.map((xpayHtml) => {
+                            document.write(xpayHtml);
+                          })
+                        );
+                        break;
+                      }
+                      default: {
+                        handleFinalStatusResult(UNKNOWN.value);
+                        break;
+                      }
+                    }
+                  }
+                )
+              )
+          )
+        )();
+      },
+      (idTransaction) => async () =>
+        pipe(
+          getXpay3DSResponseFromUrl(),
+          TE.fold(
+            (_) => async () => {
+              // 3. ACS RESUME and CHECK FINAL STATUS POLLING step on 3ds2
+              await pipe(
+                getStringFromSessionStorageTask("sessionToken"),
+                TE.chain((sessionToken) =>
+                  pipe(
+                    resumeTransactionTask(
+                      undefined,
+                      sessionToken,
+                      idTransaction,
+                      pmClient
+                    ),
+                    TE.chain((_) =>
+                      checkStatusTask(
+                        idTransaction,
+                        sessionToken,
+                        paymentManagerClientWithPollingOnFinalStatus
+                      )
+                    )
+                  )
+                ),
+                TE.fold(
+                  (_) => async () => {
+                    mixpanel.track(
+                      THREEDSACSCHALLENGEURL_STEP2_RESP_ERR.value,
+                      {
+                        EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_RESP_ERR.value,
+                      }
+                    );
+                    handleFinalStatusResult(UNKNOWN.value);
+                  },
+                  (transactionStatusResponse) => async () => {
+                    mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value, {
+                      EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value,
+                    });
+                    handleFinalStatusResult(
+                      transactionStatusResponse.data.idStatus,
+                      transactionStatusResponse.data.authorizationCode,
+                      isDirectAcquirer
+                    );
+                  }
+                )
+              )();
+            },
+            (xpay3DSResponse) => async () => {
+              // 4. XPAY transaction resume
+              await pipe(
+                getStringFromSessionStorageTask("sessionToken"),
+                TE.chain((sessionToken) =>
+                  pipe(
+                    resumeXpayTransactionTask(
+                      xpay3DSResponse,
+                      getUrlParameter("outcome"),
+                      sessionToken,
+                      idTransaction,
+                      pmClient
+                      // eslint-disable-next-line sonarjs/no-identical-functions
+                    ),
+                    // eslint-disable-next-line sonarjs/no-identical-functions
+                    TE.chain((_) =>
+                      checkStatusTask(
+                        idTransaction,
+                        sessionToken,
+                        paymentManagerClientWithPollingOnFinalStatus
+                      )
+                    )
+                  )
+                ),
+                TE.fold(
+                  (_) => async () => {
+                    mixpanel.track(THREEDS_CHECK_XPAY_RESP_ERR.value, {
+                      EVENT_ID: THREEDS_CHECK_XPAY_RESP_ERR.value,
+                    });
+                    handleFinalStatusResult(UNKNOWN.value);
+                  },
+                  (transactionStatusResponse) => async () => {
+                    mixpanel.track(THREEDS_CHECK_XPAY_RESP_SUCCESS.value, {
+                      EVENT_ID: THREEDS_CHECK_XPAY_RESP_SUCCESS.value,
+                    });
+                    handleFinalStatusResult(
+                      transactionStatusResponse.data.idStatus,
+                      transactionStatusResponse.data.authorizationCode,
+                      isDirectAcquirer
+                    );
+                  }
+                )
+              )();
+            }
+          )
+        )()
+    )
+  )();
 };
