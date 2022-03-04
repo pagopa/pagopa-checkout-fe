@@ -105,7 +105,13 @@ export default function PaymentNoticePage() {
           }}
         />
       )}
-      <ReCAPTCHA ref={ref} size="invisible" sitekey={getReCaptchaKey()} />
+      <Box display="none">
+        <ReCAPTCHA
+          ref={ref}
+          size="invisible"
+          sitekey={getReCaptchaKey() as string}
+        />
+      </Box>
     </PageContainer>
   );
 }

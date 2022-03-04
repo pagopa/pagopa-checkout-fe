@@ -6,8 +6,8 @@ import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router";
-import { PaymentRequestsGetResponse } from "../../generated/definitions/payment-transactions-api/PaymentRequestsGetResponse";
-import { RptId } from "../../generated/definitions/payment-transactions-api/RptId";
+import { PaymentRequestsGetResponse } from "../../generated/definitions/payment-activations-api/PaymentRequestsGetResponse";
+import { RptId } from "../../generated/definitions/payment-activations-api/RptId";
 import { FormButtons } from "../components/FormButtons/FormButtons";
 import ErrorModal from "../components/modals/ErrorModal";
 import PageContainer from "../components/PageContent/PageContainer";
@@ -132,11 +132,13 @@ export default function PaymentSummaryPage() {
           }}
         />
       )}
-      <ReCAPTCHA
-        ref={ref}
-        size="invisible"
-        sitekey={getReCaptchaKey() as string}
-      />
+      <Box display="none">
+        <ReCAPTCHA
+          ref={ref}
+          size="invisible"
+          sitekey={getReCaptchaKey() as string}
+        />
+      </Box>
     </PageContainer>
   );
 }

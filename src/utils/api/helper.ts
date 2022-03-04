@@ -9,16 +9,16 @@ import {
   tryCatch,
 } from "fp-ts/lib/TaskEither";
 import { Millisecond } from "italia-ts-commons/lib/units";
+import { CodiceContestoPagamento } from "../../../generated/definitions/payment-activations-api/CodiceContestoPagamento";
+import { ImportoEuroCents } from "../../../generated/definitions/payment-activations-api/ImportoEuroCents";
+import { PaymentActivationsGetResponse } from "../../../generated/definitions/payment-activations-api/PaymentActivationsGetResponse";
+import { PaymentActivationsPostResponse } from "../../../generated/definitions/payment-activations-api/PaymentActivationsPostResponse";
+import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-activations-api/PaymentRequestsGetResponse";
+import { RptId } from "../../../generated/definitions/payment-activations-api/RptId";
 import {
   TypeEnum,
   Wallet,
 } from "../../../generated/definitions/payment-manager-api/Wallet";
-import { CodiceContestoPagamento } from "../../../generated/definitions/payment-transactions-api/CodiceContestoPagamento";
-import { ImportoEuroCents } from "../../../generated/definitions/payment-transactions-api/ImportoEuroCents";
-import { PaymentActivationsGetResponse } from "../../../generated/definitions/payment-transactions-api/PaymentActivationsGetResponse";
-import { PaymentActivationsPostResponse } from "../../../generated/definitions/payment-transactions-api/PaymentActivationsPostResponse";
-import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-transactions-api/PaymentRequestsGetResponse";
-import { RptId } from "../../../generated/definitions/payment-transactions-api/RptId";
 import {
   InputCardFormFields,
   PaymentCheckData,
