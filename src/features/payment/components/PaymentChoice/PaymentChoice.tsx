@@ -16,7 +16,7 @@ export function PaymentChoice() {
   const currentPath = location.pathname.split("/")[1];
 
   const handleClickOnCard = React.useCallback(() => {
-    navigate(`/${currentPath}/email`);
+    navigate(`/${currentPath}/inputcard`);
   }, []);
 
   return (

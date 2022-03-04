@@ -76,7 +76,7 @@ export default function PaymentSummaryPage() {
               (res) => {
                 setPaymentId(res);
                 setLoading(false);
-                navigate(`/${currentPath}/paymentchoice`);
+                navigate(`/${currentPath}/email`);
               }
             );
           })
@@ -116,7 +116,7 @@ export default function PaymentSummaryPage() {
       <FormButtons
         submitTitle="paymentSummaryPage.buttons.submit"
         cancelTitle="paymentSummaryPage.buttons.cancel"
-        disabled={false}
+        disabledSubmit={false}
         loadingSubmit={loading}
         handleSubmit={onSubmit}
         handleCancel={() => {

@@ -9,7 +9,8 @@ export function FormButtons(props: {
   handleSubmit: () => void;
   handleCancel: () => void;
   type?: "submit" | "button";
-  disabled: boolean;
+  disabledSubmit: boolean;
+  disabledCancel?: boolean;
   loadingSubmit?: boolean;
   loadingCancel?: boolean;
   submitTitle: string;
@@ -41,6 +42,7 @@ export function FormButtons(props: {
             variant="outlined"
             onClick={props.handleCancel}
             loading={props.loadingCancel || false}
+            disabled={props.disabledCancel || props.loadingSubmit || false}
             style={{
               width: "100%",
               height: "100%",
@@ -57,7 +59,7 @@ export function FormButtons(props: {
             loading={props.loadingSubmit || false}
             variant="contained"
             onClick={props.type === "button" ? props.handleSubmit : undefined}
-            disabled={props.disabled}
+            disabled={props.disabledSubmit}
             style={{
               width: "100%",
               height: "100%",
