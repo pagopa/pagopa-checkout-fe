@@ -1,8 +1,8 @@
 import {
-  mixpanel,
   THREEDSACSCHALLENGEURL_STEP2_REQ,
   THREEDSMETHODURL_STEP1_REQ,
-} from "../config/pmMixpanelHelperInit";
+} from "../config/mixpanelDefs";
+import { mixpanel } from "../config/mixpanelHelperInit";
 
 function createForm(
   formName: string,

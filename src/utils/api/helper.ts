@@ -26,7 +26,6 @@ import {
 } from "../../features/payment/models/paymentModel";
 import { getConfig } from "../config/config";
 import {
-  mixpanel,
   PAYMENT_ACTIVATE_INIT,
   PAYMENT_ACTIVATE_NET_ERR,
   PAYMENT_ACTIVATE_RESP_ERR,
@@ -42,8 +41,6 @@ import {
   PAYMENT_VERIFY_RESP_ERR,
   PAYMENT_VERIFY_SUCCESS,
   PAYMENT_VERIFY_SVR_ERR,
-} from "../config/mixpanelHelperInit";
-import {
   PAYMENT_ACTION_DELETE_INIT,
   PAYMENT_ACTION_DELETE_NET_ERR,
   PAYMENT_ACTION_DELETE_RESP_ERR,
@@ -84,7 +81,8 @@ import {
   PAYMENT_WALLET_RESP_ERR,
   PAYMENT_WALLET_SUCCESS,
   PAYMENT_WALLET_SVR_ERR,
-} from "../config/pmMixpanelHelperInit";
+} from "../config/mixpanelDefs";
+import { mixpanel } from "../config/mixpanelHelperInit";
 import { ErrorsType } from "../errors/checkErrorsModel";
 import { PaymentSession } from "../sessionData/PaymentSession";
 import { WalletSession } from "../sessionData/WalletSession";

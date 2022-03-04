@@ -7,14 +7,14 @@ import {
   GENERIC_STATUS,
 } from "../transactions/TransactionStatesTypes";
 import {
-  mixpanel,
   THREEDSACSCHALLENGEURL_STEP2_RESP_ERR,
   THREEDSACSCHALLENGEURL_STEP2_SUCCESS,
   THREEDSMETHODURL_STEP1_RESP_ERR,
   THREEDSMETHODURL_STEP1_SUCCESS,
   THREEDS_CHECK_XPAY_RESP_ERR,
   THREEDS_CHECK_XPAY_RESP_SUCCESS,
-} from "../config/pmMixpanelHelperInit";
+} from "../config/mixpanelDefs";
+import { mixpanel } from "../config/mixpanelHelperInit";
 import { WalletSession } from "../sessionData/WalletSession";
 import {
   getStringFromSessionStorageTask,
