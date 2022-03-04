@@ -23,6 +23,7 @@ import {
   pollingActivationStatus,
 } from "../utils/api/helper";
 import { getConfig } from "../utils/config/config";
+import { ErrorsType } from "../utils/errors/checkErrorsModel";
 import { moneyFormat } from "../utils/form/formatters";
 
 const defaultStyle = {
@@ -44,6 +45,7 @@ export default function PaymentSummaryPage() {
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
+  const [timeoutId, setTimeoutId] = React.useState<NodeJS.Timeout>();
   const ref = React.useRef(null);
 
   const paymentInfo = getPaymentInfo();
@@ -54,6 +56,18 @@ export default function PaymentSummaryPage() {
     setError(m);
     setErrorModalOpen(true);
   };
+
+  React.useEffect(() => {
+    if (loading && !errorModalOpen) {
+      const id = setTimeout(() => {
+        setError(ErrorsType.POLLING_SLOW);
+        setErrorModalOpen(true);
+      }, getConfig("IO_PAY_PORTAL_API_REQUEST_TIMEOUT") as number);
+      setTimeoutId(id);
+    } else if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+  }, [loading, errorModalOpen]);
 
   const onSubmit = React.useCallback(async () => {
     const rptId: RptId = `${noticeInfo.cf}${noticeInfo.billCode}`;

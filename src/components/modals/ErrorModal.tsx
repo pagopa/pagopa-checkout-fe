@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/cognitive-complexity */
 /* eslint-disable functional/immutable-data */
 /* eslint-disable @typescript-eslint/ban-types */
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
@@ -8,11 +9,13 @@ import {
   Button,
   Dialog,
   DialogContent,
+  LinearProgress,
   Tooltip,
   Typography,
 } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { ErrorsType } from "../../utils/errors/checkErrorsModel";
 import {
   PaymentCategoryResponses,
   PaymentFaultCategory,
@@ -66,6 +69,7 @@ function ErrorModal(props: {
     ? PaymentCategoryResponses[PaymentFaultCategory.NOTLISTED]?.buttons
     : PaymentCategoryResponses[PaymentResponses[props.error]?.category]
         ?.buttons;
+  const showProgressBar = props.error === ErrorsType.POLLING_SLOW;
 
   return (
     <Dialog
@@ -124,11 +128,15 @@ function ErrorModal(props: {
               </AlertTitle>
             </Alert>
           )}
-          {!!buttonsDetail && (
-            <ErrorButtons
-              handleClose={props.onClose}
-              buttonsDetail={buttonsDetail}
-            />
+          {showProgressBar ? (
+            <LinearProgress sx={{ my: 2 }} />
+          ) : (
+            !!buttonsDetail && (
+              <ErrorButtons
+                handleClose={props.onClose}
+                buttonsDetail={buttonsDetail}
+              />
+            )
           )}
         </Box>
       </DialogContent>

@@ -260,4 +260,9 @@ export const PaymentResponses: Record<string, PaymentFaultErrorMessage> = {
     body: "PAA_PAGAMENTO_SCADUTO.body",
     category: PaymentFaultCategory.CUSTOM,
   },
+  POLLING_SLOW: {
+    title: "POLLING_SLOW.title",
+    body: "POLLING_SLOW.body",
+    category: PaymentFaultCategory.CUSTOM,
+  },
 };
