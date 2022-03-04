@@ -44,6 +44,7 @@ import {
 
 import { getUrlParameter } from "../regex/urlUtilities";
 import { getConfigOrThrow } from "../config/config";
+import { TransactionStatus } from "../../../generated/definitions/payment-manager-api/TransactionStatus";
 
 const config = getConfigOrThrow();
 /**
@@ -177,7 +178,7 @@ export const callServices = async (
                 (transactionStatus) =>
                   pipe(
                     TE.fromPredicate(
-                      (data) => data.finalStatus === false,
+                      (data: TransactionStatus) => data.finalStatus === false,
                       E.toError
                     )(transactionStatus.data),
                     TE.fold(
@@ -242,7 +243,7 @@ export const callServices = async (
             (transactionStatus) =>
               pipe(
                 TE.fromPredicate(
-                  (data) => data.finalStatus === false,
+                  (data: TransactionStatus) => data.finalStatus === false,
                   E.toError
                 )(transactionStatus.data),
                 TE.fold(

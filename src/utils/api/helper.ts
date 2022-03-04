@@ -117,7 +117,7 @@ export const getPaymentInfoTask = (
           errorOrResponse,
           E.fold(
             () => TE.left("Errore recupero pagamento"),
-            (responseType: { status: number; value: { detail: any } }) => {
+            (responseType) => {
               const reason =
                 responseType.status === 200 ? "" : responseType.value?.detail;
               const EVENT_ID: string =
@@ -134,8 +134,7 @@ export const getPaymentInfoTask = (
                   )
                 : TE.of(responseType.value);
             }
-          ),
-          TE.toUnion
+          )
         )
     )
   );
@@ -318,42 +317,47 @@ export const getPaymentCheckData = async ({
                 EVENT_ID: PAYMENT_CHECK_SVR_ERR.value,
               });
             },
-            (myResExt: any) => async () => {
-              myResExt.fold(
-                onError(ErrorsType.GENERIC_ERROR),
-                (response: {
-                  value: { data: { urlRedirectEc: string } };
-                  status: number;
-                }) => {
-                  const maybePayment = PaymentSession.decode(
-                    response.value?.data
-                  );
+            (myResExt) => async () => {
+              pipe(
+                myResExt,
+                E.fold(
+                  () => onError(ErrorsType.GENERIC_ERROR),
+                  (response) => {
+                    const maybePayment = PaymentSession.decode(
+                      response.value?.data
+                    );
 
-                  // eslint-disable-next-line no-underscore-dangle
-                  if (response.status === 200 && E.isRight(maybePayment)) {
-                    sessionStorage.setItem(
-                      "checkData",
-                      JSON.stringify(maybePayment.value)
-                    );
-                    onResponse(maybePayment.value as PaymentCheckData);
-                    mixpanel.track(PAYMENT_CHECK_SUCCESS.value, {
-                      EVENT_ID: PAYMENT_CHECK_SUCCESS.value,
-                    });
-                    const originInput = pipe(
-                      O.fromNullable(origin),
-                      O.getOrElse(() => response.value.data.urlRedirectEc)
-                    );
-                    sessionStorage.setItem(
-                      "originUrlRedirect",
-                      originInput === "payportal" ? "/" : originInput
-                    );
-                  } else {
-                    onNavigate();
-                    mixpanel.track(PAYMENT_CHECK_RESP_ERR.value, {
-                      EVENT_ID: PAYMENT_CHECK_RESP_ERR.value,
-                    });
+                    // eslint-disable-next-line no-underscore-dangle
+                    if (response.status === 200) {
+                      pipe(
+                        maybePayment,
+                        E.map((payment) => {
+                          sessionStorage.setItem(
+                            "checkData",
+                            JSON.stringify(payment)
+                          );
+                          onResponse(payment as PaymentCheckData);
+                          mixpanel.track(PAYMENT_CHECK_SUCCESS.value, {
+                            EVENT_ID: PAYMENT_CHECK_SUCCESS.value,
+                          });
+                          const originInput = pipe(
+                            O.fromNullable(origin),
+                            O.getOrElse(() => response.value.data.urlRedirectEc)
+                          );
+                          sessionStorage.setItem(
+                            "originUrlRedirect",
+                            originInput === "payportal" ? "/" : originInput
+                          );
+                        })
+                      );
+                    } else {
+                      onNavigate();
+                      mixpanel.track(PAYMENT_CHECK_RESP_ERR.value, {
+                        EVENT_ID: PAYMENT_CHECK_RESP_ERR.value,
+                      });
+                    }
                   }
-                }
+                )
               );
             }
           )
