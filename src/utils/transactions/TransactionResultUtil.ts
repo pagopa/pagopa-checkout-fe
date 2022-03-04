@@ -1,6 +1,6 @@
 import { fromPredicate, toError } from "fp-ts/lib/Either";
 import * as t from "io-ts";
-import { enumType } from "italia-ts-commons/lib/types";
+import { enumType } from "@pagopa/ts-commons/lib/types";
 
 export enum OutcomeEnum {
   SUCCESS = "0",

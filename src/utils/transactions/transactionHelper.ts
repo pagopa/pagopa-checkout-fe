@@ -6,7 +6,7 @@ import {
   TaskEither,
   tryCatch,
 } from "fp-ts/lib/TaskEither";
-import { NonEmptyString } from "italia-ts-commons/lib/strings";
+import { NonEmptyString } from "@pagopa/ts-commons/lib/strings";
 import { Client } from "../../../generated/definitions/payment-manager-api/client";
 import { Transaction } from "../../../generated/definitions/payment-manager-api/Transaction";
 import { TransactionStatusResponse } from "../../../generated/definitions/payment-manager-api/TransactionStatusResponse";

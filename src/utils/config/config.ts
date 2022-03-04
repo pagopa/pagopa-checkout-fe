@@ -6,8 +6,10 @@
  */
 
 import * as t from "io-ts";
-import { NonEmptyString } from "italia-ts-commons/lib/strings";
-import { readableReport } from "italia-ts-commons/lib/reporters";
+import * as E from "fp-ts/Either";
+import { pipe } from "fp-ts/function";
+import { NonEmptyString } from "@pagopa/ts-commons/lib/strings";
+import { readableReport } from "@pagopa/ts-commons/lib/reporters";
 
 export type IConfig = t.TypeOf<typeof IConfig>;
 export const IConfig = t.interface({
@@ -62,7 +64,10 @@ export function getConfig(): t.Validation<IConfig> {
  * @throws validation errors found while parsing the application configuration
  */
 export function getConfigOrThrow(): IConfig {
-  return errorOrConfig.getOrElseL((errors) => {
-    throw new Error(`Invalid configuration: ${readableReport(errors)}`);
-  });
+  return pipe(
+    errorOrConfig,
+    E.getOrElseW((errors) => {
+      throw new Error(`Invalid configuration: ${readableReport(errors)}`);
+    })
+  );
 }

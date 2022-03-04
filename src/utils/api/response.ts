@@ -1,7 +1,7 @@
 import { fromNullable, none } from "fp-ts/lib/Option";
 import { fromPredicate, toError } from "fp-ts/lib/Either";
-import { DeferredPromise } from "italia-ts-commons/lib/promises";
-import { Millisecond } from "italia-ts-commons/lib/units";
+import { DeferredPromise } from "@pagopa/ts-commons//lib/promises";
+import { Millisecond } from "@pagopa/ts-commons//lib/units";
 import {
   UNKNOWN,
   GENERIC_STATUS,
