@@ -12,10 +12,8 @@ import {
 } from "../features/payment/models/responseOutcome";
 import { getCheckData, getEmailInfo, getWallet } from "../utils/api/apiService";
 import { callServices } from "../utils/api/response";
-import {
-  mixpanel,
-  PAYMENT_OUTCOME_CODE,
-} from "../utils/config/pmMixpanelHelperInit";
+import { mixpanel } from "../utils/config/mixpanelHelperInit";
+import { PAYMENT_OUTCOME_CODE } from "../utils/config/mixpanelDefs";
 import { onBrowserUnload } from "../utils/eventListeners";
 import { moneyFormat } from "../utils/form/formatters";
 import {
