@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 
 function FieldContainer(props: {
   title: string;
-  body: string | number;
+  body: string | number | undefined;
   icon?: React.ReactNode;
   flexDirection?: "row" | "column";
   titleVariant?: "body2" | "sidenav";

@@ -91,7 +91,7 @@ export default function PaymentSummaryPage() {
     >
       <FieldContainer
         title="paymentSummaryPage.creditor"
-        body={paymentInfo.enteBeneficiario.denominazioneBeneficiario}
+        body={paymentInfo.enteBeneficiario?.denominazioneBeneficiario}
         icon={<AccountBalanceIcon color="primary" sx={{ ml: 3 }} />}
       />
       <FieldContainer
@@ -109,7 +109,7 @@ export default function PaymentSummaryPage() {
           {t("paymentSummaryPage.cf")}
         </Typography>
         <Typography variant="sidenav" component={"div"}>
-          {paymentInfo.enteBeneficiario.identificativoUnivocoBeneficiario}
+          {paymentInfo.enteBeneficiario?.identificativoUnivocoBeneficiario}
         </Typography>
       </Box>
 
@@ -132,7 +132,11 @@ export default function PaymentSummaryPage() {
           }}
         />
       )}
-      <ReCAPTCHA ref={ref} size="invisible" sitekey={getReCaptchaKey()} />
+      <ReCAPTCHA
+        ref={ref}
+        size="invisible"
+        sitekey={getReCaptchaKey() as string}
+      />
     </PageContainer>
   );
 }
