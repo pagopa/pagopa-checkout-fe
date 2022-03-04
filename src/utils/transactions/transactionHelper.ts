@@ -28,8 +28,8 @@ import {
   TRANSACTION_RESUMEXPAY_SVR_ERR,
   TRANSACTION_RESUMEXPAY_SUCCESS,
   TRANSACTION_RESUMEXPAY_RESP_ERR,
-  mixpanel,
-} from "../config/pmMixpanelHelperInit";
+} from "../config/mixpanelDefs";
+import { mixpanel } from "../config/mixpanelHelperInit";
 import { UNKNOWN } from "./TransactionStatesTypes";
 
 export const getXpay3DSResponseFromUrl = (): TaskEither<
