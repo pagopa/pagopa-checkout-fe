@@ -1,6 +1,8 @@
 /* eslint-disable functional/immutable-data */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/restrict-plus-operands */
+import * as E from "fp-ts/Either";
+import { pipe } from "fp-ts/function";
 import { Box, Button, CircularProgress, Typography } from "@mui/material";
 import { default as React, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -63,9 +65,10 @@ export default function PaymentCheckPage() {
     };
 
     const showFinalResult = (outcome: OutcomeEnumType) => {
-      const viewOutcome: ViewOutcomeEnum = ViewOutcomeEnumType.decode(
-        outcome
-      ).getOrElse(ViewOutcomeEnum.GENERIC_ERROR);
+      const viewOutcome: ViewOutcomeEnum = pipe(
+        ViewOutcomeEnumType.decode(outcome),
+        E.getOrElse(() => ViewOutcomeEnum.GENERIC_ERROR as ViewOutcomeEnum)
+      );
       const message = responseOutcome[viewOutcome];
       setOutcomeMessage(message);
       setLoading(false);

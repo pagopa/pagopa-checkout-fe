@@ -1,5 +1,6 @@
-import { fromPredicate, toError } from "fp-ts/lib/Either";
+import * as E from "fp-ts/Either";
 import * as t from "io-ts";
+import { pipe } from "fp-ts/function";
 import { enumType } from "@pagopa/ts-commons/lib/types";
 
 export enum OutcomeEnum {
@@ -218,20 +219,29 @@ export const getOutcomeFromAuthcodeAndIsDirectAcquirer = (
   authCode?: string,
   isDirectAcquirer?: boolean
 ): OutcomeEnumType =>
-  fromPredicate(
-    (directAcquirer) => directAcquirer === true,
-    toError
-  )(isDirectAcquirer).fold(
-    () =>
-      getOutcomeFromVposStatus(
-        VposResultCodeEnumType.decode(authCode).getOrElse(
-          VposResultCodeEnum.UNKNOWN_ERROR
+  pipe(
+    E.fromPredicate(
+      (directAcquirer) => directAcquirer === true,
+      E.toError
+    )(isDirectAcquirer),
+    E.fold(
+      () =>
+        getOutcomeFromVposStatus(
+          pipe(
+            VposResultCodeEnumType.decode(authCode),
+            E.getOrElse(
+              () => VposResultCodeEnum.UNKNOWN_ERROR as VposResultCodeEnum
+            )
+          )
+        ),
+      () =>
+        getOutcomeFromNexiResultCode(
+          pipe(
+            NexiResultCodeEnumType.decode(authCode),
+            E.getOrElse(
+              () => NexiResultCodeEnum.GENERIC_ERROR as NexiResultCodeEnum
+            )
+          )
         )
-      ),
-    () =>
-      getOutcomeFromNexiResultCode(
-        NexiResultCodeEnumType.decode(authCode).getOrElse(
-          NexiResultCodeEnum.GENERIC_ERROR
-        )
-      )
+    )
   );
