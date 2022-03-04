@@ -1,6 +1,7 @@
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { Box, CircularProgress } from "@mui/material";
 import React from "react";
+import ReCAPTCHA from "react-google-recaptcha";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { RptId } from "../../generated/definitions/payment-activations-api/RptId";
@@ -11,7 +12,11 @@ import {
   PaymentFormFields,
   PaymentInfo,
 } from "../features/payment/models/paymentModel";
-import { setPaymentInfo, setRptId } from "../utils/api/apiService";
+import {
+  getReCaptchaKey,
+  setPaymentInfo,
+  setRptId,
+} from "../utils/api/apiService";
 import { getPaymentInfoTask } from "../utils/api/helper";
 
 export default function PaymentQrPage() {
@@ -21,6 +26,7 @@ export default function PaymentQrPage() {
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
+  const ref = React.useRef(null);
 
   const onError = (m: string) => {
     setLoading(false);
@@ -28,11 +34,12 @@ export default function PaymentQrPage() {
     setErrorModalOpen(true);
   };
 
-  const onSubmit = React.useCallback((notice: PaymentFormFields) => {
+  const onSubmit = React.useCallback(async (notice: PaymentFormFields) => {
     const rptId: RptId = `${notice.cf}${notice.billCode}`;
     setLoading(true);
+    const token = await (ref.current as any).executeAsync();
 
-    void getPaymentInfoTask(rptId, "")
+    void getPaymentInfoTask(rptId, token)
       .fold(onError, (paymentInfo) => {
         setPaymentInfo(paymentInfo as PaymentInfo);
         setRptId(notice);
@@ -105,6 +112,13 @@ export default function PaymentQrPage() {
           }}
         />
       )}
+      <Box display="none">
+        <ReCAPTCHA
+          ref={ref}
+          size="invisible"
+          sitekey={getReCaptchaKey() as string}
+        />
+      </Box>
     </PageContainer>
   );
 }

@@ -3,10 +3,11 @@ import EuroIcon from "@mui/icons-material/Euro";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import { Box, Typography } from "@mui/material";
 import React from "react";
+import ReCAPTCHA from "react-google-recaptcha";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router";
-import { PaymentRequestsGetResponse } from "../../generated/definitions/payment-transactions-api/PaymentRequestsGetResponse";
-import { RptId } from "../../generated/definitions/payment-transactions-api/RptId";
+import { PaymentRequestsGetResponse } from "../../generated/definitions/payment-activations-api/PaymentRequestsGetResponse";
+import { RptId } from "../../generated/definitions/payment-activations-api/RptId";
 import { FormButtons } from "../components/FormButtons/FormButtons";
 import ErrorModal from "../components/modals/ErrorModal";
 import PageContainer from "../components/PageContent/PageContainer";
@@ -14,6 +15,7 @@ import FieldContainer from "../components/TextFormField/FieldContainer";
 import {
   getNoticeInfo,
   getPaymentInfo,
+  getReCaptchaKey,
   setPaymentId,
 } from "../utils/api/apiService";
 import {
@@ -37,10 +39,13 @@ export default function PaymentSummaryPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
+
   const currentPath = location.pathname.split("/")[1];
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
+  const ref = React.useRef(null);
+
   const paymentInfo = getPaymentInfo();
   const noticeInfo = getNoticeInfo();
 
@@ -50,16 +55,19 @@ export default function PaymentSummaryPage() {
     setErrorModalOpen(true);
   };
 
-  const onSubmit = React.useCallback(() => {
+  const onSubmit = React.useCallback(async () => {
     const rptId: RptId = `${noticeInfo.cf}${noticeInfo.billCode}`;
     setLoading(true);
+    const token = await (ref.current as any).executeAsync();
+
     PaymentRequestsGetResponse.decode(paymentInfo).fold(
       () => onError(""),
       async (paymentInfo) =>
         await activePaymentTask(
           paymentInfo.importoSingoloVersamento,
           paymentInfo.codiceContestoPagamento,
-          rptId
+          rptId,
+          token
         )
           .fold(onError, () => {
             void pollingActivationStatus(
@@ -74,7 +82,7 @@ export default function PaymentSummaryPage() {
           })
           .run()
     );
-  }, []);
+  }, [ref]);
 
   return (
     <PageContainer
@@ -83,7 +91,7 @@ export default function PaymentSummaryPage() {
     >
       <FieldContainer
         title="paymentSummaryPage.creditor"
-        body={paymentInfo.enteBeneficiario.denominazioneBeneficiario}
+        body={paymentInfo.enteBeneficiario?.denominazioneBeneficiario}
         icon={<AccountBalanceIcon color="primary" sx={{ ml: 3 }} />}
       />
       <FieldContainer
@@ -101,7 +109,7 @@ export default function PaymentSummaryPage() {
           {t("paymentSummaryPage.cf")}
         </Typography>
         <Typography variant="sidenav" component={"div"}>
-          {paymentInfo.enteBeneficiario.identificativoUnivocoBeneficiario}
+          {paymentInfo.enteBeneficiario?.identificativoUnivocoBeneficiario}
         </Typography>
       </Box>
 
@@ -124,6 +132,13 @@ export default function PaymentSummaryPage() {
           }}
         />
       )}
+      <Box display="none">
+        <ReCAPTCHA
+          ref={ref}
+          size="invisible"
+          sitekey={getReCaptchaKey() as string}
+        />
+      </Box>
     </PageContainer>
   );
 }

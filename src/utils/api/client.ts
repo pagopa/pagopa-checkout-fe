@@ -5,11 +5,12 @@ import {
   toFetch,
 } from "italia-ts-commons/lib/fetch";
 import { Millisecond } from "italia-ts-commons/lib/units";
-import { createClient } from "../../../generated/definitions/payment-transactions-api/client";
+import { createClient } from "../../../generated/definitions/payment-activations-api/client";
 import { createClient as createPmClient } from "../../../generated/definitions/payment-manager-api/client";
+import { createClient as createTransactionsClient } from "../../../generated/definitions/payment-transactions-api/client";
 import { getConfig } from "../config/config";
-import { getConfigOrThrow } from "../config/pmConfig";
 import { retryingFetch } from "../config/fetch";
+import { getConfigOrThrow } from "../config/pmConfig";
 
 // Must be an https endpoint so we use an https agent
 const abortableFetch = AbortableFetch(agent.getHttpFetch(process.env));
@@ -25,7 +26,7 @@ const fetchApi: typeof fetchWithTimeout =
 
 export const apiClient = createClient({
   baseUrl: getConfig("IO_PAY_PORTAL_API_HOST") as string,
-  basePath: "/checkout/payments/v1",
+  basePath: getConfig("IO_PAY_PORTAL_API_BASEPATH") as string,
   fetchApi,
 });
 
@@ -38,7 +39,7 @@ export const pmClient = createPmClient({
   fetchApi: retryingFetch(fetch, conf.IO_PAY_API_TIMEOUT as Millisecond, 3),
 });
 
-export const iopayportalClient = createClient({
+export const iopayportalClient = createTransactionsClient({
   baseUrl: conf.IO_PAY_FUNCTIONS_HOST,
   basePath: getConfig("IO_PAY_PORTAL_API_BASEPATH") as string,
   fetchApi: retryingFetch(fetch, conf.IO_PAY_API_TIMEOUT as Millisecond, 3),
