@@ -195,6 +195,8 @@ export const TRANSLATIONS_IT = {
     description:
       "Assicurati di avere una buona illuminazione. Se il codice non è a fuoco, prova ad allontanarlo leggermente dallo schermo.",
     navigate: "Non funziona? Inserisci manualmente",
+    camBlocked:
+      "Abbiamo bisogno del tuo consenso per utilizzare la fotocamera. Per modificare la tua scelta, visita le impostazioni Privacy del tuo browser",
   },
   paymentCheckPage: {
     total: "Totale",
