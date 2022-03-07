@@ -290,7 +290,7 @@ export const getPaymentCheckData = async ({
   void pipe(
     O.fromNullable(idPayment),
     O.fold(
-      // If undefined
+      () => undefined,
       async () =>
         await pipe(
           TE.tryCatch(
@@ -361,8 +361,7 @@ export const getPaymentCheckData = async ({
               );
             }
           )
-        )(),
-      () => undefined
+        )()
     )
   );
 };
