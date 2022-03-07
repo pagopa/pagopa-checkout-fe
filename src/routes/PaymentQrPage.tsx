@@ -1,5 +1,5 @@
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { Alert, Box, CircularProgress } from "@mui/material";
+import { Alert, Box, Button, CircularProgress } from "@mui/material";
 import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useTranslation } from "react-i18next";
@@ -49,6 +49,8 @@ export default function PaymentQrPage() {
       .run();
   }, []);
 
+  const reloadPage = () => window.location.reload();
+
   const getPageBody = React.useCallback(() => {
     if (loading) {
       return (
@@ -77,9 +79,18 @@ export default function PaymentQrPage() {
           <Box
             sx={{
               whiteSpace: "break-spaces",
+              display: "flex",
+              flexDirection: "column",
             }}
           >
             {t("paymentQrPage.camBlocked")}
+            <Button
+              variant="text"
+              onClick={reloadPage}
+              sx={{ mt: 1, p: 0, alignSelf: "start" }}
+            >
+              {t("paymentQrPage.reloadPage")}
+            </Button>
           </Box>
         </Alert>
       );

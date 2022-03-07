@@ -197,6 +197,7 @@ export const TRANSLATIONS_IT = {
     navigate: "Non funziona? Inserisci manualmente",
     camBlocked:
       "Abbiamo bisogno del tuo consenso per utilizzare la fotocamera. Per modificare la tua scelta, visita le impostazioni Privacy del tuo browser",
+    reloadPage: "Ricarica la pagina",
   },
   paymentCheckPage: {
     total: "Totale",
