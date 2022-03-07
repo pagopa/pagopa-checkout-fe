@@ -83,20 +83,29 @@ export default function PaymentSummaryPage() {
           rptId,
           token
         )
-          .fold(onError, () => {
-            void pollingActivationStatus(
-              paymentInfo.codiceContestoPagamento,
-              getConfig("IO_PAY_PORTAL_PAY_WL_POLLING_ATTEMPTS") as number,
-              (res) => {
-                setPaymentId(res);
-                setLoading(false);
-                navigate(`/${currentPath}/email`);
-              }
-            );
-          })
+          .fold(
+            () => onError(ErrorsType.STATUS_ERROR),
+            () => {
+              void pollingActivationStatus(
+                paymentInfo.codiceContestoPagamento,
+                getConfig("IO_PAY_PORTAL_PAY_WL_POLLING_ATTEMPTS") as number,
+                (res) => {
+                  setPaymentId(res);
+                  setLoading(false);
+                  navigate(`/${currentPath}/email`);
+                },
+                onError
+              );
+            }
+          )
           .run()
     );
   }, [ref]);
+
+  const onRetry = React.useCallback(async () => {
+    setErrorModalOpen(false);
+    await onSubmit();
+  }, []);
 
   return (
     <PageContainer
@@ -144,6 +153,7 @@ export default function PaymentSummaryPage() {
           onClose={() => {
             setErrorModalOpen(false);
           }}
+          onRetry={onRetry}
         />
       )}
       <Box display="none">

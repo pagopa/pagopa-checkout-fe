@@ -238,7 +238,8 @@ export const getActivationStatusTask = (
 export const pollingActivationStatus = async (
   paymentNoticeCode: CodiceContestoPagamento,
   attempts: number,
-  onResponse: (activationResponse: { idPagamento: any }) => void
+  onResponse: (activationResponse: { idPagamento: any }) => void,
+  onError: (e: string) => void
 ): Promise<void> => {
   await getActivationStatusTask(paymentNoticeCode)
     .fold(() => {
@@ -249,9 +250,10 @@ export const pollingActivationStatus = async (
             getConfig("IO_PAY_PORTAL_PAY_WL_POLLING_INTERVAL") as Millisecond,
             paymentNoticeCode,
             --attempts, // eslint-disable-line no-param-reassign,
-            onResponse
+            onResponse,
+            onError
           )
-        : () => {}; // TODO Error Intereptor
+        : onError(ErrorsType.TIMEOUT);
     }, onResponse)
     .run();
 };

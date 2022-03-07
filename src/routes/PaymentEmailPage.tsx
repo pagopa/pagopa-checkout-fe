@@ -3,6 +3,7 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { CancelPayment } from "../components/modals/CancelPayment";
+import ErrorModal from "../components/modals/ErrorModal";
 import PageContainer from "../components/PageContent/PageContainer";
 import { PaymentEmailForm } from "../features/payment/components/PaymentEmailForm/PaymentEmailForm";
 import { PaymentEmailFormFields } from "../features/payment/models/paymentModel";
@@ -27,6 +28,8 @@ export default function PaymentEmailPage() {
   const dispatch = useDispatch();
   const [cancelModalOpen, setCancelModalOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
+  const [errorModalOpen, setErrorModalOpen] = React.useState(false);
+  const [error, setError] = React.useState("");
 
   const onBrowserBackEvent = (e: any) => {
     e.preventDefault();
@@ -38,8 +41,10 @@ export default function PaymentEmailPage() {
     navigate(`/${currentPath}/cancelled`);
   };
 
-  const onError = () => {
+  const onError = (m: string) => {
     setLoading(false);
+    setError(m);
+    setErrorModalOpen(true);
   };
 
   const onCancelPaymentSubmit = () => {
@@ -75,33 +80,46 @@ export default function PaymentEmailPage() {
     return () => window.removeEventListener("popstate", onBrowserBackEvent);
   }, [checkData.idPayment]);
 
-  return loading ? (
-    <Box
-      display="flex"
-      flexDirection="column"
-      justifyContent="center"
-      alignItems="center"
-      my={10}
-    >
-      <CircularProgress />
-    </Box>
-  ) : (
-    <PageContainer
-      title="paymentEmailPage.title"
-      description="paymentEmailPage.description"
-    >
-      <Box sx={{ mt: 6 }}>
-        <PaymentEmailForm
-          onCancel={() => setCancelModalOpen(true)}
-          onSubmit={onSubmit}
-          defaultValues={emailInfo}
+  return (
+    <>
+      {loading ? (
+        <Box
+          display="flex"
+          flexDirection="column"
+          justifyContent="center"
+          alignItems="center"
+          my={10}
+        >
+          <CircularProgress />
+        </Box>
+      ) : (
+        <PageContainer
+          title="paymentEmailPage.title"
+          description="paymentEmailPage.description"
+        >
+          <Box sx={{ mt: 6 }}>
+            <PaymentEmailForm
+              onCancel={() => setCancelModalOpen(true)}
+              onSubmit={onSubmit}
+              defaultValues={emailInfo}
+            />
+          </Box>
+          <CancelPayment
+            open={cancelModalOpen}
+            onCancel={onCancel}
+            onSubmit={onCancelPaymentSubmit}
+          />
+        </PageContainer>
+      )}
+      {!!error && (
+        <ErrorModal
+          error={error}
+          open={errorModalOpen}
+          onClose={() => {
+            setErrorModalOpen(false);
+          }}
         />
-      </Box>
-      <CancelPayment
-        open={cancelModalOpen}
-        onCancel={onCancel}
-        onSubmit={onCancelPaymentSubmit}
-      />
-    </PageContainer>
+      )}
+    </>
   );
 }
