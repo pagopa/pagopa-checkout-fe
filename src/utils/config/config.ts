@@ -32,6 +32,16 @@ const errorOrConfig: t.Validation<IConfig> = IConfig.decode({
     (window as any)._env_.CHECKOUT_API_TIMEOUT,
     10
   ),
+  CHECKOUT_POLLING_ACTIVATION_INTERVAL: parseInt(
+    // eslint-disable-next-line no-underscore-dangle
+    (window as any)._env_.CHECKOUT_POLLING_ACTIVATION_INTERVAL,
+    10
+  ),
+  CHECKOUT_POLLING_ACTIVATION_ATTEMPTS: parseInt(
+    // eslint-disable-next-line no-underscore-dangle
+    (window as any)._env_.CHECKOUT_POLLING_ACTIVATION_ATTEMPTS,
+    10
+  ),
 });
 
 /**
