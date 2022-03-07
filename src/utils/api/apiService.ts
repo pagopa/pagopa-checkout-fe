@@ -10,7 +10,7 @@ import { getConfig } from "../config/config";
 import { loadState, SessionItems } from "../storage/sessionStorage";
 
 export function getReCaptchaKey() {
-  return getConfig("IO_PAY_PORTAL_SITE_KEY");
+  return getConfig("CHECKOUT_RECAPTCHA_SITE_KEY");
 }
 
 export function getNoticeInfo() {

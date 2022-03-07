@@ -16,7 +16,7 @@ import { getConfigOrThrow } from "../config/pmConfig";
 const abortableFetch = AbortableFetch(agent.getHttpFetch(process.env));
 const fetchWithTimeout = toFetch(
   setFetchTimeout(
-    getConfig("IO_PAY_PORTAL_API_REQUEST_TIMEOUT") as Millisecond,
+    getConfig("CHECKOUT_API_TIMEOUT") as Millisecond,
     abortableFetch
   )
 );
@@ -25,8 +25,8 @@ const fetchApi: typeof fetchWithTimeout =
   fetch as any as typeof fetchWithTimeout;
 
 export const apiClient = createClient({
-  baseUrl: getConfig("IO_PAY_PORTAL_API_HOST") as string,
-  basePath: getConfig("IO_PAY_PORTAL_API_BASEPATH") as string,
+  baseUrl: getConfig("CHECKOUT_PAGOPA_APIM_HOST") as string,
+  basePath: getConfig("CHECKOUT_API_PAYMENT_ACTIVATIONS_BASEPATH") as string,
   fetchApi,
 });
 
@@ -41,6 +41,6 @@ export const pmClient = createPmClient({
 
 export const iopayportalClient = createTransactionsClient({
   baseUrl: conf.IO_PAY_FUNCTIONS_HOST,
-  basePath: getConfig("IO_PAY_PORTAL_API_BASEPATH") as string,
+  basePath: getConfig("CHECKOUT_API_PAYMENT_ACTIVATIONS_BASEPATH") as string,
   fetchApi: retryingFetch(fetch, conf.IO_PAY_API_TIMEOUT as Millisecond, 3),
 });

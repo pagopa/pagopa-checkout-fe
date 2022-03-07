@@ -246,7 +246,7 @@ export const pollingActivationStatus = async (
       attempts > 0
         ? setTimeout(
             pollingActivationStatus,
-            getConfig("IO_PAY_PORTAL_PAY_WL_POLLING_INTERVAL") as Millisecond,
+            getConfig("CHECKOUT_POLLING_ACTIVATION_INTERVAL") as Millisecond,
             paymentNoticeCode,
             --attempts, // eslint-disable-line no-param-reassign,
             onResponse

@@ -2,17 +2,16 @@ import { NonEmptyString } from "italia-ts-commons/lib/strings";
 import { Millisecond } from "italia-ts-commons/lib/units";
 
 export interface IConfig {
-  IO_PAY_PORTAL_API_HOST: string;
-  IO_PAY_PORTAL_API_REQUEST_TIMEOUT: Millisecond;
-  IO_PAY_PORTAL_PAY_WL_POLLING_INTERVAL: Millisecond;
-  IO_PAY_PORTAL_PAY_WL_POLLING_ATTEMPTS: number;
-  IO_PAY_PORTAL_ENV: string;
-  IO_PAY_PORTAL_SITE_KEY: string;
-  IO_PAY_PAYMENT_MANAGER_HOST: NonEmptyString;
-  IO_PAY_FUNCTIONS_HOST: NonEmptyString;
-  IO_PAY_API_TIMEOUT: number;
-  IO_PAY_ENV: NonEmptyString;
-  IO_PAY_PORTAL_API_BASEPATH: string;
+  CHECKOUT_PAGOPA_APIM_HOST: NonEmptyString;
+  CHECKOUT_API_PAYMENT_ACTIVATIONS_BASEPATH: NonEmptyString;
+  CHECKOUT_API_PAYMENT_TRANSACTIONS_BASEPATH: NonEmptyString;
+  CHECKOUT_PM_HOST: NonEmptyString;
+  CHECKOUT_PM_API_BASEPATH: NonEmptyString;
+  CHECKOUT_API_TIMEOUT: Millisecond;
+  CHECKOUT_POLLING_ACTIVATION_INTERVAL: Millisecond;
+  CHECKOUT_POLLING_ACTIVATION_ATTEMPTS: number;
+  CHECKOUT_ENV: NonEmptyString;
+  CHECKOUT_RECAPTCHA_SITE_KEY: NonEmptyString;
 }
 
 export function getConfig(param: keyof IConfig): string | Millisecond {

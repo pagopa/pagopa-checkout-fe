@@ -62,7 +62,7 @@ export default function PaymentSummaryPage() {
       const id = window.setTimeout(() => {
         setError(ErrorsType.POLLING_SLOW);
         setErrorModalOpen(true);
-      }, getConfig("IO_PAY_PORTAL_API_REQUEST_TIMEOUT") as number);
+      }, getConfig("CHECKOUT_API_TIMEOUT") as number);
       setTimeoutId(id);
     } else if (timeoutId) {
       window.clearTimeout(timeoutId);
@@ -86,7 +86,7 @@ export default function PaymentSummaryPage() {
           .fold(onError, () => {
             void pollingActivationStatus(
               paymentInfo.codiceContestoPagamento,
-              getConfig("IO_PAY_PORTAL_PAY_WL_POLLING_ATTEMPTS") as number,
+              getConfig("CHECKOUT_POLLING_ACTIVATION_ATTEMPTS") as number,
               (res) => {
                 setPaymentId(res);
                 setLoading(false);

@@ -4,10 +4,10 @@
 echo "window._env_ = {" > ./src/env-config.js
 
 # Loop on environment variables prefixed with
-# io_pay_portal_var and add them to env-config.js
-for io_pay_portal_var in $(env | grep -i io_pay); do
-    varname=$(printf '%s\n' "$io_pay_portal_var" | sed -e 's/=.*//')
-    varvalue=$(printf '%s\n' "$io_pay_portal_var" | sed -e 's/^[^=]*=//')
+# checkout_var and add them to env-config.js
+for checkout_var in $(env | grep -i checkout); do
+    varname=$(printf '%s\n' "$checkout_var" | sed -e 's/=.*//')
+    varvalue=$(printf '%s\n' "$checkout_var" | sed -e 's/^[^=]*=//')
 
     echo "  $varname: \"$varvalue\"," >> ./src/env-config.js
 done
