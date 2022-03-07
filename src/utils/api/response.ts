@@ -31,7 +31,6 @@ import {
   start3DS2MethodStep,
 } from "../iframe/iframe";
 
-import { getConfigOrThrow } from "../config/pmConfig";
 import {
   constantPollingWithPromisePredicateFetch,
   retryingFetch,
@@ -43,6 +42,7 @@ import {
 } from "../../../generated/definitions/payment-manager-api/client";
 
 import { getUrlParameter } from "../regex/urlUtilities";
+import { getConfigOrThrow } from "../config/config";
 
 const config = getConfigOrThrow();
 /**
@@ -50,14 +50,14 @@ const config = getConfigOrThrow();
  */
 const retries: number = 10;
 const delay: number = 3000;
-const timeout: Millisecond = config.IO_PAY_API_TIMEOUT as Millisecond;
+const timeout: Millisecond = config.CHECKOUT_API_TIMEOUT as Millisecond;
 
 /**
  * Payment Manager Client with polling until the transaction has the methodUrl or xpayHtml
  * or acsUrl and it is in a non final state.
  */
 const paymentManagerClientWithPolling: Client = createPmClient({
-  baseUrl: config.IO_PAY_PAYMENT_MANAGER_HOST,
+  baseUrl: config.CHECKOUT_PM_HOST,
   fetchApi: constantPollingWithPromisePredicateFetch(
     DeferredPromise<boolean>().e1,
     retries,
@@ -78,7 +78,7 @@ const paymentManagerClientWithPolling: Client = createPmClient({
  * Payment Manager Client with polling until the transaction is in a final state.
  */
 const paymentManagerClientWithPollingOnFinalStatus: Client = createPmClient({
-  baseUrl: config.IO_PAY_PAYMENT_MANAGER_HOST,
+  baseUrl: config.CHECKOUT_PM_HOST,
   fetchApi: constantPollingWithPromisePredicateFetch(
     DeferredPromise<boolean>().e1,
     retries,
@@ -95,7 +95,7 @@ const paymentManagerClientWithPollingOnFinalStatus: Client = createPmClient({
  * Payment Manager Client.
  */
 const pmClient: Client = createPmClient({
-  baseUrl: config.IO_PAY_PAYMENT_MANAGER_HOST,
+  baseUrl: config.CHECKOUT_PM_HOST,
   fetchApi: retryingFetch(fetch, timeout as Millisecond, 5),
 });
 
@@ -124,7 +124,7 @@ export const callServices = async (
       fromPredicate<Error, MessageEvent<any>>(
         // Addresses must be static
         (e1) =>
-          e1.origin === config.IO_PAY_FUNCTIONS_HOST &&
+          e1.origin === config.CHECKOUT_PAGOPA_APIM_HOST &&
           e1.data === "3DS.Notification.Received",
         toError
       )(e).fold(

@@ -8,39 +8,45 @@ import { Millisecond } from "italia-ts-commons/lib/units";
 import { createClient } from "../../../generated/definitions/payment-activations-api/client";
 import { createClient as createPmClient } from "../../../generated/definitions/payment-manager-api/client";
 import { createClient as createTransactionsClient } from "../../../generated/definitions/payment-transactions-api/client";
-import { getConfig } from "../config/config";
+import { getConfigOrThrow } from "../config/config";
 import { retryingFetch } from "../config/fetch";
-import { getConfigOrThrow } from "../config/pmConfig";
+
+const conf = getConfigOrThrow();
 
 // Must be an https endpoint so we use an https agent
 const abortableFetch = AbortableFetch(agent.getHttpFetch(process.env));
 const fetchWithTimeout = toFetch(
-  setFetchTimeout(
-    getConfig("CHECKOUT_API_TIMEOUT") as Millisecond,
-    abortableFetch
-  )
+  setFetchTimeout(conf.CHECKOUT_API_TIMEOUT as Millisecond, abortableFetch)
 );
 // tslint:disable-next-line: no-any
 const fetchApi: typeof fetchWithTimeout =
   fetch as any as typeof fetchWithTimeout;
 
-export const apiClient = createClient({
-  baseUrl: getConfig("CHECKOUT_PAGOPA_APIM_HOST") as string,
-  basePath: getConfig("CHECKOUT_API_PAYMENT_ACTIVATIONS_BASEPATH") as string,
+/**
+ * Api client for payment activations API
+ */
+export const apiPaymentActivationsClient = createClient({
+  baseUrl: conf.CHECKOUT_PAGOPA_APIM_HOST,
+  basePath: conf.CHECKOUT_API_PAYMENT_ACTIVATIONS_BASEPATH as string,
   fetchApi,
 });
 
-export type APIClient = typeof apiClient;
+export type APIClient = typeof apiPaymentActivationsClient;
 
-const conf = getConfigOrThrow();
-// This instance on PM Client calls the  of PM
+/**
+ * Api client for Payment Manager API
+ */
 export const pmClient = createPmClient({
-  baseUrl: conf.IO_PAY_PAYMENT_MANAGER_HOST,
-  fetchApi: retryingFetch(fetch, conf.IO_PAY_API_TIMEOUT as Millisecond, 3),
+  baseUrl: conf.CHECKOUT_PM_HOST,
+  basePath: conf.CHECKOUT_PM_API_BASEPATH,
+  fetchApi: retryingFetch(fetch, conf.CHECKOUT_API_TIMEOUT as Millisecond, 3),
 });
 
-export const iopayportalClient = createTransactionsClient({
-  baseUrl: conf.IO_PAY_FUNCTIONS_HOST,
-  basePath: getConfig("CHECKOUT_API_PAYMENT_ACTIVATIONS_BASEPATH") as string,
-  fetchApi: retryingFetch(fetch, conf.IO_PAY_API_TIMEOUT as Millisecond, 3),
+/**
+ * Api client for payment transactions API
+ */
+export const apiPaymentTransactionsClient = createTransactionsClient({
+  baseUrl: conf.CHECKOUT_PAGOPA_APIM_HOST,
+  basePath: conf.CHECKOUT_API_PAYMENT_ACTIVATIONS_BASEPATH as string,
+  fetchApi: retryingFetch(fetch, conf.CHECKOUT_API_TIMEOUT as Millisecond, 3),
 });

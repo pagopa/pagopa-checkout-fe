@@ -24,7 +24,7 @@ import {
   PaymentCheckData,
   Wallet as PaymentWallet,
 } from "../../features/payment/models/paymentModel";
-import { getConfig } from "../config/config";
+import { getConfigOrThrow } from "../config/config";
 import {
   PAYMENT_ACTIVATE_INIT,
   PAYMENT_ACTIVATE_NET_ERR,
@@ -87,7 +87,11 @@ import { ErrorsType } from "../errors/checkErrorsModel";
 import { PaymentSession } from "../sessionData/PaymentSession";
 import { WalletSession } from "../sessionData/WalletSession";
 import { getBrowserInfoTask, getEMVCompliantColorDepth } from "./checkHelper";
-import { apiClient, iopayportalClient, pmClient } from "./client";
+import {
+  apiPaymentActivationsClient,
+  apiPaymentTransactionsClient,
+  pmClient,
+} from "./client";
 
 export const getPaymentInfoTask = (
   rptId: RptId,
@@ -98,7 +102,7 @@ export const getPaymentInfoTask = (
       mixpanel.track(PAYMENT_VERIFY_INIT.value, {
         EVENT_ID: PAYMENT_VERIFY_INIT.value,
       });
-      return apiClient.getPaymentInfo({
+      return apiPaymentActivationsClient.getPaymentInfo({
         rptId,
         recaptchaResponse,
       });
@@ -149,7 +153,7 @@ export const activePaymentTask = (
       mixpanel.track(PAYMENT_ACTIVATE_INIT.value, {
         EVENT_ID: PAYMENT_ACTIVATE_INIT.value,
       });
-      return apiClient.activatePayment({
+      return apiPaymentActivationsClient.activatePayment({
         recaptchaResponse,
         body: {
           rptId,
@@ -202,7 +206,7 @@ export const getActivationStatusTask = (
       mixpanel.track(PAYMENT_ACTIVATION_STATUS_INIT.value, {
         EVENT_ID: PAYMENT_ACTIVATION_STATUS_INIT.value,
       });
-      return apiClient.getActivationStatus({
+      return apiPaymentActivationsClient.getActivationStatus({
         codiceContestoPagamento: paymentContextCode,
       });
     },
@@ -246,7 +250,8 @@ export const pollingActivationStatus = async (
       attempts > 0
         ? setTimeout(
             pollingActivationStatus,
-            getConfig("CHECKOUT_POLLING_ACTIVATION_INTERVAL") as Millisecond,
+            getConfigOrThrow()
+              .CHECKOUT_POLLING_ACTIVATION_INTERVAL as Millisecond,
             paymentNoticeCode,
             --attempts, // eslint-disable-line no-param-reassign,
             onResponse
@@ -697,7 +702,7 @@ export const confirmPayment = async (
   onResponse: () => void
 ) => {
   const browserInfo = (
-    await getBrowserInfoTask(iopayportalClient).run()
+    await getBrowserInfoTask(apiPaymentTransactionsClient).run()
   ).getOrElse({
     ip: "",
     useragent: "",
