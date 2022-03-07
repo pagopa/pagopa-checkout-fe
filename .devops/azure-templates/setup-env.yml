@@ -21,16 +21,16 @@ parameters:
     default: ''
 
   - name: 'api_timeout'
-    type: string
-    default: '10000'
+    type: number
+    default: 10000
 
   - name: 'polling_activation_interval'
-    type: string
-    default: '6000'
+    type: number
+    default: 6000
 
   - name: 'polling_activation_attempts'
-    type: string
-    default: '15'
+    type: number
+    default: 15
 
   - name: 'env'
     type: string

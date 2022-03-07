@@ -68,12 +68,12 @@ stages:
           - template: azure-templates/setup-env.yml
             parameters:
               pagopa_apim_host: $(CHECKOUT_API_HOST_DEV)
-              polling_activation_interval: '6000'
-              polling_activation_attempts: '16'
+              polling_activation_interval: 6000
+              polling_activation_attempts: 16
               env: 'DEV'
               recaptcha_site_key: $(CHECKOUT_CAPTCHA_ID_DEV)
               api_payment_transactions_basepath: '/api/checkout/payment-transactions/v1'
-              api_timeout: '10000'
+              api_timeout: 10000
               api_payment_activations_basepath: '/checkout/payments/v1'
               pm_host: $(CHECKOUT_API_HOST_DEV)
               pm_api_basepath: '/payment-manager/'
@@ -174,12 +174,12 @@ stages:
           - template: azure-templates/setup-env.yml
             parameters:
               pagopa_apim_host: $(CHECKOUT_API_HOST_UAT)
-              polling_activation_interval: '6000'
-              polling_activation_attempts: '16'
+              polling_activation_interval: 6000
+              polling_activation_attempts: 16
               env: 'UAT'
               recaptcha_site_key: $(CHECKOUT_CAPTCHA_ID_UAT)
               api_payment_transactions_basepath: $(CHECKOUT_API_HOST_UAT)
-              api_timeout: '10000'
+              api_timeout: 10000
               api_payment_activations_basepath: '/checkout/payments/v1'
               pm_host: ''
               pm_api_basepath: ''
@@ -265,12 +265,12 @@ stages:
           - template: azure-templates/setup-env.yml
             parameters:
               pagopa_apim_host: $(CHECKOUT_API_HOST_PROD)
-              polling_activation_interval: '6000'
-              polling_activation_attempts: '16'
+              polling_activation_interval: 6000
+              polling_activation_attempts: 16
               env: 'PROD'
               recaptcha_site_key: $(CHECKOUT_CAPTCHA_ID_PROD)
               api_payment_transactions_basepath: $(CHECKOUT_API_HOST_PROD)
-              api_timeout: '10000'
+              api_timeout: 10000
               api_payment_activations_basepath: '/checkout/payments/v1'
               pm_host: ''
               pm_api_basepath: ''
