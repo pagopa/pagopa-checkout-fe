@@ -16,6 +16,7 @@ trigger:
   branches:
     include:
     - main
+    - develop
 
 # Execute agents (jobs) on latest Ubuntu version.
 # To change OS for a specific, ovverride "pool" attribute inside the job definition
