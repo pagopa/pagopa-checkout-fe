@@ -124,6 +124,10 @@ export const TRANSLATIONS_IT = {
     help: "Contatta l'assistenza",
     close: "Chiudi",
   },
+  POLLING_SLOW: {
+    title: "Spiacenti, l’Ente sta impiegando più tempo del previsto...",
+    body: "Ti preghiamo di attendere un paio di minuti al massimo senza ricare la pagina nel frattempo.",
+  },
   ERRORE_EC: {
     title: "Spiacenti, l’Ente Creditore sta avendo problemi nella risposta",
     buttons: {
