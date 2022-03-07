@@ -55,15 +55,15 @@ steps:
     chmod +x env.sh && source env.sh
   
   env:
-    CHECKOUT_PAGOPA_APIM_HOST: ${{ parameters.checkout_pagopa_apim_host }}
-    CHECKOUT_API_PAYMENT_ACTIVATIONS_BASEPATH: ${{ parameters.checkout_api_payment_activations_basepath }}
-    CHECKOUT_API_PAYMENT_TRANSACTIONS_BASEPATH: ${{ parameters.checkout_api_payment_transactions_basepath }}
-    CHECKOUT_PM_HOST: ${{ parameters.checkout_pm_host }}
-    CHECKOUT_PM_API_BASEPATH: ${{ parameters.checkout_pm_api_basepath }}
-    CHECKOUT_API_TIMEOUT: ${{ parameters.checkout_api_timeout }}
-    CHECKOUT_POLLING_ACTIVATION_INTERVAL: ${{ parameters.checkout_polling_activation_interval }}
-    CHECKOUT_POLLING_ACTIVATION_ATTEMPTS: ${{ parameters.checkout_polling_activation_attempts }}
-    CHECKOUT_ENV: ${{ parameters.checkout_env }}
-    CHECKOUT_RECAPTCHA_SITE_KEY: ${{ parameters.checkout_recaptcha_site_key }}
+    CHECKOUT_PAGOPA_APIM_HOST: ${{ parameters.pagopa_apim_host }}
+    CHECKOUT_API_PAYMENT_ACTIVATIONS_BASEPATH: ${{ parameters.api_payment_activations_basepath }}
+    CHECKOUT_API_PAYMENT_TRANSACTIONS_BASEPATH: ${{ parameters.api_payment_transactions_basepath }}
+    CHECKOUT_PM_HOST: ${{ parameters.pm_host }}
+    CHECKOUT_PM_API_BASEPATH: ${{ parameters.pm_api_basepath }}
+    CHECKOUT_API_TIMEOUT: ${{ parameters.api_timeout }}
+    CHECKOUT_POLLING_ACTIVATION_INTERVAL: ${{ parameters.polling_activation_interval }}
+    CHECKOUT_POLLING_ACTIVATION_ATTEMPTS: ${{ parameters.polling_activation_attempts }}
+    CHECKOUT_ENV: ${{ parameters.env }}
+    CHECKOUT_RECAPTCHA_SITE_KEY: ${{ parameters.recaptcha_site_key }}
 
   displayName: 'Populate environment file'
