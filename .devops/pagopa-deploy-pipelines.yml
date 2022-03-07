@@ -68,7 +68,6 @@ stages:
           - template: azure-templates/setup-env.yml
             parameters:
               pagopa_apim_host: $(CHECKOUT_API_HOST_DEV)
-              request_timeout: '5000'
               polling_interval: '6000'
               polling_attempts: '16'
               env: 'DEV'
@@ -175,7 +174,6 @@ stages:
           - template: azure-templates/setup-env.yml
             parameters:
               pagopa_apim_host: $(CHECKOUT_API_HOST_UAT)
-              request_timeout: '5000'
               polling_interval: '6000'
               polling_attempts: '16'
               env: 'UAT'
@@ -267,7 +265,6 @@ stages:
           - template: azure-templates/setup-env.yml
             parameters:
               pagopa_apim_host: $(CHECKOUT_API_HOST_PROD)
-              request_timeout: '5000'
               polling_interval: '6000'
               polling_attempts: '16'
               env: 'PROD'
