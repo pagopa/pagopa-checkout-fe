@@ -76,7 +76,7 @@ stages:
               api_timeout: '10000'
               api_payment_activations_basepath: '/checkout/payments/v1'
               pm_host: $(CHECKOUT_API_HOST_DEV)
-              pm_api_basepath: ''
+              pm_api_basepath: '/payment-manager/'
 
           - script: |
               yarn build
