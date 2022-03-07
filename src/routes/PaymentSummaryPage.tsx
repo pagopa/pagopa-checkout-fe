@@ -45,7 +45,7 @@ export default function PaymentSummaryPage() {
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
-  const [timeoutId, setTimeoutId] = React.useState<NodeJS.Timeout>();
+  const [timeoutId, setTimeoutId] = React.useState<number>();
   const ref = React.useRef(null);
 
   const paymentInfo = getPaymentInfo();
@@ -59,7 +59,7 @@ export default function PaymentSummaryPage() {
 
   React.useEffect(() => {
     if (loading && !errorModalOpen) {
-      const id = setTimeout(() => {
+      const id = window.setTimeout(() => {
         setError(ErrorsType.POLLING_SLOW);
         setErrorModalOpen(true);
       }, getConfig("IO_PAY_PORTAL_API_REQUEST_TIMEOUT") as number);
