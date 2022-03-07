@@ -65,7 +65,7 @@ export default function PaymentSummaryPage() {
       }, getConfig("IO_PAY_PORTAL_API_REQUEST_TIMEOUT") as number);
       setTimeoutId(id);
     } else if (timeoutId) {
-      clearTimeout(timeoutId);
+      window.clearTimeout(timeoutId);
     }
   }, [loading, errorModalOpen]);
 
