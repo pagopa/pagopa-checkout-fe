@@ -2,7 +2,7 @@
  * Development server built as an express application,
  * able to run frontend (thanks to parcel-bundler) and an API server with json response example.
  *
- * Note: to run the development server must be set IO_PAY_PORTAL_API_HOST=http://localhost:1234
+ * Note: to run the development server must be set CHECKOUT_PAGOPA_APIM_HOST=http://localhost:1234
  */
 
 const express = require("express");
