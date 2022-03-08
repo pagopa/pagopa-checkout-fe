@@ -77,7 +77,7 @@ export default function PaymentSummaryPage() {
   const onSubmit = React.useCallback(async () => {
     const rptId: RptId = `${noticeInfo.cf}${noticeInfo.billCode}`;
     setLoading(true);
-    const token = await (ref.current as any).executeAsync();
+    // const token = await (ref.current as any).executeAsync();
 
     pipe(
       PaymentRequestsGetResponse.decode(paymentInfo),
@@ -88,8 +88,7 @@ export default function PaymentSummaryPage() {
             activePaymentTask(
               response.importoSingoloVersamento,
               response.codiceContestoPagamento,
-              rptId,
-              token
+              rptId
             ),
             TE.fold(
               () => async () => {

@@ -76,12 +76,14 @@ import { mixpanel } from "../config/mixpanelHelperInit";
 import { ErrorsType } from "../errors/checkErrorsModel";
 import { PaymentSession } from "../sessionData/PaymentSession";
 import { WalletSession } from "../sessionData/WalletSession";
+import { ImportoEuroCents } from "../../../generated/definitions/payment-transactions-api/ImportoEuroCents";
+import { CodiceContestoPagamento } from "../../../generated/definitions/payment-transactions-api/CodiceContestoPagamento";
+import { RptId } from "../../../generated/definitions/payment-transactions-api/RptId";
+import { PaymentActivationsPostResponse } from "../../../generated/definitions/payment-transactions-api/PaymentActivationsPostResponse";
+import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-activations-api/PaymentRequestsGetResponse";
+import { PaymentActivationsGetResponse } from "../../../generated/definitions/payment-activations-api/PaymentActivationsGetResponse";
+import { apiClient, iopayportalClient, pmClient } from "./client";
 import { getBrowserInfoTask, getEMVCompliantColorDepth } from "./checkHelper";
-import {
-  apiPaymentActivationsClient,
-  apiPaymentTransactionsClient,
-  pmClient,
-} from "./client";
 
 export const getPaymentInfoTask = (
   rptId: RptId,
