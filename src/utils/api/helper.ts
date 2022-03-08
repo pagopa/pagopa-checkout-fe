@@ -76,10 +76,10 @@ import { mixpanel } from "../config/mixpanelHelperInit";
 import { ErrorsType } from "../errors/checkErrorsModel";
 import { PaymentSession } from "../sessionData/PaymentSession";
 import { WalletSession } from "../sessionData/WalletSession";
-import { ImportoEuroCents } from "../../../generated/definitions/payment-transactions-api/ImportoEuroCents";
-import { CodiceContestoPagamento } from "../../../generated/definitions/payment-transactions-api/CodiceContestoPagamento";
+import { ImportoEuroCents } from "../../../generated/definitions/payment-activations-api/ImportoEuroCents";
+import { CodiceContestoPagamento } from "../../../generated/definitions/payment-activations-api/CodiceContestoPagamento";
 import { RptId } from "../../../generated/definitions/payment-transactions-api/RptId";
-import { PaymentActivationsPostResponse } from "../../../generated/definitions/payment-transactions-api/PaymentActivationsPostResponse";
+import { PaymentActivationsPostResponse } from "../../../generated/definitions/payment-activations-api/PaymentActivationsPostResponse";
 import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-activations-api/PaymentRequestsGetResponse";
 import { PaymentActivationsGetResponse } from "../../../generated/definitions/payment-activations-api/PaymentActivationsGetResponse";
 import { apiClient, iopayportalClient, pmClient } from "./client";
@@ -144,7 +144,8 @@ export const getPaymentInfoTask = (
 export const activePaymentTask = (
   amountSinglePayment: ImportoEuroCents,
   paymentContextCode: CodiceContestoPagamento,
-  rptId: RptId
+  rptId: RptId,
+  recaptchaResponse: string
 ): TE.TaskEither<string, PaymentActivationsPostResponse> =>
   pipe(
     TE.tryCatch(
@@ -153,6 +154,7 @@ export const activePaymentTask = (
           EVENT_ID: PAYMENT_ACTIVATE_INIT.value,
         });
         return apiClient.activatePayment({
+          recaptchaResponse,
           body: {
             rptId,
             importoSingoloVersamento: amountSinglePayment,

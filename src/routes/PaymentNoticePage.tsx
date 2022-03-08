@@ -43,22 +43,25 @@ export default function PaymentNoticePage() {
     setErrorModalOpen(true);
   };
 
-  const onSubmit = React.useCallback(async (notice: PaymentFormFields) => {
-    const rptId: RptId = `${notice.cf}${notice.billCode}`;
-    setLoading(true);
-    const token = await (ref.current as any).executeAsync();
+  const onSubmit = React.useCallback(
+    async (notice: PaymentFormFields) => {
+      const rptId: RptId = `${notice.cf}${notice.billCode}`;
+      setLoading(true);
+      const token = await (ref.current as any).executeAsync();
 
-    void pipe(
-      getPaymentInfoTask(rptId, token),
-      TE.mapLeft((err) => onError(err)),
-      TE.map((paymentInfo) => {
-        setPaymentInfo(paymentInfo as PaymentInfo);
-        setRptId(notice);
-        setLoading(false);
-        navigate(`/${currentPath}/summary`);
-      })
-    )();
-  }, []);
+      void pipe(
+        getPaymentInfoTask(rptId, token),
+        TE.mapLeft((err) => onError(err)),
+        TE.map((paymentInfo) => {
+          setPaymentInfo(paymentInfo as PaymentInfo);
+          setRptId(notice);
+          setLoading(false);
+          navigate(`/${currentPath}/summary`);
+        })
+      )();
+    },
+    [ref]
+  );
 
   const onCancel = () => {
     navigate(-1);

@@ -5,7 +5,7 @@ import {
   toFetch,
 } from "@pagopa/ts-commons/lib/fetch";
 import { Millisecond } from "@pagopa/ts-commons/lib/units";
-import { createClient } from "../../../generated/definitions/payment-transactions-api/client";
+import { createClient } from "../../../generated/definitions/payment-activations-api/client";
 import { createClient as createPmClient } from "../../../generated/definitions/payment-manager-api/client";
 import { createClient as createTransactionsClient } from "../../../generated/definitions/payment-transactions-api/client";
 import { getConfigOrThrow } from "../config/config";
