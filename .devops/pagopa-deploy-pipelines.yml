@@ -75,8 +75,8 @@ stages:
               api_payment_transactions_basepath: '/api/checkout/payment-transactions/v1'
               api_timeout: 10000
               api_payment_activations_basepath: '/checkout/payments/v1'
-              pm_host: $(CHECKOUT_API_HOST_DEV)
-              pm_api_basepath: '/payment-manager/pp-restapi/v4'
+              pm_host: 'https://acardste.vaservices.eu'
+              pm_api_basepath: '/pp-restapi/v4'
 
           - script: |
               yarn build
