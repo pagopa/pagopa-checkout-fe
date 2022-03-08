@@ -98,8 +98,7 @@ export default function PaymentSummaryPage() {
               () => async () => {
                 void pollingActivationStatus(
                   response.codiceContestoPagamento,
-                  getConfig("IO_PAY_PORTAL_PAY_WL_POLLING_ATTEMPTS") as number,
-
+                  config.CHECKOUT_POLLING_ACTIVATION_ATTEMPTS as number,
                   (res) => {
                     setPaymentId(res);
                     setLoading(false);

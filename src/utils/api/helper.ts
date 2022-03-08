@@ -82,7 +82,7 @@ import { RptId } from "../../../generated/definitions/payment-transactions-api/R
 import { PaymentActivationsPostResponse } from "../../../generated/definitions/payment-activations-api/PaymentActivationsPostResponse";
 import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-activations-api/PaymentRequestsGetResponse";
 import { PaymentActivationsGetResponse } from "../../../generated/definitions/payment-activations-api/PaymentActivationsGetResponse";
-import { apiClient, iopayportalClient, pmClient } from "./client";
+import { APIClient, apiPaymentActivationsClient, pmClient } from "./client";
 import { getBrowserInfoTask, getEMVCompliantColorDepth } from "./checkHelper";
 
 export const getPaymentInfoTask = (
@@ -95,7 +95,7 @@ export const getPaymentInfoTask = (
         mixpanel.track(PAYMENT_VERIFY_INIT.value, {
           EVENT_ID: PAYMENT_VERIFY_INIT.value,
         });
-        return apiClient.getPaymentInfo({
+        return apiPaymentActivationsClient.getPaymentInfo({
           rptId,
           recaptchaResponse,
         });
@@ -153,7 +153,7 @@ export const activePaymentTask = (
         mixpanel.track(PAYMENT_ACTIVATE_INIT.value, {
           EVENT_ID: PAYMENT_ACTIVATE_INIT.value,
         });
-        return apiClient.activatePayment({
+        return apiPaymentActivationsClient.activatePayment({
           recaptchaResponse,
           body: {
             rptId,
@@ -216,7 +216,7 @@ export const getActivationStatusTask = (
         mixpanel.track(PAYMENT_ACTIVATION_STATUS_INIT.value, {
           EVENT_ID: PAYMENT_ACTIVATION_STATUS_INIT.value,
         });
-        return apiClient.getActivationStatus({
+        return apiPaymentActivationsClient.getActivationStatus({
           codiceContestoPagamento: paymentContextCode,
         });
       },
@@ -261,7 +261,7 @@ export const pollingActivationStatus = async (
 ): Promise<void> => {
   await pipe(
     getActivationStatusTask(paymentNoticeCode),
-    TE.fold(() => {
+    TE.match(() => {
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       attempts > 0
         ? setTimeout(
@@ -769,7 +769,7 @@ export const confirmPayment = async (
   onResponse: () => void
 ) => {
   const browserInfo = await pipe(
-    getBrowserInfoTask(iopayportalClient),
+    getBrowserInfoTask(apiPaymentActivationsClient),
     TE.mapLeft(() => ({
       ip: "",
       useragent: "",
