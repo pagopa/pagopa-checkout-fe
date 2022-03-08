@@ -82,7 +82,11 @@ import { RptId } from "../../../generated/definitions/payment-transactions-api/R
 import { PaymentActivationsPostResponse } from "../../../generated/definitions/payment-activations-api/PaymentActivationsPostResponse";
 import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-activations-api/PaymentRequestsGetResponse";
 import { PaymentActivationsGetResponse } from "../../../generated/definitions/payment-activations-api/PaymentActivationsGetResponse";
-import { APIClient, apiPaymentActivationsClient, pmClient } from "./client";
+import {
+  apiPaymentTransactionsClient,
+  apiPaymentActivationsClient,
+  pmClient,
+} from "./client";
 import { getBrowserInfoTask, getEMVCompliantColorDepth } from "./checkHelper";
 
 export const getPaymentInfoTask = (
@@ -769,7 +773,7 @@ export const confirmPayment = async (
   onResponse: () => void
 ) => {
   const browserInfo = await pipe(
-    getBrowserInfoTask(apiPaymentActivationsClient),
+    getBrowserInfoTask(apiPaymentTransactionsClient),
     TE.mapLeft(() => ({
       ip: "",
       useragent: "",
