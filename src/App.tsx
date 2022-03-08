@@ -1,6 +1,7 @@
 import { createTheme, ThemeProvider } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
 import theme from "@pagopa/mui-italia/theme";
+import React from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Guard from "./components/commons/Guard";
 import { Layout } from "./components/commons/Layout";
