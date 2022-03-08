@@ -103,7 +103,7 @@ export default function PaymentSummaryPage() {
                   (res) => {
                     setPaymentId(res);
                     setLoading(false);
-                    navigate(`/${currentPath}/paymentchoice`);
+                    navigate(`/${currentPath}/email`);
                   }
                 );
               }
