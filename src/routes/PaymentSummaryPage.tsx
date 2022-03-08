@@ -22,9 +22,11 @@ import {
   activePaymentTask,
   pollingActivationStatus,
 } from "../utils/api/helper";
-import { getConfig } from "../utils/config/config";
+import { getConfigOrThrow } from "../utils/config/config";
 import { ErrorsType } from "../utils/errors/checkErrorsModel";
 import { moneyFormat } from "../utils/form/formatters";
+
+const config = getConfigOrThrow();
 
 const defaultStyle = {
   display: "flex",
@@ -62,7 +64,7 @@ export default function PaymentSummaryPage() {
       const id = window.setTimeout(() => {
         setError(ErrorsType.POLLING_SLOW);
         setErrorModalOpen(true);
-      }, getConfig("IO_PAY_PORTAL_API_REQUEST_TIMEOUT") as number);
+      }, config.CHECKOUT_API_TIMEOUT as number);
       setTimeoutId(id);
     } else if (timeoutId) {
       window.clearTimeout(timeoutId);
@@ -83,21 +85,17 @@ export default function PaymentSummaryPage() {
           rptId,
           token
         )
-          .fold(
-            () => onError(ErrorsType.STATUS_ERROR),
-            () => {
-              void pollingActivationStatus(
-                paymentInfo.codiceContestoPagamento,
-                getConfig("IO_PAY_PORTAL_PAY_WL_POLLING_ATTEMPTS") as number,
-                (res) => {
-                  setPaymentId(res);
-                  setLoading(false);
-                  navigate(`/${currentPath}/email`);
-                },
-                onError
-              );
-            }
-          )
+          .fold(onError, () => {
+            void pollingActivationStatus(
+              paymentInfo.codiceContestoPagamento,
+              config.CHECKOUT_POLLING_ACTIVATION_ATTEMPTS as number,
+              (res) => {
+                setPaymentId(res);
+                setLoading(false);
+                navigate(`/${currentPath}/email`);
+              }
+            );
+          })
           .run()
     );
   }, [ref]);
