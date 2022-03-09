@@ -188,6 +188,10 @@ export const TRANSLATIONS_IT = {
     title: "Spiacenti, l'Ente Creditore sta avendo problemi nella risposta",
     body: "Se il problema persiste, segnalacelo!",
   },
+  INVALID_CARD: {
+    title: "Spiacenti, la carta è risultata non valida",
+    body: "Prova ad inserire una carta valida o eventualmente contattaci per ricevere assistenza.",
+  },
   paymentChoicePage: {
     title: "Come vuoi pagare?",
     description:

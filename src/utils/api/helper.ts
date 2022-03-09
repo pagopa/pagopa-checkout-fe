@@ -13,12 +13,14 @@ import { CodiceContestoPagamento } from "../../../generated/definitions/payment-
 import { ImportoEuroCents } from "../../../generated/definitions/payment-activations-api/ImportoEuroCents";
 import { PaymentActivationsGetResponse } from "../../../generated/definitions/payment-activations-api/PaymentActivationsGetResponse";
 import { PaymentActivationsPostResponse } from "../../../generated/definitions/payment-activations-api/PaymentActivationsPostResponse";
+import { Detail_v2Enum } from "../../../generated/definitions/payment-activations-api/PaymentProblemJson";
 import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-activations-api/PaymentRequestsGetResponse";
 import { RptId } from "../../../generated/definitions/payment-activations-api/RptId";
 import {
   TypeEnum,
   Wallet,
 } from "../../../generated/definitions/payment-manager-api/Wallet";
+import { PaymentProblemJson } from "../../../generated/definitions/payment-activations-api/PaymentProblemJson";
 import {
   InputCardFormFields,
   PaymentCheckData,
@@ -107,7 +109,7 @@ export const getPaymentInfoTask = (
       mixpanel.track(PAYMENT_VERIFY_NET_ERR.value, {
         EVENT_ID: PAYMENT_VERIFY_NET_ERR.value,
       });
-      return "Errore recupero pagamento";
+      return Detail_v2Enum.GENERIC_ERROR;
     }
   ).foldTaskEither(
     (err) => {
@@ -118,7 +120,7 @@ export const getPaymentInfoTask = (
     },
     (errorOrResponse) =>
       errorOrResponse.fold(
-        () => fromLeft("Errore recupero pagamento"),
+        () => fromLeft(Detail_v2Enum.GENERIC_ERROR),
         (responseType) => {
           const reason =
             responseType.status === 200 ? "" : responseType.value?.detail;
@@ -127,10 +129,18 @@ export const getPaymentInfoTask = (
               ? PAYMENT_VERIFY_SUCCESS.value
               : PAYMENT_VERIFY_RESP_ERR.value;
           mixpanel.track(EVENT_ID, { EVENT_ID, reason });
+
+          if (responseType.status === 424) {
+            return fromLeft(
+              fromNullable(
+                (responseType.value as PaymentProblemJson)?.detail_v2
+              ).getOrElse(Detail_v2Enum.GENERIC_ERROR)
+            );
+          }
           return responseType.status !== 200
             ? fromLeft(
                 fromNullable(responseType.value?.detail).getOrElse(
-                  "Errore recupero pagamento"
+                  Detail_v2Enum.GENERIC_ERROR
                 )
               )
             : taskEither.of(responseType.value);
@@ -186,7 +196,7 @@ export const activePaymentTask = (
           return responseType.status !== 200
             ? fromLeft(
                 fromNullable(responseType.value?.detail).getOrElse(
-                  `Errore attivazione pagamento : ${responseType.status}`
+                  ErrorsType.STATUS_ERROR
                 )
               )
             : taskEither.of(responseType.value);
@@ -297,7 +307,9 @@ export const getPaymentCheckData = async ({
         },
         (myResExt: any) => {
           myResExt.fold(
-            onError(ErrorsType.GENERIC_ERROR),
+            () => {
+              onError(ErrorsType.GENERIC_ERROR);
+            },
             (response: {
               value: { data: { urlRedirectEc: string } };
               status: number;

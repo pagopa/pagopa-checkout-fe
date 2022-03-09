@@ -83,21 +83,18 @@ export default function PaymentSummaryPage() {
           rptId,
           token
         )
-          .fold(
-            () => onError(ErrorsType.STATUS_ERROR),
-            () => {
-              void pollingActivationStatus(
-                paymentInfo.codiceContestoPagamento,
-                getConfig("IO_PAY_PORTAL_PAY_WL_POLLING_ATTEMPTS") as number,
-                (res) => {
-                  setPaymentId(res);
-                  setLoading(false);
-                  navigate(`/${currentPath}/email`);
-                },
-                onError
-              );
-            }
-          )
+          .fold(onError, () => {
+            void pollingActivationStatus(
+              paymentInfo.codiceContestoPagamento,
+              getConfig("IO_PAY_PORTAL_PAY_WL_POLLING_ATTEMPTS") as number,
+              (res) => {
+                setPaymentId(res);
+                setLoading(false);
+                navigate(`/${currentPath}/email`);
+              },
+              onError
+            );
+          })
           .run()
     );
   }, [ref]);

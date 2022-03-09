@@ -65,7 +65,7 @@ export default function PaymentEmailPage() {
       setLoading(true);
       void getPaymentCheckData({
         idPayment: paymentId.paymentId,
-        onError: () => setLoading(false), // handle error on response,
+        onError,
         onResponse: (r) => {
           setCheckData(r);
           dispatch(setData(r));
