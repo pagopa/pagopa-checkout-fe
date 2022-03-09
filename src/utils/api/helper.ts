@@ -261,7 +261,8 @@ export const getActivationStatusTask = (
 export const pollingActivationStatus = async (
   paymentNoticeCode: CodiceContestoPagamento,
   attempts: number,
-  onResponse: (activationResponse: { idPagamento: any }) => void
+  onResponse: (activationResponse: { idPagamento: any }) => void,
+  onError: (e: string) => void
 ): Promise<void> => {
   await pipe(
     getActivationStatusTask(paymentNoticeCode),
@@ -274,9 +275,10 @@ export const pollingActivationStatus = async (
               .CHECKOUT_POLLING_ACTIVATION_INTERVAL as Millisecond,
             paymentNoticeCode,
             --attempts, // eslint-disable-line no-param-reassign,
-            onResponse
+            onResponse,
+            onError
           )
-        : () => {}; // TODO Error Intereptor
+        : onError(ErrorsType.TIMEOUT);
     }, onResponse)
   )();
 };

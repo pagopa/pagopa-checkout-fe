@@ -27,6 +27,7 @@ function ErrorModal(props: {
   error: string;
   open: boolean;
   onClose: () => void;
+  onRetry?: () => void;
   style?: React.CSSProperties;
 }) {
   const { t } = useTranslation();
@@ -63,12 +64,27 @@ function ErrorModal(props: {
       ?.body;
   };
 
+  const getErrorButtons = () => {
+    if (isCustom(props.error)) {
+      return PaymentResponses[props.error]?.buttons;
+    }
+    if (notListed(props.error)) {
+      return PaymentCategoryResponses[PaymentFaultCategory.NOTLISTED]?.buttons;
+    }
+    return PaymentCategoryResponses[PaymentResponses[props.error]?.category]
+      ?.buttons;
+  };
+
   const title = getErrorTitle() || "GenericError.title";
   const body = getErrorBody() || "GenericError.body";
-  const buttonsDetail = notListed(props.error)
-    ? PaymentCategoryResponses[PaymentFaultCategory.NOTLISTED]?.buttons
-    : PaymentCategoryResponses[PaymentResponses[props.error]?.category]
-        ?.buttons;
+  const buttons = getErrorButtons();
+  const buttonsDetail =
+    props.error === ErrorsType.STATUS_ERROR ||
+    props.error === ErrorsType.TIMEOUT
+      ? buttons?.map((elem, index) =>
+          index === 1 ? { ...elem, action: props.onRetry } : elem
+        )
+      : buttons;
   const showProgressBar = props.error === ErrorsType.POLLING_SLOW;
 
   return (

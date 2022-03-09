@@ -14,6 +14,7 @@ import sprite from "../assets/images/app.svg";
 import { FormButtons } from "../components/FormButtons/FormButtons";
 import { CancelPayment } from "../components/modals/CancelPayment";
 import { CustomDrawer } from "../components/modals/CustomDrawer";
+import ErrorModal from "../components/modals/ErrorModal";
 import InformationModal from "../components/modals/InformationModal";
 import PageContainer from "../components/PageContent/PageContainer";
 import SkeletonFieldContainer from "../components/Skeletons/SkeletonFieldContainer";
@@ -60,17 +61,21 @@ export default function PaymentCheckPage() {
   const [payLoading, setPayLoading] = React.useState(false);
   const [cancelLoading, setCancelLoading] = React.useState(false);
   const [pspList, setPspList] = React.useState<Array<PspList>>([]);
+  const [errorModalOpen, setErrorModalOpen] = React.useState(false);
+  const [error, setError] = React.useState("");
 
   const checkData = getCheckData();
   const wallet = getWallet();
   const email = getEmailInfo();
   const totalAmount = checkData.amount.amount + wallet.psp.fixedCost.amount;
 
-  const onError = () => {
+  const onError = (m: string) => {
     setPayLoading(false);
     setCancelLoading(false);
     setPspEditLoading(false);
     setPspUpdateLoading(false);
+    setError(m);
+    setErrorModalOpen(true);
   };
 
   const onResponse = () => {
@@ -341,6 +346,16 @@ export default function PaymentCheckPage() {
               />
             ))}
       </CustomDrawer>
+
+      {!!error && (
+        <ErrorModal
+          error={error}
+          open={errorModalOpen}
+          onClose={() => {
+            setErrorModalOpen(false);
+          }}
+        />
+      )}
     </PageContainer>
   );
 }

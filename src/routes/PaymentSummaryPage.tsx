@@ -2,11 +2,11 @@ import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import EuroIcon from "@mui/icons-material/Euro";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import { Box, Typography } from "@mui/material";
+import * as E from "fp-ts/Either";
+import { pipe } from "fp-ts/function";
+import * as TE from "fp-ts/TaskEither";
 import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
-import * as E from "fp-ts/Either";
-import * as TE from "fp-ts/TaskEither";
-import { pipe } from "fp-ts/function";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router";
 import { PaymentRequestsGetResponse } from "../../generated/definitions/payment-activations-api/PaymentRequestsGetResponse";
@@ -92,8 +92,8 @@ export default function PaymentSummaryPage() {
               token
             ),
             TE.fold(
-              () => async () => {
-                onError("");
+              (e: string) => async () => {
+                onError(e);
               },
               () => async () => {
                 void pollingActivationStatus(
@@ -103,7 +103,8 @@ export default function PaymentSummaryPage() {
                     setPaymentId(res);
                     setLoading(false);
                     navigate(`/${currentPath}/email`);
-                  }
+                  },
+                  onError
                 );
               }
             )
@@ -111,6 +112,11 @@ export default function PaymentSummaryPage() {
       )
     );
   }, [ref]);
+
+  const onRetry = React.useCallback(async () => {
+    setErrorModalOpen(false);
+    await onSubmit();
+  }, []);
 
   return (
     <PageContainer
@@ -158,6 +164,7 @@ export default function PaymentSummaryPage() {
           onClose={() => {
             setErrorModalOpen(false);
           }}
+          onRetry={onRetry}
         />
       )}
       <Box display="none">

@@ -265,4 +265,36 @@ export const PaymentResponses: Record<string, PaymentFaultErrorMessage> = {
     body: "POLLING_SLOW.body",
     category: PaymentFaultCategory.CUSTOM,
   },
+  TIMEOUT: {
+    title: "TIMEOUT.title",
+    body: "TIMEOUT.body",
+    category: PaymentFaultCategory.CUSTOM,
+    buttons: [
+      {
+        title: "errorButton.help",
+        action: () => {
+          window.open(HELPDESK_URL, "_blank")?.focus();
+        },
+      },
+      {
+        title: "errorButton.retry",
+      },
+    ],
+  },
+  STATUS_ERROR: {
+    title: "STATUS_ERROR.title",
+    body: "STATUS_ERROR.body",
+    category: PaymentFaultCategory.CUSTOM,
+    buttons: [
+      {
+        title: "errorButton.help",
+        action: () => {
+          window.open(HELPDESK_URL, "_blank")?.focus();
+        },
+      },
+      {
+        title: "errorButton.retry",
+      },
+    ],
+  },
 };

@@ -123,6 +123,7 @@ export const TRANSLATIONS_IT = {
   errorButton: {
     help: "Contatta l'assistenza",
     close: "Chiudi",
+    retry: "Riprova",
   },
   POLLING_SLOW: {
     title: "Spiacenti, l’Ente sta impiegando più tempo del previsto...",
@@ -178,6 +179,14 @@ export const TRANSLATIONS_IT = {
   GenericError: {
     title: "Spiacenti, si è verificato un errore imprevisto",
     body: "Prova di nuovo o contattaci per ricevere assistenza.",
+  },
+  STATUS_ERROR: {
+    title: "Spiacenti, si è verificato un errore imprevisto",
+    body: "Se il problema persiste, segnalacelo!",
+  },
+  TIMEOUT: {
+    title: "Spiacenti, l'Ente Creditore sta avendo problemi nella risposta",
+    body: "Se il problema persiste, segnalacelo!",
   },
   paymentChoicePage: {
     title: "Come vuoi pagare?",
