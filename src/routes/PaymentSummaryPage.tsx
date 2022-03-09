@@ -113,9 +113,9 @@ export default function PaymentSummaryPage() {
     );
   }, [ref]);
 
-  const onRetry = React.useCallback(async () => {
+  const onRetry = React.useCallback(() => {
     setErrorModalOpen(false);
-    await onSubmit();
+    void onSubmit();
   }, []);
 
   return (
