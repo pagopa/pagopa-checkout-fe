@@ -150,7 +150,7 @@ export const getPaymentInfoTask = (
                 ? TE.left(
                     pipe(
                       O.fromNullable(responseType.value?.detail),
-                      O.getOrElse(() => "STATUS_ERROR")
+                      O.getOrElse(() => ErrorsType.STATUS_ERROR as string)
                     )
                   )
                 : TE.of(responseType.value);
@@ -213,7 +213,7 @@ export const activePaymentTask = (
                 ? TE.left(
                     pipe(
                       O.fromNullable(responseType.value?.detail),
-                      O.getOrElse(() => "STATUS_ERROR")
+                      O.getOrElse(() => ErrorsType.STATUS_ERROR as string)
                     )
                   )
                 : TE.of(responseType.value);
@@ -691,13 +691,15 @@ export const getSessionWallet = async (
         );
 
         sessionStorage.setItem("securityCode", creditCard.cvv);
-        pipe(
-          WalletSession.decode(JSON.parse(walletResp as any as string)),
-          E.map((wallet) => {
-            sessionStorage.setItem("wallet", JSON.stringify(wallet));
-          })
-        );
-        onResponse();
+        if ((walletResp as any as string) !== "fakeWallet") {
+          pipe(
+            WalletSession.decode(JSON.parse(walletResp as any as string)),
+            E.map((wallet) => {
+              sessionStorage.setItem("wallet", JSON.stringify(wallet));
+            })
+          );
+          onResponse();
+        }
       }
     )
   )();
