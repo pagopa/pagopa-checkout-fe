@@ -1,5 +1,5 @@
 const scriptEl = document.createElement("script");
-const domainScript = window._env_.IO_PAY_ENV === "develop" ? "-test" : "";
+const domainScript = window._env_.CHECKOUT_ENV === "develop" ? "-test" : "";
 scriptEl.setAttribute(
   "src",
   "https://cdn.cookielaw.org/scripttemplates/otSDKStub.js"

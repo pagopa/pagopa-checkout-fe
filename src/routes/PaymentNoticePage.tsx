@@ -3,6 +3,8 @@ import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
+import * as TE from "fp-ts/TaskEither";
+import { pipe } from "fp-ts/function";
 import { RptId } from "../../generated/definitions/payment-activations-api/RptId";
 import notification from "../assets/images/payment-notice-pagopa.png";
 import ErrorModal from "../components/modals/ErrorModal";
@@ -47,14 +49,16 @@ export default function PaymentNoticePage() {
       setLoading(true);
       const token = await (ref.current as any).executeAsync();
 
-      void getPaymentInfoTask(rptId, token)
-        .fold(onError, (paymentInfo) => {
+      void pipe(
+        getPaymentInfoTask(rptId, token),
+        TE.mapLeft((err) => onError(err)),
+        TE.map((paymentInfo) => {
           setPaymentInfo(paymentInfo as PaymentInfo);
           setRptId(notice);
           setLoading(false);
           navigate(`/${currentPath}/summary`);
         })
-        .run();
+      )();
     },
     [ref]
   );
