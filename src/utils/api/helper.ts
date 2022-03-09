@@ -209,6 +209,16 @@ export const activePaymentTask = (
                   : PAYMENT_ACTIVATE_RESP_ERR.value;
               mixpanel.track(EVENT_ID, { EVENT_ID, reason });
 
+              if (responseType.status === 424) {
+                return TE.left(
+                  pipe(
+                    O.fromNullable(
+                      (responseType.value as PaymentProblemJson)?.detail_v2
+                    ),
+                    O.getOrElse(() => ErrorsType.STATUS_ERROR as string)
+                  )
+                );
+              }
               return responseType.status !== 200
                 ? TE.left(
                     pipe(
