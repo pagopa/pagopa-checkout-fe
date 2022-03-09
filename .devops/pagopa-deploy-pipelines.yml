@@ -67,15 +67,16 @@ stages:
 
           - template: azure-templates/setup-env.yml
             parameters:
-              api_host: $(CHECKOUT_API_HOST_UAT)
-              request_timeout: '5000'
-              polling_interval: '6000'
-              polling_attempts: '16'
+              pagopa_apim_host: $(CHECKOUT_API_HOST_DEV)
+              polling_activation_interval: 6000
+              polling_activation_attempts: 16
               env: 'DEV'
-              site_key: $(CHECKOUT_CAPTCHA_ID_DEV)
-              functions_host: $(CHECKOUT_API_HOST_UAT)
-              api_timeout: '10000'
-              api_basepath: '/checkout/payments/v1'
+              recaptcha_site_key: $(CHECKOUT_CAPTCHA_ID_DEV)
+              api_payment_transactions_basepath: '/api/checkout/payment-transactions/v1'
+              api_timeout: 10000
+              api_payment_activations_basepath: '/checkout/payments/v1'
+              pm_host: 'https://acardste.vaservices.eu'
+              pm_api_basepath: '/pp-restapi/v4'
 
           - script: |
               yarn build
@@ -172,15 +173,16 @@ stages:
 
           - template: azure-templates/setup-env.yml
             parameters:
-              api_host: $(CHECKOUT_API_HOST_UAT)
-              request_timeout: '5000'
-              polling_interval: '6000'
-              polling_attempts: '16'
+              pagopa_apim_host: $(CHECKOUT_API_HOST_UAT)
+              polling_activation_interval: 6000
+              polling_activation_attempts: 16
               env: 'UAT'
-              site_key: $(CHECKOUT_CAPTCHA_ID_UAT)
-              functions_host: $(CHECKOUT_API_HOST_UAT)
-              api_timeout: '10000'
-              api_basepath: '/checkout/payments/v1'
+              recaptcha_site_key: $(CHECKOUT_CAPTCHA_ID_UAT)
+              api_payment_transactions_basepath: $(CHECKOUT_API_HOST_UAT)
+              api_timeout: 10000
+              api_payment_activations_basepath: '/checkout/payments/v1'
+              pm_host: ''
+              pm_api_basepath: ''
 
           - script: |
               yarn build
@@ -262,15 +264,16 @@ stages:
 
           - template: azure-templates/setup-env.yml
             parameters:
-              api_host: $(CHECKOUT_API_HOST_PROD)
-              request_timeout: '5000'
-              polling_interval: '6000'
-              polling_attempts: '16'
+              pagopa_apim_host: $(CHECKOUT_API_HOST_PROD)
+              polling_activation_interval: 6000
+              polling_activation_attempts: 16
               env: 'PROD'
-              site_key: $(CHECKOUT_CAPTCHA_ID_PROD)
-              functions_host: $(CHECKOUT_API_HOST_PROD)
-              api_timeout: '10000'
-              api_basepath: '/checkout/payments/v1'
+              recaptcha_site_key: $(CHECKOUT_CAPTCHA_ID_PROD)
+              api_payment_transactions_basepath: $(CHECKOUT_API_HOST_PROD)
+              api_timeout: 10000
+              api_payment_activations_basepath: '/checkout/payments/v1'
+              pm_host: ''
+              pm_api_basepath: ''
 
           - script: |
               yarn build

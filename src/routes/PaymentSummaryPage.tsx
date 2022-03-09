@@ -2,6 +2,9 @@ import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import EuroIcon from "@mui/icons-material/Euro";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import { Box, Typography } from "@mui/material";
+import * as E from "fp-ts/Either";
+import { pipe } from "fp-ts/function";
+import * as TE from "fp-ts/TaskEither";
 import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useTranslation } from "react-i18next";
@@ -22,9 +25,11 @@ import {
   activePaymentTask,
   pollingActivationStatus,
 } from "../utils/api/helper";
-import { getConfig } from "../utils/config/config";
+import { getConfigOrThrow } from "../utils/config/config";
 import { ErrorsType } from "../utils/errors/checkErrorsModel";
 import { moneyFormat } from "../utils/form/formatters";
+
+const config = getConfigOrThrow();
 
 const defaultStyle = {
   display: "flex",
@@ -62,7 +67,7 @@ export default function PaymentSummaryPage() {
       const id = window.setTimeout(() => {
         setError(ErrorsType.POLLING_SLOW);
         setErrorModalOpen(true);
-      }, getConfig("IO_PAY_PORTAL_API_REQUEST_TIMEOUT") as number);
+      }, config.CHECKOUT_API_TIMEOUT as number);
       setTimeoutId(id);
     } else if (timeoutId) {
       window.clearTimeout(timeoutId);
@@ -74,28 +79,37 @@ export default function PaymentSummaryPage() {
     setLoading(true);
     const token = await (ref.current as any).executeAsync();
 
-    PaymentRequestsGetResponse.decode(paymentInfo).fold(
-      () => onError(""),
-      async (paymentInfo) =>
-        await activePaymentTask(
-          paymentInfo.importoSingoloVersamento,
-          paymentInfo.codiceContestoPagamento,
-          rptId,
-          token
-        )
-          .fold(onError, () => {
-            void pollingActivationStatus(
-              paymentInfo.codiceContestoPagamento,
-              getConfig("IO_PAY_PORTAL_PAY_WL_POLLING_ATTEMPTS") as number,
-              (res) => {
-                setPaymentId(res);
-                setLoading(false);
-                navigate(`/${currentPath}/email`);
+    pipe(
+      PaymentRequestsGetResponse.decode(paymentInfo),
+      E.fold(
+        () => onError(""),
+        (response) =>
+          pipe(
+            activePaymentTask(
+              response.importoSingoloVersamento,
+              response.codiceContestoPagamento,
+              rptId,
+              token
+            ),
+            TE.fold(
+              (e: string) => async () => {
+                onError(e);
               },
-              onError
-            );
-          })
-          .run()
+              () => async () => {
+                void pollingActivationStatus(
+                  response.codiceContestoPagamento,
+                  config.CHECKOUT_POLLING_ACTIVATION_ATTEMPTS as number,
+                  (res) => {
+                    setPaymentId(res);
+                    setLoading(false);
+                    navigate(`/${currentPath}/email`);
+                  },
+                  onError
+                );
+              }
+            )
+          )()
+      )
     );
   }, [ref]);
 

@@ -1,65 +1,69 @@
 # Azure DevOps pipeline template used to build bundle.
 parameters:
-  - name: 'api_host'
+  - name: 'pagopa_apim_host'
     type: string
     default: ''
 
-  - name: 'request_timeout'
+  - name: 'api_payment_activations_basepath'
     type: string
-    default: '5000'
+    default: ''
+  
+  - name: 'api_payment_transactions_basepath'
+    type: string
+    default: ''
 
-  - name: 'polling_interval'
+  - name: 'pm_host'
     type: string
-    default: '6000'
+    default: ''
 
-  - name: 'polling_attempts'
+  - name: 'pm_api_basepath'
     type: string
-    default: '15'
+    default: ''
+
+  - name: 'api_timeout'
+    type: number
+    default: 10000
+
+  - name: 'polling_activation_interval'
+    type: number
+    default: 6000
+
+  - name: 'polling_activation_attempts'
+    type: number
+    default: 15
 
   - name: 'env'
     type: string
     default: ''
 
-  - name: 'site_key'
-    type: string
-    default: ''
-
-  - name: 'functions_host'
-    type: string
-    default: ''
-
-  - name: 'api_timeout'
-    type: string
-    default: '10000'
-
-  - name: 'api_basepath'
+  - name: 'recaptcha_site_key'
     type: string
     default: ''
 
 steps:
 - bash: |
-    echo 'IO_PAY_PORTAL_API_HOST: $IO_PAY_PORTAL_API_HOST'
-    echo 'IO_PAY_PORTAL_API_REQUEST_TIMEOUT: $IO_PAY_PORTAL_API_REQUEST_TIMEOUT'
-    echo 'IO_PAY_PORTAL_PAY_WL_POLLING_INTERVAL: $IO_PAY_PORTAL_PAY_WL_POLLING_INTERVAL'
-    echo 'IO_PAY_PORTAL_PAY_WL_POLLING_ATTEMPTS: $IO_PAY_PORTAL_PAY_WL_POLLING_ATTEMPTS'
-    echo 'IO_PAY_PORTAL_ENV: $IO_PAY_PORTAL_ENV'
-    echo 'IO_PAY_PORTAL_SITE_KEY: $IO_PAY_PORTAL_SITE_KEY'
-    echo 'IO_PAY_PAYMENT_MANAGER_HOST: $IO_PAY_PAYMENT_MANAGER_HOST'
-    echo 'IO_PAY_FUNCTIONS_HOST: $IO_PAY_FUNCTIONS_HOST'
-    echo 'IO_PAY_API_TIMEOUT: $IO_PAY_API_TIMEOUT'
-    echo 'IO_PAY_ENV: $IO_PAY_ENV'
-    echo 'IO_PAY_PORTAL_API_BASEPATH: $IO_PAY_PORTAL_API_BASEPATH'
+    echo 'CHECKOUT_PAGOPA_APIM_HOST: $CHECKOUT_PAGOPA_APIM_HOST'
+    echo 'CHECKOUT_API_PAYMENT_ACTIVATIONS_BASEPATH: $CHECKPUT_API_PAYMENT_ACTIVATIONS_BASEPATH'
+    echo 'CHECKOUT_API_PAYMENT_TRANSACTIONS_BASEPATH: $CHECKOUT_API_PAYMENT_TRANSACTIONS_BASEPATH'
+    echo 'CHECKOUT_PM_HOST: $CHECKOUT_PM_HOST'
+    echo 'CHECKOUT_PM_API_BASEPATH: $CHECKOUT_PM_API_BASEPATH'
+    echo 'CHECKOUT_API_TIMEOUT: $CHECKOUT_API_TIMEOUT'
+    echo 'CHECKOUT_POLLING_ACTIVATION_INTERVAL: $CHECKOUT_POLLING_ACTIVATION_INTERVAL'
+    echo 'CHECKOUT_POLLING_ACTIVATION_ATTEMPTS: $CHECKOUT_POLLING_ACTIVATION_ATTEMPTS'
+    echo 'CHECKOUT_ENV: $CHECKOUT_ENV'
+    echo 'CHECKOUT_RECAPTCHA_SITE_KEY: $CHECKOUT_RECAPTCHA_SITE_KEY'
     chmod +x env.sh && source env.sh
+  
   env:
-    IO_PAY_PORTAL_API_HOST: ${{ parameters.api_host }}
-    IO_PAY_PORTAL_API_REQUEST_TIMEOUT: ${{ parameters.request_timeout }}
-    IO_PAY_PORTAL_PAY_WL_POLLING_INTERVAL: ${{ parameters.polling_interval }}
-    IO_PAY_PORTAL_PAY_WL_POLLING_ATTEMPTS: ${{ parameters.polling_attempts }}
-    IO_PAY_PORTAL_ENV: ${{ parameters.env }}
-    IO_PAY_PORTAL_SITE_KEY: ${{ parameters.site_key }}
-    IO_PAY_PAYMENT_MANAGER_HOST: ${{ parameters.api_host }}
-    IO_PAY_FUNCTIONS_HOST: ${{ parameters.functions_host }}
-    IO_PAY_API_TIMEOUT: ${{ parameters.api_timeout }}
-    IO_PAY_ENV: ${{ parameters.env }}
-    IO_PAY_PORTAL_API_BASEPATH: ${{ parameters.api_basepath }}
+    CHECKOUT_PAGOPA_APIM_HOST: ${{ parameters.pagopa_apim_host }}
+    CHECKOUT_API_PAYMENT_ACTIVATIONS_BASEPATH: ${{ parameters.api_payment_activations_basepath }}
+    CHECKOUT_API_PAYMENT_TRANSACTIONS_BASEPATH: ${{ parameters.api_payment_transactions_basepath }}
+    CHECKOUT_PM_HOST: ${{ parameters.pm_host }}
+    CHECKOUT_PM_API_BASEPATH: ${{ parameters.pm_api_basepath }}
+    CHECKOUT_API_TIMEOUT: ${{ parameters.api_timeout }}
+    CHECKOUT_POLLING_ACTIVATION_INTERVAL: ${{ parameters.polling_activation_interval }}
+    CHECKOUT_POLLING_ACTIVATION_ATTEMPTS: ${{ parameters.polling_activation_attempts }}
+    CHECKOUT_ENV: ${{ parameters.env }}
+    CHECKOUT_RECAPTCHA_SITE_KEY: ${{ parameters.recaptcha_site_key }}
+
   displayName: 'Populate environment file'

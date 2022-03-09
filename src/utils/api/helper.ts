@@ -1,32 +1,24 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { toError } from "fp-ts/lib/Either";
-import { fromNullable } from "fp-ts/lib/Option";
-import * as TE from "fp-ts/lib/TaskEither";
-import {
-  fromLeft,
-  taskEither,
-  TaskEither,
-  tryCatch,
-} from "fp-ts/lib/TaskEither";
-import { Millisecond } from "italia-ts-commons/lib/units";
-import { CodiceContestoPagamento } from "../../../generated/definitions/payment-activations-api/CodiceContestoPagamento";
-import { ImportoEuroCents } from "../../../generated/definitions/payment-activations-api/ImportoEuroCents";
-import { PaymentActivationsGetResponse } from "../../../generated/definitions/payment-activations-api/PaymentActivationsGetResponse";
-import { PaymentActivationsPostResponse } from "../../../generated/definitions/payment-activations-api/PaymentActivationsPostResponse";
-import { Detail_v2Enum } from "../../../generated/definitions/payment-activations-api/PaymentProblemJson";
-import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-activations-api/PaymentRequestsGetResponse";
-import { RptId } from "../../../generated/definitions/payment-activations-api/RptId";
+import * as TE from "fp-ts/TaskEither";
+import * as O from "fp-ts/Option";
+import * as E from "fp-ts/Either";
+import { pipe } from "fp-ts/function";
+import { Millisecond } from "@pagopa/ts-commons/lib/units";
 import {
   TypeEnum,
   Wallet,
 } from "../../../generated/definitions/payment-manager-api/Wallet";
-import { PaymentProblemJson } from "../../../generated/definitions/payment-activations-api/PaymentProblemJson";
+import {
+  Detail_v2Enum,
+  PaymentProblemJson,
+} from "../../../generated/definitions/payment-activations-api/PaymentProblemJson";
 import {
   InputCardFormFields,
   PaymentCheckData,
   Wallet as PaymentWallet,
 } from "../../features/payment/models/paymentModel";
-import { getConfig } from "../config/config";
+import { getConfigOrThrow } from "../config/config";
 import {
   PAYMENT_ACTIVATE_INIT,
   PAYMENT_ACTIVATE_NET_ERR,
@@ -88,64 +80,84 @@ import { mixpanel } from "../config/mixpanelHelperInit";
 import { ErrorsType } from "../errors/checkErrorsModel";
 import { PaymentSession } from "../sessionData/PaymentSession";
 import { WalletSession } from "../sessionData/WalletSession";
+import { ImportoEuroCents } from "../../../generated/definitions/payment-activations-api/ImportoEuroCents";
+import { CodiceContestoPagamento } from "../../../generated/definitions/payment-activations-api/CodiceContestoPagamento";
+import { RptId } from "../../../generated/definitions/payment-transactions-api/RptId";
+import { PaymentActivationsPostResponse } from "../../../generated/definitions/payment-activations-api/PaymentActivationsPostResponse";
+import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-activations-api/PaymentRequestsGetResponse";
+import { PaymentActivationsGetResponse } from "../../../generated/definitions/payment-activations-api/PaymentActivationsGetResponse";
+import {
+  apiPaymentTransactionsClient,
+  apiPaymentActivationsClient,
+  pmClient,
+} from "./client";
 import { getBrowserInfoTask, getEMVCompliantColorDepth } from "./checkHelper";
-import { apiClient, iopayportalClient, pmClient } from "./client";
 
 export const getPaymentInfoTask = (
   rptId: RptId,
   recaptchaResponse: string
-): TaskEither<string, PaymentRequestsGetResponse> =>
-  tryCatch(
-    () => {
-      mixpanel.track(PAYMENT_VERIFY_INIT.value, {
-        EVENT_ID: PAYMENT_VERIFY_INIT.value,
-      });
-      return apiClient.getPaymentInfo({
-        rptId,
-        recaptchaResponse,
-      });
-    },
-    () => {
-      mixpanel.track(PAYMENT_VERIFY_NET_ERR.value, {
-        EVENT_ID: PAYMENT_VERIFY_NET_ERR.value,
-      });
-      return Detail_v2Enum.GENERIC_ERROR;
-    }
-  ).foldTaskEither(
-    (err) => {
-      mixpanel.track(PAYMENT_VERIFY_SVR_ERR.value, {
-        EVENT_ID: PAYMENT_VERIFY_SVR_ERR.value,
-      });
-      return fromLeft(err);
-    },
-    (errorOrResponse) =>
-      errorOrResponse.fold(
-        () => fromLeft(Detail_v2Enum.GENERIC_ERROR),
-        (responseType) => {
-          const reason =
-            responseType.status === 200 ? "" : responseType.value?.detail;
-          const EVENT_ID: string =
-            responseType.status === 200
-              ? PAYMENT_VERIFY_SUCCESS.value
-              : PAYMENT_VERIFY_RESP_ERR.value;
-          mixpanel.track(EVENT_ID, { EVENT_ID, reason });
+): TE.TaskEither<string, PaymentRequestsGetResponse> =>
+  pipe(
+    TE.tryCatch(
+      () => {
+        mixpanel.track(PAYMENT_VERIFY_INIT.value, {
+          EVENT_ID: PAYMENT_VERIFY_INIT.value,
+        });
+        return apiPaymentActivationsClient.getPaymentInfo({
+          rptId,
+          recaptchaResponse,
+        });
+      },
+      () => {
+        mixpanel.track(PAYMENT_VERIFY_NET_ERR.value, {
+          EVENT_ID: PAYMENT_VERIFY_NET_ERR.value,
+        });
+        return "Errore recupero pagamento";
+      }
+    ),
+    TE.fold(
+      (err) => {
+        mixpanel.track(PAYMENT_VERIFY_SVR_ERR.value, {
+          EVENT_ID: PAYMENT_VERIFY_SVR_ERR.value,
+        });
+        return TE.left(err);
+      },
+      (errorOrResponse) =>
+        pipe(
+          errorOrResponse,
+          E.fold(
+            () => TE.left(Detail_v2Enum.GENERIC_ERROR),
+            (responseType) => {
+              const reason =
+                responseType.status === 200 ? "" : responseType.value?.detail;
+              const EVENT_ID: string =
+                responseType.status === 200
+                  ? PAYMENT_VERIFY_SUCCESS.value
+                  : PAYMENT_VERIFY_RESP_ERR.value;
+              mixpanel.track(EVENT_ID, { EVENT_ID, reason });
 
-          if (responseType.status === 424) {
-            return fromLeft(
-              fromNullable(
-                (responseType.value as PaymentProblemJson)?.detail_v2
-              ).getOrElse(Detail_v2Enum.GENERIC_ERROR)
-            );
-          }
-          return responseType.status !== 200
-            ? fromLeft(
-                fromNullable(responseType.value?.detail).getOrElse(
-                  Detail_v2Enum.GENERIC_ERROR
-                )
-              )
-            : taskEither.of(responseType.value);
-        }
-      )
+              if (responseType.status === 424) {
+                return TE.left(
+                  pipe(
+                    O.fromNullable(
+                      (responseType.value as PaymentProblemJson)?.detail_v2
+                    ),
+                    O.getOrElse(() => Detail_v2Enum.GENERIC_ERROR)
+                  )
+                );
+              }
+              return responseType.status !== 200
+                ? TE.left(
+                    pipe(
+                      O.fromNullable(responseType.value?.detail),
+                      O.getOrElse(() => "STATUS_ERROR")
+                    )
+                  )
+                : TE.of(responseType.value);
+            }
+          )
+        )
+    )
   );
 
 export const activePaymentTask = (
@@ -153,97 +165,110 @@ export const activePaymentTask = (
   paymentContextCode: CodiceContestoPagamento,
   rptId: RptId,
   recaptchaResponse: string
-): TaskEither<string, PaymentActivationsPostResponse> =>
-  tryCatch(
-    () => {
-      mixpanel.track(PAYMENT_ACTIVATE_INIT.value, {
-        EVENT_ID: PAYMENT_ACTIVATE_INIT.value,
-      });
-      return apiClient.activatePayment({
-        recaptchaResponse,
-        body: {
-          rptId,
-          importoSingoloVersamento: amountSinglePayment,
-          codiceContestoPagamento: paymentContextCode,
-        },
-      });
-    },
-    () => {
-      mixpanel.track(PAYMENT_ACTIVATE_NET_ERR.value, {
-        EVENT_ID: PAYMENT_ACTIVATE_NET_ERR.value,
-      });
-      return "Errore attivazione pagamento";
-    }
-  ).foldTaskEither(
-    (err) => {
-      mixpanel.track(PAYMENT_ACTIVATE_SVR_ERR.value, {
-        EVENT_ID: PAYMENT_ACTIVATE_SVR_ERR.value,
-      });
-      return fromLeft(err);
-    },
-    (errorOrResponse) =>
-      errorOrResponse.fold(
-        () => fromLeft("Errore attivazione pagamento"),
-        (responseType) => {
-          const reason =
-            responseType.status === 200 ? "" : responseType.value?.detail;
-          const EVENT_ID: string =
-            responseType.status === 200
-              ? PAYMENT_ACTIVATE_SUCCESS.value
-              : PAYMENT_ACTIVATE_RESP_ERR.value;
-          mixpanel.track(EVENT_ID, { EVENT_ID, reason });
+): TE.TaskEither<string, PaymentActivationsPostResponse> =>
+  pipe(
+    TE.tryCatch(
+      () => {
+        mixpanel.track(PAYMENT_ACTIVATE_INIT.value, {
+          EVENT_ID: PAYMENT_ACTIVATE_INIT.value,
+        });
+        return apiPaymentActivationsClient.activatePayment({
+          recaptchaResponse,
+          body: {
+            rptId,
+            importoSingoloVersamento: amountSinglePayment,
+            codiceContestoPagamento: paymentContextCode,
+          },
+        });
+      },
+      () => {
+        mixpanel.track(PAYMENT_ACTIVATE_NET_ERR.value, {
+          EVENT_ID: PAYMENT_ACTIVATE_NET_ERR.value,
+        });
+        return "Errore attivazione pagamento";
+      }
+    ),
+    TE.fold(
+      (err) => {
+        mixpanel.track(PAYMENT_ACTIVATE_SVR_ERR.value, {
+          EVENT_ID: PAYMENT_ACTIVATE_SVR_ERR.value,
+        });
+        return TE.left(err);
+      },
+      (errorOrResponse) =>
+        pipe(
+          errorOrResponse,
+          E.fold(
+            () => TE.left("Errore attivazione pagamento"),
+            (responseType) => {
+              const reason =
+                responseType.status === 200 ? "" : responseType.value?.detail;
+              const EVENT_ID: string =
+                responseType.status === 200
+                  ? PAYMENT_ACTIVATE_SUCCESS.value
+                  : PAYMENT_ACTIVATE_RESP_ERR.value;
+              mixpanel.track(EVENT_ID, { EVENT_ID, reason });
 
-          return responseType.status !== 200
-            ? fromLeft(
-                fromNullable(responseType.value?.detail).getOrElse(
-                  ErrorsType.STATUS_ERROR
-                )
-              )
-            : taskEither.of(responseType.value);
-        }
-      )
+              return responseType.status !== 200
+                ? TE.left(
+                    pipe(
+                      O.fromNullable(responseType.value?.detail),
+                      O.getOrElse(() => "STATUS_ERROR")
+                    )
+                  )
+                : TE.of(responseType.value);
+            }
+          )
+        )
+    )
   );
 
 export const getActivationStatusTask = (
   paymentContextCode: CodiceContestoPagamento
-): TaskEither<string, PaymentActivationsGetResponse> =>
-  tryCatch(
-    () => {
-      mixpanel.track(PAYMENT_ACTIVATION_STATUS_INIT.value, {
-        EVENT_ID: PAYMENT_ACTIVATION_STATUS_INIT.value,
-      });
-      return apiClient.getActivationStatus({
-        codiceContestoPagamento: paymentContextCode,
-      });
-    },
-    () => {
-      mixpanel.track(PAYMENT_ACTIVATION_STATUS_NET_ERR.value, {
-        EVENT_ID: PAYMENT_ACTIVATION_STATUS_NET_ERR.value,
-      });
-      return "Errore stato pagamento";
-    }
-  ).foldTaskEither(
-    (err) => {
-      mixpanel.track(PAYMENT_ACTIVATION_STATUS_SVR_ERR.value, {
-        EVENT_ID: PAYMENT_ACTIVATION_STATUS_SVR_ERR.value,
-      });
-      return fromLeft(err);
-    },
-    (errorOrResponse) =>
-      errorOrResponse.fold(
-        () => fromLeft("Errore stato pagamento"),
-        (responseType) => {
-          const EVENT_ID: string =
-            responseType.status === 200
-              ? PAYMENT_ACTIVATION_STATUS_SUCCESS.value
-              : PAYMENT_ACTIVATION_STATUS_RESP_ERR.value;
-          mixpanel.track(EVENT_ID, { EVENT_ID });
+): TE.TaskEither<string, PaymentActivationsGetResponse> =>
+  pipe(
+    TE.tryCatch(
+      () => {
+        mixpanel.track(PAYMENT_ACTIVATION_STATUS_INIT.value, {
+          EVENT_ID: PAYMENT_ACTIVATION_STATUS_INIT.value,
+        });
+        return apiPaymentActivationsClient.getActivationStatus({
+          codiceContestoPagamento: paymentContextCode,
+        });
+      },
+      () => {
+        mixpanel.track(PAYMENT_ACTIVATION_STATUS_NET_ERR.value, {
+          EVENT_ID: PAYMENT_ACTIVATION_STATUS_NET_ERR.value,
+        });
+        return "Errore stato pagamento";
+      }
+    ),
+    TE.fold(
+      (err) => {
+        mixpanel.track(PAYMENT_ACTIVATION_STATUS_SVR_ERR.value, {
+          EVENT_ID: PAYMENT_ACTIVATION_STATUS_SVR_ERR.value,
+        });
+        return TE.left(err);
+      },
+      (errorOrResponse) =>
+        pipe(
+          errorOrResponse,
+          E.fold(
+            () => TE.left("Errore stato pagamento"),
+            (responseType) => {
+              const EVENT_ID: string =
+                responseType.status === 200
+                  ? PAYMENT_ACTIVATION_STATUS_SUCCESS.value
+                  : PAYMENT_ACTIVATION_STATUS_RESP_ERR.value;
+              mixpanel.track(EVENT_ID, { EVENT_ID });
 
-          return responseType.status !== 200
-            ? fromLeft(`Errore stato pagamento : ${responseType.status}`)
-            : taskEither.of(responseType.value);
-        }
-      )
+              return responseType.status !== 200
+                ? TE.left(`Errore stato pagamento : ${responseType.status}`)
+                : TE.of(responseType.value);
+            }
+          )
+        )
+    )
   );
 export const pollingActivationStatus = async (
   paymentNoticeCode: CodiceContestoPagamento,
@@ -251,13 +276,15 @@ export const pollingActivationStatus = async (
   onResponse: (activationResponse: { idPagamento: any }) => void,
   onError: (e: string) => void
 ): Promise<void> => {
-  await getActivationStatusTask(paymentNoticeCode)
-    .fold(() => {
+  await pipe(
+    getActivationStatusTask(paymentNoticeCode),
+    TE.match(() => {
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       attempts > 0
         ? setTimeout(
             pollingActivationStatus,
-            getConfig("IO_PAY_PORTAL_PAY_WL_POLLING_INTERVAL") as Millisecond,
+            getConfigOrThrow()
+              .CHECKOUT_POLLING_ACTIVATION_INTERVAL as Millisecond,
             paymentNoticeCode,
             --attempts, // eslint-disable-line no-param-reassign,
             onResponse,
@@ -265,7 +292,7 @@ export const pollingActivationStatus = async (
           )
         : onError(ErrorsType.TIMEOUT);
     }, onResponse)
-    .run();
+  )();
 };
 
 export const getPaymentCheckData = async ({
@@ -282,68 +309,82 @@ export const getPaymentCheckData = async ({
   mixpanel.track(PAYMENT_CHECK_INIT.value, {
     EVENT_ID: PAYMENT_CHECK_INIT.value,
   });
-  fromNullable(idPayment).fold(
-    // If undefined
-    await tryCatch(
-      () =>
-        pmClient.checkPaymentUsingGET({
-          id: fromNullable(idPayment).getOrElse(""),
-        }),
-      // Error on call
-      () => {
-        onError(ErrorsType.CONNECTION);
-        mixpanel.track(PAYMENT_CHECK_NET_ERR.value, {
-          EVENT_ID: PAYMENT_CHECK_NET_ERR.value,
-        });
-        return toError;
-      }
-    )
-      .fold(
-        () => {
-          onError(ErrorsType.SERVER);
-          mixpanel.track(PAYMENT_CHECK_SVR_ERR.value, {
-            EVENT_ID: PAYMENT_CHECK_SVR_ERR.value,
-          });
-        },
-        (myResExt: any) => {
-          myResExt.fold(
+  void pipe(
+    O.fromNullable(idPayment),
+    O.fold(
+      () => undefined,
+      async () =>
+        await pipe(
+          TE.tryCatch(
+            () =>
+              pmClient.checkPaymentUsingGET({
+                id: pipe(
+                  O.fromNullable(idPayment),
+                  O.getOrElse(() => "")
+                ),
+              }),
+            // Error on call
             () => {
-              onError(ErrorsType.GENERIC_ERROR);
-            },
-            (response: {
-              value: { data: { urlRedirectEc: string } };
-              status: number;
-            }) => {
-              const maybePayment = PaymentSession.decode(response.value?.data);
-
-              if (response.status === 200 && maybePayment.isRight()) {
-                sessionStorage.setItem(
-                  "checkData",
-                  JSON.stringify(maybePayment.value)
-                );
-                onResponse(maybePayment.value as PaymentCheckData);
-                mixpanel.track(PAYMENT_CHECK_SUCCESS.value, {
-                  EVENT_ID: PAYMENT_CHECK_SUCCESS.value,
-                });
-                const originInput = fromNullable(origin).getOrElse(
-                  response.value.data.urlRedirectEc
-                );
-                sessionStorage.setItem(
-                  "originUrlRedirect",
-                  originInput === "payportal" ? "/" : originInput
-                );
-              } else {
-                onNavigate();
-                mixpanel.track(PAYMENT_CHECK_RESP_ERR.value, {
-                  EVENT_ID: PAYMENT_CHECK_RESP_ERR.value,
-                });
-              }
+              onError(ErrorsType.CONNECTION);
+              mixpanel.track(PAYMENT_CHECK_NET_ERR.value, {
+                EVENT_ID: PAYMENT_CHECK_NET_ERR.value,
+              });
+              return toError;
             }
-          );
-        }
-      )
-      .run(),
-    () => undefined
+          ),
+          TE.fold(
+            () => async () => {
+              onError(ErrorsType.SERVER);
+              mixpanel.track(PAYMENT_CHECK_SVR_ERR.value, {
+                EVENT_ID: PAYMENT_CHECK_SVR_ERR.value,
+              });
+            },
+            (myResExt) => async () => {
+              pipe(
+                myResExt,
+                E.fold(
+                  () => onError(ErrorsType.GENERIC_ERROR),
+                  (response) => {
+                    const maybePayment = PaymentSession.decode(
+                      response.value?.data
+                    );
+
+                    // eslint-disable-next-line no-underscore-dangle
+                    if (response.status === 200) {
+                      pipe(
+                        maybePayment,
+                        E.map((payment) => {
+                          sessionStorage.setItem(
+                            "checkData",
+                            JSON.stringify(payment)
+                          );
+                          onResponse(payment as PaymentCheckData);
+                          mixpanel.track(PAYMENT_CHECK_SUCCESS.value, {
+                            EVENT_ID: PAYMENT_CHECK_SUCCESS.value,
+                          });
+                          const originInput = pipe(
+                            O.fromNullable(origin),
+                            O.getOrElse(() => response.value.data.urlRedirectEc)
+                          );
+                          sessionStorage.setItem(
+                            "originUrlRedirect",
+                            originInput === "payportal" ? "/" : originInput
+                          );
+                        })
+                      );
+                    } else {
+                      onNavigate();
+                      mixpanel.track(PAYMENT_CHECK_RESP_ERR.value, {
+                        EVENT_ID: PAYMENT_CHECK_RESP_ERR.value,
+                      });
+                    }
+                  }
+                )
+              );
+            }
+          )
+        )()
+    )
   );
 };
 
@@ -379,52 +420,56 @@ export const getPaymentPSPList = async ({
   mixpanel.track(PAYMENT_PSPLIST_INIT.value, {
     EVENT_ID: PAYMENT_PSPLIST_INIT.value,
   });
-  const pspL = await TE.tryCatch(
-    () =>
-      pmClient.getPspListUsingGET({
-        Bearer,
-        paymentType,
-        isList,
-        idWallet,
-        language,
-        idPayment,
-      }),
-    (_e) => {
-      onError(ErrorsType.CONNECTION);
-      mixpanel.track(PAYMENT_PSPLIST_NET_ERR.value, {
-        EVENT_ID: PAYMENT_PSPLIST_NET_ERR.value,
-      });
-      return toError;
-    }
-  )
-    .fold(
-      (_r) => {
+  const pspL = await pipe(
+    TE.tryCatch(
+      () =>
+        pmClient.getPspListUsingGET({
+          Bearer,
+          paymentType,
+          isList,
+          idWallet,
+          language,
+          idPayment,
+        }),
+      (_e) => {
+        onError(ErrorsType.CONNECTION);
+        mixpanel.track(PAYMENT_PSPLIST_NET_ERR.value, {
+          EVENT_ID: PAYMENT_PSPLIST_NET_ERR.value,
+        });
+        return toError;
+      }
+    ),
+    TE.fold(
+      (_r) => async () => {
         onError(ErrorsType.SERVER);
         mixpanel.track(PAYMENT_PSPLIST_SVR_ERR.value, {
           EVENT_ID: PAYMENT_PSPLIST_SVR_ERR.value,
         });
         return undefined;
       },
-      (myResExt) =>
-        myResExt.fold(
-          () => [],
-          (myRes) => {
-            if (myRes?.status === 200) {
-              mixpanel.track(PAYMENT_PSPLIST_SUCCESS.value, {
-                EVENT_ID: PAYMENT_PSPLIST_SUCCESS.value,
-              });
-              return myRes?.value?.data?.pspList;
-            } else {
-              onError(ErrorsType.GENERIC_ERROR);
-              mixpanel.track(PAYMENT_PSPLIST_RESP_ERR.value, {
-                EVENT_ID: PAYMENT_PSPLIST_RESP_ERR.value,
-              });
-              return [];
+      (myResExt) => async () =>
+        pipe(
+          myResExt,
+          E.fold(
+            () => [],
+            (myRes) => {
+              if (myRes?.status === 200) {
+                mixpanel.track(PAYMENT_PSPLIST_SUCCESS.value, {
+                  EVENT_ID: PAYMENT_PSPLIST_SUCCESS.value,
+                });
+                return myRes?.value?.data?.pspList;
+              } else {
+                onError(ErrorsType.GENERIC_ERROR);
+                mixpanel.track(PAYMENT_PSPLIST_RESP_ERR.value, {
+                  EVENT_ID: PAYMENT_PSPLIST_RESP_ERR.value,
+                });
+                return [];
+              }
             }
-          }
+          )
         )
     )
-    .run();
+  )();
 
   const psp = pspL?.map((e) => ({
     name: e?.businessName,
@@ -453,185 +498,209 @@ export const getSessionWallet = async (
     EVENT_ID: PAYMENT_START_SESSION_INIT.value,
   });
   // 1. Start Session to Fetch session token
-  const mySessionToken = await TE.tryCatch(
-    () =>
-      pmClient.startSessionUsingPOST({
-        startSessionRequest: {
-          data: {
-            email: fromNullable(useremail).getOrElse(""),
-            idPayment: fromNullable(checkData.idPayment).getOrElse(""),
-            fiscalCode: fromNullable(checkData.fiscalCode).getOrElse(""),
+  const mySessionToken = await pipe(
+    TE.tryCatch(
+      () =>
+        pmClient.startSessionUsingPOST({
+          startSessionRequest: {
+            data: {
+              email: pipe(
+                O.fromNullable(useremail),
+                O.getOrElse(() => "")
+              ),
+              idPayment: pipe(
+                O.fromNullable(checkData.idPayment),
+                O.getOrElse(() => "")
+              ),
+              fiscalCode: pipe(
+                O.fromNullable(checkData.fiscalCode),
+                O.getOrElse(() => "")
+              ),
+            },
           },
-        },
-      }),
-    (_e) => {
-      onError(ErrorsType.CONNECTION);
-      mixpanel.track(PAYMENT_START_SESSION_NET_ERR.value, {
-        EVENT_ID: PAYMENT_START_SESSION_NET_ERR.value,
-      });
-      return toError;
-    }
-  )
-    .fold(
-      (_r) => {
+        }),
+      (_e) => {
+        onError(ErrorsType.CONNECTION);
+        mixpanel.track(PAYMENT_START_SESSION_NET_ERR.value, {
+          EVENT_ID: PAYMENT_START_SESSION_NET_ERR.value,
+        });
+        return toError;
+      }
+    ),
+    TE.fold(
+      (_r) => async () => {
         onError(ErrorsType.SERVER);
         mixpanel.track(PAYMENT_START_SESSION_SVR_ERR.value, {
           EVENT_ID: PAYMENT_START_SESSION_SVR_ERR.value,
         });
+        return "fakeSessionToken";
       }, // to be replaced with logic to handle failures
-      (myResExt) => {
-        const sessionToken = myResExt.fold(
-          () => "fakeSessionToken",
-          (myRes) => {
-            if (myRes.status === 200) {
-              mixpanel.track(PAYMENT_START_SESSION_SUCCESS.value, {
-                EVENT_ID: PAYMENT_START_SESSION_SUCCESS.value,
-              });
-            } else {
-              onError(ErrorsType.GENERIC_ERROR);
-              mixpanel.track(PAYMENT_START_SESSION_RESP_ERR.value, {
-                EVENT_ID: PAYMENT_START_SESSION_RESP_ERR.value,
-              });
+      (myResExt) => async () => {
+        const sessionToken = pipe(
+          myResExt,
+          E.fold(
+            () => "fakeSessionToken",
+            (myRes) => {
+              if (myRes.status === 200) {
+                mixpanel.track(PAYMENT_START_SESSION_SUCCESS.value, {
+                  EVENT_ID: PAYMENT_START_SESSION_SUCCESS.value,
+                });
+              } else {
+                onError(ErrorsType.GENERIC_ERROR);
+                mixpanel.track(PAYMENT_START_SESSION_RESP_ERR.value, {
+                  EVENT_ID: PAYMENT_START_SESSION_RESP_ERR.value,
+                });
+              }
+              return myRes.status === 200
+                ? pipe(
+                    O.fromNullable(myRes.value.sessionToken),
+                    O.getOrElse(() => "fakeSessionToken")
+                  )
+                : "fakeSessionToken";
             }
-            return myRes.status === 200
-              ? fromNullable(myRes.value.sessionToken).getOrElse(
-                  "fakeSessionToken"
-                )
-              : "fakeSessionToken";
-          }
+          )
         );
         sessionStorage.setItem("sessionToken", sessionToken);
         return sessionToken;
       }
     )
-    .run();
+  )();
 
   mixpanel.track(PAYMENT_APPROVE_TERMS_INIT.value, {
     EVENT_ID: PAYMENT_APPROVE_TERMS_INIT.value,
   });
   // 2. Approve Terms
-  await TE.tryCatch(
-    () =>
-      pmClient.approveTermsUsingPOST({
-        Bearer: `Bearer ${mySessionToken}`,
-        approveTermsRequest: {
-          data: {
-            terms: true,
-            privacy: true,
+  await pipe(
+    TE.tryCatch(
+      () =>
+        pmClient.approveTermsUsingPOST({
+          Bearer: `Bearer ${mySessionToken}`,
+          approveTermsRequest: {
+            data: {
+              terms: true,
+              privacy: true,
+            },
           },
-        },
-      }),
-    (_e) => {
-      onError(ErrorsType.CONNECTION);
-      mixpanel.track(PAYMENT_APPROVE_TERMS_NET_ERR.value, {
-        EVENT_ID: PAYMENT_APPROVE_TERMS_NET_ERR.value,
-      });
-      return toError;
-    }
-  )
-    .fold(
-      (_r) => {
+        }),
+      (_e) => {
+        onError(ErrorsType.CONNECTION);
+        mixpanel.track(PAYMENT_APPROVE_TERMS_NET_ERR.value, {
+          EVENT_ID: PAYMENT_APPROVE_TERMS_NET_ERR.value,
+        });
+        return toError;
+      }
+    ),
+    TE.fold(
+      (_r) => async () => {
         onError(ErrorsType.SERVER);
         mixpanel.track(PAYMENT_APPROVE_TERMS_SVR_ERR.value, {
           EVENT_ID: PAYMENT_APPROVE_TERMS_SVR_ERR.value,
         });
       }, // to be replaced with logic to handle failures
-      (myResExt) => {
-        myResExt.fold(
-          () => "noApproval",
-          (myRes) => {
-            if (myRes.status === 200) {
-              mixpanel.track(PAYMENT_APPROVE_TERMS_SUCCESS.value, {
-                EVENT_ID: PAYMENT_APPROVE_TERMS_SUCCESS.value,
-              });
-            } else {
-              onError(ErrorsType.GENERIC_ERROR);
-              mixpanel.track(PAYMENT_APPROVE_TERMS_RESP_ERR.value, {
-                EVENT_ID: PAYMENT_APPROVE_TERMS_RESP_ERR.value,
-              });
+      (myResExt) => async () => {
+        pipe(
+          myResExt,
+          E.fold(
+            () => "noApproval",
+            (myRes) => {
+              if (myRes.status === 200) {
+                mixpanel.track(PAYMENT_APPROVE_TERMS_SUCCESS.value, {
+                  EVENT_ID: PAYMENT_APPROVE_TERMS_SUCCESS.value,
+                });
+              } else {
+                onError(ErrorsType.GENERIC_ERROR);
+                mixpanel.track(PAYMENT_APPROVE_TERMS_RESP_ERR.value, {
+                  EVENT_ID: PAYMENT_APPROVE_TERMS_RESP_ERR.value,
+                });
+              }
+              return myRes.status === 200
+                ? JSON.stringify(myRes.value.data)
+                : "noApproval";
             }
-            return myRes.status === 200
-              ? JSON.stringify(myRes.value.data)
-              : "noApproval";
-          }
+          )
         );
       }
     )
-    .run();
+  )();
 
   mixpanel.track(PAYMENT_WALLET_INIT.value, {
     EVENT_ID: PAYMENT_WALLET_INIT.value,
   });
   // 3. Wallet
-  await TE.tryCatch(
-    () =>
-      pmClient.addWalletUsingPOST({
-        Bearer: `Bearer ${mySessionToken}`,
-        walletRequest: {
-          data: {
-            type: TypeEnum.CREDIT_CARD,
-            creditCard: {
-              expireMonth: creditCard.expirationDate.split("/")[0],
-              expireYear: creditCard.expirationDate.split("/")[1],
-              holder: creditCard.name.trim(),
-              pan: creditCard.number.trim(),
-              securityCode: creditCard.cvv,
+  await pipe(
+    TE.tryCatch(
+      () =>
+        pmClient.addWalletUsingPOST({
+          Bearer: `Bearer ${mySessionToken}`,
+          walletRequest: {
+            data: {
+              type: TypeEnum.CREDIT_CARD,
+              creditCard: {
+                expireMonth: creditCard.expirationDate.split("/")[0],
+                expireYear: creditCard.expirationDate.split("/")[1],
+                holder: creditCard.name.trim(),
+                pan: creditCard.number.trim(),
+                securityCode: creditCard.cvv,
+              },
+              idPagamentoFromEC: checkData.idPayment, // needs to exist
             },
-            idPagamentoFromEC: checkData.idPayment, // needs to exist
           },
-        },
-        language: "it",
-      }),
-    (_e) => {
-      onError(ErrorsType.CONNECTION);
-      mixpanel.track(PAYMENT_WALLET_NET_ERR.value, {
-        EVENT_ID: PAYMENT_WALLET_NET_ERR.value,
-      });
-      return toError;
-    }
-  )
-    .fold(
-      (_r) => {
+          language: "it",
+        }),
+      (_e) => {
+        onError(ErrorsType.CONNECTION);
+        mixpanel.track(PAYMENT_WALLET_NET_ERR.value, {
+          EVENT_ID: PAYMENT_WALLET_NET_ERR.value,
+        });
+        return toError;
+      }
+    ),
+    TE.fold(
+      (_r) => async () => {
         onError(ErrorsType.SERVER);
         mixpanel.track(PAYMENT_WALLET_SVR_ERR.value, {
           EVENT_ID: PAYMENT_WALLET_SVR_ERR.value,
         });
       }, // to be replaced with logic to handle failures
-      (myResExt) => {
-        const walletResp = myResExt.fold(
-          () => {
-            onError(ErrorsType.GENERIC_ERROR);
-            mixpanel.track(PAYMENT_WALLET_RESP_ERR.value, {
-              EVENT_ID: PAYMENT_WALLET_RESP_ERR.value,
-            });
-          },
-          (myRes) => {
-            if (myRes.status === 200) {
-              mixpanel.track(PAYMENT_WALLET_SUCCESS.value, {
-                EVENT_ID: PAYMENT_WALLET_SUCCESS.value,
-              });
-            } else {
-              onError(ErrorsType.INVALID_CARD);
+      (myResExt) => async () => {
+        const walletResp = pipe(
+          myResExt,
+          E.fold(
+            () => {
+              onError(ErrorsType.GENERIC_ERROR);
               mixpanel.track(PAYMENT_WALLET_RESP_ERR.value, {
                 EVENT_ID: PAYMENT_WALLET_RESP_ERR.value,
               });
+            },
+            (myRes) => {
+              if (myRes.status === 200) {
+                mixpanel.track(PAYMENT_WALLET_SUCCESS.value, {
+                  EVENT_ID: PAYMENT_WALLET_SUCCESS.value,
+                });
+              } else {
+                onError(ErrorsType.INVALID_CARD);
+                mixpanel.track(PAYMENT_WALLET_RESP_ERR.value, {
+                  EVENT_ID: PAYMENT_WALLET_RESP_ERR.value,
+                });
+              }
+              return myRes.status === 200
+                ? JSON.stringify(myRes.value.data)
+                : "fakeWallet";
             }
-            return myRes.status === 200
-              ? JSON.stringify(myRes.value.data)
-              : "fakeWallet";
-          }
+          )
         );
 
         sessionStorage.setItem("securityCode", creditCard.cvv);
-        WalletSession.decode(JSON.parse(walletResp as any as string)).map(
-          (wallet) => {
+        pipe(
+          WalletSession.decode(JSON.parse(walletResp as any as string)),
+          E.map((wallet) => {
             sessionStorage.setItem("wallet", JSON.stringify(wallet));
-          }
+          })
         );
         onResponse();
       }
     )
-    .run();
+  )();
 };
 
 export const updateWallet = async (
@@ -650,53 +719,60 @@ export const updateWallet = async (
   mixpanel.track(PAYMENT_UPD_WALLET_INIT.value, {
     EVENT_ID: PAYMENT_UPD_WALLET_INIT.value,
   });
-  await TE.tryCatch(
-    () =>
-      pmClient.updateWalletUsingPUT({
-        Bearer,
-        id: idWallet,
-        walletRequest: {
-          data: {
-            idPsp,
+  await pipe(
+    TE.tryCatch(
+      () =>
+        pmClient.updateWalletUsingPUT({
+          Bearer,
+          id: idWallet,
+          walletRequest: {
+            data: {
+              idPsp,
+            },
           },
-        },
-      }),
-    (_e) => {
-      onError(ErrorsType.GENERIC_ERROR);
-      mixpanel.track(PAYMENT_UPD_WALLET_NET_ERR.value, {
-        EVENT_ID: PAYMENT_UPD_WALLET_NET_ERR.value,
-      });
-      return toError;
-    }
-  )
-    .fold(
-      (_r) => {
+        }),
+      (_e) => {
+        onError(ErrorsType.GENERIC_ERROR);
+        mixpanel.track(PAYMENT_UPD_WALLET_NET_ERR.value, {
+          EVENT_ID: PAYMENT_UPD_WALLET_NET_ERR.value,
+        });
+        return toError;
+      }
+    ),
+    TE.fold(
+      (_r) => async () => {
         onError(ErrorsType.GENERIC_ERROR);
         mixpanel.track(PAYMENT_UPD_WALLET_SVR_ERR.value, {
           EVENT_ID: PAYMENT_UPD_WALLET_SVR_ERR.value,
         });
       },
-      (myResExt) =>
-        myResExt.fold(
-          () =>
-            mixpanel.track(PAYMENT_UPD_WALLET_RESP_ERR.value, {
-              EVENT_ID: PAYMENT_UPD_WALLET_RESP_ERR.value,
-            }),
-          (res) => {
-            WalletSession.decode(res.value?.data).fold(
-              (_) => undefined,
-              (wallet) => {
-                mixpanel.track(PAYMENT_UPD_WALLET_SUCCESS.value, {
-                  EVENT_ID: PAYMENT_UPD_WALLET_SUCCESS.value,
-                });
-                sessionStorage.setItem("wallet", JSON.stringify(wallet));
-                onResponse();
-              }
-            );
-          }
+      (myResExt) => async () =>
+        pipe(
+          myResExt,
+          E.fold(
+            () =>
+              mixpanel.track(PAYMENT_UPD_WALLET_RESP_ERR.value, {
+                EVENT_ID: PAYMENT_UPD_WALLET_RESP_ERR.value,
+              }),
+            (res) => {
+              pipe(
+                WalletSession.decode(res.value?.data),
+                E.fold(
+                  (_) => undefined,
+                  (wallet) => {
+                    mixpanel.track(PAYMENT_UPD_WALLET_SUCCESS.value, {
+                      EVENT_ID: PAYMENT_UPD_WALLET_SUCCESS.value,
+                    });
+                    sessionStorage.setItem("wallet", JSON.stringify(wallet));
+                    onResponse();
+                  }
+                )
+              );
+            }
+          )
         )
     )
-    .run();
+  )();
 };
 
 export const confirmPayment = async (
@@ -710,13 +786,15 @@ export const confirmPayment = async (
   onError: (e: string) => void,
   onResponse: () => void
 ) => {
-  const browserInfo = (
-    await getBrowserInfoTask(iopayportalClient).run()
-  ).getOrElse({
-    ip: "",
-    useragent: "",
-    accept: "",
-  });
+  const browserInfo = await pipe(
+    getBrowserInfoTask(apiPaymentTransactionsClient),
+    TE.mapLeft(() => ({
+      ip: "",
+      useragent: "",
+      accept: "",
+    })),
+    TE.toUnion
+  )();
 
   const threeDSData = {
     browserJavaEnabled: navigator.javaEnabled().toString(),
@@ -730,14 +808,18 @@ export const confirmPayment = async (
     browserUserAgent: navigator.userAgent,
     acctID: `ACCT_${(
       JSON.parse(
-        fromNullable(sessionStorage.getItem("wallet")).getOrElse("")
+        pipe(
+          O.fromNullable(sessionStorage.getItem("wallet")),
+          O.getOrElse(() => "")
+        )
       ) as Wallet
     ).idWallet
       ?.toString()
       .trim()}`,
-    deliveryEmailAddress: fromNullable(
-      sessionStorage.getItem("useremail")
-    ).getOrElse(""),
+    deliveryEmailAddress: pipe(
+      O.fromNullable(sessionStorage.getItem("useremail")),
+      O.getOrElse(() => "")
+    ),
     mobilePhone: null,
   };
 
@@ -745,61 +827,66 @@ export const confirmPayment = async (
     EVENT_ID: PAYMENT_PAY3DS2_INIT.value,
   });
   // Pay
-  await TE.tryCatch(
-    () =>
-      pmClient.pay3ds2UsingPOST({
-        Bearer: `Bearer ${sessionStorage.getItem("sessionToken")}`,
-        id: checkData.idPayment,
-        payRequest: {
-          data: {
-            tipo: "web",
-            idWallet: wallet.idWallet,
-            cvv: fromNullable(sessionStorage.getItem("securityCode")).getOrElse(
-              ""
-            ),
-            threeDSData: JSON.stringify(threeDSData),
+  await pipe(
+    TE.tryCatch(
+      () =>
+        pmClient.pay3ds2UsingPOST({
+          Bearer: `Bearer ${sessionStorage.getItem("sessionToken")}`,
+          id: checkData.idPayment,
+          payRequest: {
+            data: {
+              tipo: "web",
+              idWallet: wallet.idWallet,
+              cvv: pipe(
+                O.fromNullable(sessionStorage.getItem("securityCode")),
+                O.getOrElse(() => "")
+              ),
+              threeDSData: JSON.stringify(threeDSData),
+            },
           },
-        },
-        language: "it",
-      }),
-    (_e) => {
-      onError(ErrorsType.CONNECTION);
-      mixpanel.track(PAYMENT_PAY3DS2_NET_ERR.value, {
-        EVENT_ID: PAYMENT_PAY3DS2_NET_ERR.value,
-      });
-      return toError;
-    }
-  )
-    .fold(
-      (_r) => {
+          language: "it",
+        }),
+      (_e) => {
+        onError(ErrorsType.CONNECTION);
+        mixpanel.track(PAYMENT_PAY3DS2_NET_ERR.value, {
+          EVENT_ID: PAYMENT_PAY3DS2_NET_ERR.value,
+        });
+        return toError;
+      }
+    ),
+    TE.fold(
+      (_r) => async () => {
         onError(ErrorsType.SERVER);
         mixpanel.track(PAYMENT_PAY3DS2_SVR_ERR.value, {
           EVENT_ID: PAYMENT_PAY3DS2_SVR_ERR.value,
         });
       }, // to be replaced with logic to handle failures
-      (myResExt) => {
-        const paymentResp = myResExt.fold(
-          () => "fakePayment",
-          (myRes) => {
-            if (myRes.status === 200) {
-              mixpanel.track(PAYMENT_PAY3DS2_SUCCESS.value, {
-                EVENT_ID: PAYMENT_PAY3DS2_SUCCESS.value,
-              });
-              return JSON.stringify(myRes.value.data);
-            } else {
-              onError(ErrorsType.GENERIC_ERROR);
-              mixpanel.track(PAYMENT_PAY3DS2_RESP_ERR.value, {
-                EVENT_ID: PAYMENT_PAY3DS2_RESP_ERR.value,
-              });
-              return "fakePayment";
+      (myResExt) => async () => {
+        const paymentResp = pipe(
+          myResExt,
+          E.fold(
+            () => "fakePayment",
+            (myRes) => {
+              if (myRes.status === 200) {
+                mixpanel.track(PAYMENT_PAY3DS2_SUCCESS.value, {
+                  EVENT_ID: PAYMENT_PAY3DS2_SUCCESS.value,
+                });
+                return JSON.stringify(myRes.value.data);
+              } else {
+                onError(ErrorsType.GENERIC_ERROR);
+                mixpanel.track(PAYMENT_PAY3DS2_RESP_ERR.value, {
+                  EVENT_ID: PAYMENT_PAY3DS2_RESP_ERR.value,
+                });
+                return "fakePayment";
+              }
             }
-          }
+          )
         );
         sessionStorage.setItem("idTransaction", JSON.parse(paymentResp).token);
         onResponse();
       }
     )
-    .run();
+  )();
 };
 
 export const cancelPayment = async (
@@ -817,36 +904,40 @@ export const cancelPayment = async (
     | PAYMENT_ACTION_DELETE_NET_ERR
     | PAYMENT_ACTION_DELETE_SVR_ERR
     | PAYMENT_ACTION_DELETE_RESP_ERR
-    | PAYMENT_ACTION_DELETE_SUCCESS = await TE.tryCatch(
-    () =>
-      pmClient.deleteBySessionCookieExpiredUsingDELETE({
-        Bearer: `Bearer ${sessionStorage.getItem("sessionToken")}`,
-        id: checkData.idPayment,
-        koReason: "ANNUTE",
-        showWallet: false,
-      }),
-    () => PAYMENT_ACTION_DELETE_NET_ERR.value
-  )
-    .fold(
-      () => PAYMENT_ACTION_DELETE_SVR_ERR.value,
-      (myResExt) =>
-        myResExt.fold(
-          () => PAYMENT_ACTION_DELETE_RESP_ERR.value,
-          (myRes) =>
-            myRes.status === 200
-              ? PAYMENT_ACTION_DELETE_SUCCESS.value
-              : PAYMENT_ACTION_DELETE_RESP_ERR.value
+    | PAYMENT_ACTION_DELETE_SUCCESS = await pipe(
+    TE.tryCatch(
+      () =>
+        pmClient.deleteBySessionCookieExpiredUsingDELETE({
+          Bearer: `Bearer ${sessionStorage.getItem("sessionToken")}`,
+          id: checkData.idPayment,
+          koReason: "ANNUTE",
+          showWallet: false,
+        }),
+      () => PAYMENT_ACTION_DELETE_NET_ERR.value
+    ),
+    TE.fold(
+      () => async () => PAYMENT_ACTION_DELETE_SVR_ERR.value,
+      (myResExt) => async () =>
+        pipe(
+          myResExt,
+          E.fold(
+            () => PAYMENT_ACTION_DELETE_RESP_ERR.value,
+            (myRes) =>
+              myRes.status === 200
+                ? PAYMENT_ACTION_DELETE_SUCCESS.value
+                : PAYMENT_ACTION_DELETE_RESP_ERR.value
+          )
         )
     )
-    .run();
+  )();
 
   mixpanel.track(eventResult, { EVENT_ID: eventResult });
 
-  if (PAYMENT_ACTION_DELETE_SUCCESS.decode(eventResult).isRight()) {
+  if (E.isRight(PAYMENT_ACTION_DELETE_SUCCESS.decode(eventResult))) {
     onResponse();
-  } else if (PAYMENT_ACTION_DELETE_NET_ERR.decode(eventResult).isRight()) {
+  } else if (E.isRight(PAYMENT_ACTION_DELETE_NET_ERR.decode(eventResult))) {
     onError(ErrorsType.CONNECTION);
-  } else if (PAYMENT_ACTION_DELETE_SVR_ERR.decode(eventResult).isRight()) {
+  } else if (E.isRight(PAYMENT_ACTION_DELETE_SVR_ERR.decode(eventResult))) {
     onError(ErrorsType.SERVER);
   } else {
     onError(ErrorsType.GENERIC_ERROR);

@@ -4,6 +4,8 @@ import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { pipe } from "fp-ts/function";
+import * as TE from "fp-ts/TaskEither";
 import { RptId } from "../../generated/definitions/payment-activations-api/RptId";
 import ErrorModal from "../components/modals/ErrorModal";
 import PageContainer from "../components/PageContent/PageContainer";
@@ -40,13 +42,15 @@ export default function PaymentQrPage() {
     setLoading(true);
     const token = await (ref.current as any).executeAsync();
 
-    void getPaymentInfoTask(rptId, token)
-      .fold(onError, (paymentInfo) => {
+    void pipe(
+      getPaymentInfoTask(rptId, token),
+      TE.mapLeft((err) => onError(err)),
+      TE.map((paymentInfo) => {
         setPaymentInfo(paymentInfo as PaymentInfo);
         setRptId(notice);
         navigate(`/${currentPath}/summary`);
       })
-      .run();
+    )();
   }, []);
 
   const reloadPage = () => window.location.reload();

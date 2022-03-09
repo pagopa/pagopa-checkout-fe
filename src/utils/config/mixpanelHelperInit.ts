@@ -1,7 +1,7 @@
 import { init, track, Mixpanel } from "mixpanel-browser";
-import { getConfig } from "./config";
+import { getConfigOrThrow } from "./config";
 
-const ENV = getConfig("IO_PAY_PORTAL_ENV");
+const ENV = getConfigOrThrow().CHECKOUT_ENV;
 
 export const mixpanelInit = function (): void {
   if (ENV === "develop") {
