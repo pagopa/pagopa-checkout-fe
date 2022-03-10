@@ -1,14 +1,24 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { toError } from "fp-ts/lib/Either";
-import * as TE from "fp-ts/TaskEither";
-import * as O from "fp-ts/Option";
+import { Millisecond } from "@pagopa/ts-commons/lib/units";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
-import { Millisecond } from "@pagopa/ts-commons/lib/units";
+import { toError } from "fp-ts/lib/Either";
+import * as O from "fp-ts/Option";
+import * as TE from "fp-ts/TaskEither";
+import { CodiceContestoPagamento } from "../../../generated/definitions/payment-activations-api/CodiceContestoPagamento";
+import { ImportoEuroCents } from "../../../generated/definitions/payment-activations-api/ImportoEuroCents";
+import { PaymentActivationsGetResponse } from "../../../generated/definitions/payment-activations-api/PaymentActivationsGetResponse";
+import { PaymentActivationsPostResponse } from "../../../generated/definitions/payment-activations-api/PaymentActivationsPostResponse";
+import {
+  Detail_v2Enum,
+  PaymentProblemJson,
+} from "../../../generated/definitions/payment-activations-api/PaymentProblemJson";
+import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-activations-api/PaymentRequestsGetResponse";
 import {
   TypeEnum,
   Wallet,
 } from "../../../generated/definitions/payment-manager-api/Wallet";
+import { RptId } from "../../../generated/definitions/payment-transactions-api/RptId";
 import {
   InputCardFormFields,
   PaymentCheckData,
@@ -16,6 +26,11 @@ import {
 } from "../../features/payment/models/paymentModel";
 import { getConfigOrThrow } from "../config/config";
 import {
+  PAYMENT_ACTION_DELETE_INIT,
+  PAYMENT_ACTION_DELETE_NET_ERR,
+  PAYMENT_ACTION_DELETE_RESP_ERR,
+  PAYMENT_ACTION_DELETE_SUCCESS,
+  PAYMENT_ACTION_DELETE_SVR_ERR,
   PAYMENT_ACTIVATE_INIT,
   PAYMENT_ACTIVATE_NET_ERR,
   PAYMENT_ACTIVATE_RESP_ERR,
@@ -26,16 +41,6 @@ import {
   PAYMENT_ACTIVATION_STATUS_RESP_ERR,
   PAYMENT_ACTIVATION_STATUS_SUCCESS,
   PAYMENT_ACTIVATION_STATUS_SVR_ERR,
-  PAYMENT_VERIFY_INIT,
-  PAYMENT_VERIFY_NET_ERR,
-  PAYMENT_VERIFY_RESP_ERR,
-  PAYMENT_VERIFY_SUCCESS,
-  PAYMENT_VERIFY_SVR_ERR,
-  PAYMENT_ACTION_DELETE_INIT,
-  PAYMENT_ACTION_DELETE_NET_ERR,
-  PAYMENT_ACTION_DELETE_RESP_ERR,
-  PAYMENT_ACTION_DELETE_SUCCESS,
-  PAYMENT_ACTION_DELETE_SVR_ERR,
   PAYMENT_APPROVE_TERMS_INIT,
   PAYMENT_APPROVE_TERMS_NET_ERR,
   PAYMENT_APPROVE_TERMS_RESP_ERR,
@@ -66,6 +71,11 @@ import {
   PAYMENT_UPD_WALLET_RESP_ERR,
   PAYMENT_UPD_WALLET_SUCCESS,
   PAYMENT_UPD_WALLET_SVR_ERR,
+  PAYMENT_VERIFY_INIT,
+  PAYMENT_VERIFY_NET_ERR,
+  PAYMENT_VERIFY_RESP_ERR,
+  PAYMENT_VERIFY_SUCCESS,
+  PAYMENT_VERIFY_SVR_ERR,
   PAYMENT_WALLET_INIT,
   PAYMENT_WALLET_NET_ERR,
   PAYMENT_WALLET_RESP_ERR,
@@ -76,18 +86,12 @@ import { mixpanel } from "../config/mixpanelHelperInit";
 import { ErrorsType } from "../errors/checkErrorsModel";
 import { PaymentSession } from "../sessionData/PaymentSession";
 import { WalletSession } from "../sessionData/WalletSession";
-import { ImportoEuroCents } from "../../../generated/definitions/payment-activations-api/ImportoEuroCents";
-import { CodiceContestoPagamento } from "../../../generated/definitions/payment-activations-api/CodiceContestoPagamento";
-import { RptId } from "../../../generated/definitions/payment-transactions-api/RptId";
-import { PaymentActivationsPostResponse } from "../../../generated/definitions/payment-activations-api/PaymentActivationsPostResponse";
-import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-activations-api/PaymentRequestsGetResponse";
-import { PaymentActivationsGetResponse } from "../../../generated/definitions/payment-activations-api/PaymentActivationsGetResponse";
+import { getBrowserInfoTask, getEMVCompliantColorDepth } from "./checkHelper";
 import {
-  apiPaymentTransactionsClient,
   apiPaymentActivationsClient,
+  apiPaymentTransactionsClient,
   pmClient,
 } from "./client";
-import { getBrowserInfoTask, getEMVCompliantColorDepth } from "./checkHelper";
 
 export const getPaymentInfoTask = (
   rptId: RptId,
@@ -122,7 +126,7 @@ export const getPaymentInfoTask = (
         pipe(
           errorOrResponse,
           E.fold(
-            () => TE.left("Errore recupero pagamento"),
+            () => TE.left(Detail_v2Enum.GENERIC_ERROR),
             (responseType) => {
               const reason =
                 responseType.status === 200 ? "" : responseType.value?.detail;
@@ -131,11 +135,22 @@ export const getPaymentInfoTask = (
                   ? PAYMENT_VERIFY_SUCCESS.value
                   : PAYMENT_VERIFY_RESP_ERR.value;
               mixpanel.track(EVENT_ID, { EVENT_ID, reason });
+
+              if (responseType.status === 424) {
+                return TE.left(
+                  pipe(
+                    O.fromNullable(
+                      (responseType.value as PaymentProblemJson)?.detail_v2
+                    ),
+                    O.getOrElse(() => Detail_v2Enum.GENERIC_ERROR)
+                  )
+                );
+              }
               return responseType.status !== 200
                 ? TE.left(
                     pipe(
                       O.fromNullable(responseType.value?.detail),
-                      O.getOrElse(() => "Errore recupero pagamento")
+                      O.getOrElse(() => ErrorsType.STATUS_ERROR as string)
                     )
                   )
                 : TE.of(responseType.value);
@@ -194,14 +209,21 @@ export const activePaymentTask = (
                   : PAYMENT_ACTIVATE_RESP_ERR.value;
               mixpanel.track(EVENT_ID, { EVENT_ID, reason });
 
+              if (responseType.status === 424) {
+                return TE.left(
+                  pipe(
+                    O.fromNullable(
+                      (responseType.value as PaymentProblemJson)?.detail_v2
+                    ),
+                    O.getOrElse(() => ErrorsType.STATUS_ERROR as string)
+                  )
+                );
+              }
               return responseType.status !== 200
                 ? TE.left(
                     pipe(
                       O.fromNullable(responseType.value?.detail),
-                      O.getOrElse(
-                        () =>
-                          `Errore attivazione pagamento : ${responseType.status}`
-                      )
+                      O.getOrElse(() => ErrorsType.STATUS_ERROR as string)
                     )
                   )
                 : TE.of(responseType.value);
@@ -477,6 +499,7 @@ export const getSessionWallet = async (
   creditCard: InputCardFormFields,
   onError: (e: string) => void,
   onResponse: () => void
+  // eslint-disable-next-line sonarjs/cognitive-complexity
 ) => {
   const useremail: string = sessionStorage.getItem("useremail") || "";
   const checkDataStored: string = sessionStorage.getItem("checkData") || "";
@@ -548,17 +571,23 @@ export const getSessionWallet = async (
             }
           )
         );
-        sessionStorage.setItem("sessionToken", sessionToken);
+        if (sessionToken !== "fakeSessionToken") {
+          sessionStorage.setItem("sessionToken", sessionToken);
+        }
         return sessionToken;
       }
     )
   )();
 
+  if (mySessionToken === "fakeSessionToken") {
+    return;
+  }
+
   mixpanel.track(PAYMENT_APPROVE_TERMS_INIT.value, {
     EVENT_ID: PAYMENT_APPROVE_TERMS_INIT.value,
   });
   // 2. Approve Terms
-  await pipe(
+  const termsApproval = await pipe(
     TE.tryCatch(
       () =>
         pmClient.approveTermsUsingPOST({
@@ -575,7 +604,7 @@ export const getSessionWallet = async (
         mixpanel.track(PAYMENT_APPROVE_TERMS_NET_ERR.value, {
           EVENT_ID: PAYMENT_APPROVE_TERMS_NET_ERR.value,
         });
-        return toError;
+        return "noApproval";
       }
     ),
     TE.fold(
@@ -584,8 +613,9 @@ export const getSessionWallet = async (
         mixpanel.track(PAYMENT_APPROVE_TERMS_SVR_ERR.value, {
           EVENT_ID: PAYMENT_APPROVE_TERMS_SVR_ERR.value,
         });
-      }, // to be replaced with logic to handle failures
-      (myResExt) => async () => {
+        return "noApproval";
+      },
+      (myResExt) => async () =>
         pipe(
           myResExt,
           E.fold(
@@ -606,10 +636,13 @@ export const getSessionWallet = async (
                 : "noApproval";
             }
           )
-        );
-      }
+        )
     )
   )();
+
+  if (termsApproval === "noApproval") {
+    return;
+  }
 
   mixpanel.track(PAYMENT_WALLET_INIT.value, {
     EVENT_ID: PAYMENT_WALLET_INIT.value,
@@ -679,13 +712,15 @@ export const getSessionWallet = async (
         );
 
         sessionStorage.setItem("securityCode", creditCard.cvv);
-        pipe(
-          WalletSession.decode(JSON.parse(walletResp as any as string)),
-          E.map((wallet) => {
-            sessionStorage.setItem("wallet", JSON.stringify(wallet));
-          })
-        );
-        onResponse();
+        if ((walletResp as any as string) !== "fakeWallet") {
+          pipe(
+            WalletSession.decode(JSON.parse(walletResp as any as string)),
+            E.map((wallet) => {
+              sessionStorage.setItem("wallet", JSON.stringify(wallet));
+            })
+          );
+          onResponse();
+        }
       }
     )
   )();
@@ -870,8 +905,13 @@ export const confirmPayment = async (
             }
           )
         );
-        sessionStorage.setItem("idTransaction", JSON.parse(paymentResp).token);
-        onResponse();
+        if (paymentResp !== "fakePayment") {
+          sessionStorage.setItem(
+            "idTransaction",
+            JSON.parse(paymentResp).token
+          );
+          onResponse();
+        }
       }
     )
   )();

@@ -100,15 +100,13 @@ export default function PaymentNoticePage() {
           style={useSmallDevice() ? { width: "100%" } : { height: "80vh" }}
         />
       </InformationModal>
-      {!!error && (
-        <ErrorModal
-          error={error}
-          open={errorModalOpen}
-          onClose={() => {
-            setErrorModalOpen(false);
-          }}
-        />
-      )}
+      <ErrorModal
+        error={error}
+        open={errorModalOpen}
+        onClose={() => {
+          setErrorModalOpen(false);
+        }}
+      />
       <Box display="none">
         <ReCAPTCHA
           ref={ref}

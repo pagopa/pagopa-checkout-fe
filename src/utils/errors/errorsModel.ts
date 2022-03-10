@@ -297,4 +297,20 @@ export const PaymentResponses: Record<string, PaymentFaultErrorMessage> = {
       },
     ],
   },
+  INVALID_CARD: {
+    title: "INVALID_CARD.title",
+    body: "INVALID_CARD.body",
+    category: PaymentFaultCategory.CUSTOM,
+    buttons: [
+      {
+        title: "errorButton.help",
+        action: () => {
+          window.open(HELPDESK_URL, "_blank")?.focus();
+        },
+      },
+      {
+        title: "errorButton.close",
+      },
+    ],
+  },
 };
