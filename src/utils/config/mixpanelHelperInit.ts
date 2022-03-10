@@ -4,7 +4,7 @@ import { getConfigOrThrow } from "./config";
 const ENV = getConfigOrThrow().CHECKOUT_ENV;
 
 export const mixpanelInit = function (): void {
-  if (ENV === "develop") {
+  if (ENV === "DEV") {
     // eslint-disable-next-line no-console
     console.log("Mixpanel events mock on console log.");
   } else {
@@ -25,7 +25,7 @@ export const mixpanelInit = function (): void {
 
 export const mixpanel = {
   track(event_name: string, properties?: any): void {
-    if (ENV === "develop") {
+    if (ENV === "DEV") {
       // eslint-disable-next-line no-console
       console.log(event_name, properties);
     } else {
