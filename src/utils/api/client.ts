@@ -47,6 +47,6 @@ export const pmClient = createPmClient({
  */
 export const apiPaymentTransactionsClient = createTransactionsClient({
   baseUrl: conf.CHECKOUT_PAGOPA_APIM_HOST,
-  basePath: conf.CHECKOUT_API_PAYMENT_ACTIVATIONS_BASEPATH as string,
+  basePath: conf.CHECKOUT_API_PAYMENT_TRANSACTIONS_BASEPATH as string,
   fetchApi: retryingFetch(fetch, conf.CHECKOUT_API_TIMEOUT as Millisecond, 3),
 });
