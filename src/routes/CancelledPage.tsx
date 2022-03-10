@@ -7,16 +7,20 @@ import cancelled from "../assets/images/response-unrecognized.svg";
 import PageContainer from "../components/PageContent/PageContainer";
 import { resetCheckData } from "../redux/slices/checkData";
 import { onBrowserUnload } from "../utils/eventListeners";
+import { loadState, SessionItems } from "../utils/storage/sessionStorage";
 
 export default function CancelledPage() {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const redirectUrl =
+    (loadState(SessionItems.originUrlRedirect) as string) || "/";
 
   React.useEffect(() => {
     dispatch(resetCheckData());
     window.removeEventListener("beforeunload", onBrowserUnload);
   }, []);
+
   sessionStorage.clear();
 
   return (
@@ -41,7 +45,7 @@ export default function CancelledPage() {
           <Button
             type="button"
             variant="outlined"
-            onClick={() => navigate("/")}
+            onClick={() => navigate(redirectUrl)}
             style={{
               width: "100%",
               height: "100%",

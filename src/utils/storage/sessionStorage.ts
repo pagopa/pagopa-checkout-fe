@@ -15,6 +15,7 @@ export enum SessionItems {
   checkData = "checkData",
   securityCode = "securityCode",
   wallet = "wallet",
+  originUrlRedirect = "originUrlRedirect",
 }
 export const loadState = (item: string) => {
   try {
