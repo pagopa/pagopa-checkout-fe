@@ -28,7 +28,18 @@ function ClickableFieldContainer(props: {
   };
 
   return (
-    <Grid container sx={defaultStyle} onClick={props.onClick}>
+    <Grid
+      container
+      sx={defaultStyle}
+      onClick={props.onClick}
+      onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
+        if (e.key === "Enter") {
+          // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+          !!props.onClick && props.onClick();
+        }
+      }}
+      {...(props.clickable ? { tabIndex: 0 } : {})}
+    >
       <Grid item xs={9}>
         <Box
           sx={{

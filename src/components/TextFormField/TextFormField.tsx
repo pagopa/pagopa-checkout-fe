@@ -64,6 +64,7 @@ function TextFormField(props: TextFormFieldProps) {
       inputProps={{
         inputMode: props.inputMode,
       }}
+      aria-live="polite"
     />
   );
 }

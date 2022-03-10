@@ -38,6 +38,12 @@ export function PaymentNoticeChoice() {
           borderBottomColor: "#EFEFEF",
         }}
         onClick={() => handleClickOnQR()}
+        onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
+          if (e.key === "Enter") {
+            handleClickOnQR();
+          }
+        }}
+        tabIndex={0}
       >
         <Grid item xs={9}>
           <Box
@@ -87,6 +93,12 @@ export function PaymentNoticeChoice() {
           borderBottomColor: "#EFEFEF",
         }}
         onClick={() => handleClickOnForm()}
+        onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
+          if (e.key === "Enter") {
+            handleClickOnForm();
+          }
+        }}
+        tabIndex={0}
       >
         <Grid item xs={9}>
           <Box

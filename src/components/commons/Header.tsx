@@ -39,6 +39,7 @@ export default function Header() {
             src={pagopaLogo}
             alt="pagoPA"
             style={{ width: "56px", height: "36px" }}
+            aria-hidden="true"
           />
         </Grid>
         <Grid item xs={8} sx={{ display: { xs: "none", sm: "block" } }}>

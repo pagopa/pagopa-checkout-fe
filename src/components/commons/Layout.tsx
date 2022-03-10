@@ -30,6 +30,7 @@ export function Layout({ sx, children, fixedFooterPages }: LayoutProps) {
           height: { xs: "100%" },
         }}
         maxWidth={"sm"}
+        aria-live="assertive"
       >
         {children}
       </Container>

@@ -211,6 +211,12 @@ export default function PaymentCheckPage() {
             onClick={() => {
               setModalOpen(true);
             }}
+            onKeyDown={(e: React.KeyboardEvent) => {
+              if (e.key === "Enter") {
+                setModalOpen(true);
+              }
+            }}
+            tabIndex={0}
           />
         }
       />
