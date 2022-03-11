@@ -123,7 +123,7 @@ export default function DrawerDetail(props: Props) {
                       fontWeight={600}
                       component="div"
                     >
-                      {moneyFormat(el.importo, 1)}
+                      {moneyFormat(el.importo, 0)}
                     </Typography>
                     <Typography
                       variant="body2"

@@ -343,7 +343,7 @@ export default function PaymentCheckPage() {
                     color="primary"
                     component={"div"}
                   >
-                    {moneyFormat(psp.commission)}
+                    {moneyFormat(psp.commission, 0)}
                   </Typography>
                 }
                 onClick={() => {

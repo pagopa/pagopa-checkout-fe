@@ -57,7 +57,11 @@ function ClickableFieldContainer(props: {
           </Typography>
         </Box>
       </Grid>
-      <Grid item xs={3} sx={{ display: "flex", justifyContent: "end", pr: 2 }}>
+      <Grid
+        item
+        xs={3}
+        sx={{ display: "flex", justifyContent: "flex-end", pr: 2 }}
+      >
         {props.endAdornment}
       </Grid>
     </Grid>
