@@ -1,9 +1,9 @@
 import { InputBase, NativeSelect, styled } from "@mui/material";
+import theme from "@pagopa/mui-italia/theme";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { getSortedLang } from "../../translations/lang";
-import supportedLang from "../../translations/lang";
 import { fallbackLang } from "../../translations/i18n";
+import supportedLang, { getSortedLang } from "../../translations/lang";
 
 export default function LanguageNativeSelect() {
   const { i18n } = useTranslation();
@@ -23,6 +23,7 @@ export default function LanguageNativeSelect() {
   const StyledInput = styled(InputBase)(() => ({
     "& .MuiInputBase-input": {
       padding: 0,
+      fontSize: theme.typography.caption.fontSize,
     },
   }));
 
