@@ -21,7 +21,7 @@ export const TRANSLATIONS_EN = {
   privacyInfo: {
     privacyDesc:
       "On Continue you declare that you have read and understood the ",
-    googleDesc: "Form protected by reCAPTCHA and Google",
+    googleDesc: " Form protected by reCAPTCHA and Google",
     privacy: "Privacy Policy and Terms and conditions of use of the service.",
     privacyPolicy: "Privacy Policy",
     serviceTerms: "Terms of Service",

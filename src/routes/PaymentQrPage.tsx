@@ -20,6 +20,8 @@ import {
   setRptId,
 } from "../utils/api/apiService";
 import { getPaymentInfoTask } from "../utils/api/helper";
+import { qrCodeValidation } from "../utils/regex/validators";
+import { ErrorsType } from "../utils/errors/checkErrorsModel";
 
 export default function PaymentQrPage() {
   const { t } = useTranslation();
@@ -104,10 +106,14 @@ export default function PaymentQrPage() {
           onError={() => setCamBlocked(true)}
           onScan={(data) => {
             if (data && !loading) {
-              void onSubmit({
-                billCode: data?.split("|")[2] || "",
-                cf: data?.split("|")[3] || "",
-              });
+              if (!qrCodeValidation(data)) {
+                onError(ErrorsType.INVALID_QRCODE);
+              } else {
+                void onSubmit({
+                  billCode: data?.split("|")[2] || "",
+                  cf: data?.split("|")[3] || "",
+                });
+              }
             }
           }}
           enableLoadFromPicture={false}

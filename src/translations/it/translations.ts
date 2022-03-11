@@ -19,7 +19,7 @@ export const TRANSLATIONS_IT = {
   },
   privacyInfo: {
     privacyDesc: "Proseguendo dichiari di aver letto e compreso l'",
-    googleDesc: "Form protetto tramite reCAPTCHA e Google",
+    googleDesc: " Form protetto tramite reCAPTCHA e Google",
     privacy: "Informativa Privacy e i Termini e condizioni d'uso del servizio.",
     privacyPolicy: "Privacy Policy",
     serviceTerms: "Termini di servizio",
@@ -191,6 +191,10 @@ export const TRANSLATIONS_IT = {
   INVALID_CARD: {
     title: "Spiacenti, la carta è risultata non valida",
     body: "Prova ad inserire una carta valida o eventualmente contattaci per ricevere assistenza.",
+  },
+  INVALID_QRCODE: {
+    title: "Il codice inquadrato non è un avviso pagoPA",
+    body: "Se il problema persiste, prova a inserire i dati manualmente.",
   },
   paymentChoicePage: {
     title: "Come vuoi pagare?",
