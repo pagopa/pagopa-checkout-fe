@@ -141,14 +141,16 @@ export default function PaymentQrPage() {
           alignItems="center"
           sx={{ gap: 2, mb: 4 }}
         >
-          <a
-            href=""
-            style={{ fontWeight: 600, textDecoration: "none" }}
+          <Button
+            variant="text"
             onClick={() => navigate(`/${currentPath}/notice`)}
           >
             {t("paymentQrPage.navigate")}
-          </a>
-          <ArrowForwardIcon sx={{ color: "primary.main" }} fontSize="small" />
+            <ArrowForwardIcon
+              sx={{ color: "primary.main", ml: 2 }}
+              fontSize="small"
+            />
+          </Button>
         </Box>
       </Box>
       {!!error && (

@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useTranslation } from "react-i18next";
@@ -72,13 +72,9 @@ export default function PaymentNoticePage() {
       title="paymentNoticePage.title"
       description="paymentNoticePage.description"
     >
-      <a
-        href="#"
-        style={{ fontWeight: 600, textDecoration: "none" }}
-        onClick={() => setModalOpen(true)}
-      >
+      <Button variant="text" onClick={() => setModalOpen(true)} sx={{ p: 0 }}>
         {t("paymentNoticePage.helpLink")}
-      </a>
+      </Button>
       <Box sx={{ mt: 6 }}>
         <PaymentNoticeForm
           onCancel={onCancel}

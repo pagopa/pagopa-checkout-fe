@@ -77,7 +77,7 @@ export function PaymentNoticeChoice() {
         <Grid
           item
           xs={3}
-          sx={{ display: "flex", justifyContent: "end", pr: 2 }}
+          sx={{ display: "flex", justifyContent: "flex-end", pr: 2 }}
         >
           <ArrowForwardIosIcon
             sx={{ color: "primary.main" }}
@@ -132,7 +132,7 @@ export function PaymentNoticeChoice() {
         <Grid
           item
           xs={3}
-          sx={{ display: "flex", justifyContent: "end", pr: 2 }}
+          sx={{ display: "flex", justifyContent: "flex-end", pr: 2 }}
         >
           <ArrowForwardIosIcon
             sx={{ color: "primary.main" }}
