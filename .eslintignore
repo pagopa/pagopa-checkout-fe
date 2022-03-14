@@ -10,3 +10,4 @@ generated
 cssnano.config.js
 jest.config.js
 jest.e2e.config.js
+jest-puppeteer.config.js

@@ -34,3 +34,5 @@ yarn-error.log*
 
 # Parcel
 .parcel-cache
+
+test_reports
