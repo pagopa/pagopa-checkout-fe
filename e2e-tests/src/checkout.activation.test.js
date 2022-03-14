@@ -4,9 +4,9 @@ describe('Checkout payment activation tests', () => {
   /**
    * Test input and configuration
    */
-  const CHECKOUT_URL = 'http://localhost:1234/'; // TODO: update to DEV/UAT env
+  const CHECKOUT_URL = 'https://dev.checkout.pagopa.it/';
   const VALID_FISCAL_CODE = '77777777777';
-  const INVALID_FISCAL_CODE = '07777777779';
+  // const INVALID_FISCAL_CODE = '07777777779';
   const EMAIL = 'mario.rossi@email.com';
   const VALID_CARD_DATA = {
     number: '4801769871971639',
@@ -29,11 +29,10 @@ describe('Checkout payment activation tests', () => {
     await page.setViewport({ width: 1200, height: 907 });
   });
 
-  /*
   it('Should correctly verify a payment notification', async () => {
     /**
      * 1. Payment Activation with valid notice code
-     *  
+     */
     await verifyPayment(VALID_NOTICE_CODE, VALID_FISCAL_CODE);
   });
 
