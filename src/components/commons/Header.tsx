@@ -70,32 +70,34 @@ export default function Header() {
               : ""}
           </Typography>
         </Grid>
-        <Grid
-          item
-          xs={10}
-          sx={{ display: { sm: "none" } }}
-          display="flex"
-          alignItems="center"
-        >
-          <Typography
-            color="primary.main"
-            variant="body2"
-            component="div"
-            fontWeight={600}
+        {!!PaymentCheckData.idPayment && (
+          <Grid
+            item
+            xs={10}
+            sx={{ display: { sm: "none" } }}
             display="flex"
             alignItems="center"
-            justifyContent="end"
           >
-            {PaymentCheckData
-              ? moneyFormat(PaymentCheckData.amount.amount)
-              : ""}
-            <InfoOutlinedIcon
-              color="primary"
-              sx={{ ml: 1 }}
-              onClick={toggleDrawer(true)}
-            />
-          </Typography>
-        </Grid>
+            <Typography
+              color="primary.main"
+              variant="body2"
+              component="div"
+              fontWeight={600}
+              display="flex"
+              alignItems="center"
+              justifyContent="end"
+            >
+              {PaymentCheckData
+                ? moneyFormat(PaymentCheckData.amount.amount)
+                : ""}
+              <InfoOutlinedIcon
+                color="primary"
+                sx={{ ml: 1 }}
+                onClick={toggleDrawer(true)}
+              />
+            </Typography>
+          </Grid>
+        )}
       </Grid>
       <DrawerDetail
         PaymentCheckData={PaymentCheckData}
