@@ -9,5 +9,6 @@ module.exports = {
       outputName: 'io-pay-portal-fe-TEST.xml',
     } ]
   ],
-  coverageReporters: ["cobertura"]
+  coverageReporters: ["cobertura"],
+  modulePathIgnorePatterns: ["__integration_tests__"]
 };
