@@ -3,6 +3,7 @@ import {
   THREEDSMETHODURL_STEP1_REQ,
 } from "../config/mixpanelDefs";
 import { mixpanel } from "../config/mixpanelHelperInit";
+import { onBrowserUnload } from "../eventListeners";
 
 function createForm(
   formName: string,
@@ -83,6 +84,7 @@ export function start3DS2AcsChallengeStep(
     EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_REQ.value,
     acsUrl,
   });
+  window.removeEventListener("beforeunload", onBrowserUnload);
   const form = createForm("acsChallengeForm", acsUrl, "_self", params);
   container.appendChild(form);
   form.submit();
