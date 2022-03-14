@@ -2,6 +2,7 @@
 .DS_Store
 test_reports/io-functions-pay-portal-TEST.xml
 test_reports/io-pay-portal-fe-TEST.xml
+test_reports/checkout-ui-TEST.xml
 src/env-config.js
 # dependencies
 /node_modules
