@@ -30,6 +30,7 @@ const targCookiesGroup = "C0004";
 const checkoutTheme = createTheme({
   ...theme,
   palette: {
+    ...theme.palette,
     background: {
       paper: theme.palette.background.default,
       default: theme.palette.background.paper,
