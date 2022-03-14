@@ -42,68 +42,68 @@ export default function Header() {
             aria-hidden="true"
           />
         </Grid>
-        <Grid item xs={8} sx={{ display: { xs: "none", sm: "block" } }}>
-          <Typography
-            variant="body2"
-            component="div"
-            sx={{ textAlign: "center" }}
-          >
-            {PaymentCheckData.idPayment ? PaymentCheckData.receiver : ""}
-          </Typography>
-          <Typography
-            fontWeight={600}
-            variant="body2"
-            component="div"
-            sx={{ textAlign: "center" }}
-          >
-            {PaymentCheckData.idPayment ? PaymentCheckData.subject : ""}
-          </Typography>
-          <Typography
-            color="primary.main"
-            variant="body2"
-            component="div"
-            fontWeight={600}
-            sx={{ textAlign: "center" }}
-          >
-            {PaymentCheckData.idPayment
-              ? `€ ${moneyFormat(PaymentCheckData.amount.amount)}`
-              : ""}
-          </Typography>
-        </Grid>
         {!!PaymentCheckData.idPayment && (
-          <Grid
-            item
-            xs={10}
-            sx={{ display: { sm: "none" } }}
-            display="flex"
-            alignItems="center"
-          >
-            <Typography
-              color="primary.main"
-              variant="body2"
-              component="div"
-              fontWeight={600}
+          <>
+            <Grid item xs={8} sx={{ display: { xs: "none", sm: "block" } }}>
+              <Typography
+                variant="body2"
+                component="div"
+                sx={{ textAlign: "center" }}
+              >
+                {PaymentCheckData.receiver}
+              </Typography>
+              <Typography
+                fontWeight={600}
+                variant="body2"
+                component="div"
+                sx={{ textAlign: "center" }}
+              >
+                {PaymentCheckData.subject}
+              </Typography>
+              <Typography
+                color="primary.main"
+                variant="body2"
+                component="div"
+                fontWeight={600}
+                sx={{ textAlign: "center" }}
+              >
+                {`€ ${moneyFormat(PaymentCheckData.amount.amount)}`}
+              </Typography>
+            </Grid>
+            <Grid
+              item
+              xs={10}
+              sx={{ display: { sm: "none" } }}
               display="flex"
               alignItems="center"
-              justifyContent="end"
             >
-              {PaymentCheckData
-                ? moneyFormat(PaymentCheckData.amount.amount)
-                : ""}
-              <InfoOutlinedIcon
-                color="primary"
-                sx={{ ml: 1 }}
-                onClick={toggleDrawer(true)}
-              />
-            </Typography>
-          </Grid>
+              <Typography
+                color="primary.main"
+                variant="body2"
+                component="div"
+                fontWeight={600}
+                display="flex"
+                alignItems="center"
+                justifyContent="end"
+              >
+                {PaymentCheckData
+                  ? moneyFormat(PaymentCheckData.amount.amount)
+                  : ""}
+                <InfoOutlinedIcon
+                  color="primary"
+                  sx={{ ml: 1 }}
+                  onClick={toggleDrawer(true)}
+                />
+              </Typography>
+            </Grid>
+            <DrawerDetail
+              PaymentCheckData={PaymentCheckData}
+              drawstate={drawstate}
+              toggleDrawer={toggleDrawer}
+            />
+          </>
         )}
       </Grid>
-      <DrawerDetail
-        PaymentCheckData={PaymentCheckData}
-        drawstate={drawstate}
-        toggleDrawer={toggleDrawer}
-      />
     </Box>
   );
 }
