@@ -8,7 +8,7 @@ import React from "react";
 import { FormButtons } from "../../../../components/FormButtons/FormButtons";
 import TextFormField from "../../../../components/TextFormField/TextFormField";
 import { cleanSpaces } from "../../../../utils/form/formatters";
-import { getFormErrorIcon } from "../../../../utils/form/formValidation";
+import { getFormValidationIcon } from "../../../../utils/form/formValidation";
 import {
   PaymentFormErrors,
   PaymentFormFields,
@@ -87,7 +87,10 @@ export function PaymentNoticeForm(props: {
                 sx={{ mb: 4 }}
                 endAdornment={
                   <InputAdornment position="end">
-                    {getFormErrorIcon(!!values.billCode, !!errors.billCode)}
+                    {getFormValidationIcon(
+                      !!values.billCode,
+                      !!errors.billCode
+                    )}
                   </InputAdornment>
                 }
               />
@@ -108,7 +111,7 @@ export function PaymentNoticeForm(props: {
                 handleBlur={handleBlur}
                 endAdornment={
                   <InputAdornment position="end">
-                    {getFormErrorIcon(!!values.cf, !!errors.cf)}
+                    {getFormValidationIcon(!!values.cf, !!errors.cf)}
                   </InputAdornment>
                 }
               />
