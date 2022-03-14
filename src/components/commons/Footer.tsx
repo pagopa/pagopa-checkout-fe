@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
@@ -25,32 +25,34 @@ export default function Footer(props: { fixedPages: Array<string> }) {
       }}
       bgcolor={{
         ...(isFixed()
-          ? { xs: "background.default" }
-          : { xs: "background.paper" }),
-        sm: "background.default",
+          ? { xs: "background.paper" }
+          : { xs: "background.default" }),
+        sm: "background.paper",
       }}
     >
-      <Box display={"flex"} alignItems={"center"} gap={1}>
-        <a
-          href="https://form.agid.gov.it/view/7628e161-33c0-420f-8c80-4fe362d2c7c5/"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ color: "black", textDecoration: "none" }}
-        >
-          {t("mainPage.footer.accessibility")}
-        </a>
-        <p>·</p>
-        <a
-          href="https://www.pagopa.gov.it/it/helpdesk/"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ color: "black", textDecoration: "none" }}
-        >
-          {t("mainPage.footer.help")}
-        </a>
-        <p>·</p>
-        <LanguageFooterMenu />
-      </Box>
+      <Typography variant="caption" component={"div"}>
+        <Box display={"flex"} alignItems={"center"} gap={1}>
+          <a
+            href="https://form.agid.gov.it/view/7628e161-33c0-420f-8c80-4fe362d2c7c5/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: "black", textDecoration: "none" }}
+          >
+            {t("mainPage.footer.accessibility")}
+          </a>
+          <p>·</p>
+          <a
+            href="https://www.pagopa.gov.it/it/helpdesk/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: "black", textDecoration: "none" }}
+          >
+            {t("mainPage.footer.help")}
+          </a>
+          <p>·</p>
+          <LanguageFooterMenu />
+        </Box>
+      </Typography>
       <a
         href="https://www.pagopa.it/it/"
         target="_blank"
@@ -60,7 +62,7 @@ export default function Footer(props: { fixedPages: Array<string> }) {
         <img
           src={pagopaLogo}
           alt="pagoPA"
-          style={{ width: "56px", height: "36px" }}
+          style={{ width: "60px", height: "17px" }}
         />
       </a>
     </Box>

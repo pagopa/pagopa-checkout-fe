@@ -16,8 +16,9 @@ export function Layout({ sx, children, fixedFooterPages }: LayoutProps) {
       sx={{
         display: { sm: "flex" },
         flexDirection: "column",
+        justifyContent: "space-between",
         height: "100vh",
-        bgcolor: theme.palette.background.paper,
+        bgcolor: theme.palette.background.default,
       }}
     >
       <Header />
@@ -27,9 +28,10 @@ export function Layout({ sx, children, fixedFooterPages }: LayoutProps) {
           p: { xs: 6, sm: 0 },
           pl: { xs: 2, sm: 6, md: 0 },
           pr: { xs: 2, sm: 6, md: 0 },
-          height: { xs: "100%" },
+          flexGrow: 1,
         }}
         maxWidth={"sm"}
+        aria-live="assertive"
       >
         {children}
       </Container>

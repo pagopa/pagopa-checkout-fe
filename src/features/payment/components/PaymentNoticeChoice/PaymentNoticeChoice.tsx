@@ -38,6 +38,12 @@ export function PaymentNoticeChoice() {
           borderBottomColor: "#EFEFEF",
         }}
         onClick={() => handleClickOnQR()}
+        onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
+          if (e.key === "Enter") {
+            handleClickOnQR();
+          }
+        }}
+        tabIndex={0}
       >
         <Grid item xs={9}>
           <Box
@@ -71,7 +77,7 @@ export function PaymentNoticeChoice() {
         <Grid
           item
           xs={3}
-          sx={{ display: "flex", justifyContent: "end", pr: 2 }}
+          sx={{ display: "flex", justifyContent: "flex-end", pr: 2 }}
         >
           <ArrowForwardIosIcon
             sx={{ color: "primary.main" }}
@@ -87,6 +93,12 @@ export function PaymentNoticeChoice() {
           borderBottomColor: "#EFEFEF",
         }}
         onClick={() => handleClickOnForm()}
+        onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
+          if (e.key === "Enter") {
+            handleClickOnForm();
+          }
+        }}
+        tabIndex={0}
       >
         <Grid item xs={9}>
           <Box
@@ -120,7 +132,7 @@ export function PaymentNoticeChoice() {
         <Grid
           item
           xs={3}
-          sx={{ display: "flex", justifyContent: "end", pr: 2 }}
+          sx={{ display: "flex", justifyContent: "flex-end", pr: 2 }}
         >
           <ArrowForwardIosIcon
             sx={{ color: "primary.main" }}

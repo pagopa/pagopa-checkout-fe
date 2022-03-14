@@ -211,6 +211,12 @@ export default function PaymentCheckPage() {
             onClick={() => {
               setModalOpen(true);
             }}
+            onKeyDown={(e: React.KeyboardEvent) => {
+              if (e.key === "Enter") {
+                setModalOpen(true);
+              }
+            }}
+            tabIndex={0}
           />
         }
       />
@@ -337,7 +343,7 @@ export default function PaymentCheckPage() {
                     color="primary"
                     component={"div"}
                   >
-                    {moneyFormat(psp.commission)}
+                    {moneyFormat(psp.commission, 0)}
                   </Typography>
                 }
                 onClick={() => {

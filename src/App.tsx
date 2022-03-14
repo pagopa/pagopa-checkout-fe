@@ -29,6 +29,12 @@ const targCookiesGroup = "C0004";
 
 const checkoutTheme = createTheme({
   ...theme,
+  palette: {
+    background: {
+      paper: theme.palette.background.default,
+      default: theme.palette.background.paper,
+    },
+  },
   components: {
     ...theme.components,
     MuiFormHelperText: {

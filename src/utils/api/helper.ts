@@ -378,7 +378,9 @@ export const getPaymentCheckData = async ({
                           );
                           sessionStorage.setItem(
                             "originUrlRedirect",
-                            originInput === "payportal" ? "/" : originInput
+                            originInput === "payportal"
+                              ? "/"
+                              : JSON.stringify(originInput)
                           );
                         })
                       );

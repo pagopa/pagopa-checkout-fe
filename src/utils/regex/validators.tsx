@@ -11,3 +11,9 @@ export function cardNameValidation(name: string) {
 export function digitValidation(text: string) {
   return /^\d+$/.test(text);
 }
+
+export function qrCodeValidation(code: string) {
+  return /^[a-zA-Z]{6}(\|[0-9]{3})(\|[0-9]{18})(\|[0-9]{11})(\|[0-9]{2,11})$/.test(
+    code
+  );
+}

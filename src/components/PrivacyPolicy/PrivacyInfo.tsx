@@ -20,7 +20,6 @@ export default function PrivacyInfo() {
           >
             {t("privacyInfo.privacy")}
           </a>
-          <br />
           {`${t("privacyInfo.googleDesc")} (`}
           <a
             href="https://policies.google.com/privacy"

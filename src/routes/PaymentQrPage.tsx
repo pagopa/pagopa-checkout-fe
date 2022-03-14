@@ -20,6 +20,8 @@ import {
   setRptId,
 } from "../utils/api/apiService";
 import { getPaymentInfoTask } from "../utils/api/helper";
+import { qrCodeValidation } from "../utils/regex/validators";
+import { ErrorsType } from "../utils/errors/checkErrorsModel";
 
 export default function PaymentQrPage() {
   const { t } = useTranslation();
@@ -104,10 +106,14 @@ export default function PaymentQrPage() {
           onError={() => setCamBlocked(true)}
           onScan={(data) => {
             if (data && !loading) {
-              void onSubmit({
-                billCode: data?.split("|")[2] || "",
-                cf: data?.split("|")[3] || "",
-              });
+              if (!qrCodeValidation(data)) {
+                onError(ErrorsType.INVALID_QRCODE);
+              } else {
+                void onSubmit({
+                  billCode: data?.split("|")[2] || "",
+                  cf: data?.split("|")[3] || "",
+                });
+              }
             }
           }}
           enableLoadFromPicture={false}
@@ -135,14 +141,16 @@ export default function PaymentQrPage() {
           alignItems="center"
           sx={{ gap: 2, mb: 4 }}
         >
-          <a
-            href=""
-            style={{ fontWeight: 600, textDecoration: "none" }}
+          <Button
+            variant="text"
             onClick={() => navigate(`/${currentPath}/notice`)}
           >
             {t("paymentQrPage.navigate")}
-          </a>
-          <ArrowForwardIcon sx={{ color: "primary.main" }} fontSize="small" />
+            <ArrowForwardIcon
+              sx={{ color: "primary.main", ml: 2 }}
+              fontSize="small"
+            />
+          </Button>
         </Box>
       </Box>
       {!!error && (
