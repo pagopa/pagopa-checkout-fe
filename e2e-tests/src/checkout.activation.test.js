@@ -48,8 +48,7 @@ describe('Checkout payment activation tests', () => {
     /*
      * 2. Payment with valid notice code
      */
-    await verifyPayment(VALID_NOTICE_CODE, VALID_FISCAL_CODE);
-    const resultMessage = await payNotice(EMAIL, VALID_CARD_DATA);
+    const resultMessage = await payNotice(VALID_NOTICE_CODE, VALID_FISCAL_CODE, EMAIL, VALID_CARD_DATA);
 
     expect(resultMessage).toContain('Grazie, hai pagato');
   });

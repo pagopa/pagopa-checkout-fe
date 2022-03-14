@@ -5,7 +5,7 @@ module.exports = {
         'default',
         [ 'jest-junit', {
           outputDirectory: './test_reports',
-          outputName: 'io-pay-ui-TEST.xml',
+          outputName: 'checkout-ui-TEST.xml',
         } ]
       ]
     };
