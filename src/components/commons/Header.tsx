@@ -10,6 +10,7 @@ import { moneyFormat } from "../../utils/form/formatters";
 import DrawerDetail from "../Header/DrawerDetail";
 
 export default function Header() {
+  const currentPath = location.pathname.split("/").slice(-1)[0];
   const PaymentCheckData = useSelector((state: RootState) => {
     if (!state.checkData.idPayment) {
       return getCheckData();
@@ -42,7 +43,7 @@ export default function Header() {
             aria-hidden="true"
           />
         </Grid>
-        {!!PaymentCheckData.idPayment && (
+        {!!PaymentCheckData.idPayment && currentPath !== "response" && (
           <>
             <Grid item xs={8} sx={{ display: { xs: "none", sm: "block" } }}>
               <Typography

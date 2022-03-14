@@ -9,6 +9,7 @@ import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import { Box, Button, Skeleton, SvgIcon, Typography } from "@mui/material";
 import { default as React } from "react";
 import { useTranslation } from "react-i18next";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import sprite from "../assets/images/app.svg";
 import { FormButtons } from "../components/FormButtons/FormButtons";
@@ -22,6 +23,7 @@ import ClickableFieldContainer from "../components/TextFormField/ClickableFieldC
 import FieldContainer from "../components/TextFormField/FieldContainer";
 import PspFieldContainer from "../components/TextFormField/PspFieldContainer";
 import { PspList } from "../features/payment/models/paymentModel";
+import { resetCheckData } from "../redux/slices/checkData";
 import { getCheckData, getEmailInfo, getWallet } from "../utils/api/apiService";
 import {
   cancelPayment,
@@ -52,6 +54,7 @@ const pspContainerStyle = {
 export default function PaymentCheckPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const currentPath = location.pathname.split("/")[1];
   const [modalOpen, setModalOpen] = React.useState(false);
   const [cancelModalOpen, setCancelModalOpen] = React.useState(false);
@@ -81,6 +84,7 @@ export default function PaymentCheckPage() {
   const onResponse = () => {
     setPayLoading(false);
     navigate(`/${currentPath}/response`);
+    dispatch(resetCheckData());
   };
 
   const onSubmit = React.useCallback(() => {

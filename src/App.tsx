@@ -59,7 +59,14 @@ const checkoutTheme = createTheme({
 });
 
 export function App() {
-  const fixedFooterPages = ["payment", "qr-reader", "cancelled"];
+  const fixedFooterPages = [
+    "payment",
+    "qr-reader",
+    "paymentchoice",
+    "cancelled",
+    "response",
+    "ko",
+  ];
   React.useEffect(() => {
     // OneTrust callback at first time
     // eslint-disable-next-line functional/immutable-data

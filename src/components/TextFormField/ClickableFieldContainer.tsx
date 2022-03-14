@@ -40,7 +40,7 @@ function ClickableFieldContainer(props: {
       }}
       {...(props.clickable ? { tabIndex: 0 } : {})}
     >
-      <Grid item xs={9}>
+      <Grid item xs={8}>
         <Box
           sx={{
             display: "flex",
@@ -59,7 +59,7 @@ function ClickableFieldContainer(props: {
       </Grid>
       <Grid
         item
-        xs={3}
+        xs={4}
         sx={{ display: "flex", justifyContent: "flex-end", pr: 2 }}
       >
         {props.endAdornment}
