@@ -121,14 +121,14 @@ stages:
         - script: cp env.example .env
           workingDirectory: pagopa-checkout-backend-mock
           displayName: 'Setup env for mock'
-          
+
         - script: |
-            docker-compose build
+            yarn build
           displayName: 'Setup backend mock dependencies'
           workingDirectory: pagopa-checkout-backend-mock
 
         - script: |
-             docker-compose up
+             yarn start
           displayName: 'Start backend mock'
           workingDirectory: pagopa-checkout-backend-mock
 
