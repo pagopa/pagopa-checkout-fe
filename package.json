@@ -16,7 +16,7 @@
     "dev:env": "export $(grep -v '^#' .env.development | xargs) && chmod +x env.sh && ./env.sh",
     "dev:server": "parcel src/index.html &",
     "dev:proxy": "parcel src/index.html",
-    "test": "jest",
+    "test": "jest --config=jest.config.js",
     "test:integration": "jest --config=jest.integration.config.js",
     "test:coverage": "jest --coverage --passWithNoTests",
     "preversion": "auto-changelog  --config .auto-changelog.json --unreleased --commit-limit false --stdout --template preview.hbs",
