@@ -132,10 +132,6 @@ stages:
           displayName: 'Start backend mock'
           workingDirectory: pagopa-checkout-backend-mock
 
-        - script: while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:1234)" != "200" ]]; do sleep 5; done
-          displayName: 'Wait for backend to be up and running'
-          workingDirectory: pagopa-checkout-backend-mock
-
         - checkout: self
         
         - template: templates/node-job-setup/template.yaml@pagopaCommons
@@ -145,6 +141,10 @@ stages:
         - script: |
             nohup yarn dev &
           displayName: 'Start checkout FE'
+          workingDirectory: pagopa-checkout-fe
+          
+        - script: while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:1234)" != "200" ]]; do sleep 5; done
+          displayName: 'Wait for backend to be up and running'
           workingDirectory: pagopa-checkout-fe
         
         - script: yarn test:e2e
