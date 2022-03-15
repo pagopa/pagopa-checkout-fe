@@ -118,6 +118,9 @@ stages:
 
         - checkout: checkout-backend-mock
 
+        - script: dir
+          displayName: Debugging
+          
         - script: |
             docker-compose build
           displayName: 'Setup backend mock dependencies'
