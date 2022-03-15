@@ -118,16 +118,15 @@ stages:
 
         - checkout: checkout-backend-mock
 
-        - script: dir
-          displayName: Debugging
-          
         - script: |
             docker-compose build
           displayName: 'Setup backend mock dependencies'
+          workingDirectory: pagopa-checkout-backend-mock
 
         - script: |
              docker-compose up
           displayName: 'Start backend mock'
+          workingDirectory: pagopa-checkout-backend-mock
 
         - checkout: self
 
