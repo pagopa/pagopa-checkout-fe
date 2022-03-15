@@ -49,6 +49,11 @@ resources:
       ref: refs/tags/v19
       endpoint: 'io-azure-devops-github-ro'
 
+    - repository: checkoutTests
+      type: github
+      name: pagopa/pagopa-checkout-tests
+      ref: main
+      endpoint: 'io-azure-devops-github-ro'
 stages:
   - stage: Prepare_artifact_dev
     condition: and(succeeded(), eq(${{parameters.DEV_DEPLOY}}, true))
@@ -111,6 +116,35 @@ stages:
               scriptLocation: inlineScript
               inlineScript: |
                 call az cdn endpoint purge -g pagopa-d-checkout-fe-rg -n pagopa-d-checkout-cdn-endpoint --profile-name pagopa-d-checkout-cdn-profile --content-paths "/*"
+  
+  - stage: End_to_End_Tests_DEV
+    dependsOn:
+      - Deploy_DEV_pagoPA
+    jobs:
+      - job: e2e_tests
+        steps:
+          - script: |
+             docker build -t ui_test-v2 e2e-tests-v2
+            displayName: 'Build test image'
+            workingDirectory: pagopa-checkout-tests
+
+          - script: |
+              docker run --name=ui_test-v2 ui_test-v2
+            displayName: 'Run UI test container'
+            continueOnError: true 
+            workingDirectory: pagopa-checkout-tests
+
+          - script: |
+              docker cp ui_test-v2:/puppeteer/test_reports  test_reports
+            displayName: 'Copy test result'
+            continueOnError: true 
+            workingDirectory: pagopa-checkout-tests
+
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFormat: 'JUnit'
+              testResultsFiles: '**/*-TEST.xml' 
+              searchFolder: '$(System.DefaultWorkingDirectory)'
 
 
   # Create a relase
