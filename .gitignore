@@ -1,8 +1,5 @@
 
-.DS_Store
-test_reports/io-functions-pay-portal-TEST.xml
-test_reports/io-pay-portal-fe-TEST.xml
-test_reports/checkout-ui-TEST.xml
+.DS_Stores
 src/env-config.js
 # dependencies
 /node_modules
@@ -35,4 +32,4 @@ yarn-error.log*
 # Parcel
 .parcel-cache
 
-test_reports
+test_reports/
