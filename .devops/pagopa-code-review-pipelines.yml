@@ -163,7 +163,7 @@ stages:
           displayName: 'Wait for backend to be up and running'
           workingDirectory: pagopa-checkout-fe
         
-        - script: yarn test:e2e
+        - script: yarn test:integration
           displayName: 'Integration tests exec'
           workingDirectory: pagopa-checkout-fe
 
