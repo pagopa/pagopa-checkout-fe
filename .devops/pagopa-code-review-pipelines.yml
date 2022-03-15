@@ -30,6 +30,11 @@ resources:
       name: pagopa/azure-pipeline-templates
       ref: refs/tags/v19
       endpoint: 'io-azure-devops-github-ro'
+    - repository: checkout-backend-mock
+      type: github
+      name: pagopa/pagopa-checkout-backend-mock
+      ref: master
+      endpoint: 'io-azure-devops-github-ro'
 
 stages:
   - stage: Build
@@ -107,3 +112,37 @@ stages:
           inputs:
             codeCoverageTool: Cobertura
             summaryFileLocation: 'coverage/cobertura-coverage.xml'
+      - job: integration_tests
+        steps:
+        - template: templates/node-job-setup/template.yaml@pagopaCommons
+
+        - checkout: checkout-backend-mock
+
+        - script: |
+            yarn install && yarn generate
+          displayName: 'Setup backend mock dependencies'
+
+        - script: |
+            yarn build
+          displayName: 'Build backend mock'
+
+        - script: |
+            yarn build
+          displayName: 'Start backend mock'
+
+        - checkout: self
+
+        - script: yarn generate
+          displayName: 'Generate definitions'
+
+        - script: yarn test:e2e
+          displayName: 'Integration tests exec'
+
+        - task: PublishTestResults@2
+          displayName: 'Publish test results from Jest tests'
+          inputs:
+            testResultsFormat: 'JUnit'
+            testResultsFiles: '**/junit.xml' 
+            searchFolder: '$(System.DefaultWorkingDirectory)'
+            failTaskOnFailedTests: true
+        
