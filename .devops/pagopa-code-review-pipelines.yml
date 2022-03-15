@@ -141,9 +141,8 @@ stages:
            projectDir: pagopa-checkout-fe
 
         - script: |
-            env
-          displayName: 'test'
-          workingDirectory: pagopa-checkout-fe
+            export $(grep -v '^#' .env.development | xargs)
+          displayName: 'export envs from .env.development'
 
         - script: |
             yarn dev &
