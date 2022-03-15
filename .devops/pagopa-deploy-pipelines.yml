@@ -123,6 +123,8 @@ stages:
     jobs:
       - job: e2e_tests
         steps:
+          - checkout: checkoutTests
+
           - script: |
              docker build -t ui_test-v2 e2e-tests-v2
             displayName: 'Build test image'
