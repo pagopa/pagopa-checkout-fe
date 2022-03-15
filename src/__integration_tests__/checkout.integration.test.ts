@@ -1,5 +1,6 @@
 import { payNotice, acceptCookiePolicy } from "./utils/helpers.js";
 
+
 describe("Checkout payment activation tests", () => {
   /**
    * Test input and configuration
@@ -21,14 +22,22 @@ describe("Checkout payment activation tests", () => {
   /**
    * Increase default test timeout (60000ms)
    * to support entire payment flow
-   */
-  jest.setTimeout(6 * 10 * 1000);
+    */
+  jest.setTimeout(60000);
+  jest.retryTimes(3);
+  page.setDefaultNavigationTimeout(60000);
+  page.setDefaultTimeout(60000)
+
+  beforeAll( async () => {
+    await page.goto(CHECKOUT_URL);
+    await page.setViewport({ width: 1200, height: 907 });
+    await acceptCookiePolicy();
+  })
 
   beforeEach(async () => {
     await page.goto(CHECKOUT_URL);
-    await page.setViewport({ width: 1200, height: 907 });
   });
-
+  
   it("Should correctly execute a payment", async () => {
     /*
      * 1. Payment with valid notice code
