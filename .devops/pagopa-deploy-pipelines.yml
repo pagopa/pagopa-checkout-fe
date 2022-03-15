@@ -52,7 +52,7 @@ resources:
     - repository: checkoutTests
       type: github
       name: pagopa/pagopa-checkout-tests
-      ref: main
+      ref: IOPAY-455-update-e2e-tests
       endpoint: 'io-azure-devops-github-ro'
 stages:
   - stage: Prepare_artifact_dev
@@ -126,23 +126,20 @@ stages:
           - checkout: checkoutTests
 
           - script: dir
-          
+
           - script: |
              docker build -t ui_test-v2 e2e-tests-v2
             displayName: 'Build test image'
-            workingDirectory: pagopa-checkout-tests
 
           - script: |
               docker run --name=ui_test-v2 ui_test-v2
             displayName: 'Run UI test container'
             continueOnError: true 
-            workingDirectory: pagopa-checkout-tests
 
           - script: |
               docker cp ui_test-v2:/puppeteer/test_reports  test_reports
             displayName: 'Copy test result'
             continueOnError: true 
-            workingDirectory: pagopa-checkout-tests
 
           - task: PublishTestResults@2
             inputs:
