@@ -2,24 +2,25 @@ import { createTheme, ThemeProvider } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
 import theme from "@pagopa/mui-italia/theme";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Guard from "./components/commons/Guard";
 import { Layout } from "./components/commons/Layout";
+import CancelledPage from "./routes/CancelledPage";
 import IndexPage from "./routes/IndexPage";
 import InputCardPage from "./routes/InputCardPage";
+import KOPage from "./routes/KOPage";
+import PaymentCheckPage from "./routes/PaymentCheckPage";
 import PaymentChoicePage from "./routes/PaymentChoicePage";
 import PaymentEmailPage from "./routes/PaymentEmailPage";
-import PaymentOutlet from "./routes/PaymentOutlet";
 import PaymentNoticePage from "./routes/PaymentNoticePage";
+import PaymentOutlet from "./routes/PaymentOutlet";
+import PaymentQrPage from "./routes/PaymentQrPage";
+import PaymentResponsePage from "./routes/PaymentResponsePage";
 import PaymentSummaryPage from "./routes/PaymentSummaryPage";
 import "./translations/i18n";
-import PaymentQrPage from "./routes/PaymentQrPage";
-import { SessionItems } from "./utils/storage/sessionStorage";
-import PaymentCheckPage from "./routes/PaymentCheckPage";
-import PaymentResponsePage from "./routes/PaymentResponsePage";
-import CancelledPage from "./routes/CancelledPage";
-import KOPage from "./routes/KOPage";
 import { mixpanelInit } from "./utils/config/mixpanelHelperInit";
+import { SessionItems } from "./utils/storage/sessionStorage";
 
 declare const OneTrust: any;
 declare const OnetrustActiveGroups: string;
@@ -59,6 +60,7 @@ const checkoutTheme = createTheme({
 });
 
 export function App() {
+  const { t } = useTranslation();
   const fixedFooterPages = [
     "payment",
     "qr-reader",
@@ -88,6 +90,8 @@ export function App() {
       mixpanelInit();
     }
   }, []);
+  // eslint-disable-next-line functional/immutable-data
+  document.title = t("app.title");
 
   return (
     <ThemeProvider theme={checkoutTheme}>

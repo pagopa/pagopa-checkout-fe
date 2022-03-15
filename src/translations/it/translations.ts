@@ -286,4 +286,7 @@ export const TRANSLATIONS_IT = {
     body: "Non è stato addebitato alcun importo.",
     button: "Chiudi",
   },
+  app: {
+    title: "Paga un avviso - pagoPA",
+  },
 };
