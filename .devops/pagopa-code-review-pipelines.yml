@@ -123,7 +123,6 @@ stages:
           displayName: 'Setup env for mock'
 
         - template: templates/node-job-setup/template.yaml@pagopaCommons
-          workingDirectory: pagopa-checkout-backend-mock
 
         - script: |
             nohup yarn start &
@@ -133,7 +132,6 @@ stages:
         - checkout: self
 
         - template: templates/node-job-setup/template.yaml@pagopaCommons
-          workingDirectory: pagopa-checkout-fe
         
         - script: |
             nohup yarn start &
