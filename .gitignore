@@ -9,6 +9,7 @@ src/env-config.js
 
 # testing
 /coverage
+/test_reports
 
 # production
 /build
