@@ -133,7 +133,7 @@ stages:
           workingDirectory: pagopa-checkout-backend-mock
 
         - script: |
-             yarn start
+            nohup yarn start &
           displayName: 'Start backend mock'
           workingDirectory: pagopa-checkout-backend-mock
 
