@@ -52,7 +52,7 @@ resources:
     - repository: checkoutTests
       type: github
       name: pagopa/pagopa-checkout-tests
-      ref: IOPAY-455-update-e2e-tests
+      ref: main
       endpoint: 'io-azure-devops-github-ro'
 stages:
   - stage: Prepare_artifact_dev
@@ -120,12 +120,12 @@ stages:
   - stage: End_to_End_Tests_DEV
 #    dependsOn:
 #      - Deploy_DEV_pagoPA
+    pool:
+      vmImage: 'ubuntu-latest'
     jobs:
       - job: end_to_end_tests
         steps:
           - checkout: checkoutTests
-
-          - script: dir
 
           - script: |
              docker build -t ui_test-v2 e2e-tests-v2
