@@ -123,8 +123,13 @@ stages:
           displayName: 'Setup env for mock'
 
         - script: |
-            yarn build
+            yarn install
           displayName: 'Setup backend mock dependencies'
+          workingDirectory: pagopa-checkout-backend-mock
+
+        - script: |
+            yarn build
+          displayName: 'Build backend mock'
           workingDirectory: pagopa-checkout-backend-mock
 
         - script: |
