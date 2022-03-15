@@ -142,6 +142,10 @@ stages:
           displayName: 'Start checkout FE'
           workingDirectory: pagopa-checkout-fe
 
+        - task: Delay@1
+          inputs:
+            delayForMinutes: '3' 
+        
         - script: yarn test:e2e
           displayName: 'Integration tests exec'
           workingDirectory: pagopa-checkout-fe
