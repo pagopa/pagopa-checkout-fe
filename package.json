@@ -17,7 +17,7 @@
     "dev:server": "parcel src/index.html &",
     "dev:proxy": "parcel src/index.html",
     "test": "jest",
-    "test:e2e": "jest --config=jest.e2e.config.js",
+    "test:integration": "jest --config=jest.integration.config.js",
     "test:coverage": "jest --coverage --passWithNoTests",
     "preversion": "auto-changelog  --config .auto-changelog.json --unreleased --commit-limit false --stdout --template preview.hbs",
     "version": "auto-changelog -p --config .auto-changelog.json --unreleased && git add CHANGELOG.md",
