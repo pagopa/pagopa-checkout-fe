@@ -115,24 +115,14 @@ stages:
             summaryFileLocation: 'coverage/cobertura-coverage.xml'
       - job: integration_tests
         steps:
-        - template: templates/node-job-setup/template.yaml@pagopaCommons
-
+      
         - checkout: checkout-backend-mock
-          clean: false
-
+        
         - script: cp env.example .env
           workingDirectory: pagopa-checkout-backend-mock
           displayName: 'Setup env for mock'
 
-        - script: |
-            yarn install
-          displayName: 'Setup backend mock dependencies'
-          workingDirectory: pagopa-checkout-backend-mock
-
-        - script: |
-            yarn build
-          displayName: 'Build backend mock'
-          workingDirectory: pagopa-checkout-backend-mock
+        - template: templates/node-job-setup/template.yaml@pagopaCommons
 
         - script: |
             nohup yarn start &
@@ -140,7 +130,13 @@ stages:
           workingDirectory: pagopa-checkout-backend-mock
 
         - checkout: self
-          clean: false
+
+        - template: templates/node-job-setup/template.yaml@pagopaCommons
+        
+        - script: |
+            nohup yarn start &
+          displayName: 'Start backend mock'
+          workingDirectory: pagopa-checkout-backend-mock
 
         - script: yarn test:e2e
           displayName: 'Integration tests exec'
