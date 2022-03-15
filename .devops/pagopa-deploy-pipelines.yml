@@ -121,7 +121,7 @@ stages:
     dependsOn:
       - Deploy_DEV_pagoPA
     jobs:
-      - job: e2e_tests
+      - job: end_to_end_tests
         steps:
           - checkout: checkoutTests
 
