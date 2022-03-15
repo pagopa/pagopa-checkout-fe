@@ -42,7 +42,6 @@ describe("Checkout payment activation tests", () => {
     /*
      * 1. Payment with valid notice code
      */
-    await acceptCookiePolicy();
     const resultMessage = await payNotice(
       VALID_NOTICE_CODE,
       VALID_FISCAL_CODE,
