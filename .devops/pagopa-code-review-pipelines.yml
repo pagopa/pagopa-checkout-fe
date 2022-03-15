@@ -118,6 +118,7 @@ stages:
         - template: templates/node-job-setup/template.yaml@pagopaCommons
 
         - checkout: checkout-backend-mock
+          clean: false
 
         - script: cp env.example .env
           workingDirectory: pagopa-checkout-backend-mock
