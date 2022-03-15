@@ -137,7 +137,7 @@ stages:
           workingDirectory: pagopa-checkout-fe
           displayName: 'Setup deps for checkout fe'
         
-        - script: yarn build && yarn prestart-mock
+        - script: yarn prestart-mock && yarn build
           workingDirectory: pagopa-checkout-fe
           displayName: 'Build checkout fe'
         
