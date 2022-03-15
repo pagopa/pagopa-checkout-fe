@@ -78,4 +78,7 @@ export const TRANSLATIONS_EN = {
   general: {
     and: "&",
   },
+  app: {
+    title: "Pay a notice - pagoPA",
+  },
 };

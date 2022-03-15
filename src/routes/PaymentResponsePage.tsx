@@ -72,7 +72,6 @@ export default function PaymentCheckPage() {
       const message = responseOutcome[viewOutcome];
       setOutcomeMessage(message);
       setLoading(false);
-      sessionStorage.clear();
       window.removeEventListener("beforeunload", onBrowserUnload);
     };
 
@@ -128,7 +127,10 @@ export default function PaymentCheckPage() {
             <Box px={8} sx={{ width: "100%", height: "100%" }}>
               <Button
                 variant="outlined"
-                onClick={() => window.location.replace(originUrlRedirect)}
+                onClick={() => {
+                  sessionStorage.clear();
+                  window.location.replace(originUrlRedirect);
+                }}
                 sx={{
                   width: "100%",
                   height: "100%",
