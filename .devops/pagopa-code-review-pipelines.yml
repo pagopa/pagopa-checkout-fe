@@ -141,6 +141,11 @@ stages:
            projectDir: pagopa-checkout-fe
 
         - script: |
+            env
+          displayName: 'test'
+          workingDirectory: pagopa-checkout-fe
+
+        - script: |
             yarn dev &
           displayName: 'Start checkout FE'
           workingDirectory: pagopa-checkout-fe
