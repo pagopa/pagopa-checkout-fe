@@ -132,15 +132,9 @@ stages:
           workingDirectory: pagopa-checkout-backend-mock
 
         - checkout: self
+        
+        - template: templates/node-job-setup/template.yaml@pagopaCommons
 
-        - script: yarn install && yarn generate
-          workingDirectory: pagopa-checkout-fe
-          displayName: 'Setup deps for checkout fe'
-        
-        - script: yarn prestart-mock && yarn build
-          workingDirectory: pagopa-checkout-fe
-          displayName: 'Build checkout fe'
-        
         - script: |
             nohup yarn dev &
           displayName: 'Start checkout FE'
