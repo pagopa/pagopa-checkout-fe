@@ -14,7 +14,7 @@
     "dev": "rimraf .cache && rimraf dist && npm-run-all generate type-check dev:env dev:server",
     "proxy": "npm-run-all generate type-check dev:env dev:proxy",
     "dev:env": "export $(grep -v '^#' .env.development | xargs) && chmod +x env.sh && source env.sh",
-    "dev:server": "parcel src/index.html",
+    "dev:server": "parcel src/index.html &",
     "dev:proxy": "parcel src/index.html",
     "test": "jest",
     "test:e2e": "jest --config=jest.e2e.config.js",
