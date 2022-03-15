@@ -137,7 +137,7 @@ stages:
           displayName: 'Start backend mock'
           workingDirectory: pagopa-checkout-backend-mock
 
-        - checkout: self
+        - checkout: none
 
         - script: yarn test:e2e
           displayName: 'Integration tests exec'
