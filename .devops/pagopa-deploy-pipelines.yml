@@ -118,8 +118,8 @@ stages:
                 call az cdn endpoint purge -g pagopa-d-checkout-fe-rg -n pagopa-d-checkout-cdn-endpoint --profile-name pagopa-d-checkout-cdn-profile --content-paths "/*"
   
   - stage: End_to_End_Tests_DEV
-    dependsOn:
-      - Deploy_DEV_pagoPA
+#    dependsOn:
+#      - Deploy_DEV_pagoPA
     jobs:
       - job: end_to_end_tests
         steps:
