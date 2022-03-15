@@ -114,6 +114,7 @@ stages:
             codeCoverageTool: Cobertura
             summaryFileLocation: 'coverage/cobertura-coverage.xml'
       - job: integration_tests
+        timeoutInMinutes: 10
         steps:
       
         - checkout: checkout-backend-mock
@@ -129,6 +130,10 @@ stages:
         - script: |
             nohup yarn start &
           displayName: 'Start backend mock'
+          workingDirectory: pagopa-checkout-backend-mock
+
+        - script: while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:1234)" != "200" ]]; do sleep 5; done
+          displayName: 'Wait for backend to be up and running'
           workingDirectory: pagopa-checkout-backend-mock
 
         - checkout: self
