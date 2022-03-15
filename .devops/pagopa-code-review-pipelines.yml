@@ -139,14 +139,14 @@ stages:
 
         - checkout: self
 
-        - script: yarn generate
-          displayName: 'Generate definitions'
+        - script: yarn install && yarn generate && yarn build
+          displayName: 'Setup build'
           workingDirectory: pagopa-checkout-fe
 
         - script: yarn test:e2e
           displayName: 'Integration tests exec'
           workingDirectory: pagopa-checkout-fe
-          
+
         - task: PublishTestResults@2
           displayName: 'Publish test results from Jest tests'
           inputs:
