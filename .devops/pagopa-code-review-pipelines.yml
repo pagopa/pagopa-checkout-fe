@@ -30,6 +30,7 @@ resources:
       name: pagopa/azure-pipeline-templates
       ref: refs/tags/v19
       endpoint: 'io-azure-devops-github-ro'
+
     - repository: checkout-backend-mock
       type: github
       name: pagopa/pagopa-checkout-backend-mock
@@ -137,7 +138,8 @@ stages:
           displayName: 'Start backend mock'
           workingDirectory: pagopa-checkout-backend-mock
 
-        - checkout: none
+        - checkout: self
+          clean: false
 
         - script: yarn test:e2e
           displayName: 'Integration tests exec'
