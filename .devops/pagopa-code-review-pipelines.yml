@@ -139,10 +139,6 @@ stages:
 
         - checkout: self
 
-        - script: yarn install && yarn generate && yarn build
-          displayName: 'Setup build'
-          workingDirectory: pagopa-checkout-fe
-
         - script: yarn test:e2e
           displayName: 'Integration tests exec'
           workingDirectory: pagopa-checkout-fe
