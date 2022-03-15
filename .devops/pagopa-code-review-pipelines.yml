@@ -122,7 +122,7 @@ stages:
           workingDirectory: pagopa-checkout-backend-mock
           displayName: 'Setup env for mock'
 
-        - script: yarn install
+        - script: yarn install && yarn build
           workingDirectory: pagopa-checkout-backend-mock
           displayName: 'Setup deps for mock'
 
@@ -137,13 +137,12 @@ stages:
           workingDirectory: pagopa-checkout-fe
           displayName: 'Setup deps for checkout fe'
         
-        
         - script: yarn build
           workingDirectory: pagopa-checkout-fe
           displayName: 'Build checkout fe'
         
         - script: |
-            nohup yarn start &
+            nohup yarn dev &
           displayName: 'Start checkout FE'
           workingDirectory: pagopa-checkout-fe
 
