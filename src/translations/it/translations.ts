@@ -289,4 +289,11 @@ export const TRANSLATIONS_IT = {
   app: {
     title: "Paga un avviso - pagoPA",
   },
+  ariaLabels: {
+    languageMenu: "Menù lingue",
+    close: "Chiudi",
+    editPsp: "Modifica PSP",
+    editCard: "Modifica dati carta",
+    informationDialog: "Informazioni",
+  },
 };

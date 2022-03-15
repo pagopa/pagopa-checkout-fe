@@ -1,6 +1,7 @@
 import CloseIcon from "@mui/icons-material/Close";
 import { Box, Container, Drawer, IconButton } from "@mui/material";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { useSmallDevice } from "../../hooks/useSmallDevice";
 import SkeletonFieldContainer from "../Skeletons/SkeletonFieldContainer";
 
@@ -11,6 +12,7 @@ export function CustomDrawer(props: {
   style?: React.CSSProperties;
   loading?: boolean;
 }) {
+  const { t } = useTranslation();
   return (
     <Drawer
       anchor={useSmallDevice() ? "bottom" : "right"}
@@ -21,7 +23,7 @@ export function CustomDrawer(props: {
       <Container sx={{ p: 3 }} maxWidth="xs">
         <Box display="flex" justifyContent="end" alignItems="center">
           <IconButton
-            aria-label="close"
+            aria-label={t("ariaLabels.close")}
             onClick={() => props.onClose()}
             sx={{
               color: "action.active",

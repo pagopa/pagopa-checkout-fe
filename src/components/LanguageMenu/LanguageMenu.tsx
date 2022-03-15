@@ -7,7 +7,7 @@ import { getSortedLang } from "../../translations/lang";
 import supportedLang from "../../translations/lang";
 
 export default function LanguageMenu() {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const [lang, setLang] = React.useState<string>(i18n.language.split("-")[0]);
   const languages = getSortedLang().map((elem, index) => (
     <MenuItem
@@ -60,7 +60,7 @@ export default function LanguageMenu() {
       <IconButton
         size="medium"
         edge="end"
-        aria-label="account of current user"
+        aria-label={t("ariaLabels.languageMenu")}
         aria-controls={menuId}
         aria-haspopup="true"
         onClick={handleMenuOpen}
