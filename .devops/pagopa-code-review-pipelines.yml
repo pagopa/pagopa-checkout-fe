@@ -119,15 +119,11 @@ stages:
         - checkout: checkout-backend-mock
 
         - script: |
-            yarn install && yarn generate
+            docker-compose build
           displayName: 'Setup backend mock dependencies'
 
         - script: |
-            yarn build
-          displayName: 'Build backend mock'
-
-        - script: |
-            yarn build
+             docker-compose up
           displayName: 'Start backend mock'
 
         - checkout: self
