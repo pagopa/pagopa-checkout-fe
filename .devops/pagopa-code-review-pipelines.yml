@@ -134,7 +134,8 @@ stages:
         - checkout: self
         
         - template: templates/node-job-setup/template.yaml@pagopaCommons
-          projectDir: pagopa-checkout-fe
+          parameters:
+           projectDir: pagopa-checkout-fe
 
         - script: |
             nohup yarn dev &
