@@ -1,7 +1,5 @@
 
-.DS_Store
-test_reports/io-functions-pay-portal-TEST.xml
-test_reports/io-pay-portal-fe-TEST.xml
+.DS_Stores
 src/env-config.js
 # dependencies
 /node_modules
@@ -11,6 +9,7 @@ src/env-config.js
 
 # testing
 /coverage
+/test_reports
 
 # production
 /build
@@ -33,3 +32,5 @@ yarn-error.log*
 
 # Parcel
 .parcel-cache
+
+test_reports/

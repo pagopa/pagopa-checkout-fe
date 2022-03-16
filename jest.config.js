@@ -1,13 +1,15 @@
 module.exports = {
   preset: "ts-jest",
-  testEnvironment: "node",
+  testEnvironment: "jsdom",
   testPathIgnorePatterns: ["dist", "/node_modules"],
+  testRegex: "./*test\\.ts$",
   reporters: [
     'default',
     [ 'jest-junit', {
       outputDirectory: './test_reports',
-      outputName: 'io-pay-portal-fe-TEST.xml',
+      outputName: 'checkout-unit-TEST.xml',
     } ]
   ],
-  coverageReporters: ["cobertura"]
+  coverageReporters: ["cobertura"],
+  modulePathIgnorePatterns: ["__integration_tests__"]
 };

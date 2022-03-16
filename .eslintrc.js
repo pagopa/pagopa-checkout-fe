@@ -17,6 +17,7 @@ module.exports = {
       'prettier/@typescript-eslint',
       'plugin:prettier/recommended',
     ],
+    "ignorePatterns": ["**/__integration_tests__/*"],
     rules: {
       'no-case-declarations': 'off',
       'no-inner-declarations': 'off',
