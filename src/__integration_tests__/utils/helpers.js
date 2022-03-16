@@ -25,17 +25,21 @@ export const fillPaymentNotificationForm = async (noticeCode, fiscalCode) => {
 };
 
 export const verifyPaymentAndGetError = async (noticeCode, fiscalCode) => {
-  const errorMessageXPath = "/html/body/div[2]/div[3]/div/div/div/div[1]";
+  const errorMessageXPath = "/html/body/div[5]/div[3]/div";
+  const payNoticeBtnXPath =
+    "/html/body/div[1]/div/div[2]/div/div[6]/div[2]/button";
 
-  await acceptCookiePolicy();
   await fillPaymentNotificationForm(noticeCode, fiscalCode);
+  const payNoticeBtn = await page.waitForXPath(payNoticeBtnXPath, {
+    visible: true,
+  });
+  await payNoticeBtn.click();
   const errorMessageElem = await page.waitForXPath(errorMessageXPath);
 
   return await errorMessageElem.evaluate((el) => el.textContent);
 };
 
 export const verifyPayment = async (noticeCode, fiscalCode) => {
-  await acceptCookiePolicy();
   await fillPaymentNotificationForm(noticeCode, fiscalCode);
 };
 
@@ -64,6 +68,21 @@ export const payNotice = async (noticeCode, fiscalCode, email, cardData) => {
   await fillEmailForm(email);
   await choosePaymentMethod("card");
   await fillCardDataForm(cardData);
+
+  const message = await page.waitForXPath(resultMessageXPath);
+  return await message.evaluate((el) => el.textContent);
+};
+
+export const activatePaymentAndGetError = async (noticeCode, fiscalCode) => {
+  const payNoticeBtnXPath =
+    "/html/body/div[1]/div/div[2]/div/div[6]/div[2]/button";
+  const resultMessageXPath = "/html/body/div[1]/div/div[2]/div/div/div/h6";
+  await fillPaymentNotificationForm(noticeCode, fiscalCode);
+
+  const payNoticeBtn = await page.waitForXPath(payNoticeBtnXPath, {
+    visible: true,
+  });
+  await payNoticeBtn.click();
 
   const message = await page.waitForXPath(resultMessageXPath);
   return await message.evaluate((el) => el.textContent);
