@@ -97,6 +97,8 @@ export default function PaymentCheckPage() {
               justifyContent: "center",
               width: "100%",
             }}
+            aria-live="assertive"
+            aria-label={t("ariaLabels.loading")}
           >
             <CircularProgress />
           </Box>

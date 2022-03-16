@@ -295,5 +295,6 @@ export const TRANSLATIONS_IT = {
     editPsp: "Modifica PSP",
     editCard: "Modifica dati carta",
     informationDialog: "Informazioni",
+    loading: "Caricamento",
   },
 };
