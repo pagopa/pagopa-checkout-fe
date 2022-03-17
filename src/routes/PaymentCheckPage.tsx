@@ -196,6 +196,7 @@ export default function PaymentCheckPage() {
             onClick={() => navigate(-1)}
             startIcon={<EditIcon />}
             disabled={isDisabled()}
+            aria-label={t("ariaLabels.editCard")}
           >
             {t("clipboard.edit")}
           </Button>
@@ -221,6 +222,8 @@ export default function PaymentCheckPage() {
               }
             }}
             tabIndex={0}
+            aria-label={t("ariaLabels.informationDialog")}
+            role="dialog"
           />
         }
       />
@@ -243,6 +246,7 @@ export default function PaymentCheckPage() {
             onClick={onPspEditClick}
             startIcon={<EditIcon />}
             disabled={isDisabled()}
+            aria-label={t("ariaLabels.editPsp")}
           >
             {t("clipboard.edit")}
           </Button>
@@ -319,10 +323,18 @@ export default function PaymentCheckPage() {
               pb: 2,
             }}
           >
-            <Typography variant={"caption-semibold"} component={"div"}>
+            <Typography
+              variant={"caption-semibold"}
+              component={"div"}
+              aria-hidden="true"
+            >
               {t("paymentCheckPage.drawer.header.name")}
             </Typography>
-            <Typography variant={"caption-semibold"} component={"div"}>
+            <Typography
+              variant={"caption-semibold"}
+              component={"div"}
+              aria-hidden="true"
+            >
               {t("paymentCheckPage.drawer.header.amount")}
             </Typography>
           </Box>

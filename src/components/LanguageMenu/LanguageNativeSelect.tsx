@@ -1,11 +1,12 @@
-import { InputBase, NativeSelect, styled, useTheme } from "@mui/material";
+import { Box, InputBase, NativeSelect, styled, useTheme } from "@mui/material";
+import { visuallyHidden } from "@mui/utils";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { fallbackLang } from "../../translations/i18n";
 import supportedLang, { getSortedLang } from "../../translations/lang";
 
 export default function LanguageNativeSelect() {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const theme = useTheme();
   const [lang, setLang] = React.useState<string>(i18n.language.split("-")[0]);
 
@@ -29,10 +30,12 @@ export default function LanguageNativeSelect() {
 
   return (
     <>
+      <Box sx={visuallyHidden}>{t("ariaLabels.languageMenu")}</Box>
       <NativeSelect
         defaultValue={lang in supportedLang ? lang : fallbackLang}
         input={<StyledInput />}
         onChange={(e) => changeLanguageHandler(e.target.value)}
+        aria-label={t("ariaLabels.appLanguage")}
       >
         {languages}
       </NativeSelect>

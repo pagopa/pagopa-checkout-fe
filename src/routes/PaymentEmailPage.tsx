@@ -1,5 +1,6 @@
 import { Box, CircularProgress } from "@mui/material";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { CancelPayment } from "../components/modals/CancelPayment";
@@ -19,6 +20,7 @@ import { cancelPayment, getPaymentCheckData } from "../utils/api/helper";
 import { onBrowserUnload } from "../utils/eventListeners";
 
 export default function PaymentEmailPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const emailInfo = getEmailInfo();
   const currentPath = location.pathname.split("/")[1];
@@ -89,6 +91,8 @@ export default function PaymentEmailPage() {
           justifyContent="center"
           alignItems="center"
           my={10}
+          aria-live="assertive"
+          aria-label={t("ariaLabels.loading")}
         >
           <CircularProgress />
         </Box>

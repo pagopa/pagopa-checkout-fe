@@ -4,6 +4,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { Dialog, DialogContent, DialogTitle, useTheme } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 function InformationModal(props: {
   open: boolean;
@@ -14,6 +15,7 @@ function InformationModal(props: {
   maxWidth?: "xs" | "sm" | "lg";
 }) {
   const theme = useTheme();
+  const { t } = useTranslation();
   return (
     <Dialog
       maxWidth={props.maxWidth}
@@ -34,7 +36,7 @@ function InformationModal(props: {
       <DialogTitle sx={{ m: 0, p: 2 }}>
         {!props.hideIcon && (
           <IconButton
-            aria-label="close"
+            aria-label={t("ariaLabels.close")}
             onClick={() => props.onClose()}
             sx={{
               position: "absolute",

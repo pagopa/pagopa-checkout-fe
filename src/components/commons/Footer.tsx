@@ -37,19 +37,21 @@ export default function Footer(props: { fixedPages: Array<string> }) {
             target="_blank"
             rel="noopener noreferrer"
             style={{ color: "black", textDecoration: "none" }}
+            title={t("mainPage.footer.accessibility")}
           >
             {t("mainPage.footer.accessibility")}
           </a>
-          <p>·</p>
+          <p aria-hidden="true">·</p>
           <a
             href="https://www.pagopa.gov.it/it/helpdesk/"
             target="_blank"
             rel="noopener noreferrer"
             style={{ color: "black", textDecoration: "none" }}
+            title={t("mainPage.footer.help")}
           >
             {t("mainPage.footer.help")}
           </a>
-          <p>·</p>
+          <p aria-hidden="true">·</p>
           <LanguageFooterMenu />
         </Box>
       </Typography>
@@ -58,11 +60,13 @@ export default function Footer(props: { fixedPages: Array<string> }) {
         target="_blank"
         rel="noopener noreferrer"
         style={{ display: "flex" }}
+        title={t("mainPage.footer.pagoPA")}
       >
         <img
           src={pagopaLogo}
           alt="pagoPA"
           style={{ width: "60px", height: "17px" }}
+          aria-hidden="true"
         />
       </a>
     </Box>

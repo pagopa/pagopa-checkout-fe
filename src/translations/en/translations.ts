@@ -3,6 +3,7 @@ export const TRANSLATIONS_EN = {
     footer: {
       accessibility: "Accessibility",
       help: "Help",
+      pagoPA: "visit pagoPA site",
     },
     header: {
       disclaimer: "",
@@ -80,5 +81,14 @@ export const TRANSLATIONS_EN = {
   },
   app: {
     title: "Pay a notice - pagoPA",
+  },
+  ariaLabels: {
+    languageMenu: "Current language",
+    appLanguage: "Select language",
+    close: "Close",
+    editPsp: "Change PSP",
+    editCard: "Edit credit card",
+    informationDialog: "Informations",
+    loading: "Loading",
   },
 };

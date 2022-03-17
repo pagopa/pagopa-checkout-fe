@@ -48,8 +48,14 @@ export function FormButtons(props: {
               height: "100%",
               minHeight: 45,
             }}
+            aria-live="polite"
+            aria-label={
+              props.loadingSubmit
+                ? t("ariaLabels.loading")
+                : t(props.cancelTitle)
+            }
           >
-            {t(props.cancelTitle)}
+            {props.loadingSubmit ? "" : t(props.cancelTitle)}
           </LoadingButton>
         </Grid>
         <Grid xs={8} style={useSmallDevice() ? { paddingTop: 0 } : {}} item>
@@ -65,8 +71,14 @@ export function FormButtons(props: {
               height: "100%",
               minHeight: 45,
             }}
+            aria-live="polite"
+            aria-label={
+              props.loadingSubmit
+                ? t("ariaLabels.loading")
+                : t(props.submitTitle)
+            }
           >
-            {t(props.submitTitle)}
+            {props.loadingSubmit ? "" : t(props.submitTitle)}
           </LoadingButton>
         </Grid>
       </Grid>

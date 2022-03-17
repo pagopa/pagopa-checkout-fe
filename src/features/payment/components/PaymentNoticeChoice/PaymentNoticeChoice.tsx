@@ -43,7 +43,7 @@ export function PaymentNoticeChoice() {
             handleClickOnQR();
           }
         }}
-        tabIndex={0}
+        aria-hidden="true"
       >
         <Grid item xs={9}>
           <Box
@@ -99,6 +99,7 @@ export function PaymentNoticeChoice() {
           }
         }}
         tabIndex={0}
+        role="link"
       >
         <Grid item xs={9}>
           <Box

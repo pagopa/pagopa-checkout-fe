@@ -68,7 +68,7 @@ export default function Header() {
                 fontWeight={600}
                 sx={{ textAlign: "center" }}
               >
-                {`€ ${moneyFormat(PaymentCheckData.amount.amount)}`}
+                {`${moneyFormat(PaymentCheckData.amount.amount)}`}
               </Typography>
             </Grid>
             <Grid

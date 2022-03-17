@@ -5,10 +5,10 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import {
   Alert,
   AlertTitle,
-  Box,
   Button,
   Dialog,
   DialogContent,
+  DialogTitle,
   LinearProgress,
   Tooltip,
   Typography,
@@ -102,59 +102,60 @@ function ErrorModal(props: {
       fullWidth
       open={props.open}
       onClose={props.onClose}
+      aria-live="assertive"
     >
+      <DialogTitle sx={{ p: 0 }}>
+        <Typography variant="h6" component={"div"} sx={{ mb: 2 }}>
+          {t(title)}
+        </Typography>
+      </DialogTitle>
       <DialogContent sx={{ p: 0 }}>
-        <Box>
-          <Typography variant="h6" component={"div"} sx={{ mb: 2 }}>
-            {t(title)}
-          </Typography>
-          <Typography variant="body1" component={"div"}>
-            {t(body)}
-          </Typography>
-          {showDetail(body) && (
-            <Alert
-              severity="info"
+        <Typography variant="body1" component={"div"}>
+          {t(body)}
+        </Typography>
+        {showDetail(body) && (
+          <Alert
+            severity="info"
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "start",
+              mt: 2,
+            }}
+            action={
+              <Tooltip title={copy} onMouseOver={(e) => e.stopPropagation()}>
+                <Button
+                  variant="text"
+                  onClick={() => {
+                    void navigator.clipboard.writeText(props.error);
+                    setCopy(t("clipboard.copied"));
+                  }}
+                  onMouseLeave={() => setCopy(t("clipboard.copy"))}
+                >
+                  <ContentCopyIcon sx={{ mr: 1 }} /> {t("clipboard.copy")}
+                </Button>
+              </Tooltip>
+            }
+          >
+            <AlertTitle
               sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "start",
-                mt: 2,
+                mb: 0,
               }}
-              action={
-                <Tooltip title={copy} onMouseOver={(e) => e.stopPropagation()}>
-                  <Button
-                    variant="text"
-                    onClick={() => {
-                      void navigator.clipboard.writeText(props.error);
-                      setCopy(t("clipboard.copied"));
-                    }}
-                    onMouseLeave={() => setCopy(t("clipboard.copy"))}
-                  >
-                    <ContentCopyIcon sx={{ mr: 1 }} /> {t("clipboard.copy")}
-                  </Button>
-                </Tooltip>
-              }
             >
-              <AlertTitle
-                sx={{
-                  mb: 0,
-                }}
-              >
-                {props.error}
-              </AlertTitle>
-            </Alert>
-          )}
-          {showProgressBar ? (
-            <LinearProgress sx={{ my: 2 }} />
-          ) : (
-            !!buttonsDetail && (
-              <ErrorButtons
-                handleClose={props.onClose}
-                buttonsDetail={buttonsDetail}
-              />
-            )
-          )}
-        </Box>
+              {props.error}
+            </AlertTitle>
+          </Alert>
+        )}
+        {showProgressBar ? (
+          <LinearProgress sx={{ my: 2 }} />
+        ) : (
+          !!buttonsDetail && (
+            <ErrorButtons
+              handleClose={props.onClose}
+              buttonsDetail={buttonsDetail}
+            />
+          )
+        )}
       </DialogContent>
     </Dialog>
   );

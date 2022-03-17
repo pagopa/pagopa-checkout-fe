@@ -3,6 +3,7 @@ export const TRANSLATIONS_IT = {
     footer: {
       accessibility: "Accessibilità",
       help: "Aiuto",
+      pagoPA: "Visita il sito pagoPA",
     },
     header: {
       disclaimer:
@@ -288,5 +289,14 @@ export const TRANSLATIONS_IT = {
   },
   app: {
     title: "Paga un avviso - pagoPA",
+  },
+  ariaLabels: {
+    languageMenu: "Lingua impostata",
+    appLanguage: "Imposta lingua",
+    close: "Chiudi",
+    editPsp: "Modifica PSP",
+    editCard: "Modifica dati carta",
+    informationDialog: "Informazioni",
+    loading: "Caricamento",
   },
 };

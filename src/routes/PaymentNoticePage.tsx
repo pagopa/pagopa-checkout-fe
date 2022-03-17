@@ -72,7 +72,13 @@ export default function PaymentNoticePage() {
       title="paymentNoticePage.title"
       description="paymentNoticePage.description"
     >
-      <Button variant="text" onClick={() => setModalOpen(true)} sx={{ p: 0 }}>
+      <Button
+        variant="text"
+        onClick={() => setModalOpen(true)}
+        sx={{ p: 0 }}
+        aria-hidden="true"
+        tabIndex={-1}
+      >
         {t("paymentNoticePage.helpLink")}
       </Button>
       <Box sx={{ mt: 6 }}>

@@ -22,6 +22,7 @@ export default function PaymentChoicePage() {
           target="_blank"
           rel="noopener noreferrer"
           style={{ fontWeight: 600, textDecoration: "none" }}
+          title={t("paymentChoicePage.costs")}
         >
           {t("paymentChoicePage.costs")}
         </a>
