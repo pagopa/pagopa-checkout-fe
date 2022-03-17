@@ -1,14 +1,13 @@
-import { Box, InputBase, NativeSelect, styled } from "@mui/material";
+import { Box, InputBase, NativeSelect, styled, useTheme } from "@mui/material";
 import { visuallyHidden } from "@mui/utils";
-import theme from "@pagopa/mui-italia/theme";
-import { t } from "i18next";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { fallbackLang } from "../../translations/i18n";
 import supportedLang, { getSortedLang } from "../../translations/lang";
 
 export default function LanguageNativeSelect() {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
+  const theme = useTheme();
   const [lang, setLang] = React.useState<string>(i18n.language.split("-")[0]);
 
   const languages = getSortedLang().map((elem, index) => (

@@ -27,7 +27,7 @@ export function FormButtons(props: {
           bottom: { xs: 0 },
           left: { xs: 0 },
           p: { xs: "1rem", sm: 0 },
-          boxShadow: { xs: "0 0.5rem 1rem rgb(0 0 0 / 15%)", sm: 0 },
+          boxShadow: { xs: "0 0.5rem 1rem rgb(0 0 0 / 15%)", sm: "none" },
           bgcolor: { xs: "background.default" },
           my: { sm: 6 },
         }}
