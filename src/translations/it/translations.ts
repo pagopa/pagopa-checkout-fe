@@ -3,6 +3,7 @@ export const TRANSLATIONS_IT = {
     footer: {
       accessibility: "Accessibilità",
       help: "Aiuto",
+      pagoPA: "Visita il sito pagoPA",
     },
     header: {
       disclaimer:
@@ -296,5 +297,6 @@ export const TRANSLATIONS_IT = {
     editCard: "Modifica dati carta",
     informationDialog: "Informazioni",
     loading: "Caricamento",
+    loadingPSP: "Caricamento lista psp in corso, attendere",
   },
 };

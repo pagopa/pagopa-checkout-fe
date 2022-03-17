@@ -323,10 +323,18 @@ export default function PaymentCheckPage() {
               pb: 2,
             }}
           >
-            <Typography variant={"caption-semibold"} component={"div"}>
+            <Typography
+              variant={"caption-semibold"}
+              component={"div"}
+              aria-hidden="true"
+            >
               {t("paymentCheckPage.drawer.header.name")}
             </Typography>
-            <Typography variant={"caption-semibold"} component={"div"}>
+            <Typography
+              variant={"caption-semibold"}
+              component={"div"}
+              aria-hidden="true"
+            >
               {t("paymentCheckPage.drawer.header.amount")}
             </Typography>
           </Box>
@@ -335,7 +343,11 @@ export default function PaymentCheckPage() {
           ? Array(3)
               .fill(1)
               .map((_, index) => (
-                <SkeletonFieldContainer key={index} sx={pspContainerStyle} />
+                <SkeletonFieldContainer
+                  key={index}
+                  sx={pspContainerStyle}
+                  useAria={!index}
+                />
               ))
           : pspList.map((psp, index) => (
               <PspFieldContainer

@@ -28,6 +28,7 @@ export function CustomDrawer(props: {
             sx={{
               color: "action.active",
             }}
+            aria-hidden="true"
           >
             <CloseIcon />
           </IconButton>

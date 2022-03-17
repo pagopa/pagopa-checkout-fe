@@ -32,7 +32,6 @@ function InformationModal(props: {
       fullWidth
       open={props.open}
       onClose={props.onClose}
-      aria-live="assertive"
     >
       <DialogTitle sx={{ m: 0, p: 2 }}>
         {!props.hideIcon && (

@@ -48,7 +48,7 @@ export function FormButtons(props: {
               height: "100%",
               minHeight: 45,
             }}
-            aria-live="assertive"
+            aria-live="polite"
             aria-label={
               props.loadingSubmit
                 ? t("ariaLabels.loading")
@@ -71,7 +71,7 @@ export function FormButtons(props: {
               height: "100%",
               minHeight: 45,
             }}
-            aria-live="assertive"
+            aria-live="polite"
             aria-label={
               props.loadingSubmit
                 ? t("ariaLabels.loading")

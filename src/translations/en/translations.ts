@@ -3,6 +3,7 @@ export const TRANSLATIONS_EN = {
     footer: {
       accessibility: "Accessibility",
       help: "Help",
+      pagoPA: "visit pagoPA site",
     },
     header: {
       disclaimer: "",
@@ -88,5 +89,6 @@ export const TRANSLATIONS_EN = {
     editCard: "Edit credit card",
     informationDialog: "Informations",
     loading: "Loading",
+    loadingPSP: "Loading PSP list in progress",
   },
 };
