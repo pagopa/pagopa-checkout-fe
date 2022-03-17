@@ -2,10 +2,8 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { Box, Skeleton, SxProps, Typography } from "@mui/material";
 import React from "react";
-import { useTranslation } from "react-i18next";
 
-function SkeletonFieldContainer(props: { sx?: SxProps; useAria?: boolean }) {
-  const { t } = useTranslation();
+function SkeletonFieldContainer(props: { sx?: SxProps }) {
   const defaultStyle = {
     display: "flex",
     justifyContent: "space-between",
@@ -20,14 +18,7 @@ function SkeletonFieldContainer(props: { sx?: SxProps; useAria?: boolean }) {
   };
 
   return (
-    <Box
-      sx={{ ...defaultStyle, ...props.sx }}
-      maxWidth="xs"
-      {...(props.useAria && {
-        "aria-live": "polite",
-        "aria-label": t("ariaLabels.loadingPSP"),
-      })}
-    >
+    <Box sx={{ ...defaultStyle, ...props.sx }} maxWidth="xs">
       <Box
         sx={{
           display: "flex",

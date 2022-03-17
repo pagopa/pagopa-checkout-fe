@@ -343,11 +343,7 @@ export default function PaymentCheckPage() {
           ? Array(3)
               .fill(1)
               .map((_, index) => (
-                <SkeletonFieldContainer
-                  key={index}
-                  sx={pspContainerStyle}
-                  useAria={!index}
-                />
+                <SkeletonFieldContainer key={index} sx={pspContainerStyle} />
               ))
           : pspList.map((psp, index) => (
               <PspFieldContainer
