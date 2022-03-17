@@ -1,7 +1,7 @@
 /* eslint-disable functional/immutable-data */
 /* eslint-disable @typescript-eslint/ban-types */
 import CloseIcon from "@mui/icons-material/Close";
-import { Dialog, DialogContent, DialogTitle } from "@mui/material";
+import { Dialog, DialogContent, DialogTitle, useTheme } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import React from "react";
 
@@ -13,6 +13,7 @@ function InformationModal(props: {
   style?: React.CSSProperties;
   maxWidth?: "xs" | "sm" | "lg";
 }) {
+  const theme = useTheme();
   return (
     <Dialog
       maxWidth={props.maxWidth}
@@ -23,6 +24,7 @@ function InformationModal(props: {
         sx: {
           width: "auto",
           borderRadius: 1,
+          bgcolor: theme.palette.background.default,
         },
       }}
       fullWidth
