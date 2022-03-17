@@ -90,6 +90,5 @@ export const TRANSLATIONS_EN = {
     editCard: "Edit credit card",
     informationDialog: "Informations",
     loading: "Loading",
-    loadingPSP: "Loading PSP list in progress",
   },
 };
