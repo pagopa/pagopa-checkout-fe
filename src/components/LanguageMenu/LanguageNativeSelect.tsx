@@ -1,5 +1,7 @@
-import { InputBase, NativeSelect, styled } from "@mui/material";
+import { Box, InputBase, NativeSelect, styled } from "@mui/material";
+import { visuallyHidden } from "@mui/utils";
 import theme from "@pagopa/mui-italia/theme";
+import { t } from "i18next";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { fallbackLang } from "../../translations/i18n";
@@ -29,10 +31,12 @@ export default function LanguageNativeSelect() {
 
   return (
     <>
+      <Box sx={visuallyHidden}>{t("ariaLabels.languageMenu")}</Box>
       <NativeSelect
         defaultValue={lang in supportedLang ? lang : fallbackLang}
         input={<StyledInput />}
         onChange={(e) => changeLanguageHandler(e.target.value)}
+        aria-label={t("ariaLabels.appLanguage")}
       >
         {languages}
       </NativeSelect>

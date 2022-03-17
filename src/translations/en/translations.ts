@@ -83,7 +83,8 @@ export const TRANSLATIONS_EN = {
     title: "Pay a notice - pagoPA",
   },
   ariaLabels: {
-    languageMenu: "Language menù",
+    languageMenu: "Current language",
+    appLanguage: "Select language",
     close: "Close",
     editPsp: "Change PSP",
     editCard: "Edit credit card",
