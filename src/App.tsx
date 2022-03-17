@@ -92,6 +92,10 @@ export function App() {
   }, []);
   // eslint-disable-next-line functional/immutable-data
   document.title = t("app.title");
+  // eslint-disable-next-line functional/immutable-data
+  (window as any).recaptchaOptions = {
+    useRecaptchaNet: true,
+  };
 
   return (
     <ThemeProvider theme={checkoutTheme}>
