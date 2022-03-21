@@ -299,4 +299,10 @@ export const TRANSLATIONS_IT = {
     informationDialog: "Informazioni",
     loading: "Caricamento",
   },
+  donationPage: {
+    title: "Dona per l’Ucraina",
+    description:
+      "Puoi donare con carta di credito, debito o prepagata, senza costi di commissione. L’importo verrà versato direttamente sul conto dell’organizzazione a cui scegli di donare.",
+    entity: "A chi vuoi donare?",
+  },
 };
