@@ -11,8 +11,7 @@ function SkeletonFieldContainer(props: { sx?: SxProps }) {
     border: "1px solid",
     borderColor: "divider",
     borderRadius: 2,
-    pt: 2,
-    pb: 2,
+    p: 2,
     width: "100%",
     minWidth: { xs: "100%", sm: "327px" },
     height: "106px",
@@ -26,7 +25,6 @@ function SkeletonFieldContainer(props: { sx?: SxProps }) {
           alignItems: "center",
           justifyContent: "start",
           gap: 3,
-          ml: 2,
         }}
       >
         <Skeleton variant="circular" width="40px" height="40px" />

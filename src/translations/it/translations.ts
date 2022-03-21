@@ -296,6 +296,7 @@ export const TRANSLATIONS_IT = {
     close: "Chiudi",
     editPsp: "Modifica PSP",
     editCard: "Modifica dati carta",
+    editDonation: "Modifica ente donazione",
     informationDialog: "Informazioni",
     loading: "Caricamento",
   },
@@ -304,5 +305,6 @@ export const TRANSLATIONS_IT = {
     description:
       "Puoi donare con carta di credito, debito o prepagata, senza costi di commissione. L’importo verrà versato direttamente sul conto dell’organizzazione a cui scegli di donare.",
     entity: "A chi vuoi donare?",
+    volunteer: "Quanto vuoi donare?",
   },
 };
