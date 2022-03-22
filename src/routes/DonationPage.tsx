@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/restrict-plus-operands */
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import EditIcon from "@mui/icons-material/Edit";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
@@ -7,6 +8,7 @@ import {
   Box,
   Button,
   Grid,
+  Icon,
   SvgIcon,
   SxProps,
   Typography,
@@ -16,6 +18,8 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import QRCode from "react-qr-code";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import sprite from "../assets/images/app.svg";
 import ErrorModal from "../components/modals/ErrorModal";
 import InformationModal from "../components/modals/InformationModal";
 import PageContainer from "../components/PageContent/PageContainer";
@@ -33,6 +37,7 @@ import { moneyFormat } from "../utils/form/formatters";
 export default function DonationPage() {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const theme = useTheme();
   const [loadingList, setLoadingList] = React.useState(false);
   const [entityList, setEntityList] = React.useState<Array<Donation>>([]);
@@ -65,6 +70,10 @@ export default function DonationPage() {
     setSelectedSlice(undefined);
   };
 
+  const onSubmit = () => {
+    navigate(`/paga/${selectedSlice?.nav}/${selectedEntity?.cf}/it`);
+  };
+
   const getEntityContainer = ({
     entity,
     key,
@@ -87,13 +96,13 @@ export default function DonationPage() {
       titleVariant="sidenav"
       bodyVariant="body2"
       icon={
-        <SvgIcon aria-hidden="true">
+        <Icon sx={{ width: "40px", height: "40px" }} aria-hidden="true">
           <img
             src={`data:image/png;base64,${entity.base64Logo}`}
             alt="Logo ente"
-            style={{ width: "40px", height: "40px" }}
+            style={{ height: "100%" }}
           />
-        </SvgIcon>
+        </Icon>
       }
       endAdornment={
         <a
@@ -232,7 +241,7 @@ export default function DonationPage() {
               <>
                 <Button
                   variant="contained"
-                  onClick={() => onEdit()}
+                  onClick={() => onSubmit()}
                   startIcon={<CreditCardIcon />}
                   aria-label={t("donationPage.submitCard")}
                   sx={{ width: "100%", marginBottom: 2 }}
@@ -242,7 +251,15 @@ export default function DonationPage() {
                 <Button
                   variant="outlined"
                   onClick={() => setModalOpen(true)}
-                  startIcon={<CreditCardIcon />}
+                  startIcon={
+                    <SvgIcon
+                      sx={{
+                        stroke: theme.palette.primary.main,
+                      }}
+                    >
+                      <use href={sprite + "#appIO"} />
+                    </SvgIcon>
+                  }
                   aria-label={t("donationPage.submitIO")}
                   sx={{ width: "100%", marginBottom: 2 }}
                   aria-hidden="true"

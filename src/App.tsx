@@ -8,6 +8,7 @@ import Guard from "./components/commons/Guard";
 import { Layout } from "./components/commons/Layout";
 import CancelledPage from "./routes/CancelledPage";
 import DonationPage from "./routes/DonationPage";
+import GhostPaymentNoticePage from "./routes/GhostPaymentNoticePage";
 import IndexPage from "./routes/IndexPage";
 import InputCardPage from "./routes/InputCardPage";
 import KOPage from "./routes/KOPage";
@@ -164,6 +165,10 @@ export function App() {
               <Route path="ko" element={<KOPage />} />
               <Route path="*" element={<Navigate replace to="/" />} />
             </Route>
+            <Route
+              path="/paga/:notice/:cf/:lng"
+              element={<GhostPaymentNoticePage />}
+            />
             <Route path="*" element={<Navigate replace to="/" />} />
           </Routes>
         </Layout>
