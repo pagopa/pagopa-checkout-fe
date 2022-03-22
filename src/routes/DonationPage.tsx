@@ -70,11 +70,15 @@ export default function DonationPage() {
     key,
     sx,
     onClick,
+    onKeyDown,
+    tabIndex,
   }: {
     entity: Donation;
     key?: number;
     sx?: SxProps;
     onClick?: () => void;
+    onKeyDown?: (e: React.KeyboardEvent<HTMLDivElement>) => void;
+    tabIndex?: number;
   }) => (
     <FieldContainer
       key={key}
@@ -83,7 +87,7 @@ export default function DonationPage() {
       titleVariant="sidenav"
       bodyVariant="body2"
       icon={
-        <SvgIcon>
+        <SvgIcon aria-hidden="true">
           <img
             src={`data:image/png;base64,${entity.base64Logo}`}
             alt="Logo ente"
@@ -102,7 +106,7 @@ export default function DonationPage() {
           <InfoOutlinedIcon
             sx={{ color: "primary.main", cursor: "pointer" }}
             fontSize="medium"
-            tabIndex={0}
+            aria-hidden="true"
           />
         </a>
       }
@@ -115,6 +119,8 @@ export default function DonationPage() {
         ...sx,
       }}
       onClick={onClick}
+      onKeyDown={onKeyDown}
+      tabIndex={tabIndex}
     />
   );
 
@@ -171,12 +177,20 @@ export default function DonationPage() {
                 key: index,
                 sx: { cursor: "pointer" },
                 onClick: () => setSelectedEntity(entity),
+                onKeyDown: (e: React.KeyboardEvent<HTMLDivElement>) => {
+                  if (e.key === "Enter") {
+                    setSelectedEntity(entity);
+                  }
+                },
+                tabIndex: 0,
               })
             )
           ))}
         {!!selectedEntity && (
           <>
-            {getEntityContainer({ entity: selectedEntity })}
+            {getEntityContainer({
+              entity: selectedEntity,
+            })}
             <Typography
               variant="sidenav"
               component="div"
@@ -231,6 +245,8 @@ export default function DonationPage() {
                   startIcon={<CreditCardIcon />}
                   aria-label={t("donationPage.submitIO")}
                   sx={{ width: "100%", marginBottom: 2 }}
+                  aria-hidden="true"
+                  tabIndex={-1}
                 >
                   {t("donationPage.submitIO")}
                 </Button>
