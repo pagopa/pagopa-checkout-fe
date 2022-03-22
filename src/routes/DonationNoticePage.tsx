@@ -1,4 +1,4 @@
-import { Box, Button } from "@mui/material";
+import { Box, Button, CircularProgress } from "@mui/material";
 import { pipe } from "fp-ts/function";
 import * as TE from "fp-ts/TaskEither";
 import React from "react";
@@ -23,7 +23,7 @@ import {
 } from "../utils/api/apiService";
 import { getPaymentInfoTask } from "../utils/api/helper";
 
-export default function GhostPaymentNoticePage() {
+export default function DonationNoticePage() {
   const { i18n, t } = useTranslation();
   const navigate = useNavigate();
   const { notice, cf, lng } = useParams();
@@ -32,15 +32,7 @@ export default function GhostPaymentNoticePage() {
   const [modalOpen, setModalOpen] = React.useState(false);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
-  const [loading, setLoading] = React.useState(false);
-
-  React.useEffect(() => {
-    void i18n.changeLanguage(lng);
-    void onSubmit({
-      billCode: notice || "",
-      cf: cf || "",
-    });
-  }, [notice, cf, lng]);
+  const [loading, setLoading] = React.useState(true);
 
   const onError = (m: string) => {
     setLoading(false);
@@ -51,7 +43,6 @@ export default function GhostPaymentNoticePage() {
   const onSubmit = React.useCallback(
     async (notice: PaymentFormFields) => {
       const rptId: RptId = `${notice.cf}${notice.billCode}`;
-      setLoading(true);
       const token = await (ref.current as any).executeAsync();
 
       void pipe(
@@ -60,7 +51,6 @@ export default function GhostPaymentNoticePage() {
         TE.map((paymentInfo) => {
           setPaymentInfo(paymentInfo as PaymentInfo);
           setRptId(notice);
-          setLoading(false);
           navigate("/payment/summary");
         })
       )();
@@ -72,51 +62,75 @@ export default function GhostPaymentNoticePage() {
     navigate(-1);
   };
 
-  return (
-    <PageContainer
-      title="paymentNoticePage.title"
-      description="paymentNoticePage.description"
-    >
-      <Button
-        variant="text"
-        onClick={() => setModalOpen(true)}
-        sx={{ p: 0 }}
-        aria-hidden="true"
-        tabIndex={-1}
-      >
-        {t("paymentNoticePage.helpLink")}
-      </Button>
-      <Box sx={{ mt: 6 }}>
-        <PaymentNoticeForm
-          onCancel={onCancel}
-          onSubmit={onSubmit}
-          defaultValues={{
-            billCode: notice || "",
-            cf: cf || "",
-          }}
-          loading={loading}
-        />
-      </Box>
+  React.useEffect(() => {
+    void i18n.changeLanguage(lng);
+    void onSubmit({
+      billCode: notice || "",
+      cf: cf || "",
+    });
+  }, []);
 
-      <InformationModal
-        open={modalOpen}
-        onClose={() => {
-          setModalOpen(false);
-        }}
-      >
-        <img
-          src={notification}
-          alt="facsimile"
-          style={useSmallDevice() ? { width: "100%" } : { height: "80vh" }}
-        />
-      </InformationModal>
-      <ErrorModal
-        error={error}
-        open={errorModalOpen}
-        onClose={() => {
-          setErrorModalOpen(false);
-        }}
-      />
+  return (
+    <>
+      {loading ? (
+        <Box
+          display="flex"
+          flexDirection="column"
+          justifyContent="center"
+          alignItems="center"
+          my={10}
+          aria-live="assertive"
+          aria-label={t("ariaLabels.loading")}
+        >
+          <CircularProgress />
+        </Box>
+      ) : (
+        <PageContainer
+          title="paymentNoticePage.title"
+          description="paymentNoticePage.description"
+        >
+          <Button
+            variant="text"
+            onClick={() => setModalOpen(true)}
+            sx={{ p: 0 }}
+            aria-hidden="true"
+            tabIndex={-1}
+          >
+            {t("paymentNoticePage.helpLink")}
+          </Button>
+          <Box sx={{ mt: 6 }}>
+            <PaymentNoticeForm
+              onCancel={onCancel}
+              onSubmit={onSubmit}
+              defaultValues={{
+                billCode: notice || "",
+                cf: cf || "",
+              }}
+              loading={loading}
+            />
+          </Box>
+
+          <InformationModal
+            open={modalOpen}
+            onClose={() => {
+              setModalOpen(false);
+            }}
+          >
+            <img
+              src={notification}
+              alt="facsimile"
+              style={useSmallDevice() ? { width: "100%" } : { height: "80vh" }}
+            />
+          </InformationModal>
+          <ErrorModal
+            error={error}
+            open={errorModalOpen}
+            onClose={() => {
+              setErrorModalOpen(false);
+            }}
+          />
+        </PageContainer>
+      )}
       <Box display="none">
         <ReCAPTCHA
           ref={ref}
@@ -124,6 +138,6 @@ export default function GhostPaymentNoticePage() {
           sitekey={getReCaptchaKey() as string}
         />
       </Box>
-    </PageContainer>
+    </>
   );
 }

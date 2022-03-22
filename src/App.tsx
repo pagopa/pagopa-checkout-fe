@@ -8,7 +8,7 @@ import Guard from "./components/commons/Guard";
 import { Layout } from "./components/commons/Layout";
 import CancelledPage from "./routes/CancelledPage";
 import DonationPage from "./routes/DonationPage";
-import GhostPaymentNoticePage from "./routes/GhostPaymentNoticePage";
+import GhostPaymentNoticePage from "./routes/DonationNoticePage";
 import IndexPage from "./routes/IndexPage";
 import InputCardPage from "./routes/InputCardPage";
 import KOPage from "./routes/KOPage";
@@ -106,7 +106,7 @@ export function App() {
         <Layout fixedFooterPages={fixedFooterPages}>
           <Routes>
             <Route path="/" element={<Navigate to="/payment" />} />
-            <Route path="/dona" element={<PaymentOutlet />}>
+            <Route path="/donation" element={<PaymentOutlet />}>
               <Route path="" element={<DonationPage />} />
             </Route>
             <Route path="/payment" element={<PaymentOutlet />}>
@@ -163,12 +163,12 @@ export function App() {
               />
               <Route path="cancelled" element={<CancelledPage />} />
               <Route path="ko" element={<KOPage />} />
+              <Route
+                path=":notice/:cf/:lng"
+                element={<GhostPaymentNoticePage />}
+              />
               <Route path="*" element={<Navigate replace to="/" />} />
             </Route>
-            <Route
-              path="/paga/:notice/:cf/:lng"
-              element={<GhostPaymentNoticePage />}
-            />
             <Route path="*" element={<Navigate replace to="/" />} />
           </Routes>
         </Layout>

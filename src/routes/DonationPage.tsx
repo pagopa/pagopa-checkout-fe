@@ -35,7 +35,7 @@ import { getDonationEntityList } from "../utils/api/helper";
 import { moneyFormat } from "../utils/form/formatters";
 
 export default function DonationPage() {
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const theme = useTheme();
@@ -71,7 +71,11 @@ export default function DonationPage() {
   };
 
   const onSubmit = () => {
-    navigate(`/paga/${selectedSlice?.nav}/${selectedEntity?.cf}/it`);
+    navigate(
+      `/payment/${selectedSlice?.nav}/${selectedEntity?.cf}/${
+        i18n.language.split("-")[0]
+      }`
+    );
   };
 
   const getEntityContainer = ({
