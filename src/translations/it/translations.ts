@@ -306,5 +306,13 @@ export const TRANSLATIONS_IT = {
       "Puoi donare con carta di credito, debito o prepagata, senza costi di commissione. L’importo verrà versato direttamente sul conto dell’organizzazione a cui scegli di donare.",
     entity: "A chi vuoi donare?",
     volunteer: "Quanto vuoi donare?",
+    submitCard: "Dona con carta",
+    submitIO: "Dona con IO",
+    ioDescription:
+      "Dona con l’app IO per ricevere un’e-mail con i dati utili ai fini delle agevolazioni fiscali.",
+    modalTitle: "Continua sull'app IO",
+    modalBody1: `Apri la sezione Portafoglio, premi Paga un avviso e inquadra il codice:`,
+    modalBody2:
+      "Puoi donare senza costi di commissione con le tue carte di debito, credito o prepagate.",
   },
 };

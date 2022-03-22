@@ -1,3 +1,4 @@
+import CreditCardIcon from "@mui/icons-material/CreditCard";
 import EditIcon from "@mui/icons-material/Edit";
 import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
 import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
@@ -11,8 +12,10 @@ import {
 } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import QRCode from "react-qr-code";
 import { useDispatch } from "react-redux";
 import ErrorModal from "../components/modals/ErrorModal";
+import InformationModal from "../components/modals/InformationModal";
 import PageContainer from "../components/PageContent/PageContainer";
 import PrivacyInfo from "../components/PrivacyPolicy/PrivacyInfo";
 import SkeletonDonationFieldContainer from "../components/Skeletons/SkeletonDonationFieldContainer";
@@ -22,6 +25,7 @@ import {
   DonationSlice,
 } from "../features/payment/models/donationModel";
 import { resetCheckData } from "../redux/slices/checkData";
+import { getDonationEntityList } from "../utils/api/helper";
 import { moneyFormat } from "../utils/form/formatters";
 
 export default function DonationPage() {
@@ -32,104 +36,14 @@ export default function DonationPage() {
   const [entityList, setEntityList] = React.useState<Array<Donation>>([]);
   const [selectedEntity, setSelectedEntity] = React.useState<Donation>();
   const [selectedSlice, setSelectedSlice] = React.useState<DonationSlice>();
+  const [modalOpen, setModalOpen] = React.useState(false);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
 
   React.useEffect(() => {
     dispatch(resetCheckData());
     setLoadingList(true);
-    // void getDonationEntityList(onError, onResponse);
-    setTimeout(() => {
-      setLoadingList(false);
-      setEntityList([
-        {
-          name: "Croce Rossa Italiana",
-          reason: "Donazione Emergenza Ucraina",
-          web_site: "https://cri.it/emergenzaucraina/",
-          base64Logo: "/9j/4AAQSk",
-          cf: "11111111110",
-          paymentDescription: "Donazione Emergenza Ucraina",
-          companyName: "Croce Rossa Italiana",
-          officeName: "Croce Rossa Italiana ",
-          transferCategory: "0101002IM",
-          slices: [
-            {
-              idDonation: "00",
-              amount: 500,
-              nav: "300001647862165438",
-            },
-            {
-              idDonation: "01",
-              amount: 1000,
-              nav: "300011647862165438",
-            },
-            {
-              idDonation: "02",
-              amount: 2000,
-              nav: "300021647862165438",
-            },
-            {
-              idDonation: "03",
-              amount: 5000,
-              nav: "300031647862165438",
-            },
-            {
-              idDonation: "04",
-              amount: 10000,
-              nav: "300041647862165438",
-            },
-            {
-              idDonation: "05",
-              amount: 20000,
-              nav: "300051647862165438",
-            },
-          ],
-        },
-        {
-          name: "Basilica minore di Santa maria in Sofia",
-          reason: "Donazione sostegno Ucraina",
-          web_site: "https://bmsms.it/sostegnoucraina/",
-          base64Logo: "/9j/4AAQSkZJR",
-          cf: "22222222220",
-          paymentDescription: "Donazione sostegno Ucraina",
-          companyName: "Basilica minore di Santa maria in Sofia",
-          officeName: "Basilica minore di Santa maria in Sofia ",
-          transferCategory: "0101002IM",
-          slices: [
-            {
-              idDonation: "06",
-              amount: 500,
-              nav: "300061647862165438",
-            },
-            {
-              idDonation: "07",
-              amount: 1000,
-              nav: "300071647862165438",
-            },
-            {
-              idDonation: "08",
-              amount: 2000,
-              nav: "300081647862165438",
-            },
-            {
-              idDonation: "09",
-              amount: 5000,
-              nav: "300091647862165438",
-            },
-            {
-              idDonation: "10",
-              amount: 10000,
-              nav: "300101647862165438",
-            },
-            {
-              idDonation: "11",
-              amount: 20000,
-              nav: "300111647862165438",
-            },
-          ],
-        },
-      ]);
-    }, 3000);
+    void getDonationEntityList(onError, onResponse);
   }, []);
   sessionStorage.clear();
 
@@ -152,7 +66,9 @@ export default function DonationPage() {
   return (
     <PageContainer
       title="donationPage.title"
-      description="donationPage.description"
+      {...(selectedEntity
+        ? { description: undefined }
+        : { description: "donationPage.description" })}
     >
       <Box sx={{ mt: 6 }}>
         <Box
@@ -262,7 +178,7 @@ export default function DonationPage() {
               />
               {t("donationPage.volunteer")}
             </Typography>
-            <Grid container spacing={3}>
+            <Grid container spacing={3} mb={6}>
               {selectedEntity.slices?.map((slice, index) => (
                 <React.Fragment key={index}>
                   <Grid item xs={4}>
@@ -283,10 +199,72 @@ export default function DonationPage() {
                 </React.Fragment>
               ))}
             </Grid>
+            {!!selectedSlice && (
+              <>
+                <Button
+                  variant="contained"
+                  onClick={() => onEdit()}
+                  startIcon={<CreditCardIcon />}
+                  aria-label={t("donationPage.submitCard")}
+                  sx={{ width: "100%", marginBottom: 2 }}
+                >
+                  {t("donationPage.submitCard")}
+                </Button>
+                <Button
+                  variant="outlined"
+                  onClick={() => setModalOpen(true)}
+                  startIcon={<CreditCardIcon />}
+                  aria-label={t("donationPage.submitIO")}
+                  sx={{ width: "100%", marginBottom: 2 }}
+                >
+                  {t("donationPage.submitIO")}
+                </Button>
+                <Typography variant="caption-semibold" component="div">
+                  {t("donationPage.ioDescription")}
+                </Typography>
+              </>
+            )}
           </>
         )}
       </Box>
       <PrivacyInfo />
+      <InformationModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        maxWidth="sm"
+        hideIcon={true}
+      >
+        <Typography variant="h6" component={"div"} sx={{ pb: 2 }}>
+          {t("donationPage.modalTitle")}
+        </Typography>
+        <Typography
+          variant="body1"
+          component={"div"}
+          sx={{ whiteSpace: "pre-line" }}
+        >
+          {t("donationPage.modalBody1")}
+        </Typography>
+        <Box display="flex" justifyContent="center" alignItems="center" my={4}>
+          <QRCode
+            value={`PAGOPA|002|${selectedSlice?.nav}|${selectedEntity?.cf}|${selectedSlice?.amount}`}
+            size={172}
+          />
+        </Box>
+        <Typography
+          variant="body1"
+          component={"div"}
+          sx={{ whiteSpace: "pre-line" }}
+        >
+          {t("donationPage.modalBody2")}
+        </Typography>
+        <Button
+          variant="outlined"
+          onClick={() => setModalOpen(false)}
+          sx={{ width: "100%", marginTop: 3 }}
+        >
+          {t("errorButton.close")}
+        </Button>
+      </InformationModal>
       {!!error && (
         <ErrorModal
           error={error}

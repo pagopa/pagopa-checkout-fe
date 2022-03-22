@@ -36,10 +36,10 @@ function SkeletonFieldContainer(props: { sx?: SxProps }) {
           }}
         >
           <Typography variant="sidenav" component={"div"}>
-            <Skeleton variant="text" width="50px" height="40px" />
+            <Skeleton variant="text" width="50px" height="27px" />
           </Typography>
           <Typography variant="body2" component={"div"}>
-            <Skeleton variant="text" width="215px" height="24px" />
+            <Skeleton variant="text" width="215px" height="23px" />
           </Typography>
         </Box>
       </Box>
