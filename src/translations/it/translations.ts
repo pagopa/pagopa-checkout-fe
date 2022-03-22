@@ -298,6 +298,7 @@ export const TRANSLATIONS_IT = {
     editCard: "Modifica dati carta",
     editDonation: "Modifica ente donazione",
     informationDialog: "Informazioni",
+    informationLink: "Link al sito ente",
     loading: "Caricamento",
   },
   donationPage: {

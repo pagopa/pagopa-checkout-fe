@@ -1,5 +1,6 @@
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import EditIcon from "@mui/icons-material/Edit";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
 import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
 import {
@@ -7,6 +8,7 @@ import {
   Button,
   Grid,
   SvgIcon,
+  SxProps,
   Typography,
   useTheme,
 } from "@mui/material";
@@ -63,6 +65,59 @@ export default function DonationPage() {
     setSelectedSlice(undefined);
   };
 
+  const getEntityContainer = ({
+    entity,
+    key,
+    sx,
+    onClick,
+  }: {
+    entity: Donation;
+    key?: number;
+    sx?: SxProps;
+    onClick?: () => void;
+  }) => (
+    <FieldContainer
+      key={key}
+      title={entity.companyName}
+      body={entity.reason}
+      titleVariant="sidenav"
+      bodyVariant="body2"
+      icon={
+        <SvgIcon>
+          <img
+            src={`data:image/png;base64,${entity.base64Logo}`}
+            alt="Logo ente"
+            style={{ width: "40px", height: "40px" }}
+          />
+        </SvgIcon>
+      }
+      endAdornment={
+        <a
+          href={entity.web_site}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ display: "flex", marginRight: "16px" }}
+          title={`${t("ariaLabels.informationLink")} ${entity.companyName}`}
+        >
+          <InfoOutlinedIcon
+            sx={{ color: "primary.main", cursor: "pointer" }}
+            fontSize="medium"
+            tabIndex={0}
+          />
+        </a>
+      }
+      sx={{
+        border: "1px solid",
+        borderColor: "divider",
+        borderRadius: 2,
+        mb: 1,
+        p: 2,
+        ...sx,
+      }}
+      onClick={onClick}
+    />
+  );
+
   return (
     <PageContainer
       title="donationPage.title"
@@ -110,58 +165,18 @@ export default function DonationPage() {
           (loadingList ? (
             <SkeletonDonationFieldContainer />
           ) : (
-            entityList.map((entity, index) => (
-              <FieldContainer
-                key={index}
-                title={entity.companyName}
-                body={entity.reason}
-                titleVariant="sidenav"
-                bodyVariant="body2"
-                icon={
-                  <SvgIcon>
-                    <img
-                      src={`data:image/png;base64,${entity.base64Logo}`}
-                      alt="Logo ente"
-                      style={{ width: "40px", height: "40px" }}
-                    />
-                  </SvgIcon>
-                }
-                sx={{
-                  border: "1px solid",
-                  borderColor: "divider",
-                  borderRadius: 2,
-                  mb: 1,
-                  p: 2,
-                  cursor: "pointer",
-                }}
-                onClick={() => setSelectedEntity(entity)}
-              />
-            ))
+            entityList.map((entity, index) =>
+              getEntityContainer({
+                entity,
+                key: index,
+                sx: { cursor: "pointer" },
+                onClick: () => setSelectedEntity(entity),
+              })
+            )
           ))}
         {!!selectedEntity && (
           <>
-            <FieldContainer
-              title={selectedEntity.companyName}
-              body={selectedEntity.reason}
-              titleVariant="sidenav"
-              bodyVariant="body2"
-              icon={
-                <SvgIcon>
-                  <img
-                    src={`data:image/png;base64,${selectedEntity.base64Logo}`}
-                    alt="Logo ente"
-                    style={{ width: "40px", height: "40px" }}
-                  />
-                </SvgIcon>
-              }
-              sx={{
-                border: "1px solid",
-                borderColor: "divider",
-                borderRadius: 2,
-                mb: 1,
-                p: 2,
-              }}
-            />
+            {getEntityContainer({ entity: selectedEntity })}
             <Typography
               variant="sidenav"
               component="div"
