@@ -258,7 +258,7 @@ export default function DonationPage() {
                   startIcon={
                     <SvgIcon
                       sx={{
-                        stroke: theme.palette.primary.main,
+                        fill: theme.palette.primary.main,
                       }}
                     >
                       <use href={sprite + "#appIO"} />
