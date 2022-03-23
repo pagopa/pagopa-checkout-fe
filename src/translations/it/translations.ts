@@ -21,9 +21,12 @@ export const TRANSLATIONS_IT = {
   privacyInfo: {
     privacyDesc: "Proseguendo dichiari di aver letto e compreso l'",
     googleDesc: " Form protetto tramite reCAPTCHA e Google",
-    privacy: "Informativa Privacy e i Termini e condizioni d'uso del servizio.",
+    privacy: "Informativa Privacy e i Termini e condizioni d'uso del servizio",
     privacyPolicy: "Privacy Policy",
     serviceTerms: "Termini di servizio",
+    and: "e i",
+    privacyDonation:
+      "Termini e condizioni d’uso del servizio Donazioni a favore dell’emergenza in Ucraina",
   },
   paymentNoticePage: {
     title: "Cosa devi pagare?",
@@ -298,7 +301,7 @@ export const TRANSLATIONS_IT = {
     editCard: "Modifica dati carta",
     editDonation: "Modifica ente donazione",
     informationDialog: "Informazioni",
-    informationLink: "Link al sito ente",
+    informationLink: "Per sapere di più su",
     loading: "Caricamento",
   },
   donationPage: {
@@ -312,7 +315,11 @@ export const TRANSLATIONS_IT = {
     ioDescription:
       "Dona con l’app IO per ricevere un’e-mail con i dati utili ai fini delle agevolazioni fiscali.",
     modalTitle: "Continua sull'app IO",
-    modalBody1: `Apri la sezione Portafoglio, premi Paga un avviso e inquadra il codice:`,
+    openSection: "Apri la sezione",
+    portfolio: "Portafoglio",
+    click: "premi",
+    payNotice: "Paga un avviso",
+    code: "e inquadra il codice:",
     modalBody2:
       "Puoi donare senza costi di commissione con le tue carte di debito, credito o prepagate.",
   },

@@ -26,6 +26,7 @@ import {
 } from "../../features/payment/models/paymentModel";
 import { getConfigOrThrow } from "../config/config";
 import {
+  DONATION_INIT_SESSION,
   DONATION_LIST_ERROR,
   DONATION_LIST_SUCCESS,
   PAYMENT_ACTION_DELETE_INIT,
@@ -980,6 +981,10 @@ export const getDonationEntityList = async (
   onError: (e: string) => void,
   onResponse: (data: any) => void
 ) => {
+  mixpanel.track(DONATION_INIT_SESSION.value, {
+    EVENT_ID: DONATION_INIT_SESSION.value,
+  });
+
   window
     .fetch(getConfigOrThrow().CHECKOUT_DONATIONS_URL)
     .then((response) => response.json())

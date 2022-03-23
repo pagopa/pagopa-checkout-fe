@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import InformationModal from "../modals/InformationModal";
 import PrivacyPolicy from "./PrivacyPolicy";
 
-export default function PrivacyInfo() {
+export default function PrivacyInfo(props: { showDonationPrivacy?: boolean }) {
   const { t } = useTranslation();
   const [modalOpen, setModalOpen] = React.useState(false);
 
@@ -20,6 +20,20 @@ export default function PrivacyInfo() {
           >
             {t("privacyInfo.privacy")}
           </a>
+          {props.showDonationPrivacy && (
+            <>
+              {` ${t("privacyInfo.and")} `}
+              <a
+                href="https://www.pagopa.gov.it/it/privacy-policy-donazioni-ucraina/"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ fontWeight: 600, textDecoration: "none" }}
+              >
+                {t("privacyInfo.privacyDonation")}
+              </a>
+            </>
+          )}
+          {"."}
           {`${t("privacyInfo.googleDesc")} (`}
           <a
             href="https://policies.google.com/privacy"

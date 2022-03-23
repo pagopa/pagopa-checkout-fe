@@ -16,6 +16,7 @@ export enum SessionItems {
   securityCode = "securityCode",
   wallet = "wallet",
   originUrlRedirect = "originUrlRedirect",
+  donating = "donating",
 }
 export const loadState = (item: string) => {
   try {

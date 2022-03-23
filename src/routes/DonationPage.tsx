@@ -32,6 +32,8 @@ import {
 } from "../features/payment/models/donationModel";
 import { resetCheckData } from "../redux/slices/checkData";
 import { getDonationEntityList } from "../utils/api/helper";
+import { DONATION_URL_VISIT } from "../utils/config/mixpanelDefs";
+import { mixpanel } from "../utils/config/mixpanelHelperInit";
 import { moneyFormat } from "../utils/form/formatters";
 
 export default function DonationPage() {
@@ -109,19 +111,29 @@ export default function DonationPage() {
         </Icon>
       }
       endAdornment={
-        <a
-          href={entity.web_site}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ display: "flex", marginRight: "16px" }}
-          title={`${t("ariaLabels.informationLink")} ${entity.companyName}`}
+        <Box
+          onClick={(e) => {
+            e.stopPropagation();
+            mixpanel.track(DONATION_URL_VISIT.value, {
+              orgCF: entity.cf,
+              orgUrl: entity.web_site,
+            });
+          }}
         >
-          <InfoOutlinedIcon
-            sx={{ color: "primary.main", cursor: "pointer" }}
-            fontSize="medium"
-            aria-hidden="true"
-          />
-        </a>
+          <a
+            href={entity.web_site}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ display: "flex", marginRight: "16px" }}
+            title={`${t("ariaLabels.informationLink")} ${entity.companyName}`}
+          >
+            <InfoOutlinedIcon
+              sx={{ color: "primary.main", cursor: "pointer" }}
+              fontSize="medium"
+              aria-hidden="true"
+            />
+          </a>
+        </Box>
       }
       sx={{
         border: "1px solid",
@@ -279,7 +291,7 @@ export default function DonationPage() {
           </>
         )}
       </Box>
-      <PrivacyInfo />
+      <PrivacyInfo showDonationPrivacy={true} />
       <InformationModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
@@ -289,12 +301,24 @@ export default function DonationPage() {
         <Typography variant="h6" component={"div"} sx={{ pb: 2 }}>
           {t("donationPage.modalTitle")}
         </Typography>
-        <Typography
-          variant="body1"
-          component={"div"}
-          sx={{ whiteSpace: "pre-line" }}
-        >
-          {t("donationPage.modalBody1")}
+        <Typography variant="body1" component={"div"}>
+          {`${t("donationPage.openSection")} `}
+          <Typography
+            variant="body1"
+            component={"span"}
+            sx={{ fontWeight: 600 }}
+          >
+            {`${t("donationPage.portfolio")}, `}
+          </Typography>
+          {`${t("donationPage.click")} `}
+          <Typography
+            variant="body1"
+            component={"span"}
+            sx={{ fontWeight: 600 }}
+          >
+            {`${t("donationPage.payNotice")} `}
+          </Typography>
+          {t("donationPage.code")}
         </Typography>
         <Box display="flex" justifyContent="center" alignItems="center" my={4}>
           <QRCode

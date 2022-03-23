@@ -399,3 +399,5 @@ export const DONATION_LIST_SUCCESS = t.literal("DONATION_LIST_SUCCESS");
 export type DONATION_LIST_SUCCESS = t.TypeOf<typeof DONATION_LIST_SUCCESS>;
 export const DONATION_LIST_ERROR = t.literal("DONATION_LIST_ERROR");
 export type DONATION_LIST_ERROR = t.TypeOf<typeof DONATION_LIST_ERROR>;
+export const DONATION_URL_VISIT = t.literal("DONATION_URL_VISIT");
+export type DONATION_URL_VISIT = t.TypeOf<typeof DONATION_URL_VISIT>;
