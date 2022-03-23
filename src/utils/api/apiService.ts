@@ -108,10 +108,6 @@ export function getWallet() {
   };
 }
 
-export function shouldDoubleBack() {
-  return (loadState(SessionItems.doubleBack) as string) === "true";
-}
-
 export function setWaller(item: Wallet) {
   sessionStorage.setItem(SessionItems.wallet, JSON.stringify(item));
 }
@@ -134,8 +130,4 @@ export function setPaymentInfo(item: PaymentInfo) {
 
 export function setRptId(item: PaymentFormFields) {
   sessionStorage.setItem(SessionItems.noticeInfo, JSON.stringify(item));
-}
-
-export function setDoubleBack(item: string) {
-  sessionStorage.setItem(SessionItems.doubleBack, JSON.stringify(item));
 }

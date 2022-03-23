@@ -39,7 +39,7 @@ import { mixpanel } from "../utils/config/mixpanelHelperInit";
 import { moneyFormat } from "../utils/form/formatters";
 
 export default function DonationPage() {
-  const { i18n, t } = useTranslation();
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const theme = useTheme();
@@ -76,11 +76,7 @@ export default function DonationPage() {
   };
 
   const onSubmit = () => {
-    navigate(
-      `/payment/${selectedSlice?.nav}/${selectedEntity?.cf}/${
-        i18n.language.split("-")[0]
-      }`
-    );
+    navigate(`/payment/${selectedEntity?.cf}${selectedSlice?.nav}`);
   };
 
   const getEntityContainer = ({

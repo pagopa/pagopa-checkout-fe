@@ -18,16 +18,15 @@ import {
 import { useSmallDevice } from "../hooks/useSmallDevice";
 import {
   getReCaptchaKey,
-  setDoubleBack,
   setPaymentInfo,
   setRptId,
 } from "../utils/api/apiService";
 import { getPaymentInfoTask } from "../utils/api/helper";
 
-export default function DonationNoticePage() {
-  const { i18n, t } = useTranslation();
+export default function ShortcutNoticePage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
-  const { notice, cf, lng } = useParams();
+  const { rptid } = useParams();
 
   const ref = React.useRef(null);
   const [modalOpen, setModalOpen] = React.useState(false);
@@ -46,14 +45,13 @@ export default function DonationNoticePage() {
       const rptId: RptId = `${notice.cf}${notice.billCode}`;
       const token = await (ref.current as any).executeAsync();
 
-      setDoubleBack("true");
       void pipe(
         getPaymentInfoTask(rptId, token),
         TE.mapLeft((err) => onError(err)),
         TE.map((paymentInfo) => {
           setPaymentInfo(paymentInfo as PaymentInfo);
           setRptId(notice);
-          navigate("/payment/summary");
+          navigate("/payment/summary", { replace: true });
         })
       )();
     },
@@ -65,10 +63,9 @@ export default function DonationNoticePage() {
   };
 
   React.useEffect(() => {
-    void i18n.changeLanguage(lng);
     void onSubmit({
-      billCode: notice || "",
-      cf: cf || "",
+      billCode: rptid?.slice(11) || "",
+      cf: rptid?.slice(0, 11) || "",
     });
   }, []);
 
@@ -105,8 +102,8 @@ export default function DonationNoticePage() {
               onCancel={onCancel}
               onSubmit={onSubmit}
               defaultValues={{
-                billCode: notice || "",
-                cf: cf || "",
+                billCode: rptid?.slice(11) || "",
+                cf: rptid?.slice(0, 11) || "",
               }}
               loading={loading}
             />
