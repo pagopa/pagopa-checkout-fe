@@ -9,6 +9,7 @@ import {
   Button,
   Grid,
   Icon,
+  Link,
   SvgIcon,
   SxProps,
   Typography,
@@ -87,6 +88,7 @@ export default function DonationPage() {
     onClick,
     onKeyDown,
     tabIndex,
+    role,
   }: {
     entity: Donation;
     key?: number;
@@ -94,6 +96,7 @@ export default function DonationPage() {
     onClick?: () => void;
     onKeyDown?: (e: React.KeyboardEvent<HTMLDivElement>) => void;
     tabIndex?: number;
+    role?: string;
   }) => (
     <FieldContainer
       key={key}
@@ -120,7 +123,7 @@ export default function DonationPage() {
             });
           }}
         >
-          <a
+          <Link
             href={entity.web_site}
             target="_blank"
             rel="noopener noreferrer"
@@ -132,7 +135,7 @@ export default function DonationPage() {
               fontSize="medium"
               aria-hidden="true"
             />
-          </a>
+          </Link>
         </Box>
       }
       sx={{
@@ -146,6 +149,7 @@ export default function DonationPage() {
       onClick={onClick}
       onKeyDown={onKeyDown}
       tabIndex={tabIndex}
+      role={role}
     />
   );
 
@@ -208,6 +212,7 @@ export default function DonationPage() {
                   }
                 },
                 tabIndex: 0,
+                role: "link",
               })
             )
           ))}

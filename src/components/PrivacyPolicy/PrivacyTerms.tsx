@@ -1,5 +1,5 @@
 import React from "react";
-import { Box } from "@mui/material";
+import { Box, Link } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import InformationModal from "../modals/InformationModal";
 import PrivacyPolicy from "./PrivacyPolicy";
@@ -13,13 +13,13 @@ export default function PrivacyTerms() {
       <Box>
         <p>
           {t("inputCardPage.privacyDesc")}
-          <a
+          <Link
             href="#"
             style={{ fontWeight: 600, textDecoration: "none" }}
             onClick={() => setModalOpen(true)}
           >
             {t("inputCardPage.privacyTerms")}
-          </a>
+          </Link>
         </p>
       </Box>
       <InformationModal

@@ -1,7 +1,7 @@
 /* eslint-disable functional/immutable-data */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable sonarjs/cognitive-complexity */
-import { Box, Button } from "@mui/material";
+import { Box, Button, Link } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -17,7 +17,7 @@ export default function PaymentChoicePage() {
       title="paymentChoicePage.title"
       description="paymentChoicePage.description"
       link={
-        <a
+        <Link
           href="https://www.pagopa.gov.it/it/cittadini/trasparenza-costi/"
           target="_blank"
           rel="noopener noreferrer"
@@ -25,7 +25,7 @@ export default function PaymentChoicePage() {
           title={t("paymentChoicePage.costs")}
         >
           {t("paymentChoicePage.costs")}
-        </a>
+        </Link>
       }
     >
       <Box sx={{ mt: 6 }}>

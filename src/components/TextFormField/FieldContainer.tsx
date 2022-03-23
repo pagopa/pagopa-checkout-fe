@@ -17,6 +17,7 @@ function FieldContainer(props: {
   onClick?: () => void;
   onKeyDown?: (e: React.KeyboardEvent<HTMLDivElement>) => void;
   tabIndex?: number;
+  role?: string;
 }) {
   const { t } = useTranslation();
   const defaultStyle = {
@@ -35,6 +36,7 @@ function FieldContainer(props: {
       onClick={props.onClick}
       onKeyDown={props.onKeyDown}
       tabIndex={props.tabIndex}
+      role={props.role}
     >
       <Box
         sx={{
