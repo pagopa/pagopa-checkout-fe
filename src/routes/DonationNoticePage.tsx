@@ -18,7 +18,7 @@ import {
 import { useSmallDevice } from "../hooks/useSmallDevice";
 import {
   getReCaptchaKey,
-  setDonating,
+  setDoubleBack,
   setPaymentInfo,
   setRptId,
 } from "../utils/api/apiService";
@@ -46,7 +46,7 @@ export default function DonationNoticePage() {
       const rptId: RptId = `${notice.cf}${notice.billCode}`;
       const token = await (ref.current as any).executeAsync();
 
-      setDonating("true");
+      setDoubleBack("true");
       void pipe(
         getPaymentInfoTask(rptId, token),
         TE.mapLeft((err) => onError(err)),

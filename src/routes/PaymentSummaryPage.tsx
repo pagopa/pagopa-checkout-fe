@@ -19,8 +19,8 @@ import {
   getNoticeInfo,
   getPaymentInfo,
   getReCaptchaKey,
-  isDonating,
   setPaymentId,
+  shouldDoubleBack,
 } from "../utils/api/apiService";
 import {
   activePaymentTask,
@@ -154,7 +154,7 @@ export default function PaymentSummaryPage() {
         disabledSubmit={false}
         loadingSubmit={loading}
         handleSubmit={onSubmit}
-        handleCancel={() => (isDonating() ? navigate(-2) : navigate(-1))}
+        handleCancel={() => (shouldDoubleBack() ? navigate(-2) : navigate(-1))}
       />
       {!!error && (
         <ErrorModal

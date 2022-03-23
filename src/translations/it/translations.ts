@@ -26,7 +26,7 @@ export const TRANSLATIONS_IT = {
     serviceTerms: "Termini di servizio",
     and: "e i",
     privacyDonation:
-      "Termini e condizioni d’uso del servizio Donazioni a favore dell’emergenza in Ucraina",
+      "Termini aggiuntivi del servizio Donazioni a favore dell’emergenza in Ucraina",
   },
   paymentNoticePage: {
     title: "Cosa devi pagare?",

@@ -13,6 +13,7 @@ import {
   SvgIcon,
   SxProps,
   Typography,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import React from "react";
@@ -49,6 +50,7 @@ export default function DonationPage() {
   const [modalOpen, setModalOpen] = React.useState(false);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
+  const isMobileDevice = useMediaQuery(theme.breakpoints.down("sm"));
 
   React.useEffect(() => {
     dispatch(resetCheckData());
@@ -114,7 +116,12 @@ export default function DonationPage() {
         </Icon>
       }
       endAdornment={
-        <Box
+        <Link
+          href={entity.web_site}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ display: "flex", marginRight: "16px" }}
+          title={`${t("ariaLabels.informationLink")} ${entity.companyName}`}
           onClick={(e) => {
             e.stopPropagation();
             mixpanel.track(DONATION_URL_VISIT.value, {
@@ -123,20 +130,12 @@ export default function DonationPage() {
             });
           }}
         >
-          <Link
-            href={entity.web_site}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ display: "flex", marginRight: "16px" }}
-            title={`${t("ariaLabels.informationLink")} ${entity.companyName}`}
-          >
-            <InfoOutlinedIcon
-              sx={{ color: "primary.main", cursor: "pointer" }}
-              fontSize="medium"
-              aria-hidden="true"
-            />
-          </Link>
-        </Box>
+          <InfoOutlinedIcon
+            sx={{ color: "primary.main", cursor: "pointer" }}
+            fontSize="medium"
+            aria-hidden="true"
+          />
+        </Link>
       }
       sx={{
         border: "1px solid",
@@ -212,7 +211,7 @@ export default function DonationPage() {
                   }
                 },
                 tabIndex: 0,
-                role: "link",
+                role: "listitem",
               })
             )
           ))}
@@ -271,7 +270,16 @@ export default function DonationPage() {
                 </Button>
                 <Button
                   variant="outlined"
-                  onClick={() => setModalOpen(true)}
+                  onClick={() =>
+                    isMobileDevice
+                      ? window
+                          .open(
+                            "https://io.italia.it/donazioni-ucraina/",
+                            "_blank"
+                          )
+                          ?.focus()
+                      : setModalOpen(true)
+                  }
                   startIcon={
                     <SvgIcon
                       sx={{
