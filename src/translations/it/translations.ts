@@ -200,6 +200,8 @@ export const TRANSLATIONS_IT = {
     title: "Il codice inquadrato non è un avviso pagoPA",
     body: "Se il problema persiste, prova a inserire i dati manualmente.",
   },
+  DONATIONLIST_ERROR:
+    "Non siamo riusciti a caricare la lista delle organizzazioni.",
   paymentChoicePage: {
     title: "Come vuoi pagare?",
     description:

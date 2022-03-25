@@ -994,10 +994,10 @@ export const getDonationEntityList = async (
       });
       onResponse(data);
     })
-    .catch((error) => {
+    .catch(() => {
       mixpanel.track(DONATION_LIST_ERROR.value, {
         EVENT_ID: DONATION_LIST_ERROR.value,
       });
-      onError(error);
+      onError(ErrorsType.DONATIONLIST_ERROR);
     });
 };

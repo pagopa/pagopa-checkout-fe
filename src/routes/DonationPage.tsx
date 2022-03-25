@@ -5,11 +5,13 @@ import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
 import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
 import {
+  Alert,
   Box,
   Button,
   Grid,
   Icon,
   Link,
+  Snackbar,
   SvgIcon,
   SxProps,
   Typography,
@@ -22,7 +24,6 @@ import QRCode from "react-qr-code";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import sprite from "../assets/images/app.svg";
-import ErrorModal from "../components/modals/ErrorModal";
 import InformationModal from "../components/modals/InformationModal";
 import PageContainer from "../components/PageContent/PageContainer";
 import PrivacyInfo from "../components/PrivacyPolicy/PrivacyInfo";
@@ -195,7 +196,8 @@ export default function DonationPage() {
           (loadingList ? (
             <SkeletonDonationFieldContainer />
           ) : (
-            entityList.map((entity, index) =>
+            // eslint-disable-next-line functional/immutable-data
+            entityList.sort().map((entity, index) =>
               getEntityContainer({
                 entity,
                 key: index,
@@ -351,13 +353,45 @@ export default function DonationPage() {
         </Button>
       </InformationModal>
       {!!error && (
-        <ErrorModal
-          error={error}
+        <Snackbar
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
           open={errorModalOpen}
+          autoHideDuration={6000}
           onClose={() => {
             setErrorModalOpen(false);
           }}
-        />
+          sx={{
+            position: "fixed",
+            bottom: "64px !important",
+          }}
+        >
+          <Alert
+            onClose={() => {
+              setErrorModalOpen(false);
+            }}
+            severity="error"
+            sx={{
+              width: "100%",
+              alignItems: "center",
+              background: theme.palette.background.default,
+              borderLeftColor: theme.palette.error.main + " !important",
+              borderLeft: "4px solid",
+            }}
+            action={
+              <Button
+                variant="text"
+                onClick={() => {
+                  setLoadingList(true);
+                  void getDonationEntityList(onError, onResponse);
+                }}
+              >
+                {t("errorButton.retry")}
+              </Button>
+            }
+          >
+            {t(error)}
+          </Alert>
+        </Snackbar>
       )}
     </PageContainer>
   );
