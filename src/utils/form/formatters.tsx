@@ -14,8 +14,8 @@ export function cleanSpaces(text: string) {
 
 export function moneyFormat(
   amount: number,
-  fractionDigits: number = 2,
-  decimalDigits: number = 2
+  decimalDigits: number = 2,
+  fractionDigits: number = 2
 ) {
   return new Intl.NumberFormat("it-IT", {
     style: "currency",
