@@ -366,6 +366,7 @@ export default function DonationPage() {
           sx={{
             position: "fixed",
             bottom: "64px !important",
+            boxShadow: theme.shadows[4],
           }}
         >
           <Alert
