@@ -21,9 +21,12 @@ export const TRANSLATIONS_IT = {
   privacyInfo: {
     privacyDesc: "Proseguendo dichiari di aver letto e compreso l'",
     googleDesc: " Form protetto tramite reCAPTCHA e Google",
-    privacy: "Informativa Privacy e i Termini e condizioni d'uso del servizio.",
+    privacy: "Informativa Privacy e i Termini e condizioni d'uso del servizio",
     privacyPolicy: "Privacy Policy",
     serviceTerms: "Termini di servizio",
+    and: "e i",
+    privacyDonation:
+      "Termini aggiuntivi del servizio Donazioni a favore dell’emergenza in Ucraina",
   },
   paymentNoticePage: {
     title: "Cosa devi pagare?",
@@ -197,6 +200,8 @@ export const TRANSLATIONS_IT = {
     title: "Il codice inquadrato non è un avviso pagoPA",
     body: "Se il problema persiste, prova a inserire i dati manualmente.",
   },
+  DONATIONLIST_ERROR:
+    "Non siamo riusciti a caricare la lista delle organizzazioni.",
   paymentChoicePage: {
     title: "Come vuoi pagare?",
     description:
@@ -296,7 +301,28 @@ export const TRANSLATIONS_IT = {
     close: "Chiudi",
     editPsp: "Modifica PSP",
     editCard: "Modifica dati carta",
+    editDonation: "Modifica ente donazione",
     informationDialog: "Informazioni",
+    informationLink: "Per sapere di più su",
     loading: "Caricamento",
+  },
+  donationPage: {
+    title: "Dona per l’Ucraina",
+    description:
+      "Puoi donare con carta di credito, debito o prepagata, senza costi di commissione. L’importo verrà versato direttamente sul conto dell’organizzazione a cui scegli di donare.",
+    entity: "A chi vuoi donare?",
+    volunteer: "Quanto vuoi donare?",
+    submitCard: "Dona con carta",
+    submitIO: "Dona con IO",
+    ioDescription:
+      "Dona con l’app IO per ricevere un’e-mail con i dati utili ai fini delle agevolazioni fiscali.",
+    modalTitle: "Continua sull'app IO",
+    openSection: "Apri la sezione",
+    portfolio: "Portafoglio",
+    click: "premi",
+    payNotice: "Paga un avviso",
+    code: "e inquadra il codice:",
+    modalBody2:
+      "Puoi donare senza costi di commissione con le tue carte di debito, credito o prepagate.",
   },
 };

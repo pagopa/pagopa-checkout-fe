@@ -7,6 +7,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Guard from "./components/commons/Guard";
 import { Layout } from "./components/commons/Layout";
 import CancelledPage from "./routes/CancelledPage";
+import DonationPage from "./routes/DonationPage";
 import IndexPage from "./routes/IndexPage";
 import InputCardPage from "./routes/InputCardPage";
 import KOPage from "./routes/KOPage";
@@ -104,6 +105,9 @@ export function App() {
         <Layout fixedFooterPages={fixedFooterPages}>
           <Routes>
             <Route path="/" element={<Navigate to="/payment" />} />
+            <Route path="/donation" element={<PaymentOutlet />}>
+              <Route path="" element={<DonationPage />} />
+            </Route>
             <Route path="/payment" element={<PaymentOutlet />}>
               <Route path="" element={<IndexPage />} />
               <Route path="qr-reader" element={<PaymentQrPage />} />
@@ -158,6 +162,7 @@ export function App() {
               />
               <Route path="cancelled" element={<CancelledPage />} />
               <Route path="ko" element={<KOPage />} />
+              <Route path=":rptid" element={<PaymentNoticePage />} />
               <Route path="*" element={<Navigate replace to="/" />} />
             </Route>
             <Route path="*" element={<Navigate replace to="/" />} />

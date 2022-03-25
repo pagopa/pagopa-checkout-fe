@@ -153,9 +153,7 @@ export default function PaymentSummaryPage() {
         disabledSubmit={false}
         loadingSubmit={loading}
         handleSubmit={onSubmit}
-        handleCancel={() => {
-          navigate(-1);
-        }}
+        handleCancel={() => navigate(-1)}
       />
       {!!error && (
         <ErrorModal
