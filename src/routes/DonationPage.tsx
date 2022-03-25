@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/cognitive-complexity */
 /* eslint-disable @typescript-eslint/restrict-plus-operands */
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import EditIcon from "@mui/icons-material/Edit";
@@ -197,21 +198,23 @@ export default function DonationPage() {
             <SkeletonDonationFieldContainer />
           ) : (
             // eslint-disable-next-line functional/immutable-data
-            entityList.sort().map((entity, index) =>
-              getEntityContainer({
-                entity,
-                key: index,
-                sx: { cursor: "pointer" },
-                onClick: () => setSelectedEntity(entity),
-                onKeyDown: (e: React.KeyboardEvent<HTMLDivElement>) => {
-                  if (e.key === "Enter") {
-                    setSelectedEntity(entity);
-                  }
-                },
-                tabIndex: 0,
-                role: "listitem",
-              })
-            )
+            entityList
+              .sort((a, b) => (a.companyName > b.companyName ? 1 : -1))
+              .map((entity, index) =>
+                getEntityContainer({
+                  entity,
+                  key: index,
+                  sx: { cursor: "pointer" },
+                  onClick: () => setSelectedEntity(entity),
+                  onKeyDown: (e: React.KeyboardEvent<HTMLDivElement>) => {
+                    if (e.key === "Enter") {
+                      setSelectedEntity(entity);
+                    }
+                  },
+                  tabIndex: 0,
+                  role: "listitem",
+                })
+              )
           ))}
         {!!selectedEntity && (
           <>
