@@ -252,7 +252,7 @@ export default function DonationPage() {
                       }}
                       onClick={() => setSelectedSlice(slice)}
                     >
-                      {moneyFormat(slice.amount, 0)}
+                      {moneyFormat(slice.amount, 2, 0)}
                     </Button>
                   </Grid>
                 </React.Fragment>
