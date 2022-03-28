@@ -78,7 +78,7 @@ export default function DonationPage() {
   };
 
   const onSubmit = () => {
-    navigate(`/payment/${selectedEntity?.cf}${selectedSlice?.nav}`);
+    navigate(`/${selectedEntity?.cf}${selectedSlice?.nav}`);
   };
 
   const getEntityContainer = ({

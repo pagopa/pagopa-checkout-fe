@@ -32,6 +32,7 @@ import {
   updateWallet,
 } from "../utils/api/helper";
 import { moneyFormat } from "../utils/form/formatters";
+import { CheckoutRoutes } from "./models/routeModel";
 
 const defaultStyle = {
   display: "flex",
@@ -55,7 +56,6 @@ export default function PaymentCheckPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const currentPath = location.pathname.split("/")[1];
   const [modalOpen, setModalOpen] = React.useState(false);
   const [cancelModalOpen, setCancelModalOpen] = React.useState(false);
   const [drawerOpen, setDrawerOpen] = React.useState(false);
@@ -83,7 +83,7 @@ export default function PaymentCheckPage() {
 
   const onResponse = () => {
     setPayLoading(false);
-    navigate(`/${currentPath}/response`);
+    navigate(`/${CheckoutRoutes.ESITO}`);
     dispatch(resetCheckData());
   };
 
@@ -98,7 +98,7 @@ export default function PaymentCheckPage() {
 
   const onCancelResponse = () => {
     setCancelLoading(false);
-    navigate(`/${currentPath}/cancelled`);
+    navigate(`/${CheckoutRoutes.ANNULLATO}`);
   };
 
   const onCancelPaymentSubmit = () => {

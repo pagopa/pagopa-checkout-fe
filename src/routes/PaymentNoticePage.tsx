@@ -1,14 +1,15 @@
-import { Box, Button, CircularProgress } from "@mui/material";
+import { Box, Button } from "@mui/material";
+import { pipe } from "fp-ts/function";
+import * as TE from "fp-ts/TaskEither";
 import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useTranslation } from "react-i18next";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import * as TE from "fp-ts/TaskEither";
-import { pipe } from "fp-ts/function";
+import { useNavigate, useParams } from "react-router-dom";
 import { RptId } from "../../generated/definitions/payment-activations-api/RptId";
 import notification from "../assets/images/payment-notice-pagopa.png";
 import ErrorModal from "../components/modals/ErrorModal";
 import InformationModal from "../components/modals/InformationModal";
+import CheckoutLoader from "../components/PageContent/CheckoutLoader";
 import PageContainer from "../components/PageContent/PageContainer";
 import { PaymentNoticeForm } from "../features/payment/components/PaymentNoticeForm/PaymentNoticeForm";
 import {
@@ -23,14 +24,13 @@ import {
   setRptId,
 } from "../utils/api/apiService";
 import { getPaymentInfoTask } from "../utils/api/helper";
+import { CheckoutRoutes } from "./models/routeModel";
 
 export default function PaymentNoticePage() {
   const { t } = useTranslation();
-  const location = useLocation();
   const navigate = useNavigate();
   const { rptid } = useParams();
   const noticeInfo = getNoticeInfo();
-  const currentPath = location.pathname.split("/")[1];
 
   const ref = React.useRef(null);
   const [modalOpen, setModalOpen] = React.useState(false);
@@ -57,7 +57,10 @@ export default function PaymentNoticePage() {
         TE.map((paymentInfo) => {
           setPaymentInfo(paymentInfo as PaymentInfo);
           setRptId(notice);
-          navigate(`/${currentPath}/summary`, rptid ? { replace: true } : {});
+          navigate(
+            `/${CheckoutRoutes.DATI_PAGAMENTO}`,
+            rptid ? { replace: true } : {}
+          );
         })
       )();
     },
@@ -80,17 +83,7 @@ export default function PaymentNoticePage() {
   return (
     <>
       {loadingShortcut ? (
-        <Box
-          display="flex"
-          flexDirection="column"
-          justifyContent="center"
-          alignItems="center"
-          my={10}
-          aria-live="assertive"
-          aria-label={t("ariaLabels.loading")}
-        >
-          <CircularProgress />
-        </Box>
+        <CheckoutLoader />
       ) : (
         <PageContainer
           title="paymentNoticePage.title"
