@@ -33,7 +33,7 @@ resources:
 
     - repository: checkout-backend-mock
       type: github
-      name: pagopa/pagopa-checkout-backend-mock
+      name: pagopa/pagopa-checkout-be-mock
       ref: master
       endpoint: 'io-azure-devops-github-ro'
 
