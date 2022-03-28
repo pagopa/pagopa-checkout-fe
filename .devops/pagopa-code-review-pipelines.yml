@@ -31,7 +31,7 @@ resources:
       ref: refs/tags/v19
       endpoint: 'io-azure-devops-github-ro'
 
-    - repository: checkout-backend-mock
+    - repository: checkout-be-mock
       type: github
       name: pagopa/pagopa-checkout-be-mock
       ref: master
@@ -127,20 +127,20 @@ stages:
         timeoutInMinutes: 10
         steps:
       
-        - checkout: checkout-backend-mock
+        - checkout: checkout-be-mock
         
         - script: cp env.example .env
-          workingDirectory: pagopa-checkout-backend-mock
+          workingDirectory: pagopa-checkout-be-mock
           displayName: 'Setup env for mock'
 
         - script: yarn install && yarn build
-          workingDirectory: pagopa-checkout-backend-mock
+          workingDirectory: pagopa-checkout-be-mock
           displayName: 'Setup deps for mock'
 
         - script: |
             nohup yarn start &
           displayName: 'Start backend mock'
-          workingDirectory: pagopa-checkout-backend-mock
+          workingDirectory: pagopa-checkout-be-mock
 
         - checkout: self
         
