@@ -1,5 +1,5 @@
 import * as t from "io-ts";
-import { enumType } from "italia-ts-commons/lib/types";
+import { enumType } from "@pagopa/ts-commons/lib/types";
 
 const CreditCard = t.exact(
   t.interface({

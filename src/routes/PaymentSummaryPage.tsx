@@ -2,11 +2,15 @@ import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import EuroIcon from "@mui/icons-material/Euro";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import { Box, Typography } from "@mui/material";
+import * as E from "fp-ts/Either";
+import { pipe } from "fp-ts/function";
+import * as TE from "fp-ts/TaskEither";
 import React from "react";
+import ReCAPTCHA from "react-google-recaptcha";
 import { useTranslation } from "react-i18next";
-import { useLocation, useNavigate } from "react-router";
-import { PaymentRequestsGetResponse } from "../../generated/definitions/payment-transactions-api/PaymentRequestsGetResponse";
-import { RptId } from "../../generated/definitions/payment-transactions-api/RptId";
+import { useNavigate } from "react-router";
+import { PaymentRequestsGetResponse } from "../../generated/definitions/payment-activations-api/PaymentRequestsGetResponse";
+import { RptId } from "../../generated/definitions/payment-activations-api/RptId";
 import { FormButtons } from "../components/FormButtons/FormButtons";
 import ErrorModal from "../components/modals/ErrorModal";
 import PageContainer from "../components/PageContent/PageContainer";
@@ -14,14 +18,19 @@ import FieldContainer from "../components/TextFormField/FieldContainer";
 import {
   getNoticeInfo,
   getPaymentInfo,
+  getReCaptchaKey,
   setPaymentId,
 } from "../utils/api/apiService";
 import {
   activePaymentTask,
   pollingActivationStatus,
 } from "../utils/api/helper";
-import { getConfig } from "../utils/config/config";
+import { getConfigOrThrow } from "../utils/config/config";
+import { ErrorsType } from "../utils/errors/checkErrorsModel";
 import { moneyFormat } from "../utils/form/formatters";
+import { CheckoutRoutes } from "./models/routeModel";
+
+const config = getConfigOrThrow();
 
 const defaultStyle = {
   display: "flex",
@@ -36,11 +45,13 @@ const defaultStyle = {
 export default function PaymentSummaryPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const location = useLocation();
-  const currentPath = location.pathname.split("/")[1];
+
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
+  const [timeoutId, setTimeoutId] = React.useState<number>();
+  const ref = React.useRef(null);
+
   const paymentInfo = getPaymentInfo();
   const noticeInfo = getNoticeInfo();
 
@@ -50,31 +61,60 @@ export default function PaymentSummaryPage() {
     setErrorModalOpen(true);
   };
 
-  const onSubmit = React.useCallback(() => {
+  React.useEffect(() => {
+    if (loading && !errorModalOpen) {
+      const id = window.setTimeout(() => {
+        setError(ErrorsType.POLLING_SLOW);
+        setErrorModalOpen(true);
+      }, config.CHECKOUT_API_TIMEOUT as number);
+      setTimeoutId(id);
+    } else if (timeoutId) {
+      window.clearTimeout(timeoutId);
+    }
+  }, [loading, errorModalOpen]);
+
+  const onSubmit = React.useCallback(async () => {
     const rptId: RptId = `${noticeInfo.cf}${noticeInfo.billCode}`;
     setLoading(true);
+    const token = await (ref.current as any).executeAsync();
 
-    PaymentRequestsGetResponse.decode(paymentInfo).fold(
-      () => onError(""),
-      async (paymentInfo) =>
-        await activePaymentTask(
-          paymentInfo.importoSingoloVersamento,
-          paymentInfo.codiceContestoPagamento,
-          rptId
-        )
-          .fold(onError, () => {
-            void pollingActivationStatus(
-              paymentInfo.codiceContestoPagamento,
-              getConfig("IO_PAY_PORTAL_PAY_WL_POLLING_ATTEMPTS") as number,
-              (res) => {
-                setPaymentId(res);
-                setLoading(false);
-                navigate(`/${currentPath}/paymentchoice`);
+    pipe(
+      PaymentRequestsGetResponse.decode(paymentInfo),
+      E.fold(
+        () => onError(""),
+        (response) =>
+          pipe(
+            activePaymentTask(
+              response.importoSingoloVersamento,
+              response.codiceContestoPagamento,
+              rptId,
+              token
+            ),
+            TE.fold(
+              (e: string) => async () => {
+                onError(e);
+              },
+              () => async () => {
+                void pollingActivationStatus(
+                  response.codiceContestoPagamento,
+                  config.CHECKOUT_POLLING_ACTIVATION_ATTEMPTS as number,
+                  (res) => {
+                    setPaymentId(res);
+                    setLoading(false);
+                    navigate(`/${CheckoutRoutes.INSERISCI_EMAIL}`);
+                  },
+                  onError
+                );
               }
-            );
-          })
-          .run()
+            )
+          )()
+      )
     );
+  }, [ref]);
+
+  const onRetry = React.useCallback(() => {
+    setErrorModalOpen(false);
+    void onSubmit();
   }, []);
 
   return (
@@ -84,7 +124,7 @@ export default function PaymentSummaryPage() {
     >
       <FieldContainer
         title="paymentSummaryPage.creditor"
-        body={paymentInfo.enteBeneficiario.denominazioneBeneficiario}
+        body={paymentInfo.enteBeneficiario?.denominazioneBeneficiario}
         icon={<AccountBalanceIcon color="primary" sx={{ ml: 3 }} />}
       />
       <FieldContainer
@@ -102,19 +142,17 @@ export default function PaymentSummaryPage() {
           {t("paymentSummaryPage.cf")}
         </Typography>
         <Typography variant="sidenav" component={"div"}>
-          {paymentInfo.enteBeneficiario.identificativoUnivocoBeneficiario}
+          {paymentInfo.enteBeneficiario?.identificativoUnivocoBeneficiario}
         </Typography>
       </Box>
 
       <FormButtons
         submitTitle="paymentSummaryPage.buttons.submit"
         cancelTitle="paymentSummaryPage.buttons.cancel"
-        disabled={false}
+        disabledSubmit={false}
         loadingSubmit={loading}
         handleSubmit={onSubmit}
-        handleCancel={() => {
-          navigate(-1);
-        }}
+        handleCancel={() => navigate(-1)}
       />
       {!!error && (
         <ErrorModal
@@ -123,8 +161,16 @@ export default function PaymentSummaryPage() {
           onClose={() => {
             setErrorModalOpen(false);
           }}
+          onRetry={onRetry}
         />
       )}
+      <Box display="none">
+        <ReCAPTCHA
+          ref={ref}
+          size="invisible"
+          sitekey={getReCaptchaKey() as string}
+        />
+      </Box>
     </PageContainer>
   );
 }

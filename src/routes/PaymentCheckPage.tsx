@@ -6,14 +6,16 @@ import EditIcon from "@mui/icons-material/Edit";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
-import { Box, Button, SvgIcon, Typography } from "@mui/material";
+import { Box, Button, Skeleton, SvgIcon, Typography } from "@mui/material";
 import { default as React } from "react";
 import { useTranslation } from "react-i18next";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import sprite from "../assets/images/app.svg";
 import { FormButtons } from "../components/FormButtons/FormButtons";
 import { CancelPayment } from "../components/modals/CancelPayment";
 import { CustomDrawer } from "../components/modals/CustomDrawer";
+import ErrorModal from "../components/modals/ErrorModal";
 import InformationModal from "../components/modals/InformationModal";
 import PageContainer from "../components/PageContent/PageContainer";
 import SkeletonFieldContainer from "../components/Skeletons/SkeletonFieldContainer";
@@ -21,6 +23,7 @@ import ClickableFieldContainer from "../components/TextFormField/ClickableFieldC
 import FieldContainer from "../components/TextFormField/FieldContainer";
 import PspFieldContainer from "../components/TextFormField/PspFieldContainer";
 import { PspList } from "../features/payment/models/paymentModel";
+import { resetCheckData } from "../redux/slices/checkData";
 import { getCheckData, getEmailInfo, getWallet } from "../utils/api/apiService";
 import {
   cancelPayment,
@@ -29,6 +32,7 @@ import {
   updateWallet,
 } from "../utils/api/helper";
 import { moneyFormat } from "../utils/form/formatters";
+import { CheckoutRoutes } from "./models/routeModel";
 
 const defaultStyle = {
   display: "flex",
@@ -51,7 +55,7 @@ const pspContainerStyle = {
 export default function PaymentCheckPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const currentPath = location.pathname.split("/")[1];
+  const dispatch = useDispatch();
   const [modalOpen, setModalOpen] = React.useState(false);
   const [cancelModalOpen, setCancelModalOpen] = React.useState(false);
   const [drawerOpen, setDrawerOpen] = React.useState(false);
@@ -60,22 +64,27 @@ export default function PaymentCheckPage() {
   const [payLoading, setPayLoading] = React.useState(false);
   const [cancelLoading, setCancelLoading] = React.useState(false);
   const [pspList, setPspList] = React.useState<Array<PspList>>([]);
+  const [errorModalOpen, setErrorModalOpen] = React.useState(false);
+  const [error, setError] = React.useState("");
 
   const checkData = getCheckData();
   const wallet = getWallet();
   const email = getEmailInfo();
   const totalAmount = checkData.amount.amount + wallet.psp.fixedCost.amount;
 
-  const onError = () => {
+  const onError = (m: string) => {
     setPayLoading(false);
     setCancelLoading(false);
     setPspEditLoading(false);
     setPspUpdateLoading(false);
+    setError(m);
+    setErrorModalOpen(true);
   };
 
   const onResponse = () => {
     setPayLoading(false);
-    navigate(`/${currentPath}/response`);
+    navigate(`/${CheckoutRoutes.ESITO}`);
+    dispatch(resetCheckData());
   };
 
   const onSubmit = React.useCallback(() => {
@@ -89,7 +98,7 @@ export default function PaymentCheckPage() {
 
   const onCancelResponse = () => {
     setCancelLoading(false);
-    navigate(`/${currentPath}/cancelled`);
+    navigate(`/${CheckoutRoutes.ANNULLATO}`);
   };
 
   const onCancelPaymentSubmit = () => {
@@ -153,9 +162,13 @@ export default function PaymentCheckPage() {
         <Typography variant="h6" component={"div"} pr={2}>
           {t("paymentCheckPage.total")}
         </Typography>
-        <Typography variant="h6" component={"div"}>
-          {moneyFormat(totalAmount)}
-        </Typography>
+        {pspUpdateLoading ? (
+          <Skeleton variant="text" width="110px" height="40px" />
+        ) : (
+          <Typography variant="h6" component={"div"}>
+            {moneyFormat(totalAmount)}
+          </Typography>
+        )}
       </Box>
       <ClickableFieldContainer
         title="paymentCheckPage.creditCard"
@@ -183,6 +196,7 @@ export default function PaymentCheckPage() {
             onClick={() => navigate(-1)}
             startIcon={<EditIcon />}
             disabled={isDisabled()}
+            aria-label={t("ariaLabels.editCard")}
           >
             {t("clipboard.edit")}
           </Button>
@@ -202,6 +216,14 @@ export default function PaymentCheckPage() {
             onClick={() => {
               setModalOpen(true);
             }}
+            onKeyDown={(e: React.KeyboardEvent) => {
+              if (e.key === "Enter") {
+                setModalOpen(true);
+              }
+            }}
+            tabIndex={0}
+            aria-label={t("ariaLabels.informationDialog")}
+            role="dialog"
           />
         }
       />
@@ -224,6 +246,7 @@ export default function PaymentCheckPage() {
             onClick={onPspEditClick}
             startIcon={<EditIcon />}
             disabled={isDisabled()}
+            aria-label={t("ariaLabels.editPsp")}
           >
             {t("clipboard.edit")}
           </Button>
@@ -244,7 +267,8 @@ export default function PaymentCheckPage() {
           totalAmount
         )}`}
         cancelTitle="paymentCheckPage.buttons.cancel"
-        disabled={isDisabled()}
+        disabledSubmit={isDisabled()}
+        disabledCancel={isDisabled()}
         handleSubmit={onSubmit}
         handleCancel={onCancel}
       />
@@ -299,10 +323,18 @@ export default function PaymentCheckPage() {
               pb: 2,
             }}
           >
-            <Typography variant={"caption-semibold"} component={"div"}>
+            <Typography
+              variant={"caption-semibold"}
+              component={"div"}
+              aria-hidden="true"
+            >
               {t("paymentCheckPage.drawer.header.name")}
             </Typography>
-            <Typography variant={"caption-semibold"} component={"div"}>
+            <Typography
+              variant={"caption-semibold"}
+              component={"div"}
+              aria-hidden="true"
+            >
               {t("paymentCheckPage.drawer.header.amount")}
             </Typography>
           </Box>
@@ -327,7 +359,7 @@ export default function PaymentCheckPage() {
                     color="primary"
                     component={"div"}
                   >
-                    {moneyFormat(psp.commission)}
+                    {moneyFormat(psp.commission, 0)}
                   </Typography>
                 }
                 onClick={() => {
@@ -336,6 +368,16 @@ export default function PaymentCheckPage() {
               />
             ))}
       </CustomDrawer>
+
+      {!!error && (
+        <ErrorModal
+          error={error}
+          open={errorModalOpen}
+          onClose={() => {
+            setErrorModalOpen(false);
+          }}
+        />
+      )}
     </PageContainer>
   );
 }

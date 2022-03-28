@@ -1,12 +1,12 @@
 /* eslint-disable functional/immutable-data */
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { Box, SxProps, Typography, Skeleton } from "@mui/material";
+import { Box, Skeleton, SxProps, Typography } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
 function FieldContainer(props: {
   title: string;
-  body: string | number;
+  body: string | number | undefined;
   icon?: React.ReactNode;
   flexDirection?: "row" | "column";
   titleVariant?: "body2" | "sidenav";
@@ -14,6 +14,10 @@ function FieldContainer(props: {
   sx?: SxProps;
   endAdornment?: React.ReactNode;
   loading?: boolean;
+  onClick?: () => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLDivElement>) => void;
+  tabIndex?: number;
+  role?: string;
 }) {
   const { t } = useTranslation();
   const defaultStyle = {
@@ -27,7 +31,13 @@ function FieldContainer(props: {
   };
 
   return (
-    <Box sx={{ ...defaultStyle, ...props.sx }}>
+    <Box
+      sx={{ ...defaultStyle, ...props.sx }}
+      onClick={props.onClick}
+      onKeyDown={props.onKeyDown}
+      tabIndex={props.tabIndex}
+      role={props.role}
+    >
       <Box
         sx={{
           display: "flex",
@@ -37,7 +47,11 @@ function FieldContainer(props: {
           width: "100%",
         }}
       >
-        {props.icon}
+        {props.icon && props.loading ? (
+          <Skeleton variant="circular" width="40px" height="40px" />
+        ) : (
+          props.icon
+        )}
         <Box
           sx={{
             display: "flex",

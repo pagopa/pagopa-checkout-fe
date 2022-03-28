@@ -1,14 +1,103 @@
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { Box, Paper } from "@mui/material";
+import { Alert, Box, Button, CircularProgress } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { RptId } from "../../generated/definitions/payment-activations-api/RptId";
+import ErrorModal from "../components/modals/ErrorModal";
 import PageContainer from "../components/PageContent/PageContainer";
+import { QrCodeReader } from "../components/QrCodeReader/QrCodeReader";
+import { PaymentFormFields } from "../features/payment/models/paymentModel";
+import { ErrorsType } from "../utils/errors/checkErrorsModel";
+import { qrCodeValidation } from "../utils/regex/validators";
+import { CheckoutRoutes } from "./models/routeModel";
 
 export default function PaymentQrPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const currentPath = location.pathname.split("/")[1];
+  const [errorModalOpen, setErrorModalOpen] = React.useState(false);
+  const [error, setError] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
+  const [camBlocked, setCamBlocked] = React.useState(false);
+
+  const onError = (m: string) => {
+    setLoading(false);
+    setError(m);
+    setErrorModalOpen(true);
+  };
+
+  const onSubmit = React.useCallback(async (notice: PaymentFormFields) => {
+    const rptId: RptId = `${notice.cf}${notice.billCode}`;
+    setLoading(true);
+    navigate(`/${rptId}`);
+  }, []);
+
+  const reloadPage = () => window.location.reload();
+
+  const getPageBody = React.useCallback(() => {
+    if (loading) {
+      return (
+        <Box
+          display="flex"
+          flexDirection="column"
+          justifyContent="center"
+          alignItems="center"
+          my={10}
+        >
+          <CircularProgress />
+        </Box>
+      );
+    }
+    if (camBlocked) {
+      return (
+        <Alert
+          severity="warning"
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "start",
+            mt: 2,
+          }}
+        >
+          <Box
+            sx={{
+              whiteSpace: "break-spaces",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            {t("paymentQrPage.camBlocked")}
+            <Button
+              variant="text"
+              onClick={reloadPage}
+              sx={{ mt: 1, p: 0, alignSelf: "start" }}
+            >
+              {t("paymentQrPage.reloadPage")}
+            </Button>
+          </Box>
+        </Alert>
+      );
+    } else {
+      return (
+        <QrCodeReader
+          onError={() => setCamBlocked(true)}
+          onScan={(data) => {
+            if (data && !loading) {
+              if (!qrCodeValidation(data)) {
+                onError(ErrorsType.INVALID_QRCODE);
+              } else {
+                void onSubmit({
+                  billCode: data?.split("|")[2] || "",
+                  cf: data?.split("|")[3] || "",
+                });
+              }
+            }
+          }}
+          enableLoadFromPicture={false}
+        />
+      );
+    }
+  }, [loading, camBlocked]);
 
   return (
     <PageContainer
@@ -16,25 +105,40 @@ export default function PaymentQrPage() {
       description="paymentQrPage.description"
     >
       <Box
-        sx={{ "& > :not(style)": { mt: 6, mb: 6, width: "100%", height: 300 } }}
-      >
-        <Paper square variant="outlined" sx={{ bgcolor: "darkgrey" }} />
-      </Box>
-      <Box
         display="flex"
+        flexDirection="column"
         justifyContent="center"
         alignItems="center"
         sx={{ gap: 2 }}
       >
-        <a
-          href=""
-          style={{ fontWeight: 600, textDecoration: "none" }}
-          onClick={() => navigate(`/${currentPath}/notice`)}
+        <Box sx={{ my: 2, width: "100%" }}>{getPageBody()}</Box>
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          sx={{ gap: 2, mb: 4 }}
         >
-          {t("paymentQrPage.navigate")}
-        </a>
-        <ArrowForwardIcon sx={{ color: "primary.main" }} fontSize="small" />
+          <Button
+            variant="text"
+            onClick={() => navigate(`/${CheckoutRoutes.INSERISCI_DATI_AVVISO}`)}
+          >
+            {t("paymentQrPage.navigate")}
+            <ArrowForwardIcon
+              sx={{ color: "primary.main", ml: 2 }}
+              fontSize="small"
+            />
+          </Button>
+        </Box>
       </Box>
+      {!!error && (
+        <ErrorModal
+          error={error}
+          open={errorModalOpen}
+          onClose={() => {
+            setErrorModalOpen(false);
+          }}
+        />
+      )}
     </PageContainer>
   );
 }

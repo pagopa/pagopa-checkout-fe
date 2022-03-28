@@ -1,71 +1,10 @@
-import * as t from "io-ts";
 import { init, track, Mixpanel } from "mixpanel-browser";
-import { getConfig } from "./config";
-export const PAYMENT_VERIFY_INIT = t.literal("PAYMENT_VERIFY_INIT");
-export type PAYMENT_VERIFY_INIT = t.TypeOf<typeof PAYMENT_VERIFY_INIT>;
-export const PAYMENT_VERIFY_NET_ERR = t.literal("PAYMENT_VERIFY_NET_ERR");
-export type PAYMENT_VERIFY_NET_ERR = t.TypeOf<typeof PAYMENT_VERIFY_NET_ERR>;
-export const PAYMENT_VERIFY_SVR_ERR = t.literal("PAYMENT_VERIFY_SVR_ERR");
-export type PAYMENT_VERIFY_SVR_ERR = t.TypeOf<typeof PAYMENT_VERIFY_SVR_ERR>;
-export const PAYMENT_VERIFY_RESP_ERR = t.literal("PAYMENT_VERIFY_RESP_ERR");
-export type PAYMENT_VERIFY_RESP_ERR = t.TypeOf<typeof PAYMENT_VERIFY_RESP_ERR>;
-export const PAYMENT_VERIFY_SUCCESS = t.literal("PAYMENT_VERIFY_SUCCESS");
-export type PAYMENT_VERIFY_SUCCESS = t.TypeOf<typeof PAYMENT_VERIFY_SUCCESS>;
+import { getConfigOrThrow } from "./config";
 
-export const PAYMENT_ACTIVATE_INIT = t.literal("PAYMENT_ACTIVATE_INIT");
-export type PAYMENT_ACTIVATE_INIT = t.TypeOf<typeof PAYMENT_ACTIVATE_INIT>;
-export const PAYMENT_ACTIVATE_NET_ERR = t.literal("PAYMENT_ACTIVATE_NET_ERR");
-export type PAYMENT_ACTIVATE_NET_ERR = t.TypeOf<
-  typeof PAYMENT_ACTIVATE_NET_ERR
->;
-export const PAYMENT_ACTIVATE_SVR_ERR = t.literal("PAYMENT_ACTIVATE_SVR_ERR");
-export type PAYMENT_ACTIVATE_SVR_ERR = t.TypeOf<
-  typeof PAYMENT_ACTIVATE_SVR_ERR
->;
-export const PAYMENT_ACTIVATE_RESP_ERR = t.literal("PAYMENT_ACTIVATE_RESP_ERR");
-export type PAYMENT_ACTIVATE_RESP_ERR = t.TypeOf<
-  typeof PAYMENT_ACTIVATE_RESP_ERR
->;
-export const PAYMENT_ACTIVATE_SUCCESS = t.literal("PAYMENT_ACTIVATE_SUCCESS");
-export type PAYMENT_ACTIVATE_SUCCESS = t.TypeOf<
-  typeof PAYMENT_ACTIVATE_SUCCESS
->;
-
-export const PAYMENT_ACTIVATION_STATUS_INIT = t.literal(
-  "PAYMENT_ACTIVATION_STATUS_INIT"
-);
-export type PAYMENT_ACTIVATION_STATUS_INIT = t.TypeOf<
-  typeof PAYMENT_ACTIVATION_STATUS_INIT
->;
-export const PAYMENT_ACTIVATION_STATUS_NET_ERR = t.literal(
-  "PAYMENT_ACTIVATION_STATUS_NET_ERR"
-);
-export type PAYMENT_ACTIVATION_STATUS_NET_ERR = t.TypeOf<
-  typeof PAYMENT_ACTIVATION_STATUS_NET_ERR
->;
-export const PAYMENT_ACTIVATION_STATUS_SVR_ERR = t.literal(
-  "PAYMENT_ACTIVATION_STATUS_SVR_ERR"
-);
-export type PAYMENT_ACTIVATION_STATUS_SVR_ERR = t.TypeOf<
-  typeof PAYMENT_ACTIVATION_STATUS_SVR_ERR
->;
-export const PAYMENT_ACTIVATION_STATUS_RESP_ERR = t.literal(
-  "PAYMENT_ACTIVATION_STATUS_RESP_ERR"
-);
-export type PAYMENT_ACTIVATION_STATUS_RESP_ERR = t.TypeOf<
-  typeof PAYMENT_ACTIVATION_STATUS_RESP_ERR
->;
-export const PAYMENT_ACTIVATION_STATUS_SUCCESS = t.literal(
-  "PAYMENT_ACTIVATION_STATUS_SUCCESS"
-);
-export type PAYMENT_ACTIVATION_STATUS_SUCCESS = t.TypeOf<
-  typeof PAYMENT_ACTIVATION_STATUS_SUCCESS
->;
-
-const ENV = getConfig("IO_PAY_PORTAL_ENV");
+const ENV = getConfigOrThrow().CHECKOUT_ENV;
 
 export const mixpanelInit = function (): void {
-  if (ENV === "develop") {
+  if (ENV === "DEV") {
     // eslint-disable-next-line no-console
     console.log("Mixpanel events mock on console log.");
   } else {
@@ -76,7 +15,9 @@ export const mixpanelInit = function (): void {
       property_blacklist: ["$current_url", "$initial_referrer", "$referrer"],
       loaded(mixpanel: Mixpanel) {
         // this is useful to obtain a new distinct_id every session
-        mixpanel.reset();
+        if (sessionStorage.getItem("rptId") === null) {
+          mixpanel.reset();
+        }
       },
     });
   }
@@ -84,7 +25,7 @@ export const mixpanelInit = function (): void {
 
 export const mixpanel = {
   track(event_name: string, properties?: any): void {
-    if (ENV === "develop") {
+    if (ENV === "DEV") {
       // eslint-disable-next-line no-console
       console.log(event_name, properties);
     } else {

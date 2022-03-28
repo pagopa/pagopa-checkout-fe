@@ -3,6 +3,7 @@ export const TRANSLATIONS_EN = {
     footer: {
       accessibility: "Accessibility",
       help: "Help",
+      pagoPA: "visit pagoPA site",
     },
     header: {
       disclaimer: "",
@@ -21,7 +22,7 @@ export const TRANSLATIONS_EN = {
   privacyInfo: {
     privacyDesc:
       "On Continue you declare that you have read and understood the ",
-    googleDesc: "Form protected by reCAPTCHA and Google",
+    googleDesc: " Form protected by reCAPTCHA and Google",
     privacy: "Privacy Policy and Terms and conditions of use of the service.",
     privacyPolicy: "Privacy Policy",
     serviceTerms: "Terms of Service",
@@ -72,10 +73,22 @@ export const TRANSLATIONS_EN = {
     },
     formButtons: {
       submit: "Continue",
-      cancel: "Back",
+      cancel: "Cancel",
     },
   },
   general: {
     and: "&",
+  },
+  app: {
+    title: "Pay a notice - pagoPA",
+  },
+  ariaLabels: {
+    languageMenu: "Current language",
+    appLanguage: "Select language",
+    close: "Close",
+    editPsp: "Change PSP",
+    editCard: "Edit credit card",
+    informationDialog: "Informations",
+    loading: "Loading",
   },
 };

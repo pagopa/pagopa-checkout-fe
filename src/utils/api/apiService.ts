@@ -6,7 +6,12 @@ import {
   PaymentInfo,
   Wallet,
 } from "../../features/payment/models/paymentModel";
+import { getConfigOrThrow } from "../config/config";
 import { loadState, SessionItems } from "../storage/sessionStorage";
+
+export function getReCaptchaKey() {
+  return getConfigOrThrow().CHECKOUT_RECAPTCHA_SITE_KEY;
+}
 
 export function getNoticeInfo() {
   const noticeInfo = loadState(SessionItems.noticeInfo) as PaymentFormFields;
@@ -20,15 +25,22 @@ export function getPaymentInfo() {
   const paymentInfo = loadState(SessionItems.paymentInfo) as PaymentInfo;
   return {
     importoSingoloVersamento: paymentInfo?.importoSingoloVersamento || 0,
-    enteBeneficiario: {
-      denominazioneBeneficiario:
-        paymentInfo?.enteBeneficiario?.denominazioneBeneficiario || "",
-      identificativoUnivocoBeneficiario:
-        paymentInfo?.enteBeneficiario?.identificativoUnivocoBeneficiario || "",
-    },
-    causaleVersamento: paymentInfo?.causaleVersamento || "",
+    enteBeneficiario: paymentInfo.enteBeneficiario
+      ? {
+          denominazioneBeneficiario:
+            paymentInfo?.enteBeneficiario?.denominazioneBeneficiario || "",
+          identificativoUnivocoBeneficiario:
+            paymentInfo?.enteBeneficiario?.identificativoUnivocoBeneficiario ||
+            "",
+        }
+      : undefined,
+    causaleVersamento: paymentInfo.causaleVersamento
+      ? paymentInfo.causaleVersamento
+      : undefined,
     codiceContestoPagamento: paymentInfo?.codiceContestoPagamento || "",
-    ibanAccredito: paymentInfo?.ibanAccredito || "",
+    ibanAccredito: paymentInfo.ibanAccredito
+      ? paymentInfo.ibanAccredito
+      : undefined,
   };
 }
 

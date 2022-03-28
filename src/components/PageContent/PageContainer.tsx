@@ -11,7 +11,7 @@ export default function PageContainer(props: {
   const { t } = useTranslation();
 
   return (
-    <Box p={"3rem 0"}>
+    <Box mt={3} mb={6} aria-live="polite">
       {!!props.title && (
         <Typography variant="h4" component={"div"}>
           {t(props.title)}

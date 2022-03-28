@@ -1,6 +1,4 @@
 import * as t from "io-ts";
-import { init, track } from "mixpanel-browser";
-import { getConfigOrThrow } from "./pmConfig";
 export const PAYMENT_CHECK_INIT = t.literal("PAYMENT_CHECK_INIT");
 export type PAYMENT_CHECK_INIT = t.TypeOf<typeof PAYMENT_CHECK_INIT>;
 export const PAYMENT_CHECK_NET_ERR = t.literal("PAYMENT_CHECK_NET_ERR");
@@ -335,64 +333,71 @@ export const PAYMENT_ACTION_DELETE_SUCCESS = t.literal(
 export type PAYMENT_ACTION_DELETE_SUCCESS = t.TypeOf<
   typeof PAYMENT_ACTION_DELETE_SUCCESS
 >;
-declare const OneTrust: any;
-declare const OnetrustActiveGroups: string;
-const global = window as any;
-const targCookiesGroup = "C0004";
+export const PAYMENT_VERIFY_INIT = t.literal("PAYMENT_VERIFY_INIT");
+export type PAYMENT_VERIFY_INIT = t.TypeOf<typeof PAYMENT_VERIFY_INIT>;
+export const PAYMENT_VERIFY_NET_ERR = t.literal("PAYMENT_VERIFY_NET_ERR");
+export type PAYMENT_VERIFY_NET_ERR = t.TypeOf<typeof PAYMENT_VERIFY_NET_ERR>;
+export const PAYMENT_VERIFY_SVR_ERR = t.literal("PAYMENT_VERIFY_SVR_ERR");
+export type PAYMENT_VERIFY_SVR_ERR = t.TypeOf<typeof PAYMENT_VERIFY_SVR_ERR>;
+export const PAYMENT_VERIFY_RESP_ERR = t.literal("PAYMENT_VERIFY_RESP_ERR");
+export type PAYMENT_VERIFY_RESP_ERR = t.TypeOf<typeof PAYMENT_VERIFY_RESP_ERR>;
+export const PAYMENT_VERIFY_SUCCESS = t.literal("PAYMENT_VERIFY_SUCCESS");
+export type PAYMENT_VERIFY_SUCCESS = t.TypeOf<typeof PAYMENT_VERIFY_SUCCESS>;
 
-const ENV = getConfigOrThrow().IO_PAY_ENV;
+export const PAYMENT_ACTIVATE_INIT = t.literal("PAYMENT_ACTIVATE_INIT");
+export type PAYMENT_ACTIVATE_INIT = t.TypeOf<typeof PAYMENT_ACTIVATE_INIT>;
+export const PAYMENT_ACTIVATE_NET_ERR = t.literal("PAYMENT_ACTIVATE_NET_ERR");
+export type PAYMENT_ACTIVATE_NET_ERR = t.TypeOf<
+  typeof PAYMENT_ACTIVATE_NET_ERR
+>;
+export const PAYMENT_ACTIVATE_SVR_ERR = t.literal("PAYMENT_ACTIVATE_SVR_ERR");
+export type PAYMENT_ACTIVATE_SVR_ERR = t.TypeOf<
+  typeof PAYMENT_ACTIVATE_SVR_ERR
+>;
+export const PAYMENT_ACTIVATE_RESP_ERR = t.literal("PAYMENT_ACTIVATE_RESP_ERR");
+export type PAYMENT_ACTIVATE_RESP_ERR = t.TypeOf<
+  typeof PAYMENT_ACTIVATE_RESP_ERR
+>;
+export const PAYMENT_ACTIVATE_SUCCESS = t.literal("PAYMENT_ACTIVATE_SUCCESS");
+export type PAYMENT_ACTIVATE_SUCCESS = t.TypeOf<
+  typeof PAYMENT_ACTIVATE_SUCCESS
+>;
 
-const mixpanelInit = function (): void {
-  if (ENV === "develop") {
-    // eslint-disable-next-line no-console
-    console.log(
-      `Mixpanel events mock on console log. See IO_PAY_ENV=${process.env.IO_PAY_ENV}`
-    );
-  } else {
-    init("c3db8f517102d7a7ebd670c9da3e05c4", {
-      api_host: "https://api-eu.mixpanel.com",
-      ip: false,
-      persistence: "localStorage",
-      property_blacklist: ["$current_url", "$initial_referrer", "$referrer"],
-    });
-  }
-};
-// OneTrust callback
-// eslint-disable-next-line functional/immutable-data
-global.OptanonWrapper = function () {
-  OneTrust.OnConsentChanged(function () {
-    const activeGroups = OnetrustActiveGroups;
-    if (activeGroups.indexOf(targCookiesGroup) > -1) {
-      mixpanelInit();
-    }
-  });
-};
-// check mixpanel cookie consent in cookie
-const OTCookieValue: string =
-  document.cookie
-    .split("; ")
-    .find((row) => row.startsWith("OptanonConsent=")) || "";
-const checkValue = `${targCookiesGroup}%3A1`;
-if (OTCookieValue.indexOf(checkValue) > -1) {
-  mixpanelInit();
-}
-
-export const mixpanel = {
-  track(event_name: string, properties?: any): void {
-    if (ENV === "develop") {
-      // eslint-disable-next-line no-console
-      console.log(event_name, properties);
-    } else {
-      try {
-        if (ENV === "UAT") {
-          track(event_name, { ...properties, ...{ environment: "UAT" } });
-        } else {
-          track(event_name, properties);
-        }
-      } catch (_) {
-        // eslint-disable-next-line no-console
-        console.log(event_name, properties);
-      }
-    }
-  },
-};
+export const PAYMENT_ACTIVATION_STATUS_INIT = t.literal(
+  "PAYMENT_ACTIVATION_STATUS_INIT"
+);
+export type PAYMENT_ACTIVATION_STATUS_INIT = t.TypeOf<
+  typeof PAYMENT_ACTIVATION_STATUS_INIT
+>;
+export const PAYMENT_ACTIVATION_STATUS_NET_ERR = t.literal(
+  "PAYMENT_ACTIVATION_STATUS_NET_ERR"
+);
+export type PAYMENT_ACTIVATION_STATUS_NET_ERR = t.TypeOf<
+  typeof PAYMENT_ACTIVATION_STATUS_NET_ERR
+>;
+export const PAYMENT_ACTIVATION_STATUS_SVR_ERR = t.literal(
+  "PAYMENT_ACTIVATION_STATUS_SVR_ERR"
+);
+export type PAYMENT_ACTIVATION_STATUS_SVR_ERR = t.TypeOf<
+  typeof PAYMENT_ACTIVATION_STATUS_SVR_ERR
+>;
+export const PAYMENT_ACTIVATION_STATUS_RESP_ERR = t.literal(
+  "PAYMENT_ACTIVATION_STATUS_RESP_ERR"
+);
+export type PAYMENT_ACTIVATION_STATUS_RESP_ERR = t.TypeOf<
+  typeof PAYMENT_ACTIVATION_STATUS_RESP_ERR
+>;
+export const PAYMENT_ACTIVATION_STATUS_SUCCESS = t.literal(
+  "PAYMENT_ACTIVATION_STATUS_SUCCESS"
+);
+export type PAYMENT_ACTIVATION_STATUS_SUCCESS = t.TypeOf<
+  typeof PAYMENT_ACTIVATION_STATUS_SUCCESS
+>;
+export const DONATION_INIT_SESSION = t.literal("DONATION_INIT_SESSION");
+export type DONATION_INIT_SESSION = t.TypeOf<typeof DONATION_INIT_SESSION>;
+export const DONATION_LIST_SUCCESS = t.literal("DONATION_LIST_SUCCESS");
+export type DONATION_LIST_SUCCESS = t.TypeOf<typeof DONATION_LIST_SUCCESS>;
+export const DONATION_LIST_ERROR = t.literal("DONATION_LIST_ERROR");
+export type DONATION_LIST_ERROR = t.TypeOf<typeof DONATION_LIST_ERROR>;
+export const DONATION_URL_VISIT = t.literal("DONATION_URL_VISIT");
+export type DONATION_URL_VISIT = t.TypeOf<typeof DONATION_URL_VISIT>;

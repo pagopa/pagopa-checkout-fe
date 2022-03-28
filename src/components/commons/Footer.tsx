@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Link, Typography } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
@@ -25,44 +25,50 @@ export default function Footer(props: { fixedPages: Array<string> }) {
       }}
       bgcolor={{
         ...(isFixed()
-          ? { xs: "background.default" }
-          : { xs: "background.paper" }),
-        sm: "background.default",
+          ? { xs: "background.paper" }
+          : { xs: "background.default" }),
+        sm: "background.paper",
       }}
     >
-      <Box display={"flex"} alignItems={"center"} gap={1}>
-        <a
-          href="https://form.agid.gov.it/view/7628e161-33c0-420f-8c80-4fe362d2c7c5/"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ color: "black", textDecoration: "none" }}
-        >
-          {t("mainPage.footer.accessibility")}
-        </a>
-        <p>·</p>
-        <a
-          href="https://www.pagopa.gov.it/it/helpdesk/"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ color: "black", textDecoration: "none" }}
-        >
-          {t("mainPage.footer.help")}
-        </a>
-        <p>·</p>
-        <LanguageFooterMenu />
-      </Box>
-      <a
+      <Typography variant="caption" component={"div"}>
+        <Box display={"flex"} alignItems={"center"} gap={1}>
+          <Link
+            href="https://form.agid.gov.it/view/7628e161-33c0-420f-8c80-4fe362d2c7c5/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: "black", textDecoration: "none" }}
+            title={t("mainPage.footer.accessibility")}
+          >
+            {t("mainPage.footer.accessibility")}
+          </Link>
+          <p aria-hidden="true">·</p>
+          <Link
+            href="https://www.pagopa.gov.it/it/helpdesk/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: "black", textDecoration: "none" }}
+            title={t("mainPage.footer.help")}
+          >
+            {t("mainPage.footer.help")}
+          </Link>
+          <p aria-hidden="true">·</p>
+          <LanguageFooterMenu />
+        </Box>
+      </Typography>
+      <Link
         href="https://www.pagopa.it/it/"
         target="_blank"
         rel="noopener noreferrer"
         style={{ display: "flex" }}
+        title={t("mainPage.footer.pagoPA")}
       >
         <img
           src={pagopaLogo}
           alt="pagoPA"
-          style={{ width: "56px", height: "36px" }}
+          style={{ width: "60px", height: "17px" }}
+          aria-hidden="true"
         />
-      </a>
+      </Link>
     </Box>
   );
 }

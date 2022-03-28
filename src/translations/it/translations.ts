@@ -3,6 +3,7 @@ export const TRANSLATIONS_IT = {
     footer: {
       accessibility: "Accessibilità",
       help: "Aiuto",
+      pagoPA: "Visita il sito pagoPA",
     },
     header: {
       disclaimer:
@@ -19,10 +20,13 @@ export const TRANSLATIONS_IT = {
   },
   privacyInfo: {
     privacyDesc: "Proseguendo dichiari di aver letto e compreso l'",
-    googleDesc: "Form protetto tramite reCAPTCHA e Google",
-    privacy: "Informativa Privacy e i Termini e condizioni d'uso del servizio.",
+    googleDesc: " Form protetto tramite reCAPTCHA e Google",
+    privacy: "Informativa Privacy e i Termini e condizioni d'uso del servizio",
     privacyPolicy: "Privacy Policy",
     serviceTerms: "Termini di servizio",
+    and: "e i",
+    privacyDonation:
+      "Termini aggiuntivi del servizio Donazioni a favore dell’emergenza in Ucraina",
   },
   paymentNoticePage: {
     title: "Cosa devi pagare?",
@@ -70,7 +74,7 @@ export const TRANSLATIONS_IT = {
     },
     formButtons: {
       submit: "Continua",
-      cancel: "Indietro",
+      cancel: "Annulla",
     },
   },
   indexPage: {
@@ -123,6 +127,11 @@ export const TRANSLATIONS_IT = {
   errorButton: {
     help: "Contatta l'assistenza",
     close: "Chiudi",
+    retry: "Riprova",
+  },
+  POLLING_SLOW: {
+    title: "Spiacenti, l’Ente sta impiegando più tempo del previsto...",
+    body: "Ti preghiamo di attendere un paio di minuti al massimo senza ricare la pagina nel frattempo.",
   },
   ERRORE_EC: {
     title: "Spiacenti, l’Ente Creditore sta avendo problemi nella risposta",
@@ -175,6 +184,24 @@ export const TRANSLATIONS_IT = {
     title: "Spiacenti, si è verificato un errore imprevisto",
     body: "Prova di nuovo o contattaci per ricevere assistenza.",
   },
+  STATUS_ERROR: {
+    title: "Spiacenti, si è verificato un errore imprevisto",
+    body: "Se il problema persiste, segnalacelo!",
+  },
+  TIMEOUT: {
+    title: "Spiacenti, l'Ente Creditore sta avendo problemi nella risposta",
+    body: "Se il problema persiste, segnalacelo!",
+  },
+  INVALID_CARD: {
+    title: "Spiacenti, la carta è risultata non valida",
+    body: "Prova ad inserire una carta valida o eventualmente contattaci per ricevere assistenza.",
+  },
+  INVALID_QRCODE: {
+    title: "Il codice inquadrato non è un avviso pagoPA",
+    body: "Se il problema persiste, prova a inserire i dati manualmente.",
+  },
+  DONATIONLIST_ERROR:
+    "Non siamo riusciti a caricare la lista delle organizzazioni.",
   paymentChoicePage: {
     title: "Come vuoi pagare?",
     description:
@@ -184,12 +211,16 @@ export const TRANSLATIONS_IT = {
     bank: "Conto corrente",
     others: "Altri metodi",
     incoming: "In arrivo",
+    button: "Indietro",
   },
   paymentQrPage: {
     title: "Inquadra il Codice QR",
     description:
       "Assicurati di avere una buona illuminazione. Se il codice non è a fuoco, prova ad allontanarlo leggermente dallo schermo.",
     navigate: "Non funziona? Inserisci manualmente",
+    camBlocked:
+      "Abbiamo bisogno del tuo consenso per utilizzare la fotocamera. Per modificare la tua scelta, visita le impostazioni Privacy del tuo browser",
+    reloadPage: "Ricarica la pagina",
   },
   paymentCheckPage: {
     total: "Totale",
@@ -260,5 +291,38 @@ export const TRANSLATIONS_IT = {
     title: "Spiacenti, si è verificato un errore imprevisto",
     body: "Non è stato addebitato alcun importo.",
     button: "Chiudi",
+  },
+  app: {
+    title: "Paga un avviso - pagoPA",
+  },
+  ariaLabels: {
+    languageMenu: "Lingua impostata",
+    appLanguage: "Imposta lingua",
+    close: "Chiudi",
+    editPsp: "Modifica PSP",
+    editCard: "Modifica dati carta",
+    editDonation: "Modifica ente donazione",
+    informationDialog: "Informazioni",
+    informationLink: "Per sapere di più su",
+    loading: "Caricamento",
+  },
+  donationPage: {
+    title: "Dona per l’Ucraina",
+    description:
+      "Puoi donare con carta di credito, debito o prepagata, senza costi di commissione. L’importo verrà versato direttamente sul conto dell’organizzazione a cui scegli di donare.",
+    entity: "A chi vuoi donare?",
+    volunteer: "Quanto vuoi donare?",
+    submitCard: "Dona con carta",
+    submitIO: "Dona con IO",
+    ioDescription:
+      "Dona con l’app IO per ricevere un’e-mail con i dati utili ai fini delle agevolazioni fiscali.",
+    modalTitle: "Continua sull'app IO",
+    openSection: "Apri la sezione",
+    portfolio: "Portafoglio",
+    click: "premi",
+    payNotice: "Paga un avviso",
+    code: "e inquadra il codice:",
+    modalBody2:
+      "Puoi donare senza costi di commissione con le tue carte di debito, credito o prepagate.",
   },
 };

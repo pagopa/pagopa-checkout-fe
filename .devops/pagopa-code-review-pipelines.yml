@@ -31,6 +31,12 @@ resources:
       ref: refs/tags/v19
       endpoint: 'io-azure-devops-github-ro'
 
+    - repository: checkout-be-mock
+      type: github
+      name: pagopa/pagopa-checkout-be-mock
+      ref: master
+      endpoint: 'io-azure-devops-github-ro'
+
 stages:
   - stage: Build
     dependsOn: []
@@ -44,15 +50,16 @@ stages:
 
         - template: azure-templates/setup-env.yml
           parameters:
-            api_host: $(CHECKOUT_API_HOST_DEV)
-            request_timeout: '5000'
-            polling_interval: '6000'
-            polling_attempts: '16'
+            pagopa_apim_host: $(CHECKOUT_API_HOST_DEV)
+            polling_activation_interval: 6000
+            polling_activation_attempts: 16
             env: 'DEV'
-            site_key: $(CHECKOUT_CAPTCHA_ID_DEV)
-            functions_host: $(CHECKOUT_API_HOST_DEV)
-            api_timeout: '10000'
-            api_basepath: '/checkout/payments/v1'
+            recaptcha_site_key: $(CHECKOUT_CAPTCHA_ID_DEV)
+            api_payment_transactions_basepath: '/api/checkout/payment-transactions/v1'
+            api_timeout: 10000
+            api_payment_activations_basepath: '/checkout/payments/v1'
+            pm_host: 'https://acardste.vaservices.eu'
+            pm_api_basepath: '/pp-restapi/v4'
 
         - script: |
             yarn build
@@ -79,11 +86,14 @@ stages:
             env:
               DANGER_GITHUB_API_TOKEN: '$(DANGER_GITHUB_API_TOKEN)'
             displayName: 'Danger CI'
+
   # B) Run unit tests if there is a push or pull request on any branch.
-  - stage: Test
+  - stage: Unit_Tests
+    pool:
+      vmImage: 'ubuntu-latest'
     dependsOn: []
     jobs:
-      - job: unit_tests
+      - job: run_unit_tests
         steps:
         - template: templates/node-job-setup/template.yaml@pagopaCommons
         
@@ -97,7 +107,7 @@ stages:
           displayName: 'Publish test results from Jest tests'
           inputs:
             testResultsFormat: 'JUnit'
-            testResultsFiles: '**/junit.xml' 
+            testResultsFiles: '**/*TEST.xml' 
             searchFolder: '$(System.DefaultWorkingDirectory)'
             failTaskOnFailedTests: true
 
@@ -105,4 +115,61 @@ stages:
           displayName: 'Publish code coverage from Jest tests'
           inputs:
             codeCoverageTool: Cobertura
-            summaryFileLocation: 'coverage/cobertura-coverage.xml'
+            summaryFileLocation: 'coverage/cobertura-coverage.xml'      
+        
+# B) Run integration tests if there is a push or pull request on any branch.
+  - stage: Integration_Tests
+    pool:
+      vmImage: 'ubuntu-latest'
+    dependsOn: []
+    jobs:
+      - job: run_integration_tests
+        timeoutInMinutes: 10
+        steps:
+      
+        - checkout: checkout-be-mock
+        
+        - script: cp env.example .env
+          workingDirectory: pagopa-checkout-be-mock
+          displayName: 'Setup env for mock'
+
+        - script: yarn install && yarn build
+          workingDirectory: pagopa-checkout-be-mock
+          displayName: 'Setup deps for mock'
+
+        - script: |
+            nohup yarn start &
+          displayName: 'Start backend mock'
+          workingDirectory: pagopa-checkout-be-mock
+
+        - checkout: self
+        
+        - template: templates/node-job-setup/template.yaml@pagopaCommons
+          parameters:
+           projectDir: pagopa-checkout-fe
+
+        - script: |
+            export $(grep -v '^#' .env.development | xargs)
+          displayName: 'export envs from .env.development'
+          workingDirectory: pagopa-checkout-fe
+
+        - script: |
+            yarn dev &
+          displayName: 'Start checkout FE'
+          workingDirectory: pagopa-checkout-fe
+          
+        - script: while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:1234)" != "200" ]]; do sleep 5; done
+          displayName: 'Wait for backend to be up and running'
+          workingDirectory: pagopa-checkout-fe
+        
+        - script: yarn test:integration
+          displayName: 'Integration tests exec'
+          workingDirectory: pagopa-checkout-fe
+
+        - task: PublishTestResults@2
+          displayName: 'Publish integration tests results from Jest tests'
+          inputs:
+            testResultsFormat: 'JUnit'
+            testResultsFiles: '**/*TEST.xml'
+            searchFolder: '$(System.DefaultWorkingDirectory)'
+            failTaskOnFailedTests: true

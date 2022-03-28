@@ -9,7 +9,7 @@ parameters:
       - False
       - True
   - name: 'UAT_PROD_DEPLOY'
-    displayName: 'Deploy on UAT then PROD environments [DISABLED]'
+    displayName: 'Deploy on UAT then PROD environments'
     type: boolean
     default: False
     values:
@@ -49,6 +49,12 @@ resources:
       ref: refs/tags/v19
       endpoint: 'io-azure-devops-github-ro'
 
+    - repository: checkoutTests
+      type: github
+      name: pagopa/pagopa-checkout-tests
+      ref: main
+      endpoint: 'io-azure-devops-github-ro'
+
 stages:
   - stage: Prepare_artifact_dev
     condition: and(succeeded(), eq(${{parameters.DEV_DEPLOY}}, true))
@@ -67,15 +73,16 @@ stages:
 
           - template: azure-templates/setup-env.yml
             parameters:
-              api_host: $(CHECKOUT_API_HOST_UAT)
-              request_timeout: '5000'
-              polling_interval: '6000'
-              polling_attempts: '16'
+              pagopa_apim_host: $(CHECKOUT_API_HOST_DEV)
+              polling_activation_interval: 6000
+              polling_activation_attempts: 16
               env: 'DEV'
-              site_key: $(CHECKOUT_CAPTCHA_ID_DEV)
-              functions_host: $(CHECKOUT_API_HOST_UAT)
-              api_timeout: '10000'
-              api_basepath: '/checkout/payments/v1'
+              recaptcha_site_key: $(CHECKOUT_CAPTCHA_ID_DEV)
+              api_payment_transactions_basepath: '/api/checkout/payment-transactions/v1'
+              api_timeout: 10000
+              api_payment_activations_basepath: '/checkout/payments/v1'
+              pm_host: 'https://acardste.vaservices.eu:1443'
+              pm_api_basepath: '/pp-restapi/v4'
 
           - script: |
               yarn build
@@ -110,6 +117,37 @@ stages:
               scriptLocation: inlineScript
               inlineScript: |
                 call az cdn endpoint purge -g pagopa-d-checkout-fe-rg -n pagopa-d-checkout-cdn-endpoint --profile-name pagopa-d-checkout-cdn-profile --content-paths "/*"
+  
+  - stage: End_to_End_Tests_DEV
+#    dependsOn:
+#      - Deploy_DEV_pagoPA
+    pool:
+      vmImage: 'ubuntu-latest'
+    jobs:
+      - job: end_to_end_tests
+        steps:
+          - checkout: checkoutTests
+
+          - script: |
+             docker build -t ui_test-v2 e2e-tests-v2
+            displayName: 'Build test image'
+
+          - script: |
+              docker run --name=ui_test-v2 ui_test-v2
+            displayName: 'Run UI test container'
+            continueOnError: true 
+
+          - script: |
+              docker cp ui_test-v2:/puppeteer/test_reports  test_reports
+            displayName: 'Copy test result'
+            continueOnError: true 
+
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFormat: 'JUnit'
+              testResultsFiles: '**/*-TEST.xml' 
+              searchFolder: '$(System.DefaultWorkingDirectory)'
+
 
 
   # Create a relase
@@ -117,13 +155,11 @@ stages:
   # - is on branch main
   # - is a tag in the form v{version}-RELEASE
 
-  # TODO: Remove `false` in condition when enabling `pagopa-checkout-fe` deploys on UAT and PROD
   - stage: Release
     dependsOn: []
     condition:
       and(
         succeeded(),
-        false,
         eq(${{parameters.UAT_PROD_DEPLOY}}, true),
         or(
           eq(variables['Build.SourceBranch'], 'refs/heads/main'),
@@ -172,15 +208,16 @@ stages:
 
           - template: azure-templates/setup-env.yml
             parameters:
-              api_host: $(CHECKOUT_API_HOST_UAT)
-              request_timeout: '5000'
-              polling_interval: '6000'
-              polling_attempts: '16'
+              pagopa_apim_host: $(CHECKOUT_API_HOST_UAT)
+              polling_activation_interval: 6000
+              polling_activation_attempts: 16
               env: 'UAT'
-              site_key: $(CHECKOUT_CAPTCHA_ID_UAT)
-              functions_host: $(CHECKOUT_API_HOST_UAT)
-              api_timeout: '10000'
-              api_basepath: '/checkout/payments/v1'
+              recaptcha_site_key: $(CHECKOUT_CAPTCHA_ID_UAT)
+              api_payment_transactions_basepath: $(CHECKOUT_API_HOST_UAT)
+              api_timeout: 10000
+              api_payment_activations_basepath: '/checkout/payments/v1'
+              pm_host: ''
+              pm_api_basepath: ''
 
           - script: |
               yarn build
@@ -262,15 +299,16 @@ stages:
 
           - template: azure-templates/setup-env.yml
             parameters:
-              api_host: $(CHECKOUT_API_HOST_PROD)
-              request_timeout: '5000'
-              polling_interval: '6000'
-              polling_attempts: '16'
+              pagopa_apim_host: $(CHECKOUT_API_HOST_PROD)
+              polling_activation_interval: 6000
+              polling_activation_attempts: 16
               env: 'PROD'
-              site_key: $(CHECKOUT_CAPTCHA_ID_PROD)
-              functions_host: $(CHECKOUT_API_HOST_PROD)
-              api_timeout: '10000'
-              api_basepath: '/checkout/payments/v1'
+              recaptcha_site_key: $(CHECKOUT_CAPTCHA_ID_PROD)
+              api_payment_transactions_basepath: $(CHECKOUT_API_HOST_PROD)
+              api_timeout: 10000
+              api_payment_activations_basepath: '/checkout/payments/v1'
+              pm_host: ''
+              pm_api_basepath: ''
 
           - script: |
               yarn build

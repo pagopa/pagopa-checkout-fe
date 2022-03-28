@@ -260,4 +260,73 @@ export const PaymentResponses: Record<string, PaymentFaultErrorMessage> = {
     body: "PAA_PAGAMENTO_SCADUTO.body",
     category: PaymentFaultCategory.CUSTOM,
   },
+  POLLING_SLOW: {
+    title: "POLLING_SLOW.title",
+    body: "POLLING_SLOW.body",
+    category: PaymentFaultCategory.CUSTOM,
+  },
+  TIMEOUT: {
+    title: "TIMEOUT.title",
+    body: "TIMEOUT.body",
+    category: PaymentFaultCategory.CUSTOM,
+    buttons: [
+      {
+        title: "errorButton.help",
+        action: () => {
+          window.open(HELPDESK_URL, "_blank")?.focus();
+        },
+      },
+      {
+        title: "errorButton.retry",
+      },
+    ],
+  },
+  STATUS_ERROR: {
+    title: "STATUS_ERROR.title",
+    body: "STATUS_ERROR.body",
+    category: PaymentFaultCategory.CUSTOM,
+    buttons: [
+      {
+        title: "errorButton.help",
+        action: () => {
+          window.open(HELPDESK_URL, "_blank")?.focus();
+        },
+      },
+      {
+        title: "errorButton.retry",
+      },
+    ],
+  },
+  INVALID_CARD: {
+    title: "INVALID_CARD.title",
+    body: "INVALID_CARD.body",
+    category: PaymentFaultCategory.CUSTOM,
+    buttons: [
+      {
+        title: "errorButton.help",
+        action: () => {
+          window.open(HELPDESK_URL, "_blank")?.focus();
+        },
+      },
+      {
+        title: "errorButton.close",
+      },
+    ],
+  },
+  INVALID_QRCODE: {
+    title: "INVALID_QRCODE.title",
+    body: "INVALID_QRCODE.body",
+    category: PaymentFaultCategory.CUSTOM,
+    buttons: [
+      {
+        title: "errorButton.help",
+        action: () => {
+          window.open(HELPDESK_URL, "_blank")?.focus();
+        },
+      },
+      {
+        title: "errorButton.close",
+      },
+    ],
+  },
 };

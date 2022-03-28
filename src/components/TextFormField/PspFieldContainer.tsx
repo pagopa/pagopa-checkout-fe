@@ -23,7 +23,18 @@ function PspFieldContainer(props: {
   };
 
   return (
-    <Box sx={{ ...defaultStyle, ...props.sx }} onClick={props.onClick}>
+    <Box
+      sx={{ ...defaultStyle, ...props.sx }}
+      onClick={props.onClick}
+      onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
+        if (e.key === "Enter") {
+          // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+          !!props.onClick && props.onClick();
+        }
+      }}
+      tabIndex={0}
+      role="psp"
+    >
       <Box
         sx={{
           display: "flex",

@@ -9,7 +9,8 @@ export function FormButtons(props: {
   handleSubmit: () => void;
   handleCancel: () => void;
   type?: "submit" | "button";
-  disabled: boolean;
+  disabledSubmit: boolean;
+  disabledCancel?: boolean;
   loadingSubmit?: boolean;
   loadingCancel?: boolean;
   submitTitle: string;
@@ -26,9 +27,9 @@ export function FormButtons(props: {
           bottom: { xs: 0 },
           left: { xs: 0 },
           p: { xs: "1rem", sm: 0 },
-          boxShadow: { xs: "0 0.5rem 1rem rgb(0 0 0 / 15%)", sm: 0 },
-          bgcolor: { xs: "background.paper" },
-          mt: { sm: 6 },
+          boxShadow: { xs: "0 0.5rem 1rem rgb(0 0 0 / 15%)", sm: "none" },
+          bgcolor: { xs: "background.default" },
+          my: { sm: 6 },
         }}
         justifyContent="center"
         flexDirection="row"
@@ -41,13 +42,21 @@ export function FormButtons(props: {
             variant="outlined"
             onClick={props.handleCancel}
             loading={props.loadingCancel || false}
+            disabled={props.disabledCancel || props.loadingSubmit || false}
             style={{
               width: "100%",
               height: "100%",
               minHeight: 45,
             }}
+            aria-live="polite"
+            aria-label={
+              props.loadingCancel
+                ? t("ariaLabels.loading")
+                : t(props.cancelTitle)
+            }
+            aria-hidden={props.loadingSubmit}
           >
-            {t(props.cancelTitle)}
+            {props.loadingCancel ? "" : t(props.cancelTitle)}
           </LoadingButton>
         </Grid>
         <Grid xs={8} style={useSmallDevice() ? { paddingTop: 0 } : {}} item>
@@ -57,14 +66,21 @@ export function FormButtons(props: {
             loading={props.loadingSubmit || false}
             variant="contained"
             onClick={props.type === "button" ? props.handleSubmit : undefined}
-            disabled={props.disabled}
+            disabled={props.disabledSubmit}
             style={{
               width: "100%",
               height: "100%",
               minHeight: 45,
             }}
+            aria-live="polite"
+            aria-label={
+              props.loadingSubmit
+                ? t("ariaLabels.loading")
+                : t(props.submitTitle)
+            }
+            aria-hidden={props.loadingCancel}
           >
-            {t(props.submitTitle)}
+            {props.loadingSubmit ? "" : t(props.submitTitle)}
           </LoadingButton>
         </Grid>
       </Grid>

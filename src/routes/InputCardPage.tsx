@@ -1,24 +1,28 @@
 import { Box } from "@mui/material";
 import React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import ErrorModal from "../components/modals/ErrorModal";
 import PageContainer from "../components/PageContent/PageContainer";
 import { InputCardForm } from "../features/payment/components/InputCardForm/InputCardForm";
 import { InputCardFormFields } from "../features/payment/models/paymentModel";
 import { getSessionWallet } from "../utils/api/helper";
+import { CheckoutRoutes } from "./models/routeModel";
 
 export default function InputCardPage() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const currentPath = location.pathname.split("/")[1];
   const [loading, setLoading] = React.useState(false);
+  const [errorModalOpen, setErrorModalOpen] = React.useState(false);
+  const [error, setError] = React.useState("");
 
-  const onError = () => {
+  const onError = (m: string) => {
     setLoading(false);
+    setError(m);
+    setErrorModalOpen(true);
   };
 
   const onResponse = () => {
     setLoading(false);
-    navigate(`/${currentPath}/check`);
+    navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
   };
 
   const onSubmit = React.useCallback((wallet: InputCardFormFields) => {
@@ -35,6 +39,15 @@ export default function InputCardPage() {
           loading={loading}
         />
       </Box>
+      {!!error && (
+        <ErrorModal
+          error={error}
+          open={errorModalOpen}
+          onClose={() => {
+            setErrorModalOpen(false);
+          }}
+        />
+      )}
     </PageContainer>
   );
 }
