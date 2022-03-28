@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Guard from "./components/commons/Guard";
 import { Layout } from "./components/commons/Layout";
+import RptidGuard from "./components/commons/RptidGuard";
 import CancelledPage from "./routes/CancelledPage";
 import DonationPage from "./routes/DonationPage";
 import IndexPage from "./routes/IndexPage";
@@ -164,7 +165,14 @@ export function App() {
               />
               <Route path="annullato" element={<CancelledPage />} />
               <Route path="errore" element={<KOPage />} />
-              <Route path=":rptid" element={<PaymentNoticePage />} />
+              <Route
+                path=":rptid"
+                element={
+                  <RptidGuard>
+                    <PaymentNoticePage />
+                  </RptidGuard>
+                }
+              />
               <Route path="*" element={<Navigate replace to="/" />} />
             </Route>
             <Route path="*" element={<Navigate replace to="/" />} />
