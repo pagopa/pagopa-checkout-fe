@@ -120,8 +120,8 @@ stages:
                 call az cdn endpoint purge -g pagopa-d-checkout-fe-rg -n pagopa-d-checkout-cdn-endpoint --profile-name pagopa-d-checkout-cdn-profile --content-paths "/*"
   
   - stage: End_to_End_Tests_DEV
-#    dependsOn:
-#      - Deploy_DEV_pagoPA
+    dependsOn:
+      - Deploy_DEV_pagoPA
     pool:
       vmImage: 'ubuntu-latest'
     jobs:
@@ -251,7 +251,7 @@ stages:
           - checkout: none
 
           - download: current
-            artifact: Bundle
+            artifact: Bundle_UAT
 
           - task: AzureCLI@1
             displayName: 'Sync checkout storage on UAT'
