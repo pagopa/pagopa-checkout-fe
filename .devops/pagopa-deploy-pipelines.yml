@@ -83,6 +83,7 @@ stages:
               api_payment_activations_basepath: '/checkout/payments/v1'
               pm_host: 'https://acardste.vaservices.eu:1443'
               pm_api_basepath: '/pp-restapi/v4'
+              donations_url: "$(CHECKOUT_API_HOST_DEV)/donations/api/v1"
 
           - script: |
               yarn build
@@ -218,6 +219,7 @@ stages:
               api_payment_activations_basepath: '/checkout/payments/v1'
               pm_host: ''
               pm_api_basepath: ''
+              donations_url: "$(CHECKOUT_API_HOST_UAT)/donations/api/v1"
 
           - script: |
               yarn build
@@ -309,6 +311,7 @@ stages:
               api_payment_activations_basepath: '/checkout/payments/v1'
               pm_host: ''
               pm_api_basepath: ''
+              donations_url: "$(CHECKOUT_API_HOST_PROD)/donations/api/v1"
 
           - script: |
               yarn build
