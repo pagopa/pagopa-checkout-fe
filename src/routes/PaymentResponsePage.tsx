@@ -1,11 +1,12 @@
 /* eslint-disable functional/immutable-data */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/restrict-plus-operands */
+import { Box, Button, Typography } from "@mui/material";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
-import { Box, Button, CircularProgress, Typography } from "@mui/material";
 import { default as React, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import CheckoutLoader from "../components/PageContent/CheckoutLoader";
 import PageContainer from "../components/PageContent/PageContainer";
 import { PaymentCheckData } from "../features/payment/models/paymentModel";
 import {
@@ -14,8 +15,8 @@ import {
 } from "../features/payment/models/responseOutcome";
 import { getCheckData, getEmailInfo, getWallet } from "../utils/api/apiService";
 import { callServices } from "../utils/api/response";
-import { mixpanel } from "../utils/config/mixpanelHelperInit";
 import { PAYMENT_OUTCOME_CODE } from "../utils/config/mixpanelDefs";
+import { mixpanel } from "../utils/config/mixpanelHelperInit";
 import { onBrowserUnload } from "../utils/eventListeners";
 import { moneyFormat } from "../utils/form/formatters";
 import {
@@ -89,20 +90,7 @@ export default function PaymentCheckPage() {
           py: 5,
         }}
       >
-        {(loading && (
-          <Box
-            sx={{
-              py: 5,
-              display: "flex",
-              justifyContent: "center",
-              width: "100%",
-            }}
-            aria-live="assertive"
-            aria-label={t("ariaLabels.loading")}
-          >
-            <CircularProgress />
-          </Box>
-        )) || (
+        {(loading && <CheckoutLoader />) || (
           <Box
             sx={{
               py: 5,

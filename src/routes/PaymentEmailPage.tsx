@@ -1,10 +1,10 @@
-import { Box, CircularProgress } from "@mui/material";
+import { Box } from "@mui/material";
 import React from "react";
-import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { CancelPayment } from "../components/modals/CancelPayment";
 import ErrorModal from "../components/modals/ErrorModal";
+import CheckoutLoader from "../components/PageContent/CheckoutLoader";
 import PageContainer from "../components/PageContent/PageContainer";
 import { PaymentEmailForm } from "../features/payment/components/PaymentEmailForm/PaymentEmailForm";
 import { PaymentEmailFormFields } from "../features/payment/models/paymentModel";
@@ -18,12 +18,11 @@ import {
 } from "../utils/api/apiService";
 import { cancelPayment, getPaymentCheckData } from "../utils/api/helper";
 import { onBrowserUnload } from "../utils/eventListeners";
+import { CheckoutRoutes } from "./models/routeModel";
 
 export default function PaymentEmailPage() {
-  const { t } = useTranslation();
   const navigate = useNavigate();
   const emailInfo = getEmailInfo();
-  const currentPath = location.pathname.split("/")[1];
 
   const paymentId = getPaymentId();
   const checkData = getCheckData();
@@ -40,7 +39,7 @@ export default function PaymentEmailPage() {
 
   const onCancelResponse = () => {
     setLoading(false);
-    navigate(`/${currentPath}/cancelled`);
+    navigate(`/${CheckoutRoutes.ANNULLATO}`);
   };
 
   const onError = (m: string) => {
@@ -57,7 +56,7 @@ export default function PaymentEmailPage() {
 
   const onSubmit = React.useCallback((emailInfo: PaymentEmailFormFields) => {
     setEmailInfo(emailInfo);
-    navigate(`/${currentPath}/paymentchoice`);
+    navigate(`/${CheckoutRoutes.SCEGLI_METODO}`);
   }, []);
 
   const onCancel = () => setCancelModalOpen(false);
@@ -73,7 +72,7 @@ export default function PaymentEmailPage() {
           dispatch(setData(r));
           setLoading(false);
         },
-        onNavigate: () => navigate(`/${currentPath}/ko`),
+        onNavigate: () => navigate(`/${CheckoutRoutes.ERRORE}`),
       });
     }
     window.addEventListener("beforeunload", onBrowserUnload);
@@ -85,17 +84,7 @@ export default function PaymentEmailPage() {
   return (
     <>
       {loading ? (
-        <Box
-          display="flex"
-          flexDirection="column"
-          justifyContent="center"
-          alignItems="center"
-          my={10}
-          aria-live="assertive"
-          aria-label={t("ariaLabels.loading")}
-        >
-          <CircularProgress />
-        </Box>
+        <CheckoutLoader />
       ) : (
         <PageContainer
           title="paymentEmailPage.title"

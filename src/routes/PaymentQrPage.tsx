@@ -10,11 +10,11 @@ import { QrCodeReader } from "../components/QrCodeReader/QrCodeReader";
 import { PaymentFormFields } from "../features/payment/models/paymentModel";
 import { ErrorsType } from "../utils/errors/checkErrorsModel";
 import { qrCodeValidation } from "../utils/regex/validators";
+import { CheckoutRoutes } from "./models/routeModel";
 
 export default function PaymentQrPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const currentPath = location.pathname.split("/")[1];
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
@@ -29,7 +29,7 @@ export default function PaymentQrPage() {
   const onSubmit = React.useCallback(async (notice: PaymentFormFields) => {
     const rptId: RptId = `${notice.cf}${notice.billCode}`;
     setLoading(true);
-    navigate(`/${currentPath}/${rptId}`);
+    navigate(`/${rptId}`);
   }, []);
 
   const reloadPage = () => window.location.reload();
@@ -120,7 +120,7 @@ export default function PaymentQrPage() {
         >
           <Button
             variant="text"
-            onClick={() => navigate(`/${currentPath}/notice`)}
+            onClick={() => navigate(`/${CheckoutRoutes.INSERISCI_DATI_AVVISO}`)}
           >
             {t("paymentQrPage.navigate")}
             <ArrowForwardIcon

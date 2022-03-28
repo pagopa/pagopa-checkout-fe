@@ -11,6 +11,7 @@ import DonationPage from "./routes/DonationPage";
 import IndexPage from "./routes/IndexPage";
 import InputCardPage from "./routes/InputCardPage";
 import KOPage from "./routes/KOPage";
+import { CheckoutRoutes } from "./routes/models/routeModel";
 import PaymentCheckPage from "./routes/PaymentCheckPage";
 import PaymentChoicePage from "./routes/PaymentChoicePage";
 import PaymentEmailPage from "./routes/PaymentEmailPage";
@@ -63,12 +64,13 @@ const checkoutTheme = createTheme({
 export function App() {
   const { t } = useTranslation();
   const fixedFooterPages = [
-    "payment",
-    "qr-reader",
-    "paymentchoice",
-    "cancelled",
-    "response",
-    "ko",
+    CheckoutRoutes.ROOT,
+    CheckoutRoutes.LEGGI_CODICE_QR,
+    CheckoutRoutes.SCEGLI_METODO,
+    CheckoutRoutes.ANNULLATO,
+    CheckoutRoutes.ESITO,
+    CheckoutRoutes.ERRORE,
+    CheckoutRoutes.DONA,
   ];
   React.useEffect(() => {
     // OneTrust callback at first time
@@ -104,16 +106,16 @@ export function App() {
       <BrowserRouter>
         <Layout fixedFooterPages={fixedFooterPages}>
           <Routes>
-            <Route path="/" element={<Navigate to="/payment" />} />
-            <Route path="/donation" element={<PaymentOutlet />}>
-              <Route path="" element={<DonationPage />} />
-            </Route>
-            <Route path="/payment" element={<PaymentOutlet />}>
+            <Route path="/" element={<PaymentOutlet />}>
               <Route path="" element={<IndexPage />} />
-              <Route path="qr-reader" element={<PaymentQrPage />} />
-              <Route path="notice" element={<PaymentNoticePage />} />
+              <Route path="dona" element={<DonationPage />} />
+              <Route path="leggi-codice-qr" element={<PaymentQrPage />} />
               <Route
-                path="summary"
+                path="inserisci-dati-avviso"
+                element={<PaymentNoticePage />}
+              />
+              <Route
+                path="dati-pagamento"
                 element={
                   <Guard item={SessionItems.paymentInfo}>
                     <PaymentSummaryPage />
@@ -121,7 +123,7 @@ export function App() {
                 }
               />
               <Route
-                path="email"
+                path="inserisci-email"
                 element={
                   <Guard item={SessionItems.paymentInfo}>
                     <PaymentEmailPage />
@@ -129,7 +131,7 @@ export function App() {
                 }
               />
               <Route
-                path="inputcard"
+                path="inserisci-carta"
                 element={
                   <Guard item={SessionItems.useremail}>
                     <InputCardPage />
@@ -137,7 +139,7 @@ export function App() {
                 }
               />
               <Route
-                path="paymentchoice"
+                path="scegli-metodo"
                 element={
                   <Guard item={SessionItems.paymentId}>
                     <PaymentChoicePage />
@@ -145,7 +147,7 @@ export function App() {
                 }
               />
               <Route
-                path="check"
+                path="riepilogo-pagamento"
                 element={
                   <Guard item={SessionItems.paymentId}>
                     <PaymentCheckPage />
@@ -153,15 +155,15 @@ export function App() {
                 }
               />
               <Route
-                path="response"
+                path="esito"
                 element={
                   <Guard item={SessionItems.paymentId}>
                     <PaymentResponsePage />
                   </Guard>
                 }
               />
-              <Route path="cancelled" element={<CancelledPage />} />
-              <Route path="ko" element={<KOPage />} />
+              <Route path="annullato" element={<CancelledPage />} />
+              <Route path="errore" element={<KOPage />} />
               <Route path=":rptid" element={<PaymentNoticePage />} />
               <Route path="*" element={<Navigate replace to="/" />} />
             </Route>

@@ -8,13 +8,15 @@ import PageContainer from "../components/PageContent/PageContainer";
 import { resetCheckData } from "../redux/slices/checkData";
 import { onBrowserUnload } from "../utils/eventListeners";
 import { loadState, SessionItems } from "../utils/storage/sessionStorage";
+import { CheckoutRoutes } from "./models/routeModel";
 
 export default function CancelledPage() {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const redirectUrl =
-    (loadState(SessionItems.originUrlRedirect) as string) || "/";
+    (loadState(SessionItems.originUrlRedirect) as string) ||
+    CheckoutRoutes.ROOT;
 
   React.useEffect(() => {
     dispatch(resetCheckData());
@@ -45,7 +47,7 @@ export default function CancelledPage() {
           <Button
             type="button"
             variant="outlined"
-            onClick={() => navigate(redirectUrl)}
+            onClick={() => navigate(`/${redirectUrl}`)}
             style={{
               width: "100%",
               height: "100%",

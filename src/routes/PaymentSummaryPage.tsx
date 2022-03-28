@@ -8,7 +8,7 @@ import * as TE from "fp-ts/TaskEither";
 import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useTranslation } from "react-i18next";
-import { useLocation, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { PaymentRequestsGetResponse } from "../../generated/definitions/payment-activations-api/PaymentRequestsGetResponse";
 import { RptId } from "../../generated/definitions/payment-activations-api/RptId";
 import { FormButtons } from "../components/FormButtons/FormButtons";
@@ -28,6 +28,7 @@ import {
 import { getConfigOrThrow } from "../utils/config/config";
 import { ErrorsType } from "../utils/errors/checkErrorsModel";
 import { moneyFormat } from "../utils/form/formatters";
+import { CheckoutRoutes } from "./models/routeModel";
 
 const config = getConfigOrThrow();
 
@@ -44,9 +45,7 @@ const defaultStyle = {
 export default function PaymentSummaryPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const location = useLocation();
 
-  const currentPath = location.pathname.split("/")[1];
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
@@ -102,7 +101,7 @@ export default function PaymentSummaryPage() {
                   (res) => {
                     setPaymentId(res);
                     setLoading(false);
-                    navigate(`/${currentPath}/email`);
+                    navigate(`/${CheckoutRoutes.INSERISCI_EMAIL}`);
                   },
                   onError
                 );

@@ -5,6 +5,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import pagopaLogo from "../../assets/images/pagopa-logo.svg";
 import { RootState } from "../../redux/store";
+import { CheckoutRoutes } from "../../routes/models/routeModel";
 import { getCheckData } from "../../utils/api/apiService";
 import { moneyFormat } from "../../utils/form/formatters";
 import DrawerDetail from "../Header/DrawerDetail";
@@ -43,7 +44,7 @@ export default function Header() {
             aria-hidden="true"
           />
         </Grid>
-        {!!PaymentCheckData.idPayment && currentPath !== "response" && (
+        {!!PaymentCheckData.idPayment && currentPath !== CheckoutRoutes.ESITO && (
           <>
             <Grid item xs={8} sx={{ display: { xs: "none", sm: "block" } }}>
               <Typography

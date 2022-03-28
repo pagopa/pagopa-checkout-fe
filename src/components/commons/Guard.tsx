@@ -6,9 +6,5 @@ export default function Guard(props: {
   item: string;
   children?: React.ReactNode;
 }) {
-  return isStateEmpty(props.item) ? (
-    <Navigate to="/payment" />
-  ) : (
-    <>{props.children}</>
-  );
+  return isStateEmpty(props.item) ? <Navigate to="/" /> : <>{props.children}</>;
 }
