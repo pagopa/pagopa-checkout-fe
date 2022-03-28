@@ -41,8 +41,8 @@ parameters:
     default: ''
 
   - name: 'donations_url'
-      type: string
-      default: ''
+    type: string
+    default: ''
 
 steps:
 - bash: |
