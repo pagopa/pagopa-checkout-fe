@@ -54,6 +54,7 @@ resources:
       name: pagopa/pagopa-checkout-tests
       ref: main
       endpoint: 'io-azure-devops-github-ro'
+
 stages:
   - stage: Prepare_artifact_dev
     condition: and(succeeded(), eq(${{parameters.DEV_DEPLOY}}, true))
@@ -146,6 +147,7 @@ stages:
               testResultsFormat: 'JUnit'
               testResultsFiles: '**/*-TEST.xml' 
               searchFolder: '$(System.DefaultWorkingDirectory)'
+
 
 
   # Create a relase

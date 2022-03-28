@@ -66,4 +66,5 @@ steps:
     CHECKOUT_ENV: ${{ parameters.env }}
     CHECKOUT_RECAPTCHA_SITE_KEY: ${{ parameters.recaptcha_site_key }}
 
+
   displayName: 'Populate environment file'
