@@ -108,15 +108,18 @@ export function App() {
         <Layout fixedFooterPages={fixedFooterPages}>
           <Routes>
             <Route path="/" element={<PaymentOutlet />}>
-              <Route path="" element={<IndexPage />} />
-              <Route path="dona" element={<DonationPage />} />
-              <Route path="leggi-codice-qr" element={<PaymentQrPage />} />
+              <Route path={CheckoutRoutes.ROOT} element={<IndexPage />} />
+              <Route path={CheckoutRoutes.DONA} element={<DonationPage />} />
               <Route
-                path="inserisci-dati-avviso"
+                path={CheckoutRoutes.LEGGI_CODICE_QR}
+                element={<PaymentQrPage />}
+              />
+              <Route
+                path={CheckoutRoutes.INSERISCI_DATI_AVVISO}
                 element={<PaymentNoticePage />}
               />
               <Route
-                path="dati-pagamento"
+                path={CheckoutRoutes.DATI_PAGAMENTO}
                 element={
                   <Guard item={SessionItems.paymentInfo}>
                     <PaymentSummaryPage />
@@ -124,7 +127,7 @@ export function App() {
                 }
               />
               <Route
-                path="inserisci-email"
+                path={CheckoutRoutes.INSERISCI_EMAIL}
                 element={
                   <Guard item={SessionItems.paymentInfo}>
                     <PaymentEmailPage />
@@ -132,7 +135,7 @@ export function App() {
                 }
               />
               <Route
-                path="inserisci-carta"
+                path={CheckoutRoutes.INSERISCI_CARTA}
                 element={
                   <Guard item={SessionItems.useremail}>
                     <InputCardPage />
@@ -140,7 +143,7 @@ export function App() {
                 }
               />
               <Route
-                path="scegli-metodo"
+                path={CheckoutRoutes.SCEGLI_METODO}
                 element={
                   <Guard item={SessionItems.paymentId}>
                     <PaymentChoicePage />
@@ -148,7 +151,7 @@ export function App() {
                 }
               />
               <Route
-                path="riepilogo-pagamento"
+                path={CheckoutRoutes.RIEPILOGO_PAGAMENTO}
                 element={
                   <Guard item={SessionItems.paymentId}>
                     <PaymentCheckPage />
@@ -156,15 +159,18 @@ export function App() {
                 }
               />
               <Route
-                path="esito"
+                path={CheckoutRoutes.ESITO}
                 element={
                   <Guard item={SessionItems.paymentId}>
                     <PaymentResponsePage />
                   </Guard>
                 }
               />
-              <Route path="annullato" element={<CancelledPage />} />
-              <Route path="errore" element={<KOPage />} />
+              <Route
+                path={CheckoutRoutes.ANNULLATO}
+                element={<CancelledPage />}
+              />
+              <Route path={CheckoutRoutes.ERRORE} element={<KOPage />} />
               <Route
                 path=":rptid"
                 element={
