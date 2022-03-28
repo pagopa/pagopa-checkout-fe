@@ -40,6 +40,10 @@ parameters:
     type: string
     default: ''
 
+  - name: 'donations_url'
+      type: string
+      default: ''
+
 steps:
 - bash: |
     echo 'CHECKOUT_PAGOPA_APIM_HOST: $CHECKOUT_PAGOPA_APIM_HOST'
