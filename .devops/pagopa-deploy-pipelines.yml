@@ -9,7 +9,7 @@ parameters:
       - False
       - True
   - name: 'UAT_PROD_DEPLOY'
-    displayName: 'Deploy on UAT then PROD environments [DISABLED]'
+    displayName: 'Deploy on UAT then PROD environments'
     type: boolean
     default: False
     values:
@@ -155,13 +155,11 @@ stages:
   # - is on branch main
   # - is a tag in the form v{version}-RELEASE
 
-  # TODO: Remove `false` in condition when enabling `pagopa-checkout-fe` deploys on UAT and PROD
   - stage: Release
     dependsOn: []
     condition:
       and(
         succeeded(),
-        false,
         eq(${{parameters.UAT_PROD_DEPLOY}}, true),
         or(
           eq(variables['Build.SourceBranch'], 'refs/heads/main'),
