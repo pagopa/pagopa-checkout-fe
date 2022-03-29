@@ -6,17 +6,16 @@ import MobileFriendlyIcon from "@mui/icons-material/MobileFriendly";
 import { Chip } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { useLocation, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import ClickableFieldContainer from "../../../../components/TextFormField/ClickableFieldContainer";
+import { CheckoutRoutes } from "../../../../routes/models/routeModel";
 
 export function PaymentChoice() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const location = useLocation();
-  const currentPath = location.pathname.split("/")[1];
 
   const handleClickOnCard = React.useCallback(() => {
-    navigate(`/${currentPath}/inputcard`);
+    navigate(`/${CheckoutRoutes.INSERISCI_CARTA}`);
   }, []);
 
   return (

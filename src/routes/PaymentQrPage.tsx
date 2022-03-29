@@ -1,37 +1,24 @@
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { Alert, Box, Button, CircularProgress } from "@mui/material";
 import React from "react";
-import ReCAPTCHA from "react-google-recaptcha";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { pipe } from "fp-ts/function";
-import * as TE from "fp-ts/TaskEither";
 import { RptId } from "../../generated/definitions/payment-activations-api/RptId";
 import ErrorModal from "../components/modals/ErrorModal";
 import PageContainer from "../components/PageContent/PageContainer";
 import { QrCodeReader } from "../components/QrCodeReader/QrCodeReader";
-import {
-  PaymentFormFields,
-  PaymentInfo,
-} from "../features/payment/models/paymentModel";
-import {
-  getReCaptchaKey,
-  setPaymentInfo,
-  setRptId,
-} from "../utils/api/apiService";
-import { getPaymentInfoTask } from "../utils/api/helper";
-import { qrCodeValidation } from "../utils/regex/validators";
+import { PaymentFormFields } from "../features/payment/models/paymentModel";
 import { ErrorsType } from "../utils/errors/checkErrorsModel";
+import { qrCodeValidation } from "../utils/regex/validators";
+import { CheckoutRoutes } from "./models/routeModel";
 
 export default function PaymentQrPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const currentPath = location.pathname.split("/")[1];
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const [camBlocked, setCamBlocked] = React.useState(false);
-  const ref = React.useRef(null);
 
   const onError = (m: string) => {
     setLoading(false);
@@ -42,17 +29,7 @@ export default function PaymentQrPage() {
   const onSubmit = React.useCallback(async (notice: PaymentFormFields) => {
     const rptId: RptId = `${notice.cf}${notice.billCode}`;
     setLoading(true);
-    const token = await (ref.current as any).executeAsync();
-
-    void pipe(
-      getPaymentInfoTask(rptId, token),
-      TE.mapLeft((err) => onError(err)),
-      TE.map((paymentInfo) => {
-        setPaymentInfo(paymentInfo as PaymentInfo);
-        setRptId(notice);
-        navigate(`/${currentPath}/summary`);
-      })
-    )();
+    navigate(`/${rptId}`);
   }, []);
 
   const reloadPage = () => window.location.reload();
@@ -143,7 +120,7 @@ export default function PaymentQrPage() {
         >
           <Button
             variant="text"
-            onClick={() => navigate(`/${currentPath}/notice`)}
+            onClick={() => navigate(`/${CheckoutRoutes.INSERISCI_DATI_AVVISO}`)}
           >
             {t("paymentQrPage.navigate")}
             <ArrowForwardIcon
@@ -162,13 +139,6 @@ export default function PaymentQrPage() {
           }}
         />
       )}
-      <Box display="none">
-        <ReCAPTCHA
-          ref={ref}
-          size="invisible"
-          sitekey={getReCaptchaKey() as string}
-        />
-      </Box>
     </PageContainer>
   );
 }

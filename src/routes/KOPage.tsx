@@ -7,6 +7,7 @@ import ko from "../assets/images/response-umbrella.svg";
 import PageContainer from "../components/PageContent/PageContainer";
 import { resetCheckData } from "../redux/slices/checkData";
 import { onBrowserUnload } from "../utils/eventListeners";
+import { CheckoutRoutes } from "./models/routeModel";
 
 export default function KOPage() {
   const { t } = useTranslation();
@@ -52,7 +53,7 @@ export default function KOPage() {
           <Button
             type="button"
             variant="outlined"
-            onClick={() => navigate("/")}
+            onClick={() => navigate(`/${CheckoutRoutes.ROOT}`)}
             style={{
               width: "100%",
               height: "100%",

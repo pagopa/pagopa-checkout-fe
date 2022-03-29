@@ -1,6 +1,6 @@
 {
   "name": "io-pay-portal-frontend",
-  "version": "0.2.7",
+  "version": "0.2.11",
   "scripts": {
     "type-check": "tsc",
     "generate": "npm-run-all generate:*",
@@ -10,7 +10,7 @@
     "lint": "eslint . -c .eslintrc.js --ext .ts,.tsx",
     "lint-autofix": "eslint . -c .eslintrc.js --ext .ts,.tsx --fix",
     "prebuild": "npm-run-all generate type-check lint",
-    "build": "rimraf .cache && rimraf dist && parcel build src/index.html && cp robots.txt dist/robots.txt && cp -R privacypolicy dist/privacypolicy",
+    "build": "rimraf .cache && rimraf dist && parcel build src/index.html && cp robots.txt dist/robots.txt && cp -R privacypolicy dist/privacypolicy && shx mkdir -p dist/p && cp response.html dist/p/response.html",
     "dev": "rimraf .cache && rimraf dist && npm-run-all generate type-check dev:env dev:server",
     "proxy": "npm-run-all generate type-check dev:env dev:proxy",
     "dev:env": "export $(grep -v '^#' .env.development | xargs) && chmod +x env.sh && ./env.sh",
@@ -45,6 +45,7 @@
     "react-dom": "^17.0.2",
     "react-google-recaptcha": "^2.1.0",
     "react-i18next": "^11.15.3",
+    "react-qr-code": "^2.0.3",
     "react-qr-reader": "^2.2.1",
     "react-redux": "^7.2.6",
     "react-router-dom": "6",

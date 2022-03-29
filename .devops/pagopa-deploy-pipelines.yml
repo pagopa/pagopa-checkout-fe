@@ -9,7 +9,7 @@ parameters:
       - False
       - True
   - name: 'UAT_PROD_DEPLOY'
-    displayName: 'Deploy on UAT then PROD environments [DISABLED]'
+    displayName: 'Deploy on UAT then PROD environments'
     type: boolean
     default: False
     values:
@@ -54,6 +54,7 @@ resources:
       name: pagopa/pagopa-checkout-tests
       ref: main
       endpoint: 'io-azure-devops-github-ro'
+
 stages:
   - stage: Prepare_artifact_dev
     condition: and(succeeded(), eq(${{parameters.DEV_DEPLOY}}, true))
@@ -82,6 +83,7 @@ stages:
               api_payment_activations_basepath: '/checkout/payments/v1'
               pm_host: 'https://acardste.vaservices.eu:1443'
               pm_api_basepath: '/pp-restapi/v4'
+              donations_url: 'https://api.dev.platform.pagopa.it/donations/api/v1/availabledonations'
 
           - script: |
               yarn build
@@ -118,8 +120,8 @@ stages:
                 call az cdn endpoint purge -g pagopa-d-checkout-fe-rg -n pagopa-d-checkout-cdn-endpoint --profile-name pagopa-d-checkout-cdn-profile --content-paths "/*"
   
   - stage: End_to_End_Tests_DEV
-#    dependsOn:
-#      - Deploy_DEV_pagoPA
+    dependsOn:
+      - Deploy_DEV_pagoPA
     pool:
       vmImage: 'ubuntu-latest'
     jobs:
@@ -148,18 +150,17 @@ stages:
               searchFolder: '$(System.DefaultWorkingDirectory)'
 
 
+
   # Create a relase
   # Activated when ONE OF these are met:
   # - is on branch main
   # - is a tag in the form v{version}-RELEASE
 
-  # TODO: Remove `false` in condition when enabling `pagopa-checkout-fe` deploys on UAT and PROD
   - stage: Release
     dependsOn: []
     condition:
       and(
         succeeded(),
-        false,
         eq(${{parameters.UAT_PROD_DEPLOY}}, true),
         or(
           eq(variables['Build.SourceBranch'], 'refs/heads/main'),
@@ -213,11 +214,12 @@ stages:
               polling_activation_attempts: 16
               env: 'UAT'
               recaptcha_site_key: $(CHECKOUT_CAPTCHA_ID_UAT)
-              api_payment_transactions_basepath: $(CHECKOUT_API_HOST_UAT)
+              api_payment_transactions_basepath: '/api/checkout/payment-transactions/v1'
               api_timeout: 10000
               api_payment_activations_basepath: '/checkout/payments/v1'
-              pm_host: ''
-              pm_api_basepath: ''
+              pm_host: 'https://acardste.vaservices.eu'
+              pm_api_basepath: '/pp-restapi/v4'
+              donations_url: 'https://api.uat.platform.pagopa.it/donations/api/v1/availabledonations'
 
           - script: |
               yarn build
@@ -249,7 +251,7 @@ stages:
           - checkout: none
 
           - download: current
-            artifact: Bundle
+            artifact: Bundle_UAT
 
           - task: AzureCLI@1
             displayName: 'Sync checkout storage on UAT'
@@ -304,11 +306,12 @@ stages:
               polling_activation_attempts: 16
               env: 'PROD'
               recaptcha_site_key: $(CHECKOUT_CAPTCHA_ID_PROD)
-              api_payment_transactions_basepath: $(CHECKOUT_API_HOST_PROD)
+              api_payment_transactions_basepath: '/api/checkout/payment-transactions/v1'
               api_timeout: 10000
               api_payment_activations_basepath: '/checkout/payments/v1'
-              pm_host: ''
-              pm_api_basepath: ''
+              pm_host: 'https://wisp2.pagopa.gov.it'
+              pm_api_basepath: '/pp-restapi/v4'
+              donations_url: 'https://api.platform.pagopa.it/donations/api/v1/availabledonations'
 
           - script: |
               yarn build

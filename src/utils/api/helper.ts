@@ -26,6 +26,9 @@ import {
 } from "../../features/payment/models/paymentModel";
 import { getConfigOrThrow } from "../config/config";
 import {
+  DONATION_INIT_SESSION,
+  DONATION_LIST_ERROR,
+  DONATION_LIST_SUCCESS,
   PAYMENT_ACTION_DELETE_INIT,
   PAYMENT_ACTION_DELETE_NET_ERR,
   PAYMENT_ACTION_DELETE_RESP_ERR,
@@ -972,4 +975,29 @@ export const cancelPayment = async (
   } else {
     onError(ErrorsType.GENERIC_ERROR);
   }
+};
+
+export const getDonationEntityList = async (
+  onError: (e: string) => void,
+  onResponse: (data: any) => void
+) => {
+  mixpanel.track(DONATION_INIT_SESSION.value, {
+    EVENT_ID: DONATION_INIT_SESSION.value,
+  });
+
+  window
+    .fetch(getConfigOrThrow().CHECKOUT_DONATIONS_URL)
+    .then((response) => response.json())
+    .then((data) => {
+      mixpanel.track(DONATION_LIST_SUCCESS.value, {
+        EVENT_ID: DONATION_LIST_SUCCESS.value,
+      });
+      onResponse(data);
+    })
+    .catch(() => {
+      mixpanel.track(DONATION_LIST_ERROR.value, {
+        EVENT_ID: DONATION_LIST_ERROR.value,
+      });
+      onError(ErrorsType.DONATIONLIST_ERROR);
+    });
 };

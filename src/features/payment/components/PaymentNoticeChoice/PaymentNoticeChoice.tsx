@@ -1,22 +1,21 @@
-import QrCodeScannerIcon from "@mui/icons-material/QrCodeScanner";
-import { Grid, Box, Typography } from "@mui/material";
-import React from "react";
-import { useTranslation } from "react-i18next";
-import { useLocation, useNavigate } from "react-router";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import KeyboardIcon from "@mui/icons-material/Keyboard";
+import QrCodeScannerIcon from "@mui/icons-material/QrCodeScanner";
+import { Box, Grid, Typography } from "@mui/material";
+import React from "react";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router";
+import { CheckoutRoutes } from "../../../../routes/models/routeModel";
 
 export function PaymentNoticeChoice() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const location = useLocation();
-  const currentPath = location.pathname;
 
   const handleClickOnQR = React.useCallback(() => {
-    navigate(`${currentPath}/qr-reader`);
+    navigate(`/${CheckoutRoutes.LEGGI_CODICE_QR}`);
   }, []);
   const handleClickOnForm = React.useCallback(() => {
-    navigate(`${currentPath}/notice`);
+    navigate(`/${CheckoutRoutes.INSERISCI_DATI_AVVISO}`);
   }, []);
 
   const defaultStyle = {
