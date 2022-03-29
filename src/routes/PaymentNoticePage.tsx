@@ -51,7 +51,7 @@ export default function PaymentNoticePage() {
       setLoading(true);
       const token = await (ref.current as any).executeAsync();
 
-      void pipe(
+      await pipe(
         getPaymentInfoTask(rptId, token),
         TE.mapLeft((err) => onError(err)),
         TE.map((paymentInfo) => {
