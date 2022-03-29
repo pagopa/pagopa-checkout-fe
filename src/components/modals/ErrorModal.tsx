@@ -68,7 +68,9 @@ function ErrorModal(props: {
 
   const getErrorButtons = () => {
     if (isCustom(props.error)) {
-      return PaymentResponses[props.error]?.buttons;
+      return PaymentResponses[props.error]?.buttons
+        ? PaymentResponses[props.error]?.buttons
+        : PaymentCategoryResponses[PaymentFaultCategory.CUSTOM]?.buttons;
     }
     if (notListed(props.error)) {
       return PaymentCategoryResponses[PaymentFaultCategory.NOTLISTED]?.buttons;
