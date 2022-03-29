@@ -214,7 +214,7 @@ stages:
               polling_activation_attempts: 16
               env: 'UAT'
               recaptcha_site_key: $(CHECKOUT_CAPTCHA_ID_UAT)
-              api_payment_transactions_basepath: $(CHECKOUT_API_HOST_UAT)
+              api_payment_transactions_basepath: '/api/checkout/payment-transactions/v1'
               api_timeout: 10000
               api_payment_activations_basepath: '/checkout/payments/v1'
               pm_host: 'https://acardste.vaservices.eu'
@@ -306,11 +306,11 @@ stages:
               polling_activation_attempts: 16
               env: 'PROD'
               recaptcha_site_key: $(CHECKOUT_CAPTCHA_ID_PROD)
-              api_payment_transactions_basepath: $(CHECKOUT_API_HOST_PROD)
+              api_payment_transactions_basepath: '/api/checkout/payment-transactions/v1'
               api_timeout: 10000
               api_payment_activations_basepath: '/checkout/payments/v1'
-              pm_host: ''
-              pm_api_basepath: ''
+              pm_host: 'https://wisp2.pagopa.gov.it'
+              pm_api_basepath: '/pp-restapi/v4'
               donations_url: 'https://api.platform.pagopa.it/donations/api/v1/availabledonations'
 
           - script: |
