@@ -1,7 +1,7 @@
 /* eslint-disable sonarjs/cognitive-complexity */
 /* eslint-disable functional/immutable-data */
 /* eslint-disable @typescript-eslint/ban-types */
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import CopyAllIcon from "@mui/icons-material/CopyAll";
 import {
   Alert,
   AlertTitle,
@@ -12,6 +12,7 @@ import {
   LinearProgress,
   Tooltip,
   Typography,
+  useTheme,
 } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -31,6 +32,7 @@ function ErrorModal(props: {
   style?: React.CSSProperties;
 }) {
   const { t } = useTranslation();
+  const theme = useTheme();
   const [copy, setCopy] = React.useState(t("clipboard.copy"));
 
   const isCustom = (error: string) =>
@@ -97,6 +99,7 @@ function ErrorModal(props: {
           width: "600px",
           borderRadius: 1,
           p: 4,
+          background: theme.palette.background.default,
         },
       }}
       fullWidth
@@ -121,6 +124,8 @@ function ErrorModal(props: {
               alignItems: "center",
               justifyContent: "start",
               mt: 2,
+              borderLeftColor: theme.palette.info.main + " !important",
+              borderLeft: "4px solid",
             }}
             action={
               <Tooltip title={copy} onMouseOver={(e) => e.stopPropagation()}>
@@ -132,7 +137,12 @@ function ErrorModal(props: {
                   }}
                   onMouseLeave={() => setCopy(t("clipboard.copy"))}
                 >
-                  <ContentCopyIcon sx={{ mr: 1 }} /> {t("clipboard.copy")}
+                  <CopyAllIcon
+                    sx={{
+                      mr: 1,
+                    }}
+                  />{" "}
+                  {t("clipboard.copy")}
                 </Button>
               </Tooltip>
             }
