@@ -10,7 +10,7 @@ export default function PrivacyInfo(props: { showDonationPrivacy?: boolean }) {
       <Box mt={4}>
         <Typography variant="caption" component={"div"}>
           {t("privacyInfo.privacyDesc")}
-          <a
+          <Link
             href={t("privacyInfo.privacyUrl")}
             target="_blank"
             rel="noreferrer"
