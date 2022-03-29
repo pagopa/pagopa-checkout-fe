@@ -1,22 +1,20 @@
 import React from "react";
 import { Box, Link, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import InformationModal from "../modals/InformationModal";
-import PrivacyPolicy from "./PrivacyPolicy";
 
 export default function PrivacyInfo(props: { showDonationPrivacy?: boolean }) {
   const { t } = useTranslation();
-  const [modalOpen, setModalOpen] = React.useState(false);
 
   return (
     <>
       <Box mt={4}>
         <Typography variant="caption" component={"div"}>
           {t("privacyInfo.privacyDesc")}
-          <Link
-            href="#"
-            sx={{ fontWeight: 600, textDecoration: "none" }}
-            onClick={() => setModalOpen(true)}
+          <a
+            href={t("privacyInfo.privacyUrl")}
+            target="_blank"
+            rel="noreferrer"
+            style={{ fontWeight: 600, textDecoration: "none" }}
           >
             {t("privacyInfo.privacy")}
           </Link>
@@ -55,14 +53,6 @@ export default function PrivacyInfo(props: { showDonationPrivacy?: boolean }) {
           {")."}
         </Typography>
       </Box>
-      <InformationModal
-        open={modalOpen}
-        onClose={() => {
-          setModalOpen(false);
-        }}
-      >
-        <PrivacyPolicy />
-      </InformationModal>
     </>
   );
 }

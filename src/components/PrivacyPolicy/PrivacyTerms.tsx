@@ -2,7 +2,6 @@ import React from "react";
 import { Box, Link } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import InformationModal from "../modals/InformationModal";
-import PrivacyPolicy from "./PrivacyPolicy";
 
 export default function PrivacyTerms() {
   const { t } = useTranslation();
@@ -27,9 +26,7 @@ export default function PrivacyTerms() {
         onClose={() => {
           setModalOpen(false);
         }}
-      >
-        <PrivacyPolicy />
-      </InformationModal>
+      ></InformationModal>
     </>
   );
 }
