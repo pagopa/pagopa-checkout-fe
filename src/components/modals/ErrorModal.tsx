@@ -141,7 +141,7 @@ function ErrorModal(props: {
                     sx={{
                       mr: 1,
                     }}
-                  />{" "}
+                  />
                   {t("clipboard.copy")}
                 </Button>
               </Tooltip>

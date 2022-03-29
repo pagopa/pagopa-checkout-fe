@@ -33,7 +33,6 @@ export default function PaymentQrPage() {
   }, []);
 
   const onError = React.useCallback((m: string) => {
-    setLoading(false);
     setError(m);
     setErrorModalOpen(true);
     mixpanel.track(QRCODE_READ_ERROR.value, {
@@ -43,7 +42,6 @@ export default function PaymentQrPage() {
 
   const onSubmit = React.useCallback(async (notice: PaymentFormFields) => {
     const rptId: RptId = `${notice.cf}${notice.billCode}`;
-    setLoading(true);
     mixpanel.track(QRCODE_READ_SUCCESS.value, {
       EVENT_ID: QRCODE_READ_SUCCESS.value,
     });
@@ -53,6 +51,7 @@ export default function PaymentQrPage() {
   const onScan = React.useCallback(
     (data: string | null) => {
       if (data && !loading) {
+        setLoading(true);
         if (!qrCodeValidation(data)) {
           onError(ErrorsType.INVALID_QRCODE);
         } else {
@@ -159,7 +158,7 @@ export default function PaymentQrPage() {
           open={errorModalOpen}
           onClose={() => {
             setErrorModalOpen(false);
-            setError("");
+            setLoading(false);
           }}
         />
       )}
