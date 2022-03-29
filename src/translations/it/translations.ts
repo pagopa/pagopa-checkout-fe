@@ -24,9 +24,7 @@ export const TRANSLATIONS_IT = {
     privacy: "Informativa Privacy e i Termini e condizioni d'uso del servizio",
     privacyPolicy: "Privacy Policy",
     serviceTerms: "Termini di servizio",
-    and: "e i",
-    privacyDonation:
-      "Termini aggiuntivi del servizio Donazioni a favore dell’emergenza in Ucraina",
+    privacyUrl: "/privacypolicy/it.html",
   },
   paymentNoticePage: {
     title: "Cosa devi pagare?",
