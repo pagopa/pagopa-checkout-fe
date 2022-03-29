@@ -1,5 +1,5 @@
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { Alert, Box, Button, CircularProgress } from "@mui/material";
+import { Alert, Box, Button, Skeleton } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -69,17 +69,7 @@ export default function PaymentQrPage() {
 
   const getPageBody = React.useCallback(() => {
     if (loading) {
-      return (
-        <Box
-          display="flex"
-          flexDirection="column"
-          justifyContent="center"
-          alignItems="center"
-          my={10}
-        >
-          <CircularProgress />
-        </Box>
-      );
+      return <Skeleton variant="rectangular" width="100%" height={600} />;
     }
     if (camBlocked) {
       return (
