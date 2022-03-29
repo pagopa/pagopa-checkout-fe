@@ -288,7 +288,7 @@ export default function PaymentCheckPage() {
         >
           {t("paymentCheckPage.modal.body")}
         </Typography>
-        <Box display="flex" justifyContent="end" sx={{ mt: 3 }}>
+        <Box display="flex" justifyContent="flex-end" sx={{ mt: 3 }}>
           <Button variant="contained" onClick={() => setModalOpen(false)}>
             {t("errorButton.close")}
           </Button>

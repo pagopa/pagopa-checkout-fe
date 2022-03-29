@@ -14,7 +14,7 @@ export function Layout({ sx, children, fixedFooterPages }: LayoutProps) {
   return (
     <Box
       sx={{
-        display: { sm: "flex" },
+        display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
         height: "100vh",
