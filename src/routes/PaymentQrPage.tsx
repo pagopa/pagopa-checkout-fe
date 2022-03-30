@@ -1,5 +1,5 @@
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { Alert, Box, Button, CircularProgress } from "@mui/material";
+import { Alert, Box, Button, Skeleton } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -8,6 +8,12 @@ import ErrorModal from "../components/modals/ErrorModal";
 import PageContainer from "../components/PageContent/PageContainer";
 import { QrCodeReader } from "../components/QrCodeReader/QrCodeReader";
 import { PaymentFormFields } from "../features/payment/models/paymentModel";
+import {
+  QRCODE_READER_ACCESS,
+  QRCODE_READ_ERROR,
+  QRCODE_READ_SUCCESS,
+} from "../utils/config/mixpanelDefs";
+import { mixpanel } from "../utils/config/mixpanelHelperInit";
 import { ErrorsType } from "../utils/errors/checkErrorsModel";
 import { qrCodeValidation } from "../utils/regex/validators";
 import { CheckoutRoutes } from "./models/routeModel";
@@ -20,33 +26,50 @@ export default function PaymentQrPage() {
   const [loading, setLoading] = React.useState(false);
   const [camBlocked, setCamBlocked] = React.useState(false);
 
-  const onError = (m: string) => {
-    setLoading(false);
+  React.useEffect(() => {
+    mixpanel.track(QRCODE_READER_ACCESS.value, {
+      EVENT_ID: QRCODE_READER_ACCESS.value,
+    });
+  }, []);
+
+  const onError = React.useCallback((m: string) => {
     setError(m);
     setErrorModalOpen(true);
-  };
+    mixpanel.track(QRCODE_READ_ERROR.value, {
+      EVENT_ID: QRCODE_READ_ERROR.value,
+    });
+  }, []);
 
   const onSubmit = React.useCallback(async (notice: PaymentFormFields) => {
     const rptId: RptId = `${notice.cf}${notice.billCode}`;
-    setLoading(true);
+    mixpanel.track(QRCODE_READ_SUCCESS.value, {
+      EVENT_ID: QRCODE_READ_SUCCESS.value,
+    });
     navigate(`/${rptId}`);
   }, []);
+
+  const onScan = React.useCallback(
+    (data: string | null) => {
+      if (data && !loading) {
+        setLoading(true);
+        if (!qrCodeValidation(data)) {
+          onError(ErrorsType.INVALID_QRCODE);
+        } else {
+          void onSubmit({
+            billCode: data?.split("|")[2] || "",
+            cf: data?.split("|")[3] || "",
+          });
+        }
+      }
+    },
+    [error, loading]
+  );
 
   const reloadPage = () => window.location.reload();
 
   const getPageBody = React.useCallback(() => {
     if (loading) {
-      return (
-        <Box
-          display="flex"
-          flexDirection="column"
-          justifyContent="center"
-          alignItems="center"
-          my={10}
-        >
-          <CircularProgress />
-        </Box>
-      );
+      return <Skeleton variant="rectangular" width="100%" height={600} />;
     }
     if (camBlocked) {
       return (
@@ -81,18 +104,7 @@ export default function PaymentQrPage() {
       return (
         <QrCodeReader
           onError={() => setCamBlocked(true)}
-          onScan={(data) => {
-            if (data && !loading) {
-              if (!qrCodeValidation(data)) {
-                onError(ErrorsType.INVALID_QRCODE);
-              } else {
-                void onSubmit({
-                  billCode: data?.split("|")[2] || "",
-                  cf: data?.split("|")[3] || "",
-                });
-              }
-            }
-          }}
+          onScan={onScan}
           enableLoadFromPicture={false}
         />
       );
@@ -136,6 +148,7 @@ export default function PaymentQrPage() {
           open={errorModalOpen}
           onClose={() => {
             setErrorModalOpen(false);
+            setLoading(false);
           }}
         />
       )}

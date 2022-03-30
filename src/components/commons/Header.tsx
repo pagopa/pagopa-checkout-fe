@@ -86,7 +86,7 @@ export default function Header() {
                 fontWeight={600}
                 display="flex"
                 alignItems="center"
-                justifyContent="end"
+                justifyContent="flex-end"
               >
                 {PaymentCheckData
                   ? moneyFormat(PaymentCheckData.amount.amount)
