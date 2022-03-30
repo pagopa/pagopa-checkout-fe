@@ -32,7 +32,7 @@ export default function PaymentNoticePage() {
   const { rptid } = useParams();
   const noticeInfo = getNoticeInfo();
 
-  const ref = React.useRef(null);
+  const ref = React.useRef<ReCAPTCHA>(null);
   const [modalOpen, setModalOpen] = React.useState(false);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
@@ -43,16 +43,17 @@ export default function PaymentNoticePage() {
     setLoading(false);
     setError(m);
     setErrorModalOpen(true);
+    ref.current?.reset();
   };
 
   const onSubmit = React.useCallback(
     async (notice: PaymentFormFields) => {
       const rptId: RptId = `${notice.cf}${notice.billCode}`;
       setLoading(true);
-      const token = await (ref.current as any).executeAsync();
+      const token = await ref.current?.executeAsync();
 
       await pipe(
-        getPaymentInfoTask(rptId, token),
+        getPaymentInfoTask(rptId, token || ""),
         TE.mapLeft((err) => onError(err)),
         TE.map((paymentInfo) => {
           setPaymentInfo(paymentInfo as PaymentInfo);

@@ -50,7 +50,7 @@ export default function PaymentSummaryPage() {
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const [timeoutId, setTimeoutId] = React.useState<number>();
-  const ref = React.useRef(null);
+  const ref = React.useRef<ReCAPTCHA>(null);
 
   const paymentInfo = getPaymentInfo();
   const noticeInfo = getNoticeInfo();
@@ -59,6 +59,7 @@ export default function PaymentSummaryPage() {
     setLoading(false);
     setError(m);
     setErrorModalOpen(true);
+    ref.current?.reset();
   };
 
   React.useEffect(() => {
@@ -76,7 +77,7 @@ export default function PaymentSummaryPage() {
   const onSubmit = React.useCallback(async () => {
     const rptId: RptId = `${noticeInfo.cf}${noticeInfo.billCode}`;
     setLoading(true);
-    const token = await (ref.current as any).executeAsync();
+    const token = await ref.current?.executeAsync();
 
     pipe(
       PaymentRequestsGetResponse.decode(paymentInfo),
@@ -88,7 +89,7 @@ export default function PaymentSummaryPage() {
               response.importoSingoloVersamento,
               response.codiceContestoPagamento,
               rptId,
-              token
+              token || ""
             ),
             TE.fold(
               (e: string) => async () => {
