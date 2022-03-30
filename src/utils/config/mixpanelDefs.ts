@@ -401,6 +401,8 @@ export const DONATION_LIST_ERROR = t.literal("DONATION_LIST_ERROR");
 export type DONATION_LIST_ERROR = t.TypeOf<typeof DONATION_LIST_ERROR>;
 export const DONATION_URL_VISIT = t.literal("DONATION_URL_VISIT");
 export type DONATION_URL_VISIT = t.TypeOf<typeof DONATION_URL_VISIT>;
+export const DONATION_APPIO_VISIT = t.literal("DONATION_APPIO_VISIT");
+export type DONATION_APPIO_VISIT = t.TypeOf<typeof DONATION_APPIO_VISIT>;
 
 export const QRCODE_READER_ACCESS = t.literal("QRCODE_READER_ACCESS");
 export type QRCODE_READER_ACCESS = t.TypeOf<typeof QRCODE_READER_ACCESS>;
