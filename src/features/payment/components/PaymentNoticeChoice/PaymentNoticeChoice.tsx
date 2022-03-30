@@ -42,7 +42,8 @@ export function PaymentNoticeChoice() {
             handleClickOnQR();
           }
         }}
-        aria-hidden="true"
+        tabIndex={0}
+        role="link"
       >
         <Grid item xs={9}>
           <Box

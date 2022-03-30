@@ -32,33 +32,11 @@ export function FormButtons(props: {
           my: { sm: 6 },
         }}
         justifyContent="center"
-        flexDirection="row"
+        flexDirection="row-reverse"
         alignItems="center"
         container
         spacing={2}
       >
-        <Grid xs={4} style={useSmallDevice() ? { paddingTop: 0 } : {}} item>
-          <LoadingButton
-            variant="outlined"
-            onClick={props.handleCancel}
-            loading={props.loadingCancel || false}
-            disabled={props.disabledCancel || props.loadingSubmit || false}
-            style={{
-              width: "100%",
-              height: "100%",
-              minHeight: 45,
-            }}
-            aria-live="polite"
-            aria-label={
-              props.loadingCancel
-                ? t("ariaLabels.loading")
-                : t(props.cancelTitle)
-            }
-            aria-hidden={props.loadingSubmit}
-          >
-            {props.loadingCancel ? "" : t(props.cancelTitle)}
-          </LoadingButton>
-        </Grid>
         <Grid xs={8} style={useSmallDevice() ? { paddingTop: 0 } : {}} item>
           <LoadingButton
             type={props.type}
@@ -81,6 +59,28 @@ export function FormButtons(props: {
             aria-hidden={props.loadingCancel}
           >
             {props.loadingSubmit ? "" : t(props.submitTitle)}
+          </LoadingButton>
+        </Grid>
+        <Grid xs={4} style={useSmallDevice() ? { paddingTop: 0 } : {}} item>
+          <LoadingButton
+            variant="outlined"
+            onClick={props.handleCancel}
+            loading={props.loadingCancel || false}
+            disabled={props.disabledCancel || props.loadingSubmit || false}
+            style={{
+              width: "100%",
+              height: "100%",
+              minHeight: 45,
+            }}
+            aria-live="polite"
+            aria-label={
+              props.loadingCancel
+                ? t("ariaLabels.loading")
+                : t(props.cancelTitle)
+            }
+            aria-hidden={props.loadingSubmit}
+          >
+            {props.loadingCancel ? "" : t(props.cancelTitle)}
           </LoadingButton>
         </Grid>
       </Grid>
