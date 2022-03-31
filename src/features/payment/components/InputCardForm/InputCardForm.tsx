@@ -164,7 +164,7 @@ export function InputCardForm(props: {
                 errorText={errors.number}
                 error={!!(errors.number && touched.number)}
                 label="inputCardPage.formFields.number"
-                id="creditcardnumber"
+                id="number"
                 type="text"
                 inputMode="numeric"
                 value={values.number}
@@ -198,7 +198,7 @@ export function InputCardForm(props: {
                   errorText={errors.expirationDate}
                   error={!!(errors.expirationDate && touched.expirationDate)}
                   label="inputCardPage.formFields.expirationDate"
-                  id="creditcardexpirationdate"
+                  id="expirationDate"
                   type="text"
                   inputMode="numeric"
                   value={values.expirationDate}
@@ -224,7 +224,7 @@ export function InputCardForm(props: {
                   errorText={errors.cvv}
                   error={!!(errors.cvv && touched.cvv)}
                   label={SecureCodeLabels[cvvLength].label}
-                  id="creditcardsecurcode"
+                  id="cvv"
                   type="text"
                   inputMode="numeric"
                   value={values.cvv}
@@ -246,7 +246,7 @@ export function InputCardForm(props: {
                 errorText={errors.name}
                 error={!!(errors.name && touched.name)}
                 label="inputCardPage.formFields.name"
-                id="creditcardname"
+                id="name"
                 type="text"
                 value={values.name}
                 autoComplete="cc-name"
