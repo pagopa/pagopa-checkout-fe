@@ -6,7 +6,14 @@ import EditIcon from "@mui/icons-material/Edit";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
-import { Box, Button, Skeleton, SvgIcon, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Skeleton,
+  SvgIcon,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import { default as React } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
@@ -44,7 +51,7 @@ const defaultStyle = {
 };
 
 const pspContainerStyle = {
-  border: "1px solid",
+  border: "2px solid",
   borderColor: "divider",
   borderRadius: 2,
   pl: 3,
@@ -54,6 +61,7 @@ const pspContainerStyle = {
 
 export default function PaymentCheckPage() {
   const { t } = useTranslation();
+  const theme = useTheme();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [modalOpen, setModalOpen] = React.useState(false);
@@ -352,7 +360,14 @@ export default function PaymentCheckPage() {
                 bodyVariant="body2"
                 image={psp.image}
                 body={psp.name}
-                sx={{ ...pspContainerStyle, cursor: "pointer" }}
+                sx={{
+                  ...pspContainerStyle,
+                  cursor: "pointer",
+                  "&:hover": {
+                    color: theme.palette.primary.dark,
+                    borderColor: "currentColor",
+                  },
+                }}
                 endAdornment={
                   <Typography
                     variant={"button"}
