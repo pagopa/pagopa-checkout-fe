@@ -1,16 +1,17 @@
-import React, { ReactEventHandler } from "react";
+import CloseIcon from "@mui/icons-material/Close";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
-  Drawer,
-  Box,
-  Typography,
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Alert,
+  Box,
   Divider,
+  Drawer,
+  Typography,
+  useTheme,
 } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import React, { ReactEventHandler } from "react";
 import { useTranslation } from "react-i18next";
 import { PaymentCheckData } from "../../features/payment/models/paymentModel";
 import { moneyFormat } from "../../utils/form/formatters";
@@ -24,6 +25,7 @@ interface Props {
 
 export default function DrawerDetail(props: Props) {
   const { t } = useTranslation();
+  const theme = useTheme();
 
   return (
     <Drawer
@@ -32,7 +34,11 @@ export default function DrawerDetail(props: Props) {
       onBackdropClick={props.toggleDrawer(false)}
     >
       <Typography variant="body2" component="div" sx={{ textAlign: "center" }}>
-        <Box sx={{ width: "auto" }} p={2} role="presentation">
+        <Box
+          sx={{ width: "auto", background: theme.palette.background.default }}
+          p={2}
+          role="presentation"
+        >
           <Box display="flex">
             <CloseIcon
               sx={{ ml: "auto", my: 2 }}
@@ -57,24 +63,32 @@ export default function DrawerDetail(props: Props) {
                 : ""}
             </Typography>
           </Box>
-          <Box
+          <Alert
+            severity="info"
+            variant="standard"
             sx={{
               my: 2,
-              display: "flex",
+              borderLeftColor: theme.palette.info.main + " !important",
+              borderLeft: "4px solid",
               alignItems: "center",
-              p: 2,
-              bgcolor: "info.main",
             }}
           >
-            <InfoOutlinedIcon sx={{ mr: 1 }} />
-            <Typography variant="body2" component={"div"} textAlign="left">
+            <Typography
+              variant="body2"
+              component={"div"}
+              textAlign="left"
+              whiteSpace="normal"
+            >
               {t("mainPage.header.disclaimer")}
             </Typography>
-          </Box>
+          </Alert>
           {props.PaymentCheckData &&
             props.PaymentCheckData.detailsList.map((el, index) => (
               <Accordion
-                sx={{ boxShadow: "none" }}
+                sx={{
+                  boxShadow: "none",
+                  background: theme.palette.background.default,
+                }}
                 defaultExpanded={index === 0 ? true : false}
                 key={index}
               >
