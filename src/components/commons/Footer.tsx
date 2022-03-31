@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 import pagopaLogo from "../../assets/images/logo-pagopa-spa.svg";
 import LanguageFooterMenu from "../LanguageMenu/LanguageNativeSelect";
+import lang from "../../translations/lang";
 
 export default function Footer(props: { fixedPages: Array<string> }) {
   const { t } = useTranslation();
@@ -51,8 +52,12 @@ export default function Footer(props: { fixedPages: Array<string> }) {
           >
             {t("mainPage.footer.help")}
           </Link>
-          <p aria-hidden="true">·</p>
-          <LanguageFooterMenu />
+          {Object.keys(lang).length > 1 && (
+            <>
+              <p aria-hidden="true">·</p>
+              <LanguageFooterMenu />
+            </>
+          )}
         </Box>
       </Typography>
       <Link
