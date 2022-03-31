@@ -5,6 +5,9 @@ export function expireDateFormatter(old: string, current: string) {
   if (current.length === 3 && !current.includes("/")) {
     return old + "/" + current.slice(-1);
   }
+  if (current.length >= 6 && current.includes("/")) {
+    return current.split("/")[0] + "/" + current.split("/")[1].slice(2);
+  }
   return current;
 }
 

@@ -30,7 +30,7 @@ export function expirationDateChangeValidation(value: string) {
   if (!value) {
     return true;
   }
-  if (value.length === 1 && value === "/") {
+  if (value.length === 1 && !digitValidation(value)) {
     return false;
   }
   if (
@@ -40,11 +40,11 @@ export function expirationDateChangeValidation(value: string) {
   ) {
     return false;
   }
-  if (value.length > 3 && value.slice(-1) !== "/" && value.includes("/")) {
-    return value.split("/")[1].length < 3;
+  if (value.length > 3) {
+    return /^(0[1-9]|1[0-2]|[1-9])\/{1}([0-9]{0,4})$/.test(value);
   }
   return (
     digitValidation(value.includes("/") ? value.replace("/", "") : value) &&
-    value.length <= 5
+    value.length <= 3
   );
 }
