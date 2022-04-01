@@ -202,6 +202,7 @@ export function InputCardForm(props: {
                   type="text"
                   inputMode="numeric"
                   value={values.expirationDate}
+                  autoComplete="cc-exp"
                   handleChange={handleExpireChange}
                   handleBlur={handleBlur}
                   sx={{ mb: 4 }}
@@ -227,6 +228,7 @@ export function InputCardForm(props: {
                   type="text"
                   inputMode="numeric"
                   value={values.cvv}
+                  autoComplete="cc-csc"
                   handleChange={handleCvvChange}
                   handleBlur={handleBlur}
                   sx={{ mb: 4 }}
@@ -247,6 +249,7 @@ export function InputCardForm(props: {
                 id="name"
                 type="text"
                 value={values.name}
+                autoComplete="cc-name"
                 handleChange={handleChange}
                 handleBlur={handleBlur}
                 sx={{ mb: 4 }}
