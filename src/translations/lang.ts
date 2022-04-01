@@ -1,4 +1,4 @@
-import { TRANSLATIONS_EN } from "./en/translations";
+// import { TRANSLATIONS_EN } from "./en/translations";
 import { TRANSLATIONS_IT } from "./it/translations";
 
 const lang: Languages = {
@@ -7,11 +7,13 @@ const lang: Languages = {
     lang: "it-IT",
     translation: TRANSLATIONS_IT,
   },
+  /*
   en: {
     label: "English",
     lang: "en-EN",
     translation: TRANSLATIONS_EN,
   },
+  */
 };
 
 export interface Languages {
