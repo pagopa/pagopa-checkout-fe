@@ -847,7 +847,7 @@ export const confirmPayment = async (
     deliveryEmailAddress: pipe(
       O.fromNullable(sessionStorage.getItem("useremail")),
       O.getOrElse(() => "")
-    ).toString(),
+    ),
     mobilePhone: null,
   };
 
