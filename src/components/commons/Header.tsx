@@ -16,7 +16,12 @@ export default function Header() {
     if (!state.checkData.idPayment) {
       return getCheckData();
     }
-    return state.checkData;
+    return {
+      ...state.checkData,
+      subject: state.checkData.subject.includes("/TXT")
+        ? state.checkData.subject.split("/TXT/")[1]
+        : state.checkData.subject,
+    };
   });
   const [drawstate, setDrawstate] = React.useState(false);
 
