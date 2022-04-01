@@ -117,7 +117,7 @@ export function setPaymentId(item: PaymentId) {
 }
 
 export function setEmailInfo(item: PaymentEmailFormFields) {
-  sessionStorage.setItem(SessionItems.useremail, item.email);
+  sessionStorage.setItem(SessionItems.useremail, JSON.stringify(item.email));
 }
 
 export function setCheckData(item: PaymentCheckData) {
