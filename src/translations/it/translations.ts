@@ -132,7 +132,7 @@ export const TRANSLATIONS_IT = {
   },
   POLLING_SLOW: {
     title: "Spiacenti, l’Ente sta impiegando più tempo del previsto...",
-    body: "Ti preghiamo di attendere un paio di minuti al massimo senza ricare la pagina nel frattempo.",
+    body: "Ti preghiamo di attendere un paio di minuti al massimo senza ricaricare la pagina nel frattempo.",
   },
   ERRORE_EC: {
     title: "Spiacenti, l’Ente Creditore sta avendo problemi nella risposta",
