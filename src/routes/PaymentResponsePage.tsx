@@ -20,6 +20,11 @@ import { mixpanel } from "../utils/config/mixpanelHelperInit";
 import { onBrowserUnload } from "../utils/eventListeners";
 import { moneyFormat } from "../utils/form/formatters";
 import {
+  clearSensitiveItems,
+  loadState,
+  SessionItems,
+} from "../utils/storage/sessionStorage";
+import {
   getOutcomeFromAuthcodeAndIsDirectAcquirer,
   OutcomeEnumType,
   ViewOutcomeEnum,
@@ -35,9 +40,7 @@ type printData = {
 export default function PaymentCheckPage() {
   const [loading, setLoading] = useState(true);
   const [outcomeMessage, setOutcomeMessage] = useState<responseMessage>();
-  const originUrlRedirect = JSON.parse(
-    sessionStorage.getItem("originUrlRedirect") || ""
-  );
+  const originUrlRedirect = loadState(SessionItems.originUrlRedirect) as string;
   const PaymentCheckData = getCheckData() as PaymentCheckData;
   const wallet = getWallet();
   const email = getEmailInfo();
@@ -76,8 +79,8 @@ export default function PaymentCheckPage() {
       setOutcomeMessage(message);
       setLoading(false);
       window.removeEventListener("beforeunload", onBrowserUnload);
+      clearSensitiveItems();
     };
-
     void callServices(handleFinalStatusResult);
   }, []);
 
