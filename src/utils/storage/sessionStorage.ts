@@ -16,6 +16,7 @@ export enum SessionItems {
   securityCode = "securityCode",
   wallet = "wallet",
   originUrlRedirect = "originUrlRedirect",
+  sessionToken = "sessionToken",
 }
 export const loadState = (item: string) => {
   try {
@@ -24,7 +25,6 @@ export const loadState = (item: string) => {
     if (!serializedState) {
       return undefined;
     }
-
     return JSON.parse(serializedState) as
       | string
       | PaymentInfo
@@ -39,3 +39,12 @@ export const loadState = (item: string) => {
 };
 
 export const isStateEmpty = (item: string) => !loadState(item);
+
+export const clearSensitiveItems = () => {
+  const originUrl = loadState(SessionItems.originUrlRedirect) as string;
+  sessionStorage.clear();
+  sessionStorage.setItem(
+    SessionItems.originUrlRedirect,
+    JSON.stringify(originUrl)
+  );
+};

@@ -2,23 +2,26 @@ import { Box, Button, Typography } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import ko from "../assets/images/response-umbrella.svg";
 import PageContainer from "../components/PageContent/PageContainer";
 import { resetCheckData } from "../redux/slices/checkData";
 import { onBrowserUnload } from "../utils/eventListeners";
-import { CheckoutRoutes } from "./models/routeModel";
+import {
+  clearSensitiveItems,
+  loadState,
+  SessionItems,
+} from "../utils/storage/sessionStorage";
 
 export default function KOPage() {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const redirectUrl = loadState(SessionItems.originUrlRedirect) as string;
 
   React.useEffect(() => {
     dispatch(resetCheckData());
     window.removeEventListener("beforeunload", onBrowserUnload);
+    clearSensitiveItems();
   }, []);
-  sessionStorage.clear();
 
   return (
     <PageContainer>
@@ -53,7 +56,10 @@ export default function KOPage() {
           <Button
             type="button"
             variant="outlined"
-            onClick={() => navigate(`/${CheckoutRoutes.ROOT}`)}
+            onClick={() => {
+              sessionStorage.clear();
+              window.location.replace(redirectUrl);
+            }}
             style={{
               width: "100%",
               height: "100%",
