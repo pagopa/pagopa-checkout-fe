@@ -41,12 +41,10 @@ export const loadState = (item: string) => {
 export const isStateEmpty = (item: string) => !loadState(item);
 
 export const clearSensitiveItems = () => {
-  sessionStorage.removeItem(SessionItems.checkData);
-  sessionStorage.removeItem(SessionItems.noticeInfo);
-  sessionStorage.removeItem(SessionItems.paymentId);
-  sessionStorage.removeItem(SessionItems.paymentInfo);
-  sessionStorage.removeItem(SessionItems.wallet);
-  sessionStorage.removeItem(SessionItems.useremail);
-  sessionStorage.removeItem(SessionItems.securityCode);
-  sessionStorage.removeItem(SessionItems.sessionToken);
+  const originUrl = loadState(SessionItems.originUrlRedirect) as string;
+  sessionStorage.clear();
+  sessionStorage.setItem(
+    SessionItems.originUrlRedirect,
+    JSON.stringify(originUrl)
+  );
 };
