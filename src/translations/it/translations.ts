@@ -231,7 +231,8 @@ export const TRANSLATIONS_IT = {
     email: "Invia esito a:",
     modal: {
       title: "Perché c'è un costo di transazione?",
-      body: "Qualsiasi operazione di trasferimento di denaro (in contanti o in moneta elettronica) ha un costo, che serve a garantirti che quel pagamento sia sicuro e arrivi a buon fine.\n\nOgni gestore (o PSP, Prestatore di Servizi di Pagamento), propone un costo di transazione, a seconda delle proprie politiche commerciali e condizioni contrattuali.\n\nCon pagoPA, questi costi sono trasparenti e il cittadino può scegliere liberamente l'opzione più comoda e conveniente. Per saperne di più, consulta la pagina [Trasparenza Costi](https://www.pagopa.gov.it/it/cittadini/trasparenza-costi/).",
+      body: "Qualsiasi operazione di trasferimento di denaro (in contanti o in moneta elettronica) ha un costo, che serve a garantirti che quel pagamento sia sicuro e arrivi a buon fine.\n\nOgni gestore (o PSP, Prestatore di Servizi di Pagamento), propone un costo di transazione, a seconda delle proprie politiche commerciali e condizioni contrattuali.\n\nCon pagoPA, questi costi sono trasparenti e il cittadino può scegliere liberamente l'opzione più comoda e conveniente. Per saperne di più, consulta la pagina ",
+      link: "Trasparenza Costi",
       cancelTitle: "Uscire dal pagamento in corso?",
       cancelBody: "Tutti i dati inseriti andranno persi.",
       cancelButton: "No, ho cambiato idea",
