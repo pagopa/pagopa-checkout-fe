@@ -35,7 +35,9 @@ type printData = {
 export default function PaymentCheckPage() {
   const [loading, setLoading] = useState(true);
   const [outcomeMessage, setOutcomeMessage] = useState<responseMessage>();
-  const originUrlRedirect = sessionStorage.getItem("originUrlRedirect") || "";
+  const originUrlRedirect = JSON.parse(
+    sessionStorage.getItem("originUrlRedirect") || ""
+  );
   const PaymentCheckData = getCheckData() as PaymentCheckData;
   const wallet = getWallet();
   const email = getEmailInfo();

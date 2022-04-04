@@ -506,7 +506,9 @@ export const getSessionWallet = async (
   onResponse: () => void
   // eslint-disable-next-line sonarjs/cognitive-complexity
 ) => {
-  const useremail: string = sessionStorage.getItem("useremail") || "";
+  const useremail: string = JSON.parse(
+    sessionStorage.getItem("useremail") || ""
+  );
   const checkDataStored: string = sessionStorage.getItem("checkData") || "";
   const checkData = JSON.parse(checkDataStored);
 
@@ -845,9 +847,8 @@ export const confirmPayment = async (
       ?.toString()
       .trim()}`,
     deliveryEmailAddress: pipe(
-      O.fromNullable(sessionStorage.getItem("useremail")),
-      O.getOrElse(() => ""),
-      (_) => _.split('"').join("")
+      O.fromNullable(JSON.parse(sessionStorage.getItem("useremail") || "")),
+      O.getOrElse(() => "")
     ),
     mobilePhone: null,
   };
