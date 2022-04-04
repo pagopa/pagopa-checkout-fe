@@ -9,6 +9,7 @@ import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import {
   Box,
   Button,
+  Link,
   Skeleton,
   SvgIcon,
   Typography,
@@ -295,6 +296,15 @@ export default function PaymentCheckPage() {
           sx={{ whiteSpace: "pre-line" }}
         >
           {t("paymentCheckPage.modal.body")}
+          <Link
+            href="https://www.pagopa.gov.it/it/cittadini/trasparenza-costi/"
+            target="_blank"
+            rel="noopener noreferrer"
+            sx={{ fontWeight: 600, textDecoration: "none" }}
+          >
+            {t("paymentCheckPage.modal.link")}
+          </Link>
+          {"."}
         </Typography>
         <Box display="flex" justifyContent="flex-end" sx={{ mt: 3 }}>
           <Button variant="contained" onClick={() => setModalOpen(false)}>
