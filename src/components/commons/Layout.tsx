@@ -25,7 +25,7 @@ export function Layout({ sx, children, fixedFooterPages }: LayoutProps) {
       <Container
         sx={{
           ...sx,
-          p: { xs: 6, sm: 0 },
+          p: { xs: 0 },
           pl: { xs: 2, sm: 6, md: 0 },
           pr: { xs: 2, sm: 6, md: 0 },
           flexGrow: 1,
