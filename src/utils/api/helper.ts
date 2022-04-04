@@ -139,7 +139,7 @@ export const getPaymentInfoTask = (
                   : PAYMENT_VERIFY_RESP_ERR.value;
               mixpanel.track(EVENT_ID, { EVENT_ID, reason });
 
-              if (responseType.status === 424) {
+              if (responseType.status === 400) {
                 return TE.left(
                   pipe(
                     O.fromNullable(
@@ -212,7 +212,7 @@ export const activePaymentTask = (
                   : PAYMENT_ACTIVATE_RESP_ERR.value;
               mixpanel.track(EVENT_ID, { EVENT_ID, reason });
 
-              if (responseType.status === 424) {
+              if (responseType.status === 400) {
                 return TE.left(
                   pipe(
                     O.fromNullable(
@@ -506,7 +506,9 @@ export const getSessionWallet = async (
   onResponse: () => void
   // eslint-disable-next-line sonarjs/cognitive-complexity
 ) => {
-  const useremail: string = sessionStorage.getItem("useremail") || "";
+  const useremail: string = JSON.parse(
+    sessionStorage.getItem("useremail") || ""
+  );
   const checkDataStored: string = sessionStorage.getItem("checkData") || "";
   const checkData = JSON.parse(checkDataStored);
 
@@ -845,7 +847,7 @@ export const confirmPayment = async (
       ?.toString()
       .trim()}`,
     deliveryEmailAddress: pipe(
-      O.fromNullable(sessionStorage.getItem("useremail")),
+      O.fromNullable(JSON.parse(sessionStorage.getItem("useremail") || "")),
       O.getOrElse(() => "")
     ),
     mobilePhone: null,
