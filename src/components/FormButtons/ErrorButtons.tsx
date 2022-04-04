@@ -15,7 +15,7 @@ export function ErrorButtons(props: {
       <Grid
         sx={{
           mt: 4,
-          justifyContent: { xs: "center", sm: "end" },
+          justifyContent: { xs: "center", sm: "flex-end" },
           flexDirection: { xs: "column", sm: "row" },
           alignItems: "center",
         }}

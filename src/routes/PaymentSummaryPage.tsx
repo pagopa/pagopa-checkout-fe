@@ -123,29 +123,35 @@ export default function PaymentSummaryPage() {
       title="paymentSummaryPage.title"
       description="paymentSummaryPage.description"
     >
-      <FieldContainer
-        title="paymentSummaryPage.creditor"
-        body={paymentInfo.enteBeneficiario?.denominazioneBeneficiario}
-        icon={<AccountBalanceIcon color="primary" sx={{ ml: 3 }} />}
-      />
-      <FieldContainer
-        title="paymentSummaryPage.causal"
-        body={paymentInfo.causaleVersamento}
-        icon={<ReceiptLongIcon color="primary" sx={{ ml: 3 }} />}
-      />
+      {!!paymentInfo.enteBeneficiario?.denominazioneBeneficiario && (
+        <FieldContainer
+          title="paymentSummaryPage.creditor"
+          body={paymentInfo.enteBeneficiario?.denominazioneBeneficiario}
+          icon={<AccountBalanceIcon color="primary" sx={{ ml: 3 }} />}
+        />
+      )}
+      {!!paymentInfo.causaleVersamento && (
+        <FieldContainer
+          title="paymentSummaryPage.causal"
+          body={paymentInfo.causaleVersamento}
+          icon={<ReceiptLongIcon color="primary" sx={{ ml: 3 }} />}
+        />
+      )}
       <FieldContainer
         title="paymentSummaryPage.amount"
         body={moneyFormat(paymentInfo.importoSingoloVersamento)}
         icon={<EuroIcon color="primary" sx={{ ml: 3 }} />}
       />
-      <Box sx={{ ...defaultStyle, pl: 2, pr: 2 }}>
-        <Typography variant="body2" component={"div"} pr={2}>
-          {t("paymentSummaryPage.cf")}
-        </Typography>
-        <Typography variant="sidenav" component={"div"}>
-          {paymentInfo.enteBeneficiario?.identificativoUnivocoBeneficiario}
-        </Typography>
-      </Box>
+      {!!paymentInfo.enteBeneficiario?.identificativoUnivocoBeneficiario && (
+        <Box sx={{ ...defaultStyle, pl: 2, pr: 2 }}>
+          <Typography variant="body2" component={"div"} pr={2}>
+            {t("paymentSummaryPage.cf")}
+          </Typography>
+          <Typography variant="sidenav" component={"div"}>
+            {paymentInfo.enteBeneficiario?.identificativoUnivocoBeneficiario}
+          </Typography>
+        </Box>
+      )}
 
       <FormButtons
         submitTitle="paymentSummaryPage.buttons.submit"

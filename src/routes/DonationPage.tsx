@@ -36,7 +36,10 @@ import {
 } from "../features/payment/models/donationModel";
 import { resetCheckData } from "../redux/slices/checkData";
 import { getDonationEntityList } from "../utils/api/helper";
-import { DONATION_URL_VISIT } from "../utils/config/mixpanelDefs";
+import {
+  DONATION_APPIO_VISIT,
+  DONATION_URL_VISIT,
+} from "../utils/config/mixpanelDefs";
 import { mixpanel } from "../utils/config/mixpanelHelperInit";
 import { moneyFormat } from "../utils/form/formatters";
 
@@ -80,6 +83,17 @@ export default function DonationPage() {
   const onSubmit = () => {
     navigate(`/${selectedEntity?.cf}${selectedSlice?.nav}`);
   };
+
+  const onAPPIO = React.useCallback(() => {
+    mixpanel.track(DONATION_APPIO_VISIT.value, {
+      EVENT_ID: DONATION_APPIO_VISIT.value,
+    });
+    if (isMobileDevice) {
+      window.open("https://io.italia.it/donazioni-ucraina/", "_blank")?.focus();
+    } else {
+      setModalOpen(true);
+    }
+  }, [isMobileDevice]);
 
   const getEntityContainer = ({
     entity,
@@ -271,16 +285,7 @@ export default function DonationPage() {
                 </Button>
                 <Button
                   variant="outlined"
-                  onClick={() =>
-                    isMobileDevice
-                      ? window
-                          .open(
-                            "https://io.italia.it/donazioni-ucraina/",
-                            "_blank"
-                          )
-                          ?.focus()
-                      : setModalOpen(true)
-                  }
+                  onClick={onAPPIO}
                   startIcon={
                     <SvgIcon
                       sx={{

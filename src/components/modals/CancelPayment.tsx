@@ -31,7 +31,7 @@ export function CancelPayment(props: {
       <Box
         display="flex"
         flexDirection={{ xs: "column", sm: "row" }}
-        justifyContent="end"
+        justifyContent="flex-end"
         sx={{ mt: 3, gap: 2 }}
       >
         <Button variant="text" onClick={props.onCancel}>

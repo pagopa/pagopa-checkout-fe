@@ -48,7 +48,7 @@ export const TRANSLATIONS_IT = {
     },
   },
   paymentSummaryPage: {
-    title: "Avviso di pagamento",
+    title: "Dati del pagamento",
     description:
       "pagoPA aggiorna automaticamente l'importo per assicurarti di aver pagato esattamente quanto dovuto ed evitarsi così more o altri interessi",
     amount: "Importo aggiornato",
@@ -231,7 +231,7 @@ export const TRANSLATIONS_IT = {
     email: "Invia esito a:",
     modal: {
       title: "Perché c'è un costo di transazione?",
-      body: "Qualsiasi operazione di trasferimento di denaro (in contanti o in moneta elettronica) ha un costo, che serve a garantirti che quel pagamento sia sicuro e arrivi a buon fine.\n\nOgni gestore(o PSP, Prestatore di Servizi di Pagamento), propone un costo di transazione, a seconda delle proprie politiche commerciali e condizioni contrattuali.\n\nCon pagoPA, questi costi sono trasparenti e il cittadino può scegliere liberamente l'opzione più comoda e conveniente. Verifica l'importo applicato dal PSP che hai scelto, prima di procedere al pagamento.",
+      body: "Qualsiasi operazione di trasferimento di denaro (in contanti o in moneta elettronica) ha un costo, che serve a garantirti che quel pagamento sia sicuro e arrivi a buon fine.\n\nOgni gestore (o PSP, Prestatore di Servizi di Pagamento), propone un costo di transazione, a seconda delle proprie politiche commerciali e condizioni contrattuali.\n\nCon pagoPA, questi costi sono trasparenti e il cittadino può scegliere liberamente l'opzione più comoda e conveniente. Per saperne di più, consulta la pagina [Trasparenza Costi](https://www.pagopa.gov.it/it/cittadini/trasparenza-costi/).",
       cancelTitle: "Uscire dal pagamento in corso?",
       cancelBody: "Tutti i dati inseriti andranno persi.",
       cancelButton: "No, ho cambiato idea",
@@ -308,9 +308,9 @@ export const TRANSLATIONS_IT = {
     loading: "Caricamento",
   },
   donationPage: {
-    title: "Dona per l’Ucraina",
+    title: "Dona per la crisi in Ucraina",
     description:
-      "Puoi donare con carta di credito, debito o prepagata, senza costi di commissione. L’importo verrà versato direttamente sul conto dell’organizzazione a cui scegli di donare.",
+      "Puoi donare con carte Maestro, Mastercard e Visa senza costi di commissione. L’importo verrà versato direttamente sul conto dell’organizzazione a cui scegli di donare.",
     entity: "A chi vuoi donare?",
     volunteer: "Quanto vuoi donare?",
     submitCard: "Dona con carta",
@@ -324,6 +324,6 @@ export const TRANSLATIONS_IT = {
     payNotice: "Paga un avviso",
     code: "e inquadra il codice:",
     modalBody2:
-      "Puoi donare senza costi di commissione con le tue carte di debito, credito o prepagate.",
+      "Puoi donare senza costi di commissione con le tue carte Maestro, Mastercard e Visa.",
   },
 };
