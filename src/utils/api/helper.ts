@@ -9,10 +9,7 @@ import { CodiceContestoPagamento } from "../../../generated/definitions/payment-
 import { ImportoEuroCents } from "../../../generated/definitions/payment-activations-api/ImportoEuroCents";
 import { PaymentActivationsGetResponse } from "../../../generated/definitions/payment-activations-api/PaymentActivationsGetResponse";
 import { PaymentActivationsPostResponse } from "../../../generated/definitions/payment-activations-api/PaymentActivationsPostResponse";
-import {
-  Detail_v2Enum,
-  PaymentProblemJson,
-} from "../../../generated/definitions/payment-activations-api/PaymentProblemJson";
+import { Detail_v2Enum } from "../../../generated/definitions/payment-activations-api/PaymentProblemJson";
 import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-activations-api/PaymentRequestsGetResponse";
 import {
   TypeEnum,
@@ -142,9 +139,7 @@ export const getPaymentInfoTask = (
               if (responseType.status === 400) {
                 return TE.left(
                   pipe(
-                    O.fromNullable(
-                      (responseType.value as PaymentProblemJson)?.detail_v2
-                    ),
+                    O.fromNullable(responseType.value?.detail as Detail_v2Enum),
                     O.getOrElse(() => Detail_v2Enum.GENERIC_ERROR)
                   )
                 );
@@ -215,9 +210,7 @@ export const activePaymentTask = (
               if (responseType.status === 400) {
                 return TE.left(
                   pipe(
-                    O.fromNullable(
-                      (responseType.value as PaymentProblemJson)?.detail_v2
-                    ),
+                    O.fromNullable(responseType.value?.detail as Detail_v2Enum),
                     O.getOrElse(() => ErrorsType.STATUS_ERROR as string)
                   )
                 );
