@@ -43,7 +43,7 @@ describe("Checkout payment activation tests", () => {
     await page.goto(CHECKOUT_URL);
   });
   
-  it("Should correctly execute a payment", async () => {
+  it.only("Should correctly execute a payment", async () => {
     /*
      * 1. Payment with valid notice code
     */
