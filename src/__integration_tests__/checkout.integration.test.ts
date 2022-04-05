@@ -19,10 +19,10 @@ describe("Checkout payment activation tests", () => {
       302001000000000000
   ).toString();
   
-  const PA_IRRAGGIUNGIBILE_NOTICE_CODE = "302016723749670008";
-  const PAA_PAGAMENTO_IN_CORSO_NOTICE_CODE = "302016723749670009";
-  const PPT_SINTASSI_XSD_NOTICE_CODE = "302016723749670010";
-  const PPT_SYSTEM_ERROR_NOTICE_CODE = "302016723749670011";
+  const PA_IRRAGGIUNGIBILE_NOTICE_CODE = "302016723749670009";
+  const PAA_PAGAMENTO_IN_CORSO_NOTICE_CODE = "302016723749670010";
+  const PPT_SINTASSI_XSD_NOTICE_CODE = "302016723749670011";
+  const PPT_SYSTEM_ERROR_NOTICE_CODE = "302016723749670012";
 
   /**
    * Increase default test timeout (60000ms)
@@ -43,7 +43,7 @@ describe("Checkout payment activation tests", () => {
     await page.goto(CHECKOUT_URL);
   });
   
-  it("Should correctly execute a payment", async () => {
+  it.only("Should correctly execute a payment", async () => {
     /*
      * 1. Payment with valid notice code
     */
@@ -61,10 +61,7 @@ describe("Checkout payment activation tests", () => {
     /*
      * 2. Payment with notice code that fails on verify and get PA_IRRAGGIUNGIBILE
      */
-    const resultMessage = await verifyPaymentAndGetError(
-      PA_IRRAGGIUNGIBILE_NOTICE_CODE,
-      VALID_FISCAL_CODE,
-    );
+    const resultMessage = await verifyPaymentAndGetError(PA_IRRAGGIUNGIBILE_NOTICE_CODE, VALID_FISCAL_CODE, "/html/body/div[4]/div[3]/div/div/div[2]/div[2]/div");
 
     expect(resultMessage).toContain("PPT_STAZIONE_INT_PA_IRRAGGIUNGIBILE");
   });
@@ -74,22 +71,16 @@ describe("Checkout payment activation tests", () => {
     /*
      * 3. Payment with notice code that fails on verify and get PAA_PAGAMENTO_IN_CORSO
      */
-    const resultMessage = await verifyPaymentAndGetError(
-      PAA_PAGAMENTO_IN_CORSO_NOTICE_CODE,
-      VALID_FISCAL_CODE,
-    );
+    const resultMessage = await verifyPaymentAndGetError(PAA_PAGAMENTO_IN_CORSO_NOTICE_CODE, VALID_FISCAL_CODE, "/html/body/div[4]/div[3]/div/h2/div");
 
-    expect(resultMessage).toContain("Il pagamento è già in corso, riprova tra qualche minutoSe è passato troppo tempo, segnalacelo");
+    expect(resultMessage).toContain("Il pagamento è già in corso, riprova tra qualche minuto__int");
   });
 
   it("Should fail a payment verify and get PPT_SINTASSI_XSD", async () => {
     /*
      * 4. Payment with notice code that fails on verify and get PPT_SINTASSI_XSD
      */
-    const resultMessage = await verifyPaymentAndGetError(
-      PPT_SINTASSI_XSD_NOTICE_CODE,
-      VALID_FISCAL_CODE,
-    );
+    const resultMessage = await verifyPaymentAndGetError(PPT_SINTASSI_XSD_NOTICE_CODE, VALID_FISCAL_CODE, "/html/body/div[4]/div[3]/div/div/div[2]/div[2]/div");
 
     expect(resultMessage).toContain("PPT_SINTASSI_XSD");
   });
@@ -98,10 +89,7 @@ describe("Checkout payment activation tests", () => {
     /*
      * 5. Payment with notice code that fails on verify and get PPT_SYSTEM_ERROR
      */
-    const resultMessage = await verifyPaymentAndGetError(
-      PPT_SYSTEM_ERROR_NOTICE_CODE,
-      VALID_FISCAL_CODE,
-    );
+    const resultMessage = await verifyPaymentAndGetError(PPT_SYSTEM_ERROR_NOTICE_CODE, VALID_FISCAL_CODE, "/html/body/div[4]/div[3]/div/div/div[2]/div[2]/div");
 
     expect(resultMessage).toContain("PPT_SYSTEM_ERROR");
   });
