@@ -132,7 +132,7 @@ export const TRANSLATIONS_IT = {
   },
   POLLING_SLOW: {
     title: "Spiacenti, l’Ente sta impiegando più tempo del previsto...",
-    body: "Ti preghiamo di attendere un paio di minuti al massimo senza ricare la pagina nel frattempo.",
+    body: "Ti preghiamo di attendere un paio di minuti al massimo senza ricaricare la pagina nel frattempo.",
   },
   ERRORE_EC: {
     title: "Spiacenti, l’Ente Creditore sta avendo problemi nella risposta",
@@ -206,7 +206,7 @@ export const TRANSLATIONS_IT = {
   paymentChoicePage: {
     title: "Come vuoi pagare?",
     description:
-      "Per sapere di più sui metodi e i costi applicati dai gestori aderenti, visita la pagina ",
+      "Per saperne di più sui metodi e i costi applicati dai gestori aderenti, visita la pagina ",
     costs: "Trasparenza Costi.",
     creditCard: "Carta di debito o credito",
     bank: "Conto corrente",
@@ -231,7 +231,8 @@ export const TRANSLATIONS_IT = {
     email: "Invia esito a:",
     modal: {
       title: "Perché c'è un costo di transazione?",
-      body: "Qualsiasi operazione di trasferimento di denaro (in contanti o in moneta elettronica) ha un costo, che serve a garantirti che quel pagamento sia sicuro e arrivi a buon fine.\n\nOgni gestore (o PSP, Prestatore di Servizi di Pagamento), propone un costo di transazione, a seconda delle proprie politiche commerciali e condizioni contrattuali.\n\nCon pagoPA, questi costi sono trasparenti e il cittadino può scegliere liberamente l'opzione più comoda e conveniente. Per saperne di più, consulta la pagina [Trasparenza Costi](https://www.pagopa.gov.it/it/cittadini/trasparenza-costi/).",
+      body: "Qualsiasi operazione di trasferimento di denaro (in contanti o in moneta elettronica) ha un costo, che serve a garantirti che quel pagamento sia sicuro e arrivi a buon fine.\n\nOgni gestore (o PSP, Prestatore di Servizi di Pagamento), propone un costo di transazione, a seconda delle proprie politiche commerciali e condizioni contrattuali.\n\nCon pagoPA, questi costi sono trasparenti e il cittadino può scegliere liberamente l'opzione più comoda e conveniente. Per saperne di più, consulta la pagina ",
+      link: "Trasparenza Costi",
       cancelTitle: "Uscire dal pagamento in corso?",
       cancelBody: "Tutti i dati inseriti andranno persi.",
       cancelButton: "No, ho cambiato idea",
@@ -304,7 +305,7 @@ export const TRANSLATIONS_IT = {
     editCard: "Modifica dati carta",
     editDonation: "Modifica ente donazione",
     informationDialog: "Informazioni",
-    informationLink: "Per sapere di più su",
+    informationLink: "Per saperne di più sulla campagna di",
     loading: "Caricamento",
   },
   donationPage: {
