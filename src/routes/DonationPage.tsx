@@ -132,7 +132,7 @@ export default function DonationPage() {
           href={entity.web_site}
           target="_blank"
           rel="noopener noreferrer"
-          style={{ display: "flex", marginRight: "16px" }}
+          sx={{ display: "flex", mx: 1 }}
           title={`${t("ariaLabels.informationLink")} ${entity.companyName}`}
           onClick={(e) => {
             e.stopPropagation();
@@ -274,34 +274,43 @@ export default function DonationPage() {
             </Grid>
             {!!selectedSlice && (
               <>
-                <Button
-                  variant="contained"
-                  onClick={() => onSubmit()}
-                  startIcon={<CreditCardIcon />}
-                  aria-label={t("donationPage.submitCard")}
-                  sx={{ width: "100%", marginBottom: 2 }}
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  gap={{ xs: 0, sm: 3 }}
+                  sx={{
+                    flexDirection: { xs: "column", sm: "row-reverse" },
+                  }}
                 >
-                  {t("donationPage.submitCard")}
-                </Button>
-                <Button
-                  variant="outlined"
-                  onClick={onAPPIO}
-                  startIcon={
-                    <SvgIcon
-                      sx={{
-                        fill: theme.palette.primary.main,
-                      }}
-                    >
-                      <use href={sprite + "#appIO"} />
-                    </SvgIcon>
-                  }
-                  aria-label={t("donationPage.submitIO")}
-                  sx={{ width: "100%", marginBottom: 2 }}
-                  aria-hidden="true"
-                  tabIndex={-1}
-                >
-                  {t("donationPage.submitIO")}
-                </Button>
+                  <Button
+                    variant="contained"
+                    onClick={() => onSubmit()}
+                    startIcon={<CreditCardIcon />}
+                    aria-label={t("donationPage.submitCard")}
+                    sx={{ width: "100%", marginBottom: 2 }}
+                  >
+                    {t("donationPage.submitCard")}
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    onClick={onAPPIO}
+                    startIcon={
+                      <SvgIcon
+                        sx={{
+                          fill: theme.palette.primary.main,
+                        }}
+                      >
+                        <use href={sprite + "#appIO"} />
+                      </SvgIcon>
+                    }
+                    aria-label={t("donationPage.submitIO")}
+                    sx={{ width: "100%", marginBottom: 2 }}
+                    aria-hidden="true"
+                    tabIndex={-1}
+                  >
+                    {t("donationPage.submitIO")}
+                  </Button>
+                </Box>
                 <Typography variant="caption-semibold" component="div">
                   {t("donationPage.ioDescription")}
                 </Typography>
