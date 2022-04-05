@@ -277,9 +277,10 @@ export default function DonationPage() {
                 <Box
                   display="flex"
                   alignItems="center"
-                  gap={{ xs: 0, sm: 3 }}
+                  gap={{ xs: 2, sm: 3 }}
                   sx={{
                     flexDirection: { xs: "column", sm: "row-reverse" },
+                    mb: 2,
                   }}
                 >
                   <Button
@@ -287,7 +288,7 @@ export default function DonationPage() {
                     onClick={() => onSubmit()}
                     startIcon={<CreditCardIcon />}
                     aria-label={t("donationPage.submitCard")}
-                    sx={{ width: "100%", marginBottom: 2 }}
+                    sx={{ width: "100%" }}
                   >
                     {t("donationPage.submitCard")}
                   </Button>
@@ -304,7 +305,7 @@ export default function DonationPage() {
                       </SvgIcon>
                     }
                     aria-label={t("donationPage.submitIO")}
-                    sx={{ width: "100%", marginBottom: 2 }}
+                    sx={{ width: "100%" }}
                     aria-hidden="true"
                     tabIndex={-1}
                   >
