@@ -206,7 +206,7 @@ export const TRANSLATIONS_IT = {
   paymentChoicePage: {
     title: "Come vuoi pagare?",
     description:
-      "Per sapere di più sui metodi e i costi applicati dai gestori aderenti, visita la pagina ",
+      "Per saperne di più sui metodi e i costi applicati dai gestori aderenti, visita la pagina ",
     costs: "Trasparenza Costi.",
     creditCard: "Carta di debito o credito",
     bank: "Conto corrente",
@@ -305,7 +305,7 @@ export const TRANSLATIONS_IT = {
     editCard: "Modifica dati carta",
     editDonation: "Modifica ente donazione",
     informationDialog: "Informazioni",
-    informationLink: "Per sapere di più su",
+    informationLink: "Per saperne di più sulla campagna di",
     loading: "Caricamento",
   },
   donationPage: {
