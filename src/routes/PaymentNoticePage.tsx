@@ -56,11 +56,7 @@ export default function PaymentNoticePage() {
         getPaymentInfoTask(rptId, token || ""),
         TE.mapLeft((err) => onError(err)),
         TE.map((paymentInfo) => {
-          setPaymentInfo({
-            ...paymentInfo,
-            causaleVersamento:
-              "RFB/11000772699262590/12.00/TXT/pagamentò RPT by mock",
-          } as PaymentInfo);
+          setPaymentInfo(paymentInfo as PaymentInfo);
           setRptId(notice);
           navigate(
             `/${CheckoutRoutes.DATI_PAGAMENTO}`,
