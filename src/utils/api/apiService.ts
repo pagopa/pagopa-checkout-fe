@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/cognitive-complexity */
 import {
   PaymentCheckData,
   PaymentEmailFormFields,
@@ -8,6 +9,7 @@ import {
 } from "../../features/payment/models/paymentModel";
 import { getConfigOrThrow } from "../config/config";
 import { loadState, SessionItems } from "../storage/sessionStorage";
+import { paymentSubjectTransform } from "../transformers/paymentTransformers";
 
 export function getReCaptchaKey() {
   return getConfigOrThrow().CHECKOUT_RECAPTCHA_SITE_KEY;
@@ -34,9 +36,8 @@ export function getPaymentInfo() {
             "",
         }
       : undefined,
-    causaleVersamento: paymentInfo.causaleVersamento
-      ? paymentInfo.causaleVersamento
-      : undefined,
+    causaleVersamento:
+      paymentSubjectTransform(paymentInfo.causaleVersamento) || undefined,
     codiceContestoPagamento: paymentInfo?.codiceContestoPagamento || "",
     ibanAccredito: paymentInfo.ibanAccredito
       ? paymentInfo.ibanAccredito
@@ -75,7 +76,7 @@ export function getCheckData() {
     isCancelled: data?.isCancelled || false,
     origin: data?.origin || "",
     receiver: data?.receiver || "",
-    subject: data?.subject || "",
+    subject: paymentSubjectTransform(data?.subject) || "",
     urlRedirectEc: data?.urlRedirectEc || "",
     detailsList: data?.detailsList || [],
   };

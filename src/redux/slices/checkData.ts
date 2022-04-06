@@ -23,20 +23,20 @@ export const checkDataSlice = createSlice({
   },
   reducers: {
     setCheckData(state, action) {
-      state.amount.amount = action.payload.amount.amount;
-      state.amount.currency = action.payload.amount.currency;
-      state.amount.decimalDigits = action.payload.amount.decimalDigits;
-      state.bolloDigitale = action.payload.bolloDigitale;
-      state.fiscalCode = action.payload.fiscalCode;
-      state.iban = action.payload.iban;
-      state.id = action.payload.id;
-      state.idPayment = action.payload.idPayment;
-      state.isCancelled = action.payload.isCancelled;
-      state.origin = action.payload.origin;
-      state.receiver = action.payload.receiver;
-      state.subject = action.payload.subject;
-      state.urlRedirectEc = action.payload.urlRedirectEc;
-      state.detailsList = action.payload.detailsList;
+      state.amount.amount = action.payload?.amount?.amount || 0;
+      state.amount.currency = action.payload?.amount?.currency || "";
+      state.amount.decimalDigits = action.payload?.amount?.decimalDigits || 0;
+      state.bolloDigitale = action.payload?.bolloDigitale || false;
+      state.fiscalCode = action.payload?.fiscalCode || "";
+      state.iban = action.payload?.iban || "";
+      state.id = action.payload?.id || 0;
+      state.idPayment = action.payload?.idPayment || "";
+      state.isCancelled = action.payload?.isCancelled || false;
+      state.origin = action.payload?.origin || "";
+      state.receiver = action.payload?.receiver || "";
+      state.subject = action.payload?.subject || "";
+      state.urlRedirectEc = action.payload?.urlRedirectEc || "";
+      state.detailsList = action.payload?.detailsList || [];
     },
     resetCheckData(state) {
       state.amount.amount = 0;
