@@ -1,6 +1,6 @@
 /* eslint-disable functional/immutable-data */
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { Box, Grid, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { SxProps } from "@mui/system";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -13,6 +13,7 @@ function ClickableFieldContainer(props: {
   onClick?: () => void;
   sx?: SxProps;
   itemSx?: SxProps;
+  variant?: "body2" | "sidenav";
 }) {
   const { t } = useTranslation();
   const defaultStyle = {
@@ -28,8 +29,7 @@ function ClickableFieldContainer(props: {
   };
 
   return (
-    <Grid
-      container
+    <Box
       sx={defaultStyle}
       onClick={props.onClick}
       onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -40,37 +40,32 @@ function ClickableFieldContainer(props: {
       }}
       {...(props.clickable ? { tabIndex: 0 } : {})}
     >
-      <Grid item xs={8}>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 3,
-            pl: 2,
-            pr: 2,
-            ...props.itemSx,
-          }}
-        >
-          {props.icon}
-          <Typography variant="sidenav" component={"div"}>
-            {t(props.title)}
-          </Typography>
-        </Box>
-      </Grid>
-      <Grid
-        item
-        xs={4}
-        sx={{ display: "flex", justifyContent: "flex-end", pr: 2 }}
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 3,
+          pl: 2,
+          pr: 2,
+          ...props.itemSx,
+        }}
       >
+        {props.icon}
+        <Typography variant={props.variant} component="div">
+          {t(props.title)}
+        </Typography>
+      </Box>
+      <Box sx={{ display: "flex", justifyContent: "flex-end", pr: 2 }}>
         {props.endAdornment}
-      </Grid>
-    </Grid>
+      </Box>
+    </Box>
   );
 }
 
 ClickableFieldContainer.defaultProps = {
   flexDirection: "column",
   clickable: true,
+  variant: "sidenav",
 };
 
 export default ClickableFieldContainer;
