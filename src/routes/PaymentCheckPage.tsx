@@ -267,6 +267,7 @@ export default function PaymentCheckPage() {
         clickable={false}
         sx={{ borderBottom: "", mt: 2 }}
         itemSx={{ pl: 2, pr: 0, gap: 2 }}
+        variant="body2"
       />
 
       <FormButtons
