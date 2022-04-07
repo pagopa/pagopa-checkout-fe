@@ -1,4 +1,8 @@
+/* eslint-disable no-param-reassign */
 export function expireDateFormatter(old: string, current: string) {
+  if (current.charAt(1) === "/") {
+    current = "0" + current;
+  }
   if (current.length === 1 && Number(current) > 1) {
     return "0" + current;
   }

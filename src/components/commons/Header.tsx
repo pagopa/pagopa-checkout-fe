@@ -8,6 +8,7 @@ import { RootState } from "../../redux/store";
 import { CheckoutRoutes } from "../../routes/models/routeModel";
 import { getCheckData } from "../../utils/api/apiService";
 import { moneyFormat } from "../../utils/form/formatters";
+import { paymentSubjectTransform } from "../../utils/transformers/paymentTransformers";
 import DrawerDetail from "../Header/DrawerDetail";
 
 export default function Header() {
@@ -18,9 +19,7 @@ export default function Header() {
     }
     return {
       ...state.checkData,
-      subject: state.checkData.subject.includes("/TXT")
-        ? state.checkData.subject.split("/TXT/")[1]
-        : state.checkData.subject,
+      subject: paymentSubjectTransform(state.checkData.subject) || "",
     };
   });
   const [drawstate, setDrawstate] = React.useState(false);
