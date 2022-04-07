@@ -1,5 +1,5 @@
 import CloseIcon from "@mui/icons-material/Close";
-import { Box, Container, Drawer, IconButton } from "@mui/material";
+import { Box, Container, Drawer, IconButton, useTheme } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useSmallDevice } from "../../hooks/useSmallDevice";
@@ -13,12 +13,17 @@ export function CustomDrawer(props: {
   loading?: boolean;
 }) {
   const { t } = useTranslation();
+  const theme = useTheme();
+
   return (
     <Drawer
       anchor={useSmallDevice() ? "bottom" : "right"}
       open={props.open}
       onClose={props.onClose}
       sx={{ p: 3 }}
+      PaperProps={{
+        sx: { background: theme.palette.background.default },
+      }}
     >
       <Container sx={{ p: 3 }} maxWidth="xs">
         <Box display="flex" justifyContent="end" alignItems="center">
