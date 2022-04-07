@@ -58,7 +58,7 @@ export const TRANSLATIONS_IT = {
     iuv: "Codice IUV",
     buttons: {
       cancel: "Indietro",
-      submit: "Paga questo avviso",
+      submit: "Vai al pagamento",
     },
   },
   paymentEmailPage: {
