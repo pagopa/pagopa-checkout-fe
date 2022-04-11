@@ -9,7 +9,6 @@ import { RptId } from "../../generated/definitions/payment-activations-api/RptId
 import notification from "../assets/images/payment-notice-pagopa.png";
 import ErrorModal from "../components/modals/ErrorModal";
 import InformationModal from "../components/modals/InformationModal";
-import CheckoutLoader from "../components/PageContent/CheckoutLoader";
 import PageContainer from "../components/PageContent/PageContainer";
 import { PaymentNoticeForm } from "../features/payment/components/PaymentNoticeForm/PaymentNoticeForm";
 import {
@@ -24,20 +23,20 @@ import {
   setRptId,
 } from "../utils/api/apiService";
 import { getPaymentInfoTask } from "../utils/api/helper";
+import { getNoticeInfoFrom } from "../utils/transformers/paymentTransformers";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function PaymentNoticePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { rptid } = useParams();
-  const noticeInfo = getNoticeInfo();
+  const noticeInfo = rptid ? getNoticeInfoFrom(rptid) : getNoticeInfo();
 
   const ref = React.useRef<ReCAPTCHA>(null);
   const [modalOpen, setModalOpen] = React.useState(false);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
-  const [loading, setLoading] = React.useState(false);
-  const [loadingShortcut] = React.useState(!!rptid);
+  const [loading, setLoading] = React.useState(!!rptid);
 
   const onError = (m: string) => {
     setLoading(false);
@@ -74,61 +73,54 @@ export default function PaymentNoticePage() {
 
   React.useEffect(() => {
     if (rptid) {
-      void onSubmit({
-        billCode: rptid?.slice(11) || "",
-        cf: rptid?.slice(0, 11) || "",
-      });
+      void onSubmit(getNoticeInfoFrom(rptid));
     }
   }, [rptid]);
 
   return (
     <>
-      {loadingShortcut ? (
-        <CheckoutLoader />
-      ) : (
-        <PageContainer
-          title="paymentNoticePage.title"
-          description="paymentNoticePage.description"
+      <PageContainer
+        title="paymentNoticePage.title"
+        description="paymentNoticePage.description"
+      >
+        <Button
+          variant="text"
+          onClick={() => setModalOpen(true)}
+          sx={{ p: 0 }}
+          aria-hidden="true"
+          tabIndex={-1}
         >
-          <Button
-            variant="text"
-            onClick={() => setModalOpen(true)}
-            sx={{ p: 0 }}
-            aria-hidden="true"
-            tabIndex={-1}
-          >
-            {t("paymentNoticePage.helpLink")}
-          </Button>
-          <Box sx={{ mt: 6 }}>
-            <PaymentNoticeForm
-              onCancel={onCancel}
-              onSubmit={onSubmit}
-              defaultValues={noticeInfo}
-              loading={loading}
-            />
-          </Box>
-
-          <InformationModal
-            open={modalOpen}
-            onClose={() => {
-              setModalOpen(false);
-            }}
-          >
-            <img
-              src={notification}
-              alt="facsimile"
-              style={useSmallDevice() ? { width: "100%" } : { height: "80vh" }}
-            />
-          </InformationModal>
-          <ErrorModal
-            error={error}
-            open={errorModalOpen}
-            onClose={() => {
-              setErrorModalOpen(false);
-            }}
+          {t("paymentNoticePage.helpLink")}
+        </Button>
+        <Box sx={{ mt: 6 }}>
+          <PaymentNoticeForm
+            onCancel={onCancel}
+            onSubmit={onSubmit}
+            defaultValues={noticeInfo}
+            loading={loading}
           />
-        </PageContainer>
-      )}
+        </Box>
+
+        <InformationModal
+          open={modalOpen}
+          onClose={() => {
+            setModalOpen(false);
+          }}
+        >
+          <img
+            src={notification}
+            alt="facsimile"
+            style={useSmallDevice() ? { width: "100%" } : { height: "80vh" }}
+          />
+        </InformationModal>
+        <ErrorModal
+          error={error}
+          open={errorModalOpen}
+          onClose={() => {
+            setErrorModalOpen(false);
+          }}
+        />
+      </PageContainer>
       <Box display="none">
         <ReCAPTCHA
           ref={ref}
