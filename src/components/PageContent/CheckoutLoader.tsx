@@ -13,13 +13,27 @@ export default function CheckoutLoader() {
         ? {
             display: "flex",
             justifyContent: "center",
-            width: "100%",
-            my: 20,
+            alignItems: "start",
+            zIndex: 9000,
+            position: "fixed",
+            width: "100vw",
+            height: "calc(100vh - 80px)",
+            bgcolor: "#fff",
+            left: 0,
+            top: "80px",
+            pt: "15vh",
           }
         : {
             position: "fixed",
-            top: "50%",
-            left: "50%",
+            left: "0",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "start",
+            pt: "15vh",
+            zIndex: 1000,
+            width: "100vw",
+            height: "80vh",
+            bgcolor: "#fff",
           })}
       aria-live="assertive"
       aria-label={t("ariaLabels.loading")}

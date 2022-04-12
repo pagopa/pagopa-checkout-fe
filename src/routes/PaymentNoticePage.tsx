@@ -37,7 +37,6 @@ export default function PaymentNoticePage() {
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
-  const [loadingShortcut] = React.useState(!!rptid);
 
   const onError = (m: string) => {
     setLoading(false);
@@ -83,52 +82,49 @@ export default function PaymentNoticePage() {
 
   return (
     <>
-      {loadingShortcut ? (
-        <CheckoutLoader />
-      ) : (
-        <PageContainer
-          title="paymentNoticePage.title"
-          description="paymentNoticePage.description"
+      {rptid && loading && <CheckoutLoader />}
+      <PageContainer
+        title="paymentNoticePage.title"
+        description="paymentNoticePage.description"
+      >
+        <Button
+          variant="text"
+          onClick={() => setModalOpen(true)}
+          sx={{ p: 0 }}
+          aria-hidden="true"
+          tabIndex={-1}
         >
-          <Button
-            variant="text"
-            onClick={() => setModalOpen(true)}
-            sx={{ p: 0 }}
-            aria-hidden="true"
-            tabIndex={-1}
-          >
-            {t("paymentNoticePage.helpLink")}
-          </Button>
-          <Box sx={{ mt: 6 }}>
-            <PaymentNoticeForm
-              onCancel={onCancel}
-              onSubmit={onSubmit}
-              defaultValues={noticeInfo}
-              loading={loading}
-            />
-          </Box>
-
-          <InformationModal
-            open={modalOpen}
-            onClose={() => {
-              setModalOpen(false);
-            }}
-          >
-            <img
-              src={notification}
-              alt="facsimile"
-              style={useSmallDevice() ? { width: "100%" } : { height: "80vh" }}
-            />
-          </InformationModal>
-          <ErrorModal
-            error={error}
-            open={errorModalOpen}
-            onClose={() => {
-              setErrorModalOpen(false);
-            }}
+          {t("paymentNoticePage.helpLink")}
+        </Button>
+        <Box sx={{ mt: 6 }}>
+          <PaymentNoticeForm
+            onCancel={onCancel}
+            onSubmit={onSubmit}
+            defaultValues={noticeInfo}
+            loading={loading}
           />
-        </PageContainer>
-      )}
+        </Box>
+
+        <InformationModal
+          open={modalOpen}
+          onClose={() => {
+            setModalOpen(false);
+          }}
+        >
+          <img
+            src={notification}
+            alt="facsimile"
+            style={useSmallDevice() ? { width: "100%" } : { height: "80vh" }}
+          />
+        </InformationModal>
+        <ErrorModal
+          error={error}
+          open={errorModalOpen}
+          onClose={() => {
+            setErrorModalOpen(false);
+          }}
+        />
+      </PageContainer>
       <Box display="none">
         <ReCAPTCHA
           ref={ref}
