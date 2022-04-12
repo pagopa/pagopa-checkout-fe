@@ -29,10 +29,10 @@ export default function CheckoutLoader() {
             display: "flex",
             justifyContent: "center",
             alignItems: "start",
-            pt: "10vh",
+            pt: "15vh",
             zIndex: 1000,
             width: "100vw",
-            height: "15vh",
+            height: "80vh",
             bgcolor: "#fff",
           })}
       aria-live="assertive"
