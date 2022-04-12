@@ -13,24 +13,26 @@ export default function CheckoutLoader() {
         ? {
             display: "flex",
             justifyContent: "center",
-            alignItems: "center",
+            alignItems: "start",
             zIndex: 9000,
             position: "fixed",
             width: "100vw",
-            height: "100vh",
+            height: "calc(100vh - 80px)",
             bgcolor: "#fff",
             left: 0,
-            top: 0,
+            top: "80px",
+            pt: "15vh",
           }
         : {
             position: "fixed",
             left: "0",
             display: "flex",
             justifyContent: "center",
-            alignItems: "center",
+            alignItems: "start",
+            pt: "10vh",
             zIndex: 1000,
             width: "100vw",
-            height: "80vh",
+            height: "15vh",
             bgcolor: "#fff",
           })}
       aria-live="assertive"
