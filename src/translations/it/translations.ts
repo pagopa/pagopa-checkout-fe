@@ -324,7 +324,6 @@ export const TRANSLATIONS_IT = {
     click: "premi",
     payNotice: "Paga un avviso",
     code: "e inquadra il codice:",
-    modalBody2:
-      "Puoi donare senza costi di commissione con le tue carte.",
+    modalBody2: "Puoi donare senza costi di commissione con le tue carte.",
   },
 };
