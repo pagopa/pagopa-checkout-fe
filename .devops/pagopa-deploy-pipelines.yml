@@ -322,7 +322,7 @@ stages:
 
   - stage: Deploy_PROD_pagoPA
     dependsOn:
-      - Prepare_artifact_prod
+      - UAT_to_PROD_promotion
     jobs:
       - job: 'deploy'
         steps:
