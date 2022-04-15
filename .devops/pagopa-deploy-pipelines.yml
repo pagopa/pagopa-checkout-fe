@@ -268,25 +268,11 @@ stages:
               scriptLocation: inlineScript
               inlineScript: |
                 call az cdn endpoint purge -g pagopa-u-checkout-fe-rg -n pagopa-u-checkout-cdn-endpoint --profile-name pagopa-u-checkout-cdn-profile --content-paths "/*"
-
-  - stage: UAT_to_PROD_promotion
-    dependsOn:
-      - Deploy_UAT_pagoPA
-    jobs:
-      - job: Deploy_Prod_WaitForApproval
-        displayName: Wait for PROD approval
-        pool: server
-        timeoutInMinutes: 4320 # 3 days
-        steps:
-        - task: ManualValidation@0
-          timeoutInMinutes: 4320 # 3 days
-          inputs:
-            onTimeout: 'skip'
  
     # Prepare Artifact
   - stage: Prepare_artifact_prod
     dependsOn:
-      - UAT_to_PROD_promotion
+      - Deploy_UAT_pagoPA
     jobs:
       - job: make_build
         steps:
@@ -319,6 +305,20 @@ stages:
 
           - publish: $(System.DefaultWorkingDirectory)/dist
             artifact: Bundle
+
+  - stage: UAT_to_PROD_promotion
+    dependsOn:
+      - Prepare_artifact_prod
+    jobs:
+      - job: Deploy_Prod_WaitForApproval
+        displayName: Wait for PROD approval
+        pool: server
+        timeoutInMinutes: 4320 # 3 days
+        steps:
+        - task: ManualValidation@0
+          timeoutInMinutes: 4320 # 3 days
+          inputs:
+            onTimeout: 'skip'
 
   - stage: Deploy_PROD_pagoPA
     dependsOn:
