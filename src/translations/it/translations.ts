@@ -311,7 +311,7 @@ export const TRANSLATIONS_IT = {
   donationPage: {
     title: "Dona per la crisi in Ucraina",
     description:
-      "Puoi donare con carte Maestro, Mastercard e Visa senza costi di commissione. L’importo verrà versato direttamente sul conto dell’organizzazione a cui scegli di donare.",
+      "Puoi donare con carta senza costi di commissione. L’importo verrà versato direttamente sul conto dell’organizzazione a cui scegli di donare.",
     entity: "A chi vuoi donare?",
     volunteer: "Quanto vuoi donare?",
     submitCard: "Dona con carta",
@@ -324,7 +324,6 @@ export const TRANSLATIONS_IT = {
     click: "premi",
     payNotice: "Paga un avviso",
     code: "e inquadra il codice:",
-    modalBody2:
-      "Puoi donare senza costi di commissione con le tue carte Maestro, Mastercard e Visa.",
+    modalBody2: "Puoi donare senza costi di commissione con le tue carte.",
   },
 };
