@@ -58,37 +58,21 @@ parameters:
 
 steps:
 - bash: |
-    echo 'CHECKOUT_PAGOPA_APIM_HOST: $CHECKOUT_PAGOPA_APIM_HOST'
-    echo 'CHECKOUT_API_PAYMENT_ACTIVATIONS_BASEPATH: $CHECKPUT_API_PAYMENT_ACTIVATIONS_BASEPATH'
-    echo 'CHECKOUT_API_PAYMENT_TRANSACTIONS_BASEPATH: $CHECKOUT_API_PAYMENT_TRANSACTIONS_BASEPATH'
-    echo 'CHECKOUT_PM_HOST: $CHECKOUT_PM_HOST'
-    echo 'CHECKOUT_PM_API_BASEPATH: $CHECKOUT_PM_API_BASEPATH'
-    echo 'CHECKOUT_API_TIMEOUT: $CHECKOUT_API_TIMEOUT'
-    echo 'CHECKOUT_POLLING_ACTIVATION_INTERVAL: $CHECKOUT_POLLING_ACTIVATION_INTERVAL'
-    echo 'CHECKOUT_POLLING_ACTIVATION_ATTEMPTS: $CHECKOUT_POLLING_ACTIVATION_ATTEMPTS'
-    echo 'CHECKOUT_ENV: $CHECKOUT_ENV'
-    echo 'CHECKOUT_RECAPTCHA_SITE_KEY: $CHECKOUT_RECAPTCHA_SITE_KEY'
-    echo 'CHECKOUT_DONATIONS_URL: $CHECKOUT_DONATIONS_URL'
-    echo 'CHECKOUT_ECOMMERCE_HOST: $CHECKOUT_ECOMMERCE_HOST'
-    echo 'CHECKOUT_API_ECOMMERCE_BASEPATH: $CHECKOUT_API_ECOMMERCE_BASEPATH'
-    
-    chmod +x env.sh && source env.sh
-  
-  env:
-    CHECKOUT_PAGOPA_APIM_HOST: ${{ parameters.pagopa_apim_host }}
-    CHECKOUT_API_PAYMENT_ACTIVATIONS_BASEPATH: ${{ parameters.api_payment_activations_basepath }}
-    CHECKOUT_API_PAYMENT_TRANSACTIONS_BASEPATH: ${{ parameters.api_payment_transactions_basepath }}
-    CHECKOUT_PM_HOST: ${{ parameters.pm_host }}
-    CHECKOUT_PM_API_BASEPATH: ${{ parameters.pm_api_basepath }}
-    CHECKOUT_API_TIMEOUT: ${{ parameters.api_timeout }}
-    CHECKOUT_POLLING_ACTIVATION_INTERVAL: ${{ parameters.polling_activation_interval }}
-    CHECKOUT_POLLING_ACTIVATION_ATTEMPTS: ${{ parameters.polling_activation_attempts }}
-    CHECKOUT_ENV: ${{ parameters.env }}
-    CHECKOUT_RECAPTCHA_SITE_KEY: ${{ parameters.recaptcha_site_key }}
-    CHECKOUT_DONATIONS_URL: ${{ parameters.donations_url }}
-    CHECKOUT_ECOMMERCE_HOST: ${{ parameters.ecommerce_host }}
-    CHECKOUT_API_ECOMMERCE_BASEPATH: ${{ parameters.api_ecommerce_basepath }}
-    CHECKOUT_PAGOPA_ASSETS_CDN: ${{ parameters.pagopa_assets_cdn }}
-
+    env -i \
+      CHECKOUT_PAGOPA_APIM_HOST=${{ parameters.pagopa_apim_host }} \
+      CHECKOUT_API_PAYMENT_ACTIVATIONS_BASEPATH=${{ parameters.api_payment_activations_basepath }} \
+      CHECKOUT_API_PAYMENT_TRANSACTIONS_BASEPATH=${{ parameters.api_payment_transactions_basepath }} \
+      CHECKOUT_PM_HOST=${{ parameters.pm_host }} \
+      CHECKOUT_PM_API_BASEPATH=${{ parameters.pm_api_basepath }} \
+      CHECKOUT_API_TIMEOUT=${{ parameters.api_timeout }} \
+      CHECKOUT_POLLING_ACTIVATION_INTERVAL=${{ parameters.polling_activation_interval }} \
+      CHECKOUT_POLLING_ACTIVATION_ATTEMPTS=${{ parameters.polling_activation_attempts }} \
+      CHECKOUT_ENV=${{ parameters.env }} \
+      CHECKOUT_RECAPTCHA_SITE_KEY=${{ parameters.recaptcha_site_key }} \
+      CHECKOUT_DONATIONS_URL=${{ parameters.donations_url }} \
+      CHECKOUT_ECOMMERCE_HOST=${{parameters.ecommerce_host}} \
+      CHECKOUT_API_ECOMMERCE_BASEPATH=${{parameters.api_ecommerce_basepath}} \
+      CHECKOUT_PAGOPA_ASSETS_CDN=${{parameters.pagopa_assets_cdn}} \
+      ./env.sh
 
   displayName: 'Populate environment file'
