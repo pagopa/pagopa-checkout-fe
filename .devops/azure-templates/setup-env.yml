@@ -58,6 +58,6 @@ steps:
       CHECKOUT_ENV=${{ parameters.env }} \
       CHECKOUT_RECAPTCHA_SITE_KEY=${{ parameters.recaptcha_site_key }} \
       CHECKOUT_DONATIONS_URL=${{ parameters.donations_url }} \
-      bash -c 'env | grep checkout && chmod +x env.sh && source env.sh'
+      bash -c 'env | grep -i checkout_ && chmod +x env.sh && source env.sh'
 
   displayName: 'Populate environment file'
