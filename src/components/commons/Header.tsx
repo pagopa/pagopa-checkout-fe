@@ -91,15 +91,12 @@ export default function Header() {
                 display="flex"
                 alignItems="center"
                 justifyContent="flex-end"
+                onClick={toggleDrawer(true)}
               >
                 {PaymentCheckData
                   ? moneyFormat(PaymentCheckData.amount.amount)
                   : ""}
-                <InfoOutlinedIcon
-                  color="primary"
-                  sx={{ ml: 1 }}
-                  onClick={toggleDrawer(true)}
-                />
+                <InfoOutlinedIcon color="primary" sx={{ ml: 1 }} />
               </Typography>
             </Grid>
             <DrawerDetail
