@@ -59,6 +59,6 @@ steps:
       CHECKOUT_ENV=${{ parameters.env }} \
       CHECKOUT_RECAPTCHA_SITE_KEY=${{ parameters.recaptcha_site_key }} \
       CHECKOUT_DONATIONS_URL=${{ parameters.donations_url }} \
-      source env.sh
+      ./env.sh
 
   displayName: 'Populate environment file'
