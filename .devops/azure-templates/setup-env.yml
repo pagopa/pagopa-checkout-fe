@@ -58,6 +58,7 @@ parameters:
 
 steps:
 - bash: |
+    chmod +x env.sh
     env -i \
       CHECKOUT_PAGOPA_APIM_HOST=${{ parameters.pagopa_apim_host }} \
       CHECKOUT_API_PAYMENT_ACTIVATIONS_BASEPATH=${{ parameters.api_payment_activations_basepath }} \
@@ -73,6 +74,6 @@ steps:
       CHECKOUT_ECOMMERCE_HOST=${{parameters.ecommerce_host}} \
       CHECKOUT_API_ECOMMERCE_BASEPATH=${{parameters.api_ecommerce_basepath}} \
       CHECKOUT_PAGOPA_ASSETS_CDN=${{parameters.pagopa_assets_cdn}} \
-      "C:/Program Files/Git/bin/bash.exe" -c 'env | grep -i checkout_ && chmod +x env.sh && source env.sh'
+      source env.sh
 
   displayName: 'Populate environment file'
