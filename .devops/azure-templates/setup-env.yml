@@ -71,9 +71,9 @@ steps:
       CHECKOUT_ENV=${{ parameters.env }} \
       CHECKOUT_RECAPTCHA_SITE_KEY=${{ parameters.recaptcha_site_key }} \
       CHECKOUT_DONATIONS_URL=${{ parameters.donations_url }} \
-      CHECKOUT_ECOMMERCE_HOST=${{parameters.ecommerce_host}} \
-      CHECKOUT_API_ECOMMERCE_BASEPATH=${{parameters.api_ecommerce_basepath}} \
-      CHECKOUT_PAGOPA_ASSETS_CDN=${{parameters.pagopa_assets_cdn}} \
-      source env.sh
+      CHECKOUT_ECOMMERCE_HOST=${{ parameters.ecommerce_host }} \
+      CHECKOUT_API_ECOMMERCE_BASEPATH=${{ parameters.api_ecommerce_basepath }} \
+      CHECKOUT_PAGOPA_ASSETS_CDN=${{ parameters.pagopa_assets_cdn }} \
+      ./env.sh
 
   displayName: 'Populate environment file'
