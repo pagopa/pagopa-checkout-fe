@@ -16,7 +16,9 @@ export function getReCaptchaKey() {
 }
 
 export function getNoticeInfo() {
-  const noticeInfo = loadState(SessionItems.noticeInfo) as PaymentFormFields;
+  const noticeInfo = loadState(SessionItems.noticeInfo) as
+    | PaymentFormFields
+    | undefined;
   return {
     billCode: noticeInfo?.billCode || "",
     cf: noticeInfo?.cf || "",
@@ -24,10 +26,12 @@ export function getNoticeInfo() {
 }
 
 export function getPaymentInfo() {
-  const paymentInfo = loadState(SessionItems.paymentInfo) as PaymentInfo;
+  const paymentInfo = loadState(SessionItems.paymentInfo) as
+    | PaymentInfo
+    | undefined;
   return {
     importoSingoloVersamento: paymentInfo?.importoSingoloVersamento || 0,
-    enteBeneficiario: paymentInfo.enteBeneficiario
+    enteBeneficiario: paymentInfo?.enteBeneficiario
       ? {
           denominazioneBeneficiario:
             paymentInfo?.enteBeneficiario?.denominazioneBeneficiario || "",
@@ -37,16 +41,16 @@ export function getPaymentInfo() {
         }
       : undefined,
     causaleVersamento:
-      paymentSubjectTransform(paymentInfo.causaleVersamento) || undefined,
+      paymentSubjectTransform(paymentInfo?.causaleVersamento) || undefined,
     codiceContestoPagamento: paymentInfo?.codiceContestoPagamento || "",
-    ibanAccredito: paymentInfo.ibanAccredito
-      ? paymentInfo.ibanAccredito
+    ibanAccredito: paymentInfo?.ibanAccredito
+      ? paymentInfo?.ibanAccredito
       : undefined,
   };
 }
 
 export function getEmailInfo() {
-  const emailInfo = loadState(SessionItems.useremail) as string;
+  const emailInfo = loadState(SessionItems.useremail) as string | undefined;
   return {
     email: emailInfo || "",
     confirmEmail: emailInfo || "",
@@ -54,14 +58,16 @@ export function getEmailInfo() {
 }
 
 export function getPaymentId() {
-  const id = loadState(SessionItems.paymentId) as PaymentId;
+  const id = loadState(SessionItems.paymentId) as PaymentId | undefined;
   return {
     paymentId: id?.idPagamento || "",
   };
 }
 
 export function getCheckData() {
-  const data = loadState(SessionItems.checkData) as PaymentCheckData;
+  const data = loadState(SessionItems.checkData) as
+    | PaymentCheckData
+    | undefined;
   return {
     amount: {
       currency: data?.amount?.currency || "",
@@ -83,7 +89,7 @@ export function getCheckData() {
 }
 
 export function getWallet() {
-  const data = loadState(SessionItems.wallet) as Wallet;
+  const data = loadState(SessionItems.wallet) as Wallet | undefined;
   return {
     creditCard: {
       brand: data?.creditCard?.brand || "",

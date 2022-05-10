@@ -63,6 +63,12 @@ export interface PaymentInfo {
     | undefined;
 }
 
+export interface PaymentInfoData {
+  receiver: string | undefined;
+  subject: string;
+  amount: number;
+}
+
 export interface PaymentId {
   idPagamento: string;
 }

@@ -2,28 +2,29 @@
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { Box, Grid, Typography } from "@mui/material";
 import React from "react";
-import { useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
 import pagopaLogo from "../../assets/images/pagopa-logo.svg";
-import { RootState } from "../../redux/store";
 import { CheckoutRoutes } from "../../routes/models/routeModel";
-import { getCheckData } from "../../utils/api/apiService";
+import { getPaymentInfo } from "../../utils/api/apiService";
 import { moneyFormat } from "../../utils/form/formatters";
 import { paymentSubjectTransform } from "../../utils/transformers/paymentTransformers";
 import DrawerDetail from "../Header/DrawerDetail";
 
 export default function Header() {
+  const location = useLocation();
   const currentPath = location.pathname.split("/").slice(-1)[0];
-  const PaymentCheckData = useSelector((state: RootState) => {
-    if (!state.checkData.idPayment) {
-      return getCheckData();
-    }
-    return {
-      ...state.checkData,
-      subject: paymentSubjectTransform(state.checkData.subject) || "",
-    };
-  });
+  const PaymentCheckData = {
+    receiver:
+      getPaymentInfo().enteBeneficiario?.denominazioneBeneficiario || "",
+    subject: paymentSubjectTransform(getPaymentInfo().causaleVersamento) || "",
+    amount: getPaymentInfo().importoSingoloVersamento,
+  };
   const [drawstate, setDrawstate] = React.useState(false);
-
+  const ignoreRoutes: Array<string> = [
+    CheckoutRoutes.ANNULLATO,
+    CheckoutRoutes.ERRORE,
+    CheckoutRoutes.ESITO,
+  ];
   const toggleDrawer =
     (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
       if (
@@ -48,7 +49,7 @@ export default function Header() {
             aria-hidden="true"
           />
         </Grid>
-        {!!PaymentCheckData.idPayment && currentPath !== CheckoutRoutes.ESITO && (
+        {!!PaymentCheckData.receiver && !ignoreRoutes.includes(currentPath) && (
           <>
             <Grid item xs={8} sx={{ display: { xs: "none", sm: "block" } }}>
               <Typography
@@ -73,7 +74,7 @@ export default function Header() {
                 fontWeight={600}
                 sx={{ textAlign: "center" }}
               >
-                {`${moneyFormat(PaymentCheckData.amount.amount)}`}
+                {`${moneyFormat(PaymentCheckData.amount)}`}
               </Typography>
             </Grid>
             <Grid
@@ -93,9 +94,7 @@ export default function Header() {
                 justifyContent="flex-end"
                 onClick={toggleDrawer(true)}
               >
-                {PaymentCheckData
-                  ? moneyFormat(PaymentCheckData.amount.amount)
-                  : ""}
+                {PaymentCheckData ? moneyFormat(PaymentCheckData.amount) : ""}
                 <InfoOutlinedIcon color="primary" sx={{ ml: 1 }} />
               </Typography>
             </Grid>
