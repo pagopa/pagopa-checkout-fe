@@ -115,7 +115,7 @@ export function getWallet() {
   };
 }
 
-export function setWaller(item: Wallet) {
+export function setWallet(item: Wallet) {
   sessionStorage.setItem(SessionItems.wallet, JSON.stringify(item));
 }
 
