@@ -21,6 +21,10 @@ export default function Header() {
   };
   const [drawstate, setDrawstate] = React.useState(false);
   const ignoreRoutes: Array<string> = [
+    CheckoutRoutes.ROOT,
+    CheckoutRoutes.LEGGI_CODICE_QR,
+    CheckoutRoutes.INSERISCI_DATI_AVVISO,
+    CheckoutRoutes.DATI_PAGAMENTO,
     CheckoutRoutes.ANNULLATO,
     CheckoutRoutes.ERRORE,
     CheckoutRoutes.ESITO,
