@@ -13,7 +13,7 @@ import DrawerDetail from "../Header/DrawerDetail";
 export default function Header() {
   const location = useLocation();
   const currentPath = location.pathname.split("/").slice(-1)[0];
-  const PaymentCheckData = {
+  const PaymentInfo = {
     receiver:
       getPaymentInfo().enteBeneficiario?.denominazioneBeneficiario || "",
     subject: paymentSubjectTransform(getPaymentInfo().causaleVersamento) || "",
@@ -53,7 +53,7 @@ export default function Header() {
             aria-hidden="true"
           />
         </Grid>
-        {!!PaymentCheckData.receiver && !ignoreRoutes.includes(currentPath) && (
+        {!!PaymentInfo.receiver && !ignoreRoutes.includes(currentPath) && (
           <>
             <Grid item xs={8} sx={{ display: { xs: "none", sm: "block" } }}>
               <Typography
@@ -61,7 +61,7 @@ export default function Header() {
                 component="div"
                 sx={{ textAlign: "center" }}
               >
-                {PaymentCheckData.receiver}
+                {PaymentInfo.receiver}
               </Typography>
               <Typography
                 fontWeight={600}
@@ -69,7 +69,7 @@ export default function Header() {
                 component="div"
                 sx={{ textAlign: "center" }}
               >
-                {PaymentCheckData.subject}
+                {PaymentInfo.subject}
               </Typography>
               <Typography
                 color="primary.main"
@@ -78,7 +78,7 @@ export default function Header() {
                 fontWeight={600}
                 sx={{ textAlign: "center" }}
               >
-                {`${moneyFormat(PaymentCheckData.amount)}`}
+                {`${moneyFormat(PaymentInfo.amount)}`}
               </Typography>
             </Grid>
             <Grid
@@ -98,12 +98,12 @@ export default function Header() {
                 justifyContent="flex-end"
                 onClick={toggleDrawer(true)}
               >
-                {PaymentCheckData ? moneyFormat(PaymentCheckData.amount) : ""}
+                {PaymentInfo ? moneyFormat(PaymentInfo.amount) : ""}
                 <InfoOutlinedIcon color="primary" sx={{ ml: 1 }} />
               </Typography>
             </Grid>
             <DrawerDetail
-              PaymentCheckData={PaymentCheckData}
+              PaymentInfo={PaymentInfo}
               drawstate={drawstate}
               toggleDrawer={toggleDrawer}
             />

@@ -9,7 +9,7 @@ interface Props {
   drawstate: boolean;
   // eslint-disable-next-line @typescript-eslint/ban-types
   toggleDrawer: (open: boolean) => ReactEventHandler<{}> | undefined;
-  PaymentCheckData: PaymentInfoData;
+  PaymentInfo: PaymentInfoData;
 }
 
 export default function DrawerDetail(props: Props) {
@@ -47,9 +47,7 @@ export default function DrawerDetail(props: Props) {
               {t("mainPage.header.detail.detailAmount")}
             </Typography>
             <Typography variant="h6" component={"div"}>
-              {props.PaymentCheckData
-                ? moneyFormat(props.PaymentCheckData.amount)
-                : ""}
+              {props.PaymentInfo ? moneyFormat(props.PaymentInfo.amount) : ""}
             </Typography>
           </Box>
           <Alert
@@ -82,7 +80,7 @@ export default function DrawerDetail(props: Props) {
               {t("mainPage.header.detail.detailSubject")}
             </Typography>
             <Typography variant="body2" fontWeight={600} component="div">
-              {props.PaymentCheckData.subject}
+              {props.PaymentInfo.subject}
             </Typography>
             <Typography
               variant="body2"
@@ -94,7 +92,7 @@ export default function DrawerDetail(props: Props) {
               {t("mainPage.header.detail.detailReceiver")}
             </Typography>
             <Typography variant="body2" fontWeight={600} component="div">
-              {props.PaymentCheckData.receiver}
+              {props.PaymentInfo.receiver}
             </Typography>
           </Box>
         </Box>
