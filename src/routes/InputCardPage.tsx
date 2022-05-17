@@ -2,24 +2,16 @@ import { Box } from "@mui/material";
 import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useNavigate } from "react-router-dom";
-import { RptId } from "../../generated/definitions/payment-activations-api/RptId";
 import ErrorModal from "../components/modals/ErrorModal";
 import PageContainer from "../components/PageContent/PageContainer";
 import { InputCardForm } from "../features/payment/components/InputCardForm/InputCardForm";
 import { InputCardFormFields } from "../features/payment/models/paymentModel";
 import {
   getCheckData,
-  getNoticeInfo,
   getPaymentId,
-  getPaymentInfo,
   getReCaptchaKey,
-  setPaymentId,
 } from "../utils/api/apiService";
-import {
-  activePaymentWithPolling,
-  getPaymentCheckData,
-  getSessionWallet,
-} from "../utils/api/helper";
+import { activatePayment, getSessionWallet } from "../utils/api/helper";
 import { getConfigOrThrow } from "../utils/config/config";
 import { ErrorsType } from "../utils/errors/checkErrorsModel";
 import { CheckoutRoutes } from "./models/routeModel";
@@ -53,31 +45,15 @@ export default function InputCardPage() {
     ref.current?.reset();
   };
 
-  const onResponse = async (
-    res: { idPagamento: string },
-    wallet: InputCardFormFields
-  ) => {
-    setPaymentId(res);
-    await getPaymentCheckData({
-      idPayment: res.idPagamento,
-      onError,
-      onResponse: () => {
-        void getSessionWallet(wallet as InputCardFormFields, onError, () => {
-          setLoading(false);
-          navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
-        });
-      },
-      onNavigate: () => navigate(`/${CheckoutRoutes.ERRORE}`),
-    });
+  const onResponse = () => {
+    setLoading(false);
+    navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
   };
 
   const onSubmit = React.useCallback(
     async (wallet: InputCardFormFields) => {
-      const noticeInfo = getNoticeInfo();
-      const paymentInfo = getPaymentInfo();
       const paymentId = getPaymentId().paymentId;
       const checkDataId = getCheckData().id;
-      const rptId: RptId = `${noticeInfo.cf}${noticeInfo.billCode}`;
       const token = await ref.current?.executeAsync();
       setLoading(true);
       setWallet(wallet);
@@ -88,14 +64,12 @@ export default function InputCardPage() {
           navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
         });
       } else {
-        void activePaymentWithPolling({
-          paymentInfo,
-          rptId,
+        void activatePayment({
+          wallet,
           token: token || "",
-          pollingActivationAttempts:
-            config.CHECKOUT_POLLING_ACTIVATION_ATTEMPTS as number,
-          onResponse: (res: { idPagamento: string }) => onResponse(res, wallet),
+          onResponse,
           onError,
+          onNavigate: () => navigate(`/${CheckoutRoutes.ERRORE}`),
         });
       }
     },

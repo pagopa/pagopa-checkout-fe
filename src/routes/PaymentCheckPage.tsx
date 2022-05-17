@@ -212,7 +212,7 @@ export default function PaymentCheckPage() {
         endAdornment={
           <Button
             variant="text"
-            onClick={() => navigate(-1)}
+            onClick={() => navigate(`/${CheckoutRoutes.INSERISCI_CARTA}`)}
             startIcon={<EditIcon />}
             disabled={isDisabled()}
             aria-label={t("ariaLabels.editCard")}

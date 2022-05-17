@@ -19,7 +19,6 @@ import { RptId } from "../../../generated/definitions/payment-transactions-api/R
 import {
   InputCardFormFields,
   PaymentCheckData,
-  PaymentInfo,
   Wallet as PaymentWallet,
 } from "../../features/payment/models/paymentModel";
 import { getConfigOrThrow } from "../config/config";
@@ -87,6 +86,7 @@ import { mixpanel } from "../config/mixpanelHelperInit";
 import { ErrorsType } from "../errors/checkErrorsModel";
 import { PaymentSession } from "../sessionData/PaymentSession";
 import { WalletSession } from "../sessionData/WalletSession";
+import { getNoticeInfo, getPaymentInfo, setPaymentId } from "./apiService";
 import { getBrowserInfoTask, getEMVCompliantColorDepth } from "./checkHelper";
 import {
   apiPaymentActivationsClient,
@@ -159,21 +159,23 @@ export const getPaymentInfoTask = (
     )
   );
 
-export const activePaymentWithPolling = async ({
-  paymentInfo,
-  rptId,
+export const activatePayment = async ({
+  wallet,
   token,
-  pollingActivationAttempts,
   onResponse,
   onError,
+  onNavigate,
 }: {
-  paymentInfo: PaymentInfo;
-  rptId: RptId;
+  wallet: InputCardFormFields;
   token: string;
-  pollingActivationAttempts: number;
-  onResponse: (res: { idPagamento: string }) => void;
+  onResponse: () => void;
   onError: (e: string) => void;
+  onNavigate: () => void;
 }) => {
+  const noticeInfo = getNoticeInfo();
+  const paymentInfo = getPaymentInfo();
+  const rptId: RptId = `${noticeInfo.cf}${noticeInfo.billCode}`;
+  const config = getConfigOrThrow();
   pipe(
     PaymentRequestsGetResponse.decode(paymentInfo),
     E.fold(
@@ -193,8 +195,22 @@ export const activePaymentWithPolling = async ({
             () => async () => {
               void pollingActivationStatus(
                 response.codiceContestoPagamento,
-                pollingActivationAttempts,
-                (res) => onResponse(res),
+                config.CHECKOUT_POLLING_ACTIVATION_ATTEMPTS as number,
+                (res) => {
+                  setPaymentId(res);
+                  void getPaymentCheckData({
+                    idPayment: res.idPagamento,
+                    onError,
+                    onResponse: () => {
+                      void getSessionWallet(
+                        wallet as InputCardFormFields,
+                        onError,
+                        onResponse
+                      );
+                    },
+                    onNavigate,
+                  });
+                },
                 onError
               );
             }
