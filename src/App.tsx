@@ -145,7 +145,7 @@ export function App() {
               <Route
                 path={CheckoutRoutes.SCEGLI_METODO}
                 element={
-                  <Guard item={SessionItems.paymentId}>
+                  <Guard item={SessionItems.useremail}>
                     <PaymentChoicePage />
                   </Guard>
                 }

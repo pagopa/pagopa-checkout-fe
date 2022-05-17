@@ -37,7 +37,7 @@ import {
 export function InputCardForm(props: {
   loading: boolean;
   onCancel: () => void;
-  onSubmit: (emailInfo: InputCardFormFields) => void;
+  onSubmit: (inputCard: InputCardFormFields) => void;
 }) {
   const formRef = React.useRef<FormikProps<InputCardFormFields>>(null);
   const [disabled, setDisabled] = React.useState(true);

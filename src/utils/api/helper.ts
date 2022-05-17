@@ -19,6 +19,7 @@ import { RptId } from "../../../generated/definitions/payment-transactions-api/R
 import {
   InputCardFormFields,
   PaymentCheckData,
+  PaymentInfo,
   Wallet as PaymentWallet,
 } from "../../features/payment/models/paymentModel";
 import { getConfigOrThrow } from "../config/config";
@@ -157,6 +158,51 @@ export const getPaymentInfoTask = (
         )
     )
   );
+
+export const activePaymentWithPolling = async ({
+  paymentInfo,
+  rptId,
+  token,
+  pollingActivationAttempts,
+  onResponse,
+  onError,
+}: {
+  paymentInfo: PaymentInfo;
+  rptId: RptId;
+  token: string;
+  pollingActivationAttempts: number;
+  onResponse: (res: { idPagamento: string }) => void;
+  onError: (e: string) => void;
+}) => {
+  pipe(
+    PaymentRequestsGetResponse.decode(paymentInfo),
+    E.fold(
+      () => onError(""),
+      (response) =>
+        pipe(
+          activePaymentTask(
+            response.importoSingoloVersamento,
+            response.codiceContestoPagamento,
+            rptId,
+            token
+          ),
+          TE.fold(
+            (e: string) => async () => {
+              onError(e);
+            },
+            () => async () => {
+              void pollingActivationStatus(
+                response.codiceContestoPagamento,
+                pollingActivationAttempts,
+                (res) => onResponse(res),
+                onError
+              );
+            }
+          )
+        )()
+    )
+  );
+};
 
 export const activePaymentTask = (
   amountSinglePayment: ImportoEuroCents,
@@ -309,7 +355,7 @@ export const getPaymentCheckData = async ({
 }: {
   idPayment: string;
   onError: (e: string) => void;
-  onResponse: (r: PaymentCheckData) => void;
+  onResponse: () => void;
   onNavigate: () => void;
 }) => {
   mixpanel.track(PAYMENT_CHECK_INIT.value, {
@@ -364,7 +410,7 @@ export const getPaymentCheckData = async ({
                             "checkData",
                             JSON.stringify(payment)
                           );
-                          onResponse(payment as PaymentCheckData);
+                          onResponse();
                           mixpanel.track(PAYMENT_CHECK_SUCCESS.value, {
                             EVENT_ID: PAYMENT_CHECK_SUCCESS.value,
                           });
