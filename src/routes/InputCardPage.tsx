@@ -79,7 +79,7 @@ export default function InputCardPage() {
   const onRetry = React.useCallback(() => {
     setErrorModalOpen(false);
     void onSubmit(wallet as InputCardFormFields);
-  }, []);
+  }, [wallet]);
 
   const onCancel = () => navigate(-1);
   return (
