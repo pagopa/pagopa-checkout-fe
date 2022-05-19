@@ -52,11 +52,11 @@ export default function InputCardPage() {
 
   const onSubmit = React.useCallback(
     async (wallet: InputCardFormFields) => {
+      setLoading(true);
+      setWallet(wallet);
       const paymentId = getPaymentId().paymentId;
       const checkDataId = getCheckData().id;
       const token = await ref.current?.executeAsync();
-      setLoading(true);
-      setWallet(wallet);
 
       if (paymentId && checkDataId) {
         void getSessionWallet(wallet as InputCardFormFields, onError, () => {

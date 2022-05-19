@@ -82,6 +82,7 @@ export default function PaymentCheckPage() {
 
   const onBrowserBackEvent = (e: any) => {
     e.preventDefault();
+    window.history.pushState(null, "", window.location.pathname);
     setCancelModalOpen(true);
   };
 
