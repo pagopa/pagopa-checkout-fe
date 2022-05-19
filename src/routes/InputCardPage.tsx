@@ -23,8 +23,13 @@ export default function InputCardPage() {
   const [error, setError] = React.useState("");
   const [timeoutId, setTimeoutId] = React.useState<number>();
   const [wallet, setWallet] = React.useState<InputCardFormFields>();
+  const [hideCancelButton, setHideCancelButton] = React.useState(false);
   const ref = React.useRef<ReCAPTCHA>(null);
   const config = getConfigOrThrow();
+
+  React.useEffect(() => {
+    setHideCancelButton(!!getPaymentId().paymentId);
+  }, []);
 
   React.useEffect(() => {
     if (loading && !errorModalOpen) {
@@ -88,6 +93,7 @@ export default function InputCardPage() {
         <InputCardForm
           onCancel={onCancel}
           onSubmit={onSubmit}
+          hideCancel={hideCancelButton}
           loading={loading}
         />
       </Box>

@@ -91,7 +91,7 @@ export default function DrawerDetail(props: Props) {
             >
               {t("mainPage.header.detail.detailReceiver")}
             </Typography>
-            <Typography variant="body2" fontWeight={600} component="div">
+            <Typography variant="body2" fontWeight={600} component="div" pb={2}>
               {props.PaymentInfo.receiver}
             </Typography>
           </Box>
