@@ -86,7 +86,13 @@ import { mixpanel } from "../config/mixpanelHelperInit";
 import { ErrorsType } from "../errors/checkErrorsModel";
 import { PaymentSession } from "../sessionData/PaymentSession";
 import { WalletSession } from "../sessionData/WalletSession";
-import { getNoticeInfo, getPaymentInfo, setPaymentId } from "./apiService";
+import {
+  getCheckData,
+  getNoticeInfo,
+  getPaymentId,
+  getPaymentInfo,
+  setPaymentId,
+} from "./apiService";
 import { getBrowserInfoTask, getEMVCompliantColorDepth } from "./checkHelper";
 import {
   apiPaymentActivationsClient,
@@ -174,50 +180,62 @@ export const activatePayment = async ({
 }) => {
   const noticeInfo = getNoticeInfo();
   const paymentInfo = getPaymentInfo();
+  const paymentId = getPaymentId().paymentId;
+  const checkDataId = getCheckData().id;
   const rptId: RptId = `${noticeInfo.cf}${noticeInfo.billCode}`;
   const config = getConfigOrThrow();
-  pipe(
-    PaymentRequestsGetResponse.decode(paymentInfo),
-    E.fold(
-      () => onError(""),
-      (response) =>
-        pipe(
-          activePaymentTask(
-            response.importoSingoloVersamento,
-            response.codiceContestoPagamento,
-            rptId,
-            token
-          ),
-          TE.fold(
-            (e: string) => async () => {
-              onError(e);
-            },
-            () => async () => {
-              void pollingActivationStatus(
-                response.codiceContestoPagamento,
-                config.CHECKOUT_POLLING_ACTIVATION_ATTEMPTS as number,
-                (res) => {
-                  setPaymentId(res);
-                  void getPaymentCheckData({
-                    idPayment: res.idPagamento,
-                    onError,
-                    onResponse: () => {
-                      void getSessionWallet(
-                        wallet as InputCardFormFields,
-                        onError,
-                        onResponse
-                      );
-                    },
-                    onNavigate,
-                  });
-                },
-                onError
-              );
-            }
-          )
-        )()
-    )
-  );
+  const getWallet = () => {
+    void getSessionWallet(wallet as InputCardFormFields, onError, onResponse);
+  };
+  if (paymentId && checkDataId) {
+    getWallet();
+  }
+  if (paymentId && !checkDataId) {
+    void getPaymentCheckData({
+      idPayment: paymentId,
+      onError,
+      onResponse: getWallet,
+      onNavigate,
+    });
+  }
+  if (!paymentId) {
+    pipe(
+      PaymentRequestsGetResponse.decode(paymentInfo),
+      E.fold(
+        () => onError(""),
+        (response) =>
+          pipe(
+            activePaymentTask(
+              response.importoSingoloVersamento,
+              response.codiceContestoPagamento,
+              rptId,
+              token
+            ),
+            TE.fold(
+              (e: string) => async () => {
+                onError(e);
+              },
+              () => async () => {
+                void pollingActivationStatus(
+                  response.codiceContestoPagamento,
+                  config.CHECKOUT_POLLING_ACTIVATION_ATTEMPTS as number,
+                  (res) => {
+                    setPaymentId(res);
+                    void getPaymentCheckData({
+                      idPayment: res.idPagamento,
+                      onError,
+                      onResponse: getWallet,
+                      onNavigate,
+                    });
+                  },
+                  onError
+                );
+              }
+            )
+          )()
+      )
+    );
+  }
 };
 
 export const activePaymentTask = (

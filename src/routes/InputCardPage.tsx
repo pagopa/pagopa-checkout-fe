@@ -6,12 +6,8 @@ import ErrorModal from "../components/modals/ErrorModal";
 import PageContainer from "../components/PageContent/PageContainer";
 import { InputCardForm } from "../features/payment/components/InputCardForm/InputCardForm";
 import { InputCardFormFields } from "../features/payment/models/paymentModel";
-import {
-  getCheckData,
-  getPaymentId,
-  getReCaptchaKey,
-} from "../utils/api/apiService";
-import { activatePayment, getSessionWallet } from "../utils/api/helper";
+import { getReCaptchaKey, getWallet } from "../utils/api/apiService";
+import { activatePayment } from "../utils/api/helper";
 import { getConfigOrThrow } from "../utils/config/config";
 import { ErrorsType } from "../utils/errors/checkErrorsModel";
 import { CheckoutRoutes } from "./models/routeModel";
@@ -28,7 +24,7 @@ export default function InputCardPage() {
   const config = getConfigOrThrow();
 
   React.useEffect(() => {
-    setHideCancelButton(!!getPaymentId().paymentId);
+    setHideCancelButton(!!getWallet().idWallet);
   }, []);
 
   React.useEffect(() => {
@@ -59,24 +55,15 @@ export default function InputCardPage() {
     async (wallet: InputCardFormFields) => {
       setLoading(true);
       setWallet(wallet);
-      const paymentId = getPaymentId().paymentId;
-      const checkDataId = getCheckData().id;
       const token = await ref.current?.executeAsync();
 
-      if (paymentId && checkDataId) {
-        void getSessionWallet(wallet as InputCardFormFields, onError, () => {
-          setLoading(false);
-          navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
-        });
-      } else {
-        void activatePayment({
-          wallet,
-          token: token || "",
-          onResponse,
-          onError,
-          onNavigate: () => navigate(`/${CheckoutRoutes.ERRORE}`),
-        });
-      }
+      void activatePayment({
+        wallet,
+        token: token || "",
+        onResponse,
+        onError,
+        onNavigate: () => navigate(`/${CheckoutRoutes.ERRORE}`),
+      });
     },
     [ref]
   );
