@@ -86,6 +86,13 @@ import { mixpanel } from "../config/mixpanelHelperInit";
 import { ErrorsType } from "../errors/checkErrorsModel";
 import { PaymentSession } from "../sessionData/PaymentSession";
 import { WalletSession } from "../sessionData/WalletSession";
+import {
+  getCheckData,
+  getNoticeInfo,
+  getPaymentId,
+  getPaymentInfo,
+  setPaymentId,
+} from "./apiService";
 import { getBrowserInfoTask, getEMVCompliantColorDepth } from "./checkHelper";
 import {
   apiPaymentActivationsClient,
@@ -157,6 +164,79 @@ export const getPaymentInfoTask = (
         )
     )
   );
+
+export const activatePayment = async ({
+  wallet,
+  token,
+  onResponse,
+  onError,
+  onNavigate,
+}: {
+  wallet: InputCardFormFields;
+  token: string;
+  onResponse: () => void;
+  onError: (e: string) => void;
+  onNavigate: () => void;
+}) => {
+  const noticeInfo = getNoticeInfo();
+  const paymentInfo = getPaymentInfo();
+  const paymentId = getPaymentId().paymentId;
+  const checkDataId = getCheckData().id;
+  const rptId: RptId = `${noticeInfo.cf}${noticeInfo.billCode}`;
+  const config = getConfigOrThrow();
+  const getWallet = () => {
+    void getSessionWallet(wallet as InputCardFormFields, onError, onResponse);
+  };
+  if (paymentId && checkDataId) {
+    getWallet();
+  }
+  if (paymentId && !checkDataId) {
+    void getPaymentCheckData({
+      idPayment: paymentId,
+      onError,
+      onResponse: getWallet,
+      onNavigate,
+    });
+  }
+  if (!paymentId) {
+    pipe(
+      PaymentRequestsGetResponse.decode(paymentInfo),
+      E.fold(
+        () => onError(""),
+        (response) =>
+          pipe(
+            activePaymentTask(
+              response.importoSingoloVersamento,
+              response.codiceContestoPagamento,
+              rptId,
+              token
+            ),
+            TE.fold(
+              (e: string) => async () => {
+                onError(e);
+              },
+              () => async () => {
+                void pollingActivationStatus(
+                  response.codiceContestoPagamento,
+                  config.CHECKOUT_POLLING_ACTIVATION_ATTEMPTS as number,
+                  (res) => {
+                    setPaymentId(res);
+                    void getPaymentCheckData({
+                      idPayment: res.idPagamento,
+                      onError,
+                      onResponse: getWallet,
+                      onNavigate,
+                    });
+                  },
+                  onError
+                );
+              }
+            )
+          )()
+      )
+    );
+  }
+};
 
 export const activePaymentTask = (
   amountSinglePayment: ImportoEuroCents,
@@ -309,7 +389,7 @@ export const getPaymentCheckData = async ({
 }: {
   idPayment: string;
   onError: (e: string) => void;
-  onResponse: (r: PaymentCheckData) => void;
+  onResponse: () => void;
   onNavigate: () => void;
 }) => {
   mixpanel.track(PAYMENT_CHECK_INIT.value, {
@@ -364,7 +444,7 @@ export const getPaymentCheckData = async ({
                             "checkData",
                             JSON.stringify(payment)
                           );
-                          onResponse(payment as PaymentCheckData);
+                          onResponse();
                           mixpanel.track(PAYMENT_CHECK_SUCCESS.value, {
                             EVENT_ID: PAYMENT_CHECK_SUCCESS.value,
                           });

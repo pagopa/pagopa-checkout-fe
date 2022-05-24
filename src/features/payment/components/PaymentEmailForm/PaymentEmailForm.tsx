@@ -112,7 +112,7 @@ export function PaymentEmailForm(props: {
             <FormButtons
               type="submit"
               submitTitle="paymentEmailPage.formButtons.submit"
-              cancelTitle="paymentEmailPage.formButtons.cancel"
+              cancelTitle="paymentEmailPage.formButtons.back"
               disabledSubmit={disabled}
               handleSubmit={() => handleSubmit()}
               handleCancel={props.onCancel}

@@ -15,6 +15,7 @@ export function FormButtons(props: {
   loadingCancel?: boolean;
   submitTitle: string;
   cancelTitle: string;
+  hideCancel?: boolean;
 }) {
   const { t } = useTranslation();
 
@@ -37,7 +38,11 @@ export function FormButtons(props: {
         container
         spacing={2}
       >
-        <Grid xs={8} style={useSmallDevice() ? { paddingTop: 0 } : {}} item>
+        <Grid
+          xs={props.hideCancel ? 12 : 8}
+          style={useSmallDevice() ? { paddingTop: 0 } : {}}
+          item
+        >
           <LoadingButton
             type={props.type}
             onSubmit={props.handleSubmit}
@@ -71,6 +76,7 @@ export function FormButtons(props: {
               width: "100%",
               height: "100%",
               minHeight: 45,
+              ...(props.hideCancel ? { display: "none" } : {}),
             }}
             aria-live="polite"
             aria-label={

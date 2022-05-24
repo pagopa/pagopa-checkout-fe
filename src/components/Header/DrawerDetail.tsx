@@ -1,26 +1,15 @@
 import CloseIcon from "@mui/icons-material/Close";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Alert,
-  Box,
-  Divider,
-  Drawer,
-  Typography,
-  useTheme,
-} from "@mui/material";
+import { Alert, Box, Drawer, Typography, useTheme } from "@mui/material";
 import React, { ReactEventHandler } from "react";
 import { useTranslation } from "react-i18next";
-import { PaymentCheckData } from "../../features/payment/models/paymentModel";
+import { PaymentInfoData } from "../../features/payment/models/paymentModel";
 import { moneyFormat } from "../../utils/form/formatters";
 
 interface Props {
   drawstate: boolean;
   // eslint-disable-next-line @typescript-eslint/ban-types
   toggleDrawer: (open: boolean) => ReactEventHandler<{}> | undefined;
-  PaymentCheckData: PaymentCheckData;
+  PaymentInfo: PaymentInfoData;
 }
 
 export default function DrawerDetail(props: Props) {
@@ -55,12 +44,10 @@ export default function DrawerDetail(props: Props) {
             }}
           >
             <Typography variant="h6" component={"div"} pr={2}>
-              {t("paymentCheckPage.total")}
+              {t("mainPage.header.detail.detailAmount")}
             </Typography>
             <Typography variant="h6" component={"div"}>
-              {props.PaymentCheckData
-                ? moneyFormat(props.PaymentCheckData.amount.amount)
-                : ""}
+              {props.PaymentInfo ? moneyFormat(props.PaymentInfo.amount) : ""}
             </Typography>
           </Box>
           <Alert
@@ -82,99 +69,32 @@ export default function DrawerDetail(props: Props) {
               {t("mainPage.header.disclaimer")}
             </Typography>
           </Alert>
-          {props.PaymentCheckData &&
-            props.PaymentCheckData.detailsList.map((el, index) => (
-              <Accordion
-                sx={{
-                  boxShadow: "none",
-                  background: theme.palette.background.default,
-                }}
-                defaultExpanded={index === 0 ? true : false}
-                key={index}
-              >
-                <AccordionSummary
-                  expandIcon={<ExpandMoreIcon color="primary" />}
-                  aria-controls={`panel-content-${index}`}
-                  id={`panel-header-${index}`}
-                  sx={{
-                    flexDirection: "row-reverse",
-                    borderTop: "1px solid",
-                    borderTopColor: "divider",
-                  }}
-                >
-                  <Box sx={{ pl: 2, display: "block", textAlign: "left" }}>
-                    <Typography
-                      variant="body2"
-                      fontWeight={600}
-                      component="div"
-                    >
-                      {t("mainPage.header.detail.detailTitle")}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      fontWeight={300}
-                      component="div"
-                      color="GrayText"
-                    >
-                      {`IUV ${el.IUV}`}
-                    </Typography>
-                  </Box>
-                </AccordionSummary>
-                <Divider />
-                <AccordionDetails>
-                  <Box sx={{ textAlign: "left" }}>
-                    <Typography
-                      variant="body2"
-                      fontWeight={300}
-                      component="div"
-                      color="GrayText"
-                      sx={{ mt: 1 }}
-                    >
-                      {t("mainPage.header.detail.detailAmount")}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      fontWeight={600}
-                      component="div"
-                    >
-                      {moneyFormat(el.importo, 0)}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      fontWeight={300}
-                      component="div"
-                      color="GrayText"
-                      sx={{ mt: 1 }}
-                    >
-                      {t("mainPage.header.detail.detailSubject")}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      fontWeight={600}
-                      component="div"
-                    >
-                      {props.PaymentCheckData.subject}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      fontWeight={300}
-                      component="div"
-                      color="GrayText"
-                      sx={{ mt: 1 }}
-                    >
-                      {t("mainPage.header.detail.detailReceiver")}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      fontWeight={600}
-                      component="div"
-                    >
-                      {el.enteBeneficiario}
-                    </Typography>
-                  </Box>
-                </AccordionDetails>
-              </Accordion>
-            ))}
+          <Box sx={{ textAlign: "left" }}>
+            <Typography
+              variant="body2"
+              fontWeight={300}
+              component="div"
+              color="GrayText"
+              sx={{ mt: 1 }}
+            >
+              {t("mainPage.header.detail.detailSubject")}
+            </Typography>
+            <Typography variant="body2" fontWeight={600} component="div">
+              {props.PaymentInfo.subject}
+            </Typography>
+            <Typography
+              variant="body2"
+              fontWeight={300}
+              component="div"
+              color="GrayText"
+              sx={{ mt: 1 }}
+            >
+              {t("mainPage.header.detail.detailReceiver")}
+            </Typography>
+            <Typography variant="body2" fontWeight={600} component="div" pb={2}>
+              {props.PaymentInfo.receiver}
+            </Typography>
+          </Box>
         </Box>
       </Typography>
     </Drawer>

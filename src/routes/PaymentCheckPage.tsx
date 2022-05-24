@@ -17,7 +17,6 @@ import {
 } from "@mui/material";
 import { default as React } from "react";
 import { useTranslation } from "react-i18next";
-import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import sprite from "../assets/images/app.svg";
 import { FormButtons } from "../components/FormButtons/FormButtons";
@@ -31,7 +30,6 @@ import ClickableFieldContainer from "../components/TextFormField/ClickableFieldC
 import FieldContainer from "../components/TextFormField/FieldContainer";
 import PspFieldContainer from "../components/TextFormField/PspFieldContainer";
 import { PspList } from "../features/payment/models/paymentModel";
-import { resetCheckData } from "../redux/slices/checkData";
 import { getCheckData, getEmailInfo, getWallet } from "../utils/api/apiService";
 import {
   cancelPayment,
@@ -39,6 +37,7 @@ import {
   getPaymentPSPList,
   updateWallet,
 } from "../utils/api/helper";
+import { onBrowserUnload } from "../utils/eventListeners";
 import { moneyFormat } from "../utils/form/formatters";
 import { CheckoutRoutes } from "./models/routeModel";
 
@@ -60,11 +59,11 @@ const pspContainerStyle = {
   mb: 2,
 };
 
+// eslint-disable-next-line sonarjs/cognitive-complexity
 export default function PaymentCheckPage() {
   const { t } = useTranslation();
   const theme = useTheme();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const [modalOpen, setModalOpen] = React.useState(false);
   const [cancelModalOpen, setCancelModalOpen] = React.useState(false);
   const [drawerOpen, setDrawerOpen] = React.useState(false);
@@ -81,6 +80,19 @@ export default function PaymentCheckPage() {
   const email = getEmailInfo();
   const totalAmount = checkData.amount.amount + wallet.psp.fixedCost.amount;
 
+  const onBrowserBackEvent = (e: any) => {
+    e.preventDefault();
+    window.history.pushState(null, "", window.location.pathname);
+    setCancelModalOpen(true);
+  };
+
+  React.useEffect(() => {
+    window.addEventListener("beforeunload", onBrowserUnload);
+    window.history.pushState(null, "", window.location.pathname);
+    window.addEventListener("popstate", onBrowserBackEvent);
+    return () => window.removeEventListener("popstate", onBrowserBackEvent);
+  }, []);
+
   const onError = (m: string) => {
     setPayLoading(false);
     setCancelLoading(false);
@@ -93,7 +105,6 @@ export default function PaymentCheckPage() {
   const onResponse = () => {
     setPayLoading(false);
     navigate(`/${CheckoutRoutes.ESITO}`);
-    dispatch(resetCheckData());
   };
 
   const onSubmit = React.useCallback(() => {
@@ -202,7 +213,7 @@ export default function PaymentCheckPage() {
         endAdornment={
           <Button
             variant="text"
-            onClick={() => navigate(-1)}
+            onClick={() => navigate(`/${CheckoutRoutes.INSERISCI_CARTA}`)}
             startIcon={<EditIcon />}
             disabled={isDisabled()}
             aria-label={t("ariaLabels.editCard")}

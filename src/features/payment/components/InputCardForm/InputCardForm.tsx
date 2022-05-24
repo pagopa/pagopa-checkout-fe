@@ -37,7 +37,8 @@ import {
 export function InputCardForm(props: {
   loading: boolean;
   onCancel: () => void;
-  onSubmit: (emailInfo: InputCardFormFields) => void;
+  onSubmit: (inputCard: InputCardFormFields) => void;
+  hideCancel?: boolean;
 }) {
   const formRef = React.useRef<FormikProps<InputCardFormFields>>(null);
   const [disabled, setDisabled] = React.useState(true);
@@ -269,6 +270,7 @@ export function InputCardForm(props: {
               disabledSubmit={disabled}
               handleSubmit={() => handleSubmit()}
               handleCancel={props.onCancel}
+              hideCancel={props.hideCancel}
             />
           </form>
         )}

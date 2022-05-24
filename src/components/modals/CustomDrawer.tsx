@@ -32,6 +32,7 @@ export function CustomDrawer(props: {
             onClick={() => props.onClose()}
             sx={{
               color: "action.active",
+              p: 0,
             }}
             aria-hidden="true"
           >
