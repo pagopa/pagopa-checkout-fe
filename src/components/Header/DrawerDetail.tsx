@@ -74,7 +74,6 @@ export default function DrawerDetail(props: Props) {
               variant="body2"
               fontWeight={300}
               component="div"
-              color="GrayText"
               sx={{ mt: 1 }}
             >
               {t("mainPage.header.detail.detailSubject")}
@@ -86,7 +85,6 @@ export default function DrawerDetail(props: Props) {
               variant="body2"
               fontWeight={300}
               component="div"
-              color="GrayText"
               sx={{ mt: 1 }}
             >
               {t("mainPage.header.detail.detailReceiver")}
