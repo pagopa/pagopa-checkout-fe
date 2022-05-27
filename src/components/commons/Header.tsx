@@ -55,38 +55,12 @@ export default function Header() {
         </Grid>
         {!!PaymentInfo.receiver && !ignoreRoutes.includes(currentPath) && (
           <>
-            <Grid item xs={8} sx={{ display: { xs: "none", sm: "block" } }}>
-              <Typography
-                variant="body2"
-                component="div"
-                sx={{ textAlign: "center" }}
-              >
-                {PaymentInfo.receiver}
-              </Typography>
-              <Typography
-                fontWeight={600}
-                variant="body2"
-                component="div"
-                sx={{ textAlign: "center" }}
-              >
-                {PaymentInfo.subject}
-              </Typography>
-              <Typography
-                color="primary.main"
-                variant="body2"
-                component="div"
-                fontWeight={600}
-                sx={{ textAlign: "center" }}
-              >
-                {`${moneyFormat(PaymentInfo.amount)}`}
-              </Typography>
-            </Grid>
             <Grid
               item
               xs={10}
-              sx={{ display: { sm: "none" } }}
               display="flex"
               alignItems="center"
+              justifyContent="flex-end"
             >
               <Typography
                 color="primary.main"
