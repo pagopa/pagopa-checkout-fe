@@ -29,18 +29,9 @@ export default function Header() {
     CheckoutRoutes.ERRORE,
     CheckoutRoutes.ESITO,
   ];
-  const toggleDrawer =
-    (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
-      if (
-        event.type === "keydown" &&
-        ((event as React.KeyboardEvent).key === "Tab" ||
-          (event as React.KeyboardEvent).key === "Shift")
-      ) {
-        return;
-      }
-
-      setDrawstate(open);
-    };
+  const toggleDrawer = (open: boolean) => {
+    setDrawstate(open);
+  };
 
   return (
     <Box p={3} bgcolor={"white"}>
@@ -70,7 +61,7 @@ export default function Header() {
                 display="flex"
                 alignItems="center"
                 justifyContent="flex-end"
-                onClick={toggleDrawer(true)}
+                onClick={() => toggleDrawer(true)}
               >
                 {PaymentInfo ? moneyFormat(PaymentInfo.amount) : ""}
                 <InfoOutlinedIcon color="primary" sx={{ ml: 1 }} />
@@ -79,7 +70,7 @@ export default function Header() {
             <DrawerDetail
               PaymentInfo={PaymentInfo}
               drawstate={drawstate}
-              toggleDrawer={toggleDrawer}
+              toggleDrawer={() => toggleDrawer(false)}
             />
           </>
         )}
