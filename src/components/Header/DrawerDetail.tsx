@@ -4,6 +4,7 @@ import {
   Box,
   Container,
   Drawer,
+  IconButton,
   Typography,
   useMediaQuery,
   useTheme,
@@ -44,11 +45,18 @@ export default function DrawerDetail(props: Props) {
             sx={{ width: "auto", background: theme.palette.background.default }}
             role="presentation"
           >
-            <Box display="flex">
-              <CloseIcon
-                sx={{ ml: "auto", my: 2 }}
+            <Box display="flex" justifyContent="end" alignItems="center">
+              <IconButton
+                aria-label={t("ariaLabels.close")}
                 onClick={props.toggleDrawer(false)}
-              />
+                sx={{
+                  color: "action.active",
+                  p: 0,
+                }}
+                aria-hidden="true"
+              >
+                <CloseIcon />
+              </IconButton>
             </Box>
             <Box
               display="flex"
@@ -57,6 +65,7 @@ export default function DrawerDetail(props: Props) {
                 borderBottom: "1px solid",
                 borderBottomColor: "divider",
                 textAlign: "left",
+                pt: 1,
               }}
             >
               <Typography variant="h6" component={"div"}>
