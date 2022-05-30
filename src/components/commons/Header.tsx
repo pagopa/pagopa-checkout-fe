@@ -68,7 +68,7 @@ export default function Header() {
                 fontWeight={600}
                 variant="body2"
                 component="div"
-                sx={{ textAlign: "center", overflowWrap: "anywhere" }}
+                sx={{ textAlign: "center", wordBreak: "break-word" }}
               >
                 {PaymentInfo.subject.length > 140
                   ? PaymentInfo.subject.substring(0, 140)

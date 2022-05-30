@@ -82,7 +82,7 @@ export default function DrawerDetail(props: Props) {
               variant="body2"
               fontWeight={600}
               component="div"
-              sx={{ overflowWrap: "anywhere" }}
+              sx={{ wordBreak: "break-word" }}
             >
               {props.PaymentInfo.subject}
             </Typography>

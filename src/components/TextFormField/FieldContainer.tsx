@@ -69,7 +69,7 @@ function FieldContainer(props: {
           <Typography
             variant={props.bodyVariant}
             component={"div"}
-            sx={{ overflowWrap: "anywhere" }}
+            sx={{ wordBreak: "break-word" }}
           >
             {props.loading ? (
               <Skeleton variant="text" width="188px" height="24px" />
