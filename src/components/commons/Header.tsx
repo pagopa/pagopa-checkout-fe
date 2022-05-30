@@ -28,6 +28,7 @@ export default function Header() {
     CheckoutRoutes.ANNULLATO,
     CheckoutRoutes.ERRORE,
     CheckoutRoutes.ESITO,
+    CheckoutRoutes.DONA,
   ];
   const toggleDrawer =
     (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
@@ -67,9 +68,11 @@ export default function Header() {
                 fontWeight={600}
                 variant="body2"
                 component="div"
-                sx={{ textAlign: "center" }}
+                sx={{ textAlign: "center", overflowWrap: "anywhere" }}
               >
-                {PaymentInfo.subject}
+                {PaymentInfo.subject.length > 140
+                  ? PaymentInfo.subject.substring(0, 140)
+                  : PaymentInfo.subject}
               </Typography>
               <Typography
                 color="primary.main"

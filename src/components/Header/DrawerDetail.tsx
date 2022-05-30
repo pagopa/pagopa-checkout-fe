@@ -78,7 +78,12 @@ export default function DrawerDetail(props: Props) {
             >
               {t("mainPage.header.detail.detailSubject")}
             </Typography>
-            <Typography variant="body2" fontWeight={600} component="div">
+            <Typography
+              variant="body2"
+              fontWeight={600}
+              component="div"
+              sx={{ overflowWrap: "anywhere" }}
+            >
               {props.PaymentInfo.subject}
             </Typography>
             <Typography

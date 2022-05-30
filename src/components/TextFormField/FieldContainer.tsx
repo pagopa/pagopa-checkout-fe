@@ -66,7 +66,11 @@ function FieldContainer(props: {
               t(props.title)
             )}
           </Typography>
-          <Typography variant={props.bodyVariant} component={"div"}>
+          <Typography
+            variant={props.bodyVariant}
+            component={"div"}
+            sx={{ overflowWrap: "anywhere" }}
+          >
             {props.loading ? (
               <Skeleton variant="text" width="188px" height="24px" />
             ) : (
