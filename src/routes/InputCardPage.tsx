@@ -7,7 +7,10 @@ import PageContainer from "../components/PageContent/PageContainer";
 import { InputCardForm } from "../features/payment/components/InputCardForm/InputCardForm";
 import { InputCardFormFields } from "../features/payment/models/paymentModel";
 import { getReCaptchaKey, getWallet } from "../utils/api/apiService";
-import { activatePayment } from "../utils/api/helper";
+import {
+  activatePayment,
+  retryPollingActivationStatus,
+} from "../utils/api/helper";
 import { getConfigOrThrow } from "../utils/config/config";
 import { ErrorsType } from "../utils/errors/checkErrorsModel";
 import { CheckoutRoutes } from "./models/routeModel";
@@ -70,7 +73,16 @@ export default function InputCardPage() {
 
   const onRetry = React.useCallback(() => {
     setErrorModalOpen(false);
-    void onSubmit(wallet as InputCardFormFields);
+    if (error === ErrorsType.TIMEOUT) {
+      void retryPollingActivationStatus({
+        wallet: wallet as InputCardFormFields,
+        onResponse,
+        onError,
+        onNavigate: () => navigate(`/${CheckoutRoutes.ERRORE}`),
+      });
+    } else {
+      void onSubmit(wallet as InputCardFormFields);
+    }
   }, [wallet]);
 
   const onCancel = () => navigate(-1);
