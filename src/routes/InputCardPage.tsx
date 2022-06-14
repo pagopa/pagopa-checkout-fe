@@ -74,6 +74,7 @@ export default function InputCardPage() {
   const onRetry = React.useCallback(() => {
     setErrorModalOpen(false);
     if (error === ErrorsType.TIMEOUT) {
+      setLoading(true);
       void retryPollingActivationStatus({
         wallet: wallet as InputCardFormFields,
         onResponse,
@@ -83,7 +84,7 @@ export default function InputCardPage() {
     } else {
       void onSubmit(wallet as InputCardFormFields);
     }
-  }, [wallet]);
+  }, [wallet, error]);
 
   const onCancel = () => navigate(-1);
   return (
