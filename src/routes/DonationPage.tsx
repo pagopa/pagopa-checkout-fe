@@ -305,14 +305,18 @@ export default function DonationPage() {
                       </SvgIcon>
                     }
                     aria-label={t("donationPage.submitIO")}
-                    sx={{ width: "100%" }}
+                    sx={{ display: { xs: "none", sm: "flex" }, width: "100%" }}
                     aria-hidden="true"
                     tabIndex={-1}
                   >
                     {t("donationPage.submitIO")}
                   </Button>
                 </Box>
-                <Typography variant="caption-semibold" component="div">
+                <Typography
+                  variant="caption-semibold"
+                  component="div"
+                  sx={{ display: { xs: "none", sm: "block" } }}
+                >
                   {t("donationPage.ioDescription")}
                 </Typography>
               </>
