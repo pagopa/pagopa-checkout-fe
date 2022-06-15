@@ -60,15 +60,24 @@ export default function InputCardPage() {
       setWallet(wallet);
       const token = await ref.current?.executeAsync();
 
-      void activatePayment({
-        wallet,
-        token: token || "",
-        onResponse,
-        onError,
-        onNavigate: () => navigate(`/${CheckoutRoutes.ERRORE}`),
-      });
+      if (error === ErrorsType.TIMEOUT) {
+        void retryPollingActivationStatus({
+          wallet: wallet as InputCardFormFields,
+          onResponse,
+          onError,
+          onNavigate: () => navigate(`/${CheckoutRoutes.ERRORE}`),
+        });
+      } else {
+        void activatePayment({
+          wallet,
+          token: token || "",
+          onResponse,
+          onError,
+          onNavigate: () => navigate(`/${CheckoutRoutes.ERRORE}`),
+        });
+      }
     },
-    [ref]
+    [ref, error]
   );
 
   const onRetry = React.useCallback(() => {
