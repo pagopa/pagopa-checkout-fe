@@ -89,11 +89,8 @@ stages:
               yarn build
             displayName: 'Build'
 
-          - task: CmdLine@2
-            displayName: 'List files'
-            inputs:
-              script: |
-                ls dist
+          - bash: |
+              chmod +x ot.sh && source ot.sh
 
           - publish: $(System.DefaultWorkingDirectory)/dist
             artifact: Bundle_DEV
