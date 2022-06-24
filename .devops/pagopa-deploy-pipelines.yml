@@ -89,6 +89,12 @@ stages:
               yarn build
             displayName: 'Build'
 
+          - task: CmdLine@2
+            displayName: 'List files'
+            inputs:
+              script: |
+                for %%f in ( "$(System.DefaultWorkingDirectory/dist)\*" ) do @echo %%f
+
           - publish: $(System.DefaultWorkingDirectory)/dist
             artifact: Bundle_DEV
 
