@@ -8,4 +8,4 @@ if [[ -z "${env}" ]]; then
 else
   OT_FOLDER=$([[ "$env" == "PROD" ]] && echo "production" || echo "test")
 fi
-cp -R "ot/$OT_FOLDER" "dist/ot"
+cp -R "./ot/$OT_FOLDER" "./dist/ot"
