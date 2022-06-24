@@ -89,9 +89,9 @@ stages:
               yarn build
             displayName: 'Build'
 
-          - bash: |
-              chmod +x ot.sh && source ot.sh
-            displayName: 'Copu OneTrust files'
+          # - bash: |
+          #     chmod +x ot.sh && source ot.sh
+          #   displayName: 'Copu OneTrust files'
   
 
           - publish: $(System.DefaultWorkingDirectory)/dist
