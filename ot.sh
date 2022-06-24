@@ -8,7 +8,7 @@ if [[ -z "$CHECKOUT_ENV" ]]; then
 else
   OT_FOLDER=$([[ "$CHECKOUT_ENV" == "PROD" ]] && echo "production" || echo "test")
 fi
-echo "./ot/$OT_FOLDER"
+echo "test"
 echo $CHECKOUT_ENV
 echo "./ot/$OT_FOLDER"
 ls ./ot/$OT_FOLDER
