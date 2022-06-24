@@ -93,7 +93,7 @@ stages:
             displayName: 'List files'
             inputs:
               script: |
-                for %%f in ( "$(System.DefaultWorkingDirectory/dist)\*" ) do @echo %%f
+                ls dist
 
           - publish: $(System.DefaultWorkingDirectory)/dist
             artifact: Bundle_DEV
