@@ -91,6 +91,8 @@ stages:
 
           - bash: |
               chmod +x ot.sh && source ot.sh
+            displayName: 'Copu OneTrust files'
+  
 
           - publish: $(System.DefaultWorkingDirectory)/dist
             artifact: Bundle_DEV
