@@ -61,6 +61,8 @@ stages:
     dependsOn: []
     jobs:
       - job: make_build
+        pool:
+          vmImage: 'ubuntu-latest'
         steps:
           - template: templates/node-job-setup/template.yaml@pagopaCommons
             parameters:
@@ -88,11 +90,6 @@ stages:
           - script: |
               yarn build
             displayName: 'Build'
-
-          # - bash: |
-          #     chmod +x ot.sh && source ot.sh
-          #   displayName: 'Copu OneTrust files'
-  
 
           - publish: $(System.DefaultWorkingDirectory)/dist
             artifact: Bundle_DEV
