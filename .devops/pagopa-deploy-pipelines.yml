@@ -199,6 +199,8 @@ stages:
       - Release
     jobs:
       - job: make_build
+        pool:
+          vmImage: 'ubuntu-latest'
         steps:
           - template: templates/node-job-setup/template.yaml@pagopaCommons
             parameters:
@@ -277,6 +279,8 @@ stages:
       - Deploy_UAT_pagoPA
     jobs:
       - job: make_build
+        pool:
+          vmImage: 'ubuntu-latest'
         steps:
           - template: templates/node-job-setup/template.yaml@pagopaCommons
             parameters:
