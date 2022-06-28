@@ -1,9 +1,6 @@
 const scriptEl = document.createElement("script");
-const domainScript = window._env_.CHECKOUT_ENV === "develop" ? "-test" : "";
-scriptEl.setAttribute(
-  "src",
-  "https://cdn.cookielaw.org/scripttemplates/otSDKStub.js"
-);
+const domainScript = window._env_.CHECKOUT_ENV === "PROD" ? "" : "-test";
+scriptEl.setAttribute("src", "/ot/scripttemplates/otSDKStub.js");
 scriptEl.setAttribute("type", "text/javascript");
 scriptEl.setAttribute("charset", "UTF-8");
 scriptEl.setAttribute(
