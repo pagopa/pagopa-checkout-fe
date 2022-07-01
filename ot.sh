@@ -5,6 +5,7 @@
 # ./ot.sh $CHECKOUT_ENV
 
 # if env is not setted
+echo " +++++++++++++ $1 "
 if [[ -z "$1" ]]; then
   OT_FOLDER="test"
 else
