@@ -78,7 +78,7 @@ stages:
               pagopa_apim_host: $(CHECKOUT_API_HOST_DEV)
               polling_activation_interval: 6000
               polling_activation_attempts: 16
-              env: 'PROD'
+              env: 'DEV'
               recaptcha_site_key: $(CHECKOUT_CAPTCHA_ID_DEV)
               api_payment_transactions_basepath: '/api/checkout/payment-transactions/v1'
               api_timeout: 10000
