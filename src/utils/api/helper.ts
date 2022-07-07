@@ -381,6 +381,47 @@ export const pollingActivationStatus = async (
   )();
 };
 
+export const retryPollingActivationStatus = async ({
+  wallet,
+  onResponse,
+  onError,
+  onNavigate,
+}: {
+  wallet: InputCardFormFields;
+  onResponse: () => void;
+  onError: (e: string) => void;
+  onNavigate: () => void;
+}): Promise<void> => {
+  const paymentInfo = getPaymentInfo();
+  const config = getConfigOrThrow();
+  const getWallet = () => {
+    void getSessionWallet(wallet as InputCardFormFields, onError, onResponse);
+  };
+
+  pipe(
+    PaymentRequestsGetResponse.decode(paymentInfo),
+    E.fold(
+      () => onError(""),
+      (response) =>
+        pollingActivationStatus(
+          response.codiceContestoPagamento,
+          config.CHECKOUT_POLLING_ACTIVATION_ATTEMPTS as number,
+          // eslint-disable-next-line sonarjs/no-identical-functions
+          (res) => {
+            setPaymentId(res);
+            void getPaymentCheckData({
+              idPayment: res.idPagamento,
+              onError,
+              onResponse: getWallet,
+              onNavigate,
+            });
+          },
+          onError
+        )
+    )
+  );
+};
+
 export const getPaymentCheckData = async ({
   idPayment,
   onError,

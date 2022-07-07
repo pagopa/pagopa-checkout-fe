@@ -28,6 +28,7 @@ export default function Header() {
     CheckoutRoutes.ANNULLATO,
     CheckoutRoutes.ERRORE,
     CheckoutRoutes.ESITO,
+    CheckoutRoutes.DONA,
   ];
   const toggleDrawer = (open: boolean) => {
     setDrawstate(open);

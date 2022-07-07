@@ -1,6 +1,6 @@
 {
   "name": "io-pay-portal-frontend",
-  "version": "1.3.1",
+  "version": "1.3.6",
   "scripts": {
     "type-check": "tsc",
     "generate": "npm-run-all generate:*",
@@ -10,8 +10,8 @@
     "lint": "eslint . -c .eslintrc.js --ext .ts,.tsx",
     "lint-autofix": "eslint . -c .eslintrc.js --ext .ts,.tsx --fix",
     "prebuild": "npm-run-all generate type-check lint",
-    "build": "rimraf .cache && rimraf dist && parcel build src/index.html && cp robots.txt dist/robots.txt && cp -R privacypolicy dist/privacypolicy && shx mkdir -p dist/p && cp response.html dist/p/response.html",
-    "dev": "rimraf .cache && rimraf dist && npm-run-all generate type-check dev:env dev:server",
+    "build": "rimraf .cache && rimraf dist && parcel build src/index.html && cp robots.txt dist/robots.txt && cp -R privacypolicy dist/privacypolicy && shx mkdir -p dist/p && cp response.html dist/p/response.html && cp -R ot dist/ot",
+    "dev": "rimraf .cache && rimraf dist && npm-run-all generate type-check dev:env dev:server && cp -R ot dist/ot",
     "proxy": "npm-run-all generate type-check dev:env dev:proxy",
     "dev:env": "export $(grep -v '^#' .env.development | xargs) && chmod +x env.sh && ./env.sh",
     "dev:server": "parcel src/index.html &",
@@ -22,7 +22,7 @@
     "preversion": "auto-changelog  --config .auto-changelog.json --unreleased --commit-limit false --stdout --template preview.hbs",
     "version": "auto-changelog -p --config .auto-changelog.json --unreleased && git add CHANGELOG.md",
     "prestart-mock": "export $(grep -v '^#' .env.development | xargs) && chmod +x env.sh && source env.sh && ts-node script/generateTestingUrlMock.ts",
-    "start-mock": "parcel src/index.html"
+    "start-mock": "parcel src/index.html & mkdir -p dist && cp -R ot dist/ot"
   },
   "dependencies": {
     "@emotion/react": "^11.9.0",
