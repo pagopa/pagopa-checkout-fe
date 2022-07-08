@@ -30,18 +30,9 @@ export default function Header() {
     CheckoutRoutes.ESITO,
     CheckoutRoutes.DONA,
   ];
-  const toggleDrawer =
-    (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
-      if (
-        event.type === "keydown" &&
-        ((event as React.KeyboardEvent).key === "Tab" ||
-          (event as React.KeyboardEvent).key === "Shift")
-      ) {
-        return;
-      }
-
-      setDrawstate(open);
-    };
+  const toggleDrawer = (open: boolean) => {
+    setDrawstate(open);
+  };
 
   return (
     <Box p={3} bgcolor={"white"}>
@@ -56,40 +47,13 @@ export default function Header() {
         </Grid>
         {!!PaymentInfo.receiver && !ignoreRoutes.includes(currentPath) && (
           <>
-            <Grid item xs={8} sx={{ display: { xs: "none", sm: "block" } }}>
-              <Typography
-                variant="body2"
-                component="div"
-                sx={{ textAlign: "center" }}
-              >
-                {PaymentInfo.receiver}
-              </Typography>
-              <Typography
-                fontWeight={600}
-                variant="body2"
-                component="div"
-                sx={{ textAlign: "center", wordBreak: "break-word" }}
-              >
-                {PaymentInfo.subject.length > 140
-                  ? PaymentInfo.subject.substring(0, 140)
-                  : PaymentInfo.subject}
-              </Typography>
-              <Typography
-                color="primary.main"
-                variant="body2"
-                component="div"
-                fontWeight={600}
-                sx={{ textAlign: "center" }}
-              >
-                {`${moneyFormat(PaymentInfo.amount)}`}
-              </Typography>
-            </Grid>
             <Grid
               item
               xs={10}
-              sx={{ display: { sm: "none" } }}
               display="flex"
               alignItems="center"
+              justifyContent="flex-end"
+              sx={{ cursor: "pointer" }}
             >
               <Typography
                 color="primary.main"
@@ -99,7 +63,7 @@ export default function Header() {
                 display="flex"
                 alignItems="center"
                 justifyContent="flex-end"
-                onClick={toggleDrawer(true)}
+                onClick={() => toggleDrawer(true)}
               >
                 {PaymentInfo ? moneyFormat(PaymentInfo.amount) : ""}
                 <InfoOutlinedIcon color="primary" sx={{ ml: 1 }} />
@@ -108,7 +72,7 @@ export default function Header() {
             <DrawerDetail
               PaymentInfo={PaymentInfo}
               drawstate={drawstate}
-              toggleDrawer={toggleDrawer}
+              toggleDrawer={() => toggleDrawer(false)}
             />
           </>
         )}
