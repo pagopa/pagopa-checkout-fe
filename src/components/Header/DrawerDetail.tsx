@@ -21,8 +21,6 @@ export default function DrawerDetail(props: Props) {
         display="flex"
         justifyContent="space-between"
         sx={{
-          borderBottom: "1px solid",
-          borderBottomColor: "divider",
           textAlign: "left",
           pt: 1,
         }}
