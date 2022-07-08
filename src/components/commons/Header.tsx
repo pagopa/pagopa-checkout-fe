@@ -53,6 +53,7 @@ export default function Header() {
               display="flex"
               alignItems="center"
               justifyContent="flex-end"
+              sx={{ cursor: "pointer" }}
             >
               <Typography
                 color="primary.main"
