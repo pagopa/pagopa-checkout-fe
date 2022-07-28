@@ -111,7 +111,7 @@ export const callServices = async (
   // set isDirectAcquirer to decide the final outcome
   const isDirectAcquirer: boolean | undefined = pipe(
     WalletSession.decode(
-      JSON.parse(sessionStorage.getItem("wallet") || JSON.stringify(""))
+      JSON.parse(sessionStorage.getItem("wallet") || JSON.stringify("{}"))
     ),
     E.fold(
       (_) => undefined,
