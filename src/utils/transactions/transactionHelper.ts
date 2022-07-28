@@ -233,7 +233,7 @@ export const getTransactionFromSessionStorageTask = (
       JSON.parse(
         pipe(
           O.fromNullable(sessionStorage.getItem(key)),
-          O.getOrElse(() => "")
+          O.getOrElse(() => JSON.stringify(""))
         )
       )
     ),

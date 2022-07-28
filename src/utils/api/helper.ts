@@ -411,9 +411,11 @@ export const getPaymentPSPList = async ({
     }>
   ) => void;
 }) => {
-  const walletStored = sessionStorage.getItem("wallet") || "";
-  const checkDataStored = sessionStorage.getItem("checkData") || "";
-  const sessionToken = sessionStorage.getItem("sessionToken") || "";
+  const walletStored = sessionStorage.getItem("wallet") || JSON.stringify("");
+  const checkDataStored =
+    sessionStorage.getItem("checkData") || JSON.stringify("");
+  const sessionToken =
+    sessionStorage.getItem("sessionToken") || JSON.stringify("");
 
   const checkData = JSON.parse(checkDataStored);
   const wallet = JSON.parse(walletStored);
@@ -500,9 +502,10 @@ export const getSessionWallet = async (
   // eslint-disable-next-line sonarjs/cognitive-complexity
 ) => {
   const useremail: string = JSON.parse(
-    sessionStorage.getItem("useremail") || ""
+    sessionStorage.getItem("useremail") || JSON.stringify("")
   );
-  const checkDataStored: string = sessionStorage.getItem("checkData") || "";
+  const checkDataStored: string =
+    sessionStorage.getItem("checkData") || JSON.stringify("");
   const checkData = JSON.parse(checkDataStored);
 
   mixpanel.track(PAYMENT_START_SESSION_INIT.value, {
@@ -731,8 +734,9 @@ export const updateWallet = async (
   onError: (e: string) => void,
   onResponse: () => void
 ) => {
-  const walletStored = sessionStorage.getItem("wallet") || "";
-  const sessionToken = sessionStorage.getItem("sessionToken") || "";
+  const walletStored = sessionStorage.getItem("wallet") || JSON.stringify("");
+  const sessionToken =
+    sessionStorage.getItem("sessionToken") || JSON.stringify("");
 
   const wallet = JSON.parse(walletStored);
 
@@ -833,15 +837,17 @@ export const confirmPayment = async (
       JSON.parse(
         pipe(
           O.fromNullable(sessionStorage.getItem("wallet")),
-          O.getOrElse(() => "")
+          O.getOrElse(() => JSON.stringify(""))
         )
       ) as Wallet
     ).idWallet
       ?.toString()
       .trim()}`,
     deliveryEmailAddress: pipe(
-      O.fromNullable(JSON.parse(sessionStorage.getItem("useremail") || "")),
-      O.getOrElse(() => "")
+      O.fromNullable(
+        JSON.parse(sessionStorage.getItem("useremail") || JSON.stringify(""))
+      ),
+      O.getOrElse(() => JSON.stringify(""))
     ),
     mobilePhone: null,
   };
@@ -921,7 +927,9 @@ export const cancelPayment = async (
   onError: (e: string) => void,
   onResponse: () => void
 ) => {
-  const checkData = JSON.parse(sessionStorage.getItem("checkData") || "");
+  const checkData = JSON.parse(
+    sessionStorage.getItem("checkData") || JSON.stringify("")
+  );
 
   // Payment action DELETE
   mixpanel.track(PAYMENT_ACTION_DELETE_INIT.value, {
