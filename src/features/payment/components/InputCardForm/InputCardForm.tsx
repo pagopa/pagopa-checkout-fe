@@ -136,6 +136,17 @@ export function InputCardForm(props: {
     }
   };
 
+  const handleNameChange = (
+    e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const handleChange = formRef.current?.handleChange;
+    if (handleChange) {
+      e.currentTarget.value &&
+        (e.currentTarget.value = e.currentTarget.value.replace(/‘|’/g, "'"));
+      handleChange(e);
+    }
+  };
+
   return (
     <>
       <Formik
@@ -149,14 +160,7 @@ export function InputCardForm(props: {
         validate={validate}
         onSubmit={props.onSubmit}
       >
-        {({
-          touched,
-          errors,
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          values,
-        }) => (
+        {({ touched, errors, handleBlur, handleSubmit, values }) => (
           <form onSubmit={handleSubmit}>
             <Box>
               <TextFormField
@@ -251,7 +255,7 @@ export function InputCardForm(props: {
                 type="text"
                 value={values.name}
                 autoComplete="cc-name"
-                handleChange={handleChange}
+                handleChange={handleNameChange}
                 handleBlur={handleBlur}
                 sx={{ mb: 4 }}
                 endAdornment={
