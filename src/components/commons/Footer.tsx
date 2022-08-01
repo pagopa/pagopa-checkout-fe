@@ -14,9 +14,9 @@ export default function Footer(props: { fixedPages: Array<string> }) {
 
   return (
     <Box
-      display={"flex"}
-      justifyContent={"space-between"}
-      alignItems={"center"}
+      display="flex"
+      justifyContent="space-between"
+      alignItems="center"
       pb={{ ...(isFixed() ? {} : { xs: 16 }), sm: 0 }}
       pl={{ xs: 3, sm: 6 }}
       pr={{ xs: 3, sm: 6 }}
@@ -31,8 +31,8 @@ export default function Footer(props: { fixedPages: Array<string> }) {
         sm: "background.paper",
       }}
     >
-      <Typography variant="caption" component={"div"}>
-        <Box display={"flex"} alignItems={"center"} gap={1}>
+      <Typography variant="caption" component="div">
+        <Box display="flex" alignItems="center" gap={1}>
           <Link
             href="https://form.agid.gov.it/view/7628e161-33c0-420f-8c80-4fe362d2c7c5/"
             target="_blank"
@@ -51,6 +51,16 @@ export default function Footer(props: { fixedPages: Array<string> }) {
             title={t("mainPage.footer.help")}
           >
             {t("mainPage.footer.help")}
+          </Link>
+          <p aria-hidden="true">·</p>
+          <Link
+            href="https://status.pagopa.gov.it"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: "black", textDecoration: "none" }}
+            title={t("mainPage.footer.status")}
+          >
+            {t("mainPage.footer.status")}
           </Link>
           {Object.keys(lang).length > 1 && (
             <>

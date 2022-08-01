@@ -4,6 +4,7 @@ export const TRANSLATIONS_IT = {
       accessibility: "Accessibilità",
       help: "Aiuto",
       pagoPA: "Visita il sito pagoPA",
+      status: "Stato piattaforma",
     },
     header: {
       disclaimer:
