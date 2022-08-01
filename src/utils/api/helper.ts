@@ -1103,7 +1103,12 @@ export const getDonationEntityList = async (
 
   window
     .fetch(getConfigOrThrow().CHECKOUT_DONATIONS_URL)
-    .then((response) => response.json())
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      }
+      throw new Error(ErrorsType.DONATIONLIST_ERROR);
+    })
     .then((data) => {
       mixpanel.track(DONATION_LIST_SUCCESS.value, {
         EVENT_ID: DONATION_LIST_SUCCESS.value,
