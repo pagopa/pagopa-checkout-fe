@@ -18,6 +18,7 @@ function FieldContainer(props: {
   onKeyDown?: (e: React.KeyboardEvent<HTMLDivElement>) => void;
   tabIndex?: number;
   role?: string;
+  wordBreakBody?: boolean;
 }) {
   const { t } = useTranslation();
   const defaultStyle = {
@@ -26,8 +27,7 @@ function FieldContainer(props: {
     alignItems: "center",
     borderBottom: "1px solid",
     borderBottomColor: "divider",
-    pt: 2,
-    pb: 2,
+    py: 2,
   };
 
   return (
@@ -55,11 +55,13 @@ function FieldContainer(props: {
         <Box
           sx={{
             display: "flex",
+            alignItems: props.flexDirection === "row" ? "center" : "",
             justifyContent: "space-between",
             flexDirection: props.flexDirection,
+            width: "100%",
           }}
         >
-          <Typography variant={props.titleVariant} component={"div"}>
+          <Typography variant={props.titleVariant} component={"div"} pr={2}>
             {props.loading ? (
               <Skeleton variant="text" width="125px" height="30px" />
             ) : (
@@ -69,7 +71,7 @@ function FieldContainer(props: {
           <Typography
             variant={props.bodyVariant}
             component={"div"}
-            sx={{ wordBreak: "break-word" }}
+            sx={{ wordBreak: props.wordBreakBody ? "break-word" : "" }}
           >
             {props.loading ? (
               <Skeleton variant="text" width="188px" height="24px" />
@@ -88,6 +90,7 @@ FieldContainer.defaultProps = {
   flexDirection: "column",
   titleVariant: "body2",
   bodyVariant: "sidenav",
+  wordBreakBody: true,
 };
 
 export default FieldContainer;
