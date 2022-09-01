@@ -1,4 +1,3 @@
-import { Box } from "@mui/material";
 import React from "react";
 import { useDispatch } from "react-redux";
 import PageContainer from "../components/PageContent/PageContainer";
@@ -15,10 +14,12 @@ export default function IndexPage() {
   sessionStorage.clear();
 
   return (
-    <PageContainer title="indexPage.title" description="indexPage.description">
-      <Box sx={{ mt: 6 }}>
-        <PaymentNoticeChoice />
-      </Box>
+    <PageContainer
+      title="indexPage.title"
+      description="indexPage.description"
+      childrenSx={{ mt: 6 }}
+    >
+      <PaymentNoticeChoice />
       <PrivacyInfo />
     </PageContainer>
   );

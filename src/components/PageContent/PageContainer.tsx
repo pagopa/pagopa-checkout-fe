@@ -1,4 +1,5 @@
 import { Box, Typography } from "@mui/material";
+import { CSSProperties } from "@mui/material/styles/createTypography";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
@@ -7,6 +8,7 @@ export default function PageContainer(props: {
   description?: string;
   children?: React.ReactNode;
   link?: React.ReactNode;
+  childrenSx?: CSSProperties;
 }) {
   const { t } = useTranslation();
 
@@ -23,7 +25,7 @@ export default function PageContainer(props: {
           {!!props.link && props.link}
         </Typography>
       )}
-      {props.children}
+      <Box sx={props.childrenSx}>{props.children}</Box>
     </Box>
   );
 }
