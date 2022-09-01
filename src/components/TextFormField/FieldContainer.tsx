@@ -18,7 +18,7 @@ function FieldContainer(props: {
   onKeyDown?: (e: React.KeyboardEvent<HTMLDivElement>) => void;
   tabIndex?: number;
   role?: string;
-  wordBreakBody?: boolean;
+  overflowWrapBody?: boolean;
 }) {
   const { t } = useTranslation();
   const defaultStyle = {
@@ -71,7 +71,9 @@ function FieldContainer(props: {
           <Typography
             variant={props.bodyVariant}
             component={"div"}
-            sx={{ wordBreak: props.wordBreakBody ? "break-word" : "" }}
+            sx={{
+              overflowWrap: props.overflowWrapBody ? "anywhere" : "normal",
+            }}
           >
             {props.loading ? (
               <Skeleton variant="text" width="188px" height="24px" />
@@ -90,7 +92,7 @@ FieldContainer.defaultProps = {
   flexDirection: "column",
   titleVariant: "body2",
   bodyVariant: "sidenav",
-  wordBreakBody: true,
+  overflowWrapBody: true,
 };
 
 export default FieldContainer;

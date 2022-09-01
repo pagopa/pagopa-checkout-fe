@@ -59,7 +59,7 @@ export default function PaymentSummaryPage() {
         endAdornment={
           <InfoOutlinedIcon
             color="primary"
-            sx={{ mr: 2 }}
+            sx={{ mr: 2, cursor: "pointer" }}
             onClick={handleInfoClick}
             onKeyDown={handleKeyDown}
             aria-label={t("ariaLabels.informationDialog")}
@@ -73,7 +73,7 @@ export default function PaymentSummaryPage() {
           title="paymentSummaryPage.billCode"
           body={noticeInfo.billCode}
           flexDirection="row"
-          wordBreakBody={false}
+          overflowWrapBody={false}
           sx={{ px: 2 }}
         />
       )}
@@ -82,7 +82,7 @@ export default function PaymentSummaryPage() {
           title="paymentSummaryPage.cf"
           body={paymentInfo.enteBeneficiario?.identificativoUnivocoBeneficiario}
           flexDirection="row"
-          wordBreakBody={false}
+          overflowWrapBody={false}
           sx={{ px: 2 }}
         />
       )}

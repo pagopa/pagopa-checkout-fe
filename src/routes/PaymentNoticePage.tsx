@@ -90,7 +90,7 @@ export default function PaymentNoticePage() {
         <Button
           variant="text"
           onClick={() => setModalOpen(true)}
-          sx={{ p: 0, height: 0 }}
+          sx={{ p: 0 }}
           aria-hidden="true"
           tabIndex={-1}
         >
