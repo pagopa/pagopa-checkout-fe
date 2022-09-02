@@ -10,10 +10,53 @@ import ErrorModal from "../components/modals/ErrorModal";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
 import PageContainer from "../components/PageContent/PageContainer";
 import { PaymentChoice } from "../features/payment/components/PaymentChoice/PaymentChoice";
-import { getPaymentId } from "../utils/api/apiService";
+import { PaymentInstruments } from "../features/payment/models/paymentModel";
+import { getPaymentId, getPaymentInfo } from "../utils/api/apiService";
 import { cancelPayment } from "../utils/api/helper";
 import { onBrowserUnload } from "../utils/eventListeners";
 import { CheckoutRoutes } from "./models/routeModel";
+
+const mockedData = [
+  {
+    id: "f4adaeb4-1010-467c-8405-a32a5a3fa236",
+    name: "Carte",
+    description: "",
+    status: "ENABLED",
+    paymentTypeCode: "PO",
+    ranges: [
+      {
+        min: 0,
+        max: 9999999999,
+      },
+    ],
+  },
+  {
+    id: "32263b63-4466-436c-a467-1e4a85ef79e4",
+    name: "Postepay",
+    description: "",
+    status: "ENABLED",
+    paymentTypeCode: "PPAY",
+    ranges: [
+      {
+        min: 0,
+        max: 9999999999,
+      },
+    ],
+  },
+  {
+    id: "32263b63-4466-436c-a467-1e4a85ef79e4",
+    name: "Postepay",
+    description: "",
+    status: "DISABLED",
+    paymentTypeCode: "BPAY",
+    ranges: [
+      {
+        min: 0,
+        max: 9999999999,
+      },
+    ],
+  },
+];
 
 export default function PaymentChoicePage() {
   const { t } = useTranslation();
@@ -22,6 +65,10 @@ export default function PaymentChoicePage() {
   const [cancelModalOpen, setCancelModalOpen] = React.useState(false);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
+  const [paymentInstruments, setPaymentInstruments] = React.useState<
+    Array<PaymentInstruments>
+  >([]);
+  const amount = getPaymentInfo().importoSingoloVersamento;
 
   const onBrowserBackEvent = (e: any) => {
     e.preventDefault();
@@ -39,22 +86,37 @@ export default function PaymentChoicePage() {
     return () => {};
   }, []);
 
-  const onError = (m: string) => {
+  React.useEffect(() => {
+    // GET payment-instruments
+    setPaymentInstruments(mockedData);
+  }, []);
+
+  const onError = React.useCallback((m: string) => {
     setLoading(false);
     setError(m);
     setErrorModalOpen(true);
-  };
+  }, []);
 
-  const onCancelResponse = () => {
+  const onCancelResponse = React.useCallback(() => {
     setLoading(false);
     navigate(`/${CheckoutRoutes.ANNULLATO}`);
-  };
+  }, []);
 
-  const onCancelPaymentSubmit = () => {
+  const onCancelPaymentSubmit = React.useCallback(() => {
     setCancelModalOpen(false);
     setLoading(true);
     void cancelPayment(onError, onCancelResponse);
-  };
+  }, []);
+
+  const handleBackNavigate = React.useCallback(() => navigate(-1), []);
+  const handleCloseModal = React.useCallback(
+    () => setCancelModalOpen(false),
+    []
+  );
+  const handleCloseErrorModal = React.useCallback(
+    () => setErrorModalOpen(false),
+    []
+  );
 
   return (
     <>
@@ -75,12 +137,15 @@ export default function PaymentChoicePage() {
         }
       >
         <Box sx={{ mt: 6 }}>
-          <PaymentChoice />
+          <PaymentChoice
+            amount={amount}
+            paymentInstruments={paymentInstruments}
+          />
           <Box py={4} sx={{ width: "100%", height: "100%" }}>
             <Button
               type="button"
               variant="outlined"
-              onClick={() => navigate(-1)}
+              onClick={handleBackNavigate}
               style={{
                 minWidth: "120px",
                 height: "100%",
@@ -93,16 +158,14 @@ export default function PaymentChoicePage() {
         </Box>
         <CancelPayment
           open={cancelModalOpen}
-          onCancel={() => setCancelModalOpen(false)}
+          onCancel={handleCloseModal}
           onSubmit={onCancelPaymentSubmit}
         />
         {!!error && (
           <ErrorModal
             error={error}
             open={errorModalOpen}
-            onClose={() => {
-              setErrorModalOpen(false);
-            }}
+            onClose={handleCloseErrorModal}
           />
         )}
       </PageContainer>

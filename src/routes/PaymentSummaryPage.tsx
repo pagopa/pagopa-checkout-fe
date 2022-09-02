@@ -71,7 +71,7 @@ export default function PaymentSummaryPage() {
       {!!noticeInfo.billCode && (
         <FieldContainer
           title="paymentSummaryPage.billCode"
-          body={noticeInfo.billCode}
+          body={noticeInfo.billCode.match(/.{1,4}/g)?.join(" ")}
           flexDirection="row"
           overflowWrapBody={false}
           sx={{ px: 2 }}

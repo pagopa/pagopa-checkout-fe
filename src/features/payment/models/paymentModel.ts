@@ -137,3 +137,15 @@ export interface PspList {
   commission: number;
   idPsp: number | undefined;
 }
+
+export interface PaymentInstruments {
+  id: string;
+  name: string;
+  description: string;
+  status: string;
+  paymentTypeCode: string;
+  ranges: Array<{
+    min: number;
+    max: number;
+  }>;
+}

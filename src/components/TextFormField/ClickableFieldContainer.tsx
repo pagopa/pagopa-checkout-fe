@@ -1,6 +1,6 @@
 /* eslint-disable functional/immutable-data */
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, useTheme } from "@mui/material";
 import { SxProps } from "@mui/system";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -14,8 +14,10 @@ function ClickableFieldContainer(props: {
   sx?: SxProps;
   itemSx?: SxProps;
   variant?: "body2" | "sidenav";
+  disabled?: boolean;
 }) {
   const { t } = useTranslation();
+  const theme = useTheme();
   const defaultStyle = {
     display: "flex",
     justifyContent: "space-between",
@@ -51,11 +53,22 @@ function ClickableFieldContainer(props: {
         }}
       >
         {props.icon}
-        <Typography variant={props.variant} component="div">
+        <Typography
+          variant={props.variant}
+          component="div"
+          sx={props.disabled ? { color: theme.palette.text.disabled } : {}}
+        >
           {t(props.title)}
         </Typography>
       </Box>
-      <Box sx={{ display: "flex", justifyContent: "flex-end", pr: 2 }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "flex-end",
+          pr: 2,
+          ...(props.disabled ? { color: theme.palette.text.disabled } : {}),
+        }}
+      >
         {props.endAdornment}
       </Box>
     </Box>
