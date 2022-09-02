@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable functional/immutable-data */
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { Box, Typography, useTheme } from "@mui/material";
@@ -33,10 +34,13 @@ function ClickableFieldContainer(props: {
   return (
     <Box
       sx={defaultStyle}
-      onClick={props.onClick}
+      onClick={() => {
+        if (!props.disabled) {
+          props.onClick && props.onClick();
+        }
+      }}
       onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
         if (e.key === "Enter") {
-          // eslint-disable-next-line @typescript-eslint/no-unused-expressions
           !!props.onClick && props.onClick();
         }
       }}

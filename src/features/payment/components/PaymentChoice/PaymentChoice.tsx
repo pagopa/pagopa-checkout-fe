@@ -6,6 +6,7 @@ import React from "react";
 import { useNavigate } from "react-router";
 import ClickableFieldContainer from "../../../../components/TextFormField/ClickableFieldContainer";
 import { PaymentMethodRoutes } from "../../../../routes/models/paymentMethodRoutes";
+import { validateRange } from "../../../../utils/form/validators";
 import { PaymentInstruments } from "../../models/paymentModel";
 
 export function PaymentChoice(props: {
@@ -19,20 +20,20 @@ export function PaymentChoice(props: {
     navigate(`/${PaymentMethodRoutes[paymentType]}`);
   }, []);
 
-  const checkRange = (amount: number, range: { min: number; max: number }) =>
-    amount >= range.min && amount <= range.max;
   const getPaymentsMethods = React.useCallback(
     (status: string = "ENABLED") =>
       props.paymentInstruments
         .filter(
           (method) =>
-            !!method.ranges.filter((range) => checkRange(props.amount, range))
-              .length
+            !!method.ranges.filter((range) =>
+              validateRange(props.amount, range)
+            ).length
         )
-        .filter((instrument) => instrument.status === status),
+        .filter((method) => method.status === status)
+        .map((method, index) => makeMethodComponent(method, index)),
     [props.amount, props.paymentInstruments]
   );
-  const getContainerComponent = React.useCallback(
+  const makeMethodComponent = React.useCallback(
     (method: PaymentInstruments, index: number) => (
       <ClickableFieldContainer
         key={index}
@@ -54,10 +55,12 @@ export function PaymentChoice(props: {
           />
         }
         endAdornment={
-          <ArrowForwardIosIcon
-            sx={{ color: "primary.main" }}
-            fontSize="small"
-          />
+          method.status === "ENABLED" && (
+            <ArrowForwardIosIcon
+              sx={{ color: "primary.main" }}
+              fontSize="small"
+            />
+          )
         }
         disabled={method.status === "DISABLED"}
         clickable={method.status === "ENABLED"}
@@ -68,12 +71,8 @@ export function PaymentChoice(props: {
 
   return (
     <>
-      {getPaymentsMethods().map((method, index) =>
-        getContainerComponent(method, index)
-      )}
-      {getPaymentsMethods("DISABLED").map((method, index) =>
-        getContainerComponent(method, index)
-      )}
+      {getPaymentsMethods()}
+      {getPaymentsMethods("DISABLED")}
     </>
   );
 }

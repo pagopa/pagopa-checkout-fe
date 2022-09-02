@@ -5,7 +5,7 @@ import { Formik, FormikProps } from "formik";
 import React from "react";
 import { FormButtons } from "../../../../components/FormButtons/FormButtons";
 import TextFormField from "../../../../components/TextFormField/TextFormField";
-import { getFormErrorIcon } from "../../../../utils/form/formValidation";
+import { getFormErrorIcon } from "../../../../utils/form/validators";
 import { emailValidation } from "../../../../utils/regex/validators";
 import {
   PaymentEmailFormErrors,
