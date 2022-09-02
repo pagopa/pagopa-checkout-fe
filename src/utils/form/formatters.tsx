@@ -31,3 +31,8 @@ export function moneyFormat(
     maximumFractionDigits: fractionDigits,
   }).format(amount ? amount / Math.pow(10, decimalDigits) : 0);
 }
+
+export function codeFormat(code: string) {
+  const matches = code.match(/.{1,4}/g);
+  return matches ? matches.join(" ") : "";
+}

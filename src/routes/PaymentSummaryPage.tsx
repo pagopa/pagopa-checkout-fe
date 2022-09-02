@@ -11,7 +11,7 @@ import InformationModal from "../components/modals/InformationModal";
 import PageContainer from "../components/PageContent/PageContainer";
 import FieldContainer from "../components/TextFormField/FieldContainer";
 import { getNoticeInfo, getPaymentInfo } from "../utils/api/apiService";
-import { moneyFormat } from "../utils/form/formatters";
+import { codeFormat, moneyFormat } from "../utils/form/formatters";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function PaymentSummaryPage() {
@@ -71,7 +71,7 @@ export default function PaymentSummaryPage() {
       {!!noticeInfo.billCode && (
         <FieldContainer
           title="paymentSummaryPage.billCode"
-          body={noticeInfo.billCode.match(/.{1,4}/g)?.join(" ")}
+          body={codeFormat(noticeInfo.billCode)}
           flexDirection="row"
           overflowWrapBody={false}
           sx={{ px: 2 }}
