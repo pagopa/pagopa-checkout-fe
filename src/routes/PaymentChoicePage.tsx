@@ -10,7 +10,7 @@ import ErrorModal from "../components/modals/ErrorModal";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
 import PageContainer from "../components/PageContent/PageContainer";
 import { PaymentChoice } from "../features/payment/components/PaymentChoice/PaymentChoice";
-import { getPaymentId } from "../utils/api/apiService";
+import { getPaymentId, getPaymentInfo } from "../utils/api/apiService";
 import { cancelPayment } from "../utils/api/helper";
 import { onBrowserUnload } from "../utils/eventListeners";
 import { CheckoutRoutes } from "./models/routeModel";
@@ -18,6 +18,7 @@ import { CheckoutRoutes } from "./models/routeModel";
 export default function PaymentChoicePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const amount = getPaymentInfo().importoSingoloVersamento;
   const [loading, setLoading] = React.useState(false);
   const [cancelModalOpen, setCancelModalOpen] = React.useState(false);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
@@ -64,7 +65,7 @@ export default function PaymentChoicePage() {
         description="paymentChoicePage.description"
         link={
           <Link
-            href="https://www.pagopa.gov.it/it/cittadini/trasparenza-costi/"
+            href={`https://www.pagopa.gov.it/it/cittadini/trasparenza-costi/?amount=${amount}`}
             target="_blank"
             rel="noopener noreferrer"
             style={{ fontWeight: 600, textDecoration: "none" }}
