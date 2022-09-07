@@ -53,7 +53,7 @@ export const TRANSLATIONS_IT = {
       "pagoPA aggiorna automaticamente l'importo per assicurarti di aver pagato esattamente quanto dovuto ed evitarsi così more o altri interessi",
     amount: "Importo aggiornato",
     creditor: "Ente Creditore",
-    causal: "Causale",
+    causal: "Oggetto del pagamento",
     billCode: "Codice Avviso",
     cf: "Codice Fiscale Ente Creditore",
     iuv: "Codice IUV",
