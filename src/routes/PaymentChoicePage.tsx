@@ -12,56 +12,15 @@ import PageContainer from "../components/PageContent/PageContainer";
 import { PaymentChoice } from "../features/payment/components/PaymentChoice/PaymentChoice";
 import { PaymentInstruments } from "../features/payment/models/paymentModel";
 import { getPaymentId, getPaymentInfo } from "../utils/api/apiService";
-import { cancelPayment } from "../utils/api/helper";
+import { cancelPayment, getPaymentInstruments } from "../utils/api/helper";
 import { onBrowserUnload } from "../utils/eventListeners";
 import { CheckoutRoutes } from "./models/routeModel";
-
-const mockedData = [
-  {
-    id: "f4adaeb4-1010-467c-8405-a32a5a3fa236",
-    name: "Carte",
-    description: "",
-    status: "ENABLED",
-    paymentTypeCode: "PO",
-    ranges: [
-      {
-        min: 0,
-        max: 9999999999,
-      },
-    ],
-  },
-  {
-    id: "32263b63-4466-436c-a467-1e4a85ef79e4",
-    name: "Postepay",
-    description: "",
-    status: "ENABLED",
-    paymentTypeCode: "PPAY",
-    ranges: [
-      {
-        min: 0,
-        max: 9999999999,
-      },
-    ],
-  },
-  {
-    id: "32263b63-4466-436c-a467-1e4a85ef79e4",
-    name: "Postepay",
-    description: "",
-    status: "DISABLED",
-    paymentTypeCode: "BPAY",
-    ranges: [
-      {
-        min: 0,
-        max: 9999999999,
-      },
-    ],
-  },
-];
 
 export default function PaymentChoicePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [loading, setLoading] = React.useState(false);
+  const [instrumentsLoading, setInstrumentsLoading] = React.useState(false);
   const [cancelModalOpen, setCancelModalOpen] = React.useState(false);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
@@ -86,9 +45,16 @@ export default function PaymentChoicePage() {
     return () => {};
   }, []);
 
-  React.useEffect(() => {
-    // GET payment-instruments
-    setPaymentInstruments(mockedData);
+  const getPaymentMethods = React.useCallback(() => {
+    setInstrumentsLoading(true);
+    void getPaymentInstruments({ amount }, onError, onResponse);
+  }, []);
+
+  React.useEffect(getPaymentMethods, []);
+
+  const onResponse = React.useCallback((list: Array<PaymentInstruments>) => {
+    setPaymentInstruments(list);
+    setInstrumentsLoading(false);
   }, []);
 
   const onError = React.useCallback((m: string) => {
@@ -117,6 +83,7 @@ export default function PaymentChoicePage() {
     () => setErrorModalOpen(false),
     []
   );
+  const handleRetry = React.useCallback(getPaymentMethods, []);
 
   return (
     <>
@@ -140,6 +107,7 @@ export default function PaymentChoicePage() {
           <PaymentChoice
             amount={amount}
             paymentInstruments={paymentInstruments}
+            loading={instrumentsLoading}
           />
           <Box py={4} sx={{ width: "100%", height: "100%" }}>
             <Button
@@ -151,6 +119,7 @@ export default function PaymentChoicePage() {
                 height: "100%",
                 minHeight: 45,
               }}
+              disabled={instrumentsLoading}
             >
               {t("paymentChoicePage.button")}
             </Button>
@@ -166,6 +135,7 @@ export default function PaymentChoicePage() {
             error={error}
             open={errorModalOpen}
             onClose={handleCloseErrorModal}
+            onRetry={handleRetry}
           />
         )}
       </PageContainer>

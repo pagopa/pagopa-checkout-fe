@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
+import MobileFriendlyIcon from "@mui/icons-material/MobileFriendly";
 import { useTheme } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router";
@@ -12,6 +13,7 @@ import { PaymentInstruments } from "../../models/paymentModel";
 export function PaymentChoice(props: {
   amount: number;
   paymentInstruments: Array<PaymentInstruments>;
+  loading?: boolean;
 }) {
   const navigate = useNavigate();
   const theme = useTheme();
@@ -44,15 +46,27 @@ export function PaymentChoice(props: {
         }
         onClick={() => handleClickOnMethod(method.paymentTypeCode)}
         icon={
-          <CreditCardIcon
-            color="primary"
-            fontSize="small"
-            sx={
-              method.status === "DISABLED"
-                ? { color: theme.palette.text.disabled }
-                : {}
-            }
-          />
+          method.name.toLowerCase() === "carte" ? (
+            <CreditCardIcon
+              color="primary"
+              fontSize="small"
+              sx={
+                method.status === "DISABLED"
+                  ? { color: theme.palette.text.disabled }
+                  : {}
+              }
+            />
+          ) : (
+            <MobileFriendlyIcon
+              color="primary"
+              fontSize="small"
+              sx={
+                method.status === "DISABLED"
+                  ? { color: theme.palette.text.disabled }
+                  : {}
+              }
+            />
+          )
         }
         endAdornment={
           method.status === "ENABLED" && (
@@ -71,8 +85,12 @@ export function PaymentChoice(props: {
 
   return (
     <>
-      {getPaymentsMethods()}
-      {getPaymentsMethods("DISABLED")}
+      {props.loading
+        ? // eslint-disable-next-line functional/immutable-data
+          Array(3)
+            .fill(1)
+            .map((_, index) => <ClickableFieldContainer key={index} loading />)
+        : [getPaymentsMethods(), getPaymentsMethods("DISABLED")]}
     </>
   );
 }

@@ -11,6 +11,7 @@ import { PaymentActivationsGetResponse } from "../../../generated/definitions/pa
 import { PaymentActivationsPostResponse } from "../../../generated/definitions/payment-activations-api/PaymentActivationsPostResponse";
 import { Detail_v2Enum } from "../../../generated/definitions/payment-activations-api/PaymentProblemJson";
 import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-activations-api/PaymentRequestsGetResponse";
+import { PaymentMethodResponse } from "../../../generated/definitions/payment-ecommerce/PaymentMethodResponse";
 import {
   TypeEnum,
   Wallet,
@@ -19,6 +20,7 @@ import { RptId } from "../../../generated/definitions/payment-transactions-api/R
 import {
   InputCardFormFields,
   PaymentCheckData,
+  PaymentInstruments,
   Wallet as PaymentWallet,
 } from "../../features/payment/models/paymentModel";
 import { getConfigOrThrow } from "../config/config";
@@ -98,6 +100,7 @@ import {
   apiPaymentActivationsClient,
   apiPaymentTransactionsClient,
   pmClient,
+  apiPaymentEcommerceClient,
 } from "./client";
 
 export const getPaymentInfoTask = (
@@ -1129,4 +1132,41 @@ export const getDonationEntityList = async (
       });
       onError(ErrorsType.DONATIONLIST_ERROR);
     });
+};
+
+export const getPaymentInstruments = async (
+  query: {
+    amount: number;
+  },
+  onError: (e: string) => void,
+  onResponse: (data: Array<PaymentInstruments>) => void
+) => {
+  const list: Array<PaymentInstruments> = await pipe(
+    TE.tryCatch(
+      () => apiPaymentEcommerceClient.getAllPaymentMethods(query),
+      () => {
+        onError(ErrorsType.STATUS_ERROR);
+        return toError;
+      }
+    ),
+    TE.fold(
+      () => async () => {
+        onError(ErrorsType.STATUS_ERROR);
+        return [];
+      },
+      (myResExt) => async () =>
+        pipe(
+          myResExt,
+          E.fold(
+            () => [],
+            (myRes) =>
+              myRes.status === 200
+                ? (myRes.value as Array<PaymentInstruments>)
+                : []
+          )
+        )
+    )
+  )();
+  console.log(list);
+  onResponse(list);
 };
