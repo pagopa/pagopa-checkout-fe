@@ -83,7 +83,7 @@ stages:
               api_payment_transactions_basepath: '/api/checkout/payment-transactions/v1'
               api_timeout: 10000
               api_payment_activations_basepath: '/checkout/payments/v1'
-              pm_host: 'https://acardste.vaservices.eu:1443'
+              pm_host: 'https://api.dev.platform.pagopa.it/payment-manager'
               pm_api_basepath: '/pp-restapi/v4'
               donations_url: 'https://api.dev.platform.pagopa.it/donations/api/v1/availabledonations'
 
@@ -221,7 +221,7 @@ stages:
               api_payment_transactions_basepath: '/api/checkout/payment-transactions/v1'
               api_timeout: 10000
               api_payment_activations_basepath: '/checkout/payments/v1'
-              pm_host: 'https://acardste.vaservices.eu'
+              pm_host: 'https://api.uat.platform.pagopa.it/payment-manager'
               pm_api_basepath: '/pp-restapi/v4'
               donations_url: 'https://api.uat.platform.pagopa.it/donations/api/v1/availabledonations'
 
