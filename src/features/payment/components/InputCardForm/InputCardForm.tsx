@@ -15,10 +15,7 @@ import React from "react";
 import sprite from "../../../../assets/images/app.svg";
 import { FormButtons } from "../../../../components/FormButtons/FormButtons";
 import TextFormField from "../../../../components/TextFormField/TextFormField";
-import {
-  cleanSpaces,
-  expireDateFormatter,
-} from "../../../../utils/form/formatters";
+import { expireDateFormatter } from "../../../../utils/form/formatters";
 import {
   expirationDateChangeValidation,
   getFormErrorIcon,
@@ -106,7 +103,7 @@ export function InputCardForm(props: {
     const handleChange = formRef.current?.handleChange;
     if (handleChange) {
       e.currentTarget.value || handleChange(e);
-      e.currentTarget.value = cleanSpaces(e.currentTarget.value);
+      // e.currentTarget.value = cleanSpaces(e.currentTarget.value);
       handleDigitChange(e, handleChange, 19);
     }
   };
