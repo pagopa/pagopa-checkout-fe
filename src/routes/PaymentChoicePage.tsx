@@ -27,7 +27,7 @@ export default function PaymentChoicePage() {
   const [paymentInstruments, setPaymentInstruments] = React.useState<
     Array<PaymentInstruments>
   >([]);
-  const amount = getPaymentInfo().importoSingoloVersamento;
+  const amount = getPaymentInfo().amount;
 
   const onBrowserBackEvent = (e: any) => {
     e.preventDefault();

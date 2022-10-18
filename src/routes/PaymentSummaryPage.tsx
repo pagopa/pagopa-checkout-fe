@@ -38,23 +38,23 @@ export default function PaymentSummaryPage() {
 
   return (
     <PageContainer title="paymentSummaryPage.title" childrenSx={{ pt: 2 }}>
-      {!!paymentInfo.enteBeneficiario?.denominazioneBeneficiario && (
+      {!!paymentInfo.paName && (
         <FieldContainer
           title="paymentSummaryPage.creditor"
-          body={paymentInfo.enteBeneficiario?.denominazioneBeneficiario}
+          body={paymentInfo.paName}
           icon={<AccountBalanceIcon sx={iconStyle} />}
         />
       )}
-      {!!paymentInfo.causaleVersamento && (
+      {!!paymentInfo.description && (
         <FieldContainer
           title="paymentSummaryPage.causal"
-          body={paymentInfo.causaleVersamento}
+          body={paymentInfo.description}
           icon={<ReceiptLongIcon sx={iconStyle} />}
         />
       )}
       <FieldContainer
         title="paymentSummaryPage.amount"
-        body={moneyFormat(paymentInfo.importoSingoloVersamento)}
+        body={moneyFormat(paymentInfo.amount)}
         icon={<EuroIcon sx={iconStyle} />}
         endAdornment={
           <InfoOutlinedIcon
@@ -77,10 +77,10 @@ export default function PaymentSummaryPage() {
           sx={{ px: 2 }}
         />
       )}
-      {!!paymentInfo.enteBeneficiario?.identificativoUnivocoBeneficiario && (
+      {!!paymentInfo.paName && (
         <FieldContainer
           title="paymentSummaryPage.cf"
-          body={paymentInfo.enteBeneficiario?.identificativoUnivocoBeneficiario}
+          body={paymentInfo.paName}
           flexDirection="row"
           overflowWrapBody={false}
           sx={{ px: 2 }}

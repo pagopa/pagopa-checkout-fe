@@ -30,22 +30,13 @@ export function getPaymentInfo() {
     | PaymentInfo
     | undefined;
   return {
-    importoSingoloVersamento: paymentInfo?.importoSingoloVersamento || 0,
-    enteBeneficiario: paymentInfo?.enteBeneficiario
-      ? {
-          denominazioneBeneficiario:
-            paymentInfo?.enteBeneficiario?.denominazioneBeneficiario || "",
-          identificativoUnivocoBeneficiario:
-            paymentInfo?.enteBeneficiario?.identificativoUnivocoBeneficiario ||
-            "",
-        }
-      : undefined,
-    causaleVersamento:
-      paymentSubjectTransform(paymentInfo?.causaleVersamento) || undefined,
-    codiceContestoPagamento: paymentInfo?.codiceContestoPagamento || "",
-    ibanAccredito: paymentInfo?.ibanAccredito
-      ? paymentInfo?.ibanAccredito
-      : undefined,
+    amount: paymentInfo?.amount || 0,
+    paymentContextCode: paymentInfo?.paymentContextCode || "",
+    rptId: paymentInfo?.rptId || "",
+    paFiscalCode: paymentInfo?.paFiscalCode || "",
+    paName: paymentInfo?.paName || "",
+    description: paymentInfo?.description || "",
+    dueDate: paymentInfo?.dueDate || "",
   };
 }
 

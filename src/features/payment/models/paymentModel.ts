@@ -51,16 +51,13 @@ export const SecureCodeLabels: {
 };
 
 export interface PaymentInfo {
-  importoSingoloVersamento: number;
-  codiceContestoPagamento: string;
-  ibanAccredito: string | undefined;
-  causaleVersamento: string | undefined;
-  enteBeneficiario:
-    | {
-        identificativoUnivocoBeneficiario: string;
-        denominazioneBeneficiario: string;
-      }
-    | undefined;
+  amount: number;
+  paymentContextCode: string;
+  rptId?: string;
+  paFiscalCode?: string;
+  paName?: string;
+  description?: string;
+  dueDate?: string;
 }
 
 export interface PaymentInfoData {

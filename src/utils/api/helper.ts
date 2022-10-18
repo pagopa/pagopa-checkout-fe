@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-identical-functions */
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { Millisecond } from "@pagopa/ts-commons/lib/units";
 import * as E from "fp-ts/Either";
@@ -11,7 +12,7 @@ import { PaymentActivationsGetResponse } from "../../../generated/definitions/pa
 import { PaymentActivationsPostResponse } from "../../../generated/definitions/payment-activations-api/PaymentActivationsPostResponse";
 import { Detail_v2Enum } from "../../../generated/definitions/payment-activations-api/PaymentProblemJson";
 import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-activations-api/PaymentRequestsGetResponse";
-import { PaymentMethodResponse } from "../../../generated/definitions/payment-ecommerce/PaymentMethodResponse";
+import { PaymentRequestsGetResponse as EcommercePaymentRequestsGetResponse } from "../../../generated/definitions/payment-ecommerce/PaymentRequestsGetResponse";
 import {
   TypeEnum,
   Wallet,
@@ -98,10 +99,63 @@ import {
 import { getBrowserInfoTask, getEMVCompliantColorDepth } from "./checkHelper";
 import {
   apiPaymentActivationsClient,
+  apiPaymentEcommerceClient,
   apiPaymentTransactionsClient,
   pmClient,
-  apiPaymentEcommerceClient,
 } from "./client";
+
+export const getEcommercePaymentInfoTask = (
+  rptId: RptId
+): TE.TaskEither<string, EcommercePaymentRequestsGetResponse> =>
+  pipe(
+    TE.tryCatch(
+      () => {
+        mixpanel.track(PAYMENT_VERIFY_INIT.value, {
+          EVENT_ID: PAYMENT_VERIFY_INIT.value,
+        });
+        return apiPaymentEcommerceClient.getPaymentRequestInfo({
+          rpt_id: rptId,
+        });
+      },
+      () => {
+        mixpanel.track(PAYMENT_VERIFY_NET_ERR.value, {
+          EVENT_ID: PAYMENT_VERIFY_NET_ERR.value,
+        });
+        return "Errore recupero pagamento";
+      }
+    ),
+    TE.fold(
+      (err) => {
+        mixpanel.track(PAYMENT_VERIFY_SVR_ERR.value, {
+          EVENT_ID: PAYMENT_VERIFY_SVR_ERR.value,
+        });
+        return TE.left(err);
+      },
+      (errorOrResponse) =>
+        pipe(
+          errorOrResponse,
+          E.fold(
+            () => TE.left(Detail_v2Enum.GENERIC_ERROR),
+            (responseType) => {
+              const reason =
+                responseType.status === 200 ? "" : Detail_v2Enum.GENERIC_ERROR;
+              const EVENT_ID: string =
+                responseType.status === 200
+                  ? PAYMENT_VERIFY_SUCCESS.value
+                  : PAYMENT_VERIFY_RESP_ERR.value;
+              mixpanel.track(EVENT_ID, { EVENT_ID, reason });
+
+              if (responseType.status === 400) {
+                return TE.left(Detail_v2Enum.GENERIC_ERROR);
+              }
+              return responseType.status !== 200
+                ? TE.left(ErrorsType.STATUS_ERROR as string)
+                : TE.of(responseType.value);
+            }
+          )
+        )
+    )
+  );
 
 export const getPaymentInfoTask = (
   rptId: RptId,
@@ -1168,5 +1222,5 @@ export const getPaymentInstruments = async (
     )
   )();
   console.log(list);
-  onResponse(list);
+  onResponse(list || []);
 };
