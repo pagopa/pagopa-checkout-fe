@@ -105,7 +105,8 @@ import {
 } from "./client";
 
 export const getEcommercePaymentInfoTask = (
-  rptId: RptId
+  rptId: RptId,
+  recaptchaResponse: string
 ): TE.TaskEither<string, EcommercePaymentRequestsGetResponse> =>
   pipe(
     TE.tryCatch(
@@ -115,6 +116,7 @@ export const getEcommercePaymentInfoTask = (
         });
         return apiPaymentEcommerceClient.getPaymentRequestInfo({
           rpt_id: rptId,
+          recaptchaResponse,
         });
       },
       () => {

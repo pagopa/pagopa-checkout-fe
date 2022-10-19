@@ -52,7 +52,7 @@ export default function PaymentNoticePage() {
       const token = await ref.current?.executeAsync();
 
       await pipe(
-        getEcommercePaymentInfoTask(rptId),
+        getEcommercePaymentInfoTask(rptId, token || ""),
         TE.mapLeft((err) => onError(err)),
         TE.map((paymentInfo) => {
           setPaymentInfo(paymentInfo as PaymentInfo);
