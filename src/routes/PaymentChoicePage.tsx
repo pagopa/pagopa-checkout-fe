@@ -18,7 +18,7 @@ import { CheckoutRoutes } from "./models/routeModel";
 export default function PaymentChoicePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const amount = getPaymentInfo().importoSingoloVersamento;
+  const amount = getPaymentInfo().amount;
   const [loading, setLoading] = React.useState(false);
   const [cancelModalOpen, setCancelModalOpen] = React.useState(false);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
