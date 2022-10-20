@@ -1197,7 +1197,7 @@ export const getPaymentInstruments = async (
   onError: (e: string) => void,
   onResponse: (data: Array<PaymentInstruments>) => void
 ) => {
-  const list: Array<PaymentInstruments> = await pipe(
+  const list: Array<PaymentInstruments> | undefined = await pipe(
     TE.tryCatch(
       () => apiPaymentEcommerceClient.getAllPaymentMethods(query),
       () => {
@@ -1217,12 +1217,11 @@ export const getPaymentInstruments = async (
             () => [],
             (myRes) =>
               myRes.status === 200
-                ? (myRes.value as Array<PaymentInstruments>)
+                ? (myRes.value as Array<PaymentInstruments> | undefined)
                 : []
           )
         )
     )
   )();
-  console.log(list);
   onResponse(list || []);
 };
