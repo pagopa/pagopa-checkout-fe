@@ -86,6 +86,8 @@ stages:
               pm_host: 'https://acardste.vaservices.eu:1443'
               pm_api_basepath: '/pp-restapi/v4'
               donations_url: 'https://api.dev.platform.pagopa.it/donations/api/v1/availabledonations'
+              ecommerce_host: 'https://api.uat.platform.pagopa.it'
+              api_ecommerce_basepath: '/checkout/ecommerce/v1'
 
           - script: |
               yarn build
