@@ -5,5 +5,11 @@ interface PaymentTypecode {
 export const PaymentMethodRoutes: PaymentTypecode = {
   PPAY: "paga-con-paypal",
   BPAY: "paga-con-bancomat-pay",
-  PO: "inserisci-carta",
+  CP: "inserisci-carta",
 };
+
+export enum TransactionMethods {
+  PPAY = "PPAY",
+  BPAY = "BPAY",
+  CP = "CP",
+}
