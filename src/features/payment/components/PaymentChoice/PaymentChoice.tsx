@@ -23,7 +23,9 @@ function ImageComponent(method: PaymentInstruments) {
 
   return image === "main" ? (
     <img
-      src={config.CHECKOUT_PAGOPA_ASSETS_CDN + `/${method.paymentTypeCode}.png`}
+      src={
+        config.CHECKOUT_PAGOPA_ASSETS_CDN + `/${method.name.toLowerCase()}.png`
+      }
       onError={onError}
       style={
         method.status === "DISABLED"
@@ -58,10 +60,25 @@ export function PaymentChoice(props: {
   }, []);
 
   const getPaymentsMethods = React.useCallback(
-    (status: string = "ENABLED") =>
-      props.paymentInstruments
+    (status: string = "ENABLED") => {
+      const methods = props.paymentInstruments
         .filter((method) => method.status === status)
-        .map((method, index) => makeMethodComponent(method, index)),
+        .map((method, index) => makeMethodComponent(method, index));
+      if (status === "ENABLED") {
+        methods.push(
+          <ClickableFieldContainer
+            key={methods.length}
+            title="paymentChoicePage.others"
+            clickable={false}
+            icon={<MobileFriendlyIcon color="primary" fontSize="small" />}
+            endAdornment={
+              <Chip label={t("paymentChoicePage.incoming")} color="secondary" />
+            }
+          />
+        );
+      }
+      return methods;
+    },
     [props.amount, props.paymentInstruments]
   );
   const makeMethodComponent = React.useCallback(
@@ -111,14 +128,6 @@ export function PaymentChoice(props: {
             .fill(1)
             .map((_, index) => <ClickableFieldContainer key={index} loading />)
         : [getPaymentsMethods(), getPaymentsMethods("DISABLED")]}
-      <ClickableFieldContainer
-        title="paymentChoicePage.others"
-        clickable={false}
-        icon={<MobileFriendlyIcon color="primary" fontSize="small" />}
-        endAdornment={
-          <Chip label={t("paymentChoicePage.incoming")} color="secondary" />
-        }
-      />
     </>
   );
 }

@@ -59,7 +59,7 @@ function ClickableFieldContainer(props: {
       >
         {props.loading ? (
           <>
-            <Skeleton variant="circular" width="40px" height="40px" />
+            <Skeleton variant="circular" width="30px" height="30px" />
             <Skeleton variant="text" width="225px" height="30px" />
           </>
         ) : (
