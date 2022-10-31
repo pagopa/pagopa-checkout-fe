@@ -30,7 +30,12 @@ import ClickableFieldContainer from "../components/TextFormField/ClickableFieldC
 import FieldContainer from "../components/TextFormField/FieldContainer";
 import PspFieldContainer from "../components/TextFormField/PspFieldContainer";
 import { PspList } from "../features/payment/models/paymentModel";
-import { getCheckData, getEmailInfo, getWallet } from "../utils/api/apiService";
+import {
+  getCheckData,
+  getEmailInfo,
+  getPaymentInfo,
+  getWallet,
+} from "../utils/api/apiService";
 import {
   cancelPayment,
   confirmPayment,
@@ -79,6 +84,7 @@ export default function PaymentCheckPage() {
   const wallet = getWallet();
   const email = getEmailInfo();
   const totalAmount = checkData.amount.amount + wallet.psp.fixedCost.amount;
+  const amount = getPaymentInfo().amount;
 
   const onBrowserBackEvent = (e: any) => {
     e.preventDefault();
@@ -309,7 +315,7 @@ export default function PaymentCheckPage() {
         >
           {t("paymentCheckPage.modal.body")}
           <Link
-            href="https://www.pagopa.gov.it/it/cittadini/trasparenza-costi/"
+            href={`https://www.pagopa.gov.it/it/cittadini/trasparenza-costi/?amount=${amount}`}
             target="_blank"
             rel="noopener noreferrer"
             sx={{ fontWeight: 600, textDecoration: "none" }}

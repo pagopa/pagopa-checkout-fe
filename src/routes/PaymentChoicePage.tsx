@@ -19,6 +19,7 @@ import { CheckoutRoutes } from "./models/routeModel";
 export default function PaymentChoicePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const amount = getPaymentInfo().amount;
   const [loading, setLoading] = React.useState(false);
   const [instrumentsLoading, setInstrumentsLoading] = React.useState(false);
   const [cancelModalOpen, setCancelModalOpen] = React.useState(false);
@@ -93,7 +94,7 @@ export default function PaymentChoicePage() {
         description="paymentChoicePage.description"
         link={
           <Link
-            href="https://www.pagopa.gov.it/it/cittadini/trasparenza-costi/"
+            href={`https://www.pagopa.gov.it/it/cittadini/trasparenza-costi/?amount=${amount}`}
             target="_blank"
             rel="noopener noreferrer"
             style={{ fontWeight: 600, textDecoration: "none" }}

@@ -1,9 +1,3 @@
-import { agent } from "@pagopa/ts-commons";
-import {
-  AbortableFetch,
-  setFetchTimeout,
-  toFetch,
-} from "@pagopa/ts-commons/lib/fetch";
 import { Millisecond } from "@pagopa/ts-commons/lib/units";
 import { createClient } from "../../../generated/definitions/payment-activations-api/client";
 import { createClient as createPmClient } from "../../../generated/definitions/payment-manager-api/client";
@@ -13,15 +7,6 @@ import { getConfigOrThrow } from "../config/config";
 import { retryingFetch } from "../config/fetch";
 
 const conf = getConfigOrThrow();
-
-// Must be an https endpoint so we use an https agent
-const abortableFetch = AbortableFetch(agent.getHttpFetch(process.env));
-const fetchWithTimeout = toFetch(
-  setFetchTimeout(conf.CHECKOUT_API_TIMEOUT as Millisecond, abortableFetch)
-);
-// tslint:disable-next-line: no-any
-const fetchApi: typeof fetchWithTimeout =
-  fetch as any as typeof fetchWithTimeout;
 
 /**
  * Api client for payment activations API
