@@ -1,8 +1,15 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable functional/immutable-data */
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import CreditCardIcon from "@mui/icons-material/CreditCard";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import MobileFriendlyIcon from "@mui/icons-material/MobileFriendly";
-import { Chip, useTheme } from "@mui/material";
+import {
+  Accordion,
+  AccordionSummary,
+  Chip,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
@@ -21,18 +28,27 @@ function ImageComponent(method: PaymentInstruments) {
   const onError = React.useCallback(() => setImage("alt"), []);
   const imgSize = { width: "23px", height: "23px" };
 
-  return image === "main" ? (
-    <img
-      src={
-        config.CHECKOUT_PAGOPA_ASSETS_CDN + `/${method.name.toLowerCase()}.png`
-      }
-      onError={onError}
-      style={
+  return method.asset && image === "main" ? (
+    typeof method.asset === "string" ? (
+      <img
+        src={
+          config.CHECKOUT_PAGOPA_ASSETS_CDN +
+          `/${method?.asset.toLowerCase()}.png`
+        }
+        onError={onError}
+        style={
+          method.status === "DISABLED"
+            ? { color: theme.palette.text.disabled, ...imgSize }
+            : { color: theme.palette.text.primary, ...imgSize }
+        }
+      />
+    ) : (
+      method.asset(
         method.status === "DISABLED"
-          ? { color: theme.palette.text.disabled, ...imgSize }
-          : { color: theme.palette.text.primary, ...imgSize }
-      }
-    />
+          ? { color: theme.palette.text.disabled }
+          : {}
+      )
+    )
   ) : (
     <MobileFriendlyIcon
       color="primary"
@@ -52,18 +68,133 @@ export function PaymentChoice(props: {
   loading?: boolean;
 }) {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const theme = useTheme();
+  const navigate = useNavigate();
+  const paymentInstruments = [
+    {
+      description: "Postepay",
+      id: "19d8771f-e8d1-4ead-bcc0-b9b8bc6a2c4f",
+      name: "Postepay",
+      paymentTypeCode: "PPAY",
+      status: "ENABLED",
+      ranges: [],
+      asset: "",
+    },
+    {
+      description: "ciccio",
+      id: "19d8771f-e8d1-4ead-bcc0-b9b8bc6a2c4f",
+      name: "ciccio",
+      paymentTypeCode: "PPAY",
+      status: "ENABLED",
+      ranges: [],
+      asset: "",
+    },
+    {
+      description: "Postepay",
+      id: "19d8771f-e8d1-4ead-bcc0-b9b8bc6a2c4f",
+      name: "Postepay",
+      paymentTypeCode: "CP",
+      status: "ENABLED",
+      ranges: [],
+      asset: "",
+    },
+    {
+      description: "Postepay",
+      id: "19d8771f-e8d1-4ead-bcc0-b9b8bc6a2c4f",
+      name: "Postepay",
+      paymentTypeCode: "CP",
+      status: "ENABLED",
+      ranges: [],
+      asset: "",
+    },
+    {
+      description: "Postepay",
+      id: "19d8771f-e8d1-4ead-bcc0-b9b8bc6a2c4f",
+      name: "Postepay",
+      paymentTypeCode: "CP",
+      status: "ENABLED",
+      ranges: [],
+      asset: "",
+    },
+    {
+      description: "pasticcio",
+      id: "19d8771f-e8d1-4ead-bcc0-b9b8bc6a2c4f",
+      name: "pasticcio",
+      paymentTypeCode: "CC",
+      status: "ENABLED",
+      ranges: [],
+      asset: "",
+    },
+    {
+      description: "pasticcio",
+      id: "19d8771f-e8d1-4ead-bcc0-b9b8bc6a2c4f",
+      name: "pasticcio",
+      paymentTypeCode: "CP",
+      status: "DISABLED",
+      ranges: [],
+      asset: "",
+    },
+    {
+      description: "pasticcio",
+      id: "19d8771f-e8d1-4ead-bcc0-b9b8bc6a2c4f",
+      name: "pasticcio",
+      paymentTypeCode: "PPAY",
+      status: "DISABLED",
+      ranges: [],
+      asset: "",
+    },
+  ];
 
   const handleClickOnMethod = React.useCallback((paymentType: string) => {
-    navigate(`/${PaymentMethodRoutes[paymentType]}`);
+    const route: string = PaymentMethodRoutes[paymentType]?.route;
+    navigate(`/${route}`);
   }, []);
 
   const getPaymentsMethods = React.useCallback(
     (status: string = "ENABLED") => {
-      const methods = props.paymentInstruments
+      const filteredMethods = paymentInstruments
         .filter((method) => method.status === status)
+        .reduce((prev, current) => {
+          if (
+            PaymentMethodRoutes[current.paymentTypeCode] &&
+            (!prev.length ||
+              !prev.some(
+                (method) => method.paymentTypeCode === current.paymentTypeCode
+              ))
+          ) {
+            prev.push({
+              ...current,
+              label: PaymentMethodRoutes[current.paymentTypeCode].label,
+              asset:
+                PaymentMethodRoutes[current.paymentTypeCode].asset ||
+                current.asset,
+            });
+          }
+          return prev;
+        }, [] as Array<PaymentInstruments>);
+
+      const methodsArray: Array<PaymentInstruments> = [];
+      const methodCP = filteredMethods.find(
+        (method) => method.label === TransactionMethods.CP
+      );
+      const methodCC = filteredMethods.find(
+        (method) => method.label === TransactionMethods.CC
+      );
+      methodCP && methodsArray.push(methodCP);
+      methodCC && methodsArray.push(methodCC);
+
+      const methods = methodsArray
+        .concat(
+          filteredMethods
+            .filter(
+              (method) =>
+                method.label !== TransactionMethods.CP &&
+                method.label !== TransactionMethods.CC
+            )
+            .sort((a, b) => a.label.localeCompare(b.label))
+        )
         .map((method, index) => makeMethodComponent(method, index));
+
       if (status === "ENABLED") {
         methods.push(
           <ClickableFieldContainer
@@ -76,8 +207,30 @@ export function PaymentChoice(props: {
             }
           />
         );
+        return methods;
+      } else {
+        return (
+          <Accordion
+            key="accordion-1"
+            disableGutters
+            sx={{
+              py: 3,
+              bgcolor: theme.palette.background.default,
+            }}
+          >
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon color="primary" />}
+              aria-controls="payment-methods-content"
+              id="payment-methods-header"
+            >
+              <Typography variant="sidenav" component="div" color="primary">
+                {t("paymentChoicePage.showMore")}
+              </Typography>
+            </AccordionSummary>
+            {methods}
+          </Accordion>
+        );
       }
-      return methods;
     },
     [props.amount, props.paymentInstruments]
   );
@@ -85,27 +238,9 @@ export function PaymentChoice(props: {
     (method: PaymentInstruments, index: number) => (
       <ClickableFieldContainer
         key={index}
-        title={
-          method.paymentTypeCode === TransactionMethods.CP
-            ? "paymentChoicePage.creditCard"
-            : method.name
-        }
+        title={method.label}
         onClick={() => handleClickOnMethod(method.paymentTypeCode)}
-        icon={
-          method.paymentTypeCode === TransactionMethods.CP ? (
-            <CreditCardIcon
-              color="primary"
-              fontSize="small"
-              sx={
-                method.status === "DISABLED"
-                  ? { color: theme.palette.text.disabled }
-                  : {}
-              }
-            />
-          ) : (
-            <ImageComponent {...method} />
-          )
-        }
+        icon={<ImageComponent {...method} />}
         endAdornment={
           method.status === "ENABLED" && (
             <ArrowForwardIosIcon
