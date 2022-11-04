@@ -22,9 +22,9 @@ function groupByTypeCode(array: Array<PaymentInstruments>) {
   }, {} as Record<TransactionMethods, Array<PaymentInstruments>>);
 }
 
-function getSortedPaymentMethods(groupedMethods: {
-  [key: string]: Array<PaymentInstruments>;
-}) {
+function getSortedPaymentMethods(
+  groupedMethods: Record<TransactionMethods, Array<PaymentInstruments>>
+) {
   const paymentMethods: Array<PaymentInstruments> = [];
   const methodCP = groupedMethods[TransactionMethods.CP]?.[0];
   const methodCC = groupedMethods[TransactionMethods.CC]?.[0];
@@ -35,7 +35,7 @@ function getSortedPaymentMethods(groupedMethods: {
       key !== TransactionMethods.CC &&
       PaymentMethodRoutes[key as TransactionMethods]
     ) {
-      paymentMethods.push(groupedMethods[key][0]);
+      paymentMethods.push(groupedMethods[key as TransactionMethods][0]);
     }
   }
 
