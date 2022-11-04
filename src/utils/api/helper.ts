@@ -647,10 +647,7 @@ export const getSessionWallet = async (
                 O.fromNullable(checkData.idPayment),
                 O.getOrElse(() => "")
               ),
-              fiscalCode: pipe(
-                O.fromNullable(checkData.fiscalCode),
-                O.getOrElse(() => "")
-              ),
+              fiscalCode: "", // always empty cfr CHK-719
             },
           },
         }),
