@@ -24,6 +24,7 @@ import {
   PaymentInstruments,
   Wallet as PaymentWallet,
 } from "../../features/payment/models/paymentModel";
+import { PaymentMethodRoutes } from "../../routes/models/paymentMethodRoutes";
 import { getConfigOrThrow } from "../config/config";
 import {
   DONATION_INIT_SESSION,
@@ -1215,7 +1216,20 @@ export const getPaymentInstruments = async (
           myResExt,
           E.fold(
             () => [],
-            (myRes) => (myRes.status === 200 ? myRes.value : [])
+            (myRes) =>
+              myRes.status === 200
+                ? myRes.value
+                    .filter(
+                      (method) => !!PaymentMethodRoutes[method.paymentTypeCode]
+                    )
+                    .map((method) => ({
+                      ...method,
+                      label:
+                        PaymentMethodRoutes[method.paymentTypeCode]?.label ||
+                        method.name,
+                      asset: PaymentMethodRoutes[method.paymentTypeCode]?.asset, // when asset will be added to the object, add || method.asset
+                    }))
+                : []
           )
         )
     )

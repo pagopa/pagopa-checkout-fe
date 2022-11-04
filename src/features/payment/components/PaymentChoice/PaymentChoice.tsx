@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/cognitive-complexity */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable functional/immutable-data */
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
@@ -62,6 +63,17 @@ function ImageComponent(method: PaymentInstruments) {
   );
 }
 
+function groupByTypeCode(array: Array<PaymentInstruments>) {
+  return array.reduce((acc, current) => {
+    if (!acc[current.paymentTypeCode]) {
+      acc[current.paymentTypeCode] = [];
+    }
+
+    acc[current.paymentTypeCode].push(current);
+    return acc;
+  }, {} as { [key: string]: Array<PaymentInstruments> });
+}
+
 export function PaymentChoice(props: {
   amount: number;
   paymentInstruments: Array<PaymentInstruments>;
@@ -70,80 +82,6 @@ export function PaymentChoice(props: {
   const { t } = useTranslation();
   const theme = useTheme();
   const navigate = useNavigate();
-  const paymentInstruments = [
-    {
-      description: "Postepay",
-      id: "19d8771f-e8d1-4ead-bcc0-b9b8bc6a2c4f",
-      name: "Postepay",
-      paymentTypeCode: "PPAY",
-      status: "ENABLED",
-      ranges: [],
-      asset: "",
-    },
-    {
-      description: "ciccio",
-      id: "19d8771f-e8d1-4ead-bcc0-b9b8bc6a2c4f",
-      name: "ciccio",
-      paymentTypeCode: "PPAY",
-      status: "ENABLED",
-      ranges: [],
-      asset: "",
-    },
-    {
-      description: "Postepay",
-      id: "19d8771f-e8d1-4ead-bcc0-b9b8bc6a2c4f",
-      name: "Postepay",
-      paymentTypeCode: "CP",
-      status: "ENABLED",
-      ranges: [],
-      asset: "",
-    },
-    {
-      description: "Postepay",
-      id: "19d8771f-e8d1-4ead-bcc0-b9b8bc6a2c4f",
-      name: "Postepay",
-      paymentTypeCode: "CP",
-      status: "ENABLED",
-      ranges: [],
-      asset: "",
-    },
-    {
-      description: "Postepay",
-      id: "19d8771f-e8d1-4ead-bcc0-b9b8bc6a2c4f",
-      name: "Postepay",
-      paymentTypeCode: "CP",
-      status: "ENABLED",
-      ranges: [],
-      asset: "",
-    },
-    {
-      description: "pasticcio",
-      id: "19d8771f-e8d1-4ead-bcc0-b9b8bc6a2c4f",
-      name: "pasticcio",
-      paymentTypeCode: "CC",
-      status: "ENABLED",
-      ranges: [],
-      asset: "",
-    },
-    {
-      description: "pasticcio",
-      id: "19d8771f-e8d1-4ead-bcc0-b9b8bc6a2c4f",
-      name: "pasticcio",
-      paymentTypeCode: "CP",
-      status: "DISABLED",
-      ranges: [],
-      asset: "",
-    },
-    {
-      description: "pasticcio",
-      id: "19d8771f-e8d1-4ead-bcc0-b9b8bc6a2c4f",
-      name: "pasticcio",
-      paymentTypeCode: "PPAY",
-      status: "DISABLED",
-      ranges: [],
-      asset: "",
-    },
-  ];
 
   const handleClickOnMethod = React.useCallback((paymentType: string) => {
     const route: string = PaymentMethodRoutes[paymentType]?.route;
@@ -152,48 +90,33 @@ export function PaymentChoice(props: {
 
   const getPaymentsMethods = React.useCallback(
     (status: string = "ENABLED") => {
-      const filteredMethods = paymentInstruments
-        .filter((method) => method.status === status)
-        .reduce((prev, current) => {
-          if (
-            PaymentMethodRoutes[current.paymentTypeCode] &&
-            (!prev.length ||
-              !prev.some(
-                (method) => method.paymentTypeCode === current.paymentTypeCode
-              ))
-          ) {
-            prev.push({
-              ...current,
-              label: PaymentMethodRoutes[current.paymentTypeCode].label,
-              asset:
-                PaymentMethodRoutes[current.paymentTypeCode].asset ||
-                current.asset,
-            });
-          }
-          return prev;
-        }, [] as Array<PaymentInstruments>);
-
-      const methodsArray: Array<PaymentInstruments> = [];
-      const methodCP = filteredMethods.find(
-        (method) => method.label === TransactionMethods.CP
+      const filteredMethods = props.paymentInstruments.filter(
+        (method) => method.status === status
       );
-      const methodCC = filteredMethods.find(
-        (method) => method.label === TransactionMethods.CC
-      );
-      methodCP && methodsArray.push(methodCP);
-      methodCC && methodsArray.push(methodCC);
+      const groupedMethods = groupByTypeCode(filteredMethods);
+      const paymentMethods: Array<PaymentInstruments> = [];
+      const methodCP = groupedMethods[TransactionMethods.CP]?.[0];
+      const methodCC = groupedMethods[TransactionMethods.CC]?.[0];
+      for (const key in groupedMethods) {
+        if (
+          key !== TransactionMethods.CP &&
+          key !== TransactionMethods.CC &&
+          PaymentMethodRoutes[key]
+        ) {
+          paymentMethods.push(groupedMethods[key][0]);
+        }
+      }
 
-      const methods = methodsArray
-        .concat(
-          filteredMethods
-            .filter(
-              (method) =>
-                method.label !== TransactionMethods.CP &&
-                method.label !== TransactionMethods.CC
-            )
-            .sort((a, b) => a.label.localeCompare(b.label))
-        )
-        .map((method, index) => makeMethodComponent(method, index));
+      const sortedMethods = paymentMethods.sort((a, b) =>
+        a.label.localeCompare(b.label)
+      );
+
+      methodCC && sortedMethods.unshift(methodCC);
+      methodCP && sortedMethods.unshift(methodCP);
+
+      const methods = sortedMethods.map((method, index) =>
+        makeMethodComponent(method, index)
+      );
 
       if (status === "ENABLED") {
         methods.push(
@@ -209,27 +132,31 @@ export function PaymentChoice(props: {
         );
         return methods;
       } else {
-        return (
-          <Accordion
-            key="accordion-1"
-            disableGutters
-            sx={{
-              py: 3,
-              bgcolor: theme.palette.background.default,
-            }}
-          >
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon color="primary" />}
-              aria-controls="payment-methods-content"
-              id="payment-methods-header"
+        if (methods.length) {
+          return (
+            <Accordion
+              key="accordion-1"
+              disableGutters
+              sx={{
+                py: 3,
+                bgcolor: theme.palette.background.default,
+              }}
             >
-              <Typography variant="sidenav" component="div" color="primary">
-                {t("paymentChoicePage.showMore")}
-              </Typography>
-            </AccordionSummary>
-            {methods}
-          </Accordion>
-        );
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon color="primary" />}
+                aria-controls="payment-methods-content"
+                id="payment-methods-header"
+              >
+                <Typography variant="sidenav" component="div" color="primary">
+                  {t("paymentChoicePage.showMore")}
+                </Typography>
+              </AccordionSummary>
+              {methods}
+            </Accordion>
+          );
+        } else {
+          return [];
+        }
       }
     },
     [props.amount, props.paymentInstruments]
