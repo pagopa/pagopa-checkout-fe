@@ -24,7 +24,10 @@ import {
   PaymentInstruments,
   Wallet as PaymentWallet,
 } from "../../features/payment/models/paymentModel";
-import { PaymentMethodRoutes } from "../../routes/models/paymentMethodRoutes";
+import {
+  PaymentMethodRoutes,
+  TransactionMethods,
+} from "../../routes/models/paymentMethodRoutes";
 import { getConfigOrThrow } from "../config/config";
 import {
   DONATION_INIT_SESSION,
@@ -1237,14 +1240,21 @@ export const getPaymentInstruments = async (
                 });
                 return myRes.value
                   .filter(
-                    (method) => !!PaymentMethodRoutes[method.paymentTypeCode]
+                    (method) =>
+                      !!PaymentMethodRoutes[
+                        method.paymentTypeCode as TransactionMethods
+                      ]
                   )
                   .map((method) => ({
                     ...method,
                     label:
-                      PaymentMethodRoutes[method.paymentTypeCode]?.label ||
-                      method.name,
-                    asset: PaymentMethodRoutes[method.paymentTypeCode]?.asset, // when asset will be added to the object, add || method.asset
+                      PaymentMethodRoutes[
+                        method.paymentTypeCode as TransactionMethods
+                      ]?.label || method.name,
+                    asset:
+                      PaymentMethodRoutes[
+                        method.paymentTypeCode as TransactionMethods
+                      ]?.asset, // when asset will be added to the object, add || method.asset
                   }));
               } else {
                 mixpanel.track(PAYMENT_METHODS_RESP_ERROR.value, {

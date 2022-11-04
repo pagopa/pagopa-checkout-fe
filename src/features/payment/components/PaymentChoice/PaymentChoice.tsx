@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/cognitive-complexity */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable functional/immutable-data */
 import React from "react";
@@ -18,7 +19,7 @@ function groupByTypeCode(array: Array<PaymentInstruments>) {
 
     acc[current.paymentTypeCode].push(current);
     return acc;
-  }, {} as { [key: string]: Array<PaymentInstruments> });
+  }, {} as Record<TransactionMethods, Array<PaymentInstruments>>);
 }
 
 function getSortedPaymentMethods(groupedMethods: {
@@ -32,7 +33,7 @@ function getSortedPaymentMethods(groupedMethods: {
     if (
       key !== TransactionMethods.CP &&
       key !== TransactionMethods.CC &&
-      PaymentMethodRoutes[key]
+      PaymentMethodRoutes[key as TransactionMethods]
     ) {
       paymentMethods.push(groupedMethods[key][0]);
     }
@@ -55,10 +56,13 @@ export function PaymentChoice(props: {
 }) {
   const navigate = useNavigate();
 
-  const handleClickOnMethod = React.useCallback((paymentType: string) => {
-    const route: string = PaymentMethodRoutes[paymentType]?.route;
-    navigate(`/${route}`);
-  }, []);
+  const handleClickOnMethod = React.useCallback(
+    (paymentType: TransactionMethods) => {
+      const route: string = PaymentMethodRoutes[paymentType]?.route;
+      navigate(`/${route}`);
+    },
+    []
+  );
 
   const getPaymentMethods = React.useCallback(
     (status: "ENABLED" | "DISABLED" = "ENABLED") =>

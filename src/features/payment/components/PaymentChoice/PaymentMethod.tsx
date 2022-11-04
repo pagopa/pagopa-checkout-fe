@@ -12,6 +12,7 @@ import {
 import * as React from "react";
 import { useTranslation } from "react-i18next";
 import ClickableFieldContainer from "../../../../components/TextFormField/ClickableFieldContainer";
+import { TransactionMethods } from "../../../../routes/models/paymentMethodRoutes";
 import { getConfigOrThrow } from "../../../../utils/config/config";
 import { PaymentInstruments } from "../../models/paymentModel";
 
@@ -61,7 +62,7 @@ const MethodComponentList = ({
   onClick,
 }: {
   methods: Array<PaymentInstruments>;
-  onClick?: (typecode: string) => void;
+  onClick?: (typecode: TransactionMethods) => void;
 }) => (
   <>
     {methods.map((method, index) => (
@@ -79,7 +80,7 @@ export const EnabledPaymentMethods = ({
   onClick,
 }: {
   methods: Array<PaymentInstruments>;
-  onClick: (typecode: string) => void;
+  onClick: (typecode: TransactionMethods) => void;
 }) => {
   const { t } = useTranslation();
 

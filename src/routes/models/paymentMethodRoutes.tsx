@@ -11,13 +11,12 @@ export enum TransactionMethods {
   CC = "CC",
 }
 
-interface PaymentTypecode {
-  [key: string]: {
-    label: string;
-    asset?: (sx: SxProps<Theme>) => JSX.Element;
-    route: string;
-  };
+interface PaymentMethodAttr {
+  label: string;
+  asset?: (sx: SxProps<Theme>) => JSX.Element;
+  route: string;
 }
+type PaymentTypecode = Record<TransactionMethods, PaymentMethodAttr>;
 
 export const PaymentMethodRoutes: PaymentTypecode = {
   PPAY: {
