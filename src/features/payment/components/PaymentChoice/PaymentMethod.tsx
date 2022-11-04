@@ -56,17 +56,23 @@ function ImageComponent(method: PaymentInstruments) {
   );
 }
 
-const makeMethodComponents = (
-  methods: Array<PaymentInstruments>,
-  onClick?: (typecode: string) => void
-) =>
-  methods.map((method, index) => (
-    <MethodComponent
-      method={method}
-      key={index}
-      onClick={onClick ? () => onClick(method.paymentTypeCode) : undefined}
-    />
-  ));
+const MethodComponentList = ({
+  methods,
+  onClick,
+}: {
+  methods: Array<PaymentInstruments>;
+  onClick?: (typecode: string) => void;
+}) => (
+  <>
+    {methods.map((method, index) => (
+      <MethodComponent
+        method={method}
+        key={index}
+        onClick={onClick ? () => onClick(method.paymentTypeCode) : undefined}
+      />
+    ))}
+  </>
+);
 
 export const EnabledPaymentMethods = ({
   methods,
@@ -76,20 +82,20 @@ export const EnabledPaymentMethods = ({
   onClick: (typecode: string) => void;
 }) => {
   const { t } = useTranslation();
-  const methodsComponents = makeMethodComponents(methods, onClick);
 
-  methodsComponents.push(
-    <ClickableFieldContainer
-      key={methods.length}
-      title="paymentChoicePage.others"
-      clickable={false}
-      icon={<MobileFriendlyIcon color="primary" fontSize="small" />}
-      endAdornment={
-        <Chip label={t("paymentChoicePage.incoming")} color="secondary" />
-      }
-    />
+  return (
+    <>
+      <MethodComponentList methods={methods} onClick={onClick} />
+      <ClickableFieldContainer
+        title="paymentChoicePage.others"
+        clickable={false}
+        icon={<MobileFriendlyIcon color="primary" fontSize="small" />}
+        endAdornment={
+          <Chip label={t("paymentChoicePage.incoming")} color="secondary" />
+        }
+      />
+    </>
   );
-  return <>{methodsComponents}</>;
 };
 
 export const DisabledPaymentMethods = ({
@@ -99,9 +105,8 @@ export const DisabledPaymentMethods = ({
 }) => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const methodsComponents = makeMethodComponents(methods);
 
-  return methodsComponents.length ? (
+  return methods.length ? (
     <>
       <Accordion
         key="accordion-1"
@@ -120,7 +125,7 @@ export const DisabledPaymentMethods = ({
             {t("paymentChoicePage.showMore")}
           </Typography>
         </AccordionSummary>
-        {methodsComponents}
+        <MethodComponentList methods={methods} />
       </Accordion>
     </>
   ) : null;
