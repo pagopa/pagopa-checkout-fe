@@ -55,6 +55,11 @@ import {
   PAYMENT_CHECK_RESP_ERR,
   PAYMENT_CHECK_SUCCESS,
   PAYMENT_CHECK_SVR_ERR,
+  PAYMENT_METHODS_ACCESS,
+  PAYMENT_METHODS_NET_ERROR,
+  PAYMENT_METHODS_RESP_ERROR,
+  PAYMENT_METHODS_SUCCESS,
+  PAYMENT_METHODS_SVR_ERROR,
   PAYMENT_PAY3DS2_INIT,
   PAYMENT_PAY3DS2_NET_ERR,
   PAYMENT_PAY3DS2_RESP_ERR,
@@ -1198,16 +1203,25 @@ export const getPaymentInstruments = async (
   onError: (e: string) => void,
   onResponse: (data: Array<PaymentInstruments>) => void
 ) => {
+  mixpanel.track(PAYMENT_METHODS_ACCESS.value, {
+    EVENT_ID: PAYMENT_METHODS_ACCESS.value,
+  });
   const list = await pipe(
     TE.tryCatch(
       () => apiPaymentEcommerceClient.getAllPaymentMethods(query),
       () => {
+        mixpanel.track(PAYMENT_METHODS_NET_ERROR.value, {
+          EVENT_ID: PAYMENT_METHODS_NET_ERROR.value,
+        });
         onError(ErrorsType.STATUS_ERROR);
         return toError;
       }
     ),
     TE.fold(
       () => async () => {
+        mixpanel.track(PAYMENT_METHODS_SVR_ERROR.value, {
+          EVENT_ID: PAYMENT_METHODS_SVR_ERROR.value,
+        });
         onError(ErrorsType.STATUS_ERROR);
         return [];
       },
@@ -1216,20 +1230,29 @@ export const getPaymentInstruments = async (
           myResExt,
           E.fold(
             () => [],
-            (myRes) =>
-              myRes.status === 200
-                ? myRes.value
-                    .filter(
-                      (method) => !!PaymentMethodRoutes[method.paymentTypeCode]
-                    )
-                    .map((method) => ({
-                      ...method,
-                      label:
-                        PaymentMethodRoutes[method.paymentTypeCode]?.label ||
-                        method.name,
-                      asset: PaymentMethodRoutes[method.paymentTypeCode]?.asset, // when asset will be added to the object, add || method.asset
-                    }))
-                : []
+            (myRes) => {
+              if (myRes.status === 200) {
+                mixpanel.track(PAYMENT_METHODS_SUCCESS.value, {
+                  EVENT_ID: PAYMENT_METHODS_SUCCESS.value,
+                });
+                return myRes.value
+                  .filter(
+                    (method) => !!PaymentMethodRoutes[method.paymentTypeCode]
+                  )
+                  .map((method) => ({
+                    ...method,
+                    label:
+                      PaymentMethodRoutes[method.paymentTypeCode]?.label ||
+                      method.name,
+                    asset: PaymentMethodRoutes[method.paymentTypeCode]?.asset, // when asset will be added to the object, add || method.asset
+                  }));
+              } else {
+                mixpanel.track(PAYMENT_METHODS_RESP_ERROR.value, {
+                  EVENT_ID: PAYMENT_METHODS_RESP_ERROR.value,
+                });
+                return [];
+              }
+            }
           )
         )
     )
