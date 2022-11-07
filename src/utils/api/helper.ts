@@ -646,11 +646,7 @@ export const getSessionWallet = async (
               idPayment: pipe(
                 O.fromNullable(checkData.idPayment),
                 O.getOrElse(() => "")
-              ),
-              fiscalCode: pipe(
-                O.fromNullable(checkData.fiscalCode),
-                O.getOrElse(() => "")
-              ),
+              )
             },
           },
         }),
