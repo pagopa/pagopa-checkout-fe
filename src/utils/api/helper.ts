@@ -646,7 +646,7 @@ export const getSessionWallet = async (
               idPayment: pipe(
                 O.fromNullable(checkData.idPayment),
                 O.getOrElse(() => "")
-              )
+              ),
             },
           },
         }),
