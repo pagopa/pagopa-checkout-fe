@@ -21,8 +21,13 @@ import { RptId } from "../../../generated/definitions/payment-transactions-api/R
 import {
   InputCardFormFields,
   PaymentCheckData,
+  PaymentInstruments,
   Wallet as PaymentWallet,
 } from "../../features/payment/models/paymentModel";
+import {
+  PaymentMethodRoutes,
+  TransactionMethods,
+} from "../../routes/models/paymentMethodRoutes";
 import { getConfigOrThrow } from "../config/config";
 import {
   DONATION_INIT_SESSION,
@@ -53,6 +58,11 @@ import {
   PAYMENT_CHECK_RESP_ERR,
   PAYMENT_CHECK_SUCCESS,
   PAYMENT_CHECK_SVR_ERR,
+  PAYMENT_METHODS_ACCESS,
+  PAYMENT_METHODS_NET_ERROR,
+  PAYMENT_METHODS_RESP_ERROR,
+  PAYMENT_METHODS_SUCCESS,
+  PAYMENT_METHODS_SVR_ERROR,
   PAYMENT_PAY3DS2_INIT,
   PAYMENT_PAY3DS2_NET_ERR,
   PAYMENT_PAY3DS2_RESP_ERR,
@@ -1187,4 +1197,75 @@ export const getDonationEntityList = async (
       });
       onError(ErrorsType.DONATIONLIST_ERROR);
     });
+};
+
+export const getPaymentInstruments = async (
+  query: {
+    amount: number;
+  },
+  onError: (e: string) => void,
+  onResponse: (data: Array<PaymentInstruments>) => void
+) => {
+  mixpanel.track(PAYMENT_METHODS_ACCESS.value, {
+    EVENT_ID: PAYMENT_METHODS_ACCESS.value,
+  });
+  const list = await pipe(
+    TE.tryCatch(
+      () => apiPaymentEcommerceClient.getAllPaymentMethods(query),
+      () => {
+        mixpanel.track(PAYMENT_METHODS_NET_ERROR.value, {
+          EVENT_ID: PAYMENT_METHODS_NET_ERROR.value,
+        });
+        onError(ErrorsType.STATUS_ERROR);
+        return toError;
+      }
+    ),
+    TE.fold(
+      () => async () => {
+        mixpanel.track(PAYMENT_METHODS_SVR_ERROR.value, {
+          EVENT_ID: PAYMENT_METHODS_SVR_ERROR.value,
+        });
+        onError(ErrorsType.STATUS_ERROR);
+        return [];
+      },
+      (myResExt) => async () =>
+        pipe(
+          myResExt,
+          E.fold(
+            () => [],
+            (myRes) => {
+              if (myRes.status === 200) {
+                mixpanel.track(PAYMENT_METHODS_SUCCESS.value, {
+                  EVENT_ID: PAYMENT_METHODS_SUCCESS.value,
+                });
+                return myRes.value
+                  .filter(
+                    (method) =>
+                      !!PaymentMethodRoutes[
+                        method.paymentTypeCode as TransactionMethods
+                      ]
+                  )
+                  .map((method) => ({
+                    ...method,
+                    label:
+                      PaymentMethodRoutes[
+                        method.paymentTypeCode as TransactionMethods
+                      ]?.label || method.name,
+                    asset:
+                      PaymentMethodRoutes[
+                        method.paymentTypeCode as TransactionMethods
+                      ]?.asset, // when asset will be added to the object, add || method.asset
+                  }));
+              } else {
+                mixpanel.track(PAYMENT_METHODS_RESP_ERROR.value, {
+                  EVENT_ID: PAYMENT_METHODS_RESP_ERROR.value,
+                });
+                return [];
+              }
+            }
+          )
+        )
+    )
+  )();
+  onResponse(list as any as Array<PaymentInstruments>);
 };

@@ -1,3 +1,7 @@
+import { Theme } from "@emotion/react";
+import { SxProps } from "@mui/material";
+import { TransactionMethods } from "../../../routes/models/paymentMethodRoutes";
+
 export interface PaymentFormFields {
   billCode: string;
   cf: string;
@@ -140,7 +144,9 @@ export interface PaymentInstruments {
   name: string;
   description: string;
   status: string;
-  paymentTypeCode: string;
+  paymentTypeCode: TransactionMethods;
+  asset: string | ((sx: SxProps<Theme>) => JSX.Element);
+  label: string;
   ranges: Array<{
     min: number;
     max: number;
