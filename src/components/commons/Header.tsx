@@ -14,10 +14,9 @@ export default function Header() {
   const location = useLocation();
   const currentPath = location.pathname.split("/").slice(-1)[0];
   const PaymentInfo = {
-    receiver:
-      getPaymentInfo().enteBeneficiario?.denominazioneBeneficiario || "",
-    subject: paymentSubjectTransform(getPaymentInfo().causaleVersamento) || "",
-    amount: getPaymentInfo().importoSingoloVersamento,
+    receiver: getPaymentInfo().paName,
+    subject: paymentSubjectTransform(getPaymentInfo().description) || "",
+    amount: getPaymentInfo().amount,
   };
   const [drawstate, setDrawstate] = React.useState(false);
   const ignoreRoutes: Array<string> = [

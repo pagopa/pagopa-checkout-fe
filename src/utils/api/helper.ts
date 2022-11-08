@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-identical-functions */
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { Millisecond } from "@pagopa/ts-commons/lib/units";
 import * as E from "fp-ts/Either";
@@ -11,6 +12,7 @@ import { PaymentActivationsGetResponse } from "../../../generated/definitions/pa
 import { PaymentActivationsPostResponse } from "../../../generated/definitions/payment-activations-api/PaymentActivationsPostResponse";
 import { Detail_v2Enum } from "../../../generated/definitions/payment-activations-api/PaymentProblemJson";
 import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-activations-api/PaymentRequestsGetResponse";
+import { PaymentRequestsGetResponse as EcommercePaymentRequestsGetResponse } from "../../../generated/definitions/payment-ecommerce/PaymentRequestsGetResponse";
 import {
   TypeEnum,
   Wallet,
@@ -19,8 +21,13 @@ import { RptId } from "../../../generated/definitions/payment-transactions-api/R
 import {
   InputCardFormFields,
   PaymentCheckData,
+  PaymentInstruments,
   Wallet as PaymentWallet,
 } from "../../features/payment/models/paymentModel";
+import {
+  PaymentMethodRoutes,
+  TransactionMethods,
+} from "../../routes/models/paymentMethodRoutes";
 import { getConfigOrThrow } from "../config/config";
 import {
   DONATION_INIT_SESSION,
@@ -51,6 +58,11 @@ import {
   PAYMENT_CHECK_RESP_ERR,
   PAYMENT_CHECK_SUCCESS,
   PAYMENT_CHECK_SVR_ERR,
+  PAYMENT_METHODS_ACCESS,
+  PAYMENT_METHODS_NET_ERROR,
+  PAYMENT_METHODS_RESP_ERROR,
+  PAYMENT_METHODS_SUCCESS,
+  PAYMENT_METHODS_SVR_ERROR,
   PAYMENT_PAY3DS2_INIT,
   PAYMENT_PAY3DS2_NET_ERR,
   PAYMENT_PAY3DS2_RESP_ERR,
@@ -96,9 +108,65 @@ import {
 import { getBrowserInfoTask, getEMVCompliantColorDepth } from "./checkHelper";
 import {
   apiPaymentActivationsClient,
+  apiPaymentEcommerceClient,
   apiPaymentTransactionsClient,
   pmClient,
 } from "./client";
+
+export const getEcommercePaymentInfoTask = (
+  rptId: RptId,
+  recaptchaResponse: string
+): TE.TaskEither<string, EcommercePaymentRequestsGetResponse> =>
+  pipe(
+    TE.tryCatch(
+      () => {
+        mixpanel.track(PAYMENT_VERIFY_INIT.value, {
+          EVENT_ID: PAYMENT_VERIFY_INIT.value,
+        });
+        return apiPaymentEcommerceClient.getPaymentRequestInfo({
+          rpt_id: rptId,
+          recaptchaResponse,
+        });
+      },
+      () => {
+        mixpanel.track(PAYMENT_VERIFY_NET_ERR.value, {
+          EVENT_ID: PAYMENT_VERIFY_NET_ERR.value,
+        });
+        return "Errore recupero pagamento";
+      }
+    ),
+    TE.fold(
+      (err) => {
+        mixpanel.track(PAYMENT_VERIFY_SVR_ERR.value, {
+          EVENT_ID: PAYMENT_VERIFY_SVR_ERR.value,
+        });
+        return TE.left(err);
+      },
+      (errorOrResponse) =>
+        pipe(
+          errorOrResponse,
+          E.fold(
+            () => TE.left(Detail_v2Enum.GENERIC_ERROR),
+            (responseType) => {
+              const reason =
+                responseType.status === 200 ? "" : Detail_v2Enum.GENERIC_ERROR;
+              const EVENT_ID: string =
+                responseType.status === 200
+                  ? PAYMENT_VERIFY_SUCCESS.value
+                  : PAYMENT_VERIFY_RESP_ERR.value;
+              mixpanel.track(EVENT_ID, { EVENT_ID, reason });
+
+              if (responseType.status === 400) {
+                return TE.left(Detail_v2Enum.GENERIC_ERROR);
+              }
+              return responseType.status !== 200
+                ? TE.left(ErrorsType.STATUS_ERROR as string)
+                : TE.of(responseType.value);
+            }
+          )
+        )
+    )
+  );
 
 export const getPaymentInfoTask = (
   rptId: RptId,
@@ -1125,4 +1193,75 @@ export const getDonationEntityList = async (
       });
       onError(ErrorsType.DONATIONLIST_ERROR);
     });
+};
+
+export const getPaymentInstruments = async (
+  query: {
+    amount: number;
+  },
+  onError: (e: string) => void,
+  onResponse: (data: Array<PaymentInstruments>) => void
+) => {
+  mixpanel.track(PAYMENT_METHODS_ACCESS.value, {
+    EVENT_ID: PAYMENT_METHODS_ACCESS.value,
+  });
+  const list = await pipe(
+    TE.tryCatch(
+      () => apiPaymentEcommerceClient.getAllPaymentMethods(query),
+      () => {
+        mixpanel.track(PAYMENT_METHODS_NET_ERROR.value, {
+          EVENT_ID: PAYMENT_METHODS_NET_ERROR.value,
+        });
+        onError(ErrorsType.STATUS_ERROR);
+        return toError;
+      }
+    ),
+    TE.fold(
+      () => async () => {
+        mixpanel.track(PAYMENT_METHODS_SVR_ERROR.value, {
+          EVENT_ID: PAYMENT_METHODS_SVR_ERROR.value,
+        });
+        onError(ErrorsType.STATUS_ERROR);
+        return [];
+      },
+      (myResExt) => async () =>
+        pipe(
+          myResExt,
+          E.fold(
+            () => [],
+            (myRes) => {
+              if (myRes.status === 200) {
+                mixpanel.track(PAYMENT_METHODS_SUCCESS.value, {
+                  EVENT_ID: PAYMENT_METHODS_SUCCESS.value,
+                });
+                return myRes.value
+                  .filter(
+                    (method) =>
+                      !!PaymentMethodRoutes[
+                        method.paymentTypeCode as TransactionMethods
+                      ]
+                  )
+                  .map((method) => ({
+                    ...method,
+                    label:
+                      PaymentMethodRoutes[
+                        method.paymentTypeCode as TransactionMethods
+                      ]?.label || method.name,
+                    asset:
+                      PaymentMethodRoutes[
+                        method.paymentTypeCode as TransactionMethods
+                      ]?.asset, // when asset will be added to the object, add || method.asset
+                  }));
+              } else {
+                mixpanel.track(PAYMENT_METHODS_RESP_ERROR.value, {
+                  EVENT_ID: PAYMENT_METHODS_RESP_ERROR.value,
+                });
+                return [];
+              }
+            }
+          )
+        )
+    )
+  )();
+  onResponse(list as any as Array<PaymentInstruments>);
 };

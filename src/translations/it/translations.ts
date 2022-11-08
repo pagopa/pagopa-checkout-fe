@@ -219,6 +219,7 @@ export const TRANSLATIONS_IT = {
     bank: "Conto corrente",
     others: "Altri metodi",
     incoming: "In arrivo",
+    showMore: "Mostra tutti",
     button: "Indietro",
   },
   paymentQrPage: {
@@ -332,5 +333,11 @@ export const TRANSLATIONS_IT = {
     payNotice: "Paga un avviso",
     code: "e inquadra il codice:",
     modalBody2: "Puoi donare senza costi di commissione con le tue carte.",
+  },
+  paymentMethods: {
+    cp: "Carta di debito o credito",
+    ppay: "Postepay",
+    bpay: "Bancomat pay",
+    cc: "Conto corrente",
   },
 };
