@@ -84,6 +84,7 @@ steps:
     CHECKOUT_DONATIONS_URL: ${{ parameters.donations_url }}
     CHECKOUT_ECOMMERCE_HOST: ${{ parameters.ecommerce_host }}
     CHECKOUT_API_ECOMMERCE_BASEPATH: ${{ parameters.api_ecommerce_basepath }}
+    CHECKOUT_PAGOPA_ASSETS_CDN: ${{ parameters.pagopa_assets_cdn }}
 
 
   displayName: 'Populate environment file'

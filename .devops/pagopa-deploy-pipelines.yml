@@ -88,6 +88,7 @@ stages:
               donations_url: 'https://api.dev.platform.pagopa.it/donations/api/v1/availabledonations'
               ecommerce_host: 'https://api.uat.platform.pagopa.it'
               api_ecommerce_basepath: '/checkout/ecommerce/v1'
+              pagopa_assets_cdn: 'https://assets.cdn.platform.pagopa.it/payment-methods'
 
           - script: |
               yarn build
