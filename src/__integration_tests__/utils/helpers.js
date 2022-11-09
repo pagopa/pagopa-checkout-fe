@@ -124,7 +124,6 @@ export const verifyPaymentMethods = async () => {
     "[data-qalabel=payment-method]",
     (elHandles) => elHandles.map((el) => el.getAttribute("data-qaid"))
   );
-  await page.waitForTimeout(3000);
   for (const method of methods) {
     const cardOptionXPath = `[data-qaid=${method}]`;
 
@@ -133,7 +132,6 @@ export const verifyPaymentMethods = async () => {
     if (!(await testPaymentMethodRoute())) {
       return false;
     }
-    await page.waitForTimeout(5000);
     await page.goBack();
   }
   return true;
