@@ -24,7 +24,11 @@ export const fillPaymentNotificationForm = async (noticeCode, fiscalCode) => {
   await page.click(verifyBtn);
 };
 
-export const verifyPaymentAndGetError = async (noticeCode, fiscalCode, errorMessageXPath) => {
+export const verifyPaymentAndGetError = async (
+  noticeCode,
+  fiscalCode,
+  errorMessageXPath
+) => {
   const payNoticeBtnXPath =
     "/html/body/div[1]/div/div[2]/div/div[6]/div[1]/button";
 
@@ -55,7 +59,7 @@ export const acceptCookiePolicy = async () => {
 
 export const payNotice = async (noticeCode, fiscalCode, email, cardData) => {
   const payNoticeBtnXPath =
-    "/html/body/div[1]/div/div[2]/div/div[6]/div[1]/button";
+    "//html/body/div[1]/div/div[2]/div/div[2]/div[6]/div[1]/button";
   const resultMessageXPath = "/html/body/div[1]/div/div[2]/div/div/div/h6";
   await fillPaymentNotificationForm(noticeCode, fiscalCode);
 
@@ -65,7 +69,10 @@ export const payNotice = async (noticeCode, fiscalCode, email, cardData) => {
   await payNoticeBtn.click();
 
   await fillEmailForm(email);
-  await choosePaymentMethod("card");
+  if (!(await verifyPaymentMethods())) {
+    return "Failed";
+  }
+  await choosePaymentMethod("CP");
   await fillCardDataForm(cardData);
 
   const message = await page.waitForXPath(resultMessageXPath);
@@ -90,10 +97,8 @@ export const activatePaymentAndGetError = async (noticeCode, fiscalCode) => {
 export const fillEmailForm = async (email) => {
   const emailInput = "#email";
   const confirmEmailInput = "#confirmEmail";
-  const continueBtnXPath =
-    "/html/body/div[1]/div/div[2]/div[1]/div[2]/form/div[2]/div[1]/button";
+  const continueBtnXPath = "button[type=submit]";
 
-  await page.waitForNavigation();
   await page.waitForSelector(emailInput);
   await page.click(emailInput);
   await page.keyboard.type(email);
@@ -102,21 +107,43 @@ export const fillEmailForm = async (email) => {
   await page.click(confirmEmailInput);
   await page.keyboard.type(email);
 
-  const continueBtn = await page.waitForXPath(continueBtnXPath);
+  const continueBtn = await page.waitForSelector(continueBtnXPath);
   await continueBtn.click();
 };
 
 export const choosePaymentMethod = async (method) => {
-  const cardOptionXPath =
-    "/html/body/div[1]/div/div[2]/div/div[2]/div[1]";
+  const cardOptionXPath = `[data-qaid=${method}]`;
 
-  switch (method) {
-    case "card": {
-      const cardOptionBtn = await page.waitForXPath(cardOptionXPath);
-      await cardOptionBtn.click();
-      break;
+  const cardOptionBtn = await page.waitForSelector(cardOptionXPath);
+  await cardOptionBtn.click();
+};
+
+export const verifyPaymentMethods = async () => {
+  await page.waitForSelector("[data-qalabel=payment-method]");
+  const methods = await page.$$eval(
+    "[data-qalabel=payment-method]",
+    (elHandles) => elHandles.map((el) => el.getAttribute("data-qaid"))
+  );
+  await page.waitForTimeout(3000);
+  for (const method of methods) {
+    const cardOptionXPath = `[data-qaid=${method}]`;
+
+    const cardOptionBtn = await page.waitForSelector(cardOptionXPath);
+    await cardOptionBtn.click();
+    if (!(await testPaymentMethodRoute())) {
+      return false;
     }
+    await page.waitForTimeout(5000);
+    await page.goBack();
   }
+  return true;
+};
+
+export const testPaymentMethodRoute = async () => {
+  const url = await page.url();
+  const result = await page.evaluate((url) => url.split("/").pop() !== "", url);
+
+  return result;
 };
 
 export const fillCardDataForm = async (cardData) => {
@@ -124,8 +151,7 @@ export const fillCardDataForm = async (cardData) => {
   const expirationDateInput = "#expirationDate";
   const ccvInput = "#cvv";
   const holderNameInput = "#name";
-  const continueBtnXPath =
-    "/html/body/div[1]/div/div[2]/div/div[2]/form/div[2]/div[1]";
+  const continueBtnXPath = "button[type=submit]";
   const payBtnXPath = "/html/body/div[1]/div/div[2]/div/div[7]/div[1]";
 
   await page.waitForSelector(cardNumberInput);
@@ -144,7 +170,7 @@ export const fillCardDataForm = async (cardData) => {
   await page.click(holderNameInput);
   await page.keyboard.type(cardData.holderName);
 
-  const continueBtn = await page.waitForXPath(continueBtnXPath);
+  const continueBtn = await page.waitForSelector(continueBtnXPath);
   await continueBtn.click();
 
   const payBtn = await page.waitForXPath(payBtnXPath);

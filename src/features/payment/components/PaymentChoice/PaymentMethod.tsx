@@ -60,13 +60,16 @@ function ImageComponent(method: PaymentInstruments) {
 const MethodComponentList = ({
   methods,
   onClick,
+  testable,
 }: {
   methods: Array<PaymentInstruments>;
   onClick?: (typecode: TransactionMethods) => void;
+  testable?: boolean;
 }) => (
   <>
     {methods.map((method, index) => (
       <MethodComponent
+        testable={testable}
         method={method}
         key={index}
         onClick={onClick ? () => onClick(method.paymentTypeCode) : undefined}
@@ -86,7 +89,7 @@ export const EnabledPaymentMethods = ({
 
   return (
     <>
-      <MethodComponentList methods={methods} onClick={onClick} />
+      <MethodComponentList methods={methods} onClick={onClick} testable />
       <ClickableFieldContainer
         title="paymentChoicePage.others"
         clickable={false}
@@ -135,11 +138,15 @@ export const DisabledPaymentMethods = ({
 export const MethodComponent = ({
   method,
   onClick,
+  testable,
 }: {
   method: PaymentInstruments;
   onClick?: () => void;
+  testable?: boolean;
 }) => (
   <ClickableFieldContainer
+    dataTestId={testable ? method.paymentTypeCode : undefined}
+    dataTestLabel={testable ? "payment-method" : undefined}
     title={method.label}
     onClick={onClick}
     icon={<ImageComponent {...method} />}

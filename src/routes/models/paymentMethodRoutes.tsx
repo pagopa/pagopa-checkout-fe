@@ -24,7 +24,7 @@ export const PaymentMethodRoutes: PaymentTypecode = {
     asset: (sx: SxProps<Theme>) => (
       <MobileFriendlyIcon color="primary" fontSize="small" sx={sx} />
     ),
-    route: "paga-con-postepay",
+    route: "inserisci-carta",
   },
   CP: {
     label: "paymentMethods.cp",

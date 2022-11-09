@@ -268,14 +268,14 @@ export const activatePayment = async ({
   }
   if (!paymentId) {
     pipe(
-      PaymentRequestsGetResponse.decode(paymentInfo),
+      EcommercePaymentRequestsGetResponse.decode(paymentInfo),
       E.fold(
         () => onError(""),
         (response) =>
           pipe(
             activePaymentTask(
-              response.importoSingoloVersamento,
-              response.codiceContestoPagamento,
+              response.amount,
+              response.paymentContextCode,
               rptId,
               token
             ),
@@ -285,7 +285,7 @@ export const activatePayment = async ({
               },
               () => async () => {
                 void pollingActivationStatus(
-                  response.codiceContestoPagamento,
+                  response.paymentContextCode,
                   config.CHECKOUT_POLLING_ACTIVATION_ATTEMPTS as number,
                   (res) => {
                     setPaymentId(res);

@@ -1,6 +1,9 @@
 /* eslint-disable sonarjs/cognitive-complexity */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable functional/immutable-data */
+import { Theme } from "@emotion/react";
+import MobileFriendlyIcon from "@mui/icons-material/MobileFriendly";
+import { SxProps } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router";
 import ClickableFieldContainer from "../../../../components/TextFormField/ClickableFieldContainer";
@@ -10,6 +13,105 @@ import {
 } from "../../../../routes/models/paymentMethodRoutes";
 import { PaymentInstruments } from "../../models/paymentModel";
 import { DisabledPaymentMethods, EnabledPaymentMethods } from "./PaymentMethod";
+
+const paymentInstruments = [
+  {
+    description: "Postepay",
+    id: "2b9ceba0603911edb28e7b646130a46c",
+    name: "Postepay",
+    paymentTypeCode: TransactionMethods.PPAY,
+    status: "ENABLED",
+    ranges: [],
+    asset: (sx: SxProps<Theme>) => (
+      <MobileFriendlyIcon color="primary" fontSize="small" sx={sx} />
+    ),
+    label: "paymentMethods.ppay",
+  },
+  {
+    description: "ciccio",
+    id: "2b9ceba0603911edb28e7b646130a46c",
+    name: "ciccio",
+    paymentTypeCode: TransactionMethods.PPAY,
+    status: "ENABLED",
+    ranges: [],
+    asset: (sx: SxProps<Theme>) => (
+      <MobileFriendlyIcon color="primary" fontSize="small" sx={sx} />
+    ),
+    label: "paymentMethods.ppay",
+  },
+  {
+    description: "Postepay",
+    id: "2b9ceba0603911edb28e7b646130a46c",
+    name: "Postepay",
+    paymentTypeCode: TransactionMethods.CP,
+    status: "ENABLED",
+    ranges: [],
+    asset: (sx: SxProps<Theme>) => (
+      <MobileFriendlyIcon color="primary" fontSize="small" sx={sx} />
+    ),
+    label: "paymentMethods.cp",
+  },
+  {
+    description: "Postepay",
+    id: "2b9ceba0603911edb28e7b646130a46c",
+    name: "Postepay",
+    paymentTypeCode: TransactionMethods.CP,
+    status: "ENABLED",
+    ranges: [],
+    asset: (sx: SxProps<Theme>) => (
+      <MobileFriendlyIcon color="primary" fontSize="small" sx={sx} />
+    ),
+    label: "paymentMethods.cp",
+  },
+  {
+    description: "Postepay",
+    id: "2b9ceba0603911edb28e7b646130a46c",
+    name: "Postepay",
+    paymentTypeCode: TransactionMethods.CP,
+    status: "ENABLED",
+    ranges: [],
+    asset: (sx: SxProps<Theme>) => (
+      <MobileFriendlyIcon color="primary" fontSize="small" sx={sx} />
+    ),
+    label: "paymentMethods.cp",
+  },
+  {
+    description: "pasticcio",
+    id: "2b9ceba0603911edb28e7b646130a46c",
+    name: "pasticcio",
+    paymentTypeCode: TransactionMethods.CC,
+    status: "ENABLED",
+    ranges: [],
+    asset: (sx: SxProps<Theme>) => (
+      <MobileFriendlyIcon color="primary" fontSize="small" sx={sx} />
+    ),
+    label: "paymentMethods.cc",
+  },
+  {
+    description: "pasticcio",
+    id: "2b9ceba0603911edb28e7b646130a46c",
+    name: "pasticcio",
+    paymentTypeCode: TransactionMethods.CP,
+    status: "DISABLED",
+    ranges: [],
+    asset: (sx: SxProps<Theme>) => (
+      <MobileFriendlyIcon color="primary" fontSize="small" sx={sx} />
+    ),
+    label: "paymentMethods.cp",
+  },
+  {
+    description: "pasticcio",
+    id: "2b9ceba0603911edb28e7b646130a46c",
+    name: "pasticcio",
+    paymentTypeCode: TransactionMethods.PPAY,
+    status: "DISABLED",
+    ranges: [],
+    asset: (sx: SxProps<Theme>) => (
+      <MobileFriendlyIcon color="primary" fontSize="small" sx={sx} />
+    ),
+    label: "paymentMethods.ppay",
+  },
+];
 
 function groupByTypeCode(array: Array<PaymentInstruments>) {
   return array.reduce((acc, current) => {
