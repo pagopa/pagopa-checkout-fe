@@ -17,6 +17,8 @@ function ClickableFieldContainer(props: {
   variant?: "body2" | "sidenav";
   disabled?: boolean;
   loading?: boolean;
+  dataTestId?: string;
+  dataTestLabel?: string;
 }) {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -34,6 +36,8 @@ function ClickableFieldContainer(props: {
 
   return (
     <Box
+      data-qaid={props.dataTestId}
+      data-qalabel={props.dataTestLabel}
       sx={defaultStyle}
       onClick={() => {
         if (!props.disabled) {
