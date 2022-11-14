@@ -154,7 +154,7 @@ stages:
           workingDirectory: pagopa-checkout-fe
 
         - script: |
-            yarn start-mock &
+            yarn build && start-mock &
           displayName: 'Start checkout FE'
           workingDirectory: pagopa-checkout-fe
           
