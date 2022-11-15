@@ -301,7 +301,7 @@ stages:
               api_payment_transactions_basepath: '/api/checkout/payment-transactions/v1'
               api_timeout: 10000
               api_payment_activations_basepath: '/checkout/payments/v1'
-              pm_host: 'https://wisp2.pagopa.gov.it'
+              pm_host: 'https://api.platform.pagopa.it/payment-manager'
               pm_api_basepath: '/pp-restapi/v4'
               donations_url: 'https://api.platform.pagopa.it/donations/api/v1/availabledonations'
 
