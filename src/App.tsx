@@ -13,6 +13,7 @@ import IndexPage from "./routes/IndexPage";
 import InputCardPage from "./routes/InputCardPage";
 import KOPage from "./routes/KOPage";
 import { CheckoutRoutes } from "./routes/models/routeModel";
+import PaymentCartPage from "./routes/PaymentCartPage";
 import PaymentCheckPage from "./routes/PaymentCheckPage";
 import PaymentChoicePage from "./routes/PaymentChoicePage";
 import PaymentEmailPage from "./routes/PaymentEmailPage";
@@ -177,6 +178,14 @@ export function App() {
                   <RptidGuard>
                     <PaymentNoticePage />
                   </RptidGuard>
+                }
+              />
+              <Route
+                path={`${CheckoutRoutes.CARRELLO}/:cartid`}
+                element={
+                  <Guard item={SessionItems.paymentInfo}>
+                    <PaymentCartPage />
+                  </Guard>
                 }
               />
               <Route path="*" element={<Navigate replace to="/" />} />

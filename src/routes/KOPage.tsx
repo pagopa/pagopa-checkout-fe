@@ -58,7 +58,7 @@ export default function KOPage() {
             variant="outlined"
             onClick={() => {
               sessionStorage.clear();
-              window.location.replace(redirectUrl);
+              window.location.replace(redirectUrl || "/");
             }}
             style={{
               width: "100%",
