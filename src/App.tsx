@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Guard from "./components/commons/Guard";
 import { Layout } from "./components/commons/Layout";
+import NoticeGuard from "./components/commons/NoticeGuard";
 import RptidGuard from "./components/commons/RptidGuard";
 import CancelledPage from "./routes/CancelledPage";
 import DonationPage from "./routes/DonationPage";
@@ -130,9 +131,9 @@ export function App() {
               <Route
                 path={CheckoutRoutes.INSERISCI_EMAIL}
                 element={
-                  <Guard item={SessionItems.paymentInfo}>
+                  <NoticeGuard>
                     <PaymentEmailPage />
-                  </Guard>
+                  </NoticeGuard>
                 }
               />
               <Route
@@ -183,9 +184,8 @@ export function App() {
               <Route
                 path={`${CheckoutRoutes.CARRELLO}/:cartid`}
                 element={
-                  <Guard item={SessionItems.paymentInfo}>
-                    <PaymentCartPage />
-                  </Guard>
+                  // set a guard here to check if cartid matches a regex
+                  <PaymentCartPage />
                 }
               />
               <Route path="*" element={<Navigate replace to="/" />} />

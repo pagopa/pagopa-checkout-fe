@@ -44,6 +44,11 @@ export default function PaymentCartPage() {
     onResponse(mockCart);
   };
 
+  const onRetry = () => {
+    setErrorModalOpen(false);
+    void onSubmit();
+  };
+
   const onResponse = (cart: Cart) => {
     setCart(mockCart);
     setEmailInfo({
@@ -76,6 +81,7 @@ export default function PaymentCartPage() {
         onClose={() => {
           navigate(`/${CheckoutRoutes.ERRORE}`);
         }}
+        onRetry={onRetry}
       />
     </>
   );
