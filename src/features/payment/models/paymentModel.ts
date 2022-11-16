@@ -71,7 +71,7 @@ export interface PaymentInfoData {
 }
 
 export interface PaymentId {
-  idPagamento: string;
+  paymentId: string;
 }
 
 export interface PaymentCheckDetail {

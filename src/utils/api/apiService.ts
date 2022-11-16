@@ -17,7 +17,7 @@ export function getReCaptchaKey() {
   return getConfigOrThrow().CHECKOUT_RECAPTCHA_SITE_KEY;
 }
 
-export function getNoticeInfo() {
+export function getNoticeInfo(): PaymentFormFields {
   const noticeInfo = loadState(SessionItems.noticeInfo) as
     | PaymentFormFields
     | undefined;
@@ -27,7 +27,7 @@ export function getNoticeInfo() {
   };
 }
 
-export function getPaymentInfo() {
+export function getPaymentInfo(): PaymentInfo {
   const paymentInfo = loadState(SessionItems.paymentInfo) as
     | PaymentInfo
     | undefined;
@@ -42,7 +42,7 @@ export function getPaymentInfo() {
   };
 }
 
-export function getEmailInfo() {
+export function getEmailInfo(): PaymentEmailFormFields {
   const emailInfo = loadState(SessionItems.useremail) as string | undefined;
   return {
     email: emailInfo || "",
@@ -50,14 +50,14 @@ export function getEmailInfo() {
   };
 }
 
-export function getPaymentId() {
+export function getPaymentId(): PaymentId {
   const id = loadState(SessionItems.paymentId) as PaymentId | undefined;
   return {
-    paymentId: id?.idPagamento || "",
+    paymentId: id?.paymentId || "",
   };
 }
 
-export function getCheckData() {
+export function getCheckData(): PaymentCheckData {
   const data = loadState(SessionItems.checkData) as
     | PaymentCheckData
     | undefined;
@@ -81,7 +81,7 @@ export function getCheckData() {
   };
 }
 
-export function getWallet() {
+export function getWallet(): Wallet {
   const data = loadState(SessionItems.wallet) as Wallet | undefined;
   return {
     creditCard: {
@@ -108,9 +108,10 @@ export function getWallet() {
   };
 }
 
-export function getCart() {
+export function getCart(): Cart {
   const data = loadState(SessionItems.cart) as Cart | undefined;
   return {
+    emailNotice: data?.emailNotice || "",
     paymentNotices:
       data?.paymentNotices?.map((notice) => ({
         noticeNumber: notice?.noticeNumber || "",
@@ -119,13 +120,15 @@ export function getCart() {
         companyName: notice?.companyName || "",
         description: notice?.description || "",
       })) || [],
-    returnOkUrl: data?.returnUrls?.returnOkUrl || "",
-    returnCancelUrl: data?.returnUrls?.returnCancelUrl || "",
-    returnErrorUrl: data?.returnUrls?.returnErrorUrl || "",
+    returnUrls: {
+      returnOkUrl: data?.returnUrls?.returnOkUrl || "",
+      returnCancelUrl: data?.returnUrls?.returnCancelUrl || "",
+      returnErrorUrl: data?.returnUrls?.returnErrorUrl || "",
+    },
   };
 }
 
-export function getReturnUrls() {
+export function getReturnUrls(): ReturnUrls {
   const data = loadState(SessionItems.originUrlRedirect) as
     | ReturnUrls
     | undefined;
