@@ -19,6 +19,7 @@ import {
 } from "../../../generated/definitions/payment-manager-api/Wallet";
 import { RptId } from "../../../generated/definitions/payment-transactions-api/RptId";
 import {
+  Cart,
   InputCardFormFields,
   PaymentCheckData,
   PaymentInstruments,
@@ -30,6 +31,11 @@ import {
 } from "../../routes/models/paymentMethodRoutes";
 import { getConfigOrThrow } from "../config/config";
 import {
+  CART_REQUEST_ACCESS,
+  CART_REQUEST_NET_ERROR,
+  CART_REQUEST_RESP_ERROR,
+  CART_REQUEST_SUCCESS,
+  CART_REQUEST_SVR_ERROR,
   DONATION_INIT_SESSION,
   DONATION_LIST_ERROR,
   DONATION_LIST_SUCCESS,
@@ -1264,4 +1270,56 @@ export const getPaymentInstruments = async (
     )
   )();
   onResponse(list as any as Array<PaymentInstruments>);
+};
+
+export const getCarts = async (
+  id_cart: string,
+  onError: (e: string) => void,
+  onResponse: (data: Cart) => void
+) => {
+  mixpanel.track(CART_REQUEST_ACCESS.value, {
+    EVENT_ID: CART_REQUEST_ACCESS.value,
+  });
+  const cart = await pipe(
+    TE.tryCatch(
+      () => apiPaymentEcommerceClient.GetCarts({ id_cart }),
+      () => {
+        mixpanel.track(CART_REQUEST_NET_ERROR.value, {
+          EVENT_ID: CART_REQUEST_NET_ERROR.value,
+        });
+        onError(ErrorsType.STATUS_ERROR);
+        return toError;
+      }
+    ),
+    TE.fold(
+      () => async () => {
+        mixpanel.track(CART_REQUEST_SVR_ERROR.value, {
+          EVENT_ID: CART_REQUEST_SVR_ERROR.value,
+        });
+        onError(ErrorsType.STATUS_ERROR);
+        return [];
+      },
+      (myResExt) => async () =>
+        pipe(
+          myResExt,
+          E.fold(
+            () => [],
+            (myRes) => {
+              if (myRes.status === 200) {
+                mixpanel.track(CART_REQUEST_SUCCESS.value, {
+                  EVENT_ID: CART_REQUEST_SUCCESS.value,
+                });
+                return myRes.value;
+              } else {
+                mixpanel.track(CART_REQUEST_RESP_ERROR.value, {
+                  EVENT_ID: CART_REQUEST_RESP_ERROR.value,
+                });
+                return {};
+              }
+            }
+          )
+        )
+    )
+  )();
+  onResponse(cart as Cart);
 };
