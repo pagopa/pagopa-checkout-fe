@@ -295,7 +295,7 @@ export const activatePayment = async ({
                   response.paymentContextCode,
                   config.CHECKOUT_POLLING_ACTIVATION_ATTEMPTS as number,
                   (res) => {
-                    setPaymentId(res);
+                    setPaymentId({ paymentId: res.idPagamento });
                     void getPaymentCheckData({
                       idPayment: res.idPagamento,
                       onError,
@@ -483,7 +483,7 @@ export const retryPollingActivationStatus = async ({
           config.CHECKOUT_POLLING_ACTIVATION_ATTEMPTS as number,
           // eslint-disable-next-line sonarjs/no-identical-functions
           (res) => {
-            setPaymentId(res);
+            setPaymentId({ paymentId: res.idPagamento });
             void getPaymentCheckData({
               idPayment: res.idPagamento,
               onError,
