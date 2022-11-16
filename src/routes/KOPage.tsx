@@ -12,7 +12,7 @@ import { clearSensitiveItems } from "../utils/storage/sessionStorage";
 export default function KOPage() {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const redirectUrl = getReturnUrls().returnOkUrl;
+  const redirectUrl = getReturnUrls().returnErrorUrl;
 
   React.useEffect(() => {
     dispatch(resetCheckData());

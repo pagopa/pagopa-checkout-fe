@@ -12,7 +12,7 @@ import { clearSensitiveItems } from "../utils/storage/sessionStorage";
 export default function CancelledPage() {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const redirectUrl = getReturnUrls().returnOkUrl;
+  const redirectUrl = getReturnUrls().returnCancelUrl;
 
   React.useEffect(() => {
     dispatch(resetCheckData());
