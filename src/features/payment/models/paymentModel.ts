@@ -154,8 +154,8 @@ export interface PaymentInstruments {
 }
 
 export interface PaymentNotice {
-  noticeNumber: number;
-  fiscalCode: number;
+  noticeNumber: string;
+  fiscalCode: string;
   amount: number;
   companyName: string;
   description: string;

@@ -3,9 +3,28 @@ import { useNavigate, useParams } from "react-router-dom";
 import ErrorModal from "../components/modals/ErrorModal";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
 import { Cart } from "../features/payment/models/paymentModel";
-import { setCart } from "../utils/api/apiService";
+import { setCart, setEmailInfo } from "../utils/api/apiService";
 import { getCarts } from "../utils/api/helper";
 import { CheckoutRoutes } from "./models/routeModel";
+
+// mock
+const mockCart = {
+  emailNotice: "myemail@mail.it",
+  paymentNotices: [
+    {
+      noticeNumber: "302012387654312384",
+      fiscalCode: "77777777777",
+      amount: 1000,
+      description: "test",
+      companyName: "test",
+    },
+  ],
+  returnUrls: {
+    returnOkUrl: "www.comune.di.prova.it/pagopa/success.html",
+    returnCancelUrl: "www.comune.di.prova.it/pagopa/cancel.html",
+    returnErrorUrl: "www.comune.di.prova.it/pagopa/error.html",
+  },
+};
 
 export default function PaymentCartPage() {
   const navigate = useNavigate();
@@ -19,10 +38,18 @@ export default function PaymentCartPage() {
     setLoading(false);
     setError(m);
     setErrorModalOpen(true);
+
+    // delete this
+    // use only to go forward in testing the flow with mocked data
+    onResponse(mockCart);
   };
 
   const onResponse = (cart: Cart) => {
-    setCart(cart);
+    setCart(mockCart);
+    setEmailInfo({
+      email: mockCart.emailNotice,
+      confirmEmail: mockCart.emailNotice,
+    });
     navigate(`/${CheckoutRoutes.INSERISCI_EMAIL}`, { replace: true });
   };
 
