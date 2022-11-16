@@ -1,19 +1,16 @@
-import { Box } from "@mui/material";
 import React from "react";
-import ReCAPTCHA from "react-google-recaptcha";
 import { useNavigate, useParams } from "react-router-dom";
 import ErrorModal from "../components/modals/ErrorModal";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
-import { getNoticeInfo, getReCaptchaKey } from "../utils/api/apiService";
+import { Cart } from "../features/payment/models/paymentModel";
+import { setCart } from "../utils/api/apiService";
+import { getCarts } from "../utils/api/helper";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function PaymentCartPage() {
   const navigate = useNavigate();
   const { cartid } = useParams();
-  const noticeInfo = getNoticeInfo();
 
-  const ref = React.useRef<ReCAPTCHA>(null);
-  const [modalOpen, setModalOpen] = React.useState(false);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
@@ -22,16 +19,20 @@ export default function PaymentCartPage() {
     setLoading(false);
     setError(m);
     setErrorModalOpen(true);
-    ref.current?.reset();
+  };
+
+  const onResponse = (cart: Cart) => {
+    setCart(cart);
+    navigate(`/${CheckoutRoutes.INSERISCI_EMAIL}`, { replace: true });
   };
 
   const onSubmit = React.useCallback(async () => {
     setLoading(true);
-    const token = await ref.current?.executeAsync();
 
-    // call api GET /carts/{cartid}
-    // navigate(`/${CheckoutRoutes.INSERISCI_EMAIL}`, { replace: true });
-  }, [ref]);
+    if (cartid) {
+      void getCarts(cartid, onError, onResponse);
+    }
+  }, []);
 
   React.useEffect(() => {
     if (cartid) {
@@ -49,13 +50,6 @@ export default function PaymentCartPage() {
           navigate(`/${CheckoutRoutes.ERRORE}`);
         }}
       />
-      <Box display="none">
-        <ReCAPTCHA
-          ref={ref}
-          size="invisible"
-          sitekey={getReCaptchaKey() as string}
-        />
-      </Box>
     </>
   );
 }

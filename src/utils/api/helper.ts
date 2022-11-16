@@ -110,6 +110,7 @@ import {
   getPaymentId,
   getPaymentInfo,
   setPaymentId,
+  setReturnUrls,
 } from "./apiService";
 import { getBrowserInfoTask, getEMVCompliantColorDepth } from "./checkHelper";
 import {
@@ -567,12 +568,10 @@ export const getPaymentCheckData = async ({
                             O.fromNullable(origin),
                             O.getOrElse(() => response.value.data.urlRedirectEc)
                           );
-                          sessionStorage.setItem(
-                            "originUrlRedirect",
-                            originInput === "payportal"
-                              ? "/"
-                              : JSON.stringify(originInput)
-                          );
+                          setReturnUrls({
+                            returnOkUrl:
+                              originInput === "payportal" ? "/" : originInput,
+                          });
                         })
                       );
                     } else {
@@ -1234,7 +1233,12 @@ export const getPaymentInstruments = async (
         pipe(
           myResExt,
           E.fold(
-            () => [],
+            () => {
+              mixpanel.track(PAYMENT_METHODS_RESP_ERROR.value, {
+                EVENT_ID: PAYMENT_METHODS_RESP_ERROR.value,
+              });
+              return [];
+            },
             (myRes) => {
               if (myRes.status === 200) {
                 mixpanel.track(PAYMENT_METHODS_SUCCESS.value, {
@@ -1280,7 +1284,7 @@ export const getCarts = async (
   mixpanel.track(CART_REQUEST_ACCESS.value, {
     EVENT_ID: CART_REQUEST_ACCESS.value,
   });
-  const cart = await pipe(
+  await pipe(
     TE.tryCatch(
       () => apiPaymentEcommerceClient.GetCarts({ id_cart }),
       () => {
@@ -1297,23 +1301,31 @@ export const getCarts = async (
           EVENT_ID: CART_REQUEST_SVR_ERROR.value,
         });
         onError(ErrorsType.STATUS_ERROR);
-        return [];
+        return {};
       },
       (myResExt) => async () =>
         pipe(
           myResExt,
           E.fold(
-            () => [],
+            () => {
+              mixpanel.track(CART_REQUEST_RESP_ERROR.value, {
+                EVENT_ID: CART_REQUEST_RESP_ERROR.value,
+              });
+              onError(ErrorsType.STATUS_ERROR);
+              return {};
+            },
             (myRes) => {
               if (myRes.status === 200) {
                 mixpanel.track(CART_REQUEST_SUCCESS.value, {
                   EVENT_ID: CART_REQUEST_SUCCESS.value,
                 });
+                onResponse(myRes.value as any as Cart);
                 return myRes.value;
               } else {
                 mixpanel.track(CART_REQUEST_RESP_ERROR.value, {
                   EVENT_ID: CART_REQUEST_RESP_ERROR.value,
                 });
+                onError(ErrorsType.STATUS_ERROR);
                 return {};
               }
             }
@@ -1321,5 +1333,4 @@ export const getCarts = async (
         )
     )
   )();
-  onResponse(cart as Cart);
 };

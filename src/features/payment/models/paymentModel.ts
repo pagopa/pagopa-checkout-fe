@@ -163,11 +163,12 @@ export interface PaymentNotice {
 
 export interface ReturnUrls {
   returnOkUrl: string;
-  returnCancelUrl: string;
-  returnErrorUrl: string;
+  returnCancelUrl?: string;
+  returnErrorUrl?: string;
 }
 
 export interface Cart {
   paymentNotices: Array<PaymentNotice>;
   returnUrls: ReturnUrls;
+  emailNotice: string;
 }

@@ -1,10 +1,12 @@
 /* eslint-disable sonarjs/cognitive-complexity */
 import {
+  Cart,
   PaymentCheckData,
   PaymentEmailFormFields,
   PaymentFormFields,
   PaymentId,
   PaymentInfo,
+  ReturnUrls,
   Wallet,
 } from "../../features/payment/models/paymentModel";
 import { getConfigOrThrow } from "../config/config";
@@ -104,6 +106,42 @@ export function getWallet() {
     pspEditable: data?.pspEditable || false,
     type: data?.type || "",
   };
+}
+
+export function getCart() {
+  const data = loadState(SessionItems.cart) as Cart | undefined;
+  return {
+    paymentNotices:
+      data?.paymentNotices?.map((notice) => ({
+        noticeNumber: notice?.noticeNumber || "",
+        fiscalCode: notice?.fiscalCode || "",
+        amount: notice?.amount || 0,
+        companyName: notice?.companyName || "",
+        description: notice?.description || "",
+      })) || [],
+    returnOkUrl: data?.returnUrls?.returnOkUrl || "",
+    returnCancelUrl: data?.returnUrls?.returnCancelUrl || "",
+    returnErrorUrl: data?.returnUrls?.returnErrorUrl || "",
+  };
+}
+
+export function getReturnUrls() {
+  const data = loadState(SessionItems.originUrlRedirect) as
+    | ReturnUrls
+    | undefined;
+  return {
+    returnOkUrl: data?.returnOkUrl || "",
+    returnErrorUrl: data?.returnErrorUrl || "",
+    returnCancelUrl: data?.returnCancelUrl || "",
+  };
+}
+
+export function setReturnUrls(item: ReturnUrls) {
+  sessionStorage.setItem(SessionItems.originUrlRedirect, JSON.stringify(item));
+}
+
+export function setCart(item: Cart) {
+  sessionStorage.setItem(SessionItems.cart, JSON.stringify(item));
 }
 
 export function setWallet(item: Wallet) {
