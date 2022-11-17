@@ -55,7 +55,10 @@ export default function PaymentCartPage() {
       email: mockCart.emailNotice,
       confirmEmail: mockCart.emailNotice,
     });
-    navigate(`/${CheckoutRoutes.INSERISCI_EMAIL}`, { replace: true });
+    navigate(`/${CheckoutRoutes.INSERISCI_EMAIL}`, {
+      replace: true,
+      state: { noConfirmEmail: true },
+    });
   };
 
   const onSubmit = React.useCallback(async () => {
