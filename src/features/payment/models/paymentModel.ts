@@ -154,21 +154,21 @@ export interface PaymentInstruments {
 }
 
 export interface PaymentNotice {
-  noticeNumber: string;
-  fiscalCode: string;
+  noticeNumber: any;
+  fiscalCode: any;
   amount: number;
-  companyName: string;
-  description: string;
+  companyName?: string;
+  description?: string;
 }
 
 export interface ReturnUrls {
   returnOkUrl: string;
-  returnCancelUrl?: string;
-  returnErrorUrl?: string;
+  returnCancelUrl: string;
+  returnErrorUrl: string;
 }
 
 export interface Cart {
   paymentNotices: Array<PaymentNotice>;
   returnUrls: ReturnUrls;
-  emailNotice: string;
+  emailNotice?: string;
 }
