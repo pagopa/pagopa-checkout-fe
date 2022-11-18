@@ -2,10 +2,7 @@ import { Box, Typography } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-import {
-  PaymentInfoData,
-  Cart,
-} from "../../features/payment/models/paymentModel";
+import { PaymentInfoData } from "../../features/payment/models/paymentModel";
 
 interface Props {
   PaymentInfo: PaymentInfoData;
