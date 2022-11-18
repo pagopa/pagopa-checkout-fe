@@ -5,7 +5,8 @@ import React from "react";
 import { useLocation } from "react-router-dom";
 import pagopaLogo from "../../assets/images/pagopa-logo.svg";
 import { CheckoutRoutes } from "../../routes/models/routeModel";
-import { getPaymentInfo } from "../../utils/api/apiService";
+import { getPaymentInfo, getCart } from "../../utils/api/apiService";
+import { getTotalFromCart } from "../../utils/cart/cart";
 import { moneyFormat } from "../../utils/form/formatters";
 import { paymentSubjectTransform } from "../../utils/transformers/paymentTransformers";
 import DrawerDetail from "../Header/DrawerDetail";
@@ -18,6 +19,7 @@ export default function Header() {
     subject: paymentSubjectTransform(getPaymentInfo().description) || "",
     amount: getPaymentInfo().amount,
   };
+  const CartInfo = getCart();
   const [drawstate, setDrawstate] = React.useState(false);
   const ignoreRoutes: Array<string> = [
     CheckoutRoutes.ROOT,
@@ -44,37 +46,44 @@ export default function Header() {
             aria-hidden="true"
           />
         </Grid>
-        {!!PaymentInfo.receiver && !ignoreRoutes.includes(currentPath) && (
-          <>
-            <Grid
-              item
-              xs={10}
-              display="flex"
-              alignItems="center"
-              justifyContent="flex-end"
-              sx={{ cursor: "pointer" }}
-            >
-              <Typography
-                color="primary.main"
-                variant="body2"
-                component="div"
-                fontWeight={600}
+        {(!!PaymentInfo.receiver || !!CartInfo.paymentNotices) &&
+          !ignoreRoutes.includes(currentPath) && (
+            <>
+              <Grid
+                item
+                xs={10}
                 display="flex"
                 alignItems="center"
                 justifyContent="flex-end"
-                onClick={() => toggleDrawer(true)}
+                sx={{ cursor: "pointer" }}
               >
-                {PaymentInfo ? moneyFormat(PaymentInfo.amount) : ""}
-                <InfoOutlinedIcon color="primary" sx={{ ml: 1 }} />
-              </Typography>
-            </Grid>
-            <DrawerDetail
-              PaymentInfo={PaymentInfo}
-              drawstate={drawstate}
-              toggleDrawer={() => toggleDrawer(false)}
-            />
-          </>
-        )}
+                <Typography
+                  color="primary.main"
+                  variant="body2"
+                  component="div"
+                  fontWeight={600}
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="flex-end"
+                  onClick={() => toggleDrawer(true)}
+                >
+                  {PaymentInfo && PaymentInfo.amount
+                    ? moneyFormat(PaymentInfo.amount)
+                    : ""}
+                  {CartInfo && CartInfo.paymentNotices
+                    ? moneyFormat(getTotalFromCart(CartInfo))
+                    : ""}
+                  <InfoOutlinedIcon color="primary" sx={{ ml: 1 }} />
+                </Typography>
+              </Grid>
+              <DrawerDetail
+                PaymentInfo={PaymentInfo}
+                CartInfo={CartInfo}
+                drawstate={drawstate}
+                toggleDrawer={() => toggleDrawer(false)}
+              />
+            </>
+          )}
       </Grid>
     </Box>
   );

@@ -1,14 +1,21 @@
 import { Alert, Box, Typography, useTheme } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { PaymentInfoData } from "../../features/payment/models/paymentModel";
+
+import {
+  PaymentInfoData,
+  Cart,
+} from "../../features/payment/models/paymentModel";
+import { getTotalFromCart } from "../../utils/cart/cart";
 import { moneyFormat } from "../../utils/form/formatters";
 import { CustomDrawer } from "../modals/CustomDrawer";
-
+import DrawerCart from "./DrawerCart";
+import DrawerPaymentInfo from "./DrawerPaymentInfo";
 interface Props {
   drawstate: boolean;
   toggleDrawer: () => void;
   PaymentInfo: PaymentInfoData;
+  CartInfo: Cart;
 }
 
 export default function DrawerDetail(props: Props) {
@@ -29,7 +36,12 @@ export default function DrawerDetail(props: Props) {
           {t("mainPage.header.detail.detailAmount")}
         </Typography>
         <Typography variant="h6" component={"div"}>
-          {props.PaymentInfo ? moneyFormat(props.PaymentInfo.amount) : ""}
+          {props.PaymentInfo && props.PaymentInfo.amount
+            ? moneyFormat(props.PaymentInfo.amount)
+            : ""}
+          {props.CartInfo && props.CartInfo.paymentNotices
+            ? moneyFormat(getTotalFromCart(props.CartInfo))
+            : ""}
         </Typography>
       </Box>
       <Alert
@@ -51,30 +63,12 @@ export default function DrawerDetail(props: Props) {
           {t("mainPage.header.disclaimer")}
         </Typography>
       </Alert>
-      <Box sx={{ textAlign: "left" }}>
-        <Typography
-          variant="body2"
-          fontWeight={300}
-          component="div"
-          sx={{ mt: 1 }}
-        >
-          {t("mainPage.header.detail.detailSubject")}
-        </Typography>
-        <Typography variant="body2" fontWeight={600} component="div">
-          {props.PaymentInfo.subject}
-        </Typography>
-        <Typography
-          variant="body2"
-          fontWeight={300}
-          component="div"
-          sx={{ mt: 1 }}
-        >
-          {t("mainPage.header.detail.detailReceiver")}
-        </Typography>
-        <Typography variant="body2" fontWeight={600} component="div" pb={2}>
-          {props.PaymentInfo.receiver}
-        </Typography>
-      </Box>
+
+      {props.CartInfo && <DrawerCart CartInfo={props.CartInfo} />}
+
+      {props.PaymentInfo.subject && (
+        <DrawerPaymentInfo PaymentInfo={props.PaymentInfo} />
+      )}
     </CustomDrawer>
   );
 }

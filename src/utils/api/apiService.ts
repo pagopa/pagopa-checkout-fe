@@ -42,7 +42,7 @@ export function getPaymentInfo(): PaymentInfo {
   };
 }
 
-export function getEmailInfo(noConfirmEmail=false): PaymentEmailFormFields {
+export function getEmailInfo(noConfirmEmail = false): PaymentEmailFormFields {
   const emailInfo = loadState(SessionItems.useremail) as string | undefined;
   return {
     email: emailInfo || "",

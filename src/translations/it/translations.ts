@@ -132,6 +132,13 @@ export const TRANSLATIONS_IT = {
         "Sulle carte American Express il codice (CID) è a quattro cifre ed è posizionato sul fronte.",
     },
   },
+  cartDetail: {
+    amount: "Importo",
+    companyName: "Ente Creditore",
+    description: "Oggetto del pagamento",
+    fiscalCode: "Codice Fiscale Ente Creditore",
+    noticeNumber: "Codice Avviso",
+  },
   errorButton: {
     help: "Contatta l'assistenza",
     close: "Chiudi",
