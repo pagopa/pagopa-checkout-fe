@@ -18,7 +18,9 @@ export function PaymentEmailForm(props: {
   onSubmit: (emailInfo: PaymentEmailFormFields) => void;
 }) {
   const formRef = React.useRef<FormikProps<PaymentEmailFormFields>>(null);
-  const [disabled, setDisabled] = React.useState(!props.defaultValues?.email);
+  const [disabled, setDisabled] = React.useState(
+    !props.defaultValues?.email || !props.defaultValues?.confirmEmail
+  );
 
   const validate = (values: PaymentEmailFormFields) => {
     const errors: PaymentEmailFormErrors = {
