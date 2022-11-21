@@ -5,6 +5,7 @@ import CheckoutLoader from "../components/PageContent/CheckoutLoader";
 import { Cart } from "../features/payment/models/paymentModel";
 import { setCart, setEmailInfo } from "../utils/api/apiService";
 import { getCarts } from "../utils/api/helper";
+import { adaptCartAsRptId, adaptCartAsPaymentInfo } from "../utils/cart/cart";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function PaymentCartPage() {
@@ -32,6 +33,8 @@ export default function PaymentCartPage() {
       email: cart.emailNotice || "",
       confirmEmail: "",
     });
+    adaptCartAsPaymentInfo(cart);
+    adaptCartAsRptId(cart);
     navigate(`/${CheckoutRoutes.INSERISCI_EMAIL}`, {
       replace: true,
       state: { noConfirmEmail: true },
