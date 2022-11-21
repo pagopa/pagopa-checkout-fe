@@ -571,6 +571,8 @@ export const getPaymentCheckData = async ({
                           setReturnUrls({
                             returnOkUrl:
                               originInput === "payportal" ? "/" : originInput,
+                            returnCancelUrl: "",
+                            returnErrorUrl: "",
                           });
                         })
                       );
