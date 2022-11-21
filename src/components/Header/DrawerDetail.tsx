@@ -6,12 +6,12 @@ import {
   PaymentInfoData,
   Cart,
 } from "../../features/payment/models/paymentModel";
-import { getTotalFromCart } from "../../utils/cart/cart";
 import { moneyFormat } from "../../utils/form/formatters";
 import { CustomDrawer } from "../modals/CustomDrawer";
 import DrawerCart from "./DrawerCart";
 import DrawerPaymentInfo from "./DrawerPaymentInfo";
 interface Props {
+  amountToShow: () => number;
   drawstate: boolean;
   toggleDrawer: () => void;
   PaymentInfo: PaymentInfoData;
@@ -36,12 +36,7 @@ export default function DrawerDetail(props: Props) {
           {t("mainPage.header.detail.detailAmount")}
         </Typography>
         <Typography variant="h6" component={"div"}>
-          {props.PaymentInfo && props.PaymentInfo.amount
-            ? moneyFormat(props.PaymentInfo.amount)
-            : ""}
-          {props.CartInfo && props.CartInfo.paymentNotices
-            ? moneyFormat(getTotalFromCart(props.CartInfo))
-            : ""}
+          {moneyFormat(props.amountToShow())}
         </Typography>
       </Box>
       <Alert

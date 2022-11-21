@@ -11,6 +11,15 @@ import { moneyFormat } from "../../utils/form/formatters";
 import { paymentSubjectTransform } from "../../utils/transformers/paymentTransformers";
 import DrawerDetail from "../Header/DrawerDetail";
 
+function amountToShow() {
+  const CartInfo = getCart();
+  return (
+    (getPaymentInfo() && getPaymentInfo().amount) ||
+    (CartInfo && CartInfo.paymentNotices && getTotalFromCart(CartInfo)) ||
+    0
+  );
+}
+
 export default function Header() {
   const location = useLocation();
   const currentPath = location.pathname.split("/").slice(-1)[0];
@@ -67,18 +76,14 @@ export default function Header() {
                   justifyContent="flex-end"
                   onClick={() => toggleDrawer(true)}
                 >
-                  {PaymentInfo && PaymentInfo.amount
-                    ? moneyFormat(PaymentInfo.amount)
-                    : ""}
-                  {CartInfo && CartInfo.paymentNotices
-                    ? moneyFormat(getTotalFromCart(CartInfo))
-                    : ""}
+                  {moneyFormat(amountToShow())}
                   <InfoOutlinedIcon color="primary" sx={{ ml: 1 }} />
                 </Typography>
               </Grid>
               <DrawerDetail
                 PaymentInfo={PaymentInfo}
                 CartInfo={CartInfo}
+                amountToShow={amountToShow}
                 drawstate={drawstate}
                 toggleDrawer={() => toggleDrawer(false)}
               />
