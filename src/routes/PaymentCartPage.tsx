@@ -29,8 +29,8 @@ export default function PaymentCartPage() {
   const onResponse = (cart: Cart) => {
     setCart(cart);
     setEmailInfo({
-      email: cart.emailNotice,
-      confirmEmail: cart.emailNotice,
+      email: cart.emailNotice || "",
+      confirmEmail: "",
     });
     navigate(`/${CheckoutRoutes.INSERISCI_EMAIL}`, {
       replace: true,
