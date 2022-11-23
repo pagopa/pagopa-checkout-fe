@@ -255,6 +255,10 @@ export const activatePayment = async ({
 }) => {
   const noticeInfo = getNoticeInfo();
   const paymentInfo = getPaymentInfo();
+  const paymentInfoTransform = {
+    importoSingoloVersamento: paymentInfo.amount,
+    codiceContestoPagamento: paymentInfo.paymentContextCode,
+  };
   const paymentId = getPaymentId().paymentId;
   const checkDataId = getCheckData().id;
   const rptId: RptId = `${noticeInfo.cf}${noticeInfo.billCode}`;
@@ -275,14 +279,14 @@ export const activatePayment = async ({
   }
   if (!paymentId) {
     pipe(
-      EcommercePaymentRequestsGetResponse.decode(paymentInfo),
+      PaymentRequestsGetResponse.decode(paymentInfoTransform),
       E.fold(
         () => onError(""),
         (response) =>
           pipe(
             activePaymentTask(
-              response.amount,
-              response.paymentContextCode,
+              response.importoSingoloVersamento,
+              response.codiceContestoPagamento,
               rptId,
               token
             ),
@@ -292,7 +296,7 @@ export const activatePayment = async ({
               },
               () => async () => {
                 void pollingActivationStatus(
-                  response.paymentContextCode,
+                  response.codiceContestoPagamento,
                   config.CHECKOUT_POLLING_ACTIVATION_ATTEMPTS as number,
                   (res) => {
                     setPaymentId({ paymentId: res.idPagamento });
