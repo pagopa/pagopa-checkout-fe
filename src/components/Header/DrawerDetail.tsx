@@ -1,21 +1,16 @@
 import { Alert, Box, Typography, useTheme } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
-
-import {
-  PaymentInfoData,
-  Cart,
-} from "../../features/payment/models/paymentModel";
+import { PaymentNotice } from "../../../generated/definitions/payment-ecommerce/PaymentNotice";
 import { moneyFormat } from "../../utils/form/formatters";
 import { CustomDrawer } from "../modals/CustomDrawer";
 import DrawerCart from "./DrawerCart";
-import DrawerPaymentInfo from "./DrawerPaymentInfo";
+
 interface Props {
   amountToShow: () => number;
   drawstate: boolean;
   toggleDrawer: () => void;
-  PaymentInfo: PaymentInfoData;
-  CartInfo: Cart;
+  paymentNotices: Array<PaymentNotice>;
 }
 
 export default function DrawerDetail(props: Props) {
@@ -59,11 +54,7 @@ export default function DrawerDetail(props: Props) {
         </Typography>
       </Alert>
 
-      {props.CartInfo && <DrawerCart CartInfo={props.CartInfo} />}
-
-      {props.PaymentInfo.subject && (
-        <DrawerPaymentInfo PaymentInfo={props.PaymentInfo} />
-      )}
+      <DrawerCart paymentNotices={props.paymentNotices} />
     </CustomDrawer>
   );
 }

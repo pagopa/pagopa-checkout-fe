@@ -4,6 +4,7 @@ import { Box, Grid, Typography } from "@mui/material";
 import React from "react";
 import { useLocation } from "react-router-dom";
 import pagopaLogo from "../../assets/images/pagopa-logo.svg";
+import { PaymentNotice } from "../../features/payment/models/paymentModel";
 import { CheckoutRoutes } from "../../routes/models/routeModel";
 import { getPaymentInfo, getCart } from "../../utils/api/apiService";
 import { getTotalFromCart } from "../../utils/cart/cart";
@@ -23,10 +24,11 @@ function amountToShow() {
 export default function Header() {
   const location = useLocation();
   const currentPath = location.pathname.split("/").slice(-1)[0];
+  const PaymentInfoData = getPaymentInfo();
   const PaymentInfo = {
-    receiver: getPaymentInfo().paName,
-    subject: paymentSubjectTransform(getPaymentInfo().description) || "",
-    amount: getPaymentInfo().amount,
+    receiver: PaymentInfoData.paName,
+    subject: paymentSubjectTransform(PaymentInfoData.description) || "",
+    amount: PaymentInfoData.amount,
   };
   const CartInfo = getCart();
   const [drawstate, setDrawstate] = React.useState(false);
@@ -43,6 +45,19 @@ export default function Header() {
   const toggleDrawer = (open: boolean) => {
     setDrawstate(open);
   };
+  const paymentNotices: Array<PaymentNotice> = CartInfo
+    ? CartInfo.paymentNotices
+    : [
+        {
+          noticeNumber: PaymentInfoData.rptId
+            ? PaymentInfoData.rptId.slice(10)
+            : "",
+          fiscalCode: PaymentInfoData.paFiscalCode,
+          amount: PaymentInfoData.amount,
+          companyName: PaymentInfoData.paName || "",
+          description: PaymentInfoData.description || "",
+        },
+      ];
 
   return (
     <Box p={3} bgcolor={"white"}>
@@ -55,7 +70,7 @@ export default function Header() {
             aria-hidden="true"
           />
         </Grid>
-        {(!!PaymentInfo.receiver || !!CartInfo.paymentNotices) &&
+        {(!!PaymentInfo.receiver || !!CartInfo?.paymentNotices) &&
           !ignoreRoutes.includes(currentPath) && (
             <>
               <Grid
@@ -81,8 +96,7 @@ export default function Header() {
                 </Typography>
               </Grid>
               <DrawerDetail
-                PaymentInfo={PaymentInfo}
-                CartInfo={CartInfo}
+                paymentNotices={paymentNotices}
                 amountToShow={amountToShow}
                 drawstate={drawstate}
                 toggleDrawer={() => toggleDrawer(false)}

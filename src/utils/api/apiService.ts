@@ -108,24 +108,26 @@ export function getWallet(): Wallet {
   };
 }
 
-export function getCart(): Cart {
+export function getCart(): Cart | undefined {
   const data = loadState(SessionItems.cart) as Cart | undefined;
-  return {
-    emailNotice: data?.emailNotice || "",
-    paymentNotices:
-      data?.paymentNotices?.map((notice) => ({
-        noticeNumber: notice?.noticeNumber || "",
-        fiscalCode: notice?.fiscalCode || "",
-        amount: notice?.amount || 0,
-        companyName: notice?.companyName || "",
-        description: notice?.description || "",
-      })) || [],
-    returnUrls: {
-      returnOkUrl: data?.returnUrls?.returnOkUrl || "",
-      returnCancelUrl: data?.returnUrls?.returnCancelUrl || "",
-      returnErrorUrl: data?.returnUrls?.returnErrorUrl || "",
-    },
-  };
+  return data
+    ? {
+        emailNotice: data?.emailNotice || "",
+        paymentNotices:
+          data?.paymentNotices?.map((notice) => ({
+            noticeNumber: notice?.noticeNumber || "",
+            fiscalCode: notice?.fiscalCode || "",
+            amount: notice?.amount || 0,
+            companyName: notice?.companyName || "",
+            description: notice?.description || "",
+          })) || [],
+        returnUrls: {
+          returnOkUrl: data?.returnUrls?.returnOkUrl || "",
+          returnCancelUrl: data?.returnUrls?.returnCancelUrl || "",
+          returnErrorUrl: data?.returnUrls?.returnErrorUrl || "",
+        },
+      }
+    : undefined;
 }
 
 export function getReturnUrls(): ReturnUrls {

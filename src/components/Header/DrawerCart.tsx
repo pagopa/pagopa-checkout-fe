@@ -3,21 +3,21 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { AccordionDetails, Box, Typography, useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import React from "react";
-import {
-  PaymentNotice,
-  Cart,
-} from "../../features/payment/models/paymentModel";
+import { PaymentNotice } from "../../features/payment/models/paymentModel";
 import { moneyFormat } from "../../utils/form/formatters";
 import { truncateText } from "../../utils/transformers/text";
 
 interface Props {
-  CartInfo: Cart;
+  paymentNotices: Array<PaymentNotice>;
 }
 
 export default function DrawerCart(props: Props) {
   const { t } = useTranslation();
   const theme = useTheme();
-  const [expanded, setExpanded] = React.useState<string | false>("paynotice-0");
+  const firstItemExpanded = props.paymentNotices.length === 1;
+  const [expanded, setExpanded] = React.useState<string | false>(
+    firstItemExpanded ? "paynotice-0" : false
+  );
 
   const handleChange =
     (panel: string) => (_event: React.SyntheticEvent, newExpanded: boolean) => {
@@ -26,7 +26,7 @@ export default function DrawerCart(props: Props) {
 
   return (
     <>
-      {props.CartInfo.paymentNotices.map((el: PaymentNotice, index: number) => (
+      {props.paymentNotices.map((el: PaymentNotice, index: number) => (
         <Accordion
           key={`paynotice-${index}`}
           onChange={handleChange(`paynotice-${index}`)}

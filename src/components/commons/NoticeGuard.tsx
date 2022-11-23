@@ -6,7 +6,7 @@ export default function NoticeGuard(props: { children?: React.ReactNode }) {
   const paymentInfo = getPaymentInfo();
   const cart = getCart();
 
-  return paymentInfo.rptId || cart.emailNotice ? (
+  return paymentInfo.rptId || cart?.emailNotice ? (
     <>{props.children}</>
   ) : (
     <Navigate to="/" />
