@@ -13,18 +13,18 @@ export function getTotalFromCart(cart: Cart): number {
   );
 }
 
-// these are a tempo adapters to convert the Cart with only one item
+// these are a temp adapters to convert the Cart with only one item
 export function adaptCartAsPaymentInfo(cart: Cart): void {
   const CartItem = cart.paymentNotices[0];
-  const CartAsPI: PaymentInfo = {
+  const CartAsPI = {
     amount: CartItem.amount,
-    paymentContextCode: "",
+    paymentContextCode: "CART0000000000000000000000000000",
     rptId: `${CartItem.fiscalCode}${CartItem.noticeNumber}`,
     paFiscalCode: CartItem.fiscalCode,
     paName: CartItem.companyName || "",
     description: CartItem.description || "",
   };
-  setPaymentInfo(CartAsPI);
+  setPaymentInfo(CartAsPI as PaymentInfo);
 }
 export function adaptCartAsRptId(cart: Cart): void {
   const CartItem = cart.paymentNotices[0];
