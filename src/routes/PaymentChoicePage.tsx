@@ -11,15 +11,17 @@ import CheckoutLoader from "../components/PageContent/CheckoutLoader";
 import PageContainer from "../components/PageContent/PageContainer";
 import { PaymentChoice } from "../features/payment/components/PaymentChoice/PaymentChoice";
 import { PaymentInstruments } from "../features/payment/models/paymentModel";
-import { getPaymentId, getPaymentInfo } from "../utils/api/apiService";
+import { getCart, getPaymentId, getPaymentInfo } from "../utils/api/apiService";
 import { cancelPayment, getPaymentInstruments } from "../utils/api/helper";
+import { getTotalFromCart } from "../utils/cart/cart";
 import { onBrowserUnload } from "../utils/eventListeners";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function PaymentChoicePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const amount = getPaymentInfo().amount;
+  const cart = getCart();
+  const amount = getPaymentInfo().amount || getTotalFromCart(cart);
   const [loading, setLoading] = React.useState(false);
   const [instrumentsLoading, setInstrumentsLoading] = React.useState(false);
   const [cancelModalOpen, setCancelModalOpen] = React.useState(false);
