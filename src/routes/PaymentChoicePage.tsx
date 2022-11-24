@@ -21,7 +21,8 @@ export default function PaymentChoicePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const cart = getCart();
-  const amount = getPaymentInfo().amount || (cart && getTotalFromCart(cart));
+  const amount =
+    getPaymentInfo().amount || (cart && getTotalFromCart(cart)) || 0;
   const [loading, setLoading] = React.useState(false);
   const [instrumentsLoading, setInstrumentsLoading] = React.useState(false);
   const [cancelModalOpen, setCancelModalOpen] = React.useState(false);
