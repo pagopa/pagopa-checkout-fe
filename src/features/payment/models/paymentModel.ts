@@ -71,7 +71,7 @@ export interface PaymentInfoData {
 }
 
 export interface PaymentId {
-  idPagamento: string;
+  paymentId: string;
 }
 
 export interface PaymentCheckDetail {
@@ -151,4 +151,24 @@ export interface PaymentInstruments {
     min: number;
     max: number;
   }>;
+}
+
+export interface PaymentNotice {
+  noticeNumber: any;
+  fiscalCode: any;
+  amount: number;
+  companyName?: string;
+  description?: string;
+}
+
+export interface ReturnUrls {
+  returnOkUrl: string;
+  returnCancelUrl: string;
+  returnErrorUrl: string;
+}
+
+export interface Cart {
+  paymentNotices: Array<PaymentNotice>;
+  returnUrls: ReturnUrls;
+  emailNotice?: string;
 }

@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/cognitive-complexity */
 /* eslint-disable sonarjs/no-identical-functions */
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { Millisecond } from "@pagopa/ts-commons/lib/units";
@@ -19,6 +20,7 @@ import {
 } from "../../../generated/definitions/payment-manager-api/Wallet";
 import { RptId } from "../../../generated/definitions/payment-transactions-api/RptId";
 import {
+  Cart,
   InputCardFormFields,
   PaymentCheckData,
   PaymentInstruments,
@@ -30,6 +32,11 @@ import {
 } from "../../routes/models/paymentMethodRoutes";
 import { getConfigOrThrow } from "../config/config";
 import {
+  CART_REQUEST_ACCESS,
+  CART_REQUEST_NET_ERROR,
+  CART_REQUEST_RESP_ERROR,
+  CART_REQUEST_SUCCESS,
+  CART_REQUEST_SVR_ERROR,
   DONATION_INIT_SESSION,
   DONATION_LIST_ERROR,
   DONATION_LIST_SUCCESS,
@@ -99,11 +106,13 @@ import { ErrorsType } from "../errors/checkErrorsModel";
 import { PaymentSession } from "../sessionData/PaymentSession";
 import { WalletSession } from "../sessionData/WalletSession";
 import {
+  getCart,
   getCheckData,
   getNoticeInfo,
   getPaymentId,
   getPaymentInfo,
   setPaymentId,
+  setReturnUrls,
 } from "./apiService";
 import { getBrowserInfoTask, getEMVCompliantColorDepth } from "./checkHelper";
 import {
@@ -248,6 +257,10 @@ export const activatePayment = async ({
 }) => {
   const noticeInfo = getNoticeInfo();
   const paymentInfo = getPaymentInfo();
+  const paymentInfoTransform = {
+    importoSingoloVersamento: paymentInfo.amount,
+    codiceContestoPagamento: paymentInfo.paymentContextCode,
+  };
   const paymentId = getPaymentId().paymentId;
   const checkDataId = getCheckData().id;
   const rptId: RptId = `${noticeInfo.cf}${noticeInfo.billCode}`;
@@ -268,14 +281,14 @@ export const activatePayment = async ({
   }
   if (!paymentId) {
     pipe(
-      EcommercePaymentRequestsGetResponse.decode(paymentInfo),
+      PaymentRequestsGetResponse.decode(paymentInfoTransform),
       E.fold(
-        () => onError(""),
+        () => onError(ErrorsType.INVALID_DECODE),
         (response) =>
           pipe(
             activePaymentTask(
-              response.amount,
-              response.paymentContextCode,
+              response.importoSingoloVersamento,
+              response.codiceContestoPagamento,
               rptId,
               token
             ),
@@ -285,10 +298,10 @@ export const activatePayment = async ({
               },
               () => async () => {
                 void pollingActivationStatus(
-                  response.paymentContextCode,
+                  response.codiceContestoPagamento,
                   config.CHECKOUT_POLLING_ACTIVATION_ATTEMPTS as number,
                   (res) => {
-                    setPaymentId(res);
+                    setPaymentId({ paymentId: res.idPagamento });
                     void getPaymentCheckData({
                       idPayment: res.idPagamento,
                       onError,
@@ -461,22 +474,26 @@ export const retryPollingActivationStatus = async ({
   onNavigate: () => void;
 }): Promise<void> => {
   const paymentInfo = getPaymentInfo();
+  const paymentInfoTransform = {
+    importoSingoloVersamento: paymentInfo.amount,
+    codiceContestoPagamento: paymentInfo.paymentContextCode,
+  };
   const config = getConfigOrThrow();
   const getWallet = () => {
     void getSessionWallet(wallet as InputCardFormFields, onError, onResponse);
   };
 
   pipe(
-    PaymentRequestsGetResponse.decode(paymentInfo),
+    PaymentRequestsGetResponse.decode(paymentInfoTransform),
     E.fold(
-      () => onError(""),
+      () => onError(ErrorsType.INVALID_DECODE),
       (response) =>
         pollingActivationStatus(
           response.codiceContestoPagamento,
           config.CHECKOUT_POLLING_ACTIVATION_ATTEMPTS as number,
           // eslint-disable-next-line sonarjs/no-identical-functions
           (res) => {
-            setPaymentId(res);
+            setPaymentId({ paymentId: res.idPagamento });
             void getPaymentCheckData({
               idPayment: res.idPagamento,
               onError,
@@ -557,15 +574,23 @@ export const getPaymentCheckData = async ({
                           mixpanel.track(PAYMENT_CHECK_SUCCESS.value, {
                             EVENT_ID: PAYMENT_CHECK_SUCCESS.value,
                           });
+
                           const originInput = pipe(
-                            O.fromNullable(origin),
+                            O.fromNullable(response.value.data.origin),
                             O.getOrElse(() => response.value.data.urlRedirectEc)
                           );
-                          sessionStorage.setItem(
-                            "originUrlRedirect",
-                            originInput === "payportal"
-                              ? "/"
-                              : JSON.stringify(originInput)
+                          const cart = getCart();
+                          setReturnUrls(
+                            cart?.returnUrls.returnOkUrl
+                              ? cart.returnUrls
+                              : {
+                                  returnOkUrl:
+                                    originInput === "payportal"
+                                      ? "/"
+                                      : response.value.data.urlRedirectEc,
+                                  returnCancelUrl: "",
+                                  returnErrorUrl: "",
+                                }
                           );
                         })
                       );
@@ -1228,7 +1253,12 @@ export const getPaymentInstruments = async (
         pipe(
           myResExt,
           E.fold(
-            () => [],
+            () => {
+              mixpanel.track(PAYMENT_METHODS_RESP_ERROR.value, {
+                EVENT_ID: PAYMENT_METHODS_RESP_ERROR.value,
+              });
+              return [];
+            },
             (myRes) => {
               if (myRes.status === 200) {
                 mixpanel.track(PAYMENT_METHODS_SUCCESS.value, {
@@ -1264,4 +1294,63 @@ export const getPaymentInstruments = async (
     )
   )();
   onResponse(list as any as Array<PaymentInstruments>);
+};
+
+export const getCarts = async (
+  id_cart: string,
+  onError: (e: string) => void,
+  onResponse: (data: Cart) => void
+) => {
+  mixpanel.track(CART_REQUEST_ACCESS.value, {
+    EVENT_ID: CART_REQUEST_ACCESS.value,
+  });
+  await pipe(
+    TE.tryCatch(
+      () => apiPaymentEcommerceClient.GetCarts({ id_cart }),
+      () => {
+        mixpanel.track(CART_REQUEST_NET_ERROR.value, {
+          EVENT_ID: CART_REQUEST_NET_ERROR.value,
+        });
+        onError(ErrorsType.STATUS_ERROR);
+        return toError;
+      }
+    ),
+    TE.fold(
+      () => async () => {
+        mixpanel.track(CART_REQUEST_SVR_ERROR.value, {
+          EVENT_ID: CART_REQUEST_SVR_ERROR.value,
+        });
+        onError(ErrorsType.STATUS_ERROR);
+        return {};
+      },
+      (myResExt) => async () =>
+        pipe(
+          myResExt,
+          E.fold(
+            () => {
+              mixpanel.track(CART_REQUEST_RESP_ERROR.value, {
+                EVENT_ID: CART_REQUEST_RESP_ERROR.value,
+              });
+              onError(ErrorsType.STATUS_ERROR);
+              return {};
+            },
+            (myRes) => {
+              if (myRes.status === 200) {
+                mixpanel.track(CART_REQUEST_SUCCESS.value, {
+                  EVENT_ID: CART_REQUEST_SUCCESS.value,
+                });
+                onResponse(myRes.value as any as Cart);
+                return myRes.value;
+              } else {
+                mixpanel.track(CART_REQUEST_RESP_ERROR.value, {
+                  EVENT_ID: CART_REQUEST_RESP_ERROR.value,
+                });
+                onError(ErrorsType.STATUS_ERROR);
+                return {};
+              }
+            }
+          )
+        )
+    )
+  )();
 };

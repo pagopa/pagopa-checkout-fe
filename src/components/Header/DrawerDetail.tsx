@@ -1,14 +1,16 @@
 import { Alert, Box, Typography, useTheme } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { PaymentInfoData } from "../../features/payment/models/paymentModel";
+import { PaymentNotice } from "../../../generated/definitions/payment-ecommerce/PaymentNotice";
 import { moneyFormat } from "../../utils/form/formatters";
 import { CustomDrawer } from "../modals/CustomDrawer";
+import DrawerCart from "./DrawerCart";
 
 interface Props {
+  amountToShow: () => number;
   drawstate: boolean;
   toggleDrawer: () => void;
-  PaymentInfo: PaymentInfoData;
+  paymentNotices: Array<PaymentNotice>;
 }
 
 export default function DrawerDetail(props: Props) {
@@ -29,7 +31,7 @@ export default function DrawerDetail(props: Props) {
           {t("mainPage.header.detail.detailAmount")}
         </Typography>
         <Typography variant="h6" component={"div"}>
-          {props.PaymentInfo ? moneyFormat(props.PaymentInfo.amount) : ""}
+          {moneyFormat(props.amountToShow())}
         </Typography>
       </Box>
       <Alert
@@ -51,30 +53,8 @@ export default function DrawerDetail(props: Props) {
           {t("mainPage.header.disclaimer")}
         </Typography>
       </Alert>
-      <Box sx={{ textAlign: "left" }}>
-        <Typography
-          variant="body2"
-          fontWeight={300}
-          component="div"
-          sx={{ mt: 1 }}
-        >
-          {t("mainPage.header.detail.detailSubject")}
-        </Typography>
-        <Typography variant="body2" fontWeight={600} component="div">
-          {props.PaymentInfo.subject}
-        </Typography>
-        <Typography
-          variant="body2"
-          fontWeight={300}
-          component="div"
-          sx={{ mt: 1 }}
-        >
-          {t("mainPage.header.detail.detailReceiver")}
-        </Typography>
-        <Typography variant="body2" fontWeight={600} component="div" pb={2}>
-          {props.PaymentInfo.receiver}
-        </Typography>
-      </Box>
+
+      <DrawerCart paymentNotices={props.paymentNotices} />
     </CustomDrawer>
   );
 }
