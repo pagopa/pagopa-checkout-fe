@@ -329,4 +329,20 @@ export const PaymentResponses: Record<string, PaymentFaultErrorMessage> = {
       },
     ],
   },
+  INVALID_DECODE: {
+    title: "INVALID_DECODE.title",
+    body: "INVALID_DECODE.body",
+    category: PaymentFaultCategory.CUSTOM,
+    buttons: [
+      {
+        title: "errorButton.help",
+        action: () => {
+          window.open(HELPDESK_URL, "_blank")?.focus();
+        },
+      },
+      {
+        title: "errorButton.close",
+      },
+    ],
+  },
 };

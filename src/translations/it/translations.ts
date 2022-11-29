@@ -215,6 +215,10 @@ export const TRANSLATIONS_IT = {
     title: "Il codice inquadrato non è un avviso pagoPA",
     body: "Se il problema persiste, prova a inserire i dati manualmente.",
   },
+  INVALID_DECODE: {
+    title: "Si è verificato un errore nella lettura dei dati",
+    body: "Prova di nuovo o contattaci per ricevere assistenza.",
+  },
   DONATIONLIST_ERROR:
     "Non siamo riusciti a caricare la lista delle organizzazioni.",
   paymentChoicePage: {

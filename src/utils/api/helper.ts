@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/cognitive-complexity */
 /* eslint-disable sonarjs/no-identical-functions */
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { Millisecond } from "@pagopa/ts-commons/lib/units";
@@ -105,6 +106,7 @@ import { ErrorsType } from "../errors/checkErrorsModel";
 import { PaymentSession } from "../sessionData/PaymentSession";
 import { WalletSession } from "../sessionData/WalletSession";
 import {
+  getCart,
   getCheckData,
   getNoticeInfo,
   getPaymentId,
@@ -281,7 +283,7 @@ export const activatePayment = async ({
     pipe(
       PaymentRequestsGetResponse.decode(paymentInfoTransform),
       E.fold(
-        () => onError(""),
+        () => onError(ErrorsType.INVALID_DECODE),
         (response) =>
           pipe(
             activePaymentTask(
@@ -472,15 +474,19 @@ export const retryPollingActivationStatus = async ({
   onNavigate: () => void;
 }): Promise<void> => {
   const paymentInfo = getPaymentInfo();
+  const paymentInfoTransform = {
+    importoSingoloVersamento: paymentInfo.amount,
+    codiceContestoPagamento: paymentInfo.paymentContextCode,
+  };
   const config = getConfigOrThrow();
   const getWallet = () => {
     void getSessionWallet(wallet as InputCardFormFields, onError, onResponse);
   };
 
   pipe(
-    PaymentRequestsGetResponse.decode(paymentInfo),
+    PaymentRequestsGetResponse.decode(paymentInfoTransform),
     E.fold(
-      () => onError(""),
+      () => onError(ErrorsType.INVALID_DECODE),
       (response) =>
         pollingActivationStatus(
           response.codiceContestoPagamento,
@@ -568,16 +574,24 @@ export const getPaymentCheckData = async ({
                           mixpanel.track(PAYMENT_CHECK_SUCCESS.value, {
                             EVENT_ID: PAYMENT_CHECK_SUCCESS.value,
                           });
+
                           const originInput = pipe(
-                            O.fromNullable(origin),
+                            O.fromNullable(response.value.data.origin),
                             O.getOrElse(() => response.value.data.urlRedirectEc)
                           );
-                          setReturnUrls({
-                            returnOkUrl:
-                              originInput === "payportal" ? "/" : originInput,
-                            returnCancelUrl: "",
-                            returnErrorUrl: "",
-                          });
+                          const cart = getCart();
+                          setReturnUrls(
+                            cart?.returnUrls.returnOkUrl
+                              ? cart.returnUrls
+                              : {
+                                  returnOkUrl:
+                                    originInput === "payportal"
+                                      ? "/"
+                                      : response.value.data.urlRedirectEc,
+                                  returnCancelUrl: "",
+                                  returnErrorUrl: "",
+                                }
+                          );
                         })
                       );
                     } else {
