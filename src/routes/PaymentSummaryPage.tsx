@@ -10,16 +10,24 @@ import { FormButtons } from "../components/FormButtons/FormButtons";
 import InformationModal from "../components/modals/InformationModal";
 import PageContainer from "../components/PageContent/PageContainer";
 import FieldContainer from "../components/TextFormField/FieldContainer";
-import { getNoticeInfo, getPaymentInfo } from "../utils/api/apiService";
+import {
+  PaymentFormFields,
+  PaymentInfo,
+} from "../features/payment/models/paymentModel";
 import { moneyFormat } from "../utils/form/formatters";
+import { getSessionItem, SessionItems } from "../utils/storage/sessionStorage";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function PaymentSummaryPage() {
   const { t } = useTranslation();
   const theme = useTheme();
   const navigate = useNavigate();
-  const paymentInfo = getPaymentInfo();
-  const noticeInfo = getNoticeInfo();
+  const paymentInfo = getSessionItem(SessionItems.paymentInfo) as
+    | PaymentInfo
+    | undefined;
+  const noticeInfo = getSessionItem(SessionItems.noticeInfo) as
+    | PaymentFormFields
+    | undefined;
   const [modalOpen, setModalOpen] = React.useState(false);
 
   const iconStyle = { ml: 3, color: theme.palette.text.secondary };
@@ -38,23 +46,23 @@ export default function PaymentSummaryPage() {
 
   return (
     <PageContainer title="paymentSummaryPage.title" childrenSx={{ pt: 2 }}>
-      {!!paymentInfo.paName && (
+      {!!paymentInfo?.paName && (
         <FieldContainer
           title="paymentSummaryPage.creditor"
-          body={paymentInfo.paName}
+          body={paymentInfo?.paName}
           icon={<AccountBalanceIcon sx={iconStyle} />}
         />
       )}
-      {!!paymentInfo.description && (
+      {!!paymentInfo?.description && (
         <FieldContainer
           title="paymentSummaryPage.causal"
-          body={paymentInfo.description}
+          body={paymentInfo?.description}
           icon={<ReceiptLongIcon sx={iconStyle} />}
         />
       )}
       <FieldContainer
         title="paymentSummaryPage.amount"
-        body={moneyFormat(paymentInfo.amount)}
+        body={moneyFormat(paymentInfo?.amount || 0)}
         icon={<EuroIcon sx={iconStyle} />}
         endAdornment={
           <InfoOutlinedIcon
@@ -68,19 +76,19 @@ export default function PaymentSummaryPage() {
           />
         }
       />
-      {!!noticeInfo.billCode && (
+      {!!noticeInfo?.billCode && (
         <FieldContainer
           title="paymentSummaryPage.billCode"
-          body={noticeInfo.billCode}
+          body={noticeInfo?.billCode}
           flexDirection="row"
           overflowWrapBody={false}
           sx={{ px: 2 }}
         />
       )}
-      {!!paymentInfo.paName && (
+      {!!paymentInfo?.paName && (
         <FieldContainer
           title="paymentSummaryPage.cf"
-          body={paymentInfo.paName}
+          body={paymentInfo?.paName}
           flexDirection="row"
           overflowWrapBody={false}
           sx={{ px: 2 }}

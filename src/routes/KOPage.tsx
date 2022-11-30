@@ -4,15 +4,21 @@ import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import ko from "../assets/images/response-umbrella.svg";
 import PageContainer from "../components/PageContent/PageContainer";
+import { ReturnUrls } from "../features/payment/models/paymentModel";
 import { resetCheckData } from "../redux/slices/checkData";
-import { getReturnUrls } from "../utils/api/apiService";
 import { onBrowserUnload } from "../utils/eventListeners";
-import { clearSensitiveItems } from "../utils/storage/sessionStorage";
+import {
+  clearSensitiveItems,
+  getSessionItem,
+  SessionItems,
+} from "../utils/storage/sessionStorage";
 
 export default function KOPage() {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const redirectUrl = getReturnUrls().returnErrorUrl;
+  const redirectUrl =
+    (getSessionItem(SessionItems.returnUrls) as ReturnUrls | undefined)
+      ?.returnErrorUrl || "";
 
   React.useEffect(() => {
     dispatch(resetCheckData());

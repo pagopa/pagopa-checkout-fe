@@ -29,13 +29,12 @@ import SkeletonFieldContainer from "../components/Skeletons/SkeletonFieldContain
 import ClickableFieldContainer from "../components/TextFormField/ClickableFieldContainer";
 import FieldContainer from "../components/TextFormField/FieldContainer";
 import PspFieldContainer from "../components/TextFormField/PspFieldContainer";
-import { PspList } from "../features/payment/models/paymentModel";
 import {
-  getCheckData,
-  getEmailInfo,
-  getPaymentInfo,
-  getWallet,
-} from "../utils/api/apiService";
+  PaymentCheckData,
+  PaymentInfo,
+  PspList,
+  Wallet,
+} from "../features/payment/models/paymentModel";
 import {
   cancelPayment,
   confirmPayment,
@@ -44,6 +43,7 @@ import {
 } from "../utils/api/helper";
 import { onBrowserUnload } from "../utils/eventListeners";
 import { moneyFormat } from "../utils/form/formatters";
+import { getSessionItem, SessionItems } from "../utils/storage/sessionStorage";
 import { CheckoutRoutes } from "./models/routeModel";
 
 const defaultStyle = {
@@ -80,11 +80,16 @@ export default function PaymentCheckPage() {
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
 
-  const checkData = getCheckData();
-  const wallet = getWallet();
-  const email = getEmailInfo();
-  const totalAmount = checkData.amount.amount + wallet.psp.fixedCost.amount;
-  const amount = getPaymentInfo().amount;
+  const checkData = getSessionItem(SessionItems.checkData) as
+    | PaymentCheckData
+    | undefined;
+  const wallet = getSessionItem(SessionItems.wallet) as Wallet | undefined;
+  const email = getSessionItem(SessionItems.useremail) as string | undefined;
+  const totalAmount =
+    (checkData?.amount?.amount || 0) + (wallet?.psp?.fixedCost?.amount || 0);
+  const amount = (
+    getSessionItem(SessionItems.paymentInfo) as PaymentInfo | undefined
+  )?.amount;
 
   const onBrowserBackEvent = (e: any) => {
     e.preventDefault();
@@ -159,7 +164,7 @@ export default function PaymentCheckPage() {
 
   const getWalletIcon = () => {
     if (
-      !wallet.creditCard.brand ||
+      !wallet?.creditCard?.brand ||
       wallet.creditCard.brand.toLowerCase() === "other"
     ) {
       return <CreditCardIcon color="action" />;
@@ -206,8 +211,8 @@ export default function PaymentCheckPage() {
       <FieldContainer
         titleVariant="sidenav"
         bodyVariant="body2"
-        title={`· · · · ${wallet.creditCard.pan.slice(-4)}`}
-        body={`${wallet.creditCard.expireMonth}/${wallet.creditCard.expireYear} · ${wallet.creditCard.holder}`}
+        title={`· · · · ${wallet?.creditCard?.pan?.slice(-4)}`}
+        body={`${wallet?.creditCard?.expireMonth}/${wallet?.creditCard?.expireYear} · ${wallet?.creditCard?.holder}`}
         icon={getWalletIcon()}
         sx={{
           border: "1px solid",
@@ -257,8 +262,8 @@ export default function PaymentCheckPage() {
         loading={pspUpdateLoading}
         titleVariant="sidenav"
         bodyVariant="body2"
-        title={moneyFormat(wallet.psp.fixedCost.amount)}
-        body={`${t("paymentCheckPage.psp")} ${wallet.psp.businessName}`}
+        title={moneyFormat(wallet?.psp?.fixedCost?.amount || 0)}
+        body={`${t("paymentCheckPage.psp")} ${wallet?.psp?.businessName}`}
         sx={{
           border: "1px solid",
           borderColor: "divider",
@@ -279,7 +284,7 @@ export default function PaymentCheckPage() {
         }
       />
       <ClickableFieldContainer
-        title={`${t("paymentCheckPage.email")} ${email.email}`}
+        title={`${t("paymentCheckPage.email")} ${email}`}
         icon={<MailOutlineIcon sx={{ color: "text.primary" }} />}
         clickable={false}
         sx={{ borderBottom: "", mt: 2 }}

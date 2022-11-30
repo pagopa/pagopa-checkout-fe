@@ -4,15 +4,21 @@ import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import cancelled from "../assets/images/response-unrecognized.svg";
 import PageContainer from "../components/PageContent/PageContainer";
+import { ReturnUrls } from "../features/payment/models/paymentModel";
 import { resetCheckData } from "../redux/slices/checkData";
-import { getReturnUrls } from "../utils/api/apiService";
 import { onBrowserUnload } from "../utils/eventListeners";
-import { clearSensitiveItems } from "../utils/storage/sessionStorage";
+import {
+  clearSensitiveItems,
+  getSessionItem,
+  SessionItems,
+} from "../utils/storage/sessionStorage";
 
 export default function CancelledPage() {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const redirectUrl = getReturnUrls().returnCancelUrl;
+  const redirectUrl =
+    (getSessionItem(SessionItems.returnUrls) as ReturnUrls | undefined)
+      ?.returnCancelUrl || "";
 
   React.useEffect(() => {
     dispatch(resetCheckData());

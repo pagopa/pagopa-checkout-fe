@@ -10,19 +10,26 @@ import ErrorModal from "../components/modals/ErrorModal";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
 import PageContainer from "../components/PageContent/PageContainer";
 import { PaymentChoice } from "../features/payment/components/PaymentChoice/PaymentChoice";
-import { PaymentInstruments } from "../features/payment/models/paymentModel";
-import { getCart, getPaymentId, getPaymentInfo } from "../utils/api/apiService";
+import {
+  Cart,
+  PaymentInfo,
+  PaymentInstruments,
+} from "../features/payment/models/paymentModel";
 import { cancelPayment, getPaymentInstruments } from "../utils/api/helper";
 import { getTotalFromCart } from "../utils/cart/cart";
 import { onBrowserUnload } from "../utils/eventListeners";
+import { getSessionItem, SessionItems } from "../utils/storage/sessionStorage";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function PaymentChoicePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const cart = getCart();
+  const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
   const amount =
-    getPaymentInfo().amount || (cart && getTotalFromCart(cart)) || 0;
+    (getSessionItem(SessionItems.paymentInfo) as PaymentInfo | undefined)
+      ?.amount ||
+    (cart && getTotalFromCart(cart)) ||
+    0;
   const [loading, setLoading] = React.useState(false);
   const [instrumentsLoading, setInstrumentsLoading] = React.useState(false);
   const [cancelModalOpen, setCancelModalOpen] = React.useState(false);
@@ -39,7 +46,7 @@ export default function PaymentChoicePage() {
   };
 
   React.useEffect(() => {
-    if (getPaymentId().paymentId) {
+    if (getSessionItem(SessionItems.paymentId) as string | undefined) {
       window.addEventListener("beforeunload", onBrowserUnload);
       window.history.pushState(null, "", window.location.pathname);
       window.addEventListener("popstate", onBrowserBackEvent);

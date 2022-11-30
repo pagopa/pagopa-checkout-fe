@@ -5,14 +5,21 @@ import { useNavigate } from "react-router-dom";
 import ErrorModal from "../components/modals/ErrorModal";
 import PageContainer from "../components/PageContent/PageContainer";
 import { InputCardForm } from "../features/payment/components/InputCardForm/InputCardForm";
-import { InputCardFormFields } from "../features/payment/models/paymentModel";
-import { getReCaptchaKey, getWallet } from "../utils/api/apiService";
+import {
+  InputCardFormFields,
+  Wallet,
+} from "../features/payment/models/paymentModel";
 import {
   activatePayment,
   retryPollingActivationStatus,
 } from "../utils/api/helper";
 import { getConfigOrThrow } from "../utils/config/config";
 import { ErrorsType } from "../utils/errors/checkErrorsModel";
+import {
+  getReCaptchaKey,
+  getSessionItem,
+  SessionItems,
+} from "../utils/storage/sessionStorage";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function InputCardPage() {
@@ -27,7 +34,9 @@ export default function InputCardPage() {
   const config = getConfigOrThrow();
 
   React.useEffect(() => {
-    setHideCancelButton(!!getWallet().idWallet);
+    setHideCancelButton(
+      !!(getSessionItem(SessionItems.wallet) as Wallet | undefined)?.idWallet
+    );
   }, []);
 
   React.useEffect(() => {

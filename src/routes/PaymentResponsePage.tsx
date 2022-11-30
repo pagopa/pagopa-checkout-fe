@@ -8,23 +8,25 @@ import { default as React, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
 import PageContainer from "../components/PageContent/PageContainer";
-import { PaymentCheckData } from "../features/payment/models/paymentModel";
+import {
+  PaymentCheckData,
+  ReturnUrls,
+  Wallet,
+} from "../features/payment/models/paymentModel";
 import {
   responseMessage,
   responseOutcome,
 } from "../features/payment/models/responseOutcome";
-import {
-  getCheckData,
-  getEmailInfo,
-  getReturnUrls,
-  getWallet,
-} from "../utils/api/apiService";
 import { callServices } from "../utils/api/response";
 import { PAYMENT_OUTCOME_CODE } from "../utils/config/mixpanelDefs";
 import { mixpanel } from "../utils/config/mixpanelHelperInit";
 import { onBrowserUnload } from "../utils/eventListeners";
 import { moneyFormat } from "../utils/form/formatters";
-import { clearSensitiveItems } from "../utils/storage/sessionStorage";
+import {
+  clearSensitiveItems,
+  getSessionItem,
+  SessionItems,
+} from "../utils/storage/sessionStorage";
 import {
   getOutcomeFromAuthcodeAndIsDirectAcquirer,
   OutcomeEnumType,
@@ -41,14 +43,19 @@ type printData = {
 export default function PaymentCheckPage() {
   const [loading, setLoading] = useState(true);
   const [outcomeMessage, setOutcomeMessage] = useState<responseMessage>();
-  const redirectUrl = getReturnUrls().returnOkUrl;
-  const PaymentCheckData = getCheckData() as PaymentCheckData;
-  const wallet = getWallet();
-  const email = getEmailInfo();
+  const redirectUrl =
+    (getSessionItem(SessionItems.returnUrls) as ReturnUrls | undefined)
+      ?.returnOkUrl || "";
+  const paymentCheckData = getSessionItem(SessionItems.checkData) as
+    | PaymentCheckData
+    | undefined;
+  const wallet = getSessionItem(SessionItems.wallet) as Wallet | undefined;
+  const email = getSessionItem(SessionItems.useremail) as string | undefined;
   const totalAmount =
-    PaymentCheckData.amount.amount + wallet.psp.fixedCost.amount;
+    (paymentCheckData?.amount?.amount || 0) +
+    (wallet?.psp?.fixedCost?.amount || 0);
   const usefulPrintData: printData = {
-    useremail: email.email,
+    useremail: email || "",
     amount: moneyFormat(totalAmount),
   };
 

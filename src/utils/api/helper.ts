@@ -14,17 +14,16 @@ import { PaymentActivationsPostResponse } from "../../../generated/definitions/p
 import { Detail_v2Enum } from "../../../generated/definitions/payment-activations-api/PaymentProblemJson";
 import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-activations-api/PaymentRequestsGetResponse";
 import { PaymentRequestsGetResponse as EcommercePaymentRequestsGetResponse } from "../../../generated/definitions/payment-ecommerce/PaymentRequestsGetResponse";
-import {
-  TypeEnum,
-  Wallet,
-} from "../../../generated/definitions/payment-manager-api/Wallet";
+import { Payment } from "../../../generated/definitions/payment-manager-api/Payment";
+import { TypeEnum } from "../../../generated/definitions/payment-manager-api/Wallet";
 import { RptId } from "../../../generated/definitions/payment-transactions-api/RptId";
 import {
   Cart,
   InputCardFormFields,
   PaymentCheckData,
+  PaymentFormFields,
   PaymentInstruments,
-  Wallet as PaymentWallet,
+  Wallet,
 } from "../../features/payment/models/paymentModel";
 import {
   PaymentMethodRoutes,
@@ -106,14 +105,10 @@ import { ErrorsType } from "../errors/checkErrorsModel";
 import { PaymentSession } from "../sessionData/PaymentSession";
 import { WalletSession } from "../sessionData/WalletSession";
 import {
-  getCart,
-  getCheckData,
-  getNoticeInfo,
-  getPaymentId,
-  getPaymentInfo,
-  setPaymentId,
-  setReturnUrls,
-} from "./apiService";
+  getSessionItem,
+  SessionItems,
+  setSessionItem,
+} from "../storage/sessionStorage";
 import { getBrowserInfoTask, getEMVCompliantColorDepth } from "./checkHelper";
 import {
   apiPaymentActivationsClient,
@@ -255,15 +250,19 @@ export const activatePayment = async ({
   onError: (e: string) => void;
   onNavigate: () => void;
 }) => {
-  const noticeInfo = getNoticeInfo();
-  const paymentInfo = getPaymentInfo();
+  const noticeInfo = getSessionItem(SessionItems.noticeInfo) as
+    | PaymentFormFields
+    | undefined;
+  const paymentInfo = getSessionItem(SessionItems.paymentInfo) as
+    | EcommercePaymentRequestsGetResponse
+    | undefined;
   const paymentInfoTransform = {
-    importoSingoloVersamento: paymentInfo.amount,
-    codiceContestoPagamento: paymentInfo.paymentContextCode,
+    importoSingoloVersamento: paymentInfo?.amount,
+    codiceContestoPagamento: paymentInfo?.paymentContextCode,
   };
-  const paymentId = getPaymentId().paymentId;
-  const checkDataId = getCheckData().id;
-  const rptId: RptId = `${noticeInfo.cf}${noticeInfo.billCode}`;
+  const paymentId = getSessionItem(SessionItems.paymentId) as string;
+  const checkDataId = (getSessionItem(SessionItems.checkData) as Payment)?.id;
+  const rptId: RptId = `${noticeInfo?.cf}${noticeInfo?.billCode}`;
   const config = getConfigOrThrow();
   const getWallet = () => {
     void getSessionWallet(wallet as InputCardFormFields, onError, onResponse);
@@ -301,7 +300,7 @@ export const activatePayment = async ({
                   response.codiceContestoPagamento,
                   config.CHECKOUT_POLLING_ACTIVATION_ATTEMPTS as number,
                   (res) => {
-                    setPaymentId({ paymentId: res.idPagamento });
+                    setSessionItem(SessionItems.paymentId, res.idPagamento);
                     void getPaymentCheckData({
                       idPayment: res.idPagamento,
                       onError,
@@ -473,10 +472,12 @@ export const retryPollingActivationStatus = async ({
   onError: (e: string) => void;
   onNavigate: () => void;
 }): Promise<void> => {
-  const paymentInfo = getPaymentInfo();
+  const paymentInfo = getSessionItem(SessionItems.paymentInfo) as
+    | EcommercePaymentRequestsGetResponse
+    | undefined;
   const paymentInfoTransform = {
-    importoSingoloVersamento: paymentInfo.amount,
-    codiceContestoPagamento: paymentInfo.paymentContextCode,
+    importoSingoloVersamento: paymentInfo?.amount,
+    codiceContestoPagamento: paymentInfo?.paymentContextCode,
   };
   const config = getConfigOrThrow();
   const getWallet = () => {
@@ -493,7 +494,7 @@ export const retryPollingActivationStatus = async ({
           config.CHECKOUT_POLLING_ACTIVATION_ATTEMPTS as number,
           // eslint-disable-next-line sonarjs/no-identical-functions
           (res) => {
-            setPaymentId({ paymentId: res.idPagamento });
+            setSessionItem(SessionItems.paymentId, res.idPagamento);
             void getPaymentCheckData({
               idPayment: res.idPagamento,
               onError,
@@ -579,8 +580,11 @@ export const getPaymentCheckData = async ({
                             O.fromNullable(response.value.data.origin),
                             O.getOrElse(() => response.value.data.urlRedirectEc)
                           );
-                          const cart = getCart();
-                          setReturnUrls(
+                          const cart = getSessionItem(SessionItems.cart) as
+                            | Cart
+                            | undefined;
+                          setSessionItem(
+                            SessionItems.returnUrls,
                             cart?.returnUrls.returnOkUrl
                               ? cart.returnUrls
                               : {
@@ -1017,8 +1021,8 @@ export const confirmPayment = async (
     checkData,
     wallet,
   }: {
-    checkData: PaymentCheckData;
-    wallet: PaymentWallet;
+    checkData: PaymentCheckData | undefined;
+    wallet: Wallet | undefined;
   },
   onError: (e: string) => void,
   onResponse: () => void
@@ -1071,11 +1075,11 @@ export const confirmPayment = async (
       () =>
         pmClient.pay3ds2UsingPOST({
           Bearer: `Bearer ${sessionStorage.getItem("sessionToken")}`,
-          id: checkData.idPayment,
+          id: checkData?.idPayment || "",
           payRequest: {
             data: {
               tipo: "web",
-              idWallet: wallet.idWallet,
+              idWallet: wallet?.idWallet,
               cvv: pipe(
                 O.fromNullable(sessionStorage.getItem("securityCode")),
                 O.getOrElse(() => "")
