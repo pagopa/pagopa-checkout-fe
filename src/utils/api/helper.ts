@@ -567,9 +567,9 @@ export const getPaymentCheckData = async ({
                       pipe(
                         maybePayment,
                         E.map((payment) => {
-                          sessionStorage.setItem(
-                            "checkData",
-                            JSON.stringify(payment)
+                          setSessionItem(
+                            SessionItems.checkData,
+                            payment as PaymentCheckData
                           );
                           onResponse();
                           mixpanel.track(PAYMENT_CHECK_SUCCESS.value, {
@@ -629,21 +629,21 @@ export const getPaymentPSPList = async ({
     }>
   ) => void;
 }) => {
-  const walletStored = sessionStorage.getItem("wallet") || JSON.stringify("{}");
-  const checkDataStored =
-    sessionStorage.getItem("checkData") || JSON.stringify("{}");
-  const sessionToken =
-    sessionStorage.getItem("sessionToken") || JSON.stringify("");
+  const sessionToken = getSessionItem(SessionItems.sessionToken) as
+    | string
+    | undefined;
 
-  const checkData = JSON.parse(checkDataStored);
-  const wallet = JSON.parse(walletStored);
+  const checkData = getSessionItem(SessionItems.checkData) as
+    | PaymentCheckData
+    | undefined;
+  const wallet = getSessionItem(SessionItems.wallet) as Wallet | undefined;
 
-  const idPayment = checkData.idPayment;
+  const idPayment = checkData?.idPayment || "";
   const Bearer = `Bearer ${sessionToken}`;
-  const paymentType = wallet.type;
+  const paymentType = wallet?.type || "";
   const isList = true;
   const language = "it";
-  const idWallet = wallet.idWallet;
+  const idWallet = wallet?.idWallet || 0;
 
   mixpanel.track(PAYMENT_PSPLIST_INIT.value, {
     EVENT_ID: PAYMENT_PSPLIST_INIT.value,
@@ -719,12 +719,12 @@ export const getSessionWallet = async (
   onResponse: () => void
   // eslint-disable-next-line sonarjs/cognitive-complexity
 ) => {
-  const useremail: string = JSON.parse(
-    sessionStorage.getItem("useremail") || JSON.stringify("")
-  );
-  const checkDataStored: string =
-    sessionStorage.getItem("checkData") || JSON.stringify("{}");
-  const checkData = JSON.parse(checkDataStored);
+  const useremail = getSessionItem(SessionItems.useremail) as
+    | string
+    | undefined;
+  const checkData = getSessionItem(SessionItems.checkData) as
+    | PaymentCheckData
+    | undefined;
 
   mixpanel.track(PAYMENT_START_SESSION_INIT.value, {
     EVENT_ID: PAYMENT_START_SESSION_INIT.value,
@@ -741,7 +741,7 @@ export const getSessionWallet = async (
                 O.getOrElse(() => "")
               ),
               idPayment: pipe(
-                O.fromNullable(checkData.idPayment),
+                O.fromNullable(checkData?.idPayment),
                 O.getOrElse(() => "")
               ),
             },
@@ -789,7 +789,7 @@ export const getSessionWallet = async (
           )
         );
         if (sessionToken !== "fakeSessionToken") {
-          sessionStorage.setItem("sessionToken", sessionToken);
+          setSessionItem(SessionItems.sessionToken, sessionToken);
         }
         return sessionToken;
       }
@@ -880,7 +880,7 @@ export const getSessionWallet = async (
                 pan: creditCard.number.trim(),
                 securityCode: creditCard.cvv,
               },
-              idPagamentoFromEC: checkData.idPayment, // needs to exist
+              idPagamentoFromEC: checkData?.idPayment, // needs to exist
             },
           },
           language: "it",
@@ -928,12 +928,12 @@ export const getSessionWallet = async (
           )
         );
 
-        sessionStorage.setItem("securityCode", creditCard.cvv);
+        setSessionItem(SessionItems.securityCode, creditCard.cvv);
         if ((walletResp as any as string) !== "fakeWallet") {
           pipe(
             WalletSession.decode(JSON.parse(walletResp as any as string)),
             E.map((wallet) => {
-              sessionStorage.setItem("wallet", JSON.stringify(wallet));
+              setSessionItem(SessionItems.wallet, wallet as Wallet);
             })
           );
           onResponse();
@@ -948,14 +948,14 @@ export const updateWallet = async (
   onError: (e: string) => void,
   onResponse: () => void
 ) => {
-  const walletStored = sessionStorage.getItem("wallet") || JSON.stringify("{}");
-  const sessionToken =
-    sessionStorage.getItem("sessionToken") || JSON.stringify("");
+  const sessionToken = getSessionItem(SessionItems.sessionToken) as
+    | string
+    | undefined;
 
-  const wallet = JSON.parse(walletStored);
+  const wallet = getSessionItem(SessionItems.wallet) as Wallet | undefined;
 
   const Bearer = `Bearer ${sessionToken}`;
-  const idWallet = wallet.idWallet;
+  const idWallet = wallet?.idWallet || 0;
 
   mixpanel.track(PAYMENT_UPD_WALLET_INIT.value, {
     EVENT_ID: PAYMENT_UPD_WALLET_INIT.value,
@@ -1004,7 +1004,7 @@ export const updateWallet = async (
                     mixpanel.track(PAYMENT_UPD_WALLET_SUCCESS.value, {
                       EVENT_ID: PAYMENT_UPD_WALLET_SUCCESS.value,
                     });
-                    sessionStorage.setItem("wallet", JSON.stringify(wallet));
+                    setSessionItem(SessionItems.wallet, wallet as Wallet);
                     onResponse();
                   }
                 )
@@ -1048,20 +1048,13 @@ export const confirmPayment = async (
     browserIP: browserInfo.ip,
     browserUserAgent: navigator.userAgent,
     acctID: `ACCT_${(
-      JSON.parse(
-        pipe(
-          O.fromNullable(sessionStorage.getItem("wallet")),
-          O.getOrElse(() => JSON.stringify("{}"))
-        )
-      ) as Wallet
-    ).idWallet
+      getSessionItem(SessionItems.wallet) as Wallet | undefined
+    )?.idWallet
       ?.toString()
       .trim()}`,
     deliveryEmailAddress: pipe(
-      O.fromNullable(
-        JSON.parse(sessionStorage.getItem("useremail") || JSON.stringify(""))
-      ),
-      O.getOrElse(() => JSON.stringify(""))
+      O.fromNullable(getSessionItem(SessionItems.useremail) as string),
+      O.getOrElse(() => "")
     ),
     mobilePhone: null,
   };
@@ -1074,14 +1067,16 @@ export const confirmPayment = async (
     TE.tryCatch(
       () =>
         pmClient.pay3ds2UsingPOST({
-          Bearer: `Bearer ${sessionStorage.getItem("sessionToken")}`,
+          Bearer: `Bearer ${getSessionItem(SessionItems.sessionToken)}`,
           id: checkData?.idPayment || "",
           payRequest: {
             data: {
               tipo: "web",
               idWallet: wallet?.idWallet,
               cvv: pipe(
-                O.fromNullable(sessionStorage.getItem("securityCode")),
+                O.fromNullable(
+                  getSessionItem(SessionItems.securityCode) as string
+                ),
                 O.getOrElse(() => "")
               ),
               threeDSData: JSON.stringify(threeDSData),
@@ -1126,8 +1121,8 @@ export const confirmPayment = async (
           )
         );
         if (paymentResp !== "fakePayment") {
-          sessionStorage.setItem(
-            "idTransaction",
+          setSessionItem(
+            SessionItems.idTransaction,
             JSON.parse(paymentResp).token
           );
           onResponse();
@@ -1141,9 +1136,9 @@ export const cancelPayment = async (
   onError: (e: string) => void,
   onResponse: () => void
 ) => {
-  const checkData = JSON.parse(
-    sessionStorage.getItem("checkData") || JSON.stringify("{}")
-  );
+  const checkData = getSessionItem(SessionItems.checkData) as
+    | PaymentCheckData
+    | undefined;
 
   // Payment action DELETE
   mixpanel.track(PAYMENT_ACTION_DELETE_INIT.value, {
@@ -1158,8 +1153,8 @@ export const cancelPayment = async (
     TE.tryCatch(
       () =>
         pmClient.deleteBySessionCookieExpiredUsingDELETE({
-          Bearer: `Bearer ${sessionStorage.getItem("sessionToken")}`,
-          id: checkData.idPayment,
+          Bearer: `Bearer ${getSessionItem(SessionItems.sessionToken)}`,
+          id: checkData?.idPayment || "",
           koReason: "ANNUTE",
           showWallet: false,
         }),
