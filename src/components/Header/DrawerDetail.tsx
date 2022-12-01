@@ -1,7 +1,7 @@
 import { Alert, Box, Typography, useTheme } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { PaymentNotice } from "../../../generated/definitions/payment-ecommerce/PaymentNotice";
+import { PaymentNotice } from "../../features/payment/models/paymentModel";
 import { moneyFormat } from "../../utils/form/formatters";
 import { CustomDrawer } from "../modals/CustomDrawer";
 import DrawerCart from "./DrawerCart";
