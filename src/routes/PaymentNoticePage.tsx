@@ -23,7 +23,7 @@ import {
   setPaymentInfo,
   setRptId,
 } from "../utils/api/apiService";
-import { getPaymentInfoTask } from "../utils/api/helper";
+import { getEcommercePaymentInfoTask } from "../utils/api/helper";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function PaymentNoticePage() {
@@ -52,7 +52,7 @@ export default function PaymentNoticePage() {
       const token = await ref.current?.executeAsync();
 
       await pipe(
-        getPaymentInfoTask(rptId, token || ""),
+        getEcommercePaymentInfoTask(rptId, token || ""),
         TE.mapLeft((err) => onError(err)),
         TE.map((paymentInfo) => {
           setPaymentInfo(paymentInfo as PaymentInfo);

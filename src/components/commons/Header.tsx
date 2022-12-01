@@ -4,21 +4,33 @@ import { Box, Grid, Typography } from "@mui/material";
 import React from "react";
 import { useLocation } from "react-router-dom";
 import pagopaLogo from "../../assets/images/pagopa-logo.svg";
+import { PaymentNotice } from "../../features/payment/models/paymentModel";
 import { CheckoutRoutes } from "../../routes/models/routeModel";
-import { getPaymentInfo } from "../../utils/api/apiService";
+import { getPaymentInfo, getCart } from "../../utils/api/apiService";
+import { getTotalFromCart } from "../../utils/cart/cart";
 import { moneyFormat } from "../../utils/form/formatters";
 import { paymentSubjectTransform } from "../../utils/transformers/paymentTransformers";
 import DrawerDetail from "../Header/DrawerDetail";
 
+function amountToShow() {
+  const CartInfo = getCart();
+  return (
+    (getPaymentInfo() && getPaymentInfo().amount) ||
+    (CartInfo && CartInfo.paymentNotices && getTotalFromCart(CartInfo)) ||
+    0
+  );
+}
+
 export default function Header() {
   const location = useLocation();
   const currentPath = location.pathname.split("/").slice(-1)[0];
+  const PaymentInfoData = getPaymentInfo();
   const PaymentInfo = {
-    receiver:
-      getPaymentInfo().enteBeneficiario?.denominazioneBeneficiario || "",
-    subject: paymentSubjectTransform(getPaymentInfo().causaleVersamento) || "",
-    amount: getPaymentInfo().importoSingoloVersamento,
+    receiver: PaymentInfoData.paName,
+    subject: paymentSubjectTransform(PaymentInfoData.description) || "",
+    amount: PaymentInfoData.amount,
   };
+  const CartInfo = getCart();
   const [drawstate, setDrawstate] = React.useState(false);
   const ignoreRoutes: Array<string> = [
     CheckoutRoutes.ROOT,
@@ -33,6 +45,19 @@ export default function Header() {
   const toggleDrawer = (open: boolean) => {
     setDrawstate(open);
   };
+  const paymentNotices: Array<PaymentNotice> = CartInfo
+    ? CartInfo.paymentNotices
+    : [
+        {
+          noticeNumber: PaymentInfoData.rptId
+            ? PaymentInfoData.rptId.slice(10)
+            : "",
+          fiscalCode: PaymentInfoData.paFiscalCode,
+          amount: PaymentInfoData.amount,
+          companyName: PaymentInfoData.paName || "",
+          description: PaymentInfoData.description || "",
+        },
+      ];
 
   return (
     <Box p={3} bgcolor={"white"}>
@@ -45,37 +70,39 @@ export default function Header() {
             aria-hidden="true"
           />
         </Grid>
-        {!!PaymentInfo.receiver && !ignoreRoutes.includes(currentPath) && (
-          <>
-            <Grid
-              item
-              xs={10}
-              display="flex"
-              alignItems="center"
-              justifyContent="flex-end"
-              sx={{ cursor: "pointer" }}
-            >
-              <Typography
-                color="primary.main"
-                variant="body2"
-                component="div"
-                fontWeight={600}
+        {(!!PaymentInfo.receiver || !!CartInfo?.paymentNotices) &&
+          !ignoreRoutes.includes(currentPath) && (
+            <>
+              <Grid
+                item
+                xs={10}
                 display="flex"
                 alignItems="center"
                 justifyContent="flex-end"
-                onClick={() => toggleDrawer(true)}
+                sx={{ cursor: "pointer" }}
               >
-                {PaymentInfo ? moneyFormat(PaymentInfo.amount) : ""}
-                <InfoOutlinedIcon color="primary" sx={{ ml: 1 }} />
-              </Typography>
-            </Grid>
-            <DrawerDetail
-              PaymentInfo={PaymentInfo}
-              drawstate={drawstate}
-              toggleDrawer={() => toggleDrawer(false)}
-            />
-          </>
-        )}
+                <Typography
+                  color="primary.main"
+                  variant="body2"
+                  component="div"
+                  fontWeight={600}
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="flex-end"
+                  onClick={() => toggleDrawer(true)}
+                >
+                  {moneyFormat(amountToShow())}
+                  <InfoOutlinedIcon color="primary" sx={{ ml: 1 }} />
+                </Typography>
+              </Grid>
+              <DrawerDetail
+                paymentNotices={paymentNotices}
+                amountToShow={amountToShow}
+                drawstate={drawstate}
+                toggleDrawer={() => toggleDrawer(false)}
+              />
+            </>
+          )}
       </Grid>
     </Box>
   );

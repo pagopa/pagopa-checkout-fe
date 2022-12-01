@@ -132,6 +132,13 @@ export const TRANSLATIONS_IT = {
         "Sulle carte American Express il codice (CID) è a quattro cifre ed è posizionato sul fronte.",
     },
   },
+  cartDetail: {
+    amount: "Importo",
+    companyName: "Ente Creditore",
+    description: "Oggetto del pagamento",
+    fiscalCode: "Codice Fiscale Ente Creditore",
+    noticeNumber: "Codice Avviso",
+  },
   errorButton: {
     help: "Contatta l'assistenza",
     close: "Chiudi",
@@ -208,6 +215,10 @@ export const TRANSLATIONS_IT = {
     title: "Il codice inquadrato non è un avviso pagoPA",
     body: "Se il problema persiste, prova a inserire i dati manualmente.",
   },
+  INVALID_DECODE: {
+    title: "Si è verificato un errore nella lettura dei dati",
+    body: "Prova di nuovo o contattaci per ricevere assistenza.",
+  },
   DONATIONLIST_ERROR:
     "Non siamo riusciti a caricare la lista delle organizzazioni.",
   paymentChoicePage: {
@@ -219,6 +230,7 @@ export const TRANSLATIONS_IT = {
     bank: "Conto corrente",
     others: "Altri metodi",
     incoming: "In arrivo",
+    showMore: "Mostra tutti",
     button: "Indietro",
   },
   paymentQrPage: {
@@ -332,5 +344,11 @@ export const TRANSLATIONS_IT = {
     payNotice: "Paga un avviso",
     code: "e inquadra il codice:",
     modalBody2: "Puoi donare senza costi di commissione con le tue carte.",
+  },
+  paymentMethods: {
+    cp: "Carta di debito o credito",
+    ppay: "Postepay",
+    bpay: "Bancomat pay",
+    cc: "Conto corrente",
   },
 };

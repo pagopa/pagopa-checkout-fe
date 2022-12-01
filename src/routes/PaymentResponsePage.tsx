@@ -13,17 +13,18 @@ import {
   responseMessage,
   responseOutcome,
 } from "../features/payment/models/responseOutcome";
-import { getCheckData, getEmailInfo, getWallet } from "../utils/api/apiService";
+import {
+  getCheckData,
+  getEmailInfo,
+  getReturnUrls,
+  getWallet,
+} from "../utils/api/apiService";
 import { callServices } from "../utils/api/response";
 import { PAYMENT_OUTCOME_CODE } from "../utils/config/mixpanelDefs";
 import { mixpanel } from "../utils/config/mixpanelHelperInit";
 import { onBrowserUnload } from "../utils/eventListeners";
 import { moneyFormat } from "../utils/form/formatters";
-import {
-  clearSensitiveItems,
-  loadState,
-  SessionItems,
-} from "../utils/storage/sessionStorage";
+import { clearSensitiveItems } from "../utils/storage/sessionStorage";
 import {
   getOutcomeFromAuthcodeAndIsDirectAcquirer,
   OutcomeEnumType,
@@ -40,7 +41,7 @@ type printData = {
 export default function PaymentCheckPage() {
   const [loading, setLoading] = useState(true);
   const [outcomeMessage, setOutcomeMessage] = useState<responseMessage>();
-  const originUrlRedirect = loadState(SessionItems.originUrlRedirect) as string;
+  const redirectUrl = getReturnUrls().returnOkUrl;
   const PaymentCheckData = getCheckData() as PaymentCheckData;
   const wallet = getWallet();
   const email = getEmailInfo();
@@ -124,7 +125,7 @@ export default function PaymentCheckPage() {
                 variant="outlined"
                 onClick={() => {
                   sessionStorage.clear();
-                  window.location.replace(originUrlRedirect);
+                  window.location.replace(redirectUrl);
                 }}
                 sx={{
                   width: "100%",

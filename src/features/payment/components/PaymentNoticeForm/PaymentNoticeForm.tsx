@@ -8,7 +8,7 @@ import React from "react";
 import { FormButtons } from "../../../../components/FormButtons/FormButtons";
 import TextFormField from "../../../../components/TextFormField/TextFormField";
 import { cleanSpaces } from "../../../../utils/form/formatters";
-import { getFormValidationIcon } from "../../../../utils/form/formValidation";
+import { getFormValidationIcon } from "../../../../utils/form/validators";
 import {
   PaymentFormErrors,
   PaymentFormFields,
