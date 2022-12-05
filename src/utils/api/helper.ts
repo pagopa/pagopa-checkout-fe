@@ -1,3 +1,4 @@
+/* eslint-disable functional/no-let */
 /* eslint-disable sonarjs/cognitive-complexity */
 /* eslint-disable sonarjs/no-identical-functions */
 /* eslint-disable @typescript-eslint/no-empty-function */
@@ -14,6 +15,7 @@ import { PaymentActivationsPostResponse } from "../../../generated/definitions/p
 import { Detail_v2Enum } from "../../../generated/definitions/payment-activations-api/PaymentProblemJson";
 import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-activations-api/PaymentRequestsGetResponse";
 import { PaymentRequestsGetResponse as EcommercePaymentRequestsGetResponse } from "../../../generated/definitions/payment-ecommerce/PaymentRequestsGetResponse";
+import { ValidationFaultPaymentProblemJson } from "../../../generated/definitions/payment-ecommerce/ValidationFaultPaymentProblemJson";
 import {
   TypeEnum,
   Wallet,
@@ -155,10 +157,21 @@ export const getEcommercePaymentInfoTask = (
         pipe(
           errorOrResponse,
           E.fold(
-            () => TE.left(Detail_v2Enum.GENERIC_ERROR),
+            () => TE.left(ErrorsType.GENERIC_ERROR),
             (responseType) => {
-              const reason =
-                responseType.status === 200 ? "" : Detail_v2Enum.GENERIC_ERROR;
+              let reason;
+              if (responseType.status === 200) {
+                reason = "";
+              }
+              if (responseType.status === 400) {
+                reason = (
+                  responseType.value as ValidationFaultPaymentProblemJson
+                )?.faultCodeCategory;
+              } else {
+                reason = (
+                  responseType.value as ValidationFaultPaymentProblemJson
+                )?.faultCodeDetail;
+              }
               const EVENT_ID: string =
                 responseType.status === 200
                   ? PAYMENT_VERIFY_SUCCESS.value
@@ -166,10 +179,27 @@ export const getEcommercePaymentInfoTask = (
               mixpanel.track(EVENT_ID, { EVENT_ID, reason });
 
               if (responseType.status === 400) {
-                return TE.left(Detail_v2Enum.GENERIC_ERROR);
+                return TE.left(
+                  pipe(
+                    O.fromNullable(
+                      (responseType.value as ValidationFaultPaymentProblemJson)
+                        ?.faultCodeCategory
+                    ),
+                    O.getOrElse(() => ErrorsType.STATUS_ERROR as string)
+                  )
+                );
               }
               return responseType.status !== 200
-                ? TE.left(ErrorsType.STATUS_ERROR as string)
+                ? TE.left(
+                    pipe(
+                      O.fromNullable(
+                        (
+                          responseType.value as ValidationFaultPaymentProblemJson
+                        )?.faultCodeDetail
+                      ),
+                      O.getOrElse(() => ErrorsType.STATUS_ERROR as string)
+                    )
+                  )
                 : TE.of(responseType.value);
             }
           )
