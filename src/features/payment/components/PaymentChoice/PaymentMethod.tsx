@@ -28,6 +28,7 @@ function ImageComponent(method: PaymentInstruments) {
       <img
         src={
           config.CHECKOUT_PAGOPA_ASSETS_CDN +
+          "/payment-methods" +
           `/${method?.asset.toLowerCase()}.png`
         }
         onError={onError}
