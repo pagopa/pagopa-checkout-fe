@@ -135,9 +135,9 @@ export function getReturnUrls(): ReturnUrls {
     | ReturnUrls
     | undefined;
   return {
-    returnOkUrl: data?.returnOkUrl || "",
-    returnErrorUrl: data?.returnErrorUrl || "",
-    returnCancelUrl: data?.returnCancelUrl || "",
+    returnOkUrl: data?.returnOkUrl || "/",
+    returnErrorUrl: data?.returnErrorUrl || "/",
+    returnCancelUrl: data?.returnCancelUrl || "/",
   };
 }
 

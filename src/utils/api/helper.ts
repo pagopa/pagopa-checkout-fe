@@ -605,21 +605,14 @@ export const getPaymentCheckData = async ({
                             EVENT_ID: PAYMENT_CHECK_SUCCESS.value,
                           });
 
-                          const originInput = pipe(
-                            O.fromNullable(response.value.data.origin),
-                            O.getOrElse(() => response.value.data.urlRedirectEc)
-                          );
                           const cart = getCart();
                           setReturnUrls(
                             cart?.returnUrls.returnOkUrl
                               ? cart.returnUrls
                               : {
-                                  returnOkUrl:
-                                    originInput === "payportal"
-                                      ? "/"
-                                      : response.value.data.urlRedirectEc,
-                                  returnCancelUrl: "",
-                                  returnErrorUrl: "",
+                                  returnOkUrl: "/",
+                                  returnCancelUrl: "/",
+                                  returnErrorUrl: "/",
                                 }
                           );
                         })
