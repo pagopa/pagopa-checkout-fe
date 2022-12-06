@@ -77,10 +77,10 @@ export default function PaymentSummaryPage() {
           sx={{ px: 2 }}
         />
       )}
-      {!!paymentInfo.paName && (
+      {!!paymentInfo.paFiscalCode && (
         <FieldContainer
           title="paymentSummaryPage.cf"
-          body={paymentInfo.paName}
+          body={paymentInfo.paFiscalCode}
           flexDirection="row"
           overflowWrapBody={false}
           sx={{ px: 2 }}

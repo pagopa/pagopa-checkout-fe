@@ -41,7 +41,9 @@ type printData = {
 export default function PaymentCheckPage() {
   const [loading, setLoading] = useState(true);
   const [outcomeMessage, setOutcomeMessage] = useState<responseMessage>();
-  const redirectUrl = getReturnUrls().returnOkUrl;
+  const [redirectUrl, setRedirectUrl] = useState<string>(
+    getReturnUrls().returnOkUrl
+  );
   const PaymentCheckData = getCheckData() as PaymentCheckData;
   const wallet = getWallet();
   const email = getEmailInfo();
@@ -77,7 +79,12 @@ export default function PaymentCheckPage() {
         E.getOrElse(() => ViewOutcomeEnum.GENERIC_ERROR as ViewOutcomeEnum)
       );
       const message = responseOutcome[viewOutcome];
+      const redirectTo =
+        viewOutcome === "0"
+          ? getReturnUrls().returnOkUrl
+          : getReturnUrls().returnErrorUrl;
       setOutcomeMessage(message);
+      setRedirectUrl(redirectTo);
       setLoading(false);
       window.removeEventListener("beforeunload", onBrowserUnload);
       clearSensitiveItems();
