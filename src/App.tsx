@@ -9,7 +9,7 @@ import { Layout } from "./components/commons/Layout";
 import NoticeGuard from "./components/commons/NoticeGuard";
 import RptidGuard from "./components/commons/RptidGuard";
 import CancelledPage from "./routes/CancelledPage";
-import DonationPage from "./routes/DonationPage";
+import DonationPageDismissed from "./routes/DonationPageDismissed";
 import IndexPage from "./routes/IndexPage";
 import InputCardPage from "./routes/InputCardPage";
 import KOPage from "./routes/KOPage";
@@ -111,7 +111,10 @@ export function App() {
           <Routes>
             <Route path="/" element={<PaymentOutlet />}>
               <Route path={CheckoutRoutes.ROOT} element={<IndexPage />} />
-              <Route path={CheckoutRoutes.DONA} element={<DonationPage />} />
+              <Route
+                path={CheckoutRoutes.DONA}
+                element={<DonationPageDismissed />}
+              />
               <Route
                 path={CheckoutRoutes.LEGGI_CODICE_QR}
                 element={<PaymentQrPage />}
