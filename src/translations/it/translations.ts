@@ -330,7 +330,7 @@ export const TRANSLATIONS_IT = {
   donationPage: {
     title: "Dona per la crisi in Ucraina",
     description:
-      "Puoi donare con carta senza costi di commissione. L’importo verrà versato direttamente sul conto dell’organizzazione a cui scegli di donare.",
+      "Hai tempo fino al 23 dicembre. Puoi donare con carta senza costi di commissione. L’importo verrà versato direttamente sul conto dell’organizzazione a cui scegli di donare.",
     entity: "A chi vuoi donare?",
     volunteer: "Quanto vuoi donare?",
     submitCard: "Dona con carta",
