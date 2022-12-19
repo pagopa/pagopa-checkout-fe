@@ -30,8 +30,7 @@ export const verifyPaymentAndGetError = async (
   errorMessageXPath
 ) => {
   const payNoticeBtnXPath =
-    "/html/body/div[1]/div/div[2]/div/div[6]/div[1]/button";
-
+    "/html/body/div[1]/div/div[2]/div/div[2]/div[6]/div[1]/button";
   await fillPaymentNotificationForm(noticeCode, fiscalCode);
   const payNoticeBtn = await page.waitForXPath(payNoticeBtnXPath, {
     visible: true,
@@ -60,7 +59,7 @@ export const acceptCookiePolicy = async () => {
 export const payNotice = async (noticeCode, fiscalCode, email, cardData) => {
   const payNoticeBtnXPath =
     "//html/body/div[1]/div/div[2]/div/div[2]/div[6]/div[1]/button";
-  const resultMessageXPath = "/html/body/div[1]/div/div[2]/div/div/div/h6";
+  const resultMessageXPath = "/html/body/div[1]/div/div[2]/div/div/div/div/h6";
   await fillPaymentNotificationForm(noticeCode, fiscalCode);
 
   const payNoticeBtn = await page.waitForXPath(payNoticeBtnXPath, {
@@ -150,8 +149,8 @@ export const fillCardDataForm = async (cardData) => {
   const ccvInput = "#cvv";
   const holderNameInput = "#name";
   const continueBtnXPath = "button[type=submit]";
-  const payBtnXPath = "/html/body/div[1]/div/div[2]/div/div[7]/div[1]";
-
+  const payBtnXPath = "/html/body/div[1]/div/div[2]/div/div/div[7]/div[1]/button";
+  
   await page.waitForSelector(cardNumberInput);
   await page.click(cardNumberInput);
   await page.keyboard.type(cardData.number);
