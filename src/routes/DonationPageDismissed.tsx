@@ -10,7 +10,8 @@ import PageContainer from "../components/PageContent/PageContainer";
 
 export default function DonationPageDismissed() {
   const { t } = useTranslation();
-  const siteUrl = "https://pagopa.gov.it";
+  const siteUrl =
+    "https://pagopa.gov.it/it/notizie/2022-12-23-conclusa-iniziativa-donazioni-ucraina.html";
 
   sessionStorage.clear();
 
