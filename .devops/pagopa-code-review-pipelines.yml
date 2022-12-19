@@ -158,7 +158,7 @@ stages:
           displayName: 'Start checkout FE'
           workingDirectory: pagopa-checkout-fe
           
-        - script: while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:1234)" != "200" ]]; do sleep 5; done
+        - script: while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://checkout/ecommerce/v1/payment-requests/77777777777302001751670642100)" != "200" ]]; do sleep 5; done
           displayName: 'Wait for backend to be up and running'
           workingDirectory: pagopa-checkout-fe
         
