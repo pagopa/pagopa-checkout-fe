@@ -3,12 +3,7 @@ module.exports = {
         dumpio: true,
         headless: false,
         product: 'chrome',
-        args: [
-            "--no-sandbox",
-            "--disable-gpu",
-            "--disable-software-rasterizer"
-        
-        ] // to fix
+        args: ["--no-sandbox"] // to fix
     },
     browserContext: 'incognito'
 }
