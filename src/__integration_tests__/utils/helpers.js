@@ -1,7 +1,6 @@
 export const selectKeyboardForm = async () => {
   const selectFormXPath =
     "/html/body/div[1]/div/div[2]/div/div[2]/div[2]/div[1]/div/div/div[1]";
-
   const selectFormBtn = await page.waitForXPath(selectFormXPath);
   await selectFormBtn.click();
 };
@@ -11,25 +10,14 @@ export const fillPaymentNotificationForm = async (noticeCode, fiscalCode) => {
   const fiscalCodeTextInput = "#cf";
   const verifyBtn = "button[type=submit]";
 
-  console.log("1")
   await selectKeyboardForm();
-  console.log("2")
   await page.waitForSelector(noticeCodeTextInput);
-  console.log("3")
   await page.click(noticeCodeTextInput);
-  console.log("4")
   await page.keyboard.type(noticeCode);
-  console.log("5")
-
   await page.waitForSelector(fiscalCodeTextInput);
-  console.log("6")
   await page.click(fiscalCodeTextInput);
-  console.log("7")
   await page.keyboard.type(fiscalCode);
-  console.log("8")
-
   await page.waitForSelector(verifyBtn);
-  console.log("9")
   await page.click(verifyBtn);
 };
 
@@ -66,28 +54,20 @@ export const acceptCookiePolicy = async () => {
 };
 
 export const payNotice = async (noticeCode, fiscalCode, email, cardData) => {
-  console.log("Into pay notice method")
   const payNoticeBtnXPath =
     "/html/body/div[1]/div/div[2]/div/div[2]/div[6]/div[1]/button";
   const resultMessageXPath = "/html/body/div[1]/div/div[2]/div/div/div/div/h6";
-  console.log("before fillPaymentNotificationForm")
   await fillPaymentNotificationForm(noticeCode, fiscalCode);
-  console.log("after fillPaymentNotificationForm")
   const payNoticeBtn = await page.waitForXPath(payNoticeBtnXPath, {
     visible: true,
   });
   await payNoticeBtn.click();
-  console.log("before fillEmailForm")
   await fillEmailForm(email);
-  console.log("after fillEmailForm")
   if (!(await verifyPaymentMethods())) {
     return "Failed";
   }
   await choosePaymentMethod("CP");
-  console.log("before fillCardDataForm")
   await fillCardDataForm(cardData);
-  console.log("after fillEmailForm")
-
   const message = await page.waitForXPath(resultMessageXPath);
   return await message.evaluate((el) => el.textContent);
 };
