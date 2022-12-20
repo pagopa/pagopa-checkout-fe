@@ -1,9 +1,14 @@
 module.exports = {
     launch: {
         dumpio: true,
-        headless: true,
+        headless: false,
         product: 'chrome',
-        args: ["--no-sandbox"] // to fix
+        args: [
+            "--no-sandbox",
+            "--disable-gpu",
+            "--disable-software-rasterizer"
+        
+        ] // to fix
     },
     browserContext: 'incognito'
 }
