@@ -48,8 +48,7 @@ export const acceptCookiePolicy = async () => {
 
   await page.waitForSelector(acceptPolicyBtn);
   await page.click(acceptPolicyBtn);
-  console.log("Accettato")
-
+  
   // Avoid click on form button when dark filter is still enabled
   await page.waitForXPath(darkFilterXPath, { hidden: true });
 };
