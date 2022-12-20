@@ -40,7 +40,7 @@ resources:
     - repository: checkoutTests
       type: github
       name: pagopa/pagopa-checkout-tests
-      ref: CHK-806-integration-test
+      ref: CHK-806-checkout-test
       endpoint: 'io-azure-devops-github-ro'
 
 stages:
