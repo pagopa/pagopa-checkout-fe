@@ -124,7 +124,7 @@ stages:
             summaryFileLocation: 'coverage/cobertura-coverage.xml'      
         
 # B) Run integration tests if there is a push or pull request on any branch.
-  - stage: Integration Test
+  - stage: Integration_Test
     pool:
       vmImage: 'ubuntu-latest'
     jobs:
