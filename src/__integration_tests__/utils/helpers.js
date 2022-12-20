@@ -58,7 +58,7 @@ export const acceptCookiePolicy = async () => {
 
 export const payNotice = async (noticeCode, fiscalCode, email, cardData) => {
   const payNoticeBtnXPath =
-    "//html/body/div[1]/div/div[2]/div/div[2]/div[6]/div[1]/button";
+    "/html/body/div[1]/div/div[2]/div/div[2]/div[6]/div[1]/button";
   const resultMessageXPath = "/html/body/div[1]/div/div[2]/div/div/div/div/h6";
   await fillPaymentNotificationForm(noticeCode, fiscalCode);
 
