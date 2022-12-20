@@ -11,16 +11,25 @@ export const fillPaymentNotificationForm = async (noticeCode, fiscalCode) => {
   const fiscalCodeTextInput = "#cf";
   const verifyBtn = "button[type=submit]";
 
+  console.log("1")
   await selectKeyboardForm();
+  console.log("2")
   await page.waitForSelector(noticeCodeTextInput);
+  console.log("3")
   await page.click(noticeCodeTextInput);
+  console.log("4")
   await page.keyboard.type(noticeCode);
+  console.log("5")
 
   await page.waitForSelector(fiscalCodeTextInput);
+  console.log("6")
   await page.click(fiscalCodeTextInput);
+  console.log("7")
   await page.keyboard.type(fiscalCode);
+  console.log("8")
 
   await page.waitForSelector(verifyBtn);
+  console.log("9")
   await page.click(verifyBtn);
 };
 
