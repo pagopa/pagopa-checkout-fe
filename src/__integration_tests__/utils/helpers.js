@@ -57,22 +57,27 @@ export const acceptCookiePolicy = async () => {
 };
 
 export const payNotice = async (noticeCode, fiscalCode, email, cardData) => {
+  console.log("Into pay notice method")
   const payNoticeBtnXPath =
     "/html/body/div[1]/div/div[2]/div/div[2]/div[6]/div[1]/button";
   const resultMessageXPath = "/html/body/div[1]/div/div[2]/div/div/div/div/h6";
+  console.log("before fillPaymentNotificationForm")
   await fillPaymentNotificationForm(noticeCode, fiscalCode);
-
+  console.log("after fillPaymentNotificationForm")
   const payNoticeBtn = await page.waitForXPath(payNoticeBtnXPath, {
     visible: true,
   });
   await payNoticeBtn.click();
-
+  console.log("before fillEmailForm")
   await fillEmailForm(email);
+  console.log("after fillEmailForm")
   if (!(await verifyPaymentMethods())) {
     return "Failed";
   }
   await choosePaymentMethod("CP");
+  console.log("before fillCardDataForm")
   await fillCardDataForm(cardData);
+  console.log("after fillEmailForm")
 
   const message = await page.waitForXPath(resultMessageXPath);
   return await message.evaluate((el) => el.textContent);
