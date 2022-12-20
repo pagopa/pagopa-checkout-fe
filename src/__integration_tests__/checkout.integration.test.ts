@@ -34,15 +34,13 @@ describe("Checkout payment activation tests", () => {
   page.setDefaultTimeout(60000)
 
   beforeAll( async () => {
-    console.log("beforeAll")
     await page.goto(CHECKOUT_URL);
     await page.setViewport({ width: 1200, height: 907 });
+    await acceptCookiePolicy();
   })
 
   beforeEach(async () => {
-    console.log("beforeEach")
     await page.goto(CHECKOUT_URL);
-    await acceptCookiePolicy();
   });
   
   it("Should correctly execute a payment", async () => {
