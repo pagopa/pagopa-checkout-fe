@@ -1,6 +1,6 @@
 export const selectKeyboardForm = async () => {
   const selectFormXPath =
-    "/html/body/div[1]/div/div[2]/div/div[2]/div[2]/div[1]/div/div/div[1]";
+    "/html/body/div[1]/div/div[2]/div/div[2]/div[2]/div[1]";
   const selectFormBtn = await page.waitForXPath(selectFormXPath);
   await selectFormBtn.click();
 };
@@ -48,6 +48,7 @@ export const acceptCookiePolicy = async () => {
 
   await page.waitForSelector(acceptPolicyBtn);
   await page.click(acceptPolicyBtn);
+  console.log("Accettato")
 
   // Avoid click on form button when dark filter is still enabled
   await page.waitForXPath(darkFilterXPath, { hidden: true });
