@@ -153,8 +153,12 @@ stages:
           displayName: 'export envs from .env.development'
           workingDirectory: pagopa-checkout-fe
 
+        - script: yarn install && yarn generate && yarn build
+          workingDirectory: pagopa-checkout-fe
+          displayName: 'Setup deps for fe'
+
         - script: |
-            yarn dev &
+            yarn dev
           displayName: 'Start checkout FE'
           workingDirectory: pagopa-checkout-fe
           
