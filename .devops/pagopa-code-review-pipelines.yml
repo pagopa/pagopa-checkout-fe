@@ -157,6 +157,16 @@ stages:
             yarn dev &
           displayName: 'Start checkout FE'
           workingDirectory: pagopa-checkout-fe
+        
+        - script: |
+            rm -r .parcel-cache
+          displayName: 'remove parcel-cache'
+          workingDirectory: pagopa-checkout-fe
+        
+        - script: |
+            yarn dev &
+          displayName: 'Start checkout FE'
+          workingDirectory: pagopa-checkout-fe
           
         - script: while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:1234)" != "200" ]]; do sleep 5; done
           displayName: 'Wait for backend to be up and running'
