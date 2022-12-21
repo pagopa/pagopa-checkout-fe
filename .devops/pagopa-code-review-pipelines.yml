@@ -159,11 +159,6 @@ stages:
           workingDirectory: pagopa-checkout-fe
         
         - script: |
-            rm -r .parcel-cache
-          displayName: 'remove parcel-cache'
-          workingDirectory: pagopa-checkout-fe
-        
-        - script: |
             yarn dev &
           displayName: 'Start checkout FE'
           workingDirectory: pagopa-checkout-fe
