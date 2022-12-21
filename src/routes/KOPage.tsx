@@ -1,10 +1,10 @@
 import { Box, Button, Typography } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { useDispatch } from "react-redux";
 import ko from "../assets/images/response-umbrella.svg";
 import PageContainer from "../components/PageContent/PageContainer";
-import { resetCheckData } from "../redux/slices/checkData";
+import { useAppDispatch } from "../redux/hooks/hooks";
+import { resetSecurityCode } from "../redux/slices/securityCode";
 import { onBrowserUnload } from "../utils/eventListeners";
 import {
   clearSensitiveItems,
@@ -14,11 +14,11 @@ import {
 
 export default function KOPage() {
   const { t } = useTranslation();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const redirectUrl = loadState(SessionItems.originUrlRedirect) as string;
 
   React.useEffect(() => {
-    dispatch(resetCheckData());
+    dispatch(resetSecurityCode());
     window.removeEventListener("beforeunload", onBrowserUnload);
     clearSensitiveItems();
   }, []);

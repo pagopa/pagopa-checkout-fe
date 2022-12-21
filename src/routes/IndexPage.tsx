@@ -1,15 +1,15 @@
 import React from "react";
-import { useDispatch } from "react-redux";
 import PageContainer from "../components/PageContent/PageContainer";
 import PrivacyInfo from "../components/PrivacyPolicy/PrivacyInfo";
 import { PaymentNoticeChoice } from "../features/payment/components/PaymentNoticeChoice/PaymentNoticeChoice";
-import { resetCheckData } from "../redux/slices/checkData";
+import { useAppDispatch } from "../redux/hooks/hooks";
+import { resetSecurityCode } from "../redux/slices/securityCode";
 
 export default function IndexPage() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   React.useEffect(() => {
-    dispatch(resetCheckData());
+    dispatch(resetSecurityCode());
   }, []);
   sessionStorage.clear();
 

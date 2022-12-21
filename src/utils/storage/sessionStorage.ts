@@ -3,7 +3,6 @@ import {
   PaymentFormFields,
   PaymentId,
   PaymentInfo,
-  SecurityCode,
   Wallet,
 } from "../../features/payment/models/paymentModel";
 
@@ -13,7 +12,6 @@ export enum SessionItems {
   useremail = "useremail",
   paymentId = "paymentId",
   checkData = "checkData",
-  securityCode = "securityCode",
   wallet = "wallet",
   originUrlRedirect = "originUrlRedirect",
   sessionToken = "sessionToken",
@@ -31,8 +29,7 @@ export const loadState = (item: string) => {
       | PaymentFormFields
       | PaymentId
       | PaymentCheckData
-      | Wallet
-      | SecurityCode;
+      | Wallet;
   } catch (e) {
     return undefined;
   }

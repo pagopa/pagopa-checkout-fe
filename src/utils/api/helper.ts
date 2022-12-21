@@ -174,7 +174,7 @@ export const activatePayment = async ({
 }: {
   wallet: InputCardFormFields;
   token: string;
-  onResponse: () => void;
+  onResponse: (c: string) => void;
   onError: (e: string) => void;
   onNavigate: () => void;
 }) => {
@@ -388,7 +388,7 @@ export const retryPollingActivationStatus = async ({
   onNavigate,
 }: {
   wallet: InputCardFormFields;
-  onResponse: () => void;
+  onResponse: (c: string) => void;
   onError: (e: string) => void;
   onNavigate: () => void;
 }): Promise<void> => {
@@ -619,7 +619,7 @@ export const getPaymentPSPList = async ({
 export const getSessionWallet = async (
   creditCard: InputCardFormFields,
   onError: (e: string) => void,
-  onResponse: () => void
+  onResponse: (c: string) => void
   // eslint-disable-next-line sonarjs/cognitive-complexity
 ) => {
   const useremail: string = JSON.parse(
@@ -831,7 +831,6 @@ export const getSessionWallet = async (
           )
         );
 
-        sessionStorage.setItem("securityCode", creditCard.cvv);
         if ((walletResp as any as string) !== "fakeWallet") {
           pipe(
             WalletSession.decode(JSON.parse(walletResp as any as string)),
@@ -839,7 +838,7 @@ export const getSessionWallet = async (
               sessionStorage.setItem("wallet", JSON.stringify(wallet));
             })
           );
-          onResponse();
+          onResponse(creditCard.cvv);
         }
       }
     )
@@ -923,9 +922,11 @@ export const confirmPayment = async (
   {
     checkData,
     wallet,
+    cvv,
   }: {
     checkData: PaymentCheckData;
     wallet: PaymentWallet;
+    cvv: string;
   },
   onError: (e: string) => void,
   onResponse: () => void
@@ -984,7 +985,7 @@ export const confirmPayment = async (
               tipo: "web",
               idWallet: wallet.idWallet,
               cvv: pipe(
-                O.fromNullable(sessionStorage.getItem("securityCode")),
+                O.fromNullable(cvv),
                 O.getOrElse(() => "")
               ),
               threeDSData: JSON.stringify(threeDSData),

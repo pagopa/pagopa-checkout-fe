@@ -13,6 +13,8 @@ import {
   responseMessage,
   responseOutcome,
 } from "../features/payment/models/responseOutcome";
+import { useAppDispatch } from "../redux/hooks/hooks";
+import { resetSecurityCode } from "../redux/slices/securityCode";
 import { getCheckData, getEmailInfo, getWallet } from "../utils/api/apiService";
 import { callServices } from "../utils/api/response";
 import { PAYMENT_OUTCOME_CODE } from "../utils/config/mixpanelDefs";
@@ -50,8 +52,10 @@ export default function PaymentCheckPage() {
     useremail: email.email,
     amount: moneyFormat(totalAmount),
   };
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
+    dispatch(resetSecurityCode());
     const handleFinalStatusResult = (
       idStatus: GENERIC_STATUS,
       authorizationCode?: string,

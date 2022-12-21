@@ -30,6 +30,8 @@ import ClickableFieldContainer from "../components/TextFormField/ClickableFieldC
 import FieldContainer from "../components/TextFormField/FieldContainer";
 import PspFieldContainer from "../components/TextFormField/PspFieldContainer";
 import { PspList } from "../features/payment/models/paymentModel";
+import { useAppSelector } from "../redux/hooks/hooks";
+import { selectSecurityCode } from "../redux/slices/securityCode";
 import {
   getCheckData,
   getEmailInfo,
@@ -79,6 +81,7 @@ export default function PaymentCheckPage() {
   const [pspList, setPspList] = React.useState<Array<PspList>>([]);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
+  const cvv = useAppSelector(selectSecurityCode);
 
   const checkData = getCheckData();
   const wallet = getWallet();
@@ -115,7 +118,7 @@ export default function PaymentCheckPage() {
 
   const onSubmit = React.useCallback(() => {
     setPayLoading(true);
-    void confirmPayment({ checkData, wallet }, onError, onResponse);
+    void confirmPayment({ checkData, wallet, cvv }, onError, onResponse);
   }, []);
 
   const onCancel = React.useCallback(() => {
