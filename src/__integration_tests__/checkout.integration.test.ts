@@ -93,5 +93,4 @@ describe("Checkout payment activation tests", () => {
 
     expect(resultMessage).toContain("PPT_SYSTEM_ERROR");
   });
-
 });
