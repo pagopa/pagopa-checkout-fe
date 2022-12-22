@@ -159,7 +159,7 @@ stages:
           workingDirectory: pagopa-checkout-fe
 
         - script: |
-            ls
+            mkdir -p dist && cp -R ot dist/ot
           displayName: 'test 1'
           workingDirectory: pagopa-checkout-fe
           
