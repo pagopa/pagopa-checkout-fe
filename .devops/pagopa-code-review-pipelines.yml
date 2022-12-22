@@ -157,7 +157,22 @@ stages:
             yarn dev &
           displayName: 'Start checkout FE'
           workingDirectory: pagopa-checkout-fe
+
+        - script: |
+            ls
+          displayName: 'test 1'
+          workingDirectory: pagopa-checkout-fe
           
+        - script: |
+            ls dist
+          displayName: 'testt 2'
+          workingDirectory: pagopa-checkout-fe
+
+        - script: |
+            ls dist/ot
+          displayName: 'test 3'
+          workingDirectory: pagopa-checkout-fe
+
         - script: while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:1234)" != "200" ]]; do sleep 5; done
           displayName: 'Wait for backend to be up and running'
           workingDirectory: pagopa-checkout-fe
