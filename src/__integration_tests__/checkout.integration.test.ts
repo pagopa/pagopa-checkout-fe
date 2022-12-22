@@ -56,7 +56,7 @@ describe("Checkout payment activation tests", () => {
 
     expect(resultMessage).toContain("Grazie, hai pagato");
   });
-  
+
   it("Should fail a payment verify and get PA_IRRAGGIUNGIBILE", async () => {
     /*
      * 2. Payment with notice code that fails on verify and get PA_IRRAGGIUNGIBILE
