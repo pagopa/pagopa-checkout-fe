@@ -332,5 +332,9 @@ export const TRANSLATIONS_IT = {
     payNotice: "Paga un avviso",
     code: "e inquadra il codice:",
     modalBody2: "Puoi donare senza costi di commissione con le tue carte.",
+    dismissTitle: "Il servizio non è più attivo",
+    dismissDescription:
+      "Se vuoi puoi donare a una delle organizzazioni umanitarie che avevano aderito all’iniziativa.",
+    dismissCTA: "Vedi le organizzazioni",
   },
 };
