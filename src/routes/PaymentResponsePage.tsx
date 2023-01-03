@@ -13,6 +13,8 @@ import {
   responseMessage,
   responseOutcome,
 } from "../features/payment/models/responseOutcome";
+import { useAppDispatch } from "../redux/hooks/hooks";
+import { resetSecurityCode } from "../redux/slices/securityCode";
 import {
   getCheckData,
   getEmailInfo,
@@ -53,8 +55,10 @@ export default function PaymentCheckPage() {
     useremail: email.email,
     amount: moneyFormat(totalAmount),
   };
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
+    dispatch(resetSecurityCode());
     const handleFinalStatusResult = (
       idStatus: GENERIC_STATUS,
       authorizationCode?: string,

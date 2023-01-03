@@ -6,6 +6,8 @@ import ErrorModal from "../components/modals/ErrorModal";
 import PageContainer from "../components/PageContent/PageContainer";
 import { InputCardForm } from "../features/payment/components/InputCardForm/InputCardForm";
 import { InputCardFormFields } from "../features/payment/models/paymentModel";
+import { useAppDispatch } from "../redux/hooks/hooks";
+import { setSecurityCode } from "../redux/slices/securityCode";
 import { getReCaptchaKey, getWallet } from "../utils/api/apiService";
 import {
   activatePayment,
@@ -25,6 +27,7 @@ export default function InputCardPage() {
   const [hideCancelButton, setHideCancelButton] = React.useState(false);
   const ref = React.useRef<ReCAPTCHA>(null);
   const config = getConfigOrThrow();
+  const dispatch = useAppDispatch();
 
   React.useEffect(() => {
     setHideCancelButton(!!getWallet().idWallet);
@@ -49,8 +52,9 @@ export default function InputCardPage() {
     ref.current?.reset();
   };
 
-  const onResponse = () => {
+  const onResponse = (cvv: string) => {
     setLoading(false);
+    dispatch(setSecurityCode(cvv));
     navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
   };
 

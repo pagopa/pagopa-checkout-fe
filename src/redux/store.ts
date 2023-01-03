@@ -1,8 +1,8 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import checkDataReducer from "./slices/checkData";
+import securityCodeReducer from "./slices/securityCode";
 
 const reducer = combineReducers({
-  checkData: checkDataReducer,
+  securityCode: securityCodeReducer,
 });
 
 const store = configureStore({
@@ -11,3 +11,4 @@ const store = configureStore({
 
 export default store;
 export type RootState = ReturnType<typeof reducer>;
+export type AppDispatch = typeof store.dispatch;

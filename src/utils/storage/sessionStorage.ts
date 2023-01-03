@@ -4,7 +4,7 @@ import {
   PaymentFormFields,
   PaymentId,
   PaymentInfo,
-  SecurityCode,
+  ReturnUrls,
   Wallet,
 } from "../../features/payment/models/paymentModel";
 import { getReturnUrls, setReturnUrls } from "../api/apiService";
@@ -15,9 +15,8 @@ export enum SessionItems {
   useremail = "useremail",
   paymentId = "paymentId",
   checkData = "checkData",
-  securityCode = "securityCode",
   wallet = "wallet",
-  originUrlRedirect = "originUrlRedirect", // delete this later when returnUrls is handled properly
+  originUrlRedirect = "originUrlRedirect",
   sessionToken = "sessionToken",
   cart = "cart",
 }
@@ -34,9 +33,9 @@ export const loadState = (item: string) => {
       | PaymentFormFields
       | PaymentId
       | PaymentCheckData
-      | Wallet
+      | ReturnUrls
       | Cart
-      | SecurityCode;
+      | Wallet;
   } catch (e) {
     return undefined;
   }
