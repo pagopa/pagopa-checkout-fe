@@ -5,17 +5,14 @@ import ko from "../assets/images/response-umbrella.svg";
 import PageContainer from "../components/PageContent/PageContainer";
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { resetSecurityCode } from "../redux/slices/securityCode";
+import { getReturnUrls } from "../utils/api/apiService";
 import { onBrowserUnload } from "../utils/eventListeners";
-import {
-  clearSensitiveItems,
-  loadState,
-  SessionItems,
-} from "../utils/storage/sessionStorage";
+import { clearSensitiveItems } from "../utils/storage/sessionStorage";
 
 export default function KOPage() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const redirectUrl = loadState(SessionItems.originUrlRedirect) as string;
+  const redirectUrl = getReturnUrls().returnErrorUrl;
 
   React.useEffect(() => {
     dispatch(resetSecurityCode());
@@ -58,7 +55,7 @@ export default function KOPage() {
             variant="outlined"
             onClick={() => {
               sessionStorage.clear();
-              window.location.replace(redirectUrl);
+              window.location.replace(redirectUrl || "/");
             }}
             style={{
               width: "100%",

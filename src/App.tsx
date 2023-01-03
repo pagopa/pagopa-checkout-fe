@@ -7,13 +7,15 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import CvvGuard from "./components/commons/CvvGuard";
 import Guard from "./components/commons/Guard";
 import { Layout } from "./components/commons/Layout";
+import NoticeGuard from "./components/commons/NoticeGuard";
 import RptidGuard from "./components/commons/RptidGuard";
 import CancelledPage from "./routes/CancelledPage";
-import DonationPage from "./routes/DonationPage";
+import DonationPageDismissed from "./routes/DonationPageDismissed";
 import IndexPage from "./routes/IndexPage";
 import InputCardPage from "./routes/InputCardPage";
 import KOPage from "./routes/KOPage";
 import { CheckoutRoutes } from "./routes/models/routeModel";
+import PaymentCartPage from "./routes/PaymentCartPage";
 import PaymentCheckPage from "./routes/PaymentCheckPage";
 import PaymentChoicePage from "./routes/PaymentChoicePage";
 import PaymentEmailPage from "./routes/PaymentEmailPage";
@@ -110,7 +112,10 @@ export function App() {
           <Routes>
             <Route path="/" element={<PaymentOutlet />}>
               <Route path={CheckoutRoutes.ROOT} element={<IndexPage />} />
-              <Route path={CheckoutRoutes.DONA} element={<DonationPage />} />
+              <Route
+                path={CheckoutRoutes.DONA}
+                element={<DonationPageDismissed />}
+              />
               <Route
                 path={CheckoutRoutes.LEGGI_CODICE_QR}
                 element={<PaymentQrPage />}
@@ -130,9 +135,9 @@ export function App() {
               <Route
                 path={CheckoutRoutes.INSERISCI_EMAIL}
                 element={
-                  <Guard item={SessionItems.paymentInfo}>
+                  <NoticeGuard>
                     <PaymentEmailPage />
-                  </Guard>
+                  </NoticeGuard>
                 }
               />
               <Route
@@ -180,6 +185,13 @@ export function App() {
                   <RptidGuard>
                     <PaymentNoticePage />
                   </RptidGuard>
+                }
+              />
+              <Route
+                path={`${CheckoutRoutes.CARRELLO}/:cartid`}
+                element={
+                  // set a guard here to check if cartid matches a regex
+                  <PaymentCartPage />
                 }
               />
               <Route path="*" element={<Navigate replace to="/" />} />

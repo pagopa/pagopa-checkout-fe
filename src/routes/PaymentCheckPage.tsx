@@ -87,7 +87,7 @@ export default function PaymentCheckPage() {
   const wallet = getWallet();
   const email = getEmailInfo();
   const totalAmount = checkData.amount.amount + wallet.psp.fixedCost.amount;
-  const amount = getPaymentInfo().importoSingoloVersamento;
+  const amount = getPaymentInfo().amount;
 
   const onBrowserBackEvent = (e: any) => {
     e.preventDefault();

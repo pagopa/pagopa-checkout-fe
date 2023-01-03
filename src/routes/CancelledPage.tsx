@@ -5,17 +5,14 @@ import cancelled from "../assets/images/response-unrecognized.svg";
 import PageContainer from "../components/PageContent/PageContainer";
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { resetSecurityCode } from "../redux/slices/securityCode";
+import { getReturnUrls } from "../utils/api/apiService";
 import { onBrowserUnload } from "../utils/eventListeners";
-import {
-  clearSensitiveItems,
-  loadState,
-  SessionItems,
-} from "../utils/storage/sessionStorage";
+import { clearSensitiveItems } from "../utils/storage/sessionStorage";
 
 export default function CancelledPage() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const redirectUrl = loadState(SessionItems.originUrlRedirect) as string;
+  const redirectUrl = getReturnUrls().returnCancelUrl;
 
   React.useEffect(() => {
     dispatch(resetSecurityCode());

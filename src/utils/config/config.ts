@@ -14,10 +14,13 @@ import { readableReport } from "@pagopa/ts-commons/lib/reporters";
 export type IConfig = t.TypeOf<typeof IConfig>;
 export const IConfig = t.interface({
   CHECKOUT_PM_HOST: NonEmptyString,
+  CHECKOUT_ECOMMERCE_HOST: NonEmptyString,
   CHECKOUT_PM_API_BASEPATH: NonEmptyString,
+  CHECKOUT_API_ECOMMERCE_BASEPATH: NonEmptyString,
   CHECKOUT_API_TIMEOUT: t.number,
   CHECKOUT_ENV: NonEmptyString,
   CHECKOUT_PAGOPA_APIM_HOST: NonEmptyString,
+  CHECKOUT_PAGOPA_ASSETS_CDN: NonEmptyString,
   CHECKOUT_API_PAYMENT_ACTIVATIONS_BASEPATH: NonEmptyString,
   CHECKOUT_API_PAYMENT_TRANSACTIONS_BASEPATH: NonEmptyString,
   CHECKOUT_POLLING_ACTIVATION_INTERVAL: t.number,

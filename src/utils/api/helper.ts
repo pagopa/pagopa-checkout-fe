@@ -1,3 +1,6 @@
+/* eslint-disable functional/no-let */
+/* eslint-disable sonarjs/cognitive-complexity */
+/* eslint-disable sonarjs/no-identical-functions */
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { Millisecond } from "@pagopa/ts-commons/lib/units";
 import * as E from "fp-ts/Either";
@@ -11,18 +14,31 @@ import { PaymentActivationsGetResponse } from "../../../generated/definitions/pa
 import { PaymentActivationsPostResponse } from "../../../generated/definitions/payment-activations-api/PaymentActivationsPostResponse";
 import { Detail_v2Enum } from "../../../generated/definitions/payment-activations-api/PaymentProblemJson";
 import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-activations-api/PaymentRequestsGetResponse";
+import { PaymentRequestsGetResponse as EcommercePaymentRequestsGetResponse } from "../../../generated/definitions/payment-ecommerce/PaymentRequestsGetResponse";
+import { ValidationFaultPaymentProblemJson } from "../../../generated/definitions/payment-ecommerce/ValidationFaultPaymentProblemJson";
 import {
   TypeEnum,
   Wallet,
 } from "../../../generated/definitions/payment-manager-api/Wallet";
 import { RptId } from "../../../generated/definitions/payment-transactions-api/RptId";
 import {
+  Cart,
   InputCardFormFields,
   PaymentCheckData,
+  PaymentInstruments,
   Wallet as PaymentWallet,
 } from "../../features/payment/models/paymentModel";
+import {
+  PaymentMethodRoutes,
+  TransactionMethods,
+} from "../../routes/models/paymentMethodRoutes";
 import { getConfigOrThrow } from "../config/config";
 import {
+  CART_REQUEST_ACCESS,
+  CART_REQUEST_NET_ERROR,
+  CART_REQUEST_RESP_ERROR,
+  CART_REQUEST_SUCCESS,
+  CART_REQUEST_SVR_ERROR,
   DONATION_INIT_SESSION,
   DONATION_LIST_ERROR,
   DONATION_LIST_SUCCESS,
@@ -51,6 +67,11 @@ import {
   PAYMENT_CHECK_RESP_ERR,
   PAYMENT_CHECK_SUCCESS,
   PAYMENT_CHECK_SVR_ERR,
+  PAYMENT_METHODS_ACCESS,
+  PAYMENT_METHODS_NET_ERROR,
+  PAYMENT_METHODS_RESP_ERROR,
+  PAYMENT_METHODS_SUCCESS,
+  PAYMENT_METHODS_SVR_ERROR,
   PAYMENT_PAY3DS2_INIT,
   PAYMENT_PAY3DS2_NET_ERR,
   PAYMENT_PAY3DS2_RESP_ERR,
@@ -87,18 +108,104 @@ import { ErrorsType } from "../errors/checkErrorsModel";
 import { PaymentSession } from "../sessionData/PaymentSession";
 import { WalletSession } from "../sessionData/WalletSession";
 import {
+  getCart,
   getCheckData,
   getNoticeInfo,
   getPaymentId,
   getPaymentInfo,
   setPaymentId,
+  setReturnUrls,
 } from "./apiService";
 import { getBrowserInfoTask, getEMVCompliantColorDepth } from "./checkHelper";
 import {
   apiPaymentActivationsClient,
+  apiPaymentEcommerceClient,
   apiPaymentTransactionsClient,
   pmClient,
 } from "./client";
+
+export const getEcommercePaymentInfoTask = (
+  rptId: RptId,
+  recaptchaResponse: string
+): TE.TaskEither<string, EcommercePaymentRequestsGetResponse> =>
+  pipe(
+    TE.tryCatch(
+      () => {
+        mixpanel.track(PAYMENT_VERIFY_INIT.value, {
+          EVENT_ID: PAYMENT_VERIFY_INIT.value,
+        });
+        return apiPaymentEcommerceClient.getPaymentRequestInfo({
+          rpt_id: rptId,
+          recaptchaResponse,
+        });
+      },
+      () => {
+        mixpanel.track(PAYMENT_VERIFY_NET_ERR.value, {
+          EVENT_ID: PAYMENT_VERIFY_NET_ERR.value,
+        });
+        return "Errore recupero pagamento";
+      }
+    ),
+    TE.fold(
+      (err) => {
+        mixpanel.track(PAYMENT_VERIFY_SVR_ERR.value, {
+          EVENT_ID: PAYMENT_VERIFY_SVR_ERR.value,
+        });
+        return TE.left(err);
+      },
+      (errorOrResponse) =>
+        pipe(
+          errorOrResponse,
+          E.fold(
+            () => TE.left(ErrorsType.GENERIC_ERROR),
+            (responseType) => {
+              let reason;
+              if (responseType.status === 200) {
+                reason = "";
+              }
+              if (responseType.status === 400) {
+                reason = (
+                  responseType.value as ValidationFaultPaymentProblemJson
+                )?.faultCodeCategory;
+              } else {
+                reason = (
+                  responseType.value as ValidationFaultPaymentProblemJson
+                )?.faultCodeDetail;
+              }
+              const EVENT_ID: string =
+                responseType.status === 200
+                  ? PAYMENT_VERIFY_SUCCESS.value
+                  : PAYMENT_VERIFY_RESP_ERR.value;
+              mixpanel.track(EVENT_ID, { EVENT_ID, reason });
+
+              if (responseType.status === 400) {
+                return TE.left(
+                  pipe(
+                    O.fromNullable(
+                      (responseType.value as ValidationFaultPaymentProblemJson)
+                        ?.faultCodeCategory
+                    ),
+                    O.getOrElse(() => ErrorsType.STATUS_ERROR as string)
+                  )
+                );
+              }
+              return responseType.status !== 200
+                ? TE.left(
+                    pipe(
+                      O.fromNullable(
+                        (
+                          responseType.value as ValidationFaultPaymentProblemJson
+                        )?.faultCodeDetail
+                      ),
+                      O.getOrElse(() => ErrorsType.STATUS_ERROR as string)
+                    )
+                  )
+                : TE.of(responseType.value);
+            }
+          )
+        )
+    )
+  );
 
 export const getPaymentInfoTask = (
   rptId: RptId,
@@ -180,6 +287,10 @@ export const activatePayment = async ({
 }) => {
   const noticeInfo = getNoticeInfo();
   const paymentInfo = getPaymentInfo();
+  const paymentInfoTransform = {
+    importoSingoloVersamento: paymentInfo.amount,
+    codiceContestoPagamento: paymentInfo.paymentContextCode,
+  };
   const paymentId = getPaymentId().paymentId;
   const checkDataId = getCheckData().id;
   const rptId: RptId = `${noticeInfo.cf}${noticeInfo.billCode}`;
@@ -200,9 +311,9 @@ export const activatePayment = async ({
   }
   if (!paymentId) {
     pipe(
-      PaymentRequestsGetResponse.decode(paymentInfo),
+      PaymentRequestsGetResponse.decode(paymentInfoTransform),
       E.fold(
-        () => onError(""),
+        () => onError(ErrorsType.INVALID_DECODE),
         (response) =>
           pipe(
             activePaymentTask(
@@ -220,7 +331,7 @@ export const activatePayment = async ({
                   response.codiceContestoPagamento,
                   config.CHECKOUT_POLLING_ACTIVATION_ATTEMPTS as number,
                   (res) => {
-                    setPaymentId(res);
+                    setPaymentId({ paymentId: res.idPagamento });
                     void getPaymentCheckData({
                       idPayment: res.idPagamento,
                       onError,
@@ -393,22 +504,26 @@ export const retryPollingActivationStatus = async ({
   onNavigate: () => void;
 }): Promise<void> => {
   const paymentInfo = getPaymentInfo();
+  const paymentInfoTransform = {
+    importoSingoloVersamento: paymentInfo.amount,
+    codiceContestoPagamento: paymentInfo.paymentContextCode,
+  };
   const config = getConfigOrThrow();
   const getWallet = () => {
     void getSessionWallet(wallet as InputCardFormFields, onError, onResponse);
   };
 
   pipe(
-    PaymentRequestsGetResponse.decode(paymentInfo),
+    PaymentRequestsGetResponse.decode(paymentInfoTransform),
     E.fold(
-      () => onError(""),
+      () => onError(ErrorsType.INVALID_DECODE),
       (response) =>
         pollingActivationStatus(
           response.codiceContestoPagamento,
           config.CHECKOUT_POLLING_ACTIVATION_ATTEMPTS as number,
           // eslint-disable-next-line sonarjs/no-identical-functions
           (res) => {
-            setPaymentId(res);
+            setPaymentId({ paymentId: res.idPagamento });
             void getPaymentCheckData({
               idPayment: res.idPagamento,
               onError,
@@ -489,15 +604,16 @@ export const getPaymentCheckData = async ({
                           mixpanel.track(PAYMENT_CHECK_SUCCESS.value, {
                             EVENT_ID: PAYMENT_CHECK_SUCCESS.value,
                           });
-                          const originInput = pipe(
-                            O.fromNullable(origin),
-                            O.getOrElse(() => response.value.data.urlRedirectEc)
-                          );
-                          sessionStorage.setItem(
-                            "originUrlRedirect",
-                            originInput === "payportal"
-                              ? "/"
-                              : JSON.stringify(originInput)
+
+                          const cart = getCart();
+                          setReturnUrls(
+                            cart?.returnUrls.returnOkUrl
+                              ? cart.returnUrls
+                              : {
+                                  returnOkUrl: "/",
+                                  returnCancelUrl: "/",
+                                  returnErrorUrl: "/",
+                                }
                           );
                         })
                       );
@@ -1126,4 +1242,139 @@ export const getDonationEntityList = async (
       });
       onError(ErrorsType.DONATIONLIST_ERROR);
     });
+};
+
+export const getPaymentInstruments = async (
+  query: {
+    amount: number;
+  },
+  onError: (e: string) => void,
+  onResponse: (data: Array<PaymentInstruments>) => void
+) => {
+  mixpanel.track(PAYMENT_METHODS_ACCESS.value, {
+    EVENT_ID: PAYMENT_METHODS_ACCESS.value,
+  });
+  const list = await pipe(
+    TE.tryCatch(
+      () => apiPaymentEcommerceClient.getAllPaymentMethods(query),
+      () => {
+        mixpanel.track(PAYMENT_METHODS_NET_ERROR.value, {
+          EVENT_ID: PAYMENT_METHODS_NET_ERROR.value,
+        });
+        onError(ErrorsType.STATUS_ERROR);
+        return toError;
+      }
+    ),
+    TE.fold(
+      () => async () => {
+        mixpanel.track(PAYMENT_METHODS_SVR_ERROR.value, {
+          EVENT_ID: PAYMENT_METHODS_SVR_ERROR.value,
+        });
+        onError(ErrorsType.STATUS_ERROR);
+        return [];
+      },
+      (myResExt) => async () =>
+        pipe(
+          myResExt,
+          E.fold(
+            () => {
+              mixpanel.track(PAYMENT_METHODS_RESP_ERROR.value, {
+                EVENT_ID: PAYMENT_METHODS_RESP_ERROR.value,
+              });
+              return [];
+            },
+            (myRes) => {
+              if (myRes.status === 200) {
+                mixpanel.track(PAYMENT_METHODS_SUCCESS.value, {
+                  EVENT_ID: PAYMENT_METHODS_SUCCESS.value,
+                });
+                return myRes.value
+                  .filter(
+                    (method) =>
+                      !!PaymentMethodRoutes[
+                        method.paymentTypeCode as TransactionMethods
+                      ]
+                  )
+                  .map((method) => ({
+                    ...method,
+                    label:
+                      PaymentMethodRoutes[
+                        method.paymentTypeCode as TransactionMethods
+                      ]?.label || method.name,
+                    asset:
+                      PaymentMethodRoutes[
+                        method.paymentTypeCode as TransactionMethods
+                      ]?.asset, // when asset will be added to the object, add || method.asset
+                  }));
+              } else {
+                mixpanel.track(PAYMENT_METHODS_RESP_ERROR.value, {
+                  EVENT_ID: PAYMENT_METHODS_RESP_ERROR.value,
+                });
+                return [];
+              }
+            }
+          )
+        )
+    )
+  )();
+  onResponse(list as any as Array<PaymentInstruments>);
+};
+
+export const getCarts = async (
+  id_cart: string,
+  onError: (e: string) => void,
+  onResponse: (data: Cart) => void
+) => {
+  mixpanel.track(CART_REQUEST_ACCESS.value, {
+    EVENT_ID: CART_REQUEST_ACCESS.value,
+  });
+  await pipe(
+    TE.tryCatch(
+      () => apiPaymentEcommerceClient.GetCarts({ id_cart }),
+      () => {
+        mixpanel.track(CART_REQUEST_NET_ERROR.value, {
+          EVENT_ID: CART_REQUEST_NET_ERROR.value,
+        });
+        onError(ErrorsType.STATUS_ERROR);
+        return toError;
+      }
+    ),
+    TE.fold(
+      () => async () => {
+        mixpanel.track(CART_REQUEST_SVR_ERROR.value, {
+          EVENT_ID: CART_REQUEST_SVR_ERROR.value,
+        });
+        onError(ErrorsType.STATUS_ERROR);
+        return {};
+      },
+      (myResExt) => async () =>
+        pipe(
+          myResExt,
+          E.fold(
+            () => {
+              mixpanel.track(CART_REQUEST_RESP_ERROR.value, {
+                EVENT_ID: CART_REQUEST_RESP_ERROR.value,
+              });
+              onError(ErrorsType.STATUS_ERROR);
+              return {};
+            },
+            (myRes) => {
+              if (myRes.status === 200) {
+                mixpanel.track(CART_REQUEST_SUCCESS.value, {
+                  EVENT_ID: CART_REQUEST_SUCCESS.value,
+                });
+                onResponse(myRes.value as any as Cart);
+                return myRes.value;
+              } else {
+                mixpanel.track(CART_REQUEST_RESP_ERROR.value, {
+                  EVENT_ID: CART_REQUEST_RESP_ERROR.value,
+                });
+                onError(ErrorsType.STATUS_ERROR);
+                return {};
+              }
+            }
+          )
+        )
+    )
+  )();
 };
