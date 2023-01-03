@@ -21,21 +21,11 @@ export const fillPaymentNotificationForm = async (noticeCode, fiscalCode) => {
   await page.click(verifyBtn);
 };
 
-export const verifyPaymentAndGetError = async (
-  noticeCode,
-  fiscalCode,
-  errorMessageXPath
-) => {
-  const payNoticeBtnXPath =
-    "/html/body/div[1]/div/div[2]/div/div[2]/div[6]/div[1]/button";
+export const verifyPaymentAndGetError = async (noticeCode, fiscalCode) => {
+  const errorMessageXPath = '/html/body/div[3]/div[3]/div/div/div[2]/div[2]/div';
   await fillPaymentNotificationForm(noticeCode, fiscalCode);
-  const payNoticeBtn = await page.waitForXPath(payNoticeBtnXPath, {
-    visible: true,
-  });
-  await payNoticeBtn.click();
   const errorMessageElem = await page.waitForXPath(errorMessageXPath);
-
-  return await errorMessageElem.evaluate((el) => el.textContent);
+  return await errorMessageElem.evaluate(el => el.textContent);
 };
 
 export const verifyPayment = async (noticeCode, fiscalCode) => {
