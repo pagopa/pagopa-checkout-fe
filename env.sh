@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # Print relevant environment variables
 env | grep -i checkout_

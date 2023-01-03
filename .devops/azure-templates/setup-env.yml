@@ -74,6 +74,6 @@ steps:
       CHECKOUT_ECOMMERCE_HOST=${{ parameters.ecommerce_host }} \
       CHECKOUT_API_ECOMMERCE_BASEPATH=${{ parameters.api_ecommerce_basepath }} \
       CHECKOUT_PAGOPA_ASSETS_CDN=${{ parameters.pagopa_assets_cdn }} \
-      ./env.sh
+      bash env.sh
 
   displayName: 'Populate environment file'
