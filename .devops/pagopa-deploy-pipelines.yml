@@ -272,7 +272,9 @@ stages:
       - job: end_to_end_tests
         steps:
           - checkout: checkoutTests
-          - script : cd e2e-tests && sed -i "s/^CHECKOUT_URL=.*$/CHECKOUT_URL=$(CHECKOUT_URL)/" .env
+          - script : |
+             cd e2e-tests 
+             sed -i "s/^CHECKOUT_URL=.*$/CHECKOUT_URL=$(CHECKOUT_URL)/" .env
           - script: |
              docker build -t ui_test e2e-tests
             displayName: 'Build test image'
