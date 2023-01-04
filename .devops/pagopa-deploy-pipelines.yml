@@ -275,7 +275,7 @@ stages:
           - script : |
              echo "##[debug] Change placeholder for CHECKOUT_URL ..."
              cd e2e-tests 
-             sed -i "s/\${CHECKOUT_URL}/$(CHECKOUT_URL)/" .env
+             sed -i 's/^CHECKOUT_URL=.*$/CHECKOUT_URL=$(CHECKOUT_URL)/' .env
 
           - script: |
              docker build -t ui_test e2e-tests
