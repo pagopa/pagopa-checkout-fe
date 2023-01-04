@@ -29,7 +29,7 @@ variables:
   NODE_VERSION: 14.16.0
   YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
   ${{ if eq(parameters.UAT_PROD_DEPLOY, 'true') }}:
-    CHECKOUT_URL: https://uat..pagopa.it/
+    CHECKOUT_URL: https://uat.checkout.pagopa.it/
   ${{ if eq(parameters.DEV_DEPLOY, 'true') }}:
     CHECKOUT_URL: https://dev.checkout.pagopa.it/
 
