@@ -26,8 +26,12 @@ parameters:
 
 
 variables:
-  NODE_VERSION: 14.16.0
-  YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
+${{ if eq(parameters.UAT_PROD_DEPLOY, 'true') }}:
+  CHECKOUT_URL: https://uat..pagopa.it/
+${{ if eq(parameters.DEV_DEPLOY, 'true') }}:
+  CHECKOUT_URL: https://dev.checkout.pagopa.it/
+NODE_VERSION: 14.16.0
+YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
 
 # Only manual activations are intended
 trigger: none
@@ -52,12 +56,15 @@ resources:
     - repository: checkoutTests
       type: github
       name: pagopa/pagopa-checkout-tests
-      ref: main
+      ref: CHK-904-refactoring-e2e-test
       endpoint: 'io-azure-devops-github-ro'
 
 stages:
   - stage: Prepare_artifact_dev
-    condition: and(succeeded(), eq(${{parameters.DEV_DEPLOY}}, true))
+    condition: or(
+        and(succeeded(), eq(${{parameters.DEV_DEPLOY}}, true)),
+        and(succeeded(), eq(${{parameters.UAT_PROD_DEPLOY}}, true))
+      )
     dependsOn: []
     jobs:
       - job: make_build
@@ -124,37 +131,6 @@ stages:
               inlineScript: |
                 call az cdn endpoint purge -g pagopa-d-checkout-fe-rg -n pagopa-d-checkout-cdn-endpoint --profile-name pagopa-d-checkout-cdn-profile --content-paths "/*"
   
-  - stage: End_to_End_Tests_DEV
-    dependsOn:
-      - Deploy_DEV_pagoPA
-    pool:
-      vmImage: 'ubuntu-latest'
-    jobs:
-      - job: end_to_end_tests
-        steps:
-          - checkout: checkoutTests
-
-          - script: |
-             docker build -t ui_test-v2 e2e-tests-v2
-            displayName: 'Build test image'
-
-          - script: |
-              docker run --name=ui_test-v2 ui_test-v2
-            displayName: 'Run UI test container'
-            continueOnError: true 
-
-          - script: |
-              docker cp ui_test-v2:/puppeteer/test_reports  test_reports
-            displayName: 'Copy test result'
-            continueOnError: true 
-
-          - task: PublishTestResults@2
-            inputs:
-              testResultsFormat: 'JUnit'
-              testResultsFiles: '**/*-TEST.xml' 
-              searchFolder: '$(System.DefaultWorkingDirectory)'
-
-
 
   # Create a relase
   # Activated when ONE OF these are met:
@@ -279,6 +255,43 @@ stages:
               inlineScript: |
                 call az cdn endpoint purge -g pagopa-u-checkout-fe-rg -n pagopa-u-checkout-cdn-endpoint --profile-name pagopa-u-checkout-cdn-profile --content-paths "/*"
  
+  - stage: End_to_End_Tests
+    dependsOn:
+      - Deploy_DEV_pagoPA
+      - Deploy_UAT_pagoPA
+    condition:
+      or
+      (
+        eq(dependencies.Deploy_DEV_pagoPA.result, 'Succeeded'),
+        eq(dependencies.Deploy_UAT_pagoPA.result, 'Succeeded')
+      )
+    pool:
+      vmImage: 'ubuntu-latest'
+    jobs:
+      - job: end_to_end_tests
+        steps:
+          - checkout: checkoutTests
+          - script : cd e2e-tests && sed -i "s/^CHECKOUT_URL=.*$/CHECKOUT_URL=$(CHECKOUT_URL)/" .env
+          - script: |
+             docker build -t ui_test e2e-tests
+            displayName: 'Build test image'
+
+          - script: |
+              docker run --name=ui_test ui_test
+            displayName: 'Run UI test container'
+            continueOnError: true 
+
+          - script: |
+              docker cp ui_test:/puppeteer/test_reports  test_reports
+            displayName: 'Copy test result'
+            continueOnError: true 
+
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFormat: 'JUnit'
+              testResultsFiles: '**/*-TEST.xml' 
+              searchFolder: '$(System.DefaultWorkingDirectory)'
+
     # Prepare Artifact
   - stage: Prepare_artifact_prod
     dependsOn:
