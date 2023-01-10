@@ -304,8 +304,8 @@ export const TRANSLATIONS_IT = {
       body: "Probabilmente hai superato il massimale della tua carta. Verifica con la tua banca prima di riprovare.",
     },
     "15": {
-      title: "Ci vuole un po di tempo",
-      body: "Le faremo sapere",
+      title: "Il pagamento di {{amount}} è stato preso in carico",
+      body: "Non appena sarà pronto invieremo l’esito del pagamento a {{useremail}}",
     },
   },
   cancelledPage: {
