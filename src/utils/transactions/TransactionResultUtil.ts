@@ -2,6 +2,7 @@ import * as E from "fp-ts/Either";
 import * as t from "io-ts";
 import { pipe } from "fp-ts/function";
 import { enumType } from "@pagopa/ts-commons/lib/types";
+import { GENERIC_STATUS } from "./TransactionStatesTypes";
 
 export enum OutcomeEnum {
   SUCCESS = "0",
@@ -19,6 +20,7 @@ export enum OutcomeEnum {
   INVALID_METHOD = "12",
   KO_RETRIABLE = "13",
   INVALID_SESSION = "14",
+  TAKE_IN_CHARGE="15"
 }
 
 export enum ViewOutcomeEnum {
@@ -30,6 +32,7 @@ export enum ViewOutcomeEnum {
   INVALID_CARD = "7",
   CANCELED_BY_USER = "8",
   EXCESSIVE_AMOUNT = "10",
+  TAKE_IN_CHARGE="15"
 }
 
 export enum NexiResultCodeEnum {
@@ -217,14 +220,15 @@ export const getOutcomeFromVposStatus = (
 
 export const getOutcomeFromAuthcodeAndIsDirectAcquirer = (
   authCode?: string,
-  isDirectAcquirer?: boolean
+  isDirectAcquirer?: boolean,
+  idStatus?: GENERIC_STATUS
 ): OutcomeEnumType =>
   pipe(
     E.fromPredicate(
       (directAcquirer) => directAcquirer === true,
       E.toError
     )(isDirectAcquirer),
-    E.fold(
+      E.fold(
       () =>
         getOutcomeFromVposStatus(
           pipe(
@@ -243,5 +247,12 @@ export const getOutcomeFromAuthcodeAndIsDirectAcquirer = (
             )
           )
         )
-    )
+    ),
+    (outcomeEnum: OutcomeEnum) => {
+      console.log(idStatus);
+      if(outcomeEnum === OutcomeEnum.SUCCESS && idStatus === 14) {
+        return OutcomeEnum.TAKE_IN_CHARGE;
+      }
+      return outcomeEnum;
+    }
   );

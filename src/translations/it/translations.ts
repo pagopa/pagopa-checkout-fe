@@ -303,6 +303,10 @@ export const TRANSLATIONS_IT = {
       title: "Autorizzazione negata",
       body: "Probabilmente hai superato il massimale della tua carta. Verifica con la tua banca prima di riprovare.",
     },
+    "15": {
+      title: "Ci vuole un po di tempo",
+      body: "Le faremo sapere",
+    },
   },
   cancelledPage: {
     body: "L'operazione è stata annullata",
