@@ -248,10 +248,8 @@ export const getOutcomeFromAuthcodeAndIsDirectAcquirer = (
           )
         )
     ),
-    (outcomeEnum: OutcomeEnum) => {
-      if (outcomeEnum === OutcomeEnum.SUCCESS && idStatus === 14) {
-        return OutcomeEnum.TAKE_IN_CHARGE;
-      }
-      return outcomeEnum;
-    }
+    (outcomeEnum: OutcomeEnum) =>
+      (outcomeEnum === OutcomeEnum.SUCCESS && idStatus === 14) ? 
+      OutcomeEnum.TAKE_IN_CHARGE: 
+      outcomeEnum
   );
