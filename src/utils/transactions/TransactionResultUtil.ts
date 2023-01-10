@@ -20,7 +20,7 @@ export enum OutcomeEnum {
   INVALID_METHOD = "12",
   KO_RETRIABLE = "13",
   INVALID_SESSION = "14",
-  TAKE_IN_CHARGE="15"
+  TAKE_IN_CHARGE = "15",
 }
 
 export enum ViewOutcomeEnum {
@@ -32,7 +32,7 @@ export enum ViewOutcomeEnum {
   INVALID_CARD = "7",
   CANCELED_BY_USER = "8",
   EXCESSIVE_AMOUNT = "10",
-  TAKE_IN_CHARGE="15"
+  TAKE_IN_CHARGE = "15",
 }
 
 export enum NexiResultCodeEnum {
@@ -228,7 +228,7 @@ export const getOutcomeFromAuthcodeAndIsDirectAcquirer = (
       (directAcquirer) => directAcquirer === true,
       E.toError
     )(isDirectAcquirer),
-      E.fold(
+    E.fold(
       () =>
         getOutcomeFromVposStatus(
           pipe(
@@ -249,8 +249,7 @@ export const getOutcomeFromAuthcodeAndIsDirectAcquirer = (
         )
     ),
     (outcomeEnum: OutcomeEnum) => {
-      console.log(idStatus);
-      if(outcomeEnum === OutcomeEnum.SUCCESS && idStatus === 14) {
+      if (outcomeEnum === OutcomeEnum.SUCCESS && idStatus === 14) {
         return OutcomeEnum.TAKE_IN_CHARGE;
       }
       return outcomeEnum;
