@@ -274,7 +274,6 @@ stages:
           - checkout: checkoutTests
           - script : |
              echo "##[debug] Change placeholder for CHECKOUT_URL ..."
-             echo "$(CHECKOUT_URL)"
              cd e2e-tests 
              sed -i "s,^CHECKOUT_URL=.*$,CHECKOUT_URL=$(CHECKOUT_URL)," .env
 
