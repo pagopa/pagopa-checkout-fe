@@ -5,6 +5,7 @@ import ko from "../../../assets/images/response-ko.svg";
 import question from "../../../assets/images/response-question.svg";
 import timeout from "../../../assets/images/response-timeout.svg";
 import unrecognized from "../../../assets/images/response-unrecognized.svg";
+import wait from "../../../assets/images/response-wait.svg";
 
 export type responseMessage = {
   title: string;
@@ -56,6 +57,6 @@ export const responseOutcome: Record<ViewOutcomeEnum, responseMessage> = {
   15: {
     title: "paymentResponsePage.15.title",
     body: "paymentResponsePage.15.body",
-    icon: timeout,
+    icon: wait,
   },
 };
