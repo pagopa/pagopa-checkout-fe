@@ -85,7 +85,7 @@ export default function PaymentCheckPage() {
       );
       const message = responseOutcome[viewOutcome];
       const redirectTo =
-        (viewOutcome === "0" || viewOutcome === "15")
+        viewOutcome === "0" || viewOutcome === "15"
           ? getReturnUrls().returnOkUrl
           : getReturnUrls().returnErrorUrl;
       setOutcomeMessage(message);
