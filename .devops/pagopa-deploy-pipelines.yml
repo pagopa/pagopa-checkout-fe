@@ -141,7 +141,7 @@ stages:
              echo "##[debug] Change placeholder for CHECKOUT_URL ..."
              cd e2e-tests 
              sed -i "s,^CHECKOUT_URL=.*$,CHECKOUT_URL=https://dev.checkout.pagopa.it/," .env
-             sed -i "s,^VALID_NOTICE_CODE_PREFIX=.*$,VALID_NOTICE_CODE=31111," .env
+             sed -i "s,^VALID_NOTICE_CODE_PREFIX=.*$,VALID_NOTICE_CODE_PREFIX=31111," .env
              sed -i "s,^PA_IRRAGGIUNGIBILE_NOTICE_CODE=.*$,PA_IRRAGGIUNGIBILE_NOTICE_CODE=302016723749670009," .env
              sed -i "s,^VALID_FISCAL_CODE=.*$,VALID_FISCAL_CODE=77777777777," .env
              sed -i "s,^INVALID_FISCAL_CODE=.*$,INVALID_FISCAL_CODE=77777777776," .env
@@ -305,7 +305,7 @@ stages:
              echo "##[debug] Change placeholder for CHECKOUT_URL ..."
              cd e2e-tests 
              sed -i "s,^CHECKOUT_URL=.*$,CHECKOUT_URL=https://uat.checkout.pagopa.it/," .env
-             sed -i "s,^VALID_NOTICE_CODE_PREFIX=.*$,VALID_NOTICE_CODE=30201," .env
+             sed -i "s,^VALID_NOTICE_CODE_PREFIX=.*$,VALID_NOTICE_CODE_PREFIX=30201," .env
              sed -i "s,^PA_IRRAGGIUNGIBILE_NOTICE_CODE=.*$,PA_IRRAGGIUNGIBILE_NOTICE_CODE=311111000000000000," .env
              sed -i "s,^VALID_FISCAL_CODE=.*$,VALID_FISCAL_CODE=77777777777," .env
              sed -i "s,^INVALID_FISCAL_CODE=.*$,INVALID_FISCAL_CODE=77777777776," .env
