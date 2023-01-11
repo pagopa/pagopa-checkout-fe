@@ -140,15 +140,7 @@ stages:
           - script : |
              echo "##[debug] Change placeholder for CHECKOUT_URL ..."
              cd e2e-tests 
-             sed -i "s,^CHECKOUT_URL=.*$,CHECKOUT_URL=https://dev.checkout.pagopa.it/," .env
-             sed -i "s,^VALID_NOTICE_CODE_PREFIX=.*$,VALID_NOTICE_CODE_PREFIX=31111," .env
-             sed -i "s,^PA_IRRAGGIUNGIBILE_NOTICE_CODE=.*$,PA_IRRAGGIUNGIBILE_NOTICE_CODE=302016723749670009," .env
-             sed -i "s,^VALID_FISCAL_CODE=.*$,VALID_FISCAL_CODE=77777777777," .env
-             sed -i "s,^INVALID_FISCAL_CODE=.*$,INVALID_FISCAL_CODE=77777777776," .env
-             sed -i "s,^EMAIL=.*$,EMAIL=mario.rossi@email.com," .env
-             sed -i "s,^CARD_NUMBER=.*$,CARD_NUMBER=4333334000098346," .env
-             sed -i "s,^CARD_EXPIRATION_DATE=.*$,CARD_EXPIRATION_DATE=1230," .env
-             sed -i "s,^CARD_CCV=.*$,CARD_CCV=123," .env
+             mv dev.env .env
           - script: |
              docker build -t ui_test e2e-tests
             displayName: 'Build test image'
@@ -304,15 +296,7 @@ stages:
           - script : |
              echo "##[debug] Change placeholder for CHECKOUT_URL ..."
              cd e2e-tests 
-             sed -i "s,^CHECKOUT_URL=.*$,CHECKOUT_URL=https://uat.checkout.pagopa.it/," .env
-             sed -i "s,^VALID_NOTICE_CODE_PREFIX=.*$,VALID_NOTICE_CODE_PREFIX=30201," .env
-             sed -i "s,^PA_IRRAGGIUNGIBILE_NOTICE_CODE=.*$,PA_IRRAGGIUNGIBILE_NOTICE_CODE=311111000000000000," .env
-             sed -i "s,^VALID_FISCAL_CODE=.*$,VALID_FISCAL_CODE=77777777777," .env
-             sed -i "s,^INVALID_FISCAL_CODE=.*$,INVALID_FISCAL_CODE=77777777776," .env
-             sed -i "s,^EMAIL=.*$,EMAIL=mario.rossi@email.com," .env
-             sed -i "s,^CARD_NUMBER=.*$,CARD_NUMBER=5111114000023477," .env
-             sed -i "s,^CARD_EXPIRATION_DATE=.*$,CARD_EXPIRATION_DATE=1230," .env
-             sed -i "s,^CARD_CCV=.*$,CARD_CCV=123," .env
+             mv uat.env .env
           - script: |
              docker build -t ui_test e2e-tests
             displayName: 'Build test image'
