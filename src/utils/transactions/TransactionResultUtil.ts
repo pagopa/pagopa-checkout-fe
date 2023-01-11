@@ -249,7 +249,7 @@ export const getOutcomeFromAuthcodeAndIsDirectAcquirer = (
         )
     ),
     (outcomeEnum: OutcomeEnum) =>
-      (outcomeEnum === OutcomeEnum.SUCCESS && idStatus === 14) ? 
-      OutcomeEnum.TAKEN_IN_CHARGE: 
-      outcomeEnum
+      outcomeEnum === OutcomeEnum.SUCCESS && idStatus === 14
+        ? OutcomeEnum.TAKEN_IN_CHARGE
+        : outcomeEnum
   );
