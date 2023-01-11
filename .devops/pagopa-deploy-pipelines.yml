@@ -149,7 +149,6 @@ stages:
              sed -i "s,^CARD_NUMBER=.*$,CARD_NUMBER=4333334000098346," .env
              sed -i "s,^CARD_EXPIRATION_DATE=.*$,CARD_EXPIRATION_DATE=1230," .env
              sed -i "s,^CARD_CCV=.*$,CARD_CCV=123," .env
-             sed -i "s,^CARD_HOLDER_NAME=.*$,CARD_HOLDER_NAME=Mario Rossi," .env
           - script: |
              docker build -t ui_test e2e-tests
             displayName: 'Build test image'
@@ -314,7 +313,6 @@ stages:
              sed -i "s,^CARD_NUMBER=.*$,CARD_NUMBER=5111114000023477," .env
              sed -i "s,^CARD_EXPIRATION_DATE=.*$,CARD_EXPIRATION_DATE=1230," .env
              sed -i "s,^CARD_CCV=.*$,CARD_CCV=123," .env
-             sed -i "s,^CARD_HOLDER_NAME=.*$,CARD_HOLDER_NAME=Mario Rossi," .env
           - script: |
              docker build -t ui_test e2e-tests
             displayName: 'Build test image'
