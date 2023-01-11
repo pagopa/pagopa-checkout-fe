@@ -53,15 +53,12 @@ resources:
     - repository: checkoutTests
       type: github
       name: pagopa/pagopa-checkout-tests
-      ref: FIX-e2e-env-variable
+      ref: main
       endpoint: 'io-azure-devops-github-ro'
 
 stages:
   - stage: Prepare_artifact_dev
-    condition: or(
-        and(succeeded(), eq(${{parameters.DEV_DEPLOY}}, true)),
-        and(succeeded(), eq(${{parameters.UAT_PROD_DEPLOY}}, true))
-      )
+    condition: and(succeeded(), eq(${{parameters.DEV_DEPLOY}}, true))
     dependsOn: []
     jobs:
       - job: make_build
