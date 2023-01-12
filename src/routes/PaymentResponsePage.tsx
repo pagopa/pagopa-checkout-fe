@@ -60,7 +60,8 @@ export default function PaymentCheckPage() {
       const outcome: OutcomeEnumType =
         getOutcomeFromAuthcodeAndIsDirectAcquirer(
           authorizationCode,
-          isDirectAcquirer
+          isDirectAcquirer,
+          idStatus
         );
       mixpanel.track(PAYMENT_OUTCOME_CODE.value, {
         EVENT_ID: PAYMENT_OUTCOME_CODE.value,

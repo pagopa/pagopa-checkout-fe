@@ -15,6 +15,7 @@ const apiHost = "http://127.0.0.1:8080";
 const apiBasepath = "/checkout/payments/v1";
 const pmBasepath = "/pp-restapi/v4";
 const transactionsBasepath = "/checkout/payment-transactions/v1";
+const ecommerceBasepath = "/checkout/ecommerce/v1";
 
 module.exports = function (app) {
     app.use(createProxyMiddleware(apiBasepath, {
@@ -26,6 +27,10 @@ module.exports = function (app) {
     }));
 
     app.use(createProxyMiddleware(pmBasepath, {
+        target: apiHost,
+    }));
+
+    app.use(createProxyMiddleware(ecommerceBasepath, {
         target: apiHost,
     }));
 }
