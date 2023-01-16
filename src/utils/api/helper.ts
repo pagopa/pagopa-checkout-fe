@@ -644,39 +644,34 @@ export const getPaymentPSPList = async ({
       label: string | undefined;
       image: string | undefined;
       commission: number;
-      idPsp: number | undefined;
+      idPsp: string | undefined;
     }>
   ) => void;
 }) => {
-  const walletStored = sessionStorage.getItem("wallet") || JSON.stringify("{}");
-  const checkDataStored =
-    sessionStorage.getItem("checkData") || JSON.stringify("{}");
-  const sessionToken =
-    sessionStorage.getItem("sessionToken") || JSON.stringify("");
+  const amount: number | undefined = pipe(
+    O.fromNullable(getCart()),
+    O.map(cart => cart.paymentNotices.reduce((totalAmount, notice) => totalAmount + notice.amount, 0)),
+    O.alt(() => pipe(
+      O.fromNullable(getPaymentInfo()),
+      O.map(paymentInfo => paymentInfo.amount),
+    )),
+    O.getOrElseW(() => undefined)
+  );
 
-  const checkData = JSON.parse(checkDataStored);
-  const wallet = JSON.parse(walletStored);
-
-  const idPayment = checkData.idPayment;
-  const Bearer = `Bearer ${sessionToken}`;
-  const paymentType = wallet.type;
-  const isList = true;
-  const language = "it";
-  const idWallet = wallet.idWallet;
-
+  // const sessionToken =
+  //   sessionStorage.getItem("sessionToken") || JSON.stringify("");
+  // const Bearer = `Bearer ${sessionToken}`;
+  const lang = "it";
   mixpanel.track(PAYMENT_PSPLIST_INIT.value, {
     EVENT_ID: PAYMENT_PSPLIST_INIT.value,
   });
   const pspL = await pipe(
     TE.tryCatch(
       () =>
-        pmClient.getPspListUsingGET({
-          Bearer,
-          paymentType,
-          isList,
-          idWallet,
-          language,
-          idPayment,
+        apiPaymentEcommerceClient.getPSPs({
+          amount,
+          lang,
+          paymentTypeCode: undefined // TODO in fase di selezione del payment method salvare nello storage il paymentTypeCode
         }),
       (_e) => {
         onError(ErrorsType.CONNECTION);
@@ -704,7 +699,7 @@ export const getPaymentPSPList = async ({
                 mixpanel.track(PAYMENT_PSPLIST_SUCCESS.value, {
                   EVENT_ID: PAYMENT_PSPLIST_SUCCESS.value,
                 });
-                return myRes?.value?.data?.pspList;
+                return myRes?.value.psp;
               } else {
                 onError(ErrorsType.GENERIC_ERROR);
                 mixpanel.track(PAYMENT_PSPLIST_RESP_ERR.value, {
@@ -721,12 +716,9 @@ export const getPaymentPSPList = async ({
   const psp = pspL?.map((e) => ({
     name: e?.businessName,
     label: e?.businessName,
-    image: e?.logoPSP,
-    commission:
-      e?.fixedCost?.amount && e?.fixedCost?.decimalDigits
-        ? e?.fixedCost?.amount / Math.pow(10, e?.fixedCost?.decimalDigits)
-        : 0,
-    idPsp: e?.id,
+    image: undefined, //image: e?.logoPSP, TODO capire come gestire i loghi 
+    commission : (e?.fixedCost / 100) ?? 0,
+    idPsp: e?.code, // TODO capire se gestirlo come stringa o come number
   }));
 
   onResponse(psp || []);
