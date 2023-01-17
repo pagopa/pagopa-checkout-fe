@@ -1,5 +1,5 @@
-// import { TRANSLATIONS_EN } from "./en/translations";
-import { TRANSLATIONS_IT } from "./it/translations";
+// import TRANSLATIONS_EN from "./en/translations.json";
+import TRANSLATIONS_IT from "./it/translations.json";
 
 const lang: Languages = {
   it: {
@@ -7,13 +7,11 @@ const lang: Languages = {
     lang: "it-IT",
     translation: TRANSLATIONS_IT,
   },
-  /*
-  en: {
-    label: "English",
-    lang: "en-EN",
-    translation: TRANSLATIONS_EN,
-  },
-  */
+  // en: {
+  //   label: "English",
+  //   lang: "en-EN",
+  //   translation: TRANSLATIONS_EN,
+  // },
 };
 
 export interface Languages {
