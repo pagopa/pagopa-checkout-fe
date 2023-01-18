@@ -66,6 +66,25 @@ const pspContainerStyle = {
   mb: 2,
 };
 
+const AmountDisclaimer = (props: { amount: number }) => {
+  const { t } = useTranslation();
+  const disclaimer =
+    props.amount < 50
+      ? "Suggerito perché il più economico"
+      : "Perché gestisce la tua carta";
+  return (
+    <Typography
+      variant="caption-semibold"
+      component="div"
+      sx={{
+        overflowWrap: "anywhere",
+      }}
+    >
+      {t(disclaimer)}
+    </Typography>
+  );
+};
+
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export default function PaymentCheckPage() {
   const { t } = useTranslation();
@@ -262,6 +281,14 @@ export default function PaymentCheckPage() {
         bodyVariant="body2"
         title={moneyFormat(wallet.psp.fixedCost.amount)}
         body={`${t("paymentCheckPage.psp")} ${wallet.psp.businessName}`}
+        disclaimer={
+          <AmountDisclaimer
+            amount={
+              checkData.amount.amount /
+              Math.pow(10, checkData.amount.decimalDigits)
+            }
+          />
+        }
         sx={{
           border: "1px solid",
           borderColor: "divider",

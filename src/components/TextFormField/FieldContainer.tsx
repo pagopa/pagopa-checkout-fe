@@ -19,6 +19,7 @@ function FieldContainer(props: {
   tabIndex?: number;
   role?: string;
   overflowWrapBody?: boolean;
+  disclaimer?: React.ReactNode;
 }) {
   const { t } = useTranslation();
   const defaultStyle = {
@@ -81,6 +82,7 @@ function FieldContainer(props: {
               props.body
             )}
           </Typography>
+          {props.disclaimer}
         </Box>
       </Box>
       {props.endAdornment}
