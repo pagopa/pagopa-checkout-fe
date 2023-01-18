@@ -29,7 +29,7 @@ import SkeletonFieldContainer from "../components/Skeletons/SkeletonFieldContain
 import ClickableFieldContainer from "../components/TextFormField/ClickableFieldContainer";
 import FieldContainer from "../components/TextFormField/FieldContainer";
 import PspFieldContainer from "../components/TextFormField/PspFieldContainer";
-import { PspList } from "../features/payment/models/paymentModel";
+import { PspList, Wallet } from "../features/payment/models/paymentModel";
 import { useAppSelector } from "../redux/hooks/hooks";
 import { selectSecurityCode } from "../redux/slices/securityCode";
 import {
@@ -66,10 +66,10 @@ const pspContainerStyle = {
   mb: 2,
 };
 
-const AmountDisclaimer = (props: { amount: number }) => {
+const AmountDisclaimer = ({ amount }: { amount: number }) => {
   const { t } = useTranslation();
   const disclaimer =
-    props.amount < 50
+    amount < 50
       ? "Suggerito perché il più economico"
       : "Perché gestisce la tua carta";
   return (
@@ -85,11 +85,28 @@ const AmountDisclaimer = (props: { amount: number }) => {
   );
 };
 
+const WalletIcon = ({ wallet }: { wallet: Wallet }) => {
+  if (
+    !wallet.creditCard.brand ||
+    wallet.creditCard.brand.toLowerCase() === "other"
+  ) {
+    return <CreditCardIcon color="action" />;
+  }
+  return (
+    <SvgIcon color="action">
+      <use
+        href={sprite + `#icons-${wallet.creditCard.brand.toLowerCase()}-mini`}
+      />
+    </SvgIcon>
+  );
+};
+
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export default function PaymentCheckPage() {
   const { t } = useTranslation();
   const theme = useTheme();
   const navigate = useNavigate();
+
   const [modalOpen, setModalOpen] = React.useState(false);
   const [cancelModalOpen, setCancelModalOpen] = React.useState(false);
   const [drawerOpen, setDrawerOpen] = React.useState(false);
@@ -100,21 +117,21 @@ export default function PaymentCheckPage() {
   const [pspList, setPspList] = React.useState<Array<PspList>>([]);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
-  const cvv = useAppSelector(selectSecurityCode);
 
+  const cvv = useAppSelector(selectSecurityCode);
   const checkData = getCheckData();
   const wallet = getWallet();
   const email = getEmailInfo();
   const totalAmount = checkData.amount.amount + wallet.psp.fixedCost.amount;
   const amount = getPaymentInfo().amount;
 
-  const onBrowserBackEvent = (e: any) => {
-    e.preventDefault();
-    window.history.pushState(null, "", window.location.pathname);
-    setCancelModalOpen(true);
-  };
-
   React.useEffect(() => {
+    const onBrowserBackEvent = (e: any) => {
+      e.preventDefault();
+      window.history.pushState(null, "", window.location.pathname);
+      setCancelModalOpen(true);
+    };
+
     window.addEventListener("beforeunload", onBrowserUnload);
     window.history.pushState(null, "", window.location.pathname);
     window.addEventListener("popstate", onBrowserBackEvent);
@@ -130,34 +147,25 @@ export default function PaymentCheckPage() {
     setErrorModalOpen(true);
   };
 
-  const onResponse = () => {
-    setPayLoading(false);
-    navigate(`/${CheckoutRoutes.ESITO}`);
+  const onSubmit = () => {
+    setPayLoading(true);
+    void confirmPayment({ checkData, wallet, cvv }, onError, () => {
+      setPayLoading(false);
+      navigate(`/${CheckoutRoutes.ESITO}`);
+    });
   };
 
-  const onSubmit = React.useCallback(() => {
-    setPayLoading(true);
-    void confirmPayment({ checkData, wallet, cvv }, onError, onResponse);
-  }, []);
-
-  const onCancel = React.useCallback(() => {
+  const onCancel = () => {
     setCancelModalOpen(true);
-  }, []);
-
-  const onCancelResponse = () => {
-    setCancelLoading(false);
-    navigate(`/${CheckoutRoutes.ANNULLATO}`);
   };
 
   const onCancelPaymentSubmit = () => {
     setCancelModalOpen(false);
     setCancelLoading(true);
-    void cancelPayment(onError, onCancelResponse);
-  };
-
-  const onPspEditResponse = (list: Array<PspList>) => {
-    setPspList(list.sort((a, b) => (a.commission > b.commission ? 1 : -1)));
-    setPspEditLoading(false);
+    void cancelPayment(onError, () => {
+      setCancelLoading(false);
+      navigate(`/${CheckoutRoutes.ANNULLATO}`);
+    });
   };
 
   const onPspEditClick = () => {
@@ -165,34 +173,19 @@ export default function PaymentCheckPage() {
     setPspEditLoading(true);
     void getPaymentPSPList({
       onError,
-      onResponse: onPspEditResponse,
+      onResponse: (list: Array<PspList>) => {
+        setPspList(list.sort((a, b) => (a.commission > b.commission ? 1 : -1)));
+        setPspEditLoading(false);
+      },
     });
-  };
-
-  const onPspUpdateResponse = () => {
-    setPspUpdateLoading(false);
   };
 
   const updateWalletPSP = (id: number) => {
     setDrawerOpen(false);
     setPspUpdateLoading(true);
-    void updateWallet(id, onError, onPspUpdateResponse);
-  };
-
-  const getWalletIcon = () => {
-    if (
-      !wallet.creditCard.brand ||
-      wallet.creditCard.brand.toLowerCase() === "other"
-    ) {
-      return <CreditCardIcon color="action" />;
-    }
-    return (
-      <SvgIcon color="action">
-        <use
-          href={sprite + `#icons-${wallet.creditCard.brand.toLowerCase()}-mini`}
-        />
-      </SvgIcon>
-    );
+    void updateWallet(id, onError, () => {
+      setPspUpdateLoading(false);
+    });
   };
 
   const isDisabled = () =>
@@ -230,7 +223,7 @@ export default function PaymentCheckPage() {
         bodyVariant="body2"
         title={`· · · · ${wallet.creditCard.pan.slice(-4)}`}
         body={`${wallet.creditCard.expireMonth}/${wallet.creditCard.expireYear} · ${wallet.creditCard.holder}`}
-        icon={getWalletIcon()}
+        icon={<WalletIcon wallet={wallet} />}
         sx={{
           border: "1px solid",
           borderColor: "divider",
