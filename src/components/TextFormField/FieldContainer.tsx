@@ -82,7 +82,7 @@ function FieldContainer(props: {
               props.body
             )}
           </Typography>
-          {props.disclaimer}
+          {!props.loading && props.disclaimer}
         </Box>
       </Box>
       {props.endAdornment}

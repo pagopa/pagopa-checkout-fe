@@ -19,6 +19,7 @@ import { default as React } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import sprite from "../assets/images/app.svg";
+import disclaimerIcon from "../assets/images/disclaimer.svg";
 import { FormButtons } from "../components/FormButtons/FormButtons";
 import { CancelPayment } from "../components/modals/CancelPayment";
 import { CustomDrawer } from "../components/modals/CustomDrawer";
@@ -70,18 +71,25 @@ const AmountDisclaimer = ({ amount }: { amount: number }) => {
   const { t } = useTranslation();
   const disclaimer =
     amount < 50
-      ? "Suggerito perché il più economico"
-      : "Perché gestisce la tua carta";
+      ? t("paymentCheckPage.disclaimer.cheaper")
+      : t("paymentCheckPage.disclaimer.yourCard");
   return (
-    <Typography
-      variant="caption-semibold"
-      component="div"
-      sx={{
-        overflowWrap: "anywhere",
-      }}
-    >
-      {t(disclaimer)}
-    </Typography>
+    <Box display="flex" alignItems="center" flexDirection="row" gap={1} pt={1}>
+      <img
+        src={disclaimerIcon}
+        alt="disclaimer-icon"
+        style={{ width: "14px", height: "14px" }}
+      />
+      <Typography
+        variant="caption-semibold"
+        component="div"
+        sx={{
+          overflowWrap: "anywhere",
+        }}
+      >
+        {t(disclaimer)}
+      </Typography>
+    </Box>
   );
 };
 
@@ -117,6 +125,7 @@ export default function PaymentCheckPage() {
   const [pspList, setPspList] = React.useState<Array<PspList>>([]);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
+  const [showDisclaimer, setShowDisclaimer] = React.useState(true);
 
   const cvv = useAppSelector(selectSecurityCode);
   const checkData = getCheckData();
@@ -185,6 +194,7 @@ export default function PaymentCheckPage() {
     setPspUpdateLoading(true);
     void updateWallet(id, onError, () => {
       setPspUpdateLoading(false);
+      setShowDisclaimer(false);
     });
   };
 
@@ -275,12 +285,14 @@ export default function PaymentCheckPage() {
         title={moneyFormat(wallet.psp.fixedCost.amount)}
         body={`${t("paymentCheckPage.psp")} ${wallet.psp.businessName}`}
         disclaimer={
-          <AmountDisclaimer
-            amount={
-              checkData.amount.amount /
-              Math.pow(10, checkData.amount.decimalDigits)
-            }
-          />
+          showDisclaimer ? (
+            <AmountDisclaimer
+              amount={
+                checkData.amount.amount /
+                Math.pow(10, checkData.amount.decimalDigits)
+              }
+            />
+          ) : null
         }
         sx={{
           border: "1px solid",

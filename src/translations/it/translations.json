@@ -257,6 +257,10 @@
         "name": "Gestore",
         "amount": "Costo transazione"
       }
+    },
+    "disclaimer": {
+      "cheaper": "Suggerito perché il più economico",
+      "yourCard": "Perché gestisce la tua carta"
     }
   },
   "paymentResponsePage": {
