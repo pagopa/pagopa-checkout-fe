@@ -270,6 +270,10 @@ export const TRANSLATIONS_IT = {
         amount: "Costo transazione",
       },
     },
+    disclaimer: {
+      cheaper: "Suggerito perché il più economico",
+      yourCard: "Perché gestisce la tua carta",
+    },
   },
   paymentResponsePage: {
     "0": {
