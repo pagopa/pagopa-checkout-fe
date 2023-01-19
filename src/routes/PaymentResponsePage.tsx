@@ -13,20 +13,17 @@ import {
   responseMessage,
   responseOutcome,
 } from "../features/payment/models/responseOutcome";
-import { useAppDispatch } from "../redux/hooks/hooks";
-import { resetSecurityCode } from "../redux/slices/securityCode";
-import {
-  getCheckData,
-  getEmailInfo,
-  getReturnUrls,
-  getWallet,
-} from "../utils/api/apiService";
+import { getCheckData, getEmailInfo, getWallet } from "../utils/api/apiService";
 import { callServices } from "../utils/api/response";
 import { PAYMENT_OUTCOME_CODE } from "../utils/config/mixpanelDefs";
 import { mixpanel } from "../utils/config/mixpanelHelperInit";
 import { onBrowserUnload } from "../utils/eventListeners";
 import { moneyFormat } from "../utils/form/formatters";
-import { clearSensitiveItems } from "../utils/storage/sessionStorage";
+import {
+  clearSensitiveItems,
+  loadState,
+  SessionItems,
+} from "../utils/storage/sessionStorage";
 import {
   getOutcomeFromAuthcodeAndIsDirectAcquirer,
   OutcomeEnumType,
@@ -43,9 +40,7 @@ type printData = {
 export default function PaymentCheckPage() {
   const [loading, setLoading] = useState(true);
   const [outcomeMessage, setOutcomeMessage] = useState<responseMessage>();
-  const [redirectUrl, setRedirectUrl] = useState<string>(
-    getReturnUrls().returnOkUrl
-  );
+  const originUrlRedirect = loadState(SessionItems.originUrlRedirect) as string;
   const PaymentCheckData = getCheckData() as PaymentCheckData;
   const wallet = getWallet();
   const email = getEmailInfo();
@@ -55,10 +50,8 @@ export default function PaymentCheckPage() {
     useremail: email.email,
     amount: moneyFormat(totalAmount),
   };
-  const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(resetSecurityCode());
     const handleFinalStatusResult = (
       idStatus: GENERIC_STATUS,
       authorizationCode?: string,
@@ -83,12 +76,7 @@ export default function PaymentCheckPage() {
         E.getOrElse(() => ViewOutcomeEnum.GENERIC_ERROR as ViewOutcomeEnum)
       );
       const message = responseOutcome[viewOutcome];
-      const redirectTo =
-        viewOutcome === "0"
-          ? getReturnUrls().returnOkUrl
-          : getReturnUrls().returnErrorUrl;
       setOutcomeMessage(message);
-      setRedirectUrl(redirectTo);
       setLoading(false);
       window.removeEventListener("beforeunload", onBrowserUnload);
       clearSensitiveItems();
@@ -136,7 +124,7 @@ export default function PaymentCheckPage() {
                 variant="outlined"
                 onClick={() => {
                   sessionStorage.clear();
-                  window.location.replace(redirectUrl);
+                  window.location.replace(originUrlRedirect);
                 }}
                 sx={{
                   width: "100%",

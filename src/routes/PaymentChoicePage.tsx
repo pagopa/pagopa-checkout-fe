@@ -10,27 +10,19 @@ import ErrorModal from "../components/modals/ErrorModal";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
 import PageContainer from "../components/PageContent/PageContainer";
 import { PaymentChoice } from "../features/payment/components/PaymentChoice/PaymentChoice";
-import { PaymentInstruments } from "../features/payment/models/paymentModel";
-import { getCart, getPaymentId, getPaymentInfo } from "../utils/api/apiService";
-import { cancelPayment, getPaymentInstruments } from "../utils/api/helper";
-import { getTotalFromCart } from "../utils/cart/cart";
+import { getPaymentId, getPaymentInfo } from "../utils/api/apiService";
+import { cancelPayment } from "../utils/api/helper";
 import { onBrowserUnload } from "../utils/eventListeners";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function PaymentChoicePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const cart = getCart();
-  const amount =
-    getPaymentInfo().amount || (cart && getTotalFromCart(cart)) || 0;
+  const amount = getPaymentInfo().importoSingoloVersamento;
   const [loading, setLoading] = React.useState(false);
-  const [instrumentsLoading, setInstrumentsLoading] = React.useState(false);
   const [cancelModalOpen, setCancelModalOpen] = React.useState(false);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
-  const [paymentInstruments, setPaymentInstruments] = React.useState<
-    Array<PaymentInstruments>
-  >([]);
 
   const onBrowserBackEvent = (e: any) => {
     e.preventDefault();
@@ -48,45 +40,22 @@ export default function PaymentChoicePage() {
     return () => {};
   }, []);
 
-  const getPaymentMethods = React.useCallback(() => {
-    setInstrumentsLoading(true);
-    void getPaymentInstruments({ amount }, onError, onResponse);
-  }, []);
-
-  React.useEffect(getPaymentMethods, []);
-
-  const onResponse = React.useCallback((list: Array<PaymentInstruments>) => {
-    setPaymentInstruments(list);
-    setInstrumentsLoading(false);
-  }, []);
-
-  const onError = React.useCallback((m: string) => {
+  const onError = (m: string) => {
     setLoading(false);
     setError(m);
     setErrorModalOpen(true);
-  }, []);
+  };
 
-  const onCancelResponse = React.useCallback(() => {
+  const onCancelResponse = () => {
     setLoading(false);
     navigate(`/${CheckoutRoutes.ANNULLATO}`);
-  }, []);
+  };
 
-  const onCancelPaymentSubmit = React.useCallback(() => {
+  const onCancelPaymentSubmit = () => {
     setCancelModalOpen(false);
     setLoading(true);
     void cancelPayment(onError, onCancelResponse);
-  }, []);
-
-  const handleBackNavigate = React.useCallback(() => navigate(-1), []);
-  const handleCloseModal = React.useCallback(
-    () => setCancelModalOpen(false),
-    []
-  );
-  const handleCloseErrorModal = React.useCallback(
-    () => setErrorModalOpen(false),
-    []
-  );
-  const handleRetry = React.useCallback(getPaymentMethods, []);
+  };
 
   return (
     <>
@@ -107,22 +76,17 @@ export default function PaymentChoicePage() {
         }
       >
         <Box sx={{ mt: 6 }}>
-          <PaymentChoice
-            amount={amount}
-            paymentInstruments={paymentInstruments}
-            loading={instrumentsLoading}
-          />
+          <PaymentChoice />
           <Box py={4} sx={{ width: "100%", height: "100%" }}>
             <Button
               type="button"
               variant="outlined"
-              onClick={handleBackNavigate}
+              onClick={() => navigate(-1)}
               style={{
                 minWidth: "120px",
                 height: "100%",
                 minHeight: 45,
               }}
-              disabled={instrumentsLoading}
             >
               {t("paymentChoicePage.button")}
             </Button>
@@ -130,15 +94,16 @@ export default function PaymentChoicePage() {
         </Box>
         <CancelPayment
           open={cancelModalOpen}
-          onCancel={handleCloseModal}
+          onCancel={() => setCancelModalOpen(false)}
           onSubmit={onCancelPaymentSubmit}
         />
         {!!error && (
           <ErrorModal
             error={error}
             open={errorModalOpen}
-            onClose={handleCloseErrorModal}
-            onRetry={handleRetry}
+            onClose={() => {
+              setErrorModalOpen(false);
+            }}
           />
         )}
       </PageContainer>

@@ -29,7 +29,6 @@ variables:
   NODE_VERSION: 14.16.0
   YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
 
-
 # Only manual activations are intended
 trigger: none
 pr: none
@@ -87,9 +86,6 @@ stages:
               pm_host: 'https://api.dev.platform.pagopa.it/payment-manager'
               pm_api_basepath: '/pp-restapi/v4'
               donations_url: 'https://api.dev.platform.pagopa.it/donations/api/v1/availabledonations'
-              ecommerce_host: 'https://api.dev.platform.pagopa.it'
-              api_ecommerce_basepath: '/checkout/ecommerce/v1'
-              pagopa_assets_cdn: 'https://assets.cdn.platform.pagopa.it/payment-methods'
 
           - script: |
               yarn build
@@ -124,31 +120,28 @@ stages:
               scriptLocation: inlineScript
               inlineScript: |
                 call az cdn endpoint purge -g pagopa-d-checkout-fe-rg -n pagopa-d-checkout-cdn-endpoint --profile-name pagopa-d-checkout-cdn-profile --content-paths "/*"
-   
+  
   - stage: End_to_End_Tests_DEV
     dependsOn:
       - Deploy_DEV_pagoPA
     pool:
       vmImage: 'ubuntu-latest'
     jobs:
-      - job: end_to_end_tests_dev
+      - job: end_to_end_tests
         steps:
           - checkout: checkoutTests
-          - script : |
-             echo "##[debug] Change placeholder for CHECKOUT_URL ..."
-             cd e2e-tests 
-             mv dev.env .env
+
           - script: |
-             docker build -t ui_test e2e-tests
+             docker build -t ui_test-v2 e2e-tests-v2
             displayName: 'Build test image'
 
           - script: |
-              docker run --name=ui_test ui_test
+              docker run --name=ui_test-v2 ui_test-v2
             displayName: 'Run UI test container'
             continueOnError: true 
 
           - script: |
-              docker cp ui_test:/puppeteer/test_reports  test_reports
+              docker cp ui_test-v2:/puppeteer/test_reports  test_reports
             displayName: 'Copy test result'
             continueOnError: true 
 
@@ -157,6 +150,8 @@ stages:
               testResultsFormat: 'JUnit'
               testResultsFiles: '**/*-TEST.xml' 
               searchFolder: '$(System.DefaultWorkingDirectory)'
+
+
 
   # Create a relase
   # Activated when ONE OF these are met:
@@ -229,9 +224,6 @@ stages:
               pm_host: 'https://api.uat.platform.pagopa.it/payment-manager'
               pm_api_basepath: '/pp-restapi/v4'
               donations_url: 'https://api.uat.platform.pagopa.it/donations/api/v1/availabledonations'
-              ecommerce_host: 'https://api.uat.platform.pagopa.it'
-              api_ecommerce_basepath: '/checkout/ecommerce/v1'
-              pagopa_assets_cdn: 'https://assets.cdn.platform.pagopa.it/payment-methods'
 
           - script: |
               yarn build
@@ -281,39 +273,6 @@ stages:
               inlineScript: |
                 call az cdn endpoint purge -g pagopa-u-checkout-fe-rg -n pagopa-u-checkout-cdn-endpoint --profile-name pagopa-u-checkout-cdn-profile --content-paths "/*"
  
-  - stage: End_to_End_Tests_UAT
-    dependsOn:
-      - Deploy_UAT_pagoPA
-    pool:
-      vmImage: 'ubuntu-latest'
-    jobs:
-      - job: end_to_end_tests_uat
-        steps:
-          - checkout: checkoutTests
-          - script : |
-             echo "##[debug] Change placeholder for CHECKOUT_URL ..."
-             cd e2e-tests 
-             mv uat.env .env
-          - script: |
-             docker build -t ui_test e2e-tests
-            displayName: 'Build test image'
-
-          - script: |
-              docker run --name=ui_test ui_test
-            displayName: 'Run UI test container'
-            continueOnError: true 
-
-          - script: |
-              docker cp ui_test:/puppeteer/test_reports  test_reports
-            displayName: 'Copy test result'
-            continueOnError: true 
-
-          - task: PublishTestResults@2
-            inputs:
-              testResultsFormat: 'JUnit'
-              testResultsFiles: '**/*-TEST.xml' 
-              searchFolder: '$(System.DefaultWorkingDirectory)'
-
     # Prepare Artifact
   - stage: Prepare_artifact_prod
     dependsOn:
@@ -345,9 +304,6 @@ stages:
               pm_host: 'https://api.platform.pagopa.it/payment-manager'
               pm_api_basepath: '/pp-restapi/v4'
               donations_url: 'https://api.platform.pagopa.it/donations/api/v1/availabledonations'
-              ecommerce_host: 'https://api.platform.pagopa.it'
-              api_ecommerce_basepath: '/checkout/ecommerce/v1'
-              pagopa_assets_cdn: 'https://assets.cdn.platform.pagopa.it/payment-methods'
 
           - script: |
               yarn build

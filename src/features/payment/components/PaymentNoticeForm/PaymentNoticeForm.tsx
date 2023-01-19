@@ -8,7 +8,7 @@ import React from "react";
 import { FormButtons } from "../../../../components/FormButtons/FormButtons";
 import TextFormField from "../../../../components/TextFormField/TextFormField";
 import { cleanSpaces } from "../../../../utils/form/formatters";
-import { getFormValidationIcon } from "../../../../utils/form/validators";
+import { getFormValidationIcon } from "../../../../utils/form/formValidation";
 import {
   PaymentFormErrors,
   PaymentFormFields,
@@ -120,8 +120,6 @@ export function PaymentNoticeForm(props: {
               type="submit"
               submitTitle="paymentNoticePage.formButtons.submit"
               cancelTitle="paymentNoticePage.formButtons.cancel"
-              idCancel="paymentNoticeButtonCancel"
-              idSubmit="paymentNoticeButtonContinue"
               disabledSubmit={disabled}
               loadingSubmit={props.loading}
               handleSubmit={() => handleSubmit()}

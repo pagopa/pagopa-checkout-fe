@@ -22,7 +22,7 @@ import {
 import {
   expirationDateChangeValidation,
   getFormErrorIcon,
-} from "../../../../utils/form/validators";
+} from "../../../../utils/form/formValidation";
 import {
   cardNameValidation,
   digitValidation,

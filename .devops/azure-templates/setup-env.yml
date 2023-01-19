@@ -44,18 +44,6 @@ parameters:
     type: string
     default: ''
 
-  - name: 'ecommerce_host'
-    type: string
-    default: ''
-  
-  - name: 'api_ecommerce_basepath'
-    type: string
-    default: ''
-
-  - name: 'pagopa_assets_cdn'
-    type: string
-    default: ''
-
 steps:
 - bash: |
     echo 'CHECKOUT_PAGOPA_APIM_HOST: $CHECKOUT_PAGOPA_APIM_HOST'
@@ -69,8 +57,6 @@ steps:
     echo 'CHECKOUT_ENV: $CHECKOUT_ENV'
     echo 'CHECKOUT_RECAPTCHA_SITE_KEY: $CHECKOUT_RECAPTCHA_SITE_KEY'
     echo 'CHECKOUT_DONATIONS_URL: $CHECKOUT_DONATIONS_URL'
-    echo 'CHECKOUT_ECOMMERCE_HOST: $CHECKOUT_ECOMMERCE_HOST'
-    echo 'CHECKOUT_API_ECOMMERCE_BASEPATH: $CHECKOUT_API_ECOMMERCE_BASEPATH'
     
     chmod +x env.sh && source env.sh
   
@@ -86,9 +72,6 @@ steps:
     CHECKOUT_ENV: ${{ parameters.env }}
     CHECKOUT_RECAPTCHA_SITE_KEY: ${{ parameters.recaptcha_site_key }}
     CHECKOUT_DONATIONS_URL: ${{ parameters.donations_url }}
-    CHECKOUT_ECOMMERCE_HOST: ${{ parameters.ecommerce_host }}
-    CHECKOUT_API_ECOMMERCE_BASEPATH: ${{ parameters.api_ecommerce_basepath }}
-    CHECKOUT_PAGOPA_ASSETS_CDN: ${{ parameters.pagopa_assets_cdn }}
 
 
   displayName: 'Populate environment file'
