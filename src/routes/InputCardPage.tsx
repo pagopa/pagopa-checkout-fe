@@ -7,6 +7,7 @@ import PageContainer from "../components/PageContent/PageContainer";
 import { InputCardForm } from "../features/payment/components/InputCardForm/InputCardForm";
 import { InputCardFormFields } from "../features/payment/models/paymentModel";
 import { useAppDispatch } from "../redux/hooks/hooks";
+import { setCardData } from "../redux/slices/cardData";
 import { setSecurityCode } from "../redux/slices/securityCode";
 import { getReCaptchaKey, getWallet } from "../utils/api/apiService";
 import {
@@ -23,7 +24,7 @@ export default function InputCardPage() {
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
   const [timeoutId, setTimeoutId] = React.useState<number>();
-  const [wallet, setWallet] = React.useState<InputCardFormFields>();
+  const [wallet] = React.useState<InputCardFormFields>();
   const [hideCancelButton, setHideCancelButton] = React.useState(false);
   const ref = React.useRef<ReCAPTCHA>(null);
   const config = getConfigOrThrow();
@@ -52,16 +53,22 @@ export default function InputCardPage() {
     ref.current?.reset();
   };
 
-  const onResponse = (cvv: string) => {
+  const onResponse = (cardData: {
+    pan: string;
+    expDate: string;
+    cvv: string;
+    cardHolderName: string;
+  }) => {
     setLoading(false);
-    dispatch(setSecurityCode(cvv));
+    dispatch(setCardData(cardData));
+    dispatch(setSecurityCode(cardData.cvv));
     navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
   };
 
   const onSubmit = React.useCallback(
     async (wallet: InputCardFormFields) => {
       setLoading(true);
-      setWallet(wallet);
+      // setWallet(wallet);
       const token = await ref.current?.executeAsync();
 
       if (error === ErrorsType.TIMEOUT) {

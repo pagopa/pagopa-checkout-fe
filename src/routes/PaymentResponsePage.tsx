@@ -15,6 +15,7 @@ import {
 } from "../features/payment/models/responseOutcome";
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { resetSecurityCode } from "../redux/slices/securityCode";
+import { resetCardData } from "../redux/slices/cardData";
 import {
   getCheckData,
   getEmailInfo,
@@ -59,6 +60,7 @@ export default function PaymentCheckPage() {
 
   useEffect(() => {
     dispatch(resetSecurityCode());
+    dispatch(resetCardData());
     const handleFinalStatusResult = (
       idStatus: GENERIC_STATUS,
       authorizationCode?: string,

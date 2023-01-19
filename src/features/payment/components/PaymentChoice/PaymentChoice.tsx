@@ -4,10 +4,16 @@
 import React from "react";
 import { useNavigate } from "react-router";
 import ClickableFieldContainer from "../../../../components/TextFormField/ClickableFieldContainer";
+import { useAppDispatch } from "../../../../redux/hooks/hooks";
+import {
+  setPaymentMethodId,
+  setPspSelected,
+} from "../../../../redux/slices/paymentMethod";
 import {
   PaymentMethodRoutes,
   TransactionMethods,
 } from "../../../../routes/models/paymentMethodRoutes";
+import { getPaymentPSPList } from "../../../../utils/api/helper";
 import { PaymentInstruments } from "../../models/paymentModel";
 import { DisabledPaymentMethods, EnabledPaymentMethods } from "./PaymentMethod";
 
@@ -55,10 +61,26 @@ export function PaymentChoice(props: {
   loading?: boolean;
 }) {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const handleClickOnMethod = React.useCallback(
-    (paymentType: TransactionMethods) => {
+    (paymentType: TransactionMethods, paymentMethodId: string) => {
       const route: string = PaymentMethodRoutes[paymentType]?.route;
+      dispatch(setPaymentMethodId(paymentMethodId));
+      void getPaymentPSPList({
+        paymentMethodId,
+        onError: onErrorGetPSP,
+        onResponse: (resp) => {
+          dispatch(
+            setPspSelected({
+              // TODO Fix this portion
+              code: resp[0].idPsp?.toLocaleString() || "",
+              fee: resp[0].commission,
+              businessName: resp[0].name || "",
+            })
+          );
+        },
+      });
       navigate(`/${route}`);
     },
     []
@@ -91,4 +113,8 @@ export function PaymentChoice(props: {
       )}
     </>
   );
+}
+
+function onErrorGetPSP(e: string): void {
+  throw new Error("Function not implemented. " + e);
 }

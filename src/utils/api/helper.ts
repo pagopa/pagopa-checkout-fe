@@ -1,7 +1,6 @@
 /* eslint-disable functional/no-let */
 /* eslint-disable sonarjs/cognitive-complexity */
 /* eslint-disable sonarjs/no-identical-functions */
-/* eslint-disable @typescript-eslint/no-empty-function */
 import { Millisecond } from "@pagopa/ts-commons/lib/units";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
@@ -26,6 +25,7 @@ import {
   InputCardFormFields,
   PaymentCheckData,
   PaymentInstruments,
+  PspList,
   Wallet as PaymentWallet,
 } from "../../features/payment/models/paymentModel";
 import {
@@ -281,7 +281,12 @@ export const activatePayment = async ({
 }: {
   wallet: InputCardFormFields;
   token: string;
-  onResponse: (c: string) => void;
+  onResponse: (cardData: {
+    pan: string;
+    expDate: string;
+    cvv: string;
+    cardHolderName: string;
+  }) => void;
   onError: (e: string) => void;
   onNavigate: () => void;
 }) => {
@@ -499,7 +504,12 @@ export const retryPollingActivationStatus = async ({
   onNavigate,
 }: {
   wallet: InputCardFormFields;
-  onResponse: (c: string) => void;
+  onResponse: (cardData: {
+    pan: string;
+    expDate: string;
+    cardHolderName: string;
+    cvv: string;
+  }) => void;
   onError: (e: string) => void;
   onNavigate: () => void;
 }): Promise<void> => {
@@ -634,27 +644,28 @@ export const getPaymentCheckData = async ({
 };
 
 export const getPaymentPSPList = async ({
+  paymentMethodId,
   onError,
   onResponse,
 }: {
+  paymentMethodId: string;
   onError: (e: string) => void;
-  onResponse: (
-    r: Array<{
-      name: string | undefined;
-      label: string | undefined;
-      image: string | undefined;
-      commission: number;
-      idPsp: string | undefined;
-    }>
-  ) => void;
+  onResponse: (r: Array<PspList>) => void;
 }) => {
   const amount: number | undefined = pipe(
     O.fromNullable(getCart()),
-    O.map(cart => cart.paymentNotices.reduce((totalAmount, notice) => totalAmount + notice.amount, 0)),
-    O.alt(() => pipe(
-      O.fromNullable(getPaymentInfo()),
-      O.map(paymentInfo => paymentInfo.amount),
-    )),
+    O.map((cart) =>
+      cart.paymentNotices.reduce(
+        (totalAmount, notice) => totalAmount + notice.amount,
+        0
+      )
+    ),
+    O.alt(() =>
+      pipe(
+        O.fromNullable(getPaymentInfo()),
+        O.map((paymentInfo) => paymentInfo.amount)
+      )
+    ),
     O.getOrElseW(() => undefined)
   );
 
@@ -662,16 +673,17 @@ export const getPaymentPSPList = async ({
   //   sessionStorage.getItem("sessionToken") || JSON.stringify("");
   // const Bearer = `Bearer ${sessionToken}`;
   const lang = "it";
+
   mixpanel.track(PAYMENT_PSPLIST_INIT.value, {
     EVENT_ID: PAYMENT_PSPLIST_INIT.value,
   });
-  const pspL = await pipe(
+  const pspList = await pipe(
     TE.tryCatch(
       () =>
-        apiPaymentEcommerceClient.getPSPs({
+        apiPaymentEcommerceClient.getPaymentMethodsPSPs({
           amount,
           lang,
-          paymentTypeCode: undefined // TODO in fase di selezione del payment method salvare nello storage il paymentTypeCode
+          id: paymentMethodId,
         }),
       (_e) => {
         onError(ErrorsType.CONNECTION);
@@ -713,12 +725,12 @@ export const getPaymentPSPList = async ({
     )
   )();
 
-  const psp = pspL?.map((e) => ({
+  const psp = pspList?.map((e) => ({
     name: e?.businessName,
     label: e?.businessName,
-    image: undefined, //image: e?.logoPSP, TODO capire come gestire i loghi 
-    commission : (e?.fixedCost / 100) ?? 0,
-    idPsp: e?.code, // TODO capire se gestirlo come stringa o come number
+    image: undefined, // image: e?.logoPSP, TODO capire come gestire i loghi
+    commission: e?.fixedCost / 100 ?? 0,
+    idPsp: Number(e?.code), // TODO capire se gestirlo come stringa o come number
   }));
 
   onResponse(psp || []);
@@ -727,7 +739,12 @@ export const getPaymentPSPList = async ({
 export const getSessionWallet = async (
   creditCard: InputCardFormFields,
   onError: (e: string) => void,
-  onResponse: (c: string) => void
+  onResponse: (cardData: {
+    pan: string;
+    expDate: string;
+    cvv: string;
+    cardHolderName: string;
+  }) => void
   // eslint-disable-next-line sonarjs/cognitive-complexity
 ) => {
   const useremail: string = JSON.parse(
@@ -946,7 +963,12 @@ export const getSessionWallet = async (
               sessionStorage.setItem("wallet", JSON.stringify(wallet));
             })
           );
-          onResponse(creditCard.cvv);
+          onResponse({
+            pan: creditCard.number,
+            cvv: creditCard.cvv,
+            cardHolderName: creditCard.name,
+            expDate: creditCard.expirationDate,
+          });
         }
       }
     )

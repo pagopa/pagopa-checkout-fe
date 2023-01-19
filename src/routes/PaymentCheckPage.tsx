@@ -1,6 +1,7 @@
 /* eslint-disable functional/immutable-data */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/restrict-plus-operands */
+/* eslint-disable no-console */
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import EditIcon from "@mui/icons-material/Edit";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
@@ -31,7 +32,11 @@ import FieldContainer from "../components/TextFormField/FieldContainer";
 import PspFieldContainer from "../components/TextFormField/PspFieldContainer";
 import { PspList } from "../features/payment/models/paymentModel";
 import { useAppSelector } from "../redux/hooks/hooks";
-import { selectSecurityCode } from "../redux/slices/securityCode";
+import { selectCardData } from "../redux/slices/cardData";
+import {
+  selectPaymentMethodId,
+  selectPspSelected,
+} from "../redux/slices/paymentMethod";
 import {
   getCheckData,
   getEmailInfo,
@@ -81,12 +86,14 @@ export default function PaymentCheckPage() {
   const [pspList, setPspList] = React.useState<Array<PspList>>([]);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
-  const cvv = useAppSelector(selectSecurityCode);
+  const cardData = useAppSelector(selectCardData);
+  const paymentMethodId = useAppSelector(selectPaymentMethodId);
+  const pspSelected = useAppSelector(selectPspSelected);
 
   const checkData = getCheckData();
   const wallet = getWallet();
   const email = getEmailInfo();
-  const totalAmount = checkData.amount.amount + wallet.psp.fixedCost.amount;
+  const totalAmount = checkData.amount.amount + pspSelected.fee || 0;
   const amount = getPaymentInfo().amount;
 
   const onBrowserBackEvent = (e: any) => {
@@ -118,7 +125,11 @@ export default function PaymentCheckPage() {
 
   const onSubmit = React.useCallback(() => {
     setPayLoading(true);
-    void confirmPayment({ checkData, wallet, cvv }, onError, onResponse);
+    void confirmPayment(
+      { checkData, wallet, cvv: cardData.cvv },
+      onError,
+      onResponse
+    );
   }, []);
 
   const onCancel = React.useCallback(() => {
@@ -145,6 +156,7 @@ export default function PaymentCheckPage() {
     setDrawerOpen(true);
     setPspEditLoading(true);
     void getPaymentPSPList({
+      paymentMethodId,
       onError,
       onResponse: onPspEditResponse,
     });
@@ -209,8 +221,11 @@ export default function PaymentCheckPage() {
       <FieldContainer
         titleVariant="sidenav"
         bodyVariant="body2"
-        title={`· · · · ${wallet.creditCard.pan.slice(-4)}`}
-        body={`${wallet.creditCard.expireMonth}/${wallet.creditCard.expireYear} · ${wallet.creditCard.holder}`}
+        title={`· · · · ${cardData.pan.slice(-4)}`}
+        body={`${cardData.expDate.slice(0, 2)}/${cardData.expDate.slice(
+          2,
+          4
+        )} · ${cardData.cardHolderName}`}
         icon={getWalletIcon()}
         sx={{
           border: "1px solid",
@@ -260,8 +275,8 @@ export default function PaymentCheckPage() {
         loading={pspUpdateLoading}
         titleVariant="sidenav"
         bodyVariant="body2"
-        title={moneyFormat(wallet.psp.fixedCost.amount)}
-        body={`${t("paymentCheckPage.psp")} ${wallet.psp.businessName}`}
+        title={moneyFormat(pspSelected.fee)}
+        body={`${t("paymentCheckPage.psp")} ${pspSelected.businessName}`}
         sx={{
           border: "1px solid",
           borderColor: "divider",

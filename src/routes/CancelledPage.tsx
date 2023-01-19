@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import cancelled from "../assets/images/response-unrecognized.svg";
 import PageContainer from "../components/PageContent/PageContainer";
 import { useAppDispatch } from "../redux/hooks/hooks";
+import { resetCardData } from "../redux/slices/cardData";
 import { resetSecurityCode } from "../redux/slices/securityCode";
 import { getReturnUrls } from "../utils/api/apiService";
 import { onBrowserUnload } from "../utils/eventListeners";
@@ -16,6 +17,7 @@ export default function CancelledPage() {
 
   React.useEffect(() => {
     dispatch(resetSecurityCode());
+    dispatch(resetCardData());
     window.removeEventListener("beforeunload", onBrowserUnload);
     clearSensitiveItems();
   }, []);
