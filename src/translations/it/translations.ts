@@ -247,6 +247,8 @@ export const TRANSLATIONS_IT = {
     creditCard: "Paga con",
     transaction: "Costo della transazione",
     psp: "Gestita da",
+    under50: "Suggerito perché più economico",
+    over50: "Perché gestisce la tua carta",
     email: "Invia esito a:",
     modal: {
       title: "Perché c'è un costo di transazione?",

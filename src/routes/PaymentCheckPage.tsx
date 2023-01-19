@@ -13,7 +13,6 @@ import {
   Skeleton,
   SvgIcon,
   Typography,
-  useTheme,
 } from "@mui/material";
 import { default as React } from "react";
 import { useTranslation } from "react-i18next";
@@ -21,14 +20,12 @@ import { useNavigate } from "react-router";
 import sprite from "../assets/images/app.svg";
 import { FormButtons } from "../components/FormButtons/FormButtons";
 import { CancelPayment } from "../components/modals/CancelPayment";
-import { CustomDrawer } from "../components/modals/CustomDrawer";
 import ErrorModal from "../components/modals/ErrorModal";
 import InformationModal from "../components/modals/InformationModal";
 import PageContainer from "../components/PageContent/PageContainer";
-import SkeletonFieldContainer from "../components/Skeletons/SkeletonFieldContainer";
 import ClickableFieldContainer from "../components/TextFormField/ClickableFieldContainer";
 import FieldContainer from "../components/TextFormField/FieldContainer";
-import PspFieldContainer from "../components/TextFormField/PspFieldContainer";
+import PaymentCheckDrawer from "../features/payment/components/PaymentCheckDrawer/PaymentCheckDrawer";
 import { PspList } from "../features/payment/models/paymentModel";
 import { useAppSelector } from "../redux/hooks/hooks";
 import { selectSecurityCode } from "../redux/slices/securityCode";
@@ -45,7 +42,7 @@ import {
   updateWallet,
 } from "../utils/api/helper";
 import { onBrowserUnload } from "../utils/eventListeners";
-import { moneyFormat } from "../utils/form/formatters";
+import { moneyFormat, fixedCostFormat } from "../utils/form/formatters";
 import { CheckoutRoutes } from "./models/routeModel";
 
 const defaultStyle = {
@@ -57,19 +54,8 @@ const defaultStyle = {
   pb: 1,
 };
 
-const pspContainerStyle = {
-  border: "2px solid",
-  borderColor: "divider",
-  borderRadius: 2,
-  pl: 3,
-  pr: 3,
-  mb: 2,
-};
-
-// eslint-disable-next-line sonarjs/cognitive-complexity
 export default function PaymentCheckPage() {
   const { t } = useTranslation();
-  const theme = useTheme();
   const navigate = useNavigate();
   const [modalOpen, setModalOpen] = React.useState(false);
   const [cancelModalOpen, setCancelModalOpen] = React.useState(false);
@@ -179,6 +165,14 @@ export default function PaymentCheckPage() {
   const isDisabled = () =>
     pspEditLoading || payLoading || cancelLoading || pspUpdateLoading;
 
+  const CostDisclaimer = () => (
+    <>
+      {fixedCostFormat(wallet.psp.fixedCost) < 50
+        ? t("paymentCheckPage.under50")
+        : t("paymentCheckPage.over50")}
+    </>
+  );
+
   return (
     <PageContainer>
       <Box
@@ -262,6 +256,7 @@ export default function PaymentCheckPage() {
         bodyVariant="body2"
         title={moneyFormat(wallet.psp.fixedCost.amount)}
         body={`${t("paymentCheckPage.psp")} ${wallet.psp.businessName}`}
+        footer={<CostDisclaimer />}
         sx={{
           border: "1px solid",
           borderColor: "divider",
@@ -339,83 +334,13 @@ export default function PaymentCheckPage() {
         onCancel={() => setCancelModalOpen(false)}
         onSubmit={onCancelPaymentSubmit}
       />
-
-      <CustomDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)}>
-        <Box
-          sx={{
-            pt: 1,
-            pb: 1,
-            mb: 2,
-          }}
-        >
-          <Typography variant="h6" component={"div"}>
-            {t("paymentCheckPage.drawer.title")}
-          </Typography>
-          <Typography variant="body2" sx={{ mt: 1, mb: 1 }}>
-            {t("paymentCheckPage.drawer.body")}
-          </Typography>
-          <Box
-            sx={{
-              ...defaultStyle,
-              borderBottom: "1px solid",
-              borderBottomColor: "divider",
-              pt: 3,
-              pb: 2,
-            }}
-          >
-            <Typography
-              variant={"caption-semibold"}
-              component={"div"}
-              aria-hidden="true"
-            >
-              {t("paymentCheckPage.drawer.header.name")}
-            </Typography>
-            <Typography
-              variant={"caption-semibold"}
-              component={"div"}
-              aria-hidden="true"
-            >
-              {t("paymentCheckPage.drawer.header.amount")}
-            </Typography>
-          </Box>
-        </Box>
-        {pspEditLoading
-          ? Array(3)
-              .fill(1)
-              .map((_, index) => (
-                <SkeletonFieldContainer key={index} sx={pspContainerStyle} />
-              ))
-          : pspList.map((psp, index) => (
-              <PspFieldContainer
-                key={index}
-                titleVariant="sidenav"
-                bodyVariant="body2"
-                image={psp.image}
-                body={psp.name}
-                sx={{
-                  ...pspContainerStyle,
-                  cursor: "pointer",
-                  "&:hover": {
-                    color: theme.palette.primary.dark,
-                    borderColor: "currentColor",
-                  },
-                }}
-                endAdornment={
-                  <Typography
-                    variant={"button"}
-                    color="primary"
-                    component={"div"}
-                  >
-                    {moneyFormat(psp.commission, 0)}
-                  </Typography>
-                }
-                onClick={() => {
-                  updateWalletPSP(psp.idPsp || 0);
-                }}
-              />
-            ))}
-      </CustomDrawer>
-
+      <PaymentCheckDrawer
+        list={pspList}
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        loading={pspEditLoading}
+        onSelectPsp={updateWalletPSP}
+      />
       {!!error && (
         <ErrorModal
           error={error}

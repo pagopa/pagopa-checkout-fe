@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 function FieldContainer(props: {
   title: string;
   body: string | number | undefined;
+  footer?: React.ReactNode;
   icon?: React.ReactNode;
   flexDirection?: "row" | "column";
   titleVariant?: "body2" | "sidenav";
@@ -81,6 +82,15 @@ function FieldContainer(props: {
               props.body
             )}
           </Typography>
+          {props.footer && (
+            <Typography variant={props.bodyVariant} component={"div"}>
+              {props.loading ? (
+                <Skeleton variant="text" width="188px" height="24px" />
+              ) : (
+                props.footer
+              )}
+            </Typography>
+          )}
         </Box>
       </Box>
       {props.endAdornment}

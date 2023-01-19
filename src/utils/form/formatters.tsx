@@ -1,3 +1,5 @@
+import { Wallet } from "../../features/payment/models/paymentModel";
+
 /* eslint-disable no-param-reassign */
 export function expireDateFormatter(old: string, current: string) {
   if (current.charAt(1) === "/") {
@@ -35,4 +37,16 @@ export function moneyFormat(
 export function codeFormat(code: string) {
   const matches = code.match(/.{1,4}/g);
   return matches ? matches.join(" ") : code;
+}
+
+export function fixedCostFormat(
+  fixedCost: Wallet["psp"]["fixedCost"] = {
+    decimalDigits: 2,
+    currency: "EUR",
+    amount: 0,
+  }
+) {
+  return fixedCost?.amount
+    ? fixedCost.amount / Math.pow(10, fixedCost.decimalDigits)
+    : 0;
 }
