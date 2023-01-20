@@ -1,5 +1,11 @@
 /* eslint-disable functional/immutable-data */
-import { Box, Typography, useTheme } from "@mui/material";
+import {
+  Box,
+  TableCell,
+  TableSortLabel,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import { default as React } from "react";
 import { useTranslation } from "react-i18next";
 import { CustomDrawer } from "../../../../components/modals/CustomDrawer";
@@ -17,6 +23,10 @@ export const PaymentPspDrawer = (props: {
 }) => {
   const { t } = useTranslation();
   const theme = useTheme();
+  const [sortingOrd, setSortingOrd] = React.useState<PspOrderingModel>({
+    fieldName: "commission",
+    direction: "asc",
+  });
 
   return (
     <CustomDrawer open={props.open} onClose={props.onClose}>
@@ -33,20 +43,20 @@ export const PaymentPspDrawer = (props: {
           {t("paymentCheckPage.drawer.body")}
         </Typography>
         <Box sx={styles.defaultStyle}>
-          <Typography
-            variant={"caption-semibold"}
-            component={"div"}
-            aria-hidden="true"
+          <SortLabel
+            fieldName="name"
+            onClick={setSortingOrd}
+            orderingModel={sortingOrd}
           >
             {t("paymentCheckPage.drawer.header.name")}
-          </Typography>
-          <Typography
-            variant={"caption-semibold"}
-            component={"div"}
-            aria-hidden="true"
+          </SortLabel>
+          <SortLabel
+            fieldName="commission"
+            onClick={setSortingOrd}
+            orderingModel={sortingOrd}
           >
             {t("paymentCheckPage.drawer.header.amount")}
-          </Typography>
+          </SortLabel>
         </Box>
       </Box>
       {props.loading
@@ -58,36 +68,92 @@ export const PaymentPspDrawer = (props: {
                 sx={styles.pspContainerStyle}
               />
             ))
-        : props.list.map((psp, index) => (
-            <PspFieldContainer
-              key={index}
-              titleVariant="sidenav"
-              bodyVariant="body2"
-              image={psp.image}
-              body={psp.name}
-              sx={{
-                ...styles.pspContainerStyle,
-                cursor: "pointer",
-                "&:hover": {
-                  color: theme.palette.primary.dark,
-                  borderColor: "currentColor",
-                },
-              }}
-              endAdornment={
-                <Typography
-                  variant={"button"}
-                  color="primary"
-                  component={"div"}
-                >
-                  {moneyFormat(psp.commission, 0)}
-                </Typography>
-              }
-              onClick={() => {
-                props.onSelect(psp.idPsp || 0);
-              }}
-            />
-          ))}
+        : props.list
+            .sort(sortBy(sortingOrd.fieldName, sortingOrd.direction))
+            .map((psp, index) => (
+              <PspFieldContainer
+                key={index}
+                titleVariant="sidenav"
+                bodyVariant="body2"
+                image={psp.image}
+                body={psp.name}
+                sx={{
+                  ...styles.pspContainerStyle,
+                  cursor: "pointer",
+                  "&:hover": {
+                    color: theme.palette.primary.dark,
+                    borderColor: "currentColor",
+                  },
+                }}
+                endAdornment={
+                  <Typography
+                    variant={"button"}
+                    color="primary"
+                    component={"div"}
+                  >
+                    {moneyFormat(psp.commission, 0)}
+                  </Typography>
+                }
+                onClick={() => {
+                  props.onSelect(psp.idPsp || 0);
+                }}
+              />
+            ))}
     </CustomDrawer>
+  );
+};
+
+const sortBy =
+  (field: PspField, direction: "asc" | "desc") => (a: PspList, b: PspList) => {
+    const fieldA = a[field];
+    const fieldB = b[field];
+    const order = direction === "asc" ? 1 : -1;
+
+    return fieldA && fieldB ? (fieldA > fieldB ? order : -order) : -order;
+  };
+
+type PspField = "commission" | "name";
+
+type PspOrderingModel = {
+  fieldName: PspField;
+  direction: "asc" | "desc";
+};
+
+type SortLabelProps = {
+  fieldName: PspField;
+  onClick: (sortingOrd: PspOrderingModel) => void;
+  orderingModel: PspOrderingModel;
+  children: React.ReactNode;
+};
+
+const SortLabel = ({
+  fieldName,
+  onClick,
+  orderingModel,
+  children,
+}: SortLabelProps) => {
+  const direction = orderingModel.direction === "asc" ? "desc" : "asc";
+
+  return (
+    <TableCell
+      sortDirection={orderingModel.direction}
+      sx={{ cursor: "pointer" }}
+      component="div"
+      padding="none"
+      aria-hidden="true"
+      onClick={() =>
+        onClick({
+          fieldName,
+          direction,
+        })
+      }
+    >
+      {children}
+      <TableSortLabel
+        direction={orderingModel.direction}
+        active={orderingModel.fieldName === fieldName}
+      />
+    </TableCell>
   );
 };
 
