@@ -14,7 +14,7 @@ import {
   TransactionMethods,
 } from "../../../../routes/models/paymentMethodRoutes";
 import { getPaymentPSPList } from "../../../../utils/api/helper";
-import { PaymentInstruments } from "../../models/paymentModel";
+import { PaymentInstruments, PspList } from "../../models/paymentModel";
 import { DisabledPaymentMethods, EnabledPaymentMethods } from "./PaymentMethod";
 
 function groupByTypeCode(array: Array<PaymentInstruments>) {
@@ -71,12 +71,13 @@ export function PaymentChoice(props: {
         paymentMethodId,
         onError: onErrorGetPSP,
         onResponse: (resp) => {
+          const firstPsp = sortPsp(resp);
           dispatch(
             setPspSelected({
               // TODO Fix this portion
-              code: resp[0].idPsp?.toLocaleString() || "",
-              fee: resp[0].commission,
-              businessName: resp[0].name || "",
+              code: firstPsp[0].idPsp?.toLocaleString() || "",
+              fee: firstPsp[0].commission,
+              businessName: firstPsp[0].name || "",
             })
           );
         },
@@ -117,4 +118,9 @@ export function PaymentChoice(props: {
 
 function onErrorGetPSP(e: string): void {
   throw new Error("Function not implemented. " + e);
+}
+
+function sortPsp(pspList: Array<PspList>) {
+  // TODO Implement OnUs/NotOnUs sorting
+  return pspList;
 }

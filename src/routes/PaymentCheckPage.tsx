@@ -1,7 +1,6 @@
 /* eslint-disable functional/immutable-data */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/restrict-plus-operands */
-/* eslint-disable no-console */
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import EditIcon from "@mui/icons-material/Edit";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
@@ -31,11 +30,12 @@ import ClickableFieldContainer from "../components/TextFormField/ClickableFieldC
 import FieldContainer from "../components/TextFormField/FieldContainer";
 import PspFieldContainer from "../components/TextFormField/PspFieldContainer";
 import { PspList } from "../features/payment/models/paymentModel";
-import { useAppSelector } from "../redux/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "../redux/hooks/hooks";
 import { selectCardData } from "../redux/slices/cardData";
 import {
   selectPaymentMethodId,
   selectPspSelected,
+  setPspSelected,
 } from "../redux/slices/paymentMethod";
 import {
   getCheckData,
@@ -47,7 +47,6 @@ import {
   cancelPayment,
   confirmPayment,
   getPaymentPSPList,
-  updateWallet,
 } from "../utils/api/helper";
 import { onBrowserUnload } from "../utils/eventListeners";
 import { moneyFormat } from "../utils/form/formatters";
@@ -89,11 +88,12 @@ export default function PaymentCheckPage() {
   const cardData = useAppSelector(selectCardData);
   const paymentMethodId = useAppSelector(selectPaymentMethodId);
   const pspSelected = useAppSelector(selectPspSelected);
+  const dispatch = useAppDispatch();
 
   const checkData = getCheckData();
   const wallet = getWallet();
   const email = getEmailInfo();
-  const totalAmount = checkData.amount.amount + pspSelected.fee || 0;
+  const totalAmount = Number(checkData.amount.amount) + Number(pspSelected.fee || 0);
   const amount = getPaymentInfo().amount;
 
   const onBrowserBackEvent = (e: any) => {
@@ -162,14 +162,17 @@ export default function PaymentCheckPage() {
     });
   };
 
-  const onPspUpdateResponse = () => {
-    setPspUpdateLoading(false);
-  };
-
-  const updateWalletPSP = (id: number) => {
+  const updateWalletPSP = (psp: PspList) => {
     setDrawerOpen(false);
     setPspUpdateLoading(true);
-    void updateWallet(id, onError, onPspUpdateResponse);
+    dispatch(
+      setPspSelected({
+        code: psp.idPsp?.toLocaleString() || "",
+        fee: psp.commission,
+        businessName: psp.name || "",
+      })
+    );
+    setPspUpdateLoading(false);
   };
 
   const getWalletIcon = () => {
@@ -223,8 +226,8 @@ export default function PaymentCheckPage() {
         bodyVariant="body2"
         title={`· · · · ${cardData.pan.slice(-4)}`}
         body={`${cardData.expDate.slice(0, 2)}/${cardData.expDate.slice(
-          2,
-          4
+          3,
+          5
         )} · ${cardData.cardHolderName}`}
         icon={getWalletIcon()}
         sx={{
@@ -421,11 +424,11 @@ export default function PaymentCheckPage() {
                     color="primary"
                     component={"div"}
                   >
-                    {moneyFormat(psp.commission, 0)}
+                    {moneyFormat(psp.commission/100, 0)}
                   </Typography>
                 }
                 onClick={() => {
-                  updateWalletPSP(psp.idPsp || 0);
+                  updateWalletPSP(psp);
                 }}
               />
             ))}
