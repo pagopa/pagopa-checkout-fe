@@ -730,7 +730,7 @@ export const getPaymentPSPList = async ({
     label: e?.businessName,
     image: undefined, // image: e?.logoPSP, TODO capire come gestire i loghi
     commission: e?.fixedCost ?? 0,
-    idPsp: Number(e?.code), // TODO capire se gestirlo come stringa o come number
+    idPsp: e?.code, // TODO gestito come stringa
   }));
 
   onResponse(psp || []);

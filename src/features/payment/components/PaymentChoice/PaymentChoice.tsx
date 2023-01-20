@@ -4,15 +4,14 @@
 import React from "react";
 import { useNavigate } from "react-router";
 import ClickableFieldContainer from "../../../../components/TextFormField/ClickableFieldContainer";
-import { useAppDispatch } from "../../../../redux/hooks/hooks";
-import {
-  setPaymentMethodId,
-  setPspSelected,
-} from "../../../../redux/slices/paymentMethod";
 import {
   PaymentMethodRoutes,
   TransactionMethods,
 } from "../../../../routes/models/paymentMethodRoutes";
+import {
+  setPaymentMethodId,
+  setPspSelected,
+} from "../../../../utils/api/apiService";
 import { getPaymentPSPList } from "../../../../utils/api/helper";
 import { PaymentInstruments, PspList } from "../../models/paymentModel";
 import { DisabledPaymentMethods, EnabledPaymentMethods } from "./PaymentMethod";
@@ -61,25 +60,21 @@ export function PaymentChoice(props: {
   loading?: boolean;
 }) {
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
 
   const handleClickOnMethod = React.useCallback(
     (paymentType: TransactionMethods, paymentMethodId: string) => {
       const route: string = PaymentMethodRoutes[paymentType]?.route;
-      dispatch(setPaymentMethodId(paymentMethodId));
+      setPaymentMethodId({ paymentMethodId });
       void getPaymentPSPList({
         paymentMethodId,
         onError: onErrorGetPSP,
         onResponse: (resp) => {
           const firstPsp = sortPsp(resp);
-          dispatch(
-            setPspSelected({
-              // TODO Fix this portion
-              code: firstPsp[0].idPsp?.toLocaleString() || "",
-              fee: firstPsp[0].commission,
-              businessName: firstPsp[0].name || "",
-            })
-          );
+          setPspSelected({
+            pspCode: firstPsp[0].idPsp || "",
+            fee: firstPsp[0].commission,
+            businessName: firstPsp[0].name || "",
+          });
         },
       });
       navigate(`/${route}`);
@@ -117,6 +112,7 @@ export function PaymentChoice(props: {
 }
 
 function onErrorGetPSP(e: string): void {
+  // TODO Implement error function
   throw new Error("Function not implemented. " + e);
 }
 

@@ -30,18 +30,16 @@ import ClickableFieldContainer from "../components/TextFormField/ClickableFieldC
 import FieldContainer from "../components/TextFormField/FieldContainer";
 import PspFieldContainer from "../components/TextFormField/PspFieldContainer";
 import { PspList } from "../features/payment/models/paymentModel";
-import { useAppDispatch, useAppSelector } from "../redux/hooks/hooks";
+import { useAppSelector } from "../redux/hooks/hooks";
 import { selectCardData } from "../redux/slices/cardData";
-import {
-  selectPaymentMethodId,
-  selectPspSelected,
-  setPspSelected,
-} from "../redux/slices/paymentMethod";
 import {
   getCheckData,
   getEmailInfo,
   getPaymentInfo,
+  getPaymentMethodId,
+  getPspSelected,
   getWallet,
+  setPspSelected,
 } from "../utils/api/apiService";
 import {
   cancelPayment,
@@ -86,14 +84,14 @@ export default function PaymentCheckPage() {
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
   const cardData = useAppSelector(selectCardData);
-  const paymentMethodId = useAppSelector(selectPaymentMethodId);
-  const pspSelected = useAppSelector(selectPspSelected);
-  const dispatch = useAppDispatch();
+  const paymentMethodId = getPaymentMethodId();
+  const pspSelected = getPspSelected();
 
   const checkData = getCheckData();
   const wallet = getWallet();
   const email = getEmailInfo();
-  const totalAmount = Number(checkData.amount.amount) + Number(pspSelected.fee || 0);
+  const totalAmount =
+    Number(checkData.amount.amount) + Number(pspSelected.fee || 0);
   const amount = getPaymentInfo().amount;
 
   const onBrowserBackEvent = (e: any) => {
@@ -156,7 +154,7 @@ export default function PaymentCheckPage() {
     setDrawerOpen(true);
     setPspEditLoading(true);
     void getPaymentPSPList({
-      paymentMethodId,
+      paymentMethodId: paymentMethodId.paymentMethodId,
       onError,
       onResponse: onPspEditResponse,
     });
@@ -165,13 +163,11 @@ export default function PaymentCheckPage() {
   const updateWalletPSP = (psp: PspList) => {
     setDrawerOpen(false);
     setPspUpdateLoading(true);
-    dispatch(
-      setPspSelected({
-        code: psp.idPsp?.toLocaleString() || "",
-        fee: psp.commission,
-        businessName: psp.name || "",
-      })
-    );
+    setPspSelected({
+      pspCode: psp.idPsp || "",
+      fee: psp.commission,
+      businessName: psp.name || "",
+    });
     setPspUpdateLoading(false);
   };
 
@@ -424,7 +420,7 @@ export default function PaymentCheckPage() {
                     color="primary"
                     component={"div"}
                   >
-                    {moneyFormat(psp.commission/100, 0)}
+                    {moneyFormat(psp.commission / 100, 0)}
                   </Typography>
                 }
                 onClick={() => {
