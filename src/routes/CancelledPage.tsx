@@ -1,21 +1,24 @@
 import { Box, Button, Typography } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { useDispatch } from "react-redux";
 import cancelled from "../assets/images/response-unrecognized.svg";
 import PageContainer from "../components/PageContent/PageContainer";
-import { useAppDispatch } from "../redux/hooks/hooks";
-import { resetSecurityCode } from "../redux/slices/securityCode";
-import { getReturnUrls } from "../utils/api/apiService";
+import { resetCheckData } from "../redux/slices/checkData";
 import { onBrowserUnload } from "../utils/eventListeners";
-import { clearSensitiveItems } from "../utils/storage/sessionStorage";
+import {
+  clearSensitiveItems,
+  loadState,
+  SessionItems,
+} from "../utils/storage/sessionStorage";
 
 export default function CancelledPage() {
   const { t } = useTranslation();
-  const dispatch = useAppDispatch();
-  const redirectUrl = getReturnUrls().returnCancelUrl;
+  const dispatch = useDispatch();
+  const redirectUrl = loadState(SessionItems.originUrlRedirect) as string;
 
   React.useEffect(() => {
-    dispatch(resetSecurityCode());
+    dispatch(resetCheckData());
     window.removeEventListener("beforeunload", onBrowserUnload);
     clearSensitiveItems();
   }, []);

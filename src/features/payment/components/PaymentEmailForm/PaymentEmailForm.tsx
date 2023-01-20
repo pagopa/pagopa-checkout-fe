@@ -5,7 +5,7 @@ import { Formik, FormikProps } from "formik";
 import React from "react";
 import { FormButtons } from "../../../../components/FormButtons/FormButtons";
 import TextFormField from "../../../../components/TextFormField/TextFormField";
-import { getFormErrorIcon } from "../../../../utils/form/validators";
+import { getFormErrorIcon } from "../../../../utils/form/formValidation";
 import { emailValidation } from "../../../../utils/regex/validators";
 import {
   PaymentEmailFormErrors,
@@ -18,9 +18,7 @@ export function PaymentEmailForm(props: {
   onSubmit: (emailInfo: PaymentEmailFormFields) => void;
 }) {
   const formRef = React.useRef<FormikProps<PaymentEmailFormFields>>(null);
-  const [disabled, setDisabled] = React.useState(
-    !props.defaultValues?.email || !props.defaultValues?.confirmEmail
-  );
+  const [disabled, setDisabled] = React.useState(!props.defaultValues?.email);
 
   const validate = (values: PaymentEmailFormFields) => {
     const errors: PaymentEmailFormErrors = {
@@ -115,7 +113,6 @@ export function PaymentEmailForm(props: {
               type="submit"
               submitTitle="paymentEmailPage.formButtons.submit"
               cancelTitle="paymentEmailPage.formButtons.back"
-              idSubmit="paymentEmailPageButtonContinue"
               disabledSubmit={disabled}
               handleSubmit={() => handleSubmit()}
               handleCancel={props.onCancel}

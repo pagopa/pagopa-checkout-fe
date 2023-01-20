@@ -1,7 +1,3 @@
-import { Theme } from "@emotion/react";
-import { SxProps } from "@mui/material";
-import { TransactionMethods } from "../../../routes/models/paymentMethodRoutes";
-
 export interface PaymentFormFields {
   billCode: string;
   cf: string;
@@ -55,13 +51,16 @@ export const SecureCodeLabels: {
 };
 
 export interface PaymentInfo {
-  amount: number;
-  paymentContextCode: string;
-  rptId?: string;
-  paFiscalCode?: string;
-  paName?: string;
-  description?: string;
-  dueDate?: string;
+  importoSingoloVersamento: number;
+  codiceContestoPagamento: string;
+  ibanAccredito: string | undefined;
+  causaleVersamento: string | undefined;
+  enteBeneficiario:
+    | {
+        identificativoUnivocoBeneficiario: string;
+        denominazioneBeneficiario: string;
+      }
+    | undefined;
 }
 
 export interface PaymentInfoData {
@@ -71,7 +70,7 @@ export interface PaymentInfoData {
 }
 
 export interface PaymentId {
-  paymentId: string;
+  idPagamento: string;
 }
 
 export interface PaymentCheckDetail {
@@ -137,38 +136,4 @@ export interface PspList {
   image: string | undefined;
   commission: number;
   idPsp: number | undefined;
-}
-
-export interface PaymentInstruments {
-  id: string;
-  name: string;
-  description: string;
-  status: string;
-  paymentTypeCode: TransactionMethods;
-  asset: string | ((sx: SxProps<Theme>) => JSX.Element);
-  label: string;
-  ranges: Array<{
-    min: number;
-    max: number;
-  }>;
-}
-
-export interface PaymentNotice {
-  noticeNumber: any;
-  fiscalCode: any;
-  amount: number;
-  companyName?: string;
-  description?: string;
-}
-
-export interface ReturnUrls {
-  returnOkUrl: string;
-  returnCancelUrl: string;
-  returnErrorUrl: string;
-}
-
-export interface Cart {
-  paymentNotices: Array<PaymentNotice>;
-  returnUrls: ReturnUrls;
-  emailNotice?: string;
 }

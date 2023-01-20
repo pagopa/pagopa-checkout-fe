@@ -11,7 +11,7 @@ import InformationModal from "../components/modals/InformationModal";
 import PageContainer from "../components/PageContent/PageContainer";
 import FieldContainer from "../components/TextFormField/FieldContainer";
 import { getNoticeInfo, getPaymentInfo } from "../utils/api/apiService";
-import { moneyFormat } from "../utils/form/formatters";
+import { codeFormat, moneyFormat } from "../utils/form/formatters";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function PaymentSummaryPage() {
@@ -38,23 +38,23 @@ export default function PaymentSummaryPage() {
 
   return (
     <PageContainer title="paymentSummaryPage.title" childrenSx={{ pt: 2 }}>
-      {!!paymentInfo.paName && (
+      {!!paymentInfo.enteBeneficiario?.denominazioneBeneficiario && (
         <FieldContainer
           title="paymentSummaryPage.creditor"
-          body={paymentInfo.paName}
+          body={paymentInfo.enteBeneficiario?.denominazioneBeneficiario}
           icon={<AccountBalanceIcon sx={iconStyle} />}
         />
       )}
-      {!!paymentInfo.description && (
+      {!!paymentInfo.causaleVersamento && (
         <FieldContainer
           title="paymentSummaryPage.causal"
-          body={paymentInfo.description}
+          body={paymentInfo.causaleVersamento}
           icon={<ReceiptLongIcon sx={iconStyle} />}
         />
       )}
       <FieldContainer
         title="paymentSummaryPage.amount"
-        body={moneyFormat(paymentInfo.amount)}
+        body={moneyFormat(paymentInfo.importoSingoloVersamento)}
         icon={<EuroIcon sx={iconStyle} />}
         endAdornment={
           <InfoOutlinedIcon
@@ -71,16 +71,16 @@ export default function PaymentSummaryPage() {
       {!!noticeInfo.billCode && (
         <FieldContainer
           title="paymentSummaryPage.billCode"
-          body={noticeInfo.billCode}
+          body={codeFormat(noticeInfo.billCode)}
           flexDirection="row"
           overflowWrapBody={false}
           sx={{ px: 2 }}
         />
       )}
-      {!!paymentInfo.paFiscalCode && (
+      {!!paymentInfo.enteBeneficiario?.identificativoUnivocoBeneficiario && (
         <FieldContainer
           title="paymentSummaryPage.cf"
-          body={paymentInfo.paFiscalCode}
+          body={paymentInfo.enteBeneficiario?.identificativoUnivocoBeneficiario}
           flexDirection="row"
           overflowWrapBody={false}
           sx={{ px: 2 }}
@@ -90,7 +90,6 @@ export default function PaymentSummaryPage() {
       <FormButtons
         submitTitle="paymentSummaryPage.buttons.submit"
         cancelTitle="paymentSummaryPage.buttons.cancel"
-        idSubmit="paymentSummaryButtonPay"
         disabledSubmit={false}
         handleSubmit={onSubmit}
         handleCancel={() => navigate(-1)}

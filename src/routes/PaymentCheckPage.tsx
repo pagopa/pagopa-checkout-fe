@@ -28,8 +28,6 @@ import ClickableFieldContainer from "../components/TextFormField/ClickableFieldC
 import FieldContainer from "../components/TextFormField/FieldContainer";
 import { PaymentPspDrawer } from "../features/payment/components/modals/PaymentPspDrawer";
 import { PspList, Wallet } from "../features/payment/models/paymentModel";
-import { useAppSelector } from "../redux/hooks/hooks";
-import { selectSecurityCode } from "../redux/slices/securityCode";
 import {
   getCheckData,
   getEmailInfo,
@@ -63,12 +61,11 @@ export default function PaymentCheckPage() {
   const [error, setError] = React.useState("");
   const [showDisclaimer, setShowDisclaimer] = React.useState(true);
 
-  const cvv = useAppSelector(selectSecurityCode);
   const checkData = getCheckData();
   const wallet = getWallet();
   const email = getEmailInfo();
   const totalAmount = checkData.amount.amount + wallet.psp.fixedCost.amount;
-  const amount = getPaymentInfo().amount;
+  const amount = getPaymentInfo().importoSingoloVersamento;
 
   React.useEffect(() => {
     const onBrowserBackEvent = (e: any) => {
@@ -94,7 +91,7 @@ export default function PaymentCheckPage() {
 
   const onSubmit = () => {
     setPayLoading(true);
-    void confirmPayment({ checkData, wallet, cvv }, onError, () => {
+    void confirmPayment({ checkData, wallet }, onError, () => {
       setPayLoading(false);
       navigate(`/${CheckoutRoutes.ESITO}`);
     });
@@ -269,7 +266,6 @@ export default function PaymentCheckPage() {
         disabledCancel={isDisabled()}
         handleSubmit={onSubmit}
         handleCancel={onCancel}
-        idSubmit="paymentCheckPageButtonPay"
       />
       <InformationModal
         open={modalOpen}

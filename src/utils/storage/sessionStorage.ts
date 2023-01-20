@@ -1,13 +1,11 @@
 import {
-  Cart,
   PaymentCheckData,
   PaymentFormFields,
   PaymentId,
   PaymentInfo,
-  ReturnUrls,
+  SecurityCode,
   Wallet,
 } from "../../features/payment/models/paymentModel";
-import { getReturnUrls, setReturnUrls } from "../api/apiService";
 
 export enum SessionItems {
   paymentInfo = "paymentInfo",
@@ -15,10 +13,10 @@ export enum SessionItems {
   useremail = "useremail",
   paymentId = "paymentId",
   checkData = "checkData",
+  securityCode = "securityCode",
   wallet = "wallet",
   originUrlRedirect = "originUrlRedirect",
   sessionToken = "sessionToken",
-  cart = "cart",
 }
 export const loadState = (item: string) => {
   try {
@@ -33,9 +31,8 @@ export const loadState = (item: string) => {
       | PaymentFormFields
       | PaymentId
       | PaymentCheckData
-      | ReturnUrls
-      | Cart
-      | Wallet;
+      | Wallet
+      | SecurityCode;
   } catch (e) {
     return undefined;
   }
@@ -44,7 +41,10 @@ export const loadState = (item: string) => {
 export const isStateEmpty = (item: string) => !loadState(item);
 
 export const clearSensitiveItems = () => {
-  const originUrl = getReturnUrls();
+  const originUrl = loadState(SessionItems.originUrlRedirect) as string;
   sessionStorage.clear();
-  setReturnUrls(originUrl);
+  sessionStorage.setItem(
+    SessionItems.originUrlRedirect,
+    JSON.stringify(originUrl)
+  );
 };

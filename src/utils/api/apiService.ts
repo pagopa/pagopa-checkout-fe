@@ -1,12 +1,10 @@
 /* eslint-disable sonarjs/cognitive-complexity */
 import {
-  Cart,
   PaymentCheckData,
   PaymentEmailFormFields,
   PaymentFormFields,
   PaymentId,
   PaymentInfo,
-  ReturnUrls,
   Wallet,
 } from "../../features/payment/models/paymentModel";
 import { getConfigOrThrow } from "../config/config";
@@ -17,7 +15,7 @@ export function getReCaptchaKey() {
   return getConfigOrThrow().CHECKOUT_RECAPTCHA_SITE_KEY;
 }
 
-export function getNoticeInfo(): PaymentFormFields {
+export function getNoticeInfo() {
   const noticeInfo = loadState(SessionItems.noticeInfo) as
     | PaymentFormFields
     | undefined;
@@ -27,37 +25,46 @@ export function getNoticeInfo(): PaymentFormFields {
   };
 }
 
-export function getPaymentInfo(): PaymentInfo {
+export function getPaymentInfo() {
   const paymentInfo = loadState(SessionItems.paymentInfo) as
     | PaymentInfo
     | undefined;
   return {
-    amount: paymentInfo?.amount || 0,
-    paymentContextCode: paymentInfo?.paymentContextCode || "",
-    rptId: paymentInfo?.rptId || "",
-    paFiscalCode: paymentInfo?.paFiscalCode || "",
-    paName: paymentInfo?.paName || "",
-    description: paymentInfo?.description || "",
-    dueDate: paymentInfo?.dueDate || "",
+    importoSingoloVersamento: paymentInfo?.importoSingoloVersamento || 0,
+    enteBeneficiario: paymentInfo?.enteBeneficiario
+      ? {
+          denominazioneBeneficiario:
+            paymentInfo?.enteBeneficiario?.denominazioneBeneficiario || "",
+          identificativoUnivocoBeneficiario:
+            paymentInfo?.enteBeneficiario?.identificativoUnivocoBeneficiario ||
+            "",
+        }
+      : undefined,
+    causaleVersamento:
+      paymentSubjectTransform(paymentInfo?.causaleVersamento) || undefined,
+    codiceContestoPagamento: paymentInfo?.codiceContestoPagamento || "",
+    ibanAccredito: paymentInfo?.ibanAccredito
+      ? paymentInfo?.ibanAccredito
+      : undefined,
   };
 }
 
-export function getEmailInfo(noConfirmEmail = false): PaymentEmailFormFields {
+export function getEmailInfo() {
   const emailInfo = loadState(SessionItems.useremail) as string | undefined;
   return {
     email: emailInfo || "",
-    confirmEmail: noConfirmEmail ? "" : emailInfo || "",
+    confirmEmail: emailInfo || "",
   };
 }
 
-export function getPaymentId(): PaymentId {
+export function getPaymentId() {
   const id = loadState(SessionItems.paymentId) as PaymentId | undefined;
   return {
-    paymentId: id?.paymentId || "",
+    paymentId: id?.idPagamento || "",
   };
 }
 
-export function getCheckData(): PaymentCheckData {
+export function getCheckData() {
   const data = loadState(SessionItems.checkData) as
     | PaymentCheckData
     | undefined;
@@ -81,7 +88,7 @@ export function getCheckData(): PaymentCheckData {
   };
 }
 
-export function getWallet(): Wallet {
+export function getWallet() {
   const data = loadState(SessionItems.wallet) as Wallet | undefined;
   return {
     creditCard: {
@@ -106,47 +113,6 @@ export function getWallet(): Wallet {
     pspEditable: data?.pspEditable || false,
     type: data?.type || "",
   };
-}
-
-export function getCart(): Cart | undefined {
-  const data = loadState(SessionItems.cart) as Cart | undefined;
-  return data
-    ? {
-        emailNotice: data?.emailNotice || "",
-        paymentNotices:
-          data?.paymentNotices?.map((notice) => ({
-            noticeNumber: notice?.noticeNumber || "",
-            fiscalCode: notice?.fiscalCode || "",
-            amount: notice?.amount || 0,
-            companyName: notice?.companyName || "",
-            description: notice?.description || "",
-          })) || [],
-        returnUrls: {
-          returnOkUrl: data?.returnUrls?.returnOkUrl || "",
-          returnCancelUrl: data?.returnUrls?.returnCancelUrl || "",
-          returnErrorUrl: data?.returnUrls?.returnErrorUrl || "",
-        },
-      }
-    : undefined;
-}
-
-export function getReturnUrls(): ReturnUrls {
-  const data = loadState(SessionItems.originUrlRedirect) as
-    | ReturnUrls
-    | undefined;
-  return {
-    returnOkUrl: data?.returnOkUrl || "/",
-    returnErrorUrl: data?.returnErrorUrl || "/",
-    returnCancelUrl: data?.returnCancelUrl || "/",
-  };
-}
-
-export function setReturnUrls(item: ReturnUrls) {
-  sessionStorage.setItem(SessionItems.originUrlRedirect, JSON.stringify(item));
-}
-
-export function setCart(item: Cart) {
-  sessionStorage.setItem(SessionItems.cart, JSON.stringify(item));
 }
 
 export function setWallet(item: Wallet) {
