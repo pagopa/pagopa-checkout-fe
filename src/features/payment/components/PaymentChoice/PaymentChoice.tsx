@@ -8,12 +8,8 @@ import {
   PaymentMethodRoutes,
   TransactionMethods,
 } from "../../../../routes/models/paymentMethodRoutes";
-import {
-  setPaymentMethodId,
-  setPspSelected,
-} from "../../../../utils/api/apiService";
-import { getPaymentPSPList } from "../../../../utils/api/helper";
-import { PaymentInstruments, PspList } from "../../models/paymentModel";
+import { setPaymentMethodId } from "../../../../utils/api/apiService";
+import { PaymentInstruments } from "../../models/paymentModel";
 import { DisabledPaymentMethods, EnabledPaymentMethods } from "./PaymentMethod";
 
 function groupByTypeCode(array: Array<PaymentInstruments>) {
@@ -65,7 +61,7 @@ export function PaymentChoice(props: {
     (paymentType: TransactionMethods, paymentMethodId: string) => {
       const route: string = PaymentMethodRoutes[paymentType]?.route;
       setPaymentMethodId({ paymentMethodId });
-      void getPaymentPSPList({
+      /* void getPaymentPSPList({
         paymentMethodId,
         onError: onErrorGetPSP,
         onResponse: (resp) => {
@@ -76,7 +72,7 @@ export function PaymentChoice(props: {
             businessName: firstPsp[0].name || "",
           });
         },
-      });
+      }); */
       navigate(`/${route}`);
     },
     []
@@ -109,14 +105,4 @@ export function PaymentChoice(props: {
       )}
     </>
   );
-}
-
-function onErrorGetPSP(e: string): void {
-  // TODO Implement error function
-  throw new Error("Function not implemented. " + e);
-}
-
-function sortPsp(pspList: Array<PspList>) {
-  // TODO Implement OnUs/NotOnUs sorting
-  return pspList;
 }

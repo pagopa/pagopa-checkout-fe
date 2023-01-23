@@ -4,6 +4,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 
 interface CardDataState {
+  brand: string;
   pan: string;
   expDate: string;
   cardHolderName: string;
@@ -11,6 +12,7 @@ interface CardDataState {
 }
 
 const initialState: CardDataState = {
+  brand: "OTHER",
   pan: "",
   expDate: "",
   cardHolderName: "",
@@ -24,18 +26,21 @@ export const cardDataSlice = createSlice({
     setCardData(
       state,
       action: PayloadAction<{
+        brand: string;
         pan: string;
         expDate: string;
         cvv: string;
         cardHolderName: string;
       }>
     ) {
+      state.brand = action.payload?.brand || "OTHER";
       state.pan = action.payload?.pan || "";
       state.expDate = action.payload?.expDate || "";
       state.cardHolderName = action.payload?.cardHolderName || "";
       state.cvv = action.payload?.cvv || "";
     },
     resetCardData(state) {
+      state.brand = "OTHER";
       state.pan = "";
       state.expDate = "";
       state.cardHolderName = "";
@@ -47,6 +52,7 @@ export const cardDataSlice = createSlice({
 export const { setCardData, resetCardData } = cardDataSlice.actions;
 export default cardDataSlice.reducer;
 export const selectCardData = (state: RootState) => ({
+  brand: state.cardData.brand,
   pan: state.cardData.pan,
   expDate: state.cardData.expDate,
   cardHolderName: state.cardData.cardHolderName,

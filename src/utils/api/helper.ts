@@ -2,6 +2,7 @@
 /* eslint-disable sonarjs/cognitive-complexity */
 /* eslint-disable sonarjs/no-identical-functions */
 import { Millisecond } from "@pagopa/ts-commons/lib/units";
+import cardValidator from "card-validator";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
 import { toError } from "fp-ts/lib/Either";
@@ -282,6 +283,7 @@ export const activatePayment = async ({
   wallet: InputCardFormFields;
   token: string;
   onResponse: (cardData: {
+    brand: string;
     pan: string;
     expDate: string;
     cvv: string;
@@ -505,6 +507,7 @@ export const retryPollingActivationStatus = async ({
 }: {
   wallet: InputCardFormFields;
   onResponse: (cardData: {
+    brand: string;
     pan: string;
     expDate: string;
     cardHolderName: string;
@@ -740,6 +743,7 @@ export const getSessionWallet = async (
   creditCard: InputCardFormFields,
   onError: (e: string) => void,
   onResponse: (cardData: {
+    brand: string;
     pan: string;
     expDate: string;
     cvv: string;
@@ -964,6 +968,8 @@ export const getSessionWallet = async (
             })
           );
           onResponse({
+            brand:
+              cardValidator.number(creditCard.number).card?.type || "other",
             pan: creditCard.number,
             cvv: creditCard.cvv,
             cardHolderName: creditCard.name,
@@ -1392,3 +1398,11 @@ export const getCarts = async (
     )
   )();
 };
+
+export const onErrorGetPSP = (e: string): void => {
+  throw new Error("Error getting psp list. " + e);
+};
+
+export const sortPspByOnUsPolicy = (pspList: Array<PspList>): Array<PspList> =>
+  // TODO Implement OnUs/NotOnUs sorting?
+  pspList;

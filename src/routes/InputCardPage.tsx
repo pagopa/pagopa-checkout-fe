@@ -5,14 +5,25 @@ import { useNavigate } from "react-router-dom";
 import ErrorModal from "../components/modals/ErrorModal";
 import PageContainer from "../components/PageContent/PageContainer";
 import { InputCardForm } from "../features/payment/components/InputCardForm/InputCardForm";
-import { InputCardFormFields } from "../features/payment/models/paymentModel";
+import {
+  InputCardFormFields,
+  PspList,
+} from "../features/payment/models/paymentModel";
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { setCardData } from "../redux/slices/cardData";
 import { setSecurityCode } from "../redux/slices/securityCode";
-import { getReCaptchaKey, getWallet } from "../utils/api/apiService";
+import {
+  getPaymentMethodId,
+  getReCaptchaKey,
+  getWallet,
+  setPspSelected,
+} from "../utils/api/apiService";
 import {
   activatePayment,
+  getPaymentPSPList,
+  onErrorGetPSP,
   retryPollingActivationStatus,
+  sortPspByOnUsPolicy,
 } from "../utils/api/helper";
 import { getConfigOrThrow } from "../utils/config/config";
 import { ErrorsType } from "../utils/errors/checkErrorsModel";
@@ -54,6 +65,7 @@ export default function InputCardPage() {
   };
 
   const onResponse = (cardData: {
+    brand: string;
     pan: string;
     expDate: string;
     cvv: string;
@@ -79,6 +91,18 @@ export default function InputCardPage() {
           onNavigate: () => navigate(`/${CheckoutRoutes.ERRORE}`),
         });
       } else {
+        void getPaymentPSPList({
+          paymentMethodId: getPaymentMethodId()?.paymentMethodId,
+          onError: onErrorGetPSP,
+          onResponse: (resp: Array<PspList>) => {
+            const firstPsp = sortPspByOnUsPolicy(resp);
+            setPspSelected({
+              pspCode: firstPsp[0].idPsp || "",
+              fee: firstPsp[0].commission,
+              businessName: firstPsp[0].name || "",
+            });
+          },
+        });
         void activatePayment({
           wallet,
           token: token || "",
