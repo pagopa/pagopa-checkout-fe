@@ -13,23 +13,21 @@ import {
   Skeleton,
   SvgIcon,
   Typography,
-  useTheme,
 } from "@mui/material";
 import { default as React } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import sprite from "../assets/images/app.svg";
+import disclaimerIcon from "../assets/images/disclaimer.svg";
 import { FormButtons } from "../components/FormButtons/FormButtons";
 import { CancelPayment } from "../components/modals/CancelPayment";
-import { CustomDrawer } from "../components/modals/CustomDrawer";
 import ErrorModal from "../components/modals/ErrorModal";
 import InformationModal from "../components/modals/InformationModal";
 import PageContainer from "../components/PageContent/PageContainer";
-import SkeletonFieldContainer from "../components/Skeletons/SkeletonFieldContainer";
 import ClickableFieldContainer from "../components/TextFormField/ClickableFieldContainer";
 import FieldContainer from "../components/TextFormField/FieldContainer";
-import PspFieldContainer from "../components/TextFormField/PspFieldContainer";
-import { PspList } from "../features/payment/models/paymentModel";
+import { PaymentPspDrawer } from "../features/payment/components/modals/PaymentPspDrawer";
+import { PspList, Wallet } from "../features/payment/models/paymentModel";
 import {
   getCheckData,
   getEmailInfo,
@@ -46,29 +44,11 @@ import { onBrowserUnload } from "../utils/eventListeners";
 import { moneyFormat } from "../utils/form/formatters";
 import { CheckoutRoutes } from "./models/routeModel";
 
-const defaultStyle = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  borderColor: "divider",
-  pt: 1,
-  pb: 1,
-};
-
-const pspContainerStyle = {
-  border: "2px solid",
-  borderColor: "divider",
-  borderRadius: 2,
-  pl: 3,
-  pr: 3,
-  mb: 2,
-};
-
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export default function PaymentCheckPage() {
   const { t } = useTranslation();
-  const theme = useTheme();
   const navigate = useNavigate();
+
   const [modalOpen, setModalOpen] = React.useState(false);
   const [cancelModalOpen, setCancelModalOpen] = React.useState(false);
   const [drawerOpen, setDrawerOpen] = React.useState(false);
@@ -79,6 +59,7 @@ export default function PaymentCheckPage() {
   const [pspList, setPspList] = React.useState<Array<PspList>>([]);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
+  const [showDisclaimer, setShowDisclaimer] = React.useState(true);
 
   const checkData = getCheckData();
   const wallet = getWallet();
@@ -86,13 +67,13 @@ export default function PaymentCheckPage() {
   const totalAmount = checkData.amount.amount + wallet.psp.fixedCost.amount;
   const amount = getPaymentInfo().importoSingoloVersamento;
 
-  const onBrowserBackEvent = (e: any) => {
-    e.preventDefault();
-    window.history.pushState(null, "", window.location.pathname);
-    setCancelModalOpen(true);
-  };
-
   React.useEffect(() => {
+    const onBrowserBackEvent = (e: any) => {
+      e.preventDefault();
+      window.history.pushState(null, "", window.location.pathname);
+      setCancelModalOpen(true);
+    };
+
     window.addEventListener("beforeunload", onBrowserUnload);
     window.history.pushState(null, "", window.location.pathname);
     window.addEventListener("popstate", onBrowserBackEvent);
@@ -108,34 +89,25 @@ export default function PaymentCheckPage() {
     setErrorModalOpen(true);
   };
 
-  const onResponse = () => {
-    setPayLoading(false);
-    navigate(`/${CheckoutRoutes.ESITO}`);
+  const onSubmit = () => {
+    setPayLoading(true);
+    void confirmPayment({ checkData, wallet }, onError, () => {
+      setPayLoading(false);
+      navigate(`/${CheckoutRoutes.ESITO}`);
+    });
   };
 
-  const onSubmit = React.useCallback(() => {
-    setPayLoading(true);
-    void confirmPayment({ checkData, wallet }, onError, onResponse);
-  }, []);
-
-  const onCancel = React.useCallback(() => {
+  const onCancel = () => {
     setCancelModalOpen(true);
-  }, []);
-
-  const onCancelResponse = () => {
-    setCancelLoading(false);
-    navigate(`/${CheckoutRoutes.ANNULLATO}`);
   };
 
   const onCancelPaymentSubmit = () => {
     setCancelModalOpen(false);
     setCancelLoading(true);
-    void cancelPayment(onError, onCancelResponse);
-  };
-
-  const onPspEditResponse = (list: Array<PspList>) => {
-    setPspList(list.sort((a, b) => (a.commission > b.commission ? 1 : -1)));
-    setPspEditLoading(false);
+    void cancelPayment(onError, () => {
+      setCancelLoading(false);
+      navigate(`/${CheckoutRoutes.ANNULLATO}`);
+    });
   };
 
   const onPspEditClick = () => {
@@ -143,34 +115,20 @@ export default function PaymentCheckPage() {
     setPspEditLoading(true);
     void getPaymentPSPList({
       onError,
-      onResponse: onPspEditResponse,
+      onResponse: (list: Array<PspList>) => {
+        setPspList(list.sort((a, b) => (a.commission > b.commission ? 1 : -1)));
+        setPspEditLoading(false);
+      },
     });
-  };
-
-  const onPspUpdateResponse = () => {
-    setPspUpdateLoading(false);
   };
 
   const updateWalletPSP = (id: number) => {
     setDrawerOpen(false);
     setPspUpdateLoading(true);
-    void updateWallet(id, onError, onPspUpdateResponse);
-  };
-
-  const getWalletIcon = () => {
-    if (
-      !wallet.creditCard.brand ||
-      wallet.creditCard.brand.toLowerCase() === "other"
-    ) {
-      return <CreditCardIcon color="action" />;
-    }
-    return (
-      <SvgIcon color="action">
-        <use
-          href={sprite + `#icons-${wallet.creditCard.brand.toLowerCase()}-mini`}
-        />
-      </SvgIcon>
-    );
+    void updateWallet(id, onError, () => {
+      setPspUpdateLoading(false);
+      setShowDisclaimer(false);
+    });
   };
 
   const isDisabled = () =>
@@ -208,7 +166,7 @@ export default function PaymentCheckPage() {
         bodyVariant="body2"
         title={`· · · · ${wallet.creditCard.pan.slice(-4)}`}
         body={`${wallet.creditCard.expireMonth}/${wallet.creditCard.expireYear} · ${wallet.creditCard.holder}`}
-        icon={getWalletIcon()}
+        icon={<WalletIcon wallet={wallet} />}
         sx={{
           border: "1px solid",
           borderColor: "divider",
@@ -259,6 +217,16 @@ export default function PaymentCheckPage() {
         bodyVariant="body2"
         title={moneyFormat(wallet.psp.fixedCost.amount)}
         body={`${t("paymentCheckPage.psp")} ${wallet.psp.businessName}`}
+        disclaimer={
+          showDisclaimer ? (
+            <AmountDisclaimer
+              amount={
+                checkData.amount.amount /
+                Math.pow(10, checkData.amount.decimalDigits)
+              }
+            />
+          ) : null
+        }
         sx={{
           border: "1px solid",
           borderColor: "divider",
@@ -336,81 +304,13 @@ export default function PaymentCheckPage() {
         onSubmit={onCancelPaymentSubmit}
       />
 
-      <CustomDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)}>
-        <Box
-          sx={{
-            pt: 1,
-            pb: 1,
-            mb: 2,
-          }}
-        >
-          <Typography variant="h6" component={"div"}>
-            {t("paymentCheckPage.drawer.title")}
-          </Typography>
-          <Typography variant="body2" sx={{ mt: 1, mb: 1 }}>
-            {t("paymentCheckPage.drawer.body")}
-          </Typography>
-          <Box
-            sx={{
-              ...defaultStyle,
-              borderBottom: "1px solid",
-              borderBottomColor: "divider",
-              pt: 3,
-              pb: 2,
-            }}
-          >
-            <Typography
-              variant={"caption-semibold"}
-              component={"div"}
-              aria-hidden="true"
-            >
-              {t("paymentCheckPage.drawer.header.name")}
-            </Typography>
-            <Typography
-              variant={"caption-semibold"}
-              component={"div"}
-              aria-hidden="true"
-            >
-              {t("paymentCheckPage.drawer.header.amount")}
-            </Typography>
-          </Box>
-        </Box>
-        {pspEditLoading
-          ? Array(3)
-              .fill(1)
-              .map((_, index) => (
-                <SkeletonFieldContainer key={index} sx={pspContainerStyle} />
-              ))
-          : pspList.map((psp, index) => (
-              <PspFieldContainer
-                key={index}
-                titleVariant="sidenav"
-                bodyVariant="body2"
-                image={psp.image}
-                body={psp.name}
-                sx={{
-                  ...pspContainerStyle,
-                  cursor: "pointer",
-                  "&:hover": {
-                    color: theme.palette.primary.dark,
-                    borderColor: "currentColor",
-                  },
-                }}
-                endAdornment={
-                  <Typography
-                    variant={"button"}
-                    color="primary"
-                    component={"div"}
-                  >
-                    {moneyFormat(psp.commission, 0)}
-                  </Typography>
-                }
-                onClick={() => {
-                  updateWalletPSP(psp.idPsp || 0);
-                }}
-              />
-            ))}
-      </CustomDrawer>
+      <PaymentPspDrawer
+        list={pspList}
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        loading={pspEditLoading}
+        onSelect={updateWalletPSP}
+      />
 
       {!!error && (
         <ErrorModal
@@ -424,3 +324,55 @@ export default function PaymentCheckPage() {
     </PageContainer>
   );
 }
+
+const AmountDisclaimer = ({ amount }: { amount: number }) => {
+  const { t } = useTranslation();
+  const disclaimerUpperLimit = 50;
+  const disclaimer =
+    amount < disclaimerUpperLimit
+      ? t("paymentCheckPage.disclaimer.cheaper")
+      : t("paymentCheckPage.disclaimer.yourCard");
+  return (
+    <Box display="flex" alignItems="center" flexDirection="row" gap={1} pt={1}>
+      <img
+        src={disclaimerIcon}
+        alt="disclaimer-icon"
+        style={{ width: "14px", height: "14px" }}
+      />
+      <Typography
+        variant="caption-semibold"
+        component="div"
+        sx={{
+          overflowWrap: "anywhere",
+        }}
+      >
+        {t(disclaimer)}
+      </Typography>
+    </Box>
+  );
+};
+
+const WalletIcon = ({ wallet }: { wallet: Wallet }) => {
+  if (
+    !wallet.creditCard.brand ||
+    wallet.creditCard.brand.toLowerCase() === "other"
+  ) {
+    return <CreditCardIcon color="action" />;
+  }
+  return (
+    <SvgIcon color="action">
+      <use
+        href={sprite + `#icons-${wallet.creditCard.brand.toLowerCase()}-mini`}
+      />
+    </SvgIcon>
+  );
+};
+
+const defaultStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  borderColor: "divider",
+  pt: 1,
+  pb: 1,
+};
