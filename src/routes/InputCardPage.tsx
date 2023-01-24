@@ -91,7 +91,7 @@ export default function InputCardPage() {
           onNavigate: () => navigate(`/${CheckoutRoutes.ERRORE}`),
         });
       } else {
-        void getPaymentPSPList({
+        await getPaymentPSPList({
           paymentMethodId: getPaymentMethodId()?.paymentMethodId,
           onError: onErrorGetPSP,
           onResponse: (resp: Array<PspList>) => {
@@ -103,7 +103,7 @@ export default function InputCardPage() {
             });
           },
         });
-        void activatePayment({
+        await activatePayment({
           wallet,
           token: token || "",
           onResponse,
