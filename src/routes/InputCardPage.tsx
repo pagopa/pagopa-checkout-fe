@@ -97,9 +97,9 @@ export default function InputCardPage() {
           onResponse: (resp: Array<PspList>) => {
             const firstPsp = sortPspByOnUsPolicy(resp);
             setPspSelected({
-              pspCode: firstPsp[0].idPsp || "",
-              fee: firstPsp[0].commission,
-              businessName: firstPsp[0].name || "",
+              pspCode: firstPsp.at(0)?.idPsp || "",
+              fee: firstPsp.at(0)?.commission || 0,
+              businessName: firstPsp.at(0)?.name || "",
             });
           },
         });
