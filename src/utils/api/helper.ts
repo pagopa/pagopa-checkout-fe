@@ -1113,7 +1113,8 @@ export const confirmPayment = async (
   await pipe(
     TE.tryCatch(
       () =>
-        pmClient.pay3ds2UsingPOST({
+        apiPaymentEcommerceClient.requestTransactionAuthorization({transactionId: checkData.idPayment}),
+        /*pmClient.pay3ds2UsingPOST({
           Bearer: `Bearer ${sessionStorage.getItem("sessionToken")}`,
           id: checkData.idPayment,
           payRequest: {
@@ -1128,7 +1129,7 @@ export const confirmPayment = async (
             },
           },
           language: "it",
-        }),
+        }),*/
       (_e) => {
         onError(ErrorsType.CONNECTION);
         mixpanel.track(PAYMENT_PAY3DS2_NET_ERR.value, {
@@ -1154,7 +1155,7 @@ export const confirmPayment = async (
                 mixpanel.track(PAYMENT_PAY3DS2_SUCCESS.value, {
                   EVENT_ID: PAYMENT_PAY3DS2_SUCCESS.value,
                 });
-                return JSON.stringify(myRes.value.data);
+                return JSON.stringify(myRes.value);
               } else {
                 onError(ErrorsType.GENERIC_ERROR);
                 mixpanel.track(PAYMENT_PAY3DS2_RESP_ERR.value, {
