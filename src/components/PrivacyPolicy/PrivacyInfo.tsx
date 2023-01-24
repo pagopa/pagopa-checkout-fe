@@ -16,7 +16,16 @@ export default function PrivacyInfo(props: { showDonationPrivacy?: boolean }) {
             rel="noreferrer"
             style={{ fontWeight: 600, textDecoration: "none" }}
           >
-            {t("privacyInfo.privacy")}
+            {t("privacyInfo.privacyTerms")}
+          </Link>
+          {t("privacyInfo.privacyDescContinue")}
+          <Link
+            href={t("privacyInfo.privacyUrl")}
+            target="_blank"
+            rel="noreferrer"
+            style={{ fontWeight: 600, textDecoration: "none" }}
+          >
+            {t("privacyInfo.privacyInfo")}
           </Link>
           {props.showDonationPrivacy && (
             <>

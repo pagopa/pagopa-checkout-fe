@@ -19,9 +19,11 @@ export const TRANSLATIONS_IT = {
     },
   },
   privacyInfo: {
-    privacyDesc: "Proseguendo dichiari di aver letto e compreso l'",
+    privacyDesc: "Proseguendo accetti i ",
+    privacyDescContinue: "del servizio e confermi di aver letto l'",
     googleDesc: " Form protetto tramite reCAPTCHA e Google",
-    privacy: "Informativa Privacy e i Termini e condizioni d'uso del servizio",
+    privacyTerms: "Termini e condizioni d'uso ",
+    privacyInfo: "Informativa Privacy",
     privacyPolicy: "Privacy Policy",
     serviceTerms: "Termini di servizio",
     privacyUrl: "/privacypolicy/it.html",
