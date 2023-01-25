@@ -188,7 +188,11 @@ export default function PaymentCheckPage() {
   };
 
   const isDisabled = () =>
-    pspEditLoading || payLoading || cancelLoading || pspUpdateLoading;
+    pspEditLoading ||
+    payLoading ||
+    cancelLoading ||
+    pspUpdateLoading ||
+    pspSelected.pspCode === "";
 
   return (
     <PageContainer>
