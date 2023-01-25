@@ -13,8 +13,10 @@ import { useAppDispatch } from "../redux/hooks/hooks";
 import { setCardData } from "../redux/slices/cardData";
 import { setSecurityCode } from "../redux/slices/securityCode";
 import {
+  getPaymentId,
   getPaymentMethodId,
   getReCaptchaKey,
+  getTransaction,
   getWallet,
   setPspSelected,
 } from "../utils/api/apiService";
@@ -22,7 +24,6 @@ import {
   activatePayment,
   getPaymentPSPList,
   onErrorGetPSP,
-  retryPollingActivationStatus,
   sortPspByOnUsPolicy,
 } from "../utils/api/helper";
 import { getConfigOrThrow } from "../utils/config/config";
@@ -64,52 +65,49 @@ export default function InputCardPage() {
     ref.current?.reset();
   };
 
-  const onResponse = (cardData: {
-    brand: string;
-    pan: string;
-    expDate: string;
-    cvv: string;
-    cardHolderName: string;
-  }) => {
+  const onResponse = (cvv: string) => {
     setLoading(false);
-    dispatch(setCardData(cardData));
-    dispatch(setSecurityCode(cardData.cvv));
+    dispatch(setSecurityCode(cvv));
     navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
   };
 
   const onSubmit = React.useCallback(
     async (wallet: InputCardFormFields) => {
+      const cardData = {
+        brand: "",
+        expDate: wallet.expirationDate,
+        cardHolderName: wallet.name,
+        cvv: wallet.cvv,
+        pan: wallet.number,
+      };
+      dispatch(setCardData(cardData));
       setLoading(true);
-      const token = await ref.current?.executeAsync();
-
-      if (error === ErrorsType.TIMEOUT) {
-        void retryPollingActivationStatus({
-          wallet: wallet as InputCardFormFields,
-          onResponse,
-          onError,
-          onNavigate: () => navigate(`/${CheckoutRoutes.ERRORE}`),
-        });
+      await getPaymentPSPList({
+        paymentMethodId: getPaymentMethodId()?.paymentMethodId,
+        onError: onErrorGetPSP,
+        onResponse: (resp: Array<PspList>) => {
+          const firstPsp = sortPspByOnUsPolicy(resp);
+          setPspSelected({
+            pspCode: firstPsp.at(0)?.idPsp || "",
+            fee: firstPsp.at(0)?.commission || 0,
+            businessName: firstPsp.at(0)?.name || "",
+          });
+        },
+      });
+      const paymentId = getPaymentId().paymentId;
+      const transactionId = getTransaction().transactionId;
+      // If I want to change the card data but I have already activated the payment
+      if (paymentId && transactionId) {
+        onResponse(cardData.cvv);
       } else {
-        await getPaymentPSPList({
-          paymentMethodId: getPaymentMethodId()?.paymentMethodId,
-          onError: onErrorGetPSP,
-          onResponse: (resp: Array<PspList>) => {
-            const firstPsp = sortPspByOnUsPolicy(resp);
-            setPspSelected({
-              pspCode: firstPsp.at(0)?.idPsp || "",
-              fee: firstPsp.at(0)?.commission || 0,
-              businessName: firstPsp.at(0)?.name || "",
-            });
-          },
-        });
         await activatePayment({
-          wallet,
-          token: token || "",
+          cardData,
           onResponse,
           onError,
           onNavigate: () => navigate(`/${CheckoutRoutes.ERRORE}`),
         });
       }
+
     },
     [ref, error]
   );
