@@ -8,6 +8,7 @@ import {
   PaymentMethodRoutes,
   TransactionMethods,
 } from "../../../../routes/models/paymentMethodRoutes";
+import { setPaymentMethodId } from "../../../../utils/api/apiService";
 import { PaymentInstruments } from "../../models/paymentModel";
 import { DisabledPaymentMethods, EnabledPaymentMethods } from "./PaymentMethod";
 
@@ -57,8 +58,21 @@ export function PaymentChoice(props: {
   const navigate = useNavigate();
 
   const handleClickOnMethod = React.useCallback(
-    (paymentType: TransactionMethods) => {
+    (paymentType: TransactionMethods, paymentMethodId: string) => {
       const route: string = PaymentMethodRoutes[paymentType]?.route;
+      setPaymentMethodId({ paymentMethodId });
+      /* void getPaymentPSPList({
+        paymentMethodId,
+        onError: onErrorGetPSP,
+        onResponse: (resp) => {
+          const firstPsp = sortPsp(resp);
+          setPspSelected({
+            pspCode: firstPsp[0].idPsp || "",
+            fee: firstPsp[0].commission,
+            businessName: firstPsp[0].name || "",
+          });
+        },
+      }); */
       navigate(`/${route}`);
     },
     []

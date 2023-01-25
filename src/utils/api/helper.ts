@@ -1,8 +1,8 @@
 /* eslint-disable functional/no-let */
 /* eslint-disable sonarjs/cognitive-complexity */
 /* eslint-disable sonarjs/no-identical-functions */
-/* eslint-disable @typescript-eslint/no-empty-function */
 import { Millisecond } from "@pagopa/ts-commons/lib/units";
+import cardValidator from "card-validator";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
 import { toError } from "fp-ts/lib/Either";
@@ -26,6 +26,7 @@ import {
   InputCardFormFields,
   PaymentCheckData,
   PaymentInstruments,
+  PspList,
   Wallet as PaymentWallet,
 } from "../../features/payment/models/paymentModel";
 import {
@@ -281,7 +282,13 @@ export const activatePayment = async ({
 }: {
   wallet: InputCardFormFields;
   token: string;
-  onResponse: (c: string) => void;
+  onResponse: (cardData: {
+    brand: string;
+    pan: string;
+    expDate: string;
+    cvv: string;
+    cardHolderName: string;
+  }) => void;
   onError: (e: string) => void;
   onNavigate: () => void;
 }) => {
@@ -499,7 +506,13 @@ export const retryPollingActivationStatus = async ({
   onNavigate,
 }: {
   wallet: InputCardFormFields;
-  onResponse: (c: string) => void;
+  onResponse: (cardData: {
+    brand: string;
+    pan: string;
+    expDate: string;
+    cardHolderName: string;
+    cvv: string;
+  }) => void;
   onError: (e: string) => void;
   onNavigate: () => void;
 }): Promise<void> => {
@@ -634,49 +647,46 @@ export const getPaymentCheckData = async ({
 };
 
 export const getPaymentPSPList = async ({
+  paymentMethodId,
   onError,
   onResponse,
 }: {
+  paymentMethodId: string;
   onError: (e: string) => void;
-  onResponse: (
-    r: Array<{
-      name: string | undefined;
-      label: string | undefined;
-      image: string | undefined;
-      commission: number;
-      idPsp: number | undefined;
-    }>
-  ) => void;
+  onResponse: (r: Array<PspList>) => void;
 }) => {
-  const walletStored = sessionStorage.getItem("wallet") || JSON.stringify("{}");
-  const checkDataStored =
-    sessionStorage.getItem("checkData") || JSON.stringify("{}");
-  const sessionToken =
-    sessionStorage.getItem("sessionToken") || JSON.stringify("");
+  const amount: number | undefined = pipe(
+    O.fromNullable(getCart()),
+    O.map((cart) =>
+      cart.paymentNotices.reduce(
+        (totalAmount, notice) => totalAmount + notice.amount,
+        0
+      )
+    ),
+    O.alt(() =>
+      pipe(
+        O.fromNullable(getPaymentInfo()),
+        O.map((paymentInfo) => paymentInfo.amount)
+      )
+    ),
+    O.getOrElseW(() => undefined)
+  );
 
-  const checkData = JSON.parse(checkDataStored);
-  const wallet = JSON.parse(walletStored);
-
-  const idPayment = checkData.idPayment;
-  const Bearer = `Bearer ${sessionToken}`;
-  const paymentType = wallet.type;
-  const isList = true;
-  const language = "it";
-  const idWallet = wallet.idWallet;
+  // const sessionToken =
+  //   sessionStorage.getItem("sessionToken") || JSON.stringify("");
+  // const Bearer = `Bearer ${sessionToken}`;
+  const lang = "it";
 
   mixpanel.track(PAYMENT_PSPLIST_INIT.value, {
     EVENT_ID: PAYMENT_PSPLIST_INIT.value,
   });
-  const pspL = await pipe(
+  const pspList = await pipe(
     TE.tryCatch(
       () =>
-        pmClient.getPspListUsingGET({
-          Bearer,
-          paymentType,
-          isList,
-          idWallet,
-          language,
-          idPayment,
+        apiPaymentEcommerceClient.getPaymentMethodsPSPs({
+          amount,
+          lang,
+          id: paymentMethodId,
         }),
       (_e) => {
         onError(ErrorsType.CONNECTION);
@@ -704,7 +714,7 @@ export const getPaymentPSPList = async ({
                 mixpanel.track(PAYMENT_PSPLIST_SUCCESS.value, {
                   EVENT_ID: PAYMENT_PSPLIST_SUCCESS.value,
                 });
-                return myRes?.value?.data?.pspList;
+                return myRes?.value.psp;
               } else {
                 onError(ErrorsType.GENERIC_ERROR);
                 mixpanel.track(PAYMENT_PSPLIST_RESP_ERR.value, {
@@ -718,15 +728,12 @@ export const getPaymentPSPList = async ({
     )
   )();
 
-  const psp = pspL?.map((e) => ({
+  const psp = pspList?.map((e) => ({
     name: e?.businessName,
     label: e?.businessName,
-    image: e?.logoPSP,
-    commission:
-      e?.fixedCost?.amount && e?.fixedCost?.decimalDigits
-        ? e?.fixedCost?.amount / Math.pow(10, e?.fixedCost?.decimalDigits)
-        : 0,
-    idPsp: e?.id,
+    image: undefined, // image: e?.logoPSP, TODO capire come gestire i loghi
+    commission: e?.fixedCost ?? 0,
+    idPsp: e?.code, // TODO gestito come stringa
   }));
 
   onResponse(psp || []);
@@ -735,7 +742,13 @@ export const getPaymentPSPList = async ({
 export const getSessionWallet = async (
   creditCard: InputCardFormFields,
   onError: (e: string) => void,
-  onResponse: (c: string) => void
+  onResponse: (cardData: {
+    brand: string;
+    pan: string;
+    expDate: string;
+    cvv: string;
+    cardHolderName: string;
+  }) => void
   // eslint-disable-next-line sonarjs/cognitive-complexity
 ) => {
   const useremail: string = JSON.parse(
@@ -954,7 +967,14 @@ export const getSessionWallet = async (
               sessionStorage.setItem("wallet", JSON.stringify(wallet));
             })
           );
-          onResponse(creditCard.cvv);
+          onResponse({
+            brand:
+              cardValidator.number(creditCard.number).card?.type || "other",
+            pan: creditCard.number,
+            cvv: creditCard.cvv,
+            cardHolderName: creditCard.name,
+            expDate: creditCard.expirationDate,
+          });
         }
       }
     )
@@ -1378,3 +1398,11 @@ export const getCarts = async (
     )
   )();
 };
+
+export const onErrorGetPSP = (e: string): void => {
+  throw new Error("Error getting psp list. " + e);
+};
+
+export const sortPspByOnUsPolicy = (pspList: Array<PspList>): Array<PspList> =>
+  // TODO Implement OnUs/NotOnUs sorting?
+  pspList;
