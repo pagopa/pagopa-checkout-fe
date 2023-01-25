@@ -19,6 +19,7 @@ export enum SessionItems {
   originUrlRedirect = "originUrlRedirect",
   sessionToken = "sessionToken",
   cart = "cart",
+  transaction = "transaction",
 }
 export const loadState = (item: string) => {
   try {
