@@ -15,6 +15,7 @@ import { PaymentActivationsPostResponse } from "../../../generated/definitions/p
 import { Detail_v2Enum } from "../../../generated/definitions/payment-activations-api/PaymentProblemJson";
 import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-activations-api/PaymentRequestsGetResponse";
 import { PaymentRequestsGetResponse as EcommercePaymentRequestsGetResponse } from "../../../generated/definitions/payment-ecommerce/PaymentRequestsGetResponse";
+import { LanguageEnum } from "../../../generated/definitions/payment-ecommerce/Psp";
 import { ValidationFaultPaymentProblemJson } from "../../../generated/definitions/payment-ecommerce/ValidationFaultPaymentProblemJson";
 import {
   TypeEnum,
@@ -103,6 +104,11 @@ import {
   PAYMENT_WALLET_RESP_ERR,
   PAYMENT_WALLET_SUCCESS,
   PAYMENT_WALLET_SVR_ERR,
+  TRANSACTION_AUTH_INIT,
+  TRANSACTION_AUTH_NET_ERROR,
+  TRANSACTION_AUTH_RESP_ERROR,
+  TRANSACTION_AUTH_SRV_ERROR,
+  TRANSACTION_AUTH_SUCCES,
 } from "../config/mixpanelDefs";
 import { mixpanel } from "../config/mixpanelHelperInit";
 import { ErrorsType } from "../errors/checkErrorsModel";
@@ -1054,6 +1060,83 @@ export const updateWallet = async (
   )();
 };
 
+export const proceedToPayment = async (
+  {
+    checkData,
+  }: {
+    checkData: PaymentCheckData;
+  },
+  onError: (e: string) => void,
+  onResponse: () => void
+) => {
+  mixpanel.track(TRANSACTION_AUTH_INIT.value, {
+    EVENT_ID: TRANSACTION_AUTH_INIT.value,
+  });
+  await pipe(
+    TE.tryCatch(
+      () =>
+        apiPaymentEcommerceClient.requestTransactionAuthorization({
+          transactionId: checkData.idPayment,
+          body: {
+            amount: Number(0) as any,
+            fee: 0 as any,
+            paymentInstrumentId: "paymentInstrumentId",
+            pspId: "pspId",
+            details: {
+              detailType: "type",
+              accountEmail: "email@email.it",
+            },
+            language: LanguageEnum.IT,
+          },
+        }),
+      (_e) => {
+        onError(ErrorsType.CONNECTION);
+        mixpanel.track(TRANSACTION_AUTH_NET_ERROR.value, {
+          EVENT_ID: TRANSACTION_AUTH_NET_ERROR.value,
+        });
+        return toError;
+      }
+    ),
+    TE.fold(
+      (_r) => async () => {
+        onError(ErrorsType.SERVER);
+        mixpanel.track(TRANSACTION_AUTH_SRV_ERROR.value, {
+          EVENT_ID: TRANSACTION_AUTH_SRV_ERROR.value,
+        });
+      }, // to be replaced with logic to handle failures
+      (myResExt) => async () => {
+        const paymentResp = pipe(
+          myResExt,
+          E.fold(
+            () => "fakePayment",
+            (myRes) => {
+              if (myRes.status === 200) {
+                mixpanel.track(TRANSACTION_AUTH_SUCCES.value, {
+                  EVENT_ID: TRANSACTION_AUTH_SUCCES.value,
+                });
+                return JSON.stringify(myRes.value);
+              } else {
+                onError(ErrorsType.GENERIC_ERROR);
+                mixpanel.track(TRANSACTION_AUTH_RESP_ERROR.value, {
+                  EVENT_ID: TRANSACTION_AUTH_RESP_ERROR.value,
+                });
+                return "fakePayment";
+              }
+            }
+          )
+        );
+        if (paymentResp !== "fakePayment") {
+          sessionStorage.setItem(
+            "idTransaction",
+            JSON.parse(paymentResp).token
+          );
+          onResponse();
+        }
+      }
+    )
+  )();
+};
+
 export const confirmPayment = async (
   {
     checkData,
@@ -1113,8 +1196,7 @@ export const confirmPayment = async (
   await pipe(
     TE.tryCatch(
       () =>
-        apiPaymentEcommerceClient.requestTransactionAuthorization({transactionId: checkData.idPayment}),
-        /*pmClient.pay3ds2UsingPOST({
+        pmClient.pay3ds2UsingPOST({
           Bearer: `Bearer ${sessionStorage.getItem("sessionToken")}`,
           id: checkData.idPayment,
           payRequest: {
@@ -1129,7 +1211,7 @@ export const confirmPayment = async (
             },
           },
           language: "it",
-        }),*/
+        }),
       (_e) => {
         onError(ErrorsType.CONNECTION);
         mixpanel.track(PAYMENT_PAY3DS2_NET_ERR.value, {
