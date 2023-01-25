@@ -9,10 +9,7 @@ import { InputCardFormFields } from "../features/payment/models/paymentModel";
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { setSecurityCode } from "../redux/slices/securityCode";
 import { getReCaptchaKey, getWallet } from "../utils/api/apiService";
-import {
-  activatePayment,
-  retryPollingActivationStatus,
-} from "../utils/api/helper";
+import { activatePayment } from "../utils/api/helper";
 import { getConfigOrThrow } from "../utils/config/config";
 import { ErrorsType } from "../utils/errors/checkErrorsModel";
 import { CheckoutRoutes } from "./models/routeModel";
@@ -63,40 +60,20 @@ export default function InputCardPage() {
       setLoading(true);
       setWallet(wallet);
       const token = await ref.current?.executeAsync();
-
-      if (error === ErrorsType.TIMEOUT) {
-        void retryPollingActivationStatus({
-          wallet: wallet as InputCardFormFields,
-          onResponse,
-          onError,
-          onNavigate: () => navigate(`/${CheckoutRoutes.ERRORE}`),
-        });
-      } else {
-        void activatePayment({
-          wallet,
-          token: token || "",
-          onResponse,
-          onError,
-          onNavigate: () => navigate(`/${CheckoutRoutes.ERRORE}`),
-        });
-      }
+      void activatePayment({
+        wallet,
+        token: token || "",
+        onResponse,
+        onError,
+        onNavigate: () => navigate(`/${CheckoutRoutes.ERRORE}`),
+      });
     },
     [ref, error]
   );
 
   const onRetry = React.useCallback(() => {
     setErrorModalOpen(false);
-    if (error === ErrorsType.TIMEOUT) {
-      setLoading(true);
-      void retryPollingActivationStatus({
-        wallet: wallet as InputCardFormFields,
-        onResponse,
-        onError,
-        onNavigate: () => navigate(`/${CheckoutRoutes.ERRORE}`),
-      });
-    } else {
-      void onSubmit(wallet as InputCardFormFields);
-    }
+    void onSubmit(wallet as InputCardFormFields);
   }, [wallet, error]);
 
   const onCancel = () => navigate(-1);

@@ -11,16 +11,16 @@ import * as TE from "fp-ts/TaskEither";
 import { CodiceContestoPagamento } from "../../../generated/definitions/payment-activations-api/CodiceContestoPagamento";
 import { ImportoEuroCents } from "../../../generated/definitions/payment-activations-api/ImportoEuroCents";
 import { PaymentActivationsGetResponse } from "../../../generated/definitions/payment-activations-api/PaymentActivationsGetResponse";
-import { PaymentActivationsPostResponse } from "../../../generated/definitions/payment-activations-api/PaymentActivationsPostResponse";
 import { Detail_v2Enum } from "../../../generated/definitions/payment-activations-api/PaymentProblemJson";
 import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-activations-api/PaymentRequestsGetResponse";
+import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { PaymentRequestsGetResponse as EcommercePaymentRequestsGetResponse } from "../../../generated/definitions/payment-ecommerce/PaymentRequestsGetResponse";
+import { RptId } from "../../../generated/definitions/payment-ecommerce/RptId";
 import { ValidationFaultPaymentProblemJson } from "../../../generated/definitions/payment-ecommerce/ValidationFaultPaymentProblemJson";
 import {
   TypeEnum,
   Wallet,
 } from "../../../generated/definitions/payment-manager-api/Wallet";
-import { RptId } from "../../../generated/definitions/payment-transactions-api/RptId";
 import {
   Cart,
   InputCardFormFields,
@@ -110,6 +110,7 @@ import { WalletSession } from "../sessionData/WalletSession";
 import {
   getCart,
   getCheckData,
+  getEmailInfo,
   getNoticeInfo,
   getPaymentId,
   getPaymentInfo,
@@ -274,7 +275,7 @@ export const getPaymentInfoTask = (
 
 export const activatePayment = async ({
   wallet,
-  token,
+  // token,
   onResponse,
   onError,
   onNavigate,
@@ -291,10 +292,10 @@ export const activatePayment = async ({
     importoSingoloVersamento: paymentInfo.amount,
     codiceContestoPagamento: paymentInfo.paymentContextCode,
   };
+  const userEmail = getEmailInfo().email;
   const paymentId = getPaymentId().paymentId;
   const checkDataId = getCheckData().id;
-  const rptId: RptId = `${noticeInfo.cf}${noticeInfo.billCode}`;
-  const config = getConfigOrThrow();
+  const rptId: RptId = `${noticeInfo.cf}${noticeInfo.billCode}` as RptId;
   const getWallet = () => {
     void getSessionWallet(wallet as InputCardFormFields, onError, onResponse);
   };
@@ -319,28 +320,16 @@ export const activatePayment = async ({
             activePaymentTask(
               response.importoSingoloVersamento,
               response.codiceContestoPagamento,
-              rptId,
-              token
+              userEmail,
+              rptId
             ),
             TE.fold(
               (e: string) => async () => {
                 onError(e);
               },
-              () => async () => {
-                void pollingActivationStatus(
-                  response.codiceContestoPagamento,
-                  config.CHECKOUT_POLLING_ACTIVATION_ATTEMPTS as number,
-                  (res) => {
-                    setPaymentId({ paymentId: res.idPagamento });
-                    void getPaymentCheckData({
-                      idPayment: res.idPagamento,
-                      onError,
-                      onResponse: getWallet,
-                      onNavigate,
-                    });
-                  },
-                  onError
-                );
+              (res) => async () => {
+                setPaymentId({ paymentId: res.transactionId });
+                // getWallet
               }
             )
           )()
@@ -352,21 +341,26 @@ export const activatePayment = async ({
 export const activePaymentTask = (
   amountSinglePayment: ImportoEuroCents,
   paymentContextCode: CodiceContestoPagamento,
-  rptId: RptId,
-  recaptchaResponse: string
-): TE.TaskEither<string, PaymentActivationsPostResponse> =>
+  userEmail: string,
+  rptId: RptId
+): TE.TaskEither<string, NewTransactionResponse> =>
   pipe(
     TE.tryCatch(
       () => {
         mixpanel.track(PAYMENT_ACTIVATE_INIT.value, {
           EVENT_ID: PAYMENT_ACTIVATE_INIT.value,
         });
-        return apiPaymentActivationsClient.activatePayment({
-          recaptchaResponse,
+        return apiPaymentEcommerceClient.newTransaction({
+          // recaptchaResponse,
           body: {
-            rptId,
-            importoSingoloVersamento: amountSinglePayment,
-            codiceContestoPagamento: paymentContextCode,
+            paymentNotices: [
+              {
+                rptId,
+                paymentContextCode,
+                amount: amountSinglePayment,
+              },
+            ],
+            email: userEmail,
           },
         });
       },
@@ -390,8 +384,19 @@ export const activePaymentTask = (
           E.fold(
             () => TE.left("Errore attivazione pagamento"),
             (responseType) => {
-              const reason =
-                responseType.status === 200 ? "" : responseType.value?.detail;
+              let reason;
+              if (responseType.status === 200) {
+                reason = "";
+              }
+              if (responseType.status === 400) {
+                reason = (
+                  responseType.value as ValidationFaultPaymentProblemJson
+                )?.faultCodeCategory;
+              } else {
+                reason = (
+                  responseType.value as ValidationFaultPaymentProblemJson
+                )?.faultCodeDetail;
+              }
               const EVENT_ID: string =
                 responseType.status === 200
                   ? PAYMENT_ACTIVATE_SUCCESS.value
@@ -401,7 +406,10 @@ export const activePaymentTask = (
               if (responseType.status === 400) {
                 return TE.left(
                   pipe(
-                    O.fromNullable(responseType.value?.detail as Detail_v2Enum),
+                    O.fromNullable(
+                      (responseType.value as ValidationFaultPaymentProblemJson)
+                        ?.faultCodeCategory
+                    ),
                     O.getOrElse(() => ErrorsType.STATUS_ERROR as string)
                   )
                 );
@@ -409,7 +417,11 @@ export const activePaymentTask = (
               return responseType.status !== 200
                 ? TE.left(
                     pipe(
-                      O.fromNullable(responseType.value?.detail),
+                      O.fromNullable(
+                        (
+                          responseType.value as ValidationFaultPaymentProblemJson
+                        )?.faultCodeDetail
+                      ),
                       O.getOrElse(() => ErrorsType.STATUS_ERROR as string)
                     )
                   )
