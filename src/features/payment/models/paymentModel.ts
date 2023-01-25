@@ -181,7 +181,7 @@ export interface Transaction {
   transactionId: string;
   status: TransactionStatusEnum;
   amountTotal: number;
-  payments: Array<PaymentData>;
+  payments: ReadonlyArray<PaymentData>;
   feeTotal?: AmountEuroCents;
   clientId?: ClientIdEnum;
   authToken?: string;

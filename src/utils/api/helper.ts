@@ -116,6 +116,7 @@ import {
   getPaymentInfo,
   setPaymentId,
   setReturnUrls,
+  setTransaction,
 } from "./apiService";
 import { getBrowserInfoTask, getEMVCompliantColorDepth } from "./checkHelper";
 import {
@@ -278,7 +279,7 @@ export const activatePayment = async ({
   // token,
   onResponse,
   onError,
-  onNavigate,
+  onNavigate, // non dovrebbe servire piu
 }: {
   wallet: InputCardFormFields;
   token: string;
@@ -294,7 +295,7 @@ export const activatePayment = async ({
   };
   const userEmail = getEmailInfo().email;
   const paymentId = getPaymentId().paymentId;
-  const checkDataId = getCheckData().id;
+  const checkDataId = getCheckData().id; //bisogna eliminare l oggetto checkData e utilizzare l oggetto trasaction
   const rptId: RptId = `${noticeInfo.cf}${noticeInfo.billCode}` as RptId;
   const getWallet = () => {
     void getSessionWallet(wallet as InputCardFormFields, onError, onResponse);
@@ -302,7 +303,7 @@ export const activatePayment = async ({
   if (paymentId && checkDataId) {
     getWallet();
   }
-  if (paymentId && !checkDataId) {
+  if (paymentId && !checkDataId) { // qui farei una get la getTransaction ???
     void getPaymentCheckData({
       idPayment: paymentId,
       onError,
@@ -328,8 +329,8 @@ export const activatePayment = async ({
                 onError(e);
               },
               (res) => async () => {
-                setPaymentId({ paymentId: res.transactionId });
-                // getWallet
+                setTransaction(res);
+                onResponse("123") // il CVV va preso da redux sostituendo la getWallet
               }
             )
           )()
@@ -549,7 +550,7 @@ export const retryPollingActivationStatus = async ({
   );
 };
 
-export const getPaymentCheckData = async ({
+export const getPaymentCheckData = async ({ // va fatta la GET transaction
   idPayment,
   onError,
   onResponse,
