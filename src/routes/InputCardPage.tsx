@@ -13,7 +13,7 @@ import { useAppDispatch } from "../redux/hooks/hooks";
 import { setCardData } from "../redux/slices/cardData";
 import { setSecurityCode } from "../redux/slices/securityCode";
 import {
-  getPaymentMethodId,
+  getPaymentMethod,
   getReCaptchaKey,
   getWallet,
   setPspSelected,
@@ -91,7 +91,7 @@ export default function InputCardPage() {
         });
       } else {
         await getPaymentPSPList({
-          paymentMethodId: getPaymentMethodId()?.paymentMethodId,
+          paymentMethodId: getPaymentMethod()?.paymentMethodId,
           onError: onErrorGetPSP,
           onResponse: (resp: Array<PspList>) => {
             const firstPsp = sortPspByOnUsPolicy(resp);

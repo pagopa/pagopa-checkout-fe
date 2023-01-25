@@ -117,9 +117,12 @@ import { WalletSession } from "../sessionData/WalletSession";
 import {
   getCart,
   getCheckData,
+  getEmailInfo,
   getNoticeInfo,
   getPaymentId,
   getPaymentInfo,
+  getPaymentMethod,
+  getPspSelected,
   setPaymentId,
   setReturnUrls,
 } from "./apiService";
@@ -1063,11 +1066,18 @@ export const updateWallet = async (
 export const proceedToPayment = async (
   {
     checkData,
+    cardData,
   }: {
     checkData: PaymentCheckData;
+    cardData: {
+      cvv: string;
+      pan: string;
+      expiryDate: string;
+      holderName: string;
+    };
   },
   onError: (e: string) => void,
-  onResponse: () => void
+  onResponse: (authUrl: string) => void
 ) => {
   mixpanel.track(TRANSACTION_AUTH_INIT.value, {
     EVENT_ID: TRANSACTION_AUTH_INIT.value,
@@ -1079,13 +1089,23 @@ export const proceedToPayment = async (
           transactionId: checkData.idPayment,
           body: {
             amount: Number(0) as any,
-            fee: 0 as any,
-            paymentInstrumentId: "paymentInstrumentId",
-            pspId: "pspId",
-            details: {
-              detailType: "type",
-              accountEmail: "email@email.it",
-            },
+            fee: getPspSelected().fee as any,
+            paymentInstrumentId: getPaymentMethod().paymentMethodId,
+            pspId: getPspSelected().pspCode,
+            details:
+              getPaymentMethod().paymentTypeCode === "CP"
+                ? {
+                    detailType: "card",
+                    accountEmail: getEmailInfo(false).email,
+                    cvv: cardData.cvv,
+                    pan: cardData.pan,
+                    expiryDate: cardData.expiryDate,
+                    holderName: cardData.holderName,
+                  }
+                : {
+                    detailType: "postepay",
+                    accountEmail: getEmailInfo(false).email,
+                  },
             language: LanguageEnum.IT,
           },
         }),
@@ -1105,7 +1125,7 @@ export const proceedToPayment = async (
         });
       }, // to be replaced with logic to handle failures
       (myResExt) => async () => {
-        const paymentResp = pipe(
+        const authorizationUrl = pipe(
           myResExt,
           E.fold(
             () => "fakePayment",
@@ -1114,29 +1134,32 @@ export const proceedToPayment = async (
                 mixpanel.track(TRANSACTION_AUTH_SUCCES.value, {
                   EVENT_ID: TRANSACTION_AUTH_SUCCES.value,
                 });
-                return JSON.stringify(myRes.value);
+                return myRes.value.authorizationUrl;
               } else {
                 onError(ErrorsType.GENERIC_ERROR);
                 mixpanel.track(TRANSACTION_AUTH_RESP_ERROR.value, {
                   EVENT_ID: TRANSACTION_AUTH_RESP_ERROR.value,
                 });
+                // TODO Qui ci va una error url?
                 return "fakePayment";
               }
             }
           )
         );
-        if (paymentResp !== "fakePayment") {
+        /* if (paymentResp !== "fakePayment") {
           sessionStorage.setItem(
             "idTransaction",
             JSON.parse(paymentResp).token
           );
           onResponse();
-        }
+        } */
+        onResponse(authorizationUrl);
       }
     )
   )();
 };
 
+// TODO To be deleted
 export const confirmPayment = async (
   {
     checkData,

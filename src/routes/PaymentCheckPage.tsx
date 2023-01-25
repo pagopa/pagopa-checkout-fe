@@ -36,15 +36,15 @@ import {
   getCheckData,
   getEmailInfo,
   getPaymentInfo,
-  getPaymentMethodId,
+  getPaymentMethod,
   getPspSelected,
   getWallet,
   setPspSelected,
 } from "../utils/api/apiService";
 import {
   cancelPayment,
-  confirmPayment,
   getPaymentPSPList,
+  proceedToPayment,
 } from "../utils/api/helper";
 import { onBrowserUnload } from "../utils/eventListeners";
 import { moneyFormat } from "../utils/form/formatters";
@@ -84,7 +84,7 @@ export default function PaymentCheckPage() {
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
   const cardData = useAppSelector(selectCardData);
-  const paymentMethodId = getPaymentMethodId();
+  const paymentMethod = getPaymentMethod();
   const pspSelected = getPspSelected();
 
   const checkData = getCheckData();
@@ -116,15 +116,30 @@ export default function PaymentCheckPage() {
     setErrorModalOpen(true);
   };
 
-  const onResponse = () => {
+  const onResponse = (authorizationUrl: string) => {
     setPayLoading(false);
-    navigate(`/${CheckoutRoutes.ESITO}`);
+    // navigate(`/${CheckoutRoutes.ESITO}`);
+    // sessionStorage.clear();
+    window.location.replace(authorizationUrl);
   };
 
   const onSubmit = React.useCallback(() => {
     setPayLoading(true);
-    void confirmPayment(
+    /* void confirmPayment(
       { checkData, wallet, cvv: cardData.cvv },
+      onError,
+      onResponse
+    ); */
+    void proceedToPayment(
+      {
+        checkData,
+        cardData: {
+          cvv: cardData?.cvv || "",
+          pan: cardData?.pan || "",
+          holderName: cardData?.cardHolderName || "",
+          expiryDate: cardData?.expDate || "",
+        },
+      },
       onError,
       onResponse
     );
@@ -154,7 +169,7 @@ export default function PaymentCheckPage() {
     setDrawerOpen(true);
     setPspEditLoading(true);
     void getPaymentPSPList({
-      paymentMethodId: paymentMethodId.paymentMethodId,
+      paymentMethodId: paymentMethod.paymentMethodId,
       onError,
       onResponse: onPspEditResponse,
     });

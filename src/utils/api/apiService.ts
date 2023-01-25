@@ -6,7 +6,7 @@ import {
   PaymentFormFields,
   PaymentId,
   PaymentInfo,
-  PaymentMethodId,
+  PaymentMethod,
   PspSelected,
   ReturnUrls,
   Wallet,
@@ -59,12 +59,13 @@ export function getPaymentId(): PaymentId {
   };
 }
 
-export function getPaymentMethodId(): PaymentMethodId {
-  const id = loadState(SessionItems.paymentMethodId) as
-    | PaymentMethodId
+export function getPaymentMethod(): PaymentMethod {
+  const paymentMethod = loadState(SessionItems.paymentMethod) as
+    | PaymentMethod
     | undefined;
   return {
-    paymentMethodId: id?.paymentMethodId || "",
+    paymentTypeCode: paymentMethod?.paymentTypeCode || "",
+    paymentMethodId: paymentMethod?.paymentMethodId || "",
   };
 }
 
@@ -179,8 +180,8 @@ export function setPaymentId(item: PaymentId) {
   sessionStorage.setItem(SessionItems.paymentId, JSON.stringify(item));
 }
 
-export function setPaymentMethodId(item: PaymentMethodId) {
-  sessionStorage.setItem(SessionItems.paymentMethodId, JSON.stringify(item));
+export function setPaymentMethodId(item: PaymentMethod) {
+  sessionStorage.setItem(SessionItems.paymentMethod, JSON.stringify(item));
 }
 
 export function setPspSelected(item: PspSelected) {

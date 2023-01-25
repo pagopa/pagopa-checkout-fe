@@ -14,7 +14,7 @@ export enum SessionItems {
   noticeInfo = "rptId",
   useremail = "useremail",
   paymentId = "paymentId",
-  paymentMethodId = "paymentMethodId",
+  paymentMethod = "paymentMethod",
   pspSelected = "pspSelected",
   checkData = "checkData",
   wallet = "wallet",

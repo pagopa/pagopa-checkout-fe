@@ -63,7 +63,11 @@ const MethodComponentList = ({
   testable,
 }: {
   methods: Array<PaymentInstruments>;
-  onClick?: (typecode: TransactionMethods, paymentMethodId: string) => void;
+  onClick?: (
+    typecode: TransactionMethods,
+    paymentMethodId: string,
+    paymentTypeCode: string
+  ) => void;
   testable?: boolean;
 }) => (
   <>
@@ -73,7 +77,14 @@ const MethodComponentList = ({
         method={method}
         key={index}
         onClick={
-          onClick ? () => onClick(method.paymentTypeCode, method.id) : undefined
+          onClick
+            ? () =>
+                onClick(
+                  method.paymentTypeCode,
+                  method.id,
+                  method.paymentTypeCode
+                )
+            : undefined
         }
       />
     ))}
@@ -85,7 +96,11 @@ export const EnabledPaymentMethods = ({
   onClick,
 }: {
   methods: Array<PaymentInstruments>;
-  onClick: (typecode: TransactionMethods, paymentTypeId: string) => void;
+  onClick: (
+    typecode: TransactionMethods,
+    paymentTypeId: string,
+    paymentTypeCode: string
+  ) => void;
 }) => {
   const { t } = useTranslation();
 
