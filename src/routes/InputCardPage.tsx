@@ -80,7 +80,6 @@ export default function InputCardPage() {
   const onSubmit = React.useCallback(
     async (wallet: InputCardFormFields) => {
       setLoading(true);
-      // setWallet(wallet);
       const token = await ref.current?.executeAsync();
 
       if (error === ErrorsType.TIMEOUT) {

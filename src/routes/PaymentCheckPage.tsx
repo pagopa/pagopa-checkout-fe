@@ -188,11 +188,9 @@ export default function PaymentCheckPage() {
   };
 
   const isDisabled = () =>
-    pspEditLoading ||
-    payLoading ||
-    cancelLoading ||
-    pspUpdateLoading ||
-    pspSelected.pspCode === "";
+    pspEditLoading || payLoading || cancelLoading || pspUpdateLoading;
+
+  const isDisabledSubmit = () => isDisabled() || pspSelected.pspCode === "";
 
   return (
     <PageContainer>
@@ -315,7 +313,7 @@ export default function PaymentCheckPage() {
           totalAmount
         )}`}
         cancelTitle="paymentCheckPage.buttons.cancel"
-        disabledSubmit={isDisabled()}
+        disabledSubmit={isDisabledSubmit()}
         disabledCancel={isDisabled()}
         handleSubmit={onSubmit}
         handleCancel={onCancel}
