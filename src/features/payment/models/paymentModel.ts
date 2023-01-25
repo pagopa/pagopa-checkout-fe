@@ -78,6 +78,16 @@ export interface PaymentId {
   paymentId: string;
 }
 
+export interface PaymentMethodId {
+  paymentMethodId: string;
+}
+
+export interface PspSelected {
+  pspCode: string;
+  businessName: string;
+  fee: number;
+}
+
 export interface PaymentCheckDetail {
   CCP: string;
   IUV: string;
@@ -140,7 +150,7 @@ export interface PspList {
   label: string | undefined;
   image: string | undefined;
   commission: number;
-  idPsp: number | undefined;
+  idPsp: string | undefined;
 }
 
 export interface PaymentInstruments {

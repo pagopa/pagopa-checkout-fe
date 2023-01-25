@@ -5,11 +5,26 @@ import { useNavigate } from "react-router-dom";
 import ErrorModal from "../components/modals/ErrorModal";
 import PageContainer from "../components/PageContent/PageContainer";
 import { InputCardForm } from "../features/payment/components/InputCardForm/InputCardForm";
-import { InputCardFormFields } from "../features/payment/models/paymentModel";
+import {
+  InputCardFormFields,
+  PspList,
+} from "../features/payment/models/paymentModel";
 import { useAppDispatch } from "../redux/hooks/hooks";
+import { setCardData } from "../redux/slices/cardData";
 import { setSecurityCode } from "../redux/slices/securityCode";
-import { getReCaptchaKey, getWallet } from "../utils/api/apiService";
-import { activatePayment } from "../utils/api/helper";
+import {
+  getPaymentMethodId,
+  getReCaptchaKey,
+  getWallet,
+  setPspSelected,
+} from "../utils/api/apiService";
+import {
+  activatePayment,
+  getPaymentPSPList,
+  onErrorGetPSP,
+  retryPollingActivationStatus,
+  sortPspByOnUsPolicy,
+} from "../utils/api/helper";
 import { getConfigOrThrow } from "../utils/config/config";
 import { ErrorsType } from "../utils/errors/checkErrorsModel";
 import { CheckoutRoutes } from "./models/routeModel";
@@ -20,7 +35,7 @@ export default function InputCardPage() {
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
   const [timeoutId, setTimeoutId] = React.useState<number>();
-  const [wallet, setWallet] = React.useState<InputCardFormFields>();
+  const [wallet] = React.useState<InputCardFormFields>();
   const [hideCancelButton, setHideCancelButton] = React.useState(false);
   const ref = React.useRef<ReCAPTCHA>(null);
   const config = getConfigOrThrow();
@@ -49,24 +64,52 @@ export default function InputCardPage() {
     ref.current?.reset();
   };
 
-  const onResponse = (cvv: string) => {
+  const onResponse = (cardData: {
+    brand: string;
+    pan: string;
+    expDate: string;
+    cvv: string;
+    cardHolderName: string;
+  }) => {
     setLoading(false);
-    dispatch(setSecurityCode(cvv));
+    dispatch(setCardData(cardData));
+    dispatch(setSecurityCode(cardData.cvv));
     navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
   };
 
   const onSubmit = React.useCallback(
     async (wallet: InputCardFormFields) => {
       setLoading(true);
-      setWallet(wallet);
       const token = await ref.current?.executeAsync();
-      void activatePayment({
-        wallet,
-        token: token || "",
-        onResponse,
-        onError,
-        onNavigate: () => navigate(`/${CheckoutRoutes.ERRORE}`),
-      });
+
+      if (error === ErrorsType.TIMEOUT) {
+        void retryPollingActivationStatus({
+          wallet: wallet as InputCardFormFields,
+          onResponse,
+          onError,
+          onNavigate: () => navigate(`/${CheckoutRoutes.ERRORE}`),
+        });
+      } else {
+        await getPaymentPSPList({
+          paymentMethodId: getPaymentMethodId()?.paymentMethodId,
+          onError: onErrorGetPSP,
+          onResponse: (resp: Array<PspList>) => {
+            const firstPsp = sortPspByOnUsPolicy(resp);
+            setPspSelected({
+              pspCode: firstPsp.at(0)?.idPsp || "",
+              fee: firstPsp.at(0)?.commission || 0,
+              businessName: firstPsp.at(0)?.name || "",
+            });
+          },
+        });
+        await activatePayment({
+          wallet,
+          token: token || "",
+          onResponse,
+          onError,
+          onNavigate: () => navigate(`/${CheckoutRoutes.ERRORE}`),
+        });
+      }
     },
     [ref, error]
   );
