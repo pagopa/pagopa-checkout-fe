@@ -17,7 +17,6 @@ import {
   getPaymentMethodId,
   getReCaptchaKey,
   getTransaction,
-  getWallet,
   setPspSelected,
 } from "../utils/api/apiService";
 import {
@@ -43,7 +42,7 @@ export default function InputCardPage() {
   const dispatch = useAppDispatch();
 
   React.useEffect(() => {
-    setHideCancelButton(!!getWallet().idWallet);
+    setHideCancelButton(!!getTransaction().transactionId);
   }, []);
 
   React.useEffect(() => {
