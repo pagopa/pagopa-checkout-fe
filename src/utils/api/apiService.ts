@@ -1,4 +1,5 @@
 /* eslint-disable sonarjs/cognitive-complexity */
+import { TransactionStatusEnum } from "../../../generated/definitions/payment-ecommerce/TransactionStatus";
 import {
   Cart,
   PaymentCheckData,
@@ -10,6 +11,7 @@ import {
   PspSelected,
   ReturnUrls,
   Wallet,
+  Transaction,
 } from "../../features/payment/models/paymentModel";
 import { getConfigOrThrow } from "../config/config";
 import { loadState, SessionItems } from "../storage/sessionStorage";
@@ -163,6 +165,19 @@ export function getReturnUrls(): ReturnUrls {
   };
 }
 
+export function getTransaction(): Transaction {
+  const data = loadState(SessionItems.transaction) as Transaction | undefined;
+  return {
+    transactionId: data?.transactionId || "",
+    status: data?.status || TransactionStatusEnum.AUTHORIZATION_FAILED,
+    amountTotal: data?.amountTotal || 0,
+    payments: data?.payments || [],
+    feeTotal: data?.feeTotal,
+    clientId: data?.clientId,
+    authToken: data?.authToken,
+  };
+}
+
 export function setReturnUrls(item: ReturnUrls) {
   sessionStorage.setItem(SessionItems.originUrlRedirect, JSON.stringify(item));
 }
@@ -201,4 +216,8 @@ export function setPaymentInfo(item: PaymentInfo) {
 
 export function setRptId(item: PaymentFormFields) {
   sessionStorage.setItem(SessionItems.noticeInfo, JSON.stringify(item));
+}
+
+export function setTransaction(item: Transaction) {
+  sessionStorage.setItem(SessionItems.transaction, JSON.stringify(item));
 }

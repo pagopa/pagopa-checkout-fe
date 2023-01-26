@@ -1,7 +1,6 @@
 /* eslint-disable functional/no-let */
 /* eslint-disable sonarjs/cognitive-complexity */
 /* eslint-disable sonarjs/no-identical-functions */
-import { Millisecond } from "@pagopa/ts-commons/lib/units";
 import cardValidator from "card-validator";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
@@ -10,17 +9,17 @@ import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
 import { CodiceContestoPagamento } from "../../../generated/definitions/payment-activations-api/CodiceContestoPagamento";
 import { ImportoEuroCents } from "../../../generated/definitions/payment-activations-api/ImportoEuroCents";
-import { PaymentActivationsGetResponse } from "../../../generated/definitions/payment-activations-api/PaymentActivationsGetResponse";
-import { PaymentActivationsPostResponse } from "../../../generated/definitions/payment-activations-api/PaymentActivationsPostResponse";
 import { Detail_v2Enum } from "../../../generated/definitions/payment-activations-api/PaymentProblemJson";
 import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-activations-api/PaymentRequestsGetResponse";
+import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { PaymentRequestsGetResponse as EcommercePaymentRequestsGetResponse } from "../../../generated/definitions/payment-ecommerce/PaymentRequestsGetResponse";
+import { RptId } from "../../../generated/definitions/payment-ecommerce/RptId";
+import { TransactionInfo } from "../../../generated/definitions/payment-ecommerce/TransactionInfo";
 import { ValidationFaultPaymentProblemJson } from "../../../generated/definitions/payment-ecommerce/ValidationFaultPaymentProblemJson";
 import {
   TypeEnum,
   Wallet,
 } from "../../../generated/definitions/payment-manager-api/Wallet";
-import { RptId } from "../../../generated/definitions/payment-transactions-api/RptId";
 import {
   Cart,
   InputCardFormFields,
@@ -53,11 +52,6 @@ import {
   PAYMENT_ACTIVATE_RESP_ERR,
   PAYMENT_ACTIVATE_SUCCESS,
   PAYMENT_ACTIVATE_SVR_ERR,
-  PAYMENT_ACTIVATION_STATUS_INIT,
-  PAYMENT_ACTIVATION_STATUS_NET_ERR,
-  PAYMENT_ACTIVATION_STATUS_RESP_ERR,
-  PAYMENT_ACTIVATION_STATUS_SUCCESS,
-  PAYMENT_ACTIVATION_STATUS_SVR_ERR,
   PAYMENT_APPROVE_TERMS_INIT,
   PAYMENT_APPROVE_TERMS_NET_ERR,
   PAYMENT_APPROVE_TERMS_RESP_ERR,
@@ -106,16 +100,17 @@ import {
 } from "../config/mixpanelDefs";
 import { mixpanel } from "../config/mixpanelHelperInit";
 import { ErrorsType } from "../errors/checkErrorsModel";
-import { PaymentSession } from "../sessionData/PaymentSession";
 import { WalletSession } from "../sessionData/WalletSession";
 import {
   getCart,
-  getCheckData,
+  getEmailInfo,
   getNoticeInfo,
   getPaymentId,
   getPaymentInfo,
+  getTransaction,
   setPaymentId,
   setReturnUrls,
+  setTransaction,
 } from "./apiService";
 import { getBrowserInfoTask, getEMVCompliantColorDepth } from "./checkHelper";
 import {
@@ -274,21 +269,11 @@ export const getPaymentInfoTask = (
   );
 
 export const activatePayment = async ({
-  wallet,
-  token,
   onResponse,
   onError,
   onNavigate,
 }: {
-  wallet: InputCardFormFields;
-  token: string;
-  onResponse: (cardData: {
-    brand: string;
-    pan: string;
-    expDate: string;
-    cvv: string;
-    cardHolderName: string;
-  }) => void;
+  onResponse: () => void;
   onError: (e: string) => void;
   onNavigate: () => void;
 }) => {
@@ -298,24 +283,20 @@ export const activatePayment = async ({
     importoSingoloVersamento: paymentInfo.amount,
     codiceContestoPagamento: paymentInfo.paymentContextCode,
   };
+  const userEmail = getEmailInfo().email;
   const paymentId = getPaymentId().paymentId;
-  const checkDataId = getCheckData().id;
-  const rptId: RptId = `${noticeInfo.cf}${noticeInfo.billCode}`;
-  const config = getConfigOrThrow();
-  const getWallet = () => {
-    void getSessionWallet(wallet as InputCardFormFields, onError, onResponse);
-  };
-  if (paymentId && checkDataId) {
-    getWallet();
-  }
-  if (paymentId && !checkDataId) {
-    void getPaymentCheckData({
+  const transactionId = getTransaction().transactionId;
+  const rptId: RptId = `${noticeInfo.cf}${noticeInfo.billCode}` as RptId;
+
+  if (paymentId && !transactionId) {
+    void getTransactionData({
       idPayment: paymentId,
       onError,
-      onResponse: getWallet,
+      onResponse,
       onNavigate,
     });
   }
+
   if (!paymentId) {
     pipe(
       PaymentRequestsGetResponse.decode(paymentInfoTransform),
@@ -326,28 +307,17 @@ export const activatePayment = async ({
             activePaymentTask(
               response.importoSingoloVersamento,
               response.codiceContestoPagamento,
-              rptId,
-              token
+              userEmail,
+              rptId
             ),
             TE.fold(
               (e: string) => async () => {
                 onError(e);
               },
-              () => async () => {
-                void pollingActivationStatus(
-                  response.codiceContestoPagamento,
-                  config.CHECKOUT_POLLING_ACTIVATION_ATTEMPTS as number,
-                  (res) => {
-                    setPaymentId({ paymentId: res.idPagamento });
-                    void getPaymentCheckData({
-                      idPayment: res.idPagamento,
-                      onError,
-                      onResponse: getWallet,
-                      onNavigate,
-                    });
-                  },
-                  onError
-                );
+              (res) => async () => {
+                setPaymentId({ paymentId: res.transactionId });
+                setTransaction(res);
+                onResponse();
               }
             )
           )()
@@ -359,21 +329,26 @@ export const activatePayment = async ({
 export const activePaymentTask = (
   amountSinglePayment: ImportoEuroCents,
   paymentContextCode: CodiceContestoPagamento,
-  rptId: RptId,
-  recaptchaResponse: string
-): TE.TaskEither<string, PaymentActivationsPostResponse> =>
+  userEmail: string,
+  rptId: RptId
+): TE.TaskEither<string, NewTransactionResponse> =>
   pipe(
     TE.tryCatch(
       () => {
         mixpanel.track(PAYMENT_ACTIVATE_INIT.value, {
           EVENT_ID: PAYMENT_ACTIVATE_INIT.value,
         });
-        return apiPaymentActivationsClient.activatePayment({
-          recaptchaResponse,
+        return apiPaymentEcommerceClient.newTransaction({
+          // recaptchaResponse,
           body: {
-            rptId,
-            importoSingoloVersamento: amountSinglePayment,
-            codiceContestoPagamento: paymentContextCode,
+            paymentNotices: [
+              {
+                rptId,
+                paymentContextCode,
+                amount: amountSinglePayment,
+              },
+            ],
+            email: userEmail,
           },
         });
       },
@@ -397,8 +372,19 @@ export const activePaymentTask = (
           E.fold(
             () => TE.left("Errore attivazione pagamento"),
             (responseType) => {
-              const reason =
-                responseType.status === 200 ? "" : responseType.value?.detail;
+              let reason;
+              if (responseType.status === 200) {
+                reason = "";
+              }
+              if (responseType.status === 400) {
+                reason = (
+                  responseType.value as ValidationFaultPaymentProblemJson
+                )?.faultCodeCategory;
+              } else {
+                reason = (
+                  responseType.value as ValidationFaultPaymentProblemJson
+                )?.faultCodeDetail;
+              }
               const EVENT_ID: string =
                 responseType.status === 200
                   ? PAYMENT_ACTIVATE_SUCCESS.value
@@ -408,7 +394,10 @@ export const activePaymentTask = (
               if (responseType.status === 400) {
                 return TE.left(
                   pipe(
-                    O.fromNullable(responseType.value?.detail as Detail_v2Enum),
+                    O.fromNullable(
+                      (responseType.value as ValidationFaultPaymentProblemJson)
+                        ?.faultCodeCategory
+                    ),
                     O.getOrElse(() => ErrorsType.STATUS_ERROR as string)
                   )
                 );
@@ -416,7 +405,11 @@ export const activePaymentTask = (
               return responseType.status !== 200
                 ? TE.left(
                     pipe(
-                      O.fromNullable(responseType.value?.detail),
+                      O.fromNullable(
+                        (
+                          responseType.value as ValidationFaultPaymentProblemJson
+                        )?.faultCodeDetail
+                      ),
                       O.getOrElse(() => ErrorsType.STATUS_ERROR as string)
                     )
                   )
@@ -427,130 +420,8 @@ export const activePaymentTask = (
     )
   );
 
-export const getActivationStatusTask = (
-  paymentContextCode: CodiceContestoPagamento
-): TE.TaskEither<string, PaymentActivationsGetResponse> =>
-  pipe(
-    TE.tryCatch(
-      () => {
-        mixpanel.track(PAYMENT_ACTIVATION_STATUS_INIT.value, {
-          EVENT_ID: PAYMENT_ACTIVATION_STATUS_INIT.value,
-        });
-        return apiPaymentActivationsClient.getActivationStatus({
-          codiceContestoPagamento: paymentContextCode,
-        });
-      },
-      () => {
-        mixpanel.track(PAYMENT_ACTIVATION_STATUS_NET_ERR.value, {
-          EVENT_ID: PAYMENT_ACTIVATION_STATUS_NET_ERR.value,
-        });
-        return "Errore stato pagamento";
-      }
-    ),
-    TE.fold(
-      (err) => {
-        mixpanel.track(PAYMENT_ACTIVATION_STATUS_SVR_ERR.value, {
-          EVENT_ID: PAYMENT_ACTIVATION_STATUS_SVR_ERR.value,
-        });
-        return TE.left(err);
-      },
-      (errorOrResponse) =>
-        pipe(
-          errorOrResponse,
-          E.fold(
-            () => TE.left("Errore stato pagamento"),
-            (responseType) => {
-              const EVENT_ID: string =
-                responseType.status === 200
-                  ? PAYMENT_ACTIVATION_STATUS_SUCCESS.value
-                  : PAYMENT_ACTIVATION_STATUS_RESP_ERR.value;
-              mixpanel.track(EVENT_ID, { EVENT_ID });
-
-              return responseType.status !== 200
-                ? TE.left(`Errore stato pagamento : ${responseType.status}`)
-                : TE.of(responseType.value);
-            }
-          )
-        )
-    )
-  );
-export const pollingActivationStatus = async (
-  paymentNoticeCode: CodiceContestoPagamento,
-  attempts: number,
-  onResponse: (activationResponse: { idPagamento: any }) => void,
-  onError: (e: string) => void
-): Promise<void> => {
-  await pipe(
-    getActivationStatusTask(paymentNoticeCode),
-    TE.match(() => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      attempts > 0
-        ? setTimeout(
-            pollingActivationStatus,
-            getConfigOrThrow()
-              .CHECKOUT_POLLING_ACTIVATION_INTERVAL as Millisecond,
-            paymentNoticeCode,
-            --attempts, // eslint-disable-line no-param-reassign,
-            onResponse,
-            onError
-          )
-        : onError(ErrorsType.TIMEOUT);
-    }, onResponse)
-  )();
-};
-
-export const retryPollingActivationStatus = async ({
-  wallet,
-  onResponse,
-  onError,
-  onNavigate,
-}: {
-  wallet: InputCardFormFields;
-  onResponse: (cardData: {
-    brand: string;
-    pan: string;
-    expDate: string;
-    cardHolderName: string;
-    cvv: string;
-  }) => void;
-  onError: (e: string) => void;
-  onNavigate: () => void;
-}): Promise<void> => {
-  const paymentInfo = getPaymentInfo();
-  const paymentInfoTransform = {
-    importoSingoloVersamento: paymentInfo.amount,
-    codiceContestoPagamento: paymentInfo.paymentContextCode,
-  };
-  const config = getConfigOrThrow();
-  const getWallet = () => {
-    void getSessionWallet(wallet as InputCardFormFields, onError, onResponse);
-  };
-
-  pipe(
-    PaymentRequestsGetResponse.decode(paymentInfoTransform),
-    E.fold(
-      () => onError(ErrorsType.INVALID_DECODE),
-      (response) =>
-        pollingActivationStatus(
-          response.codiceContestoPagamento,
-          config.CHECKOUT_POLLING_ACTIVATION_ATTEMPTS as number,
-          // eslint-disable-next-line sonarjs/no-identical-functions
-          (res) => {
-            setPaymentId({ paymentId: res.idPagamento });
-            void getPaymentCheckData({
-              idPayment: res.idPagamento,
-              onError,
-              onResponse: getWallet,
-              onNavigate,
-            });
-          },
-          onError
-        )
-    )
-  );
-};
-
-export const getPaymentCheckData = async ({
+export const getTransactionData = async ({
+  // va fatta la GET transaction
   idPayment,
   onError,
   onResponse,
@@ -572,8 +443,8 @@ export const getPaymentCheckData = async ({
         await pipe(
           TE.tryCatch(
             () =>
-              pmClient.checkPaymentUsingGET({
-                id: pipe(
+              apiPaymentEcommerceClient.getTransactionInfo({
+                transactionId: pipe(
                   O.fromNullable(idPayment),
                   O.getOrElse(() => "")
                 ),
@@ -600,19 +471,14 @@ export const getPaymentCheckData = async ({
                 E.fold(
                   () => onError(ErrorsType.GENERIC_ERROR),
                   (response) => {
-                    const maybePayment = PaymentSession.decode(
-                      response.value?.data
-                    );
-
+                    const maybePayment = TransactionInfo.decode(response.value);
                     // eslint-disable-next-line no-underscore-dangle
                     if (response.status === 200) {
                       pipe(
                         maybePayment,
+
                         E.map((payment) => {
-                          sessionStorage.setItem(
-                            "checkData",
-                            JSON.stringify(payment)
-                          );
+                          setTransaction(payment);
                           onResponse();
                           mixpanel.track(PAYMENT_CHECK_SUCCESS.value, {
                             EVENT_ID: PAYMENT_CHECK_SUCCESS.value,
