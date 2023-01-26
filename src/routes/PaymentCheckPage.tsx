@@ -327,7 +327,7 @@ export default function PaymentCheckPage() {
 
 const AmountDisclaimer = ({ amount }: { amount: number }) => {
   const { t } = useTranslation();
-  const disclaimerUpperLimit = 50;
+  const disclaimerUpperLimit = 0;
   const disclaimer =
     amount < disclaimerUpperLimit
       ? t("paymentCheckPage.disclaimer.cheaper")
