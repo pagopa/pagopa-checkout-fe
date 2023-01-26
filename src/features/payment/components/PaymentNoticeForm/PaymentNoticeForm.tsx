@@ -46,6 +46,19 @@ export function PaymentNoticeForm(props: {
     return errors;
   };
 
+  const handleValidChange =
+    (
+      handleChange: (
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+      ) => void
+    ) =>
+    (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      e.currentTarget.value = cleanSpaces(e.currentTarget.value);
+      if (/^[0-9]*$/.test(e.currentTarget.value)) {
+        handleChange(e);
+      }
+    };
+
   return (
     <>
       <Formik
@@ -79,10 +92,7 @@ export function PaymentNoticeForm(props: {
                 type="text"
                 inputMode="numeric"
                 value={values.billCode}
-                handleChange={(e) => {
-                  e.currentTarget.value = cleanSpaces(e.currentTarget.value);
-                  handleChange(e);
-                }}
+                handleChange={handleValidChange(handleChange)}
                 handleBlur={handleBlur}
                 sx={{ mb: 4 }}
                 endAdornment={
@@ -104,10 +114,7 @@ export function PaymentNoticeForm(props: {
                 type="text"
                 inputMode="numeric"
                 value={values.cf}
-                handleChange={(e) => {
-                  e.currentTarget.value = cleanSpaces(e.currentTarget.value);
-                  handleChange(e);
-                }}
+                handleChange={handleValidChange(handleChange)}
                 handleBlur={handleBlur}
                 endAdornment={
                   <InputAdornment position="end">
