@@ -62,7 +62,7 @@ export function PaymentChoice(props: {
       const route: string = PaymentMethodRoutes[paymentType]?.route;
       setPaymentMethodId({
         paymentMethodId,
-        paymentTypeCode: paymentType as string,
+        paymentTypeCode: paymentType,
       });
       /* void getPaymentPSPList({
         paymentMethodId,
