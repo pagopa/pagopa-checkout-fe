@@ -269,19 +269,11 @@ export const getPaymentInfoTask = (
   );
 
 export const activatePayment = async ({
-  cardData,
   onResponse,
   onError,
   onNavigate,
 }: {
-  cardData: {
-    brand: string;
-    pan: string;
-    expDate: string;
-    cvv: string;
-    cardHolderName: string;
-  };
-  onResponse: (cvv: string) => void;
+  onResponse: () => void;
   onError: (e: string) => void;
   onNavigate: () => void;
 }) => {
@@ -298,14 +290,12 @@ export const activatePayment = async ({
 
   if (paymentId && !transactionId) {
     void getTransactionData({
-      cvv: cardData.cvv,
       idPayment: paymentId,
       onError,
       onResponse,
       onNavigate,
     });
   }
-
 
   if (!paymentId) {
     pipe(
@@ -327,7 +317,7 @@ export const activatePayment = async ({
               (res) => async () => {
                 setPaymentId({ paymentId: res.transactionId });
                 setTransaction(res);
-                onResponse(cardData.cvv);
+                onResponse();
               }
             )
           )()
@@ -432,16 +422,14 @@ export const activePaymentTask = (
 
 export const getTransactionData = async ({
   // va fatta la GET transaction
-  cvv,
   idPayment,
   onError,
   onResponse,
   onNavigate,
 }: {
-  cvv: string
   idPayment: string;
   onError: (e: string) => void;
-  onResponse: (cvv: string) => void;
+  onResponse: () => void;
   onNavigate: () => void;
 }) => {
   mixpanel.track(PAYMENT_CHECK_INIT.value, {
@@ -491,7 +479,7 @@ export const getTransactionData = async ({
 
                         E.map((payment) => {
                           setTransaction(payment);
-                          onResponse(cvv);
+                          onResponse();
                           mixpanel.track(PAYMENT_CHECK_SUCCESS.value, {
                             EVENT_ID: PAYMENT_CHECK_SUCCESS.value,
                           });

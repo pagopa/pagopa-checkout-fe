@@ -65,9 +65,8 @@ export default function InputCardPage() {
     ref.current?.reset();
   };
 
-  const onResponse = (cvv: string) => {
+  const onResponse = () => {
     setLoading(false);
-    dispatch(setSecurityCode(cvv));
     navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
   };
 
@@ -81,6 +80,7 @@ export default function InputCardPage() {
         pan: wallet.number,
       };
       dispatch(setCardData(cardData));
+      dispatch(setSecurityCode(cardData.cvv));
       setLoading(true);
       await getPaymentPSPList({
         paymentMethodId: getPaymentMethodId()?.paymentMethodId,
@@ -98,10 +98,9 @@ export default function InputCardPage() {
       const transactionId = getTransaction().transactionId;
       // If I want to change the card data but I have already activated the payment
       if (paymentId && transactionId) {
-        onResponse(cardData.cvv);
+        onResponse();
       } else {
         await activatePayment({
-          cardData,
           onResponse,
           onError,
           onNavigate: () => navigate(`/${CheckoutRoutes.ERRORE}`),
