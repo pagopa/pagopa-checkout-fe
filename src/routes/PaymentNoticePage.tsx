@@ -5,7 +5,7 @@ import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
-import { RptId } from "../../generated/definitions/payment-activations-api/RptId";
+import { RptId } from "../../generated/definitions/payment-ecommerce/RptId";
 import notification from "../assets/images/payment-notice-pagopa.png";
 import ErrorModal from "../components/modals/ErrorModal";
 import InformationModal from "../components/modals/InformationModal";
@@ -47,7 +47,7 @@ export default function PaymentNoticePage() {
 
   const onSubmit = React.useCallback(
     async (notice: PaymentFormFields) => {
-      const rptId: RptId = `${notice.cf}${notice.billCode}`;
+      const rptId: RptId = `${notice.cf}${notice.billCode}` as RptId;
       setLoading(true);
       const token = await ref.current?.executeAsync();
 

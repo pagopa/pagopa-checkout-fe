@@ -33,12 +33,11 @@ import { PspList } from "../features/payment/models/paymentModel";
 import { useAppSelector } from "../redux/hooks/hooks";
 import { selectCardData } from "../redux/slices/cardData";
 import {
-  getCheckData,
   getEmailInfo,
   getPaymentInfo,
   getPaymentMethod,
   getPspSelected,
-  getWallet,
+  getTransaction,
   setPspSelected,
 } from "../utils/api/apiService";
 import {
@@ -86,12 +85,14 @@ export default function PaymentCheckPage() {
   const cardData = useAppSelector(selectCardData);
   const paymentMethod = getPaymentMethod();
   const pspSelected = getPspSelected();
-
-  const checkData = getCheckData();
-  const wallet = getWallet();
+  const transaction = getTransaction();
   const email = getEmailInfo();
   const totalAmount =
-    Number(checkData.amount.amount) + Number(pspSelected.fee || 0);
+    Number(
+      transaction.payments
+        .map((p) => p.amount)
+        .reduce((sum, current) => sum + current, 0)
+    ) + Number(pspSelected.fee || 0);
   const amount = getPaymentInfo().amount;
 
   const onBrowserBackEvent = (e: any) => {
@@ -126,7 +127,7 @@ export default function PaymentCheckPage() {
     setPayLoading(true);
     void proceedToPayment(
       {
-        checkData,
+        transaction,
         cardData: {
           cvv: cardData?.cvv || "",
           pan: cardData?.pan || "",
@@ -181,17 +182,12 @@ export default function PaymentCheckPage() {
   };
 
   const getWalletIcon = () => {
-    if (
-      !wallet.creditCard.brand ||
-      wallet.creditCard.brand.toLowerCase() === "other"
-    ) {
+    if (!cardData.brand || cardData.brand.toLowerCase() === "other") {
       return <CreditCardIcon color="action" />;
     }
     return (
       <SvgIcon color="action">
-        <use
-          href={sprite + `#icons-${wallet.creditCard.brand.toLowerCase()}-mini`}
-        />
+        <use href={sprite + `#icons-${cardData.brand.toLowerCase()}-mini`} />
       </SvgIcon>
     );
   };
