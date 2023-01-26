@@ -298,12 +298,15 @@ export const activatePayment = async ({
 
   if (paymentId && !transactionId) {
     void getTransactionData({
+      cvv: cardData.cvv,
       idPayment: paymentId,
       onError,
-      onResponse: () => cardData.cvv,
+      onResponse,
       onNavigate,
     });
   }
+
+
   if (!paymentId) {
     pipe(
       PaymentRequestsGetResponse.decode(paymentInfoTransform),
@@ -429,14 +432,16 @@ export const activePaymentTask = (
 
 export const getTransactionData = async ({
   // va fatta la GET transaction
+  cvv,
   idPayment,
   onError,
   onResponse,
   onNavigate,
 }: {
+  cvv: string
   idPayment: string;
   onError: (e: string) => void;
-  onResponse: () => void;
+  onResponse: (cvv: string) => void;
   onNavigate: () => void;
 }) => {
   mixpanel.track(PAYMENT_CHECK_INIT.value, {
@@ -486,7 +491,7 @@ export const getTransactionData = async ({
 
                         E.map((payment) => {
                           setTransaction(payment);
-                          onResponse();
+                          onResponse(cvv);
                           mixpanel.track(PAYMENT_CHECK_SUCCESS.value, {
                             EVENT_ID: PAYMENT_CHECK_SUCCESS.value,
                           });
