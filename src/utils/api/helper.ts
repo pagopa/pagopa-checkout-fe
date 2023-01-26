@@ -1088,7 +1088,7 @@ export const proceedToPayment = async (
         apiPaymentEcommerceClient.requestTransactionAuthorization({
           transactionId: checkData.idPayment,
           body: {
-            amount: Number(0) as any,
+            amount: checkData.amount as any,
             fee: getPspSelected().fee as any,
             paymentInstrumentId: getPaymentMethod().paymentMethodId,
             pspId: getPspSelected().pspCode,
@@ -1146,14 +1146,9 @@ export const proceedToPayment = async (
             }
           )
         );
-        /* if (paymentResp !== "fakePayment") {
-          sessionStorage.setItem(
-            "idTransaction",
-            JSON.parse(paymentResp).token
-          );
-          onResponse();
-        } */
-        onResponse(authorizationUrl);
+        if (authorizationUrl !== "fakePayment") {
+          onResponse(authorizationUrl);
+        }
       }
     )
   )();

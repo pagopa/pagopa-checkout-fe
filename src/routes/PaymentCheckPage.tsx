@@ -118,18 +118,12 @@ export default function PaymentCheckPage() {
 
   const onResponse = (authorizationUrl: string) => {
     setPayLoading(false);
-    // navigate(`/${CheckoutRoutes.ESITO}`);
-    // sessionStorage.clear();
+    window.removeEventListener("beforeunload", onBrowserUnload);
     window.location.replace(authorizationUrl);
   };
 
   const onSubmit = React.useCallback(() => {
     setPayLoading(true);
-    /* void confirmPayment(
-      { checkData, wallet, cvv: cardData.cvv },
-      onError,
-      onResponse
-    ); */
     void proceedToPayment(
       {
         checkData,
