@@ -47,7 +47,11 @@ export function PaymentNoticeForm(props: {
   };
 
   const handleValidChange =
-    (handleChange: (e: React.ChangeEvent<any>) => void) =>
+    (
+      handleChange: (
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+      ) => void
+    ) =>
     (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       e.currentTarget.value = cleanSpaces(e.currentTarget.value);
       if (/^[0-9]*$/.test(e.currentTarget.value)) {
