@@ -123,8 +123,8 @@ export default function PaymentCheckPage() {
     window.location.replace(authorizationUrl);
   };
 
-  // TODO CHK-923 
-  const [month, year] = cardData.expDate.split('/');
+  // TODO CHK-923
+  const [month, year] = cardData.expDate.split("/");
   const onSubmit = React.useCallback(() => {
     setPayLoading(true);
     void proceedToPayment(
