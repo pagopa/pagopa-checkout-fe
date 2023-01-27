@@ -171,7 +171,6 @@ export function getTransaction(): Transaction {
   return {
     transactionId: data?.transactionId || "",
     status: data?.status || TransactionStatusEnum.AUTHORIZATION_FAILED,
-    amountTotal: data?.amountTotal || 0,
     payments: data?.payments || [],
     feeTotal: data?.feeTotal,
     clientId: data?.clientId,
