@@ -123,6 +123,8 @@ export default function PaymentCheckPage() {
     window.location.replace(authorizationUrl);
   };
 
+  // TODO CHK-923 
+  const [month, year] = cardData.expDate.split('/');
   const onSubmit = React.useCallback(() => {
     setPayLoading(true);
     void proceedToPayment(
@@ -132,7 +134,7 @@ export default function PaymentCheckPage() {
           cvv: cardData?.cvv || "",
           pan: cardData?.pan || "",
           holderName: cardData?.cardHolderName || "",
-          expiryDate: cardData?.expDate || "",
+          expiryDate: "20".concat(year).concat(month) || "",
         },
       },
       onError,
