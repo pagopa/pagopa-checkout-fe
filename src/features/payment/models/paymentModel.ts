@@ -78,7 +78,8 @@ export interface PaymentId {
   paymentId: string;
 }
 
-export interface PaymentMethodId {
+export interface PaymentMethod {
+  paymentTypeCode: string;
   paymentMethodId: string;
 }
 
@@ -190,7 +191,6 @@ export interface Cart {
 export interface Transaction {
   transactionId: string;
   status: TransactionStatusEnum;
-  amountTotal: number;
   payments: ReadonlyArray<PaymentData>;
   feeTotal?: AmountEuroCents;
   clientId?: ClientIdEnum;

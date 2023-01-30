@@ -33,18 +33,17 @@ import { PspList } from "../features/payment/models/paymentModel";
 import { useAppSelector } from "../redux/hooks/hooks";
 import { selectCardData } from "../redux/slices/cardData";
 import {
-  getCheckData,
   getEmailInfo,
   getPaymentInfo,
-  getPaymentMethodId,
+  getPaymentMethod,
   getPspSelected,
-  getWallet,
+  getTransaction,
   setPspSelected,
 } from "../utils/api/apiService";
 import {
   cancelPayment,
-  confirmPayment,
   getPaymentPSPList,
+  proceedToPayment,
 } from "../utils/api/helper";
 import { onBrowserUnload } from "../utils/eventListeners";
 import { moneyFormat } from "../utils/form/formatters";
@@ -84,14 +83,16 @@ export default function PaymentCheckPage() {
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
   const cardData = useAppSelector(selectCardData);
-  const paymentMethodId = getPaymentMethodId();
+  const paymentMethod = getPaymentMethod();
   const pspSelected = getPspSelected();
-
-  const checkData = getCheckData();
-  const wallet = getWallet();
+  const transaction = getTransaction();
   const email = getEmailInfo();
   const totalAmount =
-    Number(checkData.amount.amount) + Number(pspSelected.fee || 0);
+    Number(
+      transaction.payments
+        .map((p) => p.amount)
+        .reduce((sum, current) => sum + current, 0)
+    ) + Number(pspSelected.fee || 0);
   const amount = getPaymentInfo().amount;
 
   const onBrowserBackEvent = (e: any) => {
@@ -116,15 +117,26 @@ export default function PaymentCheckPage() {
     setErrorModalOpen(true);
   };
 
-  const onResponse = () => {
+  const onResponse = (authorizationUrl: string) => {
     setPayLoading(false);
-    navigate(`/${CheckoutRoutes.ESITO}`);
+    window.removeEventListener("beforeunload", onBrowserUnload);
+    window.location.replace(authorizationUrl);
   };
 
+  // TODO CHK-923
+  const [month, year] = cardData.expDate.split("/");
   const onSubmit = React.useCallback(() => {
     setPayLoading(true);
-    void confirmPayment(
-      { checkData, wallet, cvv: cardData.cvv },
+    void proceedToPayment(
+      {
+        transaction,
+        cardData: {
+          cvv: cardData?.cvv || "",
+          pan: cardData?.pan || "",
+          holderName: cardData?.cardHolderName || "",
+          expiryDate: "20".concat(year).concat(month) || "",
+        },
+      },
       onError,
       onResponse
     );
@@ -154,7 +166,7 @@ export default function PaymentCheckPage() {
     setDrawerOpen(true);
     setPspEditLoading(true);
     void getPaymentPSPList({
-      paymentMethodId: paymentMethodId.paymentMethodId,
+      paymentMethodId: paymentMethod.paymentMethodId,
       onError,
       onResponse: onPspEditResponse,
     });
@@ -172,17 +184,12 @@ export default function PaymentCheckPage() {
   };
 
   const getWalletIcon = () => {
-    if (
-      !wallet.creditCard.brand ||
-      wallet.creditCard.brand.toLowerCase() === "other"
-    ) {
+    if (!cardData.brand || cardData.brand.toLowerCase() === "other") {
       return <CreditCardIcon color="action" />;
     }
     return (
       <SvgIcon color="action">
-        <use
-          href={sprite + `#icons-${wallet.creditCard.brand.toLowerCase()}-mini`}
-        />
+        <use href={sprite + `#icons-${cardData.brand.toLowerCase()}-mini`} />
       </SvgIcon>
     );
   };

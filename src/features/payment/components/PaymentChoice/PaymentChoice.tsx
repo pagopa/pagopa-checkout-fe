@@ -60,7 +60,10 @@ export function PaymentChoice(props: {
   const handleClickOnMethod = React.useCallback(
     (paymentType: TransactionMethods, paymentMethodId: string) => {
       const route: string = PaymentMethodRoutes[paymentType]?.route;
-      setPaymentMethodId({ paymentMethodId });
+      setPaymentMethodId({
+        paymentMethodId,
+        paymentTypeCode: paymentType,
+      });
       /* void getPaymentPSPList({
         paymentMethodId,
         onError: onErrorGetPSP,

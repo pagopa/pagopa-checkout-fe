@@ -13,8 +13,8 @@ import { useAppDispatch } from "../redux/hooks/hooks";
 import { setCardData } from "../redux/slices/cardData";
 import { setSecurityCode } from "../redux/slices/securityCode";
 import {
+  getPaymentMethod,
   getPaymentId,
-  getPaymentMethodId,
   getReCaptchaKey,
   getTransaction,
   setPspSelected,
@@ -82,7 +82,7 @@ export default function InputCardPage() {
       dispatch(setSecurityCode(cardData.cvv));
       setLoading(true);
       await getPaymentPSPList({
-        paymentMethodId: getPaymentMethodId()?.paymentMethodId,
+        paymentMethodId: getPaymentMethod()?.paymentMethodId,
         onError: onErrorGetPSP,
         onResponse: (resp: Array<PspList>) => {
           const firstPsp = sortPspByOnUsPolicy(resp);

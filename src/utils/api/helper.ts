@@ -7,12 +7,15 @@ import { pipe } from "fp-ts/function";
 import { toError } from "fp-ts/lib/Either";
 import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
+import * as T from "fp-ts/Task";
 import { CodiceContestoPagamento } from "../../../generated/definitions/payment-activations-api/CodiceContestoPagamento";
 import { ImportoEuroCents } from "../../../generated/definitions/payment-activations-api/ImportoEuroCents";
 import { Detail_v2Enum } from "../../../generated/definitions/payment-activations-api/PaymentProblemJson";
 import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-activations-api/PaymentRequestsGetResponse";
-import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
+import { RequestAuthorizationRequest } from "../../../generated/definitions/payment-ecommerce/RequestAuthorizationRequest";
 import { PaymentRequestsGetResponse as EcommercePaymentRequestsGetResponse } from "../../../generated/definitions/payment-ecommerce/PaymentRequestsGetResponse";
+import { LanguageEnum } from "../../../generated/definitions/payment-ecommerce/Psp";
+import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { RptId } from "../../../generated/definitions/payment-ecommerce/RptId";
 import { TransactionInfo } from "../../../generated/definitions/payment-ecommerce/TransactionInfo";
 import { ValidationFaultPaymentProblemJson } from "../../../generated/definitions/payment-ecommerce/ValidationFaultPaymentProblemJson";
@@ -26,6 +29,7 @@ import {
   PaymentCheckData,
   PaymentInstruments,
   PspList,
+  Transaction,
   Wallet as PaymentWallet,
 } from "../../features/payment/models/paymentModel";
 import {
@@ -97,6 +101,10 @@ import {
   PAYMENT_WALLET_RESP_ERR,
   PAYMENT_WALLET_SUCCESS,
   PAYMENT_WALLET_SVR_ERR,
+  TRANSACTION_AUTH_INIT,
+  TRANSACTION_AUTH_NET_ERROR,
+  TRANSACTION_AUTH_RESP_ERROR,
+  TRANSACTION_AUTH_SUCCES,
 } from "../config/mixpanelDefs";
 import { mixpanel } from "../config/mixpanelHelperInit";
 import { ErrorsType } from "../errors/checkErrorsModel";
@@ -107,6 +115,8 @@ import {
   getNoticeInfo,
   getPaymentId,
   getPaymentInfo,
+  getPaymentMethod,
+  getPspSelected,
   getTransaction,
   setPaymentId,
   setReturnUrls,
@@ -920,6 +930,93 @@ export const updateWallet = async (
   )();
 };
 
+export const proceedToPayment = async (
+  {
+    transaction,
+    cardData,
+  }: {
+    transaction: Transaction;
+    cardData: {
+      cvv: string;
+      pan: string;
+      expiryDate: string;
+      holderName: string;
+    };
+  },
+  onError: (e: string) => void,
+  onResponse: (authUrl: string) => void
+) => {
+  mixpanel.track(TRANSACTION_AUTH_INIT.value, {
+    EVENT_ID: TRANSACTION_AUTH_INIT.value,
+  });
+  const transactionId = transaction.transactionId;
+  const authParams = {
+    amount: Number(
+      transaction.payments
+        .map((p) => p.amount)
+        .reduce((sum, current) => Number(sum) + Number(current), 0)
+    ),
+    fee: getPspSelected().fee,
+    paymentInstrumentId: getPaymentMethod().paymentMethodId,
+    pspId: getPspSelected().pspCode,
+    details:
+      getPaymentMethod().paymentTypeCode === "CP"
+        ? {
+            detailType: "card",
+            accountEmail: getEmailInfo(false).email,
+            cvv: cardData.cvv,
+            pan: cardData.pan,
+            expiryDate: cardData.expiryDate,
+            holderName: cardData.holderName,
+          }
+        : {
+            detailType: "postepay",
+            accountEmail: getEmailInfo(false).email,
+          },
+    language: LanguageEnum.IT,
+  };
+
+  await pipe(
+    authParams,
+    RequestAuthorizationRequest.decode,
+    TE.fromEither,
+    TE.chain(
+      (request) => () =>
+        apiPaymentEcommerceClient.requestTransactionAuthorization({
+          transactionId,
+          body: request,
+        })
+    ),
+    TE.fold(
+      (_r) => async () => {
+        onError(ErrorsType.SERVER);
+        mixpanel.track(TRANSACTION_AUTH_NET_ERROR.value, {
+          EVENT_ID: TRANSACTION_AUTH_NET_ERROR.value,
+        });
+      }, // to be replaced with logic to handle failures
+      (response) => {
+        if (response.status === 200) {
+          mixpanel.track(TRANSACTION_AUTH_SUCCES.value, {
+            EVENT_ID: TRANSACTION_AUTH_SUCCES.value,
+          });
+          const authorizationUrl = response.value.authorizationUrl;
+          onResponse(authorizationUrl);
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
+          return T.fromIO(() => {});
+        } else {
+          onError(ErrorsType.GENERIC_ERROR);
+          mixpanel.track(TRANSACTION_AUTH_RESP_ERROR.value, {
+            EVENT_ID: TRANSACTION_AUTH_RESP_ERROR.value,
+          });
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
+          return T.fromIO(() => {});
+        }
+      }
+    )
+  )();
+};
+
+// TODO To be deleted
 export const confirmPayment = async (
   {
     checkData,
@@ -1020,7 +1117,7 @@ export const confirmPayment = async (
                 mixpanel.track(PAYMENT_PAY3DS2_SUCCESS.value, {
                   EVENT_ID: PAYMENT_PAY3DS2_SUCCESS.value,
                 });
-                return JSON.stringify(myRes.value.data);
+                return JSON.stringify(myRes.value);
               } else {
                 onError(ErrorsType.GENERIC_ERROR);
                 mixpanel.track(PAYMENT_PAY3DS2_RESP_ERR.value, {
