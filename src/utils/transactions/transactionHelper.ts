@@ -4,6 +4,7 @@ import * as TE from "fp-ts/TaskEither";
 import { pipe } from "fp-ts/function";
 import { NonEmptyString } from "@pagopa/ts-commons/lib/strings";
 import { Client } from "../../../generated/definitions/payment-manager-api/client";
+import { Client as EcommerceClient } from "../../../generated/definitions/payment-ecommerce/client";
 import { Transaction } from "../../../generated/definitions/payment-manager-api/Transaction";
 import { TransactionStatusResponse } from "../../../generated/definitions/payment-manager-api/TransactionStatusResponse";
 import { Xpay3DSResponse } from "../../../generated/definitions/payment-manager-api/Xpay3DSResponse";
@@ -27,6 +28,7 @@ import {
 } from "../config/mixpanelDefs";
 import { mixpanel } from "../config/mixpanelHelperInit";
 import { UNKNOWN } from "./TransactionStatesTypes";
+import { TransactionInfo } from "../../../generated/definitions/payment-ecommerce/TransactionInfo";
 
 export const getXpay3DSResponseFromUrl = (): TE.TaskEither<
   UNKNOWN,
@@ -160,6 +162,62 @@ export const resumeTransactionTask = (
               return responseType.status !== 200
                 ? TE.left(UNKNOWN.value)
                 : TE.of(responseType.status);
+            }
+          )
+        )
+    )
+  );
+};
+
+export const ecommerceTransaction = (
+  transactionId: string,
+  ecommerceClient: EcommerceClient
+): TE.TaskEither<UNKNOWN, TransactionInfo> => {
+  mixpanel.track(TRANSACTION_POLLING_CHECK_INIT.value, {
+    EVENT_ID: TRANSACTION_POLLING_CHECK_INIT.value,
+  });
+  return pipe(
+    TE.tryCatch(
+      () =>
+       ecommerceClient.getTransactionInfo({
+          transactionId: transactionId,
+        }),
+      () => {
+        mixpanel.track(TRANSACTION_POLLING_CHECK_NET_ERR.value, {
+          EVENT_ID: TRANSACTION_POLLING_CHECK_NET_ERR.value,
+        });
+        return E.toError;
+      }
+    ),
+    TE.fold(
+      () => {
+        mixpanel.track(TRANSACTION_POLLING_CHECK_SVR_ERR.value, {
+          EVENT_ID: TRANSACTION_POLLING_CHECK_SVR_ERR.value,
+        });
+        return TE.left(UNKNOWN.value);
+      },
+      (errorOrResponse) =>
+        pipe(
+          errorOrResponse,
+          E.fold(
+            () => {
+              mixpanel.track(TRANSACTION_POLLING_CHECK_RESP_ERR.value, {
+                EVENT_ID: TRANSACTION_POLLING_CHECK_RESP_ERR.value,
+              });
+              return TE.left(UNKNOWN.value);
+            },
+            (responseType) => {
+              if (responseType.status === 200) {
+                mixpanel.track(TRANSACTION_POLLING_CHECK_SUCCESS.value, {
+                  EVENT_ID: TRANSACTION_POLLING_CHECK_SUCCESS.value,
+                });
+                return TE.of(responseType.value);
+              } else {
+                mixpanel.track(TRANSACTION_POLLING_CHECK_RESP_ERR.value, {
+                  EVENT_ID: TRANSACTION_POLLING_CHECK_RESP_ERR.value,
+                });
+                return TE.left(UNKNOWN.value);
+              }
             }
           )
         )

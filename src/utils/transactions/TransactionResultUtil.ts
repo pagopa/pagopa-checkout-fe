@@ -93,6 +93,11 @@ export enum VposResultCodeEnum {
   TRANSACTION_FAILED = "99",
 }
 
+export enum EcommerceFinalStatusCodeEnum {
+  NOTIFIED = "0"
+}
+
+
 export type OutcomeEnumType = t.TypeOf<typeof OutcomeEnumType>;
 export const OutcomeEnumType = enumType<OutcomeEnum>(
   OutcomeEnum,
@@ -115,6 +120,12 @@ export type VposResultCodeEnumType = t.TypeOf<typeof VposResultCodeEnumType>;
 export const VposResultCodeEnumType = enumType<VposResultCodeEnum>(
   VposResultCodeEnum,
   "VposResultCodeEnumType"
+);
+
+export type EcommerceFinalStatusCodeEnumType = t.TypeOf<typeof EcommerceFinalStatusCodeEnumType>;
+export const EcommerceFinalStatusCodeEnumType = enumType<EcommerceFinalStatusCodeEnum>(
+  EcommerceFinalStatusCodeEnum,
+  "EcommerceFinalStatusCodeEnumType"
 );
 
 // eslint-disable-next-line complexity
@@ -214,6 +225,19 @@ export const getOutcomeFromVposStatus = (
       return OutcomeEnum.GENERIC_ERROR;
   }
 };
+
+
+export const getOutcomeFromEcommerceAuthCode = (
+  authCode?: string,
+): OutcomeEnumType =>
+ 
+    pipe(
+      EcommerceFinalStatusCodeEnumType.decode(authCode),
+      E.getOrElse(
+        () => EcommerceFinalStatusCodeEnum. as EcommerceCodeEnum
+      )
+    )
+  ;
 
 export const getOutcomeFromAuthcodeAndIsDirectAcquirer = (
   authCode?: string,
