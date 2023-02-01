@@ -47,6 +47,7 @@ const ecommerceClientWithPolling: EcommerceClient = createClient({
       );
     }
   ),
+  basePath : config.CHECKOUT_API_ECOMMERCE_BASEPATH
 });
 
 export const callServices = async (
