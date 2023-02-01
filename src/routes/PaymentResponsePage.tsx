@@ -2,8 +2,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/restrict-plus-operands */
 import { Box, Button, Typography } from "@mui/material";
-import * as E from "fp-ts/Either";
-import { pipe } from "fp-ts/function";
 import { default as React, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
@@ -77,7 +75,7 @@ export default function PaymentCheckPage() {
     const showFinalResult = (outcome: ViewOutcomeEnum) => {
       const message = responseOutcome[outcome];
       const redirectTo =
-      outcome === "0"
+        outcome === "0"
           ? getReturnUrls().returnOkUrl
           : getReturnUrls().returnErrorUrl;
       setOutcomeMessage(message);

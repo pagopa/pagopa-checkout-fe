@@ -1,8 +1,8 @@
 import { TransactionStatusEnum } from "../../../generated/definitions/payment-ecommerce/TransactionStatus";
 
 import {
-  EcommerceFinalStatusCodeEnum,
-  getOutcomeFromEcommerceAuthCode,
+  getViewOutcomeFromEcommerceResultCode,
+  ViewOutcomeEnum,
 } from "../transactions/TransactionResultUtil";
 
 afterEach(() => {
@@ -11,13 +11,59 @@ afterEach(() => {
 });
 
 describe("TransactionResultUtil", () => {
-  it("should return Outcome with AuthorizationCode VPos", async () => {
+  it("should return view outcome with ecommerce athorization", async () => {
     expect(
-      getOutcomeFromEcommerceAuthCode(TransactionStatusEnum.NOTIFIED)
-    ).toEqual(EcommerceFinalStatusCodeEnum.NOTIFIED);
+      getViewOutcomeFromEcommerceResultCode(TransactionStatusEnum.NOTIFIED)
+    ).toEqual(ViewOutcomeEnum.SUCCESS);
 
     expect(
-      getOutcomeFromEcommerceAuthCode(TransactionStatusEnum.NOTIFIED_FAILED)
-    ).toEqual(EcommerceFinalStatusCodeEnum.GENERIC_ERROR);
+      getViewOutcomeFromEcommerceResultCode(TransactionStatusEnum.ACTIVATED)
+    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
+
+    expect(
+      getViewOutcomeFromEcommerceResultCode(
+        TransactionStatusEnum.ACTIVATION_REQUESTED
+      )
+    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
+
+    expect(
+      getViewOutcomeFromEcommerceResultCode(
+        TransactionStatusEnum.AUTHORIZATION_FAILED
+      )
+    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
+
+    expect(
+      getViewOutcomeFromEcommerceResultCode(
+        TransactionStatusEnum.AUTHORIZATION_REQUESTED
+      )
+    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
+
+    expect(
+      getViewOutcomeFromEcommerceResultCode(TransactionStatusEnum.AUTHORIZED)
+    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
+
+    expect(
+      getViewOutcomeFromEcommerceResultCode(TransactionStatusEnum.CLOSED)
+    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
+
+    expect(
+      getViewOutcomeFromEcommerceResultCode(
+        TransactionStatusEnum.CLOSURE_FAILED
+      )
+    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
+
+    expect(
+      getViewOutcomeFromEcommerceResultCode(TransactionStatusEnum.EXPIRED)
+    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
+
+    expect(
+      getViewOutcomeFromEcommerceResultCode(
+        TransactionStatusEnum.NOTIFIED_FAILED
+      )
+    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
+
+    expect(
+      getViewOutcomeFromEcommerceResultCode(TransactionStatusEnum.REFUNDED)
+    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
   });
 });

@@ -40,14 +40,11 @@ const ecommerceClientWithPolling: EcommerceClient = createClient({
       const myJson = (await r.clone().json()) as TransactionInfo;
       return (
         r.status === 200 &&
-        pipe(
-          EcommerceFinalStatusCodeEnumType.decode(myJson.status.toString),
-          E.isRight
-        )
+        !pipe(EcommerceFinalStatusCodeEnumType.decode(myJson.status), E.isRight)
       );
     }
   ),
-  basePath : config.CHECKOUT_API_ECOMMERCE_BASEPATH
+  basePath: config.CHECKOUT_API_ECOMMERCE_BASEPATH,
 });
 
 export const callServices = async (

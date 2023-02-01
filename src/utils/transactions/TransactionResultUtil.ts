@@ -30,7 +30,6 @@ export const getViewOutcomeFromEcommerceResultCode = (
   }
 };
 
-
 export type ViewOutcomeEnumType = t.TypeOf<typeof ViewOutcomeEnumType>;
 export const ViewOutcomeEnumType = enumType<ViewOutcomeEnum>(
   ViewOutcomeEnum,
@@ -45,4 +44,3 @@ export const EcommerceFinalStatusCodeEnumType =
     EcommerceFinalStatusCodeEnum,
     "EcommerceFinalStatusCodeEnumType"
   );
-
