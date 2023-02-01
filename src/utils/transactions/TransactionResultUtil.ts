@@ -18,7 +18,6 @@ export enum EcommerceFinalStatusCodeEnum {
   GENERIC_ERROR,
 }
 
-// TODO add case for all transaction status
 export const getViewOutcomeFromEcommerceResultCode = (
   ecommerceStatus?: TransactionStatusEnum
 ): ViewOutcomeEnum => {
