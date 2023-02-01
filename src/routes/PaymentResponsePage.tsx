@@ -28,12 +28,12 @@ import { onBrowserUnload } from "../utils/eventListeners";
 import { moneyFormat } from "../utils/form/formatters";
 import { clearSensitiveItems } from "../utils/storage/sessionStorage";
 import {
+  EcommerceFinalStatusCodeEnum,
   getOutcomeFromEcommerceAuthCode,
-  OutcomeEnumType,
   ViewOutcomeEnum,
   ViewOutcomeEnumType,
 } from "../utils/transactions/TransactionResultUtil";
-import { GENERIC_STATUS } from "../utils/transactions/TransactionStatesTypes";
+import { TransactionStatusEnum } from "../../generated/definitions/payment-ecommerce/TransactionStatus";
 
 type printData = {
   useremail: string;
@@ -65,14 +65,9 @@ export default function PaymentCheckPage() {
   useEffect(() => {
     dispatch(resetSecurityCode());
     dispatch(resetCardData());
-    const handleFinalStatusResult = (
-      idStatus: GENERIC_STATUS,
-      authorizationCode?: string
-    ) => {
-      const outcome: OutcomeEnumType =
-        getOutcomeFromEcommerceAuthCode(
-          authorizationCode
-        );
+    const handleFinalStatusResult = (idStatus?: TransactionStatusEnum) => {
+      const outcome: EcommerceFinalStatusCodeEnum =
+        getOutcomeFromEcommerceAuthCode(idStatus);
       mixpanel.track(PAYMENT_OUTCOME_CODE.value, {
         EVENT_ID: PAYMENT_OUTCOME_CODE.value,
         idStatus,
@@ -81,7 +76,7 @@ export default function PaymentCheckPage() {
       showFinalResult(outcome);
     };
 
-    const showFinalResult = (outcome: OutcomeEnumType) => {
+    const showFinalResult = (outcome: EcommerceFinalStatusCodeEnum) => {
       const viewOutcome: ViewOutcomeEnum = pipe(
         ViewOutcomeEnumType.decode(outcome),
         E.getOrElse(() => ViewOutcomeEnum.GENERIC_ERROR as ViewOutcomeEnum)

@@ -9,19 +9,18 @@ import {
   THREEDSMETHODURL_STEP1_RESP_ERR,
 } from "../config/mixpanelDefs";
 import { mixpanel } from "../config/mixpanelHelperInit";
-import {
-  getStringFromSessionStorageTask,
-  ecommerceTransaction
-} from "../transactions/transactionHelper";
-import {
-  constantPollingWithPromisePredicateFetch
-} from "../config/fetch";
+import { ecommerceTransaction } from "../transactions/transactionHelper";
+import { constantPollingWithPromisePredicateFetch } from "../config/fetch";
 import { getUrlParameter } from "../regex/urlUtilities";
 import { getConfigOrThrow } from "../config/config";
-import { createClient, Client as EcommerceClient } from "../../../generated/definitions/payment-ecommerce/client";
+import {
+  createClient,
+  Client as EcommerceClient,
+} from "../../../generated/definitions/payment-ecommerce/client";
 import { TransactionInfo } from "../../../generated/definitions/payment-ecommerce/TransactionInfo";
 import { TransactionStatusEnum } from "../../../generated/definitions/payment-ecommerce/TransactionStatus";
-
+import { EcommerceFinalStatusCodeEnumType } from "../transactions/TransactionResultUtil";
+import { getTransaction } from "./apiService";
 const config = getConfigOrThrow();
 /**
  * Polling configuration params
@@ -39,20 +38,19 @@ const ecommerceClientWithPolling: EcommerceClient = createClient({
     timeout,
     async (r: Response): Promise<boolean> => {
       const myJson = (await r.clone().json()) as TransactionInfo;
-      return r.status === 200 && pipe(
-        EcommerceCodeEnumType.decode(myJson.status.toString),
-        E.isRight
+      return (
+        r.status === 200 &&
+        pipe(
+          EcommerceFinalStatusCodeEnumType.decode(myJson.status.toString),
+          E.isRight
+        )
       );
     }
   ),
 });
 
-
-
 export const callServices = async (
-  handleFinalStatusResult: (
-    idStatus: TransactionStatusEnum,
-  ) => void
+  handleFinalStatusResult: (idStatus?: TransactionStatusEnum) => void
 ) => {
   await pipe(
     TE.fromPredicate(
@@ -61,16 +59,9 @@ export const callServices = async (
     )(getUrlParameter("id")),
     TE.fold(
       (_) => async () => {
+        const transactionId = getTransaction().transactionId;
         await pipe(
-          getStringFromSessionStorageTask(   //prendere l'oggetto transaction
-            "idTransaction"
-          ),
-          TE.chain((idTransaction) =>
-            ecommerceTransaction(
-              idTransaction,
-              ecommerceClientWithPolling
-            )
-          ),
+          ecommerceTransaction(transactionId, ecommerceClientWithPolling),
           TE.fold(
             // eslint-disable-next-line sonarjs/no-identical-functions
             () => async () => {
@@ -79,40 +70,32 @@ export const callServices = async (
               });
               handleFinalStatusResult();
             },
+            // eslint-disable-next-line sonarjs/no-identical-functions
             (transactionInfo) => async () => {
               mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value, {
                 EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value,
               });
-              handleFinalStatusResult(
-                transactionInfo.status
-              );
+              handleFinalStatusResult(transactionInfo.status);
             }
           )
         )();
       },
       (idTransaction) => async () =>
         await pipe(
-          ecommerceTransaction(
-            idTransaction,
-            ecommerceClientWithPolling
-          ),
+          ecommerceTransaction(idTransaction, ecommerceClientWithPolling),
           TE.fold(
             (_) => async () => {
-              mixpanel.track(
-                THREEDSACSCHALLENGEURL_STEP2_RESP_ERR.value,
-                {
-                  EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_RESP_ERR.value,
-                }
-              );
+              mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_RESP_ERR.value, {
+                EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_RESP_ERR.value,
+              });
               handleFinalStatusResult();
             },
+            // eslint-disable-next-line sonarjs/no-identical-functions
             (transactionInfo) => async () => {
               mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value, {
                 EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value,
               });
-              handleFinalStatusResult(
-                transactionInfo.status
-              );
+              handleFinalStatusResult(transactionInfo.status);
             }
           )
         )()
