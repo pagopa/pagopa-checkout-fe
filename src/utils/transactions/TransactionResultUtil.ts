@@ -1,6 +1,4 @@
-import * as E from "fp-ts/Either";
 import * as t from "io-ts";
-import { pipe } from "fp-ts/function";
 import { enumType } from "@pagopa/ts-commons/lib/types";
 import { TransactionStatusEnum } from "../../../generated/definitions/payment-ecommerce/TransactionStatus";
 
@@ -16,9 +14,22 @@ export enum ViewOutcomeEnum {
 }
 
 export enum EcommerceFinalStatusCodeEnum {
-  NOTIFIED = "0",
-  GENERIC_ERROR = "1",
+  NOTIFIED,
+  GENERIC_ERROR,
 }
+
+// TODO add case for all transaction status
+export const getViewOutcomeFromEcommerceResultCode = (
+  ecommerceStatus?: TransactionStatusEnum
+): ViewOutcomeEnum => {
+  switch (ecommerceStatus) {
+    case TransactionStatusEnum.NOTIFIED:
+      return ViewOutcomeEnum.SUCCESS;
+    default:
+      return ViewOutcomeEnum.GENERIC_ERROR;
+  }
+};
+
 
 export type ViewOutcomeEnumType = t.TypeOf<typeof ViewOutcomeEnumType>;
 export const ViewOutcomeEnumType = enumType<ViewOutcomeEnum>(
@@ -35,13 +46,3 @@ export const EcommerceFinalStatusCodeEnumType =
     "EcommerceFinalStatusCodeEnumType"
   );
 
-export const getOutcomeFromEcommerceAuthCode = (
-  authCode?: TransactionStatusEnum
-): EcommerceFinalStatusCodeEnum =>
-  pipe(
-    EcommerceFinalStatusCodeEnumType.decode(authCode),
-    E.getOrElse(
-      () =>
-        EcommerceFinalStatusCodeEnum.GENERIC_ERROR as EcommerceFinalStatusCodeEnum
-    )
-  );

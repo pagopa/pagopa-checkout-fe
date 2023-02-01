@@ -273,41 +273,33 @@ export const TRANSLATIONS_IT = {
   },
   paymentResponsePage: {
     "0": {
-      // NOTIFIED
       title: "Grazie, hai pagato {{amount}}!",
       body: "Abbiamo inviato l’esito del pagamento a {{useremail}}",
     },
     "1": {
-      // NOTIFIED_FAILED
       title: "Spiacenti, si è verificato un errore imprevisto.",
       body: "Non è stato addebitato alcun importo.",
     },
     "2": {
-      // AUTHORIZATION_FAILED
       title: "Autorizzazione negata",
       body: "La tua banca non ha autorizzato l'operazione. Controlla di aver inserito correttamente i vari codici richiesti dalla tua banca.",
     },
     "3": {
-      // NO
       title: "I dati della carta non risultano corretti",
       body: "Controlla di aver inserito correttamente i dati della tua carta. L'intestatario deve coincidere esattamente con quanto riportato sulla carta.",
     },
     "4": {
-      // EXPIRED
       title: "Spiacenti, la sessione è scaduta",
       body: "Non è stato addebitato alcun importo. Per la tua sicurezza, hai a disposizione 5 minuti per completare l'operazione.",
     },
     "7": {
-      // NO
       title: "C’è un problema con la tua carta",
       body: "Non è stato addebitato alcun importo. Per maggiori informazioni, contatta la tua banca.",
     },
     "8": {
-      // NO
       title: "L’operazione è stata annullata",
     },
     "10": {
-      // AUTHORIZATION_FAILED
       title: "Autorizzazione negata",
       body: "Probabilmente hai superato il massimale della tua carta. Verifica con la tua banca prima di riprovare.",
     },

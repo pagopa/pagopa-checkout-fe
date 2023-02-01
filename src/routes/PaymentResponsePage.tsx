@@ -28,10 +28,8 @@ import { onBrowserUnload } from "../utils/eventListeners";
 import { moneyFormat } from "../utils/form/formatters";
 import { clearSensitiveItems } from "../utils/storage/sessionStorage";
 import {
-  EcommerceFinalStatusCodeEnum,
-  getOutcomeFromEcommerceAuthCode,
+  getViewOutcomeFromEcommerceResultCode,
   ViewOutcomeEnum,
-  ViewOutcomeEnumType,
 } from "../utils/transactions/TransactionResultUtil";
 import { TransactionStatusEnum } from "../../generated/definitions/payment-ecommerce/TransactionStatus";
 
@@ -66,8 +64,8 @@ export default function PaymentCheckPage() {
     dispatch(resetSecurityCode());
     dispatch(resetCardData());
     const handleFinalStatusResult = (idStatus?: TransactionStatusEnum) => {
-      const outcome: EcommerceFinalStatusCodeEnum =
-        getOutcomeFromEcommerceAuthCode(idStatus);
+      const outcome: ViewOutcomeEnum =
+        getViewOutcomeFromEcommerceResultCode(idStatus);
       mixpanel.track(PAYMENT_OUTCOME_CODE.value, {
         EVENT_ID: PAYMENT_OUTCOME_CODE.value,
         idStatus,
@@ -76,14 +74,10 @@ export default function PaymentCheckPage() {
       showFinalResult(outcome);
     };
 
-    const showFinalResult = (outcome: EcommerceFinalStatusCodeEnum) => {
-      const viewOutcome: ViewOutcomeEnum = pipe(
-        ViewOutcomeEnumType.decode(outcome),
-        E.getOrElse(() => ViewOutcomeEnum.GENERIC_ERROR as ViewOutcomeEnum)
-      );
-      const message = responseOutcome[viewOutcome];
+    const showFinalResult = (outcome: ViewOutcomeEnum) => {
+      const message = responseOutcome[outcome];
       const redirectTo =
-        viewOutcome === "0"
+      outcome === "0"
           ? getReturnUrls().returnOkUrl
           : getReturnUrls().returnErrorUrl;
       setOutcomeMessage(message);
