@@ -5,6 +5,7 @@ describe("Checkout payment activation tests", () => {
    * Test input and configuration
    */
   const CHECKOUT_URL = "http://localhost:1234/";
+  const CHECKOUT_URL_AFTER_AUTHORIZATION = "http://localhost:1234/esito";
   const VALID_FISCAL_CODE = "77777777777";
   const INVALID_FISCAL_CODE = "77777777776"
   const EMAIL = "mario.rossi@email.com";
@@ -51,7 +52,8 @@ describe("Checkout payment activation tests", () => {
       VALID_NOTICE_CODE,
       VALID_FISCAL_CODE,
       EMAIL,
-      VALID_CARD_DATA
+      VALID_CARD_DATA,
+      CHECKOUT_URL_AFTER_AUTHORIZATION
     );
     
 

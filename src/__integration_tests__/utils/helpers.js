@@ -43,7 +43,7 @@ export const acceptCookiePolicy = async () => {
   await page.waitForXPath(darkFilterXPath, { hidden: true });
 };
 
-export const payNotice = async (noticeCode, fiscalCode, email, cardData) => {
+export const payNotice = async (noticeCode, fiscalCode, email, cardData, checkoutUrlAfterAuth) => {
   const payNoticeBtnSelector = "#paymentSummaryButtonPay";
   const resultMessageXPath = "/html/body/div[1]/div/div[2]/div/div/div/div/h6";
   await fillPaymentNotificationForm(noticeCode, fiscalCode);
@@ -57,6 +57,8 @@ export const payNotice = async (noticeCode, fiscalCode, email, cardData) => {
   }
   await choosePaymentMethod("CP");
   await fillCardDataForm(cardData);
+  await page.waitForNavigation();
+  await page.goto(checkoutUrlAfterAuth)
   const message = await page.waitForXPath(resultMessageXPath);
   return await message.evaluate((el) => el.textContent);
 };
