@@ -14,8 +14,7 @@ export enum ViewOutcomeEnum {
 }
 
 export enum EcommerceFinalStatusCodeEnum {
-  NOTIFIED,
-  GENERIC_ERROR,
+  NOTIFIED
 }
 
 export const getViewOutcomeFromEcommerceResultCode = (
