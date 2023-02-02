@@ -131,7 +131,7 @@ export default function PaymentCheckPage() {
       {
         transaction,
         cardData: {
-          brand: cardData?.brand,
+          brand: cardData?.brand || "",
           cvv: cardData?.cvv || "",
           pan: cardData?.pan || "",
           holderName: cardData?.cardHolderName || "",

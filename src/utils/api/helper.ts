@@ -999,7 +999,7 @@ export const proceedToPayment = async (
             pan: cardData.pan,
             expiryDate: cardData.expiryDate,
             holderName: cardData.holderName,
-            threeDsData: JSON.stringify(threeDSData)
+            threeDsData: JSON.stringify(threeDSData),
           }
         : {
             detailType: "postepay",
@@ -1071,6 +1071,20 @@ export const confirmPayment = async (
     })),
     TE.toUnion
   )();
+  const threeDSData = {
+    browserJavaEnabled: navigator.javaEnabled().toString(),
+    browserLanguage: navigator.language,
+    browserColorDepth: getEMVCompliantColorDepth(screen.colorDepth).toString(),
+    browserScreenHeight: screen.height.toString(),
+    browserScreenWidth: screen.width.toString(),
+    browserTZ: new Date().getTimezoneOffset().toString(),
+    browserAcceptHeader: browserInfo.accept,
+    browserIP: browserInfo.ip,
+    browserUserAgent: navigator.userAgent,
+    acctID: `ACCT_`,
+    deliveryEmailAddress: "email",
+    mobilePhone: null,
+  };
 
   mixpanel.track(PAYMENT_PAY3DS2_INIT.value, {
     EVENT_ID: PAYMENT_PAY3DS2_INIT.value,
@@ -1090,7 +1104,7 @@ export const confirmPayment = async (
                 O.fromNullable(cvv),
                 O.getOrElse(() => "")
               ),
-              threeDSData: JSON.stringify(threeDSData),
+              threeDSData: JSON.stringify("threeDSData"),
             },
           },
           language: "it",
