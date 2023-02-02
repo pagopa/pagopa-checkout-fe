@@ -14,7 +14,7 @@ export enum ViewOutcomeEnum {
 }
 
 export enum EcommerceFinalStatusCodeEnum {
-  NOTIFIED
+  NOTIFIED,
 }
 
 export const getViewOutcomeFromEcommerceResultCode = (
