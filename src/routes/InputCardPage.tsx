@@ -1,4 +1,5 @@
 import { Box } from "@mui/material";
+import cardValidator from "card-validator";
 import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useNavigate } from "react-router-dom";
@@ -72,7 +73,7 @@ export default function InputCardPage() {
   const onSubmit = React.useCallback(
     async (wallet: InputCardFormFields) => {
       const cardData = {
-        brand: "",
+        brand: cardValidator.number(wallet.number).card?.type || "",
         expDate: wallet.expirationDate,
         cardHolderName: wallet.name,
         cvv: wallet.cvv,

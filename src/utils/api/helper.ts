@@ -937,6 +937,7 @@ export const proceedToPayment = async (
   }: {
     transaction: Transaction;
     cardData: {
+      brand: string;
       cvv: string;
       pan: string;
       expiryDate: string;
@@ -950,6 +951,35 @@ export const proceedToPayment = async (
     EVENT_ID: TRANSACTION_AUTH_INIT.value,
   });
   const transactionId = transaction.transactionId;
+  const browserInfo = await pipe(
+    getBrowserInfoTask(apiPaymentTransactionsClient),
+    TE.mapLeft(() => ({
+      ip: "",
+      useragent: "",
+      accept: "",
+    })),
+    TE.toUnion
+  )();
+  const email = pipe(
+    O.fromNullable(
+      JSON.parse(sessionStorage.getItem("useremail") || JSON.stringify(""))
+    ),
+    O.getOrElse(() => JSON.stringify(""))
+  );
+  const threeDSData = {
+    browserJavaEnabled: navigator.javaEnabled().toString(),
+    browserLanguage: navigator.language,
+    browserColorDepth: getEMVCompliantColorDepth(screen.colorDepth).toString(),
+    browserScreenHeight: screen.height.toString(),
+    browserScreenWidth: screen.width.toString(),
+    browserTZ: new Date().getTimezoneOffset().toString(),
+    browserAcceptHeader: browserInfo.accept,
+    browserIP: browserInfo.ip,
+    browserUserAgent: navigator.userAgent,
+    acctID: `ACCT_`,
+    deliveryEmailAddress: email,
+    mobilePhone: null,
+  };
   const authParams = {
     amount: Number(
       transaction.payments
@@ -963,11 +993,13 @@ export const proceedToPayment = async (
       getPaymentMethod().paymentTypeCode === "CP"
         ? {
             detailType: "card",
-            accountEmail: getEmailInfo(false).email,
+            accountEmail: email,
+            brand: cardData.brand,
             cvv: cardData.cvv,
             pan: cardData.pan,
             expiryDate: cardData.expiryDate,
             holderName: cardData.holderName,
+            threeDsData: JSON.stringify(threeDSData)
           }
         : {
             detailType: "postepay",
@@ -1039,35 +1071,6 @@ export const confirmPayment = async (
     })),
     TE.toUnion
   )();
-
-  const threeDSData = {
-    browserJavaEnabled: navigator.javaEnabled().toString(),
-    browserLanguage: navigator.language,
-    browserColorDepth: getEMVCompliantColorDepth(screen.colorDepth).toString(),
-    browserScreenHeight: screen.height.toString(),
-    browserScreenWidth: screen.width.toString(),
-    browserTZ: new Date().getTimezoneOffset().toString(),
-    browserAcceptHeader: browserInfo.accept,
-    browserIP: browserInfo.ip,
-    browserUserAgent: navigator.userAgent,
-    acctID: `ACCT_${(
-      JSON.parse(
-        pipe(
-          O.fromNullable(sessionStorage.getItem("wallet")),
-          O.getOrElse(() => JSON.stringify("{}"))
-        )
-      ) as Wallet
-    ).idWallet
-      ?.toString()
-      .trim()}`,
-    deliveryEmailAddress: pipe(
-      O.fromNullable(
-        JSON.parse(sessionStorage.getItem("useremail") || JSON.stringify(""))
-      ),
-      O.getOrElse(() => JSON.stringify(""))
-    ),
-    mobilePhone: null,
-  };
 
   mixpanel.track(PAYMENT_PAY3DS2_INIT.value, {
     EVENT_ID: PAYMENT_PAY3DS2_INIT.value,
