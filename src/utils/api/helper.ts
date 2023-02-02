@@ -1104,7 +1104,7 @@ export const confirmPayment = async (
                 O.fromNullable(cvv),
                 O.getOrElse(() => "")
               ),
-              threeDSData: JSON.stringify("threeDSData"),
+              threeDSData: JSON.stringify(threeDSData),
             },
           },
           language: "it",
