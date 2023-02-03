@@ -32,7 +32,7 @@ describe("Checkout payment activation tests", () => {
   
 
   /**
-   * Increase default test timeout (60000ms)
+   * Increase default test timeout (80000ms)
    * to support entire payment flow
     */
   jest.setTimeout(80000);
