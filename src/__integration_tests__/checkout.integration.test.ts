@@ -134,8 +134,8 @@ describe("Checkout payment activation tests", () => {
   it.only("Should fail a payment AUTHORIZATION REQUEST and get FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND", async () => {
     /*
      * 2. Payment with notice code that fails on activation and get FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND
-     */
-    const errorMessageXPath = '/html/body/div[6]/div[3]/div/h2/div' 
+     */                        
+    const errorMessageXPath = '/html/body/div[6]/div[3]/div' 
     const resultMessage = await authorizePaymentAndGetError(
       FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND,
       VALID_FISCAL_CODE,
