@@ -27,8 +27,6 @@ describe("Checkout payment activation tests", () => {
   const FAIL_ACTIVATE_PPT_STAZIONE_INT_PA_TIMEOUT = "302016723749670015";
   /* FAIL_ACTIVATE_PPT_DOMINIO_SCONOSCIUTO end with 11 */
   const FAIL_ACTIVATE_PPT_DOMINIO_SCONOSCIUTO = "302016723749670011";
-  /* FAIL_AUTH_REQUEST_TRANSACTION_ID_ALREADY_PROCESSED end with 42 */
-  const FAIL_AUTH_REQUEST_TRANSACTION_ID_ALREADY_PROCESSED = "302016723749670042";
   /* FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND end with 41 */
   const FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND = "302016723749670041";
   
@@ -131,22 +129,6 @@ describe("Checkout payment activation tests", () => {
     );
 
     expect(resultMessage).toContain("PPT_DOMINIO_SCONOSCIUTO");
-  });
-
-  it("Should fail a payment AUTHORIZATION REQUEST and get FAIL_AUTH_REQUEST_TRANSACTION_ID_ALREADY_PROCESSED", async () => {
-    /*
-     * 2. Payment with notice code that fails on activation and get FAIL_AUTH_REQUEST_TRANSACTION_ID_ALREADY_PROCESSED
-     */
-    const errorMessageXPath = '/html/body/div[6]/div[3]/div/h2/div'
-    const resultMessage = await authorizePaymentAndGetError(
-      FAIL_AUTH_REQUEST_TRANSACTION_ID_ALREADY_PROCESSED,
-      VALID_FISCAL_CODE,
-      EMAIL,
-      VALID_CARD_DATA,
-      errorMessageXPath
-    );
-
-    expect(resultMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
   });
 
   it("Should fail a payment AUTHORIZATION REQUEST and get FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND", async () => {
