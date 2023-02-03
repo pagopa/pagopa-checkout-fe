@@ -2,13 +2,10 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/restrict-plus-operands */
 import { Box, Button, Typography } from "@mui/material";
-import * as E from "fp-ts/Either";
-import { pipe } from "fp-ts/function";
 import { default as React, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
 import PageContainer from "../components/PageContent/PageContainer";
-import { PaymentCheckData } from "../features/payment/models/paymentModel";
 import {
   responseMessage,
   responseOutcome,
@@ -17,10 +14,10 @@ import { useAppDispatch } from "../redux/hooks/hooks";
 import { resetSecurityCode } from "../redux/slices/securityCode";
 import { resetCardData } from "../redux/slices/cardData";
 import {
-  getCheckData,
   getEmailInfo,
   getPspSelected,
   getReturnUrls,
+  getTransaction,
 } from "../utils/api/apiService";
 import { callServices } from "../utils/api/response";
 import { PAYMENT_OUTCOME_CODE } from "../utils/config/mixpanelDefs";
@@ -29,12 +26,10 @@ import { onBrowserUnload } from "../utils/eventListeners";
 import { moneyFormat } from "../utils/form/formatters";
 import { clearSensitiveItems } from "../utils/storage/sessionStorage";
 import {
-  getOutcomeFromAuthcodeAndIsDirectAcquirer,
-  OutcomeEnumType,
+  getViewOutcomeFromEcommerceResultCode,
   ViewOutcomeEnum,
-  ViewOutcomeEnumType,
 } from "../utils/transactions/TransactionResultUtil";
-import { GENERIC_STATUS } from "../utils/transactions/TransactionStatesTypes";
+import { TransactionStatusEnum } from "../../generated/definitions/payment-ecommerce/TransactionStatus";
 
 type printData = {
   useremail: string;
@@ -47,11 +42,16 @@ export default function PaymentCheckPage() {
   const [redirectUrl, setRedirectUrl] = useState<string>(
     getReturnUrls().returnOkUrl
   );
-  const PaymentCheckData = getCheckData() as PaymentCheckData;
+  const transactionData = getTransaction();
   const pspSelected = getPspSelected();
   const email = getEmailInfo();
   const totalAmount =
-    Number(PaymentCheckData.amount.amount) + Number(pspSelected.fee);
+    Number(
+      transactionData.payments
+        .map((p) => p.amount)
+        .reduce((sum, current) => sum + current, 0)
+    ) + Number(pspSelected.fee);
+
   const usefulPrintData: printData = {
     useremail: email.email,
     amount: moneyFormat(totalAmount),
@@ -61,16 +61,9 @@ export default function PaymentCheckPage() {
   useEffect(() => {
     dispatch(resetSecurityCode());
     dispatch(resetCardData());
-    const handleFinalStatusResult = (
-      idStatus: GENERIC_STATUS,
-      authorizationCode?: string,
-      isDirectAcquirer?: boolean
-    ) => {
-      const outcome: OutcomeEnumType =
-        getOutcomeFromAuthcodeAndIsDirectAcquirer(
-          authorizationCode,
-          isDirectAcquirer
-        );
+    const handleFinalStatusResult = (idStatus?: TransactionStatusEnum) => {
+      const outcome: ViewOutcomeEnum =
+        getViewOutcomeFromEcommerceResultCode(idStatus);
       mixpanel.track(PAYMENT_OUTCOME_CODE.value, {
         EVENT_ID: PAYMENT_OUTCOME_CODE.value,
         idStatus,
@@ -79,14 +72,10 @@ export default function PaymentCheckPage() {
       showFinalResult(outcome);
     };
 
-    const showFinalResult = (outcome: OutcomeEnumType) => {
-      const viewOutcome: ViewOutcomeEnum = pipe(
-        ViewOutcomeEnumType.decode(outcome),
-        E.getOrElse(() => ViewOutcomeEnum.GENERIC_ERROR as ViewOutcomeEnum)
-      );
-      const message = responseOutcome[viewOutcome];
+    const showFinalResult = (outcome: ViewOutcomeEnum) => {
+      const message = responseOutcome[outcome];
       const redirectTo =
-        viewOutcome === "0"
+        outcome === "0"
           ? getReturnUrls().returnOkUrl
           : getReturnUrls().returnErrorUrl;
       setOutcomeMessage(message);
