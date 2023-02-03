@@ -131,7 +131,7 @@ describe("Checkout payment activation tests", () => {
     expect(resultMessage).toContain("PPT_DOMINIO_SCONOSCIUTO");
   });
 
-  it.only("Should fail a payment AUTHORIZATION REQUEST and get FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND", async () => {
+  it("Should fail a payment AUTHORIZATION REQUEST and get FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND", async () => {
     /*
      * 2. Payment with notice code that fails on activation and get FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND
      */                        
