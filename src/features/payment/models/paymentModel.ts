@@ -68,12 +68,6 @@ export interface PaymentInfo {
   dueDate?: string;
 }
 
-export interface PaymentInfoData {
-  receiver: string | undefined;
-  subject: string;
-  amount: number;
-}
-
 export interface PaymentId {
   paymentId: string;
 }

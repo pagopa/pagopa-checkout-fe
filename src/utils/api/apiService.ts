@@ -82,57 +82,6 @@ export function getPspSelected(): PspSelected {
   };
 }
 
-export function getCheckData(): PaymentCheckData {
-  const data = loadState(SessionItems.checkData) as
-    | PaymentCheckData
-    | undefined;
-  return {
-    amount: {
-      currency: data?.amount?.currency || "",
-      amount: data?.amount?.amount || 0,
-      decimalDigits: data?.amount?.decimalDigits || 0,
-    },
-    bolloDigitale: data?.bolloDigitale || false,
-    fiscalCode: data?.fiscalCode || "",
-    iban: data?.iban || "",
-    id: data?.id || 0,
-    idPayment: data?.idPayment || "",
-    isCancelled: data?.isCancelled || false,
-    origin: data?.origin || "",
-    receiver: data?.receiver || "",
-    subject: paymentSubjectTransform(data?.subject) || "",
-    urlRedirectEc: data?.urlRedirectEc || "",
-    detailsList: data?.detailsList || [],
-  };
-}
-
-export function getWallet(): Wallet {
-  const data = loadState(SessionItems.wallet) as Wallet | undefined;
-  return {
-    creditCard: {
-      brand: data?.creditCard?.brand || "",
-      pan: data?.creditCard?.pan || "",
-      holder: data?.creditCard?.holder || "",
-      expireMonth: data?.creditCard?.expireMonth || "",
-      expireYear: data?.creditCard?.expireYear || "",
-    },
-    idWallet: data?.idWallet || 0,
-    psp: {
-      businessName: data?.psp?.businessName || "",
-      directAcquire: data?.psp?.directAcquire || false,
-      fixedCost: {
-        currency: data?.psp?.fixedCost?.currency || "",
-        amount: data?.psp?.fixedCost?.amount || 0,
-        decimalDigits: data?.psp?.fixedCost?.decimalDigits || 0,
-      },
-      logoPSP: data?.psp?.logoPSP || "",
-      serviceAvailability: data?.psp?.serviceAvailability || "",
-    },
-    pspEditable: data?.pspEditable || false,
-    type: data?.type || "",
-  };
-}
-
 export function getCart(): Cart | undefined {
   const data = loadState(SessionItems.cart) as Cart | undefined;
   return data
@@ -186,10 +135,6 @@ export function setCart(item: Cart) {
   sessionStorage.setItem(SessionItems.cart, JSON.stringify(item));
 }
 
-export function setWallet(item: Wallet) {
-  sessionStorage.setItem(SessionItems.wallet, JSON.stringify(item));
-}
-
 export function setPaymentId(item: PaymentId) {
   sessionStorage.setItem(SessionItems.paymentId, JSON.stringify(item));
 }
@@ -204,10 +149,6 @@ export function setPspSelected(item: PspSelected) {
 
 export function setEmailInfo(item: PaymentEmailFormFields) {
   sessionStorage.setItem(SessionItems.useremail, JSON.stringify(item.email));
-}
-
-export function setCheckData(item: PaymentCheckData) {
-  sessionStorage.setItem(SessionItems.checkData, JSON.stringify(item));
 }
 
 export function setPaymentInfo(item: PaymentInfo) {
