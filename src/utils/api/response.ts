@@ -20,7 +20,8 @@ import {
 import { TransactionInfo } from "../../../generated/definitions/payment-ecommerce/TransactionInfo";
 import { TransactionStatusEnum } from "../../../generated/definitions/payment-ecommerce/TransactionStatus";
 import { EcommerceFinalStatusCodeEnumType } from "../transactions/TransactionResultUtil";
-import { getTransaction } from "./apiService";
+import { getSessionItem, SessionItems } from "../storage/sessionStorage";
+import { Transaction } from "../../features/payment/models/paymentModel";
 const config = getConfigOrThrow();
 /**
  * Polling configuration params
@@ -57,7 +58,9 @@ export const callServices = async (
     )(getUrlParameter("id")),
     TE.fold(
       (_) => async () => {
-        const transactionId = getTransaction().transactionId;
+        const transactionId =
+          (getSessionItem(SessionItems.transaction) as Transaction | undefined)
+            ?.transactionId || "";
         await pipe(
           ecommerceTransaction(transactionId, ecommerceClientWithPolling),
           TE.fold(

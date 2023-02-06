@@ -29,17 +29,15 @@ import SkeletonFieldContainer from "../components/Skeletons/SkeletonFieldContain
 import ClickableFieldContainer from "../components/TextFormField/ClickableFieldContainer";
 import FieldContainer from "../components/TextFormField/FieldContainer";
 import PspFieldContainer from "../components/TextFormField/PspFieldContainer";
-import { PspList } from "../features/payment/models/paymentModel";
+import {
+  PaymentInfo,
+  PaymentMethod,
+  PspList,
+  PspSelected,
+  Transaction,
+} from "../features/payment/models/paymentModel";
 import { useAppSelector } from "../redux/hooks/hooks";
 import { selectCardData } from "../redux/slices/cardData";
-import {
-  getEmailInfo,
-  getPaymentInfo,
-  getPaymentMethod,
-  getPspSelected,
-  getTransaction,
-  setPspSelected,
-} from "../utils/api/apiService";
 import {
   cancelPayment,
   getPaymentPSPList,
@@ -47,6 +45,11 @@ import {
 } from "../utils/api/helper";
 import { onBrowserUnload } from "../utils/eventListeners";
 import { moneyFormat } from "../utils/form/formatters";
+import {
+  getSessionItem,
+  SessionItems,
+  setSessionItem,
+} from "../utils/storage/sessionStorage";
 import { CheckoutRoutes } from "./models/routeModel";
 
 const defaultStyle = {
@@ -83,17 +86,25 @@ export default function PaymentCheckPage() {
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
   const cardData = useAppSelector(selectCardData);
-  const paymentMethod = getPaymentMethod();
-  const pspSelected = getPspSelected();
-  const transaction = getTransaction();
-  const email = getEmailInfo();
+  const paymentMethod = getSessionItem(SessionItems.paymentMethod) as
+    | PaymentMethod
+    | undefined;
+  const pspSelected = getSessionItem(SessionItems.pspSelected) as
+    | PspSelected
+    | undefined;
+  const transaction = getSessionItem(SessionItems.transaction) as
+    | Transaction
+    | undefined;
+  const email = getSessionItem(SessionItems.useremail) as string | undefined;
+  const amount =
+    (getSessionItem(SessionItems.paymentInfo) as PaymentInfo | undefined)
+      ?.amount || 0;
   const totalAmount =
     Number(
-      transaction.payments
+      transaction?.payments
         .map((p) => p.amount)
         .reduce((sum, current) => sum + current, 0)
-    ) + Number(pspSelected.fee || 0);
-  const amount = getPaymentInfo().amount;
+    ) + Number(pspSelected?.fee || 0);
 
   const onBrowserBackEvent = (e: any) => {
     e.preventDefault();
@@ -127,19 +138,21 @@ export default function PaymentCheckPage() {
   const [month, year] = cardData.expDate.split("/");
   const onSubmit = React.useCallback(() => {
     setPayLoading(true);
-    void proceedToPayment(
-      {
-        transaction,
-        cardData: {
-          cvv: cardData?.cvv || "",
-          pan: cardData?.pan || "",
-          holderName: cardData?.cardHolderName || "",
-          expiryDate: "20".concat(year).concat(month) || "",
+    if (transaction) {
+      void proceedToPayment(
+        {
+          transaction,
+          cardData: {
+            cvv: cardData?.cvv || "",
+            pan: cardData?.pan || "",
+            holderName: cardData?.cardHolderName || "",
+            expiryDate: "20".concat(year).concat(month) || "",
+          },
         },
-      },
-      onError,
-      onResponse
-    );
+        onError,
+        onResponse
+      );
+    }
   }, []);
 
   const onCancel = React.useCallback(() => {
@@ -165,17 +178,19 @@ export default function PaymentCheckPage() {
   const onPspEditClick = () => {
     setDrawerOpen(true);
     setPspEditLoading(true);
-    void getPaymentPSPList({
-      paymentMethodId: paymentMethod.paymentMethodId,
-      onError,
-      onResponse: onPspEditResponse,
-    });
+    if (paymentMethod) {
+      void getPaymentPSPList({
+        paymentMethodId: paymentMethod?.paymentMethodId,
+        onError,
+        onResponse: onPspEditResponse,
+      });
+    }
   };
 
   const updateWalletPSP = (psp: PspList) => {
     setDrawerOpen(false);
     setPspUpdateLoading(true);
-    setPspSelected({
+    setSessionItem(SessionItems.pspSelected, {
       pspCode: psp.idPsp || "",
       fee: psp.commission,
       businessName: psp.name || "",
@@ -197,7 +212,7 @@ export default function PaymentCheckPage() {
   const isDisabled = () =>
     pspEditLoading || payLoading || cancelLoading || pspUpdateLoading;
 
-  const isDisabledSubmit = () => isDisabled() || pspSelected.pspCode === "";
+  const isDisabledSubmit = () => isDisabled() || pspSelected?.pspCode === "";
 
   return (
     <PageContainer>
@@ -283,8 +298,12 @@ export default function PaymentCheckPage() {
         loading={pspUpdateLoading}
         titleVariant="sidenav"
         bodyVariant="body2"
-        title={moneyFormat(pspSelected.fee)}
-        body={`${t("paymentCheckPage.psp")} ${pspSelected.businessName}`}
+        title={(pspSelected && moneyFormat(pspSelected.fee)) || ""}
+        body={
+          (pspSelected &&
+            `${t("paymentCheckPage.psp")} ${pspSelected.businessName}`) ||
+          ""
+        }
         sx={{
           border: "1px solid",
           borderColor: "divider",
@@ -305,7 +324,7 @@ export default function PaymentCheckPage() {
         }
       />
       <ClickableFieldContainer
-        title={`${t("paymentCheckPage.email")} ${email.email}`}
+        title={`${t("paymentCheckPage.email")} ${email}`}
         icon={<MailOutlineIcon sx={{ color: "text.primary" }} />}
         clickable={false}
         sx={{ borderBottom: "", mt: 2 }}

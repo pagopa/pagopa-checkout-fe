@@ -3,7 +3,7 @@ import {
   PaymentFormFields,
   PaymentInfo,
 } from "../../features/payment/models/paymentModel";
-import { setPaymentInfo, setRptId } from "../api/apiService";
+import { SessionItems, setSessionItem } from "../storage/sessionStorage";
 
 export function getTotalFromCart(cart: Cart): number {
   const payments = cart.paymentNotices;
@@ -24,7 +24,7 @@ export function adaptCartAsPaymentInfo(cart: Cart): void {
     paName: CartItem.companyName || "",
     description: CartItem.description || "",
   };
-  setPaymentInfo(CartAsPI as PaymentInfo);
+  setSessionItem(SessionItems.paymentInfo, CartAsPI as PaymentInfo);
 }
 export function adaptCartAsRptId(cart: Cart): void {
   const CartItem = cart.paymentNotices[0];
@@ -32,5 +32,5 @@ export function adaptCartAsRptId(cart: Cart): void {
     billCode: CartItem.noticeNumber,
     cf: CartItem.fiscalCode,
   };
-  setRptId(CartAsRpt);
+  setSessionItem(SessionItems.noticeInfo, CartAsRpt);
 }

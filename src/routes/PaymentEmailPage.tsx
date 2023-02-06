@@ -4,7 +4,11 @@ import { useNavigate, useLocation } from "react-router-dom";
 import PageContainer from "../components/PageContent/PageContainer";
 import { PaymentEmailForm } from "../features/payment/components/PaymentEmailForm/PaymentEmailForm";
 import { PaymentEmailFormFields } from "../features/payment/models/paymentModel";
-import { getEmailInfo, setEmailInfo } from "../utils/api/apiService";
+import {
+  getSessionItem,
+  SessionItems,
+  setSessionItem,
+} from "../utils/storage/sessionStorage";
 import { CheckoutRoutes } from "./models/routeModel";
 
 type LocationProps = {
@@ -17,10 +21,13 @@ export default function PaymentEmailPage() {
   const { state } = useLocation() as unknown as LocationProps;
   const noConfirmEmail: boolean = (state && state.noConfirmEmail) || false;
   const navigate = useNavigate();
-  const emailInfo = getEmailInfo(noConfirmEmail);
+  const email = getSessionItem(SessionItems.useremail) as string | undefined;
+  const emailForm = noConfirmEmail
+    ? { email: email || "", confirmEmail: "" }
+    : { email: email || "", confirmEmail: email || "" };
 
   const onSubmit = React.useCallback((emailInfo: PaymentEmailFormFields) => {
-    setEmailInfo(emailInfo);
+    setSessionItem(SessionItems.useremail, emailInfo.email);
     navigate(`/${CheckoutRoutes.SCEGLI_METODO}`);
   }, []);
 
@@ -36,7 +43,7 @@ export default function PaymentEmailPage() {
           <PaymentEmailForm
             onCancel={onCancel}
             onSubmit={onSubmit}
-            defaultValues={emailInfo}
+            defaultValues={emailForm}
           />
         </Box>
       </PageContainer>
