@@ -2,7 +2,6 @@
 import { TransactionStatusEnum } from "../../../generated/definitions/payment-ecommerce/TransactionStatus";
 import {
   Cart,
-  PaymentCheckData,
   PaymentEmailFormFields,
   PaymentFormFields,
   PaymentId,
@@ -10,12 +9,10 @@ import {
   PaymentMethod,
   PspSelected,
   ReturnUrls,
-  Wallet,
   Transaction,
 } from "../../features/payment/models/paymentModel";
 import { getConfigOrThrow } from "../config/config";
 import { loadState, SessionItems } from "../storage/sessionStorage";
-import { paymentSubjectTransform } from "../transformers/paymentTransformers";
 
 export function getReCaptchaKey() {
   return getConfigOrThrow().CHECKOUT_RECAPTCHA_SITE_KEY;

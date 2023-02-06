@@ -10,7 +10,6 @@ import * as TE from "fp-ts/TaskEither";
 import * as T from "fp-ts/Task";
 import { CodiceContestoPagamento } from "../../../generated/definitions/payment-activations-api/CodiceContestoPagamento";
 import { ImportoEuroCents } from "../../../generated/definitions/payment-activations-api/ImportoEuroCents";
-import { Detail_v2Enum } from "../../../generated/definitions/payment-activations-api/PaymentProblemJson";
 import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-activations-api/PaymentRequestsGetResponse";
 import { RequestAuthorizationRequest } from "../../../generated/definitions/payment-ecommerce/RequestAuthorizationRequest";
 import { PaymentRequestsGetResponse as EcommercePaymentRequestsGetResponse } from "../../../generated/definitions/payment-ecommerce/PaymentRequestsGetResponse";
@@ -19,18 +18,13 @@ import { NewTransactionResponse } from "../../../generated/definitions/payment-e
 import { RptId } from "../../../generated/definitions/payment-ecommerce/RptId";
 import { TransactionInfo } from "../../../generated/definitions/payment-ecommerce/TransactionInfo";
 import { ValidationFaultPaymentProblemJson } from "../../../generated/definitions/payment-ecommerce/ValidationFaultPaymentProblemJson";
-import {
-  TypeEnum,
-  Wallet,
-} from "../../../generated/definitions/payment-manager-api/Wallet";
+import { TypeEnum } from "../../../generated/definitions/payment-manager-api/Wallet";
 import {
   Cart,
   InputCardFormFields,
-  PaymentCheckData,
   PaymentInstruments,
   PspList,
   Transaction,
-  Wallet as PaymentWallet,
 } from "../../features/payment/models/paymentModel";
 import {
   PaymentMethodRoutes,
@@ -71,11 +65,6 @@ import {
   PAYMENT_METHODS_RESP_ERROR,
   PAYMENT_METHODS_SUCCESS,
   PAYMENT_METHODS_SVR_ERROR,
-  PAYMENT_PAY3DS2_INIT,
-  PAYMENT_PAY3DS2_NET_ERR,
-  PAYMENT_PAY3DS2_RESP_ERR,
-  PAYMENT_PAY3DS2_SUCCESS,
-  PAYMENT_PAY3DS2_SVR_ERR,
   PAYMENT_PSPLIST_INIT,
   PAYMENT_PSPLIST_NET_ERR,
   PAYMENT_PSPLIST_RESP_ERR,
@@ -86,11 +75,6 @@ import {
   PAYMENT_START_SESSION_RESP_ERR,
   PAYMENT_START_SESSION_SUCCESS,
   PAYMENT_START_SESSION_SVR_ERR,
-  PAYMENT_UPD_WALLET_INIT,
-  PAYMENT_UPD_WALLET_NET_ERR,
-  PAYMENT_UPD_WALLET_RESP_ERR,
-  PAYMENT_UPD_WALLET_SUCCESS,
-  PAYMENT_UPD_WALLET_SVR_ERR,
   PAYMENT_VERIFY_INIT,
   PAYMENT_VERIFY_NET_ERR,
   PAYMENT_VERIFY_RESP_ERR,
@@ -122,13 +106,7 @@ import {
   setReturnUrls,
   setTransaction,
 } from "./apiService";
-import { getBrowserInfoTask, getEMVCompliantColorDepth } from "./checkHelper";
-import {
-  apiPaymentActivationsClient,
-  apiPaymentEcommerceClient,
-  apiPaymentTransactionsClient,
-  pmClient,
-} from "./client";
+import { apiPaymentEcommerceClient, pmClient } from "./client";
 
 export const getEcommercePaymentInfoTask = (
   rptId: RptId,
