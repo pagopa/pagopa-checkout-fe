@@ -976,7 +976,7 @@ export const proceedToPayment = async (
     browserAcceptHeader: browserInfo.accept,
     browserIP: browserInfo.ip,
     browserUserAgent: navigator.userAgent,
-    acctID: `ACCT_`,
+    acctID: `ACCT_${transactionId}`,
     deliveryEmailAddress: email,
     mobilePhone: null,
   };
