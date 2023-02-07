@@ -333,6 +333,11 @@ export const activatePayment = async ({
                   paymentId: res.transactionId,
                 });
                 setSessionItem(SessionItems.transaction, res);
+                setSessionItem(SessionItems.returnUrls, {
+                  returnOkUrl: "/",
+                  returnCancelUrl: "/",
+                  returnErrorUrl: "/",
+                });
                 onResponse();
               }
             )
@@ -499,20 +504,6 @@ export const getTransactionData = async ({
                           mixpanel.track(PAYMENT_CHECK_SUCCESS.value, {
                             EVENT_ID: PAYMENT_CHECK_SUCCESS.value,
                           });
-
-                          const cart = getSessionItem(SessionItems.cart) as
-                            | Cart
-                            | undefined;
-                          setSessionItem(
-                            SessionItems.returnUrls,
-                            cart?.returnUrls.returnOkUrl
-                              ? cart.returnUrls
-                              : {
-                                  returnOkUrl: "/",
-                                  returnCancelUrl: "/",
-                                  returnErrorUrl: "/",
-                                }
-                          );
                         })
                       );
                     } else {

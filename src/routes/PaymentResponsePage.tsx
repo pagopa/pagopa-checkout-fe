@@ -41,16 +41,18 @@ type printData = {
 
 export default function PaymentCheckPage() {
   const [loading, setLoading] = useState(true);
+  const returnUrls = getSessionItem(SessionItems.returnUrls) as
+    | ReturnUrls
+    | undefined;
   const [outcomeMessage, setOutcomeMessage] = useState<responseMessage>();
-  const [redirectUrl, setRedirectUrl] = useState<string>("");
+  const [redirectUrl, setRedirectUrl] = useState<string>(
+    returnUrls?.returnOkUrl || ""
+  );
   const transactionData = getSessionItem(SessionItems.transaction) as
     | Transaction
     | undefined;
   const pspSelected = getSessionItem(SessionItems.pspSelected) as
     | PspSelected
-    | undefined;
-  const returnUrls = getSessionItem(SessionItems.returnUrls) as
-    | ReturnUrls
     | undefined;
   const email = getSessionItem(SessionItems.useremail) as string | undefined;
   const totalAmount =
@@ -64,12 +66,13 @@ export default function PaymentCheckPage() {
     useremail: email || "",
     amount: moneyFormat(totalAmount),
   };
-  setRedirectUrl(returnUrls?.returnOkUrl || ""); // set as default
+
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(resetSecurityCode());
     dispatch(resetCardData());
+
     const handleFinalStatusResult = (idStatus?: TransactionStatusEnum) => {
       const outcome: ViewOutcomeEnum =
         getViewOutcomeFromEcommerceResultCode(idStatus);
