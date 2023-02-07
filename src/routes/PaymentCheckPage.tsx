@@ -123,8 +123,6 @@ export default function PaymentCheckPage() {
     window.location.replace(authorizationUrl);
   };
 
-  // TODO CHK-923
-  // const [month, year] = cardData.expDate.split("/");
   const stDate = "01/".concat(cardData?.expDate || "");
   const pattern = /(\d{2})\/(\d{2})\/(\d{2})/;
   const dateParsed = new Date(stDate.replace(pattern, "$2-$1-$3"));
