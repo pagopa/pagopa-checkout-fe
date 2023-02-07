@@ -19,10 +19,7 @@ import { NewTransactionResponse } from "../../../generated/definitions/payment-e
 import { RptId } from "../../../generated/definitions/payment-ecommerce/RptId";
 import { TransactionInfo } from "../../../generated/definitions/payment-ecommerce/TransactionInfo";
 import { ValidationFaultPaymentProblemJson } from "../../../generated/definitions/payment-ecommerce/ValidationFaultPaymentProblemJson";
-import {
-  TypeEnum,
-  Wallet,
-} from "../../../generated/definitions/payment-manager-api/Wallet";
+import { TypeEnum } from "../../../generated/definitions/payment-manager-api/Wallet";
 import {
   Cart,
   InputCardFormFields,
