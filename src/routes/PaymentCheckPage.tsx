@@ -454,7 +454,10 @@ export default function PaymentCheckPage() {
 }
 
 const expDateToString = (dateParsed: Date) =>
-  "".concat(dateParsed.getFullYear().toPrecision(4)).concat(
+  "".concat(dateParsed.getFullYear().toLocaleString("it-IT", {
+    minimumIntegerDigits: 4,
+    useGrouping: false,
+  })).concat(
     (dateParsed.getMonth() + 1).toLocaleString("it-IT", {
       minimumIntegerDigits: 2,
       useGrouping: false,
