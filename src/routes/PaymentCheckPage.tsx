@@ -124,7 +124,10 @@ export default function PaymentCheckPage() {
   };
 
   // TODO CHK-923
-  const [month, year] = cardData.expDate.split("/");
+  // const [month, year] = cardData.expDate.split("/");
+  const stDate = "01/".concat(cardData?.expDate || "");
+  const pattern = /(\d{2})\/(\d{2})\/(\d{2})/;
+  const dateParsed = new Date(stDate.replace(pattern, "$2-$1-$3"));
   const onSubmit = React.useCallback(() => {
     setPayLoading(true);
     void proceedToPayment(
@@ -134,7 +137,7 @@ export default function PaymentCheckPage() {
           cvv: cardData?.cvv || "",
           pan: cardData?.pan || "",
           holderName: cardData?.cardHolderName || "",
-          expiryDate: "20".concat(year).concat(month) || "",
+          expiryDate: expDateToString(dateParsed),
         },
       },
       onError,
@@ -451,3 +454,11 @@ export default function PaymentCheckPage() {
     </PageContainer>
   );
 }
+
+const expDateToString = (dateParsed: Date) =>
+  "".concat(dateParsed.getFullYear().toPrecision(4)).concat(
+    (dateParsed.getMonth() + 1).toLocaleString("it-IT", {
+      minimumIntegerDigits: 2,
+      useGrouping: false,
+    })
+  );
