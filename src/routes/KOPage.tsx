@@ -19,7 +19,7 @@ export default function KOPage() {
   const dispatch = useAppDispatch();
   const redirectUrl =
     (getSessionItem(SessionItems.returnUrls) as ReturnUrls | undefined)
-      ?.returnErrorUrl || "";
+      ?.returnErrorUrl || "/";
 
   React.useEffect(() => {
     dispatch(resetSecurityCode());

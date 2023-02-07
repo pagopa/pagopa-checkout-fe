@@ -46,7 +46,7 @@ export default function PaymentCheckPage() {
     | undefined;
   const [outcomeMessage, setOutcomeMessage] = useState<responseMessage>();
   const [redirectUrl, setRedirectUrl] = useState<string>(
-    returnUrls?.returnOkUrl || ""
+    returnUrls?.returnOkUrl || "/"
   );
   const transactionData = getSessionItem(SessionItems.transaction) as
     | Transaction

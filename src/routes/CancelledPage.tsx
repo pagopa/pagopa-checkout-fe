@@ -19,7 +19,7 @@ export default function CancelledPage() {
   const dispatch = useAppDispatch();
   const redirectUrl =
     (getSessionItem(SessionItems.returnUrls) as ReturnUrls | undefined)
-      ?.returnCancelUrl || "";
+      ?.returnCancelUrl || "/";
 
   React.useEffect(() => {
     dispatch(resetSecurityCode());

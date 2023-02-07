@@ -333,11 +333,6 @@ export const activatePayment = async ({
                   paymentId: res.transactionId,
                 });
                 setSessionItem(SessionItems.transaction, res);
-                setSessionItem(SessionItems.returnUrls, {
-                  returnOkUrl: "/",
-                  returnCancelUrl: "/",
-                  returnErrorUrl: "/",
-                });
                 onResponse();
               }
             )
