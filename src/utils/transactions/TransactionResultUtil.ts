@@ -15,6 +15,9 @@ export enum ViewOutcomeEnum {
 
 export enum EcommerceFinalStatusCodeEnum {
   NOTIFIED,
+  AUTHORIZATION_FAILED,
+  CLOSURE_FAILED,
+  NOTIFIED_FAILED,
 }
 
 export const getViewOutcomeFromEcommerceResultCode = (
@@ -23,6 +26,8 @@ export const getViewOutcomeFromEcommerceResultCode = (
   switch (ecommerceStatus) {
     case TransactionStatusEnum.NOTIFIED:
       return ViewOutcomeEnum.SUCCESS;
+    case TransactionStatusEnum.AUTHORIZATION_FAILED:
+      return ViewOutcomeEnum.AUTH_ERROR;
     default:
       return ViewOutcomeEnum.GENERIC_ERROR;
   }

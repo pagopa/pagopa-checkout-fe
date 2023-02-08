@@ -30,7 +30,7 @@ describe("TransactionResultUtil", () => {
       getViewOutcomeFromEcommerceResultCode(
         TransactionStatusEnum.AUTHORIZATION_FAILED
       )
-    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
+    ).toEqual(ViewOutcomeEnum.AUTH_ERROR);
 
     expect(
       getViewOutcomeFromEcommerceResultCode(
