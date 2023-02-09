@@ -957,12 +957,6 @@ export const proceedToPayment = async (
     })),
     TE.toUnion
   )();
-  const email = pipe(
-    O.fromNullable(
-      JSON.parse(sessionStorage.getItem("useremail") || JSON.stringify(""))
-    ),
-    O.getOrElse(() => JSON.stringify(""))
-  );
   const threeDSData = {
     browserJavaEnabled: navigator.javaEnabled().toString(),
     browserLanguage: navigator.language,
@@ -974,7 +968,7 @@ export const proceedToPayment = async (
     browserIP: browserInfo.ip,
     browserUserAgent: navigator.userAgent,
     acctID: `ACCT_${transactionId}`,
-    deliveryEmailAddress: email,
+    deliveryEmailAddress: (getSessionItem(SessionItems.useremail) as string) || "",
     mobilePhone: null,
   };
   const authParams = {
