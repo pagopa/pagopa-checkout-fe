@@ -7,27 +7,29 @@ import ErrorModal from "../components/modals/ErrorModal";
 import PageContainer from "../components/PageContent/PageContainer";
 import { InputCardForm } from "../features/payment/components/InputCardForm/InputCardForm";
 import {
-  InputCardFormFields,
+  PaymentId,
+  PaymentMethod,
   PspList,
+  Transaction,
 } from "../features/payment/models/paymentModel";
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { setCardData } from "../redux/slices/cardData";
 import { setSecurityCode } from "../redux/slices/securityCode";
-import {
-  getPaymentMethod,
-  getPaymentId,
-  getReCaptchaKey,
-  getTransaction,
-  setPspSelected,
-} from "../utils/api/apiService";
 import {
   activatePayment,
   getPaymentPSPList,
   onErrorGetPSP,
   sortPspByOnUsPolicy,
 } from "../utils/api/helper";
+import { InputCardFormFields } from "../features/payment/models/paymentModel";
 import { getConfigOrThrow } from "../utils/config/config";
 import { ErrorsType } from "../utils/errors/checkErrorsModel";
+import {
+  getReCaptchaKey,
+  getSessionItem,
+  SessionItems,
+  setSessionItem,
+} from "../utils/storage/sessionStorage";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function InputCardPage() {
@@ -43,7 +45,10 @@ export default function InputCardPage() {
   const dispatch = useAppDispatch();
 
   React.useEffect(() => {
-    setHideCancelButton(!!getTransaction().transactionId);
+    setHideCancelButton(
+      !!(getSessionItem(SessionItems.transaction) as Transaction | undefined)
+        ?.transactionId
+    );
   }, []);
 
   React.useEffect(() => {
@@ -83,19 +88,28 @@ export default function InputCardPage() {
       dispatch(setSecurityCode(cardData.cvv));
       setLoading(true);
       await getPaymentPSPList({
-        paymentMethodId: getPaymentMethod()?.paymentMethodId,
+        paymentMethodId:
+          (
+            getSessionItem(SessionItems.paymentMethod) as
+              | PaymentMethod
+              | undefined
+          )?.paymentMethodId || "",
         onError: onErrorGetPSP,
         onResponse: (resp: Array<PspList>) => {
           const firstPsp = sortPspByOnUsPolicy(resp);
-          setPspSelected({
+          setSessionItem(SessionItems.pspSelected, {
             pspCode: firstPsp.at(0)?.idPsp || "",
             fee: firstPsp.at(0)?.commission || 0,
             businessName: firstPsp.at(0)?.name || "",
           });
         },
       });
-      const paymentId = getPaymentId().paymentId;
-      const transactionId = getTransaction().transactionId;
+      const paymentId = (
+        getSessionItem(SessionItems.paymentId) as PaymentId | undefined
+      )?.paymentId;
+      const transactionId = (
+        getSessionItem(SessionItems.transaction) as Transaction | undefined
+      )?.transactionId;
       // If I want to change the card data but I have already activated the payment
       if (paymentId && transactionId) {
         onResponse();
