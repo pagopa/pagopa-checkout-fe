@@ -123,9 +123,9 @@ export default function PaymentCheckPage() {
     window.location.replace(authorizationUrl);
   };
 
-  const stDate = "01/".concat(cardData?.expDate || "");
+  const dateString = "01/".concat(cardData?.expDate || "");
   const pattern = /(\d{2})\/(\d{2})\/(\d{2})/;
-  const dateParsed = new Date(stDate.replace(pattern, "$2-$1-$3"));
+  const dateParsed = new Date(dateString.replace(pattern, "$2-$1-$3"));
   const onSubmit = React.useCallback(() => {
     setPayLoading(true);
     void proceedToPayment(
