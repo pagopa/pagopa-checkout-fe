@@ -138,15 +138,17 @@ export default function PaymentCheckPage() {
   const [month, year] = cardData.expDate.split("/");
   const onSubmit = React.useCallback(() => {
     setPayLoading(true);
-    void proceedToPayment(
-      {
-        transaction,
-        cardData: {
-          brand: cardData?.brand || "",
-          cvv: cardData?.cvv || "",
-          pan: cardData?.pan || "",
-          holderName: cardData?.cardHolderName || "",
-          expiryDate: "20".concat(year).concat(month) || "",
+    if (transaction) {
+      void proceedToPayment(
+        {
+          transaction,
+          cardData: {
+            brand: cardData?.brand || "",
+            cvv: cardData?.cvv || "",
+            pan: cardData?.pan || "",
+            holderName: cardData?.cardHolderName || "",
+            expiryDate: "20".concat(year).concat(month) || "",
+          },
         },
         onError,
         onResponse
