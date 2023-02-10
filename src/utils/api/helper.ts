@@ -999,7 +999,7 @@ export const proceedToPayment = async (
             pan: cardData.pan,
             expiryDate: cardData.expiryDate,
             holderName: cardData.holderName,
-            threeDsData: JSON.stringify(threeDSData),
+            threeDsData: "JSON.stringify(threeDSData)",
           }
         : {
             detailType: "postepay",
