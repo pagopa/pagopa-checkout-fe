@@ -968,7 +968,8 @@ export const proceedToPayment = async (
     browserIP: browserInfo.ip,
     browserUserAgent: navigator.userAgent,
     acctID: `ACCT_${transactionId}`,
-    deliveryEmailAddress: (getSessionItem(SessionItems.useremail) as string) || "",
+    deliveryEmailAddress:
+      (getSessionItem(SessionItems.useremail) as string) || "",
     mobilePhone: null,
   };
   const authParams = {
