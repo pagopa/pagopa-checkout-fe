@@ -948,7 +948,7 @@ export const proceedToPayment = async (
     EVENT_ID: TRANSACTION_AUTH_INIT.value,
   });
   const transactionId = transaction.transactionId;
-  const browserInfo = await pipe(
+  /* const browserInfo = await pipe(
     getBrowserInfoTask(apiPaymentTransactionsClient),
     TE.mapLeft(() => ({
       ip: "",
@@ -956,8 +956,8 @@ export const proceedToPayment = async (
       accept: "",
     })),
     TE.toUnion
-  )();
-  /*const threeDSData = {
+  )(); */
+  /* const threeDSData = {
     browserJavaEnabled: navigator.javaEnabled().toString(),
     browserLanguage: navigator.language,
     browserColorDepth: getEMVCompliantColorDepth(screen.colorDepth).toString(),
@@ -971,7 +971,7 @@ export const proceedToPayment = async (
     deliveryEmailAddress:
       (getSessionItem(SessionItems.useremail) as string) || "",
     mobilePhone: null,
-  };*/
+  }; */
   const authParams = {
     amount: Number(
       transaction.payments
