@@ -135,8 +135,10 @@ export default function PaymentCheckPage() {
   };
 
   const dateString = "01/".concat(cardData?.expDate || "");
-  const pattern = /(\d{2})\/(\d{2})\/(\d{2})/;
-  const dateParsed = new Date(dateString.replace(pattern, "$2-$1-$3"));
+  const datePattern = /(\d{2})\/(\d{2})\/(\d{2})/;
+  const [day, month, year] = (dateString.match(datePattern) || []).slice(1);
+  const dateParsed = new Date(Number(year)+2000, Number(month) - 1, Number(day));
+
   const onSubmit = React.useCallback(() => {
     setPayLoading(true);
     if (transaction) {
@@ -147,7 +149,7 @@ export default function PaymentCheckPage() {
             cvv: cardData?.cvv || "",
             pan: cardData?.pan || "",
             holderName: cardData?.cardHolderName || "",
-            expiryDate: expDateToString(dateParsed)
+            expiryDate: expDateToString(dateParsed),
           },
         },
         onError,
