@@ -957,7 +957,7 @@ export const proceedToPayment = async (
     })),
     TE.toUnion
   )();
-  const threeDSData = {
+  /*const threeDSData = {
     browserJavaEnabled: navigator.javaEnabled().toString(),
     browserLanguage: navigator.language,
     browserColorDepth: getEMVCompliantColorDepth(screen.colorDepth).toString(),
@@ -971,7 +971,7 @@ export const proceedToPayment = async (
     deliveryEmailAddress:
       (getSessionItem(SessionItems.useremail) as string) || "",
     mobilePhone: null,
-  };
+  };*/
   const authParams = {
     amount: Number(
       transaction.payments
