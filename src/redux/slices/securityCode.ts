@@ -10,7 +10,7 @@ const initialState: SecurityCodeState = {
   cvv: "",
 };
 
-export const securityCodeSlice = createSlice({
+const securityCodeSlice = createSlice({
   name: "securityCode",
   initialState,
   reducers: {

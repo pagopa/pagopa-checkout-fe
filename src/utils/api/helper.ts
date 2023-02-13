@@ -1,7 +1,6 @@
 /* eslint-disable functional/no-let */
 /* eslint-disable sonarjs/cognitive-complexity */
 /* eslint-disable sonarjs/no-identical-functions */
-import cardValidator from "card-validator";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
 import { toError } from "fp-ts/lib/Either";
@@ -18,10 +17,8 @@ import { NewTransactionResponse } from "../../../generated/definitions/payment-e
 import { RptId } from "../../../generated/definitions/payment-ecommerce/RptId";
 import { TransactionInfo } from "../../../generated/definitions/payment-ecommerce/TransactionInfo";
 import { ValidationFaultPaymentProblemJson } from "../../../generated/definitions/payment-ecommerce/ValidationFaultPaymentProblemJson";
-import { TypeEnum } from "../../../generated/definitions/payment-manager-api/Wallet";
 import {
   Cart,
-  InputCardFormFields,
   PaymentCheckData,
   PaymentFormFields,
   PaymentId,
@@ -56,11 +53,6 @@ import {
   PAYMENT_ACTIVATE_RESP_ERR,
   PAYMENT_ACTIVATE_SUCCESS,
   PAYMENT_ACTIVATE_SVR_ERR,
-  PAYMENT_APPROVE_TERMS_INIT,
-  PAYMENT_APPROVE_TERMS_NET_ERR,
-  PAYMENT_APPROVE_TERMS_RESP_ERR,
-  PAYMENT_APPROVE_TERMS_SUCCESS,
-  PAYMENT_APPROVE_TERMS_SVR_ERR,
   PAYMENT_CHECK_INIT,
   PAYMENT_CHECK_NET_ERR,
   PAYMENT_CHECK_RESP_ERR,
@@ -76,21 +68,11 @@ import {
   PAYMENT_PSPLIST_RESP_ERR,
   PAYMENT_PSPLIST_SUCCESS,
   PAYMENT_PSPLIST_SVR_ERR,
-  PAYMENT_START_SESSION_INIT,
-  PAYMENT_START_SESSION_NET_ERR,
-  PAYMENT_START_SESSION_RESP_ERR,
-  PAYMENT_START_SESSION_SUCCESS,
-  PAYMENT_START_SESSION_SVR_ERR,
   PAYMENT_VERIFY_INIT,
   PAYMENT_VERIFY_NET_ERR,
   PAYMENT_VERIFY_RESP_ERR,
   PAYMENT_VERIFY_SUCCESS,
   PAYMENT_VERIFY_SVR_ERR,
-  PAYMENT_WALLET_INIT,
-  PAYMENT_WALLET_NET_ERR,
-  PAYMENT_WALLET_RESP_ERR,
-  PAYMENT_WALLET_SUCCESS,
-  PAYMENT_WALLET_SVR_ERR,
   TRANSACTION_AUTH_INIT,
   TRANSACTION_AUTH_NET_ERROR,
   TRANSACTION_AUTH_RESP_ERROR,
@@ -98,19 +80,12 @@ import {
 } from "../config/mixpanelDefs";
 import { mixpanel } from "../config/mixpanelHelperInit";
 import { ErrorsType } from "../errors/checkErrorsModel";
-import { WalletSession } from "../sessionData/WalletSession";
 import {
   getSessionItem,
   SessionItems,
   setSessionItem,
 } from "../storage/sessionStorage";
-import { getBrowserInfoTask, getEMVCompliantColorDepth } from "./checkHelper";
-import {
-  apiPaymentActivationsClient,
-  apiPaymentEcommerceClient,
-  apiPaymentTransactionsClient,
-  pmClient,
-} from "./client";
+import { apiPaymentEcommerceClient, pmClient } from "./client";
 
 export const getEcommercePaymentInfoTask = (
   rptId: RptId,
@@ -533,321 +508,6 @@ export const getPaymentPSPList = async ({
   }));
 
   onResponse(psp || []);
-};
-
-export const getSessionWallet = async (
-  creditCard: InputCardFormFields,
-  onError: (e: string) => void,
-  onResponse: (cardData: {
-    brand: string;
-    pan: string;
-    expDate: string;
-    cvv: string;
-    cardHolderName: string;
-  }) => void
-  // eslint-disable-next-line sonarjs/cognitive-complexity
-) => {
-  const useremail: string = JSON.parse(
-    (getSessionItem(SessionItems.useremail) as string | undefined) || ""
-  );
-  const checkData =
-    (getSessionItem(SessionItems.checkData) as PaymentCheckData | undefined) ||
-    JSON.parse("{}");
-
-  mixpanel.track(PAYMENT_START_SESSION_INIT.value, {
-    EVENT_ID: PAYMENT_START_SESSION_INIT.value,
-  });
-  // 1. Start Session to Fetch session token
-  const mySessionToken = await pipe(
-    TE.tryCatch(
-      () =>
-        pmClient.startSessionUsingPOST({
-          startSessionRequest: {
-            data: {
-              email: pipe(
-                O.fromNullable(useremail),
-                O.getOrElse(() => "")
-              ),
-              idPayment: pipe(
-                O.fromNullable(checkData.idPayment),
-                O.getOrElse(() => "")
-              ),
-            },
-          },
-        }),
-      (_e) => {
-        onError(ErrorsType.CONNECTION);
-        mixpanel.track(PAYMENT_START_SESSION_NET_ERR.value, {
-          EVENT_ID: PAYMENT_START_SESSION_NET_ERR.value,
-        });
-        return toError;
-      }
-    ),
-    TE.fold(
-      (_r) => async () => {
-        onError(ErrorsType.SERVER);
-        mixpanel.track(PAYMENT_START_SESSION_SVR_ERR.value, {
-          EVENT_ID: PAYMENT_START_SESSION_SVR_ERR.value,
-        });
-        return "fakeSessionToken";
-      }, // to be replaced with logic to handle failures
-      (myResExt) => async () => {
-        const sessionToken = pipe(
-          myResExt,
-          E.fold(
-            () => "fakeSessionToken",
-            (myRes) => {
-              if (myRes.status === 200) {
-                mixpanel.track(PAYMENT_START_SESSION_SUCCESS.value, {
-                  EVENT_ID: PAYMENT_START_SESSION_SUCCESS.value,
-                });
-              } else {
-                onError(ErrorsType.GENERIC_ERROR);
-                mixpanel.track(PAYMENT_START_SESSION_RESP_ERR.value, {
-                  EVENT_ID: PAYMENT_START_SESSION_RESP_ERR.value,
-                });
-              }
-              return myRes.status === 200
-                ? pipe(
-                    O.fromNullable(myRes.value.sessionToken),
-                    O.getOrElse(() => "fakeSessionToken")
-                  )
-                : "fakeSessionToken";
-            }
-          )
-        );
-        if (sessionToken !== "fakeSessionToken") {
-          setSessionItem(SessionItems.sessionToken, sessionToken);
-        }
-        return sessionToken;
-      }
-    )
-  )();
-
-  if (mySessionToken === "fakeSessionToken") {
-    return;
-  }
-
-  mixpanel.track(PAYMENT_APPROVE_TERMS_INIT.value, {
-    EVENT_ID: PAYMENT_APPROVE_TERMS_INIT.value,
-  });
-  // 2. Approve Terms
-  const termsApproval = await pipe(
-    TE.tryCatch(
-      () =>
-        pmClient.approveTermsUsingPOST({
-          Bearer: `Bearer ${mySessionToken}`,
-          approveTermsRequest: {
-            data: {
-              terms: true,
-              privacy: true,
-            },
-          },
-        }),
-      (_e) => {
-        onError(ErrorsType.CONNECTION);
-        mixpanel.track(PAYMENT_APPROVE_TERMS_NET_ERR.value, {
-          EVENT_ID: PAYMENT_APPROVE_TERMS_NET_ERR.value,
-        });
-        return "noApproval";
-      }
-    ),
-    TE.fold(
-      (_r) => async () => {
-        onError(ErrorsType.SERVER);
-        mixpanel.track(PAYMENT_APPROVE_TERMS_SVR_ERR.value, {
-          EVENT_ID: PAYMENT_APPROVE_TERMS_SVR_ERR.value,
-        });
-        return "noApproval";
-      },
-      (myResExt) => async () =>
-        pipe(
-          myResExt,
-          E.fold(
-            () => "noApproval",
-            (myRes) => {
-              if (myRes.status === 200) {
-                mixpanel.track(PAYMENT_APPROVE_TERMS_SUCCESS.value, {
-                  EVENT_ID: PAYMENT_APPROVE_TERMS_SUCCESS.value,
-                });
-              } else {
-                onError(ErrorsType.GENERIC_ERROR);
-                mixpanel.track(PAYMENT_APPROVE_TERMS_RESP_ERR.value, {
-                  EVENT_ID: PAYMENT_APPROVE_TERMS_RESP_ERR.value,
-                });
-              }
-              return myRes.status === 200
-                ? JSON.stringify(myRes.value.data)
-                : "noApproval";
-            }
-          )
-        )
-    )
-  )();
-
-  if (termsApproval === "noApproval") {
-    return;
-  }
-
-  mixpanel.track(PAYMENT_WALLET_INIT.value, {
-    EVENT_ID: PAYMENT_WALLET_INIT.value,
-  });
-  // 3. Wallet
-  await pipe(
-    TE.tryCatch(
-      () =>
-        pmClient.addWalletUsingPOST({
-          Bearer: `Bearer ${mySessionToken}`,
-          walletRequest: {
-            data: {
-              type: TypeEnum.CREDIT_CARD,
-              creditCard: {
-                expireMonth: creditCard.expirationDate.split("/")[0],
-                expireYear: creditCard.expirationDate.split("/")[1],
-                holder: creditCard.name.trim(),
-                pan: creditCard.number.trim(),
-                securityCode: creditCard.cvv,
-              },
-              idPagamentoFromEC: checkData.idPayment, // needs to exist
-            },
-          },
-          language: "it",
-        }),
-      (_e) => {
-        onError(ErrorsType.CONNECTION);
-        mixpanel.track(PAYMENT_WALLET_NET_ERR.value, {
-          EVENT_ID: PAYMENT_WALLET_NET_ERR.value,
-        });
-        return toError;
-      }
-    ),
-    TE.fold(
-      (_r) => async () => {
-        onError(ErrorsType.SERVER);
-        mixpanel.track(PAYMENT_WALLET_SVR_ERR.value, {
-          EVENT_ID: PAYMENT_WALLET_SVR_ERR.value,
-        });
-      }, // to be replaced with logic to handle failures
-      (myResExt) => async () => {
-        const walletResp = pipe(
-          myResExt,
-          E.fold(
-            () => {
-              onError(ErrorsType.GENERIC_ERROR);
-              mixpanel.track(PAYMENT_WALLET_RESP_ERR.value, {
-                EVENT_ID: PAYMENT_WALLET_RESP_ERR.value,
-              });
-            },
-            (myRes) => {
-              if (myRes.status === 200) {
-                mixpanel.track(PAYMENT_WALLET_SUCCESS.value, {
-                  EVENT_ID: PAYMENT_WALLET_SUCCESS.value,
-                });
-              } else {
-                onError(ErrorsType.INVALID_CARD);
-                mixpanel.track(PAYMENT_WALLET_RESP_ERR.value, {
-                  EVENT_ID: PAYMENT_WALLET_RESP_ERR.value,
-                });
-              }
-              return myRes.status === 200
-                ? JSON.stringify(myRes.value.data)
-                : "fakeWallet";
-            }
-          )
-        );
-
-        if ((walletResp as any as string) !== "fakeWallet") {
-          pipe(
-            WalletSession.decode(JSON.parse(walletResp as any as string)),
-            E.map((wallet) => {
-              setSessionItem(SessionItems.wallet, JSON.stringify(wallet));
-            })
-          );
-          onResponse({
-            brand:
-              cardValidator.number(creditCard.number).card?.type || "other",
-            pan: creditCard.number,
-            cvv: creditCard.cvv,
-            cardHolderName: creditCard.name,
-            expDate: creditCard.expirationDate,
-          });
-        }
-      }
-    )
-  )();
-};
-
-export const updateWallet = async (
-  idPsp: number,
-  onError: (e: string) => void,
-  onResponse: () => void
-) => {
-  const wallet =
-    (getSessionItem(SessionItems.wallet) as PaymentWallet | undefined) ||
-    JSON.parse("{}");
-  const sessionToken =
-    (getSessionItem(SessionItems.sessionToken) as string | undefined) || "";
-
-  const Bearer = `Bearer ${sessionToken}`;
-  const idWallet = wallet.idWallet;
-
-  mixpanel.track(PAYMENT_UPD_WALLET_INIT.value, {
-    EVENT_ID: PAYMENT_UPD_WALLET_INIT.value,
-  });
-  await pipe(
-    TE.tryCatch(
-      () =>
-        pmClient.updateWalletUsingPUT({
-          Bearer,
-          id: idWallet,
-          walletRequest: {
-            data: {
-              idPsp,
-            },
-          },
-        }),
-      (_e) => {
-        onError(ErrorsType.GENERIC_ERROR);
-        mixpanel.track(PAYMENT_UPD_WALLET_NET_ERR.value, {
-          EVENT_ID: PAYMENT_UPD_WALLET_NET_ERR.value,
-        });
-        return toError;
-      }
-    ),
-    TE.fold(
-      (_r) => async () => {
-        onError(ErrorsType.GENERIC_ERROR);
-        mixpanel.track(PAYMENT_UPD_WALLET_SVR_ERR.value, {
-          EVENT_ID: PAYMENT_UPD_WALLET_SVR_ERR.value,
-        });
-      },
-      (myResExt) => async () =>
-        pipe(
-          myResExt,
-          E.fold(
-            () =>
-              mixpanel.track(PAYMENT_UPD_WALLET_RESP_ERR.value, {
-                EVENT_ID: PAYMENT_UPD_WALLET_RESP_ERR.value,
-              }),
-            (res) => {
-              pipe(
-                WalletSession.decode(res.value?.data),
-                E.fold(
-                  (_) => undefined,
-                  (wallet) => {
-                    mixpanel.track(PAYMENT_UPD_WALLET_SUCCESS.value, {
-                      EVENT_ID: PAYMENT_UPD_WALLET_SUCCESS.value,
-                    });
-                    setSessionItem(SessionItems.wallet, JSON.stringify(wallet));
-                    onResponse();
-                  }
-                )
-              );
-            }
-          )
-        )
-    )
-  )();
 };
 
 export const proceedToPayment = async (

@@ -83,7 +83,7 @@ export interface PspSelected {
   fee: number;
 }
 
-export interface PaymentCheckDetail {
+interface PaymentCheckDetail {
   CCP: string;
   IUV: string;
   codicePagatore: string;
