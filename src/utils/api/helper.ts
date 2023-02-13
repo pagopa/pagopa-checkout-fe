@@ -1357,6 +1357,42 @@ export const getCarts = async (
   )();
 };
 
+export const parseDate = (dateInput: string | null): string =>
+  pipe(
+    dateInput,
+    O.fromNullable,
+    O.map((dateValue) => "01/".concat(dateValue)),
+    O.chain((value) =>
+      O.fromNullable(value.match(/(\d{2})\/(\d{2})\/(\d{2})/))
+    ),
+    O.map((matches) => matches.slice(1)),
+    O.map((matches) => [matches[0], matches[1], matches[2]]),
+    O.map(
+      ([day, month, year]) =>
+        new Date(Number(year) + 2000, Number(month) - 1, Number(day))
+    ),
+    O.map((date) => expDateToString(date)),
+    O.fold(
+      () => "",
+      (parsedDate) => parsedDate
+    )
+  );
+
+const expDateToString = (dateParsed: Date) =>
+  ""
+    .concat(
+      dateParsed.getFullYear().toLocaleString("it-IT", {
+        minimumIntegerDigits: 4,
+        useGrouping: false,
+      })
+    )
+    .concat(
+      (dateParsed.getMonth() + 1).toLocaleString("it-IT", {
+        minimumIntegerDigits: 2,
+        useGrouping: false,
+      })
+    );
+
 export const onErrorGetPSP = (e: string): void => {
   throw new Error("Error getting psp list. " + e);
 };

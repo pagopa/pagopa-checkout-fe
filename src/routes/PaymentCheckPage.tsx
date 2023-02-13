@@ -1,5 +1,4 @@
 /* eslint-disable functional/immutable-data */
-/* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/restrict-plus-operands */
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import EditIcon from "@mui/icons-material/Edit";
@@ -40,6 +39,7 @@ import { useAppSelector } from "../redux/hooks/hooks";
 import { selectCardData } from "../redux/slices/cardData";
 import {
   cancelPayment,
+  parseDate,
   getPaymentPSPList,
   proceedToPayment,
 } from "../utils/api/helper";
@@ -134,11 +134,6 @@ export default function PaymentCheckPage() {
     window.location.replace(authorizationUrl);
   };
 
-  const dateString = "01/".concat(cardData?.expDate || "");
-  const datePattern = /(\d{2})\/(\d{2})\/(\d{2})/;
-  const [day, month, year] = (dateString.match(datePattern) || []).slice(1);
-  const dateParsed = new Date(Number(year)+2000, Number(month) - 1, Number(day));
-
   const onSubmit = React.useCallback(() => {
     setPayLoading(true);
     if (transaction) {
@@ -149,7 +144,7 @@ export default function PaymentCheckPage() {
             cvv: cardData?.cvv || "",
             pan: cardData?.pan || "",
             holderName: cardData?.cardHolderName || "",
-            expiryDate: expDateToString(dateParsed),
+            expiryDate: parseDate(cardData?.expDate),
           },
         },
         onError,
@@ -473,18 +468,3 @@ export default function PaymentCheckPage() {
     </PageContainer>
   );
 }
-
-const expDateToString = (dateParsed: Date) =>
-  ""
-    .concat(
-      dateParsed.getFullYear().toLocaleString("it-IT", {
-        minimumIntegerDigits: 4,
-        useGrouping: false,
-      })
-    )
-    .concat(
-      (dateParsed.getMonth() + 1).toLocaleString("it-IT", {
-        minimumIntegerDigits: 2,
-        useGrouping: false,
-      })
-    );
