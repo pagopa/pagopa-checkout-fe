@@ -123,7 +123,7 @@ export interface Wallet {
   idWallet: number;
   psp: {
     businessName: string;
-    directAcquire: boolean;
+    directAcquirer: boolean;
     fixedCost: {
       currency: string;
       amount: number;
@@ -134,10 +134,6 @@ export interface Wallet {
   };
   pspEditable: boolean;
   type: string;
-}
-
-export interface SecurityCode {
-  securityCode: string;
 }
 
 export interface PspList {

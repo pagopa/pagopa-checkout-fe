@@ -8,7 +8,10 @@ import {
   PaymentMethodRoutes,
   TransactionMethods,
 } from "../../../../routes/models/paymentMethodRoutes";
-import { setPaymentMethodId } from "../../../../utils/api/apiService";
+import {
+  SessionItems,
+  setSessionItem,
+} from "../../../../utils/storage/sessionStorage";
 import { PaymentInstruments } from "../../models/paymentModel";
 import { DisabledPaymentMethods, EnabledPaymentMethods } from "./PaymentMethod";
 
@@ -60,7 +63,7 @@ export function PaymentChoice(props: {
   const handleClickOnMethod = React.useCallback(
     (paymentType: TransactionMethods, paymentMethodId: string) => {
       const route: string = PaymentMethodRoutes[paymentType]?.route;
-      setPaymentMethodId({
+      setSessionItem(SessionItems.paymentMethod, {
         paymentMethodId,
         paymentTypeCode: paymentType,
       });

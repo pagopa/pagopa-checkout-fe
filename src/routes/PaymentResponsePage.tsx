@@ -13,23 +13,26 @@ import {
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { resetSecurityCode } from "../redux/slices/securityCode";
 import { resetCardData } from "../redux/slices/cardData";
-import {
-  getEmailInfo,
-  getPspSelected,
-  getReturnUrls,
-  getTransaction,
-} from "../utils/api/apiService";
 import { callServices } from "../utils/api/response";
 import { PAYMENT_OUTCOME_CODE } from "../utils/config/mixpanelDefs";
 import { mixpanel } from "../utils/config/mixpanelHelperInit";
 import { onBrowserUnload } from "../utils/eventListeners";
 import { moneyFormat } from "../utils/form/formatters";
-import { clearSensitiveItems } from "../utils/storage/sessionStorage";
+import {
+  clearSensitiveItems,
+  getSessionItem,
+  SessionItems,
+} from "../utils/storage/sessionStorage";
 import {
   getViewOutcomeFromEcommerceResultCode,
   ViewOutcomeEnum,
 } from "../utils/transactions/TransactionResultUtil";
 import { TransactionStatusEnum } from "../../generated/definitions/payment-ecommerce/TransactionStatus";
+import {
+  PspSelected,
+  ReturnUrls,
+  Transaction,
+} from "../features/payment/models/paymentModel";
 
 type printData = {
   useremail: string;
@@ -38,29 +41,38 @@ type printData = {
 
 export default function PaymentCheckPage() {
   const [loading, setLoading] = useState(true);
+  const returnUrls = getSessionItem(SessionItems.returnUrls) as
+    | ReturnUrls
+    | undefined;
   const [outcomeMessage, setOutcomeMessage] = useState<responseMessage>();
   const [redirectUrl, setRedirectUrl] = useState<string>(
-    getReturnUrls().returnOkUrl
+    returnUrls?.returnOkUrl || "/"
   );
-  const transactionData = getTransaction();
-  const pspSelected = getPspSelected();
-  const email = getEmailInfo();
+  const transactionData = getSessionItem(SessionItems.transaction) as
+    | Transaction
+    | undefined;
+  const pspSelected = getSessionItem(SessionItems.pspSelected) as
+    | PspSelected
+    | undefined;
+  const email = getSessionItem(SessionItems.useremail) as string | undefined;
   const totalAmount =
     Number(
-      transactionData.payments
+      transactionData?.payments
         .map((p) => p.amount)
         .reduce((sum, current) => sum + current, 0)
-    ) + Number(pspSelected.fee);
+    ) + Number(pspSelected?.fee);
 
   const usefulPrintData: printData = {
-    useremail: email.email,
+    useremail: email || "",
     amount: moneyFormat(totalAmount),
   };
+
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(resetSecurityCode());
     dispatch(resetCardData());
+
     const handleFinalStatusResult = (idStatus?: TransactionStatusEnum) => {
       const outcome: ViewOutcomeEnum =
         getViewOutcomeFromEcommerceResultCode(idStatus);
@@ -75,11 +87,9 @@ export default function PaymentCheckPage() {
     const showFinalResult = (outcome: ViewOutcomeEnum) => {
       const message = responseOutcome[outcome];
       const redirectTo =
-        outcome === "0"
-          ? getReturnUrls().returnOkUrl
-          : getReturnUrls().returnErrorUrl;
+        outcome === "0" ? returnUrls?.returnOkUrl : returnUrls?.returnErrorUrl;
       setOutcomeMessage(message);
-      setRedirectUrl(redirectTo);
+      setRedirectUrl(redirectTo || "");
       setLoading(false);
       window.removeEventListener("beforeunload", onBrowserUnload);
       clearSensitiveItems();

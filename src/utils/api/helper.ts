@@ -22,8 +22,14 @@ import { TypeEnum } from "../../../generated/definitions/payment-manager-api/Wal
 import {
   Cart,
   InputCardFormFields,
+  PaymentCheckData,
+  PaymentFormFields,
+  PaymentId,
+  PaymentInfo,
   PaymentInstruments,
+  PaymentMethod,
   PspList,
+  PspSelected,
   Transaction,
 } from "../../features/payment/models/paymentModel";
 import {
@@ -94,19 +100,17 @@ import { mixpanel } from "../config/mixpanelHelperInit";
 import { ErrorsType } from "../errors/checkErrorsModel";
 import { WalletSession } from "../sessionData/WalletSession";
 import {
-  getCart,
-  getEmailInfo,
-  getNoticeInfo,
-  getPaymentId,
-  getPaymentInfo,
-  getPaymentMethod,
-  getPspSelected,
-  getTransaction,
-  setPaymentId,
-  setReturnUrls,
-  setTransaction,
-} from "./apiService";
-import { apiPaymentEcommerceClient, pmClient } from "./client";
+  getSessionItem,
+  SessionItems,
+  setSessionItem,
+} from "../storage/sessionStorage";
+import { getBrowserInfoTask, getEMVCompliantColorDepth } from "./checkHelper";
+import {
+  apiPaymentActivationsClient,
+  apiPaymentEcommerceClient,
+  apiPaymentTransactionsClient,
+  pmClient,
+} from "./client";
 
 export const getEcommercePaymentInfoTask = (
   rptId: RptId,
@@ -200,16 +204,26 @@ export const activatePayment = async ({
   onError: (e: string) => void;
   onNavigate: () => void;
 }) => {
-  const noticeInfo = getNoticeInfo();
-  const paymentInfo = getPaymentInfo();
+  const noticeInfo = getSessionItem(SessionItems.noticeInfo) as
+    | PaymentFormFields
+    | undefined;
+  const paymentInfo = getSessionItem(SessionItems.paymentInfo) as
+    | PaymentInfo
+    | undefined;
   const paymentInfoTransform = {
-    importoSingoloVersamento: paymentInfo.amount,
-    codiceContestoPagamento: paymentInfo.paymentContextCode,
+    importoSingoloVersamento: paymentInfo?.amount,
+    codiceContestoPagamento: paymentInfo?.paymentContextCode,
   };
-  const userEmail = getEmailInfo().email;
-  const paymentId = getPaymentId().paymentId;
-  const transactionId = getTransaction().transactionId;
-  const rptId: RptId = `${noticeInfo.cf}${noticeInfo.billCode}` as RptId;
+  const userEmail = getSessionItem(SessionItems.useremail) as
+    | string
+    | undefined;
+  const paymentId = (
+    getSessionItem(SessionItems.paymentId) as PaymentId | undefined
+  )?.paymentId;
+  const transactionId = (
+    getSessionItem(SessionItems.transaction) as Transaction | undefined
+  )?.transactionId;
+  const rptId: RptId = `${noticeInfo?.cf}${noticeInfo?.billCode}` as RptId;
 
   if (paymentId && !transactionId) {
     void getTransactionData({
@@ -230,7 +244,7 @@ export const activatePayment = async ({
             activePaymentTask(
               response.importoSingoloVersamento,
               response.codiceContestoPagamento,
-              userEmail,
+              userEmail || "",
               rptId
             ),
             TE.fold(
@@ -238,8 +252,10 @@ export const activatePayment = async ({
                 onError(e);
               },
               (res) => async () => {
-                setPaymentId({ paymentId: res.transactionId });
-                setTransaction(res);
+                setSessionItem(SessionItems.paymentId, {
+                  paymentId: res.transactionId,
+                });
+                setSessionItem(SessionItems.transaction, res);
                 onResponse();
               }
             )
@@ -401,22 +417,11 @@ const getTransactionData = async ({
                         maybePayment,
 
                         E.map((payment) => {
-                          setTransaction(payment);
+                          setSessionItem(SessionItems.transaction, payment);
                           onResponse();
                           mixpanel.track(PAYMENT_CHECK_SUCCESS.value, {
                             EVENT_ID: PAYMENT_CHECK_SUCCESS.value,
                           });
-
-                          const cart = getCart();
-                          setReturnUrls(
-                            cart?.returnUrls.returnOkUrl
-                              ? cart.returnUrls
-                              : {
-                                  returnOkUrl: "/",
-                                  returnCancelUrl: "/",
-                                  returnErrorUrl: "/",
-                                }
-                          );
                         })
                       );
                     } else {
@@ -445,7 +450,7 @@ export const getPaymentPSPList = async ({
   onResponse: (r: Array<PspList>) => void;
 }) => {
   const amount: number | undefined = pipe(
-    O.fromNullable(getCart()),
+    O.fromNullable(getSessionItem(SessionItems.cart) as Cart | undefined),
     O.map((cart) =>
       cart.paymentNotices.reduce(
         (totalAmount, notice) => totalAmount + notice.amount,
@@ -454,7 +459,9 @@ export const getPaymentPSPList = async ({
     ),
     O.alt(() =>
       pipe(
-        O.fromNullable(getPaymentInfo()),
+        O.fromNullable(
+          getSessionItem(SessionItems.paymentInfo) as PaymentInfo | undefined
+        ),
         O.map((paymentInfo) => paymentInfo.amount)
       )
     ),
@@ -541,11 +548,11 @@ export const getSessionWallet = async (
   // eslint-disable-next-line sonarjs/cognitive-complexity
 ) => {
   const useremail: string = JSON.parse(
-    sessionStorage.getItem("useremail") || JSON.stringify("")
+    (getSessionItem(SessionItems.useremail) as string | undefined) || ""
   );
-  const checkDataStored: string =
-    sessionStorage.getItem("checkData") || JSON.stringify("{}");
-  const checkData = JSON.parse(checkDataStored);
+  const checkData =
+    (getSessionItem(SessionItems.checkData) as PaymentCheckData | undefined) ||
+    JSON.parse("{}");
 
   mixpanel.track(PAYMENT_START_SESSION_INIT.value, {
     EVENT_ID: PAYMENT_START_SESSION_INIT.value,
@@ -610,7 +617,7 @@ export const getSessionWallet = async (
           )
         );
         if (sessionToken !== "fakeSessionToken") {
-          sessionStorage.setItem("sessionToken", sessionToken);
+          setSessionItem(SessionItems.sessionToken, sessionToken);
         }
         return sessionToken;
       }
@@ -753,7 +760,7 @@ export const getSessionWallet = async (
           pipe(
             WalletSession.decode(JSON.parse(walletResp as any as string)),
             E.map((wallet) => {
-              sessionStorage.setItem("wallet", JSON.stringify(wallet));
+              setSessionItem(SessionItems.wallet, JSON.stringify(wallet));
             })
           );
           onResponse({
@@ -766,6 +773,79 @@ export const getSessionWallet = async (
           });
         }
       }
+    )
+  )();
+};
+
+export const updateWallet = async (
+  idPsp: number,
+  onError: (e: string) => void,
+  onResponse: () => void
+) => {
+  const wallet =
+    (getSessionItem(SessionItems.wallet) as PaymentWallet | undefined) ||
+    JSON.parse("{}");
+  const sessionToken =
+    (getSessionItem(SessionItems.sessionToken) as string | undefined) || "";
+
+  const Bearer = `Bearer ${sessionToken}`;
+  const idWallet = wallet.idWallet;
+
+  mixpanel.track(PAYMENT_UPD_WALLET_INIT.value, {
+    EVENT_ID: PAYMENT_UPD_WALLET_INIT.value,
+  });
+  await pipe(
+    TE.tryCatch(
+      () =>
+        pmClient.updateWalletUsingPUT({
+          Bearer,
+          id: idWallet,
+          walletRequest: {
+            data: {
+              idPsp,
+            },
+          },
+        }),
+      (_e) => {
+        onError(ErrorsType.GENERIC_ERROR);
+        mixpanel.track(PAYMENT_UPD_WALLET_NET_ERR.value, {
+          EVENT_ID: PAYMENT_UPD_WALLET_NET_ERR.value,
+        });
+        return toError;
+      }
+    ),
+    TE.fold(
+      (_r) => async () => {
+        onError(ErrorsType.GENERIC_ERROR);
+        mixpanel.track(PAYMENT_UPD_WALLET_SVR_ERR.value, {
+          EVENT_ID: PAYMENT_UPD_WALLET_SVR_ERR.value,
+        });
+      },
+      (myResExt) => async () =>
+        pipe(
+          myResExt,
+          E.fold(
+            () =>
+              mixpanel.track(PAYMENT_UPD_WALLET_RESP_ERR.value, {
+                EVENT_ID: PAYMENT_UPD_WALLET_RESP_ERR.value,
+              }),
+            (res) => {
+              pipe(
+                WalletSession.decode(res.value?.data),
+                E.fold(
+                  (_) => undefined,
+                  (wallet) => {
+                    mixpanel.track(PAYMENT_UPD_WALLET_SUCCESS.value, {
+                      EVENT_ID: PAYMENT_UPD_WALLET_SUCCESS.value,
+                    });
+                    setSessionItem(SessionItems.wallet, JSON.stringify(wallet));
+                    onResponse();
+                  }
+                )
+              );
+            }
+          )
+        )
     )
   )();
 };
@@ -796,14 +876,22 @@ export const proceedToPayment = async (
         .map((p) => p.amount)
         .reduce((sum, current) => Number(sum) + Number(current), 0)
     ),
-    fee: getPspSelected().fee,
-    paymentInstrumentId: getPaymentMethod().paymentMethodId,
-    pspId: getPspSelected().pspCode,
+    fee:
+      (getSessionItem(SessionItems.pspSelected) as PspSelected | undefined)
+        ?.fee || 0,
+    paymentInstrumentId:
+      (getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined)
+        ?.paymentMethodId || "",
+    pspId:
+      (getSessionItem(SessionItems.pspSelected) as PspSelected | undefined)
+        ?.pspCode || "",
     details:
-      getPaymentMethod().paymentTypeCode === "CP"
+      (getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined)
+        ?.paymentTypeCode === "CP"
         ? {
             detailType: "card",
-            accountEmail: getEmailInfo(false).email,
+            accountEmail:
+              (getSessionItem(SessionItems.useremail) as string) || "",
             cvv: cardData.cvv,
             pan: cardData.pan,
             expiryDate: cardData.expiryDate,
@@ -811,7 +899,8 @@ export const proceedToPayment = async (
           }
         : {
             detailType: "postepay",
-            accountEmail: getEmailInfo(false).email,
+            accountEmail:
+              (getSessionItem(SessionItems.useremail) as string) || "",
           },
     language: LanguageEnum.IT,
   };
@@ -856,14 +945,130 @@ export const proceedToPayment = async (
   )();
 };
 
+<<<<<<< HEAD
+=======
+// TODO To be deleted
+export const confirmPayment = async (
+  {
+    checkData,
+    wallet,
+    cvv,
+  }: {
+    checkData: PaymentCheckData;
+    wallet: PaymentWallet;
+    cvv: string;
+  },
+  onError: (e: string) => void,
+  onResponse: () => void
+) => {
+  const browserInfo = await pipe(
+    getBrowserInfoTask(apiPaymentTransactionsClient),
+    TE.mapLeft(() => ({
+      ip: "",
+      useragent: "",
+      accept: "",
+    })),
+    TE.toUnion
+  )();
+
+  const threeDSData = {
+    browserJavaEnabled: navigator.javaEnabled().toString(),
+    browserLanguage: navigator.language,
+    browserColorDepth: getEMVCompliantColorDepth(screen.colorDepth).toString(),
+    browserScreenHeight: screen.height.toString(),
+    browserScreenWidth: screen.width.toString(),
+    browserTZ: new Date().getTimezoneOffset().toString(),
+    browserAcceptHeader: browserInfo.accept,
+    browserIP: browserInfo.ip,
+    browserUserAgent: navigator.userAgent,
+    acctID: `ACCT_${
+      (getSessionItem(SessionItems.wallet) as PaymentWallet)?.idWallet
+        .toString()
+        .trim() || ""
+    }`,
+    deliveryEmailAddress: getSessionItem(SessionItems.useremail) || "",
+    mobilePhone: null,
+  };
+
+  mixpanel.track(PAYMENT_PAY3DS2_INIT.value, {
+    EVENT_ID: PAYMENT_PAY3DS2_INIT.value,
+  });
+  // Pay
+  await pipe(
+    TE.tryCatch(
+      () =>
+        pmClient.pay3ds2UsingPOST({
+          Bearer: `Bearer ${getSessionItem(SessionItems.sessionToken) || ""}`,
+          id: checkData.idPayment,
+          payRequest: {
+            data: {
+              tipo: "web",
+              idWallet: wallet.idWallet,
+              cvv: pipe(
+                O.fromNullable(cvv),
+                O.getOrElse(() => "")
+              ),
+              threeDSData: JSON.stringify(threeDSData),
+            },
+          },
+          language: "it",
+        }),
+      (_e) => {
+        onError(ErrorsType.CONNECTION);
+        mixpanel.track(PAYMENT_PAY3DS2_NET_ERR.value, {
+          EVENT_ID: PAYMENT_PAY3DS2_NET_ERR.value,
+        });
+        return toError;
+      }
+    ),
+    TE.fold(
+      (_r) => async () => {
+        onError(ErrorsType.SERVER);
+        mixpanel.track(PAYMENT_PAY3DS2_SVR_ERR.value, {
+          EVENT_ID: PAYMENT_PAY3DS2_SVR_ERR.value,
+        });
+      }, // to be replaced with logic to handle failures
+      (myResExt) => async () => {
+        const paymentResp = pipe(
+          myResExt,
+          E.fold(
+            () => "fakePayment",
+            (myRes) => {
+              if (myRes.status === 200) {
+                mixpanel.track(PAYMENT_PAY3DS2_SUCCESS.value, {
+                  EVENT_ID: PAYMENT_PAY3DS2_SUCCESS.value,
+                });
+                return JSON.stringify(myRes.value);
+              } else {
+                onError(ErrorsType.GENERIC_ERROR);
+                mixpanel.track(PAYMENT_PAY3DS2_RESP_ERR.value, {
+                  EVENT_ID: PAYMENT_PAY3DS2_RESP_ERR.value,
+                });
+                return "fakePayment";
+              }
+            }
+          )
+        );
+        if (paymentResp !== "fakePayment") {
+          setSessionItem(
+            SessionItems.idTransaction,
+            JSON.parse(paymentResp).token
+          );
+          onResponse();
+        }
+      }
+    )
+  )();
+};
+
+>>>>>>> develop
 export const cancelPayment = async (
   onError: (e: string) => void,
   onResponse: () => void
 ) => {
-  const checkData = JSON.parse(
-    sessionStorage.getItem("checkData") || JSON.stringify("{}")
-  );
-
+  const checkData = getSessionItem(SessionItems.checkData) as
+    | PaymentCheckData
+    | undefined;
   // Payment action DELETE
   mixpanel.track(PAYMENT_ACTION_DELETE_INIT.value, {
     EVENT_ID: PAYMENT_ACTION_DELETE_INIT.value,
@@ -877,8 +1082,8 @@ export const cancelPayment = async (
     TE.tryCatch(
       () =>
         pmClient.deleteBySessionCookieExpiredUsingDELETE({
-          Bearer: `Bearer ${sessionStorage.getItem("sessionToken")}`,
-          id: checkData.idPayment,
+          Bearer: `Bearer ${getSessionItem(SessionItems.sessionToken) || ""}`,
+          id: checkData?.idPayment || "",
           koReason: "ANNUTE",
           showWallet: false,
         }),

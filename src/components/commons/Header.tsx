@@ -4,19 +4,29 @@ import { Box, Grid, Typography } from "@mui/material";
 import React from "react";
 import { useLocation } from "react-router-dom";
 import pagopaLogo from "../../assets/images/pagopa-logo.svg";
-import { PaymentNotice } from "../../features/payment/models/paymentModel";
+import {
+  Cart,
+  PaymentInfo,
+  PaymentNotice,
+} from "../../features/payment/models/paymentModel";
 import { CheckoutRoutes } from "../../routes/models/routeModel";
-import { getPaymentInfo, getCart } from "../../utils/api/apiService";
+import {
+  getSessionItem,
+  SessionItems,
+} from "../../utils/storage/sessionStorage";
 import { getTotalFromCart } from "../../utils/cart/cart";
 import { moneyFormat } from "../../utils/form/formatters";
 import { paymentSubjectTransform } from "../../utils/transformers/paymentTransformers";
 import DrawerDetail from "../Header/DrawerDetail";
 
 function amountToShow() {
-  const CartInfo = getCart();
+  const cartInfo = getSessionItem(SessionItems.cart) as Cart | undefined;
+  const paymentInfo = getSessionItem(SessionItems.paymentInfo) as
+    | PaymentInfo
+    | undefined;
   return (
-    (getPaymentInfo() && getPaymentInfo().amount) ||
-    (CartInfo && CartInfo.paymentNotices && getTotalFromCart(CartInfo)) ||
+    paymentInfo?.amount ||
+    (cartInfo && cartInfo.paymentNotices && getTotalFromCart(cartInfo)) ||
     0
   );
 }
@@ -24,13 +34,15 @@ function amountToShow() {
 export default function Header() {
   const location = useLocation();
   const currentPath = location.pathname.split("/").slice(-1)[0];
-  const PaymentInfoData = getPaymentInfo();
+  const paymentInfoData = getSessionItem(SessionItems.paymentInfo) as
+    | PaymentInfo
+    | undefined;
   const PaymentInfo = {
-    receiver: PaymentInfoData.paName,
-    subject: paymentSubjectTransform(PaymentInfoData.description) || "",
-    amount: PaymentInfoData.amount,
+    receiver: paymentInfoData?.paName || "",
+    subject: paymentSubjectTransform(paymentInfoData?.description) || "",
+    amount: paymentInfoData?.amount || 0,
   };
-  const CartInfo = getCart();
+  const CartInfo = getSessionItem(SessionItems.cart) as Cart | undefined;
   const [drawstate, setDrawstate] = React.useState(false);
   const ignoreRoutes: Array<string> = [
     CheckoutRoutes.ROOT,
@@ -49,13 +61,13 @@ export default function Header() {
     ? CartInfo.paymentNotices
     : [
         {
-          noticeNumber: PaymentInfoData.rptId
-            ? PaymentInfoData.rptId.slice(10)
+          noticeNumber: paymentInfoData?.rptId
+            ? paymentInfoData?.rptId.slice(10)
             : "",
-          fiscalCode: PaymentInfoData.paFiscalCode,
-          amount: PaymentInfoData.amount,
-          companyName: PaymentInfoData.paName || "",
-          description: PaymentInfoData.description || "",
+          fiscalCode: paymentInfoData?.paFiscalCode || "",
+          amount: paymentInfoData?.amount || 0,
+          companyName: paymentInfoData?.paName || "",
+          description: paymentInfoData?.description || "",
         },
       ];
 
