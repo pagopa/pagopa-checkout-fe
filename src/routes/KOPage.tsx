@@ -4,18 +4,26 @@ import { useTranslation } from "react-i18next";
 import ko from "../assets/images/response-umbrella.svg";
 import PageContainer from "../components/PageContent/PageContainer";
 import { useAppDispatch } from "../redux/hooks/hooks";
+import { resetCardData } from "../redux/slices/cardData";
 import { resetSecurityCode } from "../redux/slices/securityCode";
-import { getReturnUrls } from "../utils/api/apiService";
+import { ReturnUrls } from "../features/payment/models/paymentModel";
 import { onBrowserUnload } from "../utils/eventListeners";
-import { clearSensitiveItems } from "../utils/storage/sessionStorage";
+import {
+  clearSensitiveItems,
+  getSessionItem,
+  SessionItems,
+} from "../utils/storage/sessionStorage";
 
 export default function KOPage() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const redirectUrl = getReturnUrls().returnErrorUrl;
+  const redirectUrl =
+    (getSessionItem(SessionItems.returnUrls) as ReturnUrls | undefined)
+      ?.returnErrorUrl || "/";
 
   React.useEffect(() => {
     dispatch(resetSecurityCode());
+    dispatch(resetCardData());
     window.removeEventListener("beforeunload", onBrowserUnload);
     clearSensitiveItems();
   }, []);

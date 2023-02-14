@@ -1,6 +1,10 @@
 import { Theme } from "@emotion/react";
 import { SxProps } from "@mui/material";
+import { ClientIdEnum } from "../../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
+import { TransactionStatusEnum } from "../../../../generated/definitions/payment-ecommerce/TransactionStatus";
+import { PaymentInfo as PaymentData } from "../../../../generated/definitions/payment-ecommerce/PaymentInfo";
 import { TransactionMethods } from "../../../routes/models/paymentMethodRoutes";
+import { AmountEuroCents } from "../../../../generated/definitions/payment-ecommerce/AmountEuroCents";
 
 export interface PaymentFormFields {
   billCode: string;
@@ -74,6 +78,17 @@ export interface PaymentId {
   paymentId: string;
 }
 
+export interface PaymentMethod {
+  paymentTypeCode: string;
+  paymentMethodId: string;
+}
+
+export interface PspSelected {
+  pspCode: string;
+  businessName: string;
+  fee: number;
+}
+
 export interface PaymentCheckDetail {
   CCP: string;
   IUV: string;
@@ -114,7 +129,7 @@ export interface Wallet {
   idWallet: number;
   psp: {
     businessName: string;
-    directAcquire: boolean;
+    directAcquirer: boolean;
     fixedCost: {
       currency: string;
       amount: number;
@@ -127,16 +142,12 @@ export interface Wallet {
   type: string;
 }
 
-export interface SecurityCode {
-  securityCode: string;
-}
-
 export interface PspList {
   name: string | undefined;
   label: string | undefined;
   image: string | undefined;
   commission: number;
-  idPsp: number | undefined;
+  idPsp: string | undefined;
 }
 
 export interface PaymentInstruments {
@@ -171,4 +182,13 @@ export interface Cart {
   paymentNotices: Array<PaymentNotice>;
   returnUrls: ReturnUrls;
   emailNotice?: string;
+}
+
+export interface Transaction {
+  transactionId: string;
+  status: TransactionStatusEnum;
+  payments: ReadonlyArray<PaymentData>;
+  feeTotal?: AmountEuroCents;
+  clientId?: ClientIdEnum;
+  authToken?: string;
 }

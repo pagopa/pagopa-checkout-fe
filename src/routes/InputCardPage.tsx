@@ -5,16 +5,30 @@ import { useNavigate } from "react-router-dom";
 import ErrorModal from "../components/modals/ErrorModal";
 import PageContainer from "../components/PageContent/PageContainer";
 import { InputCardForm } from "../features/payment/components/InputCardForm/InputCardForm";
-import { InputCardFormFields } from "../features/payment/models/paymentModel";
+import {
+  PaymentId,
+  PaymentMethod,
+  PspList,
+  Transaction,
+} from "../features/payment/models/paymentModel";
 import { useAppDispatch } from "../redux/hooks/hooks";
+import { setCardData } from "../redux/slices/cardData";
 import { setSecurityCode } from "../redux/slices/securityCode";
-import { getReCaptchaKey, getWallet } from "../utils/api/apiService";
 import {
   activatePayment,
-  retryPollingActivationStatus,
+  getPaymentPSPList,
+  onErrorGetPSP,
+  sortPspByOnUsPolicy,
 } from "../utils/api/helper";
+import { InputCardFormFields } from "../features/payment/models/paymentModel";
 import { getConfigOrThrow } from "../utils/config/config";
 import { ErrorsType } from "../utils/errors/checkErrorsModel";
+import {
+  getReCaptchaKey,
+  getSessionItem,
+  SessionItems,
+  setSessionItem,
+} from "../utils/storage/sessionStorage";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function InputCardPage() {
@@ -23,14 +37,17 @@ export default function InputCardPage() {
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
   const [timeoutId, setTimeoutId] = React.useState<number>();
-  const [wallet, setWallet] = React.useState<InputCardFormFields>();
+  const [wallet] = React.useState<InputCardFormFields>();
   const [hideCancelButton, setHideCancelButton] = React.useState(false);
   const ref = React.useRef<ReCAPTCHA>(null);
   const config = getConfigOrThrow();
   const dispatch = useAppDispatch();
 
   React.useEffect(() => {
-    setHideCancelButton(!!getWallet().idWallet);
+    setHideCancelButton(
+      !!(getSessionItem(SessionItems.transaction) as Transaction | undefined)
+        ?.transactionId
+    );
   }, []);
 
   React.useEffect(() => {
@@ -52,29 +69,51 @@ export default function InputCardPage() {
     ref.current?.reset();
   };
 
-  const onResponse = (cvv: string) => {
+  const onResponse = () => {
     setLoading(false);
-    dispatch(setSecurityCode(cvv));
     navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
   };
 
   const onSubmit = React.useCallback(
     async (wallet: InputCardFormFields) => {
+      const cardData = {
+        brand: "",
+        expDate: wallet.expirationDate,
+        cardHolderName: wallet.name,
+        cvv: wallet.cvv,
+        pan: wallet.number,
+      };
+      dispatch(setCardData(cardData));
+      dispatch(setSecurityCode(cardData.cvv));
       setLoading(true);
-      setWallet(wallet);
-      const token = await ref.current?.executeAsync();
-
-      if (error === ErrorsType.TIMEOUT) {
-        void retryPollingActivationStatus({
-          wallet: wallet as InputCardFormFields,
-          onResponse,
-          onError,
-          onNavigate: () => navigate(`/${CheckoutRoutes.ERRORE}`),
-        });
+      await getPaymentPSPList({
+        paymentMethodId:
+          (
+            getSessionItem(SessionItems.paymentMethod) as
+              | PaymentMethod
+              | undefined
+          )?.paymentMethodId || "",
+        onError: onErrorGetPSP,
+        onResponse: (resp: Array<PspList>) => {
+          const firstPsp = sortPspByOnUsPolicy(resp);
+          setSessionItem(SessionItems.pspSelected, {
+            pspCode: firstPsp.at(0)?.idPsp || "",
+            fee: firstPsp.at(0)?.commission || 0,
+            businessName: firstPsp.at(0)?.name || "",
+          });
+        },
+      });
+      const paymentId = (
+        getSessionItem(SessionItems.paymentId) as PaymentId | undefined
+      )?.paymentId;
+      const transactionId = (
+        getSessionItem(SessionItems.transaction) as Transaction | undefined
+      )?.transactionId;
+      // If I want to change the card data but I have already activated the payment
+      if (paymentId && transactionId) {
+        onResponse();
       } else {
-        void activatePayment({
-          wallet,
-          token: token || "",
+        await activatePayment({
           onResponse,
           onError,
           onNavigate: () => navigate(`/${CheckoutRoutes.ERRORE}`),
@@ -86,17 +125,7 @@ export default function InputCardPage() {
 
   const onRetry = React.useCallback(() => {
     setErrorModalOpen(false);
-    if (error === ErrorsType.TIMEOUT) {
-      setLoading(true);
-      void retryPollingActivationStatus({
-        wallet: wallet as InputCardFormFields,
-        onResponse,
-        onError,
-        onNavigate: () => navigate(`/${CheckoutRoutes.ERRORE}`),
-      });
-    } else {
-      void onSubmit(wallet as InputCardFormFields);
-    }
+    void onSubmit(wallet as InputCardFormFields);
   }, [wallet, error]);
 
   const onCancel = () => navigate(-1);

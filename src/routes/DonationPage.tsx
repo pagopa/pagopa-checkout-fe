@@ -35,6 +35,7 @@ import {
 } from "../features/payment/models/donationModel";
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { resetSecurityCode } from "../redux/slices/securityCode";
+import { resetCardData } from "../redux/slices/cardData";
 import { getDonationEntityList } from "../utils/api/helper";
 import {
   DONATION_APPIO_VISIT,
@@ -59,6 +60,7 @@ export default function DonationPage() {
 
   React.useEffect(() => {
     dispatch(resetSecurityCode());
+    dispatch(resetCardData());
     setLoadingList(true);
     void getDonationEntityList(onError, onResponse);
   }, []);

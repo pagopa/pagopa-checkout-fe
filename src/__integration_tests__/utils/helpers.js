@@ -1,3 +1,37 @@
+export const payNotice = async (noticeCode, fiscalCode, email, cardData, checkoutUrlAfterAuth) => {
+  const payBtnSelector = "#paymentCheckPageButtonPay";
+  const resultMessageXPath = "/html/body/div[1]/div/div[2]/div/div/div/div/h6";
+  await successDownToCardData(noticeCode, fiscalCode, email, cardData)
+  const payBtn = await page.waitForSelector(payBtnSelector);
+  await payBtn.click();
+  await page.waitForNavigation();
+  await page.goto(checkoutUrlAfterAuth)
+  const message = await page.waitForXPath(resultMessageXPath);
+  return await message.evaluate((el) => el.textContent);
+};
+
+export const verifyPaymentAndGetError = async (noticeCode, fiscalCode) => {
+  const errorMessageXPath = '/html/body/div[3]/div[3]/div/div/div[2]/div[2]/div';
+  await fillPaymentNotificationForm(noticeCode, fiscalCode);
+  const errorMessageElem = await page.waitForXPath(errorMessageXPath);
+  return await errorMessageElem.evaluate(el => el.textContent);
+};
+
+export const activatePaymentAndGetError = async (noticeCode, fiscalCode, email, cardData, errorMessageXPath) => {
+  await successDownToCardData(noticeCode, fiscalCode, email, cardData)
+  const errorMessageElem = await page.waitForXPath(errorMessageXPath);
+  return await errorMessageElem.evaluate((el) => el.textContent);
+};
+
+export const authorizePaymentAndGetError = async (noticeCode, fiscalCode, email, cardData, errorMessageXPath) => {
+  const payBtnSelector = "#paymentCheckPageButtonPay";
+  await successDownToCardData(noticeCode, fiscalCode, email, cardData)
+  const payBtn = await page.waitForSelector(payBtnSelector);
+  await payBtn.click();
+  const errorMessageElem = await page.waitForXPath(errorMessageXPath);
+  return await errorMessageElem.evaluate((el) => el.textContent);
+};
+
 export const selectKeyboardForm = async () => {
   const selectFormXPath =
     "/html/body/div[1]/div/div[2]/div/div[2]/div[2]/div[1]";
@@ -21,31 +55,19 @@ export const fillPaymentNotificationForm = async (noticeCode, fiscalCode) => {
   await page.click(verifyBtn);
 };
 
-export const verifyPaymentAndGetError = async (noticeCode, fiscalCode) => {
-  const errorMessageXPath = '/html/body/div[3]/div[3]/div/div/div[2]/div[2]/div';
-  await fillPaymentNotificationForm(noticeCode, fiscalCode);
-  const errorMessageElem = await page.waitForXPath(errorMessageXPath);
-  return await errorMessageElem.evaluate(el => el.textContent);
-};
-
-export const verifyPayment = async (noticeCode, fiscalCode) => {
-  await fillPaymentNotificationForm(noticeCode, fiscalCode);
-};
-
 export const acceptCookiePolicy = async () => {
   const acceptPolicyBtn = "#onetrust-accept-btn-handler";
   const darkFilterXPath = "/html/body/div[2]/div[1]";
 
   await page.waitForSelector(acceptPolicyBtn);
   await page.click(acceptPolicyBtn);
-  
+
   // Avoid click on form button when dark filter is still enabled
   await page.waitForXPath(darkFilterXPath, { hidden: true });
 };
 
-export const payNotice = async (noticeCode, fiscalCode, email, cardData) => {
+export const successDownToCardData = async (noticeCode, fiscalCode, email, cardData) => {
   const payNoticeBtnSelector = "#paymentSummaryButtonPay";
-  const resultMessageXPath = "/html/body/div[1]/div/div[2]/div/div/div/div/h6";
   await fillPaymentNotificationForm(noticeCode, fiscalCode);
   const payNoticeBtn = await page.waitForSelector(payNoticeBtnSelector, {
     visible: true,
@@ -57,24 +79,7 @@ export const payNotice = async (noticeCode, fiscalCode, email, cardData) => {
   }
   await choosePaymentMethod("CP");
   await fillCardDataForm(cardData);
-  const message = await page.waitForXPath(resultMessageXPath);
-  return await message.evaluate((el) => el.textContent);
-};
-
-export const activatePaymentAndGetError = async (noticeCode, fiscalCode) => {
-  const payNoticeBtnXPath =
-    "/html/body/div[1]/div/div[2]/div/div[6]/div[2]/button";
-  const resultMessageXPath = "/html/body/div[1]/div/div[2]/div/div/div/h6";
-  await fillPaymentNotificationForm(noticeCode, fiscalCode);
-
-  const payNoticeBtn = await page.waitForXPath(payNoticeBtnXPath, {
-    visible: true,
-  });
-  await payNoticeBtn.click();
-
-  const message = await page.waitForXPath(resultMessageXPath);
-  return await message.evaluate((el) => el.textContent);
-};
+}
 
 export const fillEmailForm = async (email) => {
   const emailInput = "#email";
@@ -132,8 +137,7 @@ export const fillCardDataForm = async (cardData) => {
   const ccvInput = "#cvv";
   const holderNameInput = "#name";
   const continueBtnXPath = "button[type=submit]";
-  const payBtnSelector = "#paymentCheckPageButtonPay";
-  
+
   await page.waitForSelector(cardNumberInput);
   await page.click(cardNumberInput);
   await page.keyboard.type(cardData.number);
@@ -152,7 +156,4 @@ export const fillCardDataForm = async (cardData) => {
 
   const continueBtn = await page.waitForSelector(continueBtnXPath);
   await continueBtn.click();
-
-  const payBtn = await page.waitForSelector(payBtnSelector);
-  await payBtn.click();
 };

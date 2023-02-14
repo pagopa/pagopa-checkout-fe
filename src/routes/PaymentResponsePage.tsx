@@ -2,38 +2,37 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/restrict-plus-operands */
 import { Box, Button, Typography } from "@mui/material";
-import * as E from "fp-ts/Either";
-import { pipe } from "fp-ts/function";
 import { default as React, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
 import PageContainer from "../components/PageContent/PageContainer";
-import { PaymentCheckData } from "../features/payment/models/paymentModel";
 import {
   responseMessage,
   responseOutcome,
 } from "../features/payment/models/responseOutcome";
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { resetSecurityCode } from "../redux/slices/securityCode";
-import {
-  getCheckData,
-  getEmailInfo,
-  getReturnUrls,
-  getWallet,
-} from "../utils/api/apiService";
+import { resetCardData } from "../redux/slices/cardData";
 import { callServices } from "../utils/api/response";
 import { PAYMENT_OUTCOME_CODE } from "../utils/config/mixpanelDefs";
 import { mixpanel } from "../utils/config/mixpanelHelperInit";
 import { onBrowserUnload } from "../utils/eventListeners";
 import { moneyFormat } from "../utils/form/formatters";
-import { clearSensitiveItems } from "../utils/storage/sessionStorage";
 import {
-  getOutcomeFromAuthcodeAndIsDirectAcquirer,
-  OutcomeEnumType,
+  clearSensitiveItems,
+  getSessionItem,
+  SessionItems,
+} from "../utils/storage/sessionStorage";
+import {
+  getViewOutcomeFromEcommerceResultCode,
   ViewOutcomeEnum,
-  ViewOutcomeEnumType,
 } from "../utils/transactions/TransactionResultUtil";
-import { GENERIC_STATUS } from "../utils/transactions/TransactionStatesTypes";
+import { TransactionStatusEnum } from "../../generated/definitions/payment-ecommerce/TransactionStatus";
+import {
+  PspSelected,
+  ReturnUrls,
+  Transaction,
+} from "../features/payment/models/paymentModel";
 
 type printData = {
   useremail: string;
@@ -42,33 +41,41 @@ type printData = {
 
 export default function PaymentCheckPage() {
   const [loading, setLoading] = useState(true);
+  const returnUrls = getSessionItem(SessionItems.returnUrls) as
+    | ReturnUrls
+    | undefined;
   const [outcomeMessage, setOutcomeMessage] = useState<responseMessage>();
   const [redirectUrl, setRedirectUrl] = useState<string>(
-    getReturnUrls().returnOkUrl
+    returnUrls?.returnOkUrl || "/"
   );
-  const PaymentCheckData = getCheckData() as PaymentCheckData;
-  const wallet = getWallet();
-  const email = getEmailInfo();
+  const transactionData = getSessionItem(SessionItems.transaction) as
+    | Transaction
+    | undefined;
+  const pspSelected = getSessionItem(SessionItems.pspSelected) as
+    | PspSelected
+    | undefined;
+  const email = getSessionItem(SessionItems.useremail) as string | undefined;
   const totalAmount =
-    PaymentCheckData.amount.amount + wallet.psp.fixedCost.amount;
+    Number(
+      transactionData?.payments
+        .map((p) => p.amount)
+        .reduce((sum, current) => sum + current, 0)
+    ) + Number(pspSelected?.fee);
+
   const usefulPrintData: printData = {
-    useremail: email.email,
+    useremail: email || "",
     amount: moneyFormat(totalAmount),
   };
+
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(resetSecurityCode());
-    const handleFinalStatusResult = (
-      idStatus: GENERIC_STATUS,
-      authorizationCode?: string,
-      isDirectAcquirer?: boolean
-    ) => {
-      const outcome: OutcomeEnumType =
-        getOutcomeFromAuthcodeAndIsDirectAcquirer(
-          authorizationCode,
-          isDirectAcquirer
-        );
+    dispatch(resetCardData());
+
+    const handleFinalStatusResult = (idStatus?: TransactionStatusEnum) => {
+      const outcome: ViewOutcomeEnum =
+        getViewOutcomeFromEcommerceResultCode(idStatus);
       mixpanel.track(PAYMENT_OUTCOME_CODE.value, {
         EVENT_ID: PAYMENT_OUTCOME_CODE.value,
         idStatus,
@@ -77,18 +84,12 @@ export default function PaymentCheckPage() {
       showFinalResult(outcome);
     };
 
-    const showFinalResult = (outcome: OutcomeEnumType) => {
-      const viewOutcome: ViewOutcomeEnum = pipe(
-        ViewOutcomeEnumType.decode(outcome),
-        E.getOrElse(() => ViewOutcomeEnum.GENERIC_ERROR as ViewOutcomeEnum)
-      );
-      const message = responseOutcome[viewOutcome];
+    const showFinalResult = (outcome: ViewOutcomeEnum) => {
+      const message = responseOutcome[outcome];
       const redirectTo =
-        viewOutcome === "0"
-          ? getReturnUrls().returnOkUrl
-          : getReturnUrls().returnErrorUrl;
+        outcome === "0" ? returnUrls?.returnOkUrl : returnUrls?.returnErrorUrl;
       setOutcomeMessage(message);
-      setRedirectUrl(redirectTo);
+      setRedirectUrl(redirectTo || "");
       setLoading(false);
       window.removeEventListener("beforeunload", onBrowserUnload);
       clearSensitiveItems();

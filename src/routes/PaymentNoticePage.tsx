@@ -5,32 +5,31 @@ import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
-import { RptId } from "../../generated/definitions/payment-activations-api/RptId";
+import { RptId } from "../../generated/definitions/payment-ecommerce/RptId";
 import notification from "../assets/images/payment-notice-pagopa.png";
 import ErrorModal from "../components/modals/ErrorModal";
 import InformationModal from "../components/modals/InformationModal";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
 import PageContainer from "../components/PageContent/PageContainer";
 import { PaymentNoticeForm } from "../features/payment/components/PaymentNoticeForm/PaymentNoticeForm";
-import {
-  PaymentFormFields,
-  PaymentInfo,
-} from "../features/payment/models/paymentModel";
+import { PaymentFormFields } from "../features/payment/models/paymentModel";
 import { useSmallDevice } from "../hooks/useSmallDevice";
-import {
-  getNoticeInfo,
-  getReCaptchaKey,
-  setPaymentInfo,
-  setRptId,
-} from "../utils/api/apiService";
 import { getEcommercePaymentInfoTask } from "../utils/api/helper";
+import {
+  getReCaptchaKey,
+  getSessionItem,
+  SessionItems,
+  setSessionItem,
+} from "../utils/storage/sessionStorage";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function PaymentNoticePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { rptid } = useParams();
-  const noticeInfo = getNoticeInfo();
+  const noticeInfo = getSessionItem(SessionItems.noticeInfo) as
+    | PaymentFormFields
+    | undefined;
 
   const ref = React.useRef<ReCAPTCHA>(null);
   const [modalOpen, setModalOpen] = React.useState(false);
@@ -47,7 +46,7 @@ export default function PaymentNoticePage() {
 
   const onSubmit = React.useCallback(
     async (notice: PaymentFormFields) => {
-      const rptId: RptId = `${notice.cf}${notice.billCode}`;
+      const rptId: RptId = `${notice.cf}${notice.billCode}` as RptId;
       setLoading(true);
       const token = await ref.current?.executeAsync();
 
@@ -55,8 +54,8 @@ export default function PaymentNoticePage() {
         getEcommercePaymentInfoTask(rptId, token || ""),
         TE.mapLeft((err) => onError(err)),
         TE.map((paymentInfo) => {
-          setPaymentInfo(paymentInfo as PaymentInfo);
-          setRptId(notice);
+          setSessionItem(SessionItems.paymentInfo, paymentInfo);
+          setSessionItem(SessionItems.noticeInfo, notice);
           navigate(
             `/${CheckoutRoutes.DATI_PAGAMENTO}`,
             rptid ? { replace: true } : {}
