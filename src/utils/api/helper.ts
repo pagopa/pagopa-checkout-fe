@@ -460,7 +460,13 @@ export const getTransactionData = async ({
           TE.tryCatch(
             () =>
               apiPaymentEcommerceClient.getTransactionInfo({
-                bearerAuth: "",
+                bearerAuth: pipe(
+                  getSessionItem(SessionItems.transaction),
+                  O.fromNullable,
+                  O.map(transaction => transaction as Transaction),
+                  O.chain(t => O.fromNullable(t.authToken)),
+                  O.getOrElse(() => "")
+                ),
                 transactionId: pipe(
                   O.fromNullable(idPayment),
                   O.getOrElse(() => "")
@@ -948,6 +954,11 @@ export const proceedToPayment = async (
     EVENT_ID: TRANSACTION_AUTH_INIT.value,
   });
   const transactionId = transaction.transactionId;
+  const bearerAuth = pipe(
+    transaction.authToken,
+    O.fromNullable,
+    O.getOrElse(() => "")
+  );
   const authParams = {
     amount: Number(
       transaction.payments
@@ -990,7 +1001,7 @@ export const proceedToPayment = async (
     TE.chain(
       (request) => () =>
         apiPaymentEcommerceClient.requestTransactionAuthorization({
-          bearerAuth: "",
+          bearerAuth,
           transactionId,
           body: request,
         })
