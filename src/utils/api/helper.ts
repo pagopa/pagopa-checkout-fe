@@ -1357,7 +1357,7 @@ export const getCarts = async (
   )();
 };
 
-export const parseDate = (dateInput: string | null): string =>
+export const parseDate = (dateInput: string | null): O.Option<string> =>
   pipe(
     dateInput,
     O.fromNullable,
@@ -1371,11 +1371,7 @@ export const parseDate = (dateInput: string | null): string =>
       ([day, month, year]) =>
         new Date(Number(year) + 2000, Number(month) - 1, Number(day))
     ),
-    O.map((date) => expDateToString(date)),
-    O.fold(
-      () => "",
-      (parsedDate) => parsedDate
-    )
+    O.map((date) => expDateToString(date))
   );
 
 const expDateToString = (dateParsed: Date) =>

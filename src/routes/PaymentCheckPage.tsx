@@ -17,6 +17,8 @@ import {
 import { default as React } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
+import { pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
 import sprite from "../assets/images/app.svg";
 import { FormButtons } from "../components/FormButtons/FormButtons";
 import { CancelPayment } from "../components/modals/CancelPayment";
@@ -144,7 +146,10 @@ export default function PaymentCheckPage() {
             cvv: cardData?.cvv || "",
             pan: cardData?.pan || "",
             holderName: cardData?.cardHolderName || "",
-            expiryDate: parseDate(cardData?.expDate),
+            expiryDate: pipe(
+              parseDate(cardData?.expDate),
+              O.getOrElse(() => "")
+            ),
           },
         },
         onError,
