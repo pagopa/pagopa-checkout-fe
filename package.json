@@ -22,7 +22,7 @@
     "test:coverage": "jest --coverage --passWithNoTests",
     "preversion": "auto-changelog  --config .auto-changelog.json --unreleased --commit-limit false --stdout --template preview.hbs",
     "version": "auto-changelog -p --config .auto-changelog.json --unreleased && git add CHANGELOG.md",
-    "prestart-mock": "export $(grep -v '^#' .env.development | xargs) && chmod +x env.sh && source env.sh && ts-node script/generateTestingUrlMock.ts",
+    "prestart-mock": "export $(grep -v '^#' .env.development | xargs) && chmod +x env.sh && source env.sh",
     "start-mock": "parcel src/index.html & mkdir -p dist && cp -R ot dist/ot"
   },
   "dependencies": {
