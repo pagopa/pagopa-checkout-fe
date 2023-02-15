@@ -993,8 +993,6 @@ export const proceedToPayment = async (
         ? {
             detailType: "card",
             brand: cardData.brand,
-            accountEmail:
-              (getSessionItem(SessionItems.useremail) as string) || "",
             cvv: cardData.cvv,
             pan: cardData.pan,
             expiryDate: cardData.expiryDate,
