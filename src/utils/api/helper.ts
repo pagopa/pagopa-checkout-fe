@@ -460,6 +460,13 @@ export const getTransactionData = async ({
           TE.tryCatch(
             () =>
               apiPaymentEcommerceClient.getTransactionInfo({
+                bearerAuth: pipe(
+                  getSessionItem(SessionItems.transaction),
+                  O.fromNullable,
+                  O.map(transaction => transaction as Transaction),
+                  O.chain(t => O.fromNullable(t.authToken)),
+                  O.getOrElse(() => "")
+                ),
                 transactionId: pipe(
                   O.fromNullable(idPayment),
                   O.getOrElse(() => "")
@@ -948,6 +955,13 @@ export const proceedToPayment = async (
     EVENT_ID: TRANSACTION_AUTH_INIT.value,
   });
   const transactionId = transaction.transactionId;
+  
+  const bearerAuth = pipe(
+    transaction.authToken,
+    O.fromNullable,
+    O.getOrElse(() => "")
+  );
+
   const browserInfo = await pipe(
     getBrowserInfoTask(apiPaymentTransactionsClient),
     TE.mapLeft(() => ({
@@ -972,6 +986,7 @@ export const proceedToPayment = async (
       (getSessionItem(SessionItems.useremail) as string) || "",
     mobilePhone: null,
   };
+
   const authParams = {
     amount: Number(
       transaction.payments
@@ -1016,6 +1031,7 @@ export const proceedToPayment = async (
     TE.chain(
       (request) => () =>
         apiPaymentEcommerceClient.requestTransactionAuthorization({
+          bearerAuth,
           transactionId,
           body: request,
         })
@@ -1378,6 +1394,38 @@ export const getCarts = async (
     )
   )();
 };
+
+export const parseDate = (dateInput: string | null): O.Option<string> =>
+  pipe(
+    dateInput,
+    O.fromNullable,
+    O.map((dateValue) => "01/".concat(dateValue)),
+    O.chain((value) =>
+      O.fromNullable(value.match(/(\d{2})\/(\d{2})\/(\d{2})/))
+    ),
+    O.map((matches) => matches.slice(1)),
+    O.map((matches) => [matches[0], matches[1], matches[2]]),
+    O.map(
+      ([day, month, year]) =>
+        new Date(Number(year) + 2000, Number(month) - 1, Number(day))
+    ),
+    O.map((date) => expDateToString(date))
+  );
+
+const expDateToString = (dateParsed: Date) =>
+  ""
+    .concat(
+      dateParsed.getFullYear().toLocaleString("it-IT", {
+        minimumIntegerDigits: 4,
+        useGrouping: false,
+      })
+    )
+    .concat(
+      (dateParsed.getMonth() + 1).toLocaleString("it-IT", {
+        minimumIntegerDigits: 2,
+        useGrouping: false,
+      })
+    );
 
 export const onErrorGetPSP = (e: string): void => {
   throw new Error("Error getting psp list. " + e);

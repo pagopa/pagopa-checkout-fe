@@ -1,4 +1,7 @@
-#!/usr/bin/env bash
+#!/bin/bash
+
+# Print relevant environment variables
+env | grep -i checkout_
 
 # Recreate config file and assignment
 echo "window._env_ = {" > ./src/env-config.js
