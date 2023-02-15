@@ -463,8 +463,8 @@ export const getTransactionData = async ({
                 bearerAuth: pipe(
                   getSessionItem(SessionItems.transaction),
                   O.fromNullable,
-                  O.map(transaction => transaction as Transaction),
-                  O.chain(t => O.fromNullable(t.authToken)),
+                  O.map((transaction) => transaction as Transaction),
+                  O.chain((t) => O.fromNullable(t.authToken)),
                   O.getOrElse(() => "")
                 ),
                 transactionId: pipe(
@@ -955,7 +955,7 @@ export const proceedToPayment = async (
     EVENT_ID: TRANSACTION_AUTH_INIT.value,
   });
   const transactionId = transaction.transactionId;
-  
+
   const bearerAuth = pipe(
     transaction.authToken,
     O.fromNullable,
