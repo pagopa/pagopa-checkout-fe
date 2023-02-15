@@ -1,5 +1,4 @@
 /* eslint-disable functional/immutable-data */
-/* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/restrict-plus-operands */
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import EditIcon from "@mui/icons-material/Edit";
@@ -18,6 +17,8 @@ import {
 import { default as React } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
+import { pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
 import sprite from "../assets/images/app.svg";
 import { FormButtons } from "../components/FormButtons/FormButtons";
 import { CancelPayment } from "../components/modals/CancelPayment";
@@ -40,6 +41,7 @@ import { useAppSelector } from "../redux/hooks/hooks";
 import { selectCardData } from "../redux/slices/cardData";
 import {
   cancelPayment,
+  parseDate,
   getPaymentPSPList,
   proceedToPayment,
 } from "../utils/api/helper";
@@ -134,8 +136,6 @@ export default function PaymentCheckPage() {
     window.location.replace(authorizationUrl);
   };
 
-  // TODO CHK-923
-  const [month, year] = cardData.expDate.split("/");
   const onSubmit = React.useCallback(() => {
     setPayLoading(true);
     if (transaction) {
@@ -146,7 +146,10 @@ export default function PaymentCheckPage() {
             cvv: cardData?.cvv || "",
             pan: cardData?.pan || "",
             holderName: cardData?.cardHolderName || "",
-            expiryDate: "20".concat(year).concat(month) || "",
+            expiryDate: pipe(
+              parseDate(cardData?.expDate),
+              O.getOrElse(() => "")
+            ),
           },
         },
         onError,
