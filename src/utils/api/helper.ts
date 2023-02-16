@@ -116,6 +116,11 @@ import {
   SessionItems,
   setSessionItem,
 } from "../storage/sessionStorage";
+import { AmountEuroCents } from "../../../generated/definitions/payment-ecommerce/AmountEuroCents";
+import {
+  PaymentInstrumentDetail1,
+  PaymentInstrumentDetail2,
+} from "../../../generated/definitions/payment-ecommerce/PaymentInstrumentDetail";
 import { getBrowserInfoTask, getEMVCompliantColorDepth } from "./checkHelper";
 import {
   apiPaymentActivationsClient,
@@ -988,14 +993,15 @@ export const proceedToPayment = async (
   };
 
   const authParams = {
-    amount: Number(
+    amount: AmountEuroCents.decode(
       transaction.payments
         .map((p) => p.amount)
         .reduce((sum, current) => Number(sum) + Number(current), 0)
     ),
-    fee:
+    fee: AmountEuroCents.decode(
       (getSessionItem(SessionItems.pspSelected) as PspSelected | undefined)
-        ?.fee || 0,
+        ?.fee || 0
+    ),
     paymentInstrumentId:
       (getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined)
         ?.paymentMethodId || "",
@@ -1005,7 +1011,7 @@ export const proceedToPayment = async (
     details:
       (getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined)
         ?.paymentTypeCode === "CP"
-        ? {
+        ? PaymentInstrumentDetail2.decode({
             detailType: "card",
             brand: cardData.brand,
             accountEmail:
@@ -1015,12 +1021,12 @@ export const proceedToPayment = async (
             expiryDate: cardData.expiryDate,
             holderName: cardData.holderName,
             threeDsData: JSON.stringify(threeDSData),
-          }
-        : {
+          })
+        : PaymentInstrumentDetail1.decode({
             detailType: "postepay",
             accountEmail:
               (getSessionItem(SessionItems.useremail) as string) || "",
-          },
+          }),
     language: LanguageEnum.IT,
   };
 
