@@ -24,6 +24,7 @@ export const ecommerceTransaction = (
     TE.tryCatch(
       () =>
         ecommerceClient.getTransactionInfo({
+          bearerAuth: "",
           transactionId,
         }),
       () => {
