@@ -988,22 +988,19 @@ export const proceedToPayment = async (
   };
 
   const authParams = {
-    amount: 
-      transaction.payments
-        .map((p) => p.amount)
-        .reduce((sum, current) => Number(sum) + Number(current), 0)
-    ,
-    fee: 
+    amount: transaction.payments
+      .map((p) => p.amount)
+      .reduce((sum, current) => Number(sum) + Number(current), 0),
+    fee:
       (getSessionItem(SessionItems.pspSelected) as PspSelected | undefined)
-        ?.fee || 0
-    ,
+        ?.fee || 0,
     paymentInstrumentId:
       (getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined)
         ?.paymentMethodId || "",
     pspId:
       (getSessionItem(SessionItems.pspSelected) as PspSelected | undefined)
         ?.pspCode || "",
-    details: 
+    details:
       (getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined)
         ?.paymentTypeCode === "CP"
         ? {
@@ -1019,8 +1016,7 @@ export const proceedToPayment = async (
             detailType: "postepay",
             accountEmail:
               (getSessionItem(SessionItems.useremail) as string) || "",
-          }
-    ,
+          },
     language: LanguageEnum.IT,
   };
 
