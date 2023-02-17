@@ -1010,7 +1010,7 @@ export const proceedToPayment = async (
             pan: cardData.pan,
             expiryDate: cardData.expiryDate,
             holderName: cardData.holderName,
-            threeDsData: JSON.stringify(threeDSData),
+            threeDsData: encode(JSON.stringify(threeDSData)),
           }
         : {
             detailType: "postepay",
@@ -1430,3 +1430,5 @@ export const onErrorGetPSP = (e: string): void => {
 export const sortPspByOnUsPolicy = (pspList: Array<PspList>): Array<PspList> =>
   // TODO Implement OnUs/NotOnUs sorting?
   pspList;
+
+const encode = (str: string):string => Buffer.from(str, 'binary').toString('base64');
