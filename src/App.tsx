@@ -159,7 +159,7 @@ export function App() {
               <Route
                 path={CheckoutRoutes.RIEPILOGO_PAGAMENTO}
                 element={
-                  <Guard item={SessionItems.paymentId}>
+                  <Guard item={SessionItems.transaction}>
                     <CvvGuard>
                       <PaymentCheckPage />
                     </CvvGuard>
@@ -169,7 +169,7 @@ export function App() {
               <Route
                 path={CheckoutRoutes.ESITO}
                 element={
-                  <Guard item={SessionItems.paymentId}>
+                  <Guard item={SessionItems.transaction}>
                     <PaymentResponsePage />
                   </Guard>
                 }

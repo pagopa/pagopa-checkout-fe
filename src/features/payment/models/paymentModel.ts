@@ -83,59 +83,6 @@ export interface PspSelected {
   fee: number;
 }
 
-interface PaymentCheckDetail {
-  CCP: string;
-  IUV: string;
-  codicePagatore: string;
-  enteBeneficiario: string;
-  idDominio: string;
-  importo: number;
-  nomePagatore: string;
-  tipoPagatore: string;
-}
-export interface PaymentCheckData {
-  amount: {
-    currency: string;
-    amount: number;
-    decimalDigits: number;
-  };
-  bolloDigitale: boolean;
-  fiscalCode: string;
-  iban: string;
-  id: number;
-  idPayment: string;
-  isCancelled: boolean;
-  origin: string;
-  receiver: string;
-  subject: string;
-  urlRedirectEc: string;
-  detailsList: Array<PaymentCheckDetail>;
-}
-
-export interface Wallet {
-  creditCard: {
-    brand: string;
-    pan: string;
-    holder: string;
-    expireMonth: string;
-    expireYear: string;
-  };
-  idWallet: number;
-  psp: {
-    businessName: string;
-    directAcquirer: boolean;
-    fixedCost: {
-      currency: string;
-      amount: number;
-      decimalDigits: number;
-    };
-    logoPSP: string;
-    serviceAvailability: string;
-  };
-  pspEditable: boolean;
-  type: string;
-}
-
 export interface PspList {
   name: string | undefined;
   label: string | undefined;

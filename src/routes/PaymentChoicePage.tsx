@@ -12,9 +12,9 @@ import PageContainer from "../components/PageContent/PageContainer";
 import { PaymentChoice } from "../features/payment/components/PaymentChoice/PaymentChoice";
 import {
   Cart,
-  PaymentId,
   PaymentInfo,
   PaymentInstruments,
+  Transaction,
 } from "../features/payment/models/paymentModel";
 import { cancelPayment, getPaymentInstruments } from "../utils/api/helper";
 import { getTotalFromCart } from "../utils/cart/cart";
@@ -48,8 +48,8 @@ export default function PaymentChoicePage() {
 
   React.useEffect(() => {
     if (
-      (getSessionItem(SessionItems.paymentId) as PaymentId | undefined)
-        ?.paymentId
+      (getSessionItem(SessionItems.transaction) as Transaction | undefined)
+        ?.transactionId
     ) {
       window.addEventListener("beforeunload", onBrowserUnload);
       window.history.pushState(null, "", window.location.pathname);
@@ -85,7 +85,7 @@ export default function PaymentChoicePage() {
   const onCancelPaymentSubmit = React.useCallback(() => {
     setCancelModalOpen(false);
     setLoading(true);
-    void cancelPayment(onError, onCancelResponse);
+    void cancelPayment(onCancelResponse);
   }, []);
 
   const handleBackNavigate = React.useCallback(() => navigate(-1), []);

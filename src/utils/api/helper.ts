@@ -7,21 +7,18 @@ import { toError } from "fp-ts/lib/Either";
 import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
 import * as T from "fp-ts/Task";
-import { CodiceContestoPagamento } from "../../../generated/definitions/payment-activations-api/CodiceContestoPagamento";
-import { ImportoEuroCents } from "../../../generated/definitions/payment-activations-api/ImportoEuroCents";
-import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-activations-api/PaymentRequestsGetResponse";
 import { RequestAuthorizationRequest } from "../../../generated/definitions/payment-ecommerce/RequestAuthorizationRequest";
-import { PaymentRequestsGetResponse as EcommercePaymentRequestsGetResponse } from "../../../generated/definitions/payment-ecommerce/PaymentRequestsGetResponse";
+import {
+  PaymentRequestsGetResponse as EcommercePaymentRequestsGetResponse,
+  PaymentRequestsGetResponse,
+} from "../../../generated/definitions/payment-ecommerce/PaymentRequestsGetResponse";
 import { LanguageEnum } from "../../../generated/definitions/payment-ecommerce/Psp";
 import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { RptId } from "../../../generated/definitions/payment-ecommerce/RptId";
-import { TransactionInfo } from "../../../generated/definitions/payment-ecommerce/TransactionInfo";
 import { ValidationFaultPaymentProblemJson } from "../../../generated/definitions/payment-ecommerce/ValidationFaultPaymentProblemJson";
 import {
   Cart,
-  PaymentCheckData,
   PaymentFormFields,
-  PaymentId,
   PaymentInfo,
   PaymentInstruments,
   PaymentMethod,
@@ -44,20 +41,12 @@ import {
   DONATION_LIST_ERROR,
   DONATION_LIST_SUCCESS,
   PAYMENT_ACTION_DELETE_INIT,
-  PAYMENT_ACTION_DELETE_NET_ERR,
-  PAYMENT_ACTION_DELETE_RESP_ERR,
   PAYMENT_ACTION_DELETE_SUCCESS,
-  PAYMENT_ACTION_DELETE_SVR_ERR,
   PAYMENT_ACTIVATE_INIT,
   PAYMENT_ACTIVATE_NET_ERR,
   PAYMENT_ACTIVATE_RESP_ERR,
   PAYMENT_ACTIVATE_SUCCESS,
   PAYMENT_ACTIVATE_SVR_ERR,
-  PAYMENT_CHECK_INIT,
-  PAYMENT_CHECK_NET_ERR,
-  PAYMENT_CHECK_RESP_ERR,
-  PAYMENT_CHECK_SUCCESS,
-  PAYMENT_CHECK_SVR_ERR,
   PAYMENT_METHODS_ACCESS,
   PAYMENT_METHODS_NET_ERROR,
   PAYMENT_METHODS_RESP_ERROR,
@@ -85,7 +74,13 @@ import {
   SessionItems,
   setSessionItem,
 } from "../storage/sessionStorage";
-import { apiPaymentEcommerceClient, pmClient } from "./client";
+import { AmountEuroCents } from "../../../generated/definitions/payment-ecommerce/AmountEuroCents";
+import { PaymentContextCode } from "../../../generated/definitions/payment-ecommerce/PaymentContextCode";
+import {
+  apiPaymentEcommerceClient,
+  apiPaymentTransactionsClient,
+} from "./client";
+import { getBrowserInfoTask, getEMVCompliantColorDepth } from "./checkHelper";
 
 export const getEcommercePaymentInfoTask = (
   rptId: RptId,
@@ -173,11 +168,9 @@ export const getEcommercePaymentInfoTask = (
 export const activatePayment = async ({
   onResponse,
   onError,
-  onNavigate,
 }: {
   onResponse: () => void;
   onError: (e: string) => void;
-  onNavigate: () => void;
 }) => {
   const noticeInfo = getSessionItem(SessionItems.noticeInfo) as
     | PaymentFormFields
@@ -192,57 +185,37 @@ export const activatePayment = async ({
   const userEmail = getSessionItem(SessionItems.useremail) as
     | string
     | undefined;
-  const paymentId = (
-    getSessionItem(SessionItems.paymentId) as PaymentId | undefined
-  )?.paymentId;
-  const transactionId = (
-    getSessionItem(SessionItems.transaction) as Transaction | undefined
-  )?.transactionId;
   const rptId: RptId = `${noticeInfo?.cf}${noticeInfo?.billCode}` as RptId;
 
-  if (paymentId && !transactionId) {
-    void getTransactionData({
-      idPayment: paymentId,
-      onError,
-      onResponse,
-      onNavigate,
-    });
-  }
-
-  if (!paymentId) {
-    pipe(
-      PaymentRequestsGetResponse.decode(paymentInfoTransform),
-      E.fold(
-        () => onError(ErrorsType.INVALID_DECODE),
-        (response) =>
-          pipe(
-            activePaymentTask(
-              response.importoSingoloVersamento,
-              response.codiceContestoPagamento,
-              userEmail || "",
-              rptId
-            ),
-            TE.fold(
-              (e: string) => async () => {
-                onError(e);
-              },
-              (res) => async () => {
-                setSessionItem(SessionItems.paymentId, {
-                  paymentId: res.transactionId,
-                });
-                setSessionItem(SessionItems.transaction, res);
-                onResponse();
-              }
-            )
-          )()
-      )
-    );
-  }
+  pipe(
+    PaymentRequestsGetResponse.decode(paymentInfoTransform),
+    E.fold(
+      () => onError(ErrorsType.INVALID_DECODE),
+      (response) =>
+        pipe(
+          activePaymentTask(
+            response.amount,
+            response.paymentContextCode,
+            userEmail || "",
+            rptId
+          ),
+          TE.fold(
+            (e: string) => async () => {
+              onError(e);
+            },
+            (res) => async () => {
+              setSessionItem(SessionItems.transaction, res);
+              onResponse();
+            }
+          )
+        )()
+    )
+  );
 };
 
 const activePaymentTask = (
-  amountSinglePayment: ImportoEuroCents,
-  paymentContextCode: CodiceContestoPagamento,
+  amountSinglePayment: AmountEuroCents,
+  paymentContextCode: PaymentContextCode,
   userEmail: string,
   rptId: RptId
 ): TE.TaskEither<string, NewTransactionResponse> =>
@@ -334,94 +307,6 @@ const activePaymentTask = (
     )
   );
 
-const getTransactionData = async ({
-  // va fatta la GET transaction
-  idPayment,
-  onError,
-  onResponse,
-  onNavigate,
-}: {
-  idPayment: string;
-  onError: (e: string) => void;
-  onResponse: () => void;
-  onNavigate: () => void;
-}) => {
-  mixpanel.track(PAYMENT_CHECK_INIT.value, {
-    EVENT_ID: PAYMENT_CHECK_INIT.value,
-  });
-  void pipe(
-    O.fromNullable(idPayment),
-    O.fold(
-      () => undefined,
-      async () =>
-        await pipe(
-          TE.tryCatch(
-            () =>
-              apiPaymentEcommerceClient.getTransactionInfo({
-                bearerAuth: pipe(
-                  getSessionItem(SessionItems.transaction),
-                  O.fromNullable,
-                  O.map((transaction) => transaction as Transaction),
-                  O.chain((t) => O.fromNullable(t.authToken)),
-                  O.getOrElse(() => "")
-                ),
-                transactionId: pipe(
-                  O.fromNullable(idPayment),
-                  O.getOrElse(() => "")
-                ),
-              }),
-            // Error on call
-            () => {
-              onError(ErrorsType.CONNECTION);
-              mixpanel.track(PAYMENT_CHECK_NET_ERR.value, {
-                EVENT_ID: PAYMENT_CHECK_NET_ERR.value,
-              });
-              return toError;
-            }
-          ),
-          TE.fold(
-            () => async () => {
-              onError(ErrorsType.SERVER);
-              mixpanel.track(PAYMENT_CHECK_SVR_ERR.value, {
-                EVENT_ID: PAYMENT_CHECK_SVR_ERR.value,
-              });
-            },
-            (myResExt) => async () => {
-              pipe(
-                myResExt,
-                E.fold(
-                  () => onError(ErrorsType.GENERIC_ERROR),
-                  (response) => {
-                    const maybePayment = TransactionInfo.decode(response.value);
-                    // eslint-disable-next-line no-underscore-dangle
-                    if (response.status === 200) {
-                      pipe(
-                        maybePayment,
-
-                        E.map((payment) => {
-                          setSessionItem(SessionItems.transaction, payment);
-                          onResponse();
-                          mixpanel.track(PAYMENT_CHECK_SUCCESS.value, {
-                            EVENT_ID: PAYMENT_CHECK_SUCCESS.value,
-                          });
-                        })
-                      );
-                    } else {
-                      onNavigate();
-                      mixpanel.track(PAYMENT_CHECK_RESP_ERR.value, {
-                        EVENT_ID: PAYMENT_CHECK_RESP_ERR.value,
-                      });
-                    }
-                  }
-                )
-              );
-            }
-          )
-        )()
-    )
-  );
-};
-
 export const getPaymentPSPList = async ({
   paymentMethodId,
   onError,
@@ -450,9 +335,6 @@ export const getPaymentPSPList = async ({
     O.getOrElseW(() => undefined)
   );
 
-  // const sessionToken =
-  //   sessionStorage.getItem("sessionToken") || JSON.stringify("");
-  // const Bearer = `Bearer ${sessionToken}`;
   const lang = "it";
 
   mixpanel.track(PAYMENT_PSPLIST_INIT.value, {
@@ -537,11 +419,18 @@ export const proceedToPayment = async (
   mixpanel.track(TRANSACTION_AUTH_INIT.value, {
     EVENT_ID: TRANSACTION_AUTH_INIT.value,
   });
-  const transactionId = transaction.transactionId;
+
+  const transactionId = pipe(
+    transaction,
+    O.fromNullable,
+    O.map((transaction) => transaction.transactionId),
+    O.getOrElse(() => "")
+  );
 
   const bearerAuth = pipe(
-    transaction.authToken,
+    transaction,
     O.fromNullable,
+    O.chain((transaction) => O.fromNullable(transaction.authToken)),
     O.getOrElse(() => "")
   );
 
@@ -644,61 +533,17 @@ export const proceedToPayment = async (
   )();
 };
 
-
-export const cancelPayment = async (
-  onError: (e: string) => void,
-  onResponse: () => void
-) => {
-  const checkData = getSessionItem(SessionItems.checkData) as
-    | PaymentCheckData
-    | undefined;
+// TODO Invoke ecommerce api to perform cancel payment
+export const cancelPayment = async (onResponse: () => void) => {
   // Payment action DELETE
   mixpanel.track(PAYMENT_ACTION_DELETE_INIT.value, {
     EVENT_ID: PAYMENT_ACTION_DELETE_INIT.value,
   });
 
-  const eventResult:
-    | PAYMENT_ACTION_DELETE_NET_ERR
-    | PAYMENT_ACTION_DELETE_SVR_ERR
-    | PAYMENT_ACTION_DELETE_RESP_ERR
-    | PAYMENT_ACTION_DELETE_SUCCESS = await pipe(
-    TE.tryCatch(
-      () =>
-        pmClient.deleteBySessionCookieExpiredUsingDELETE({
-          Bearer: `Bearer ${getSessionItem(SessionItems.sessionToken) || ""}`,
-          id: checkData?.idPayment || "",
-          koReason: "ANNUTE",
-          showWallet: false,
-        }),
-      () => PAYMENT_ACTION_DELETE_NET_ERR.value
-    ),
-    TE.fold(
-      () => async () => PAYMENT_ACTION_DELETE_SVR_ERR.value,
-      (myResExt) => async () =>
-        pipe(
-          myResExt,
-          E.fold(
-            () => PAYMENT_ACTION_DELETE_RESP_ERR.value,
-            (myRes) =>
-              myRes.status === 200
-                ? PAYMENT_ACTION_DELETE_SUCCESS.value
-                : PAYMENT_ACTION_DELETE_RESP_ERR.value
-          )
-        )
-    )
-  )();
-
-  mixpanel.track(eventResult, { EVENT_ID: eventResult });
-
-  if (E.isRight(PAYMENT_ACTION_DELETE_SUCCESS.decode(eventResult))) {
-    onResponse();
-  } else if (E.isRight(PAYMENT_ACTION_DELETE_NET_ERR.decode(eventResult))) {
-    onError(ErrorsType.CONNECTION);
-  } else if (E.isRight(PAYMENT_ACTION_DELETE_SVR_ERR.decode(eventResult))) {
-    onError(ErrorsType.SERVER);
-  } else {
-    onError(ErrorsType.GENERIC_ERROR);
-  }
+  mixpanel.track(PAYMENT_ACTION_DELETE_SUCCESS.value, {
+    EVENT_ID: PAYMENT_ACTION_DELETE_SUCCESS.value,
+  });
+  onResponse();
 };
 
 export const getDonationEntityList = async (

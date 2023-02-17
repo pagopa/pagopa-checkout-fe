@@ -1,10 +1,8 @@
 import {
   Cart,
-  PaymentCheckData,
   PaymentFormFields,
   PaymentInfo,
   ReturnUrls,
-  Wallet,
   PaymentId,
   Transaction,
   PaymentEmailFormFields,
@@ -17,23 +15,15 @@ export enum SessionItems {
   paymentInfo = "paymentInfo",
   noticeInfo = "rptId",
   useremail = "useremail",
-  paymentId = "paymentId",
   paymentMethod = "paymentMethod",
   pspSelected = "pspSelected",
-  checkData = "checkData",
-  wallet = "wallet",
   sessionToken = "sessionToken",
   cart = "cart",
   transaction = "transaction",
   returnUrls = "returnUrls",
-  idTransaction = "idTransaction",
 }
 const isParsable = (item: SessionItems) =>
-  !(
-    item === SessionItems.sessionToken ||
-    item === SessionItems.useremail ||
-    item === SessionItems.idTransaction
-  );
+  !(item === SessionItems.sessionToken || item === SessionItems.useremail);
 
 export const getSessionItem = (item: SessionItems) => {
   try {
@@ -49,8 +39,6 @@ export const getSessionItem = (item: SessionItems) => {
           | PaymentFormFields
           | PaymentEmailFormFields
           | PaymentId
-          | PaymentCheckData
-          | Wallet
           | Transaction
           | Cart
           | ReturnUrls
@@ -70,8 +58,6 @@ export function setSessionItem(
     | PaymentEmailFormFields
     | PaymentMethod
     | PaymentId
-    | PaymentCheckData
-    | Wallet
     | Transaction
     | Cart
     | ReturnUrls

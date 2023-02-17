@@ -7,7 +7,6 @@ import ErrorModal from "../components/modals/ErrorModal";
 import PageContainer from "../components/PageContent/PageContainer";
 import { InputCardForm } from "../features/payment/components/InputCardForm/InputCardForm";
 import {
-  PaymentId,
   PaymentMethod,
   PspList,
   Transaction,
@@ -104,20 +103,16 @@ export default function InputCardPage() {
           });
         },
       });
-      const paymentId = (
-        getSessionItem(SessionItems.paymentId) as PaymentId | undefined
-      )?.paymentId;
       const transactionId = (
         getSessionItem(SessionItems.transaction) as Transaction | undefined
       )?.transactionId;
       // If I want to change the card data but I have already activated the payment
-      if (paymentId && transactionId) {
+      if (transactionId) {
         onResponse();
       } else {
         await activatePayment({
           onResponse,
           onError,
-          onNavigate: () => navigate(`/${CheckoutRoutes.ERRORE}`),
         });
       }
     },
