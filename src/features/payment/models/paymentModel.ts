@@ -113,7 +113,7 @@ export interface PaymentNotice {
   description?: string;
 }
 
-export interface ReturnUrls {
+interface ReturnUrls {
   returnOkUrl: string;
   returnCancelUrl: string;
   returnErrorUrl: string;

@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/cognitive-complexity */
 /* eslint-disable functional/immutable-data */
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/restrict-plus-operands */
@@ -18,7 +19,7 @@ import { mixpanel } from "../utils/config/mixpanelHelperInit";
 import { onBrowserUnload } from "../utils/eventListeners";
 import { moneyFormat } from "../utils/form/formatters";
 import {
-  clearSensitiveItems,
+  clearStorage,
   getSessionItem,
   SessionItems,
 } from "../utils/storage/sessionStorage";
@@ -28,8 +29,8 @@ import {
 } from "../utils/transactions/TransactionResultUtil";
 import { TransactionStatusEnum } from "../../generated/definitions/payment-ecommerce/TransactionStatus";
 import {
+  Cart,
   PspSelected,
-  ReturnUrls,
   Transaction,
 } from "../features/payment/models/paymentModel";
 
@@ -40,12 +41,10 @@ type printData = {
 
 export default function PaymentCheckPage() {
   const [loading, setLoading] = useState(true);
-  const returnUrls = getSessionItem(SessionItems.returnUrls) as
-    | ReturnUrls
-    | undefined;
+  const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
   const [outcomeMessage, setOutcomeMessage] = useState<responseMessage>();
   const [redirectUrl, setRedirectUrl] = useState<string>(
-    returnUrls?.returnOkUrl || "/"
+    cart ? cart.returnUrls.returnOkUrl : "/"
   );
   const transactionData = getSessionItem(SessionItems.transaction) as
     | Transaction
@@ -85,12 +84,18 @@ export default function PaymentCheckPage() {
     const showFinalResult = (outcome: ViewOutcomeEnum) => {
       const message = responseOutcome[outcome];
       const redirectTo =
-        outcome === "0" ? returnUrls?.returnOkUrl : returnUrls?.returnErrorUrl;
+        outcome === "0"
+          ? cart
+            ? cart.returnUrls.returnOkUrl
+            : "/"
+          : cart
+          ? cart.returnUrls.returnErrorUrl
+          : "/";
       setOutcomeMessage(message);
       setRedirectUrl(redirectTo || "");
       setLoading(false);
       window.removeEventListener("beforeunload", onBrowserUnload);
-      clearSensitiveItems();
+      clearStorage();
     };
     void callServices(handleFinalStatusResult);
   }, []);
@@ -134,7 +139,6 @@ export default function PaymentCheckPage() {
               <Button
                 variant="outlined"
                 onClick={() => {
-                  sessionStorage.clear();
                   window.location.replace(redirectUrl);
                 }}
                 sx={{

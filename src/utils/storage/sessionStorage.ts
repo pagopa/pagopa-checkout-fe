@@ -2,7 +2,7 @@ import {
   Cart,
   PaymentFormFields,
   PaymentInfo,
-  ReturnUrls,
+  Wallet,
   PaymentId,
   Transaction,
   PaymentEmailFormFields,
@@ -20,7 +20,6 @@ export enum SessionItems {
   sessionToken = "sessionToken",
   cart = "cart",
   transaction = "transaction",
-  returnUrls = "returnUrls",
 }
 const isParsable = (item: SessionItems) =>
   !(item === SessionItems.sessionToken || item === SessionItems.useremail);
@@ -41,7 +40,6 @@ export const getSessionItem = (item: SessionItems) => {
           | PaymentId
           | Transaction
           | Cart
-          | ReturnUrls
           | PspSelected)
       : serializedState;
   } catch (e) {
@@ -60,7 +58,6 @@ export function setSessionItem(
     | PaymentId
     | Transaction
     | Cart
-    | ReturnUrls
     | PspSelected
 ) {
   sessionStorage.setItem(
@@ -71,12 +68,8 @@ export function setSessionItem(
 
 export const isStateEmpty = (item: SessionItems) => !getSessionItem(item);
 
-export const clearSensitiveItems = () => {
-  const originUrl = getSessionItem(SessionItems.returnUrls) as
-    | ReturnUrls
-    | undefined;
+export const clearStorage = () => {
   sessionStorage.clear();
-  setSessionItem(SessionItems.returnUrls, originUrl || "");
 };
 
 export function getReCaptchaKey() {

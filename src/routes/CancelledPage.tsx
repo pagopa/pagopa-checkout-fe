@@ -3,12 +3,12 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import cancelled from "../assets/images/response-unrecognized.svg";
 import PageContainer from "../components/PageContent/PageContainer";
+import { Cart } from "../features/payment/models/paymentModel";
 import { useAppDispatch } from "../redux/hooks/hooks";
-import { ReturnUrls } from "../features/payment/models/paymentModel";
 import { resetCardData } from "../redux/slices/cardData";
 import { onBrowserUnload } from "../utils/eventListeners";
 import {
-  clearSensitiveItems,
+  clearStorage,
   getSessionItem,
   SessionItems,
 } from "../utils/storage/sessionStorage";
@@ -17,13 +17,13 @@ export default function CancelledPage() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const redirectUrl =
-    (getSessionItem(SessionItems.returnUrls) as ReturnUrls | undefined)
-      ?.returnCancelUrl || "/";
+    (getSessionItem(SessionItems.cart) as Cart | undefined)?.returnUrls
+      .returnCancelUrl || "/";
 
   React.useEffect(() => {
     dispatch(resetCardData());
     window.removeEventListener("beforeunload", onBrowserUnload);
-    clearSensitiveItems();
+    clearStorage();
   }, []);
 
   return (
@@ -49,7 +49,6 @@ export default function CancelledPage() {
             type="button"
             variant="outlined"
             onClick={() => {
-              sessionStorage.clear();
               window.location.replace(redirectUrl);
             }}
             style={{
