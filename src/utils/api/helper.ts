@@ -941,6 +941,7 @@ export const proceedToPayment = async (
   }: {
     transaction: Transaction;
     cardData: {
+      brand: string;
       cvv: string;
       pan: string;
       expiryDate: string;
@@ -954,17 +955,42 @@ export const proceedToPayment = async (
     EVENT_ID: TRANSACTION_AUTH_INIT.value,
   });
   const transactionId = transaction.transactionId;
+
   const bearerAuth = pipe(
     transaction.authToken,
     O.fromNullable,
     O.getOrElse(() => "")
   );
+
+  const browserInfo = await pipe(
+    getBrowserInfoTask(apiPaymentTransactionsClient),
+    TE.mapLeft(() => ({
+      ip: "",
+      useragent: "",
+      accept: "",
+    })),
+    TE.toUnion
+  )();
+  const threeDSData = {
+    browserJavaEnabled: navigator.javaEnabled().toString(),
+    browserLanguage: navigator.language,
+    browserColorDepth: getEMVCompliantColorDepth(screen.colorDepth).toString(),
+    browserScreenHeight: screen.height.toString(),
+    browserScreenWidth: screen.width.toString(),
+    browserTZ: new Date().getTimezoneOffset().toString(),
+    browserAcceptHeader: browserInfo.accept,
+    browserIP: browserInfo.ip,
+    browserUserAgent: navigator.userAgent,
+    acctID: `ACCT_${transactionId}`,
+    deliveryEmailAddress:
+      (getSessionItem(SessionItems.useremail) as string) || "",
+    mobilePhone: null,
+  };
+
   const authParams = {
-    amount: Number(
-      transaction.payments
-        .map((p) => p.amount)
-        .reduce((sum, current) => Number(sum) + Number(current), 0)
-    ),
+    amount: transaction.payments
+      .map((p) => p.amount)
+      .reduce((sum, current) => Number(sum) + Number(current), 0),
     fee:
       (getSessionItem(SessionItems.pspSelected) as PspSelected | undefined)
         ?.fee || 0,
@@ -979,12 +1005,12 @@ export const proceedToPayment = async (
         ?.paymentTypeCode === "CP"
         ? {
             detailType: "card",
-            accountEmail:
-              (getSessionItem(SessionItems.useremail) as string) || "",
+            brand: cardData.brand,
             cvv: cardData.cvv,
             pan: cardData.pan,
             expiryDate: cardData.expiryDate,
             holderName: cardData.holderName,
+            threeDsData: JSON.stringify(threeDSData),
           }
         : {
             detailType: "postepay",
@@ -1058,7 +1084,6 @@ export const confirmPayment = async (
     })),
     TE.toUnion
   )();
-
   const threeDSData = {
     browserJavaEnabled: navigator.javaEnabled().toString(),
     browserLanguage: navigator.language,
@@ -1069,11 +1094,7 @@ export const confirmPayment = async (
     browserAcceptHeader: browserInfo.accept,
     browserIP: browserInfo.ip,
     browserUserAgent: navigator.userAgent,
-    acctID: `ACCT_${
-      (getSessionItem(SessionItems.wallet) as PaymentWallet)?.idWallet
-        .toString()
-        .trim() || ""
-    }`,
+    acctID: `ACCT_`,
     deliveryEmailAddress: getSessionItem(SessionItems.useremail) || "",
     mobilePhone: null,
   };
