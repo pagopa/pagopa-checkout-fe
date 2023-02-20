@@ -5,6 +5,7 @@ import { PaymentNoticeChoice } from "../features/payment/components/PaymentNotic
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { resetSecurityCode } from "../redux/slices/securityCode";
 import { resetCardData } from "../redux/slices/cardData";
+import { clearStorage } from "../utils/storage/sessionStorage";
 
 export default function IndexPage() {
   const dispatch = useAppDispatch();
@@ -13,7 +14,7 @@ export default function IndexPage() {
     dispatch(resetSecurityCode());
     dispatch(resetCardData());
   }, []);
-  sessionStorage.clear();
+  clearStorage();
 
   return (
     <PageContainer
