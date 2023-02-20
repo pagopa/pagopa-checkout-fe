@@ -2,7 +2,6 @@ import {
   Cart,
   PaymentFormFields,
   PaymentInfo,
-  Wallet,
   PaymentId,
   Transaction,
   PaymentEmailFormFields,
