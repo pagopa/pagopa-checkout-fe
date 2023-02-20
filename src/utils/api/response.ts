@@ -29,6 +29,8 @@ const config = getConfigOrThrow();
 const retries: number = 10;
 const delay: number = 3000;
 const timeout: Millisecond = config.CHECKOUT_API_TIMEOUT as Millisecond;
+const decode = (transactionId: string): string => Buffer.from(transactionId, 'base64').toString('binary');
+
 
 const ecommerceClientWithPolling: EcommerceClient = createClient({
   baseUrl: config.CHECKOUT_ECOMMERCE_HOST,
@@ -83,7 +85,7 @@ export const callServices = async (
       },
       (idTransaction) => async () =>
         await pipe(
-          ecommerceTransaction(idTransaction, ecommerceClientWithPolling),
+          ecommerceTransaction(decode(idTransaction), ecommerceClientWithPolling),
           TE.fold(
             (_) => async () => {
               mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_RESP_ERR.value, {
