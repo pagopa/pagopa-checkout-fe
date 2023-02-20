@@ -1431,4 +1431,5 @@ export const sortPspByOnUsPolicy = (pspList: Array<PspList>): Array<PspList> =>
   // TODO Implement OnUs/NotOnUs sorting?
   pspList;
 
-const encode = (str: string):string => Buffer.from(str, 'binary').toString('base64');
+const encode = (str: string): string =>
+  Buffer.from(str, "binary").toString("base64");
