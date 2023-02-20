@@ -30,16 +30,6 @@ export default function PaymentCartPage() {
   const onResponse = (cart: Cart) => {
     setSessionItem(SessionItems.cart, cart);
     setSessionItem(SessionItems.useremail, cart.emailNotice || "");
-    setSessionItem(
-      SessionItems.returnUrls,
-      cart.returnUrls
-        ? cart.returnUrls
-        : {
-            returnOkUrl: "/",
-            returnCancelUrl: "/",
-            returnErrorUrl: "/",
-          }
-    );
     adaptCartAsPaymentInfo(cart);
     adaptCartAsRptId(cart);
     navigate(`/${CheckoutRoutes.INSERISCI_EMAIL}`, {

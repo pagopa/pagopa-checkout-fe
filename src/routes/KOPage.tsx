@@ -3,13 +3,13 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import ko from "../assets/images/response-umbrella.svg";
 import PageContainer from "../components/PageContent/PageContainer";
+import { Cart } from "../features/payment/models/paymentModel";
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { resetCardData } from "../redux/slices/cardData";
 import { resetSecurityCode } from "../redux/slices/securityCode";
-import { ReturnUrls } from "../features/payment/models/paymentModel";
 import { onBrowserUnload } from "../utils/eventListeners";
 import {
-  clearSensitiveItems,
+  clearStorage,
   getSessionItem,
   SessionItems,
 } from "../utils/storage/sessionStorage";
@@ -18,14 +18,14 @@ export default function KOPage() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const redirectUrl =
-    (getSessionItem(SessionItems.returnUrls) as ReturnUrls | undefined)
-      ?.returnErrorUrl || "/";
+    (getSessionItem(SessionItems.cart) as Cart | undefined)?.returnUrls
+      .returnErrorUrl || "/";
 
   React.useEffect(() => {
     dispatch(resetSecurityCode());
     dispatch(resetCardData());
     window.removeEventListener("beforeunload", onBrowserUnload);
-    clearSensitiveItems();
+    clearStorage();
   }, []);
 
   return (
@@ -62,7 +62,6 @@ export default function KOPage() {
             type="button"
             variant="outlined"
             onClick={() => {
-              sessionStorage.clear();
               window.location.replace(redirectUrl || "/");
             }}
             style={{
