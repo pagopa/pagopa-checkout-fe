@@ -13,7 +13,6 @@ import {
 } from "../features/payment/models/paymentModel";
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { setCardData } from "../redux/slices/cardData";
-import { setSecurityCode } from "../redux/slices/securityCode";
 import {
   activatePayment,
   getPaymentPSPList,
@@ -84,7 +83,6 @@ export default function InputCardPage() {
         pan: wallet.number,
       };
       dispatch(setCardData(cardData));
-      dispatch(setSecurityCode(cardData.cvv));
       setLoading(true);
       await getPaymentPSPList({
         paymentMethodId:

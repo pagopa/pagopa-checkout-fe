@@ -8,10 +8,6 @@ import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
 import * as T from "fp-ts/Task";
 import { RequestAuthorizationRequest } from "../../../generated/definitions/payment-ecommerce/RequestAuthorizationRequest";
-import {
-  PaymentRequestsGetResponse as EcommercePaymentRequestsGetResponse,
-  PaymentRequestsGetResponse,
-} from "../../../generated/definitions/payment-ecommerce/PaymentRequestsGetResponse";
 import { LanguageEnum } from "../../../generated/definitions/payment-ecommerce/Psp";
 import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { RptId } from "../../../generated/definitions/payment-ecommerce/RptId";
@@ -76,6 +72,7 @@ import {
 } from "../storage/sessionStorage";
 import { AmountEuroCents } from "../../../generated/definitions/payment-ecommerce/AmountEuroCents";
 import { PaymentContextCode } from "../../../generated/definitions/payment-ecommerce/PaymentContextCode";
+import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-ecommerce/PaymentRequestsGetResponse";
 import {
   apiPaymentEcommerceClient,
   apiPaymentTransactionsClient,
@@ -85,7 +82,7 @@ import { getBrowserInfoTask, getEMVCompliantColorDepth } from "./checkHelper";
 export const getEcommercePaymentInfoTask = (
   rptId: RptId,
   recaptchaResponse: string
-): TE.TaskEither<string, EcommercePaymentRequestsGetResponse> =>
+): TE.TaskEither<string, PaymentRequestsGetResponse> =>
   pipe(
     TE.tryCatch(
       () => {
@@ -178,17 +175,12 @@ export const activatePayment = async ({
   const paymentInfo = getSessionItem(SessionItems.paymentInfo) as
     | PaymentInfo
     | undefined;
-  const paymentInfoTransform = {
-    importoSingoloVersamento: paymentInfo?.amount,
-    codiceContestoPagamento: paymentInfo?.paymentContextCode,
-  };
   const userEmail = getSessionItem(SessionItems.useremail) as
     | string
     | undefined;
   const rptId: RptId = `${noticeInfo?.cf}${noticeInfo?.billCode}` as RptId;
-
   pipe(
-    PaymentRequestsGetResponse.decode(paymentInfoTransform),
+    PaymentRequestsGetResponse.decode(paymentInfo),
     E.fold(
       () => onError(ErrorsType.INVALID_DECODE),
       (response) =>

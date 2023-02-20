@@ -5,7 +5,6 @@ import ko from "../assets/images/response-umbrella.svg";
 import PageContainer from "../components/PageContent/PageContainer";
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { resetCardData } from "../redux/slices/cardData";
-import { resetSecurityCode } from "../redux/slices/securityCode";
 import { ReturnUrls } from "../features/payment/models/paymentModel";
 import { onBrowserUnload } from "../utils/eventListeners";
 import {
@@ -22,7 +21,6 @@ export default function KOPage() {
       ?.returnErrorUrl || "/";
 
   React.useEffect(() => {
-    dispatch(resetSecurityCode());
     dispatch(resetCardData());
     window.removeEventListener("beforeunload", onBrowserUnload);
     clearSensitiveItems();

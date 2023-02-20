@@ -6,7 +6,6 @@ import PageContainer from "../components/PageContent/PageContainer";
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { ReturnUrls } from "../features/payment/models/paymentModel";
 import { resetCardData } from "../redux/slices/cardData";
-import { resetSecurityCode } from "../redux/slices/securityCode";
 import { onBrowserUnload } from "../utils/eventListeners";
 import {
   clearSensitiveItems,
@@ -22,7 +21,6 @@ export default function CancelledPage() {
       ?.returnCancelUrl || "/";
 
   React.useEffect(() => {
-    dispatch(resetSecurityCode());
     dispatch(resetCardData());
     window.removeEventListener("beforeunload", onBrowserUnload);
     clearSensitiveItems();
