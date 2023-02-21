@@ -525,7 +525,7 @@ export const proceedToPayment = async (
   )();
 };
 
-// TODO Invoke ecommerce api to perform cancel payment
+// TODO Invoke ecommerce api to perform cancel payment CHK-1007
 export const cancelPayment = async (onResponse: () => void) => {
   // Payment action DELETE
   mixpanel.track(PAYMENT_ACTION_DELETE_INIT.value, {
