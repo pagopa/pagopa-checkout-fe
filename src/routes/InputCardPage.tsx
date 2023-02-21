@@ -7,14 +7,12 @@ import ErrorModal from "../components/modals/ErrorModal";
 import PageContainer from "../components/PageContent/PageContainer";
 import { InputCardForm } from "../features/payment/components/InputCardForm/InputCardForm";
 import {
-  PaymentId,
   PaymentMethod,
   PspList,
   Transaction,
 } from "../features/payment/models/paymentModel";
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { setCardData } from "../redux/slices/cardData";
-import { setSecurityCode } from "../redux/slices/securityCode";
 import {
   activatePayment,
   getPaymentPSPList,
@@ -85,7 +83,6 @@ export default function InputCardPage() {
         pan: wallet.number,
       };
       dispatch(setCardData(cardData));
-      dispatch(setSecurityCode(cardData.cvv));
       setLoading(true);
       await getPaymentPSPList({
         paymentMethodId:
@@ -104,20 +101,16 @@ export default function InputCardPage() {
           });
         },
       });
-      const paymentId = (
-        getSessionItem(SessionItems.paymentId) as PaymentId | undefined
-      )?.paymentId;
       const transactionId = (
         getSessionItem(SessionItems.transaction) as Transaction | undefined
       )?.transactionId;
       // If I want to change the card data but I have already activated the payment
-      if (paymentId && transactionId) {
+      if (transactionId) {
         onResponse();
       } else {
         await activatePayment({
           onResponse,
           onError,
-          onNavigate: () => navigate(`/${CheckoutRoutes.ERRORE}`),
         });
       }
     },

@@ -48,10 +48,3 @@ export function expirationDateChangeValidation(value: string) {
     value.length <= 3
   );
 }
-
-export function validateRange(
-  value: number,
-  range: { min: number; max: number }
-) {
-  return value >= range.min && value <= range.max;
-}

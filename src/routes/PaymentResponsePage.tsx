@@ -12,7 +12,6 @@ import {
   responseOutcome,
 } from "../features/payment/models/responseOutcome";
 import { useAppDispatch } from "../redux/hooks/hooks";
-import { resetSecurityCode } from "../redux/slices/securityCode";
 import { resetCardData } from "../redux/slices/cardData";
 import { callServices } from "../utils/api/response";
 import { PAYMENT_OUTCOME_CODE } from "../utils/config/mixpanelDefs";
@@ -69,7 +68,6 @@ export default function PaymentCheckPage() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(resetSecurityCode());
     dispatch(resetCardData());
 
     const handleFinalStatusResult = (idStatus?: TransactionStatusEnum) => {

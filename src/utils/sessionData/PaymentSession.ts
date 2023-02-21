@@ -44,9 +44,6 @@ const PaymentSessionO = t.partial({
   fiscalCode: t.string,
 });
 
-export const PaymentSession = t.intersection([
-  PaymentSessionR,
-  PaymentSessionO,
-]);
+const PaymentSession = t.intersection([PaymentSessionR, PaymentSessionO]);
 
 export type PaymentSession = t.TypeOf<typeof PaymentSession>;

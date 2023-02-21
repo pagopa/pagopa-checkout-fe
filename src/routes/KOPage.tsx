@@ -6,7 +6,6 @@ import PageContainer from "../components/PageContent/PageContainer";
 import { Cart } from "../features/payment/models/paymentModel";
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { resetCardData } from "../redux/slices/cardData";
-import { resetSecurityCode } from "../redux/slices/securityCode";
 import { onBrowserUnload } from "../utils/eventListeners";
 import {
   clearStorage,
@@ -22,7 +21,6 @@ export default function KOPage() {
       .returnErrorUrl || "/";
 
   React.useEffect(() => {
-    dispatch(resetSecurityCode());
     dispatch(resetCardData());
     window.removeEventListener("beforeunload", onBrowserUnload);
     clearStorage();

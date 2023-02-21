@@ -3,7 +3,7 @@ import { Alert, Box, Button, Skeleton } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { RptId } from "../../generated/definitions/payment-activations-api/RptId";
+import { RptId } from "../../generated/definitions/payment-ecommerce/RptId";
 import ErrorModal from "../components/modals/ErrorModal";
 import PageContainer from "../components/PageContent/PageContainer";
 import { QrCodeReader } from "../components/QrCodeReader/QrCodeReader";
@@ -41,7 +41,7 @@ export default function PaymentQrPage() {
   }, []);
 
   const onSubmit = React.useCallback(async (notice: PaymentFormFields) => {
-    const rptId: RptId = `${notice.cf}${notice.billCode}`;
+    const rptId: RptId = `${notice.cf}${notice.billCode}` as RptId;
     mixpanel.track(QRCODE_READ_SUCCESS.value, {
       EVENT_ID: QRCODE_READ_SUCCESS.value,
     });
