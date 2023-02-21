@@ -399,7 +399,7 @@ export const proceedToPayment = async (
   }: {
     transaction: Transaction;
     cardData: {
-      brand: BrandEnum;
+      brand: string;
       cvv: string;
       pan: string;
       expiryDate: string;
