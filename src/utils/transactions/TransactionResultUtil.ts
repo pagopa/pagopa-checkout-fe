@@ -26,7 +26,7 @@ export const getViewOutcomeFromEcommerceResultCode = (
   switch (ecommerceStatus) {
     case TransactionStatusEnum.NOTIFIED:
       return ViewOutcomeEnum.SUCCESS;
-    case TransactionStatusEnum.AUTHORIZATION_FAILED:
+    case TransactionStatusEnum.UNAUTHORIZED:
       return ViewOutcomeEnum.AUTH_ERROR;
     default:
       return ViewOutcomeEnum.GENERIC_ERROR;
