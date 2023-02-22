@@ -1,3 +1,6 @@
+/* eslint-disable functional/immutable-data */
+/* eslint-disable no-bitwise */
+/* eslint @typescript-eslint/no-var-requires: "off" */
 import * as E from "fp-ts/Either";
 import * as TE from "fp-ts/TaskEither";
 import { pipe } from "fp-ts/function";
@@ -29,8 +32,16 @@ const config = getConfigOrThrow();
 const retries: number = 10;
 const delay: number = 3000;
 const timeout: Millisecond = config.CHECKOUT_API_TIMEOUT as Millisecond;
-const decode = (transactionId: string): string => Buffer.from(transactionId, 'base64').toString('binary');
 
+const hexToUuid = require("hex-to-uuid");
+const decodeToUUID = (base64: string) => {
+  const bytes = Buffer.from(base64, "base64");
+  bytes[6] &= 0x0f;
+  bytes[6] |= 0x40;
+  bytes[8] &= 0x3f;
+  bytes[8] |= 0x80;
+  return hexToUuid(bytes.toString("hex"));
+};
 
 const ecommerceClientWithPolling: EcommerceClient = createClient({
   baseUrl: config.CHECKOUT_ECOMMERCE_HOST,
@@ -85,7 +96,10 @@ export const callServices = async (
       },
       (idTransaction) => async () =>
         await pipe(
-          ecommerceTransaction(decode(idTransaction), ecommerceClientWithPolling),
+          ecommerceTransaction(
+            decodeToUUID(idTransaction),
+            ecommerceClientWithPolling
+          ),
           TE.fold(
             (_) => async () => {
               mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_RESP_ERR.value, {
