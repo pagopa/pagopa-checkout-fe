@@ -37,6 +37,7 @@
     "abort-controller": "^3.0.0",
     "card-validator": "^8.1.1",
     "formik": "^2.2.9",
+    "hex-to-uuid": "^1.1.1",
     "history": "5",
     "i18next": "^21.6.5",
     "i18next-browser-languagedetector": "^6.1.2",
