@@ -50,7 +50,7 @@ export function retryingFetch(
 //
 // Fetch with transient error handling. Handle error that occurs once or at unpredictable intervals.
 //
-export function retryLogicForTransientResponseError(
+function retryLogicForTransientResponseError(
   p: (r: Response) => boolean,
   retryLogic: (
     t: RetriableTask<Error, Response>,
@@ -75,7 +75,7 @@ export function retryLogicForTransientResponseError(
 // Given predicate that return a boolean promise, fetch with transient error handling.
 // Handle error that occurs once or at unpredictable intervals.
 //
-export function retryLogicOnPromisePredicate(
+function retryLogicOnPromisePredicate(
   p: (r: Response) => Promise<boolean>,
   retryLogic: (
     t: RetriableTask<Error, Response>,
@@ -128,38 +128,4 @@ export const constantPollingWithPromisePredicateFetch = (
   );
 
   return retriableFetch(retryWithPromisePredicate, shouldAbort)(timeoutFetch);
-};
-
-export interface ITransientFetchOpts {
-  numberOfRetries: number;
-  httpCodeMapToTransient: number;
-  delay: Millisecond;
-  timeout: Millisecond;
-}
-
-export const transientConfigurableFetch = (
-  myFetch: typeof fetch,
-  options: ITransientFetchOpts = {
-    numberOfRetries: 3,
-    httpCodeMapToTransient: 429,
-    delay: 10 as Millisecond,
-    timeout: API_TIMEOUT,
-  }
-) => {
-  const abortableFetch = AbortableFetch(myFetch);
-  const timeoutFetch = toFetch(
-    setFetchTimeout(options.timeout, abortableFetch)
-  );
-  const constantBackoff = () => options.delay;
-  const retryLogic = withRetries<Error, Response>(
-    options.numberOfRetries,
-    constantBackoff
-  );
-  // makes the retry logic map specific http error code to transient errors (by default only
-  // timeouts are transient)
-  const retryWithTransientError = retryLogicForTransientResponseError(
-    (response) => response.status === options.httpCodeMapToTransient,
-    retryLogic
-  );
-  return retriableFetch(retryWithTransientError)(timeoutFetch as typeof fetch);
 };

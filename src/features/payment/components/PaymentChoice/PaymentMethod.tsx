@@ -137,7 +137,7 @@ export const DisabledPaymentMethods = ({
   ) : null;
 };
 
-export const MethodComponent = ({
+const MethodComponent = ({
   method,
   onClick,
   testable,

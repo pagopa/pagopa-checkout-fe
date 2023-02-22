@@ -8,7 +8,7 @@ export enum PaymentFaultCategory {
   NOTLISTED = "NOTLISTED",
 }
 
-export type PaymentFaultErrorMessage = {
+type PaymentFaultErrorMessage = {
   title?: string;
   body?: string;
   category: PaymentFaultCategory;
@@ -20,7 +20,7 @@ export type ErrorModalBtn = {
   action?: () => void;
 };
 
-export type ErrorModal = {
+type ErrorModal = {
   title: string;
   body?: string;
   detail?: boolean;
