@@ -73,6 +73,7 @@ import {
 import { AmountEuroCents } from "../../../generated/definitions/payment-ecommerce/AmountEuroCents";
 import { PaymentContextCode } from "../../../generated/definitions/payment-ecommerce/PaymentContextCode";
 import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-ecommerce/PaymentRequestsGetResponse";
+import { BrandEnum } from "../../../generated/definitions/payment-ecommerce/PaymentInstrumentDetail";
 import {
   apiPaymentEcommerceClient,
   apiPaymentTransactionsClient,
@@ -469,7 +470,7 @@ export const proceedToPayment = async (
         ?.paymentTypeCode === "CP"
         ? {
             detailType: "card",
-            brand: cardData.brand,
+            brand: getBrandByBrandCardValidator(cardData.brand),
             cvv: cardData.cvv,
             pan: cardData.pan,
             expiryDate: cardData.expiryDate,
@@ -831,3 +832,22 @@ export const sortPspByOnUsPolicy = (pspList: Array<PspList>): Array<PspList> =>
       )
     );
   }; */
+
+const getBrandByBrandCardValidator = (
+  brandCardValidator: string
+): BrandEnum => {
+  switch (brandCardValidator) {
+    case "visa":
+      return BrandEnum.VISA;
+    case "american-express":
+      return BrandEnum.AMEX;
+    case "maestro":
+      return BrandEnum.MAESTRO;
+    case "mastercard":
+      return BrandEnum.MASTERCARD;
+    case "diners-club":
+      return BrandEnum.DINERS;
+    default:
+      return BrandEnum.UNKNOWN;
+  }
+};

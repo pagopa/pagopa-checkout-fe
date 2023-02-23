@@ -21,15 +21,7 @@ describe("TransactionResultUtil", () => {
     ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
 
     expect(
-      getViewOutcomeFromEcommerceResultCode(
-        TransactionStatusEnum.ACTIVATION_REQUESTED
-      )
-    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
-
-    expect(
-      getViewOutcomeFromEcommerceResultCode(
-        TransactionStatusEnum.AUTHORIZATION_FAILED
-      )
+      getViewOutcomeFromEcommerceResultCode(TransactionStatusEnum.UNAUTHORIZED)
     ).toEqual(ViewOutcomeEnum.AUTH_ERROR);
 
     expect(
@@ -39,7 +31,9 @@ describe("TransactionResultUtil", () => {
     ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
 
     expect(
-      getViewOutcomeFromEcommerceResultCode(TransactionStatusEnum.AUTHORIZED)
+      getViewOutcomeFromEcommerceResultCode(
+        TransactionStatusEnum.AUTHORIZATION_COMPLETED
+      )
     ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
 
     expect(
@@ -47,9 +41,7 @@ describe("TransactionResultUtil", () => {
     ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
 
     expect(
-      getViewOutcomeFromEcommerceResultCode(
-        TransactionStatusEnum.CLOSURE_FAILED
-      )
+      getViewOutcomeFromEcommerceResultCode(TransactionStatusEnum.CLOSURE_ERROR)
     ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
 
     expect(
@@ -58,8 +50,12 @@ describe("TransactionResultUtil", () => {
 
     expect(
       getViewOutcomeFromEcommerceResultCode(
-        TransactionStatusEnum.NOTIFIED_FAILED
+        TransactionStatusEnum.EXPIRED_NOT_AUTHORIZED
       )
+    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
+
+    expect(
+      getViewOutcomeFromEcommerceResultCode(TransactionStatusEnum.CANCELED)
     ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
 
     expect(
