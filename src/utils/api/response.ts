@@ -3,6 +3,7 @@
 /* eslint @typescript-eslint/no-var-requires: "off" */
 import * as E from "fp-ts/Either";
 import * as TE from "fp-ts/TaskEither";
+import * as O from "fp-ts/Option";
 import { pipe } from "fp-ts/function";
 import { DeferredPromise } from "@pagopa/ts-commons//lib/promises";
 import { Millisecond } from "@pagopa/ts-commons//lib/units";
@@ -71,11 +72,20 @@ export const callServices = async (
     )(getUrlParameter("id")),
     TE.fold(
       (_) => async () => {
-        const transactionId =
-          (getSessionItem(SessionItems.transaction) as Transaction | undefined)
-            ?.transactionId || "";
+
+        const transaction = (getSessionItem(SessionItems.transaction) as Transaction | undefined);
+
+        const transactionId = transaction?.transactionId || "";
+
+        const bearerAuth = pipe(
+          transaction,
+          O.fromNullable,
+          O.chain((transaction) => O.fromNullable(transaction.authToken)),
+          O.getOrElse(() => "")
+        );
+
         await pipe(
-          ecommerceTransaction(transactionId, ecommerceClientWithPolling),
+          ecommerceTransaction(transactionId, bearerAuth, ecommerceClientWithPolling),
           TE.fold(
             // eslint-disable-next-line sonarjs/no-identical-functions
             () => async () => {
