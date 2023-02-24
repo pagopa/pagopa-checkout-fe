@@ -4,6 +4,7 @@
 import * as E from "fp-ts/Either";
 import * as TE from "fp-ts/TaskEither";
 import * as O from "fp-ts/Option";
+import * as T from "fp-ts/Task";
 import { pipe } from "fp-ts/function";
 import { DeferredPromise } from "@pagopa/ts-commons//lib/promises";
 import { Millisecond } from "@pagopa/ts-commons//lib/units";
@@ -65,26 +66,39 @@ const ecommerceClientWithPolling: EcommerceClient = createClient({
 export const callServices = async (
   handleFinalStatusResult: (idStatus?: TransactionStatusEnum) => void
 ) => {
+  const transaction = getSessionItem(SessionItems.transaction) as
+    | Transaction
+    | undefined;
+
+  const bearerAuth = pipe(
+    transaction,
+    O.fromNullable,
+    O.chain((transaction) => O.fromNullable(transaction.authToken)),
+    O.getOrElse(() => "")
+  );
+
   await pipe(
     TE.fromPredicate(
       (idTransaction) => idTransaction !== "",
       E.toError
     )(getUrlParameter("id")),
+
     TE.fold(
       (_) => async () => {
-        const transaction = getSessionItem(SessionItems.transaction) as
-          | Transaction
-          | undefined;
-
-        const transactionId = transaction?.transactionId || "";
-
-        const bearerAuth = pipe(
-          transaction,
-          O.fromNullable,
-          O.chain((transaction) => O.fromNullable(transaction.authToken)),
-          O.getOrElse(() => "")
-        );
-
+        mixpanel.track(THREEDSMETHODURL_STEP1_RESP_ERR.value, {
+          EVENT_ID: THREEDSMETHODURL_STEP1_RESP_ERR.value,
+        });
+        return transaction?.transactionId || "";
+      },
+      (idTransaction) => async () => {
+        mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_RESP_ERR.value, {
+          EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_RESP_ERR.value,
+        });
+        return decodeToUUID(idTransaction) as string;
+      }
+    ),
+    T.map(
+      (transactionId) => async () =>
         await pipe(
           ecommerceTransaction(
             transactionId,
@@ -94,32 +108,6 @@ export const callServices = async (
           TE.fold(
             // eslint-disable-next-line sonarjs/no-identical-functions
             () => async () => {
-              mixpanel.track(THREEDSMETHODURL_STEP1_RESP_ERR.value, {
-                EVENT_ID: THREEDSMETHODURL_STEP1_RESP_ERR.value,
-              });
-              handleFinalStatusResult();
-            },
-            // eslint-disable-next-line sonarjs/no-identical-functions
-            (transactionInfo) => async () => {
-              mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value, {
-                EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value,
-              });
-              handleFinalStatusResult(transactionInfo.status);
-            }
-          )
-        )();
-      },
-      (idTransaction) => async () =>
-        await pipe(
-          ecommerceTransaction(
-            decodeToUUID(idTransaction),
-            ecommerceClientWithPolling
-          ),
-          TE.fold(
-            (_) => async () => {
-              mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_RESP_ERR.value, {
-                EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_RESP_ERR.value,
-              });
               handleFinalStatusResult();
             },
             // eslint-disable-next-line sonarjs/no-identical-functions
