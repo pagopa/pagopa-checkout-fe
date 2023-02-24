@@ -97,19 +97,17 @@ export const callServices = async (
         return decodeToUUID(idTransaction) as string;
       }
     ),
-    T.map(
+    T.chain(
       (transactionId) => async () =>
         await pipe(
-          ecommerceTransaction(
+            ecommerceTransaction(
             transactionId,
             bearerAuth,
             ecommerceClientWithPolling
           ),
           TE.fold(
             // eslint-disable-next-line sonarjs/no-identical-functions
-            () => async () => {
-              handleFinalStatusResult();
-            },
+            () => async () => handleFinalStatusResult(),
             // eslint-disable-next-line sonarjs/no-identical-functions
             (transactionInfo) => async () => {
               mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value, {
