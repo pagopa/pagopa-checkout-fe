@@ -72,8 +72,9 @@ export const callServices = async (
     )(getUrlParameter("id")),
     TE.fold(
       (_) => async () => {
-
-        const transaction = (getSessionItem(SessionItems.transaction) as Transaction | undefined);
+        const transaction = getSessionItem(SessionItems.transaction) as
+          | Transaction
+          | undefined;
 
         const transactionId = transaction?.transactionId || "";
 
@@ -85,7 +86,11 @@ export const callServices = async (
         );
 
         await pipe(
-          ecommerceTransaction(transactionId, bearerAuth, ecommerceClientWithPolling),
+          ecommerceTransaction(
+            transactionId,
+            bearerAuth,
+            ecommerceClientWithPolling
+          ),
           TE.fold(
             // eslint-disable-next-line sonarjs/no-identical-functions
             () => async () => {
