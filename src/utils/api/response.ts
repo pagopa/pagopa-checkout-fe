@@ -100,7 +100,7 @@ export const callServices = async (
     T.chain(
       (transactionId) => async () =>
         await pipe(
-            ecommerceTransaction(
+          ecommerceTransaction(
             transactionId,
             bearerAuth,
             ecommerceClientWithPolling
