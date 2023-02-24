@@ -15,6 +15,7 @@ import { UNKNOWN } from "./TransactionStatesTypes";
 
 export const ecommerceTransaction = (
   transactionId: string,
+  bearerAuth: string,
   ecommerceClient: EcommerceClient
 ): TE.TaskEither<UNKNOWN, TransactionInfo> => {
   mixpanel.track(TRANSACTION_POLLING_CHECK_INIT.value, {
@@ -24,7 +25,7 @@ export const ecommerceTransaction = (
     TE.tryCatch(
       () =>
         ecommerceClient.getTransactionInfo({
-          bearerAuth: "",
+          bearerAuth,
           transactionId,
         }),
       () => {
