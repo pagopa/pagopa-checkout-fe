@@ -185,6 +185,7 @@ export default function PaymentCheckPage() {
     if (paymentMethod) {
       void getPaymentPSPList({
         paymentMethodId: paymentMethod?.paymentMethodId,
+        bin: cardData?.pan.substring(0, 8),
         onError,
         onResponse: onPspEditResponse,
       });

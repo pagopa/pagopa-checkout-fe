@@ -302,10 +302,12 @@ const activePaymentTask = (
 
 export const getPaymentPSPList = async ({
   paymentMethodId,
+  bin,
   onError,
   onResponse,
 }: {
   paymentMethodId: string;
+  bin: string;
   onError: (e: string) => void;
   onResponse: (r: Array<PspList>) => void;
 }) => {
@@ -328,7 +330,7 @@ export const getPaymentPSPList = async ({
     O.getOrElseW(() => undefined)
   );
 
-  const lang = "it";
+  // const lang = "it";
 
   mixpanel.track(PAYMENT_PSPLIST_INIT.value, {
     EVENT_ID: PAYMENT_PSPLIST_INIT.value,
@@ -337,9 +339,13 @@ export const getPaymentPSPList = async ({
     TE.tryCatch(
       () =>
         apiPaymentEcommerceClient.getPaymentMethodsPSPs({
-          amount,
-          lang,
           id: paymentMethodId,
+          body: {
+            bin,
+            paymentAmount: amount ? amount : 0,
+            primaryCreditorInstitution: "",
+            transferList: [],
+          },
         }),
       (_e) => {
         onError(ErrorsType.CONNECTION);
@@ -367,7 +373,7 @@ export const getPaymentPSPList = async ({
                 mixpanel.track(PAYMENT_PSPLIST_SUCCESS.value, {
                   EVENT_ID: PAYMENT_PSPLIST_SUCCESS.value,
                 });
-                return myRes?.value.psp;
+                return myRes?.value.bundleOptions;
               } else {
                 onError(ErrorsType.GENERIC_ERROR);
                 mixpanel.track(PAYMENT_PSPLIST_RESP_ERR.value, {
@@ -382,11 +388,11 @@ export const getPaymentPSPList = async ({
   )();
 
   const psp = pspList?.map((e) => ({
-    name: e?.businessName,
-    label: e?.businessName,
-    image: undefined, // image: e?.logoPSP, TODO capire come gestire i loghi
-    commission: e?.fixedCost ?? 0,
-    idPsp: e?.code, // TODO gestito come stringa
+    name: e?.bundleName,
+    label: e?.bundleDescription,
+    image: e?.abi, // image: e?.logoPSP, TODO capire come gestire i loghi
+    commission: e?.taxPayerFee ?? 0,
+    idPsp: e?.idPsp, // TODO gestito come stringa
   }));
 
   onResponse(psp || []);

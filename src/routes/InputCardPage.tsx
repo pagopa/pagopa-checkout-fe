@@ -91,6 +91,7 @@ export default function InputCardPage() {
               | PaymentMethod
               | undefined
           )?.paymentMethodId || "",
+        bin: cardData.pan.substring(0, 8),
         onError: onErrorGetPSP,
         onResponse: (resp: Array<PspList>) => {
           const firstPsp = sortPspByOnUsPolicy(resp);
