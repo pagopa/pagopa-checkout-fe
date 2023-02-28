@@ -13,9 +13,11 @@ variables:
 # Automatically triggered on PR
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&tabs=schema%2Cparameter-schema#pr-trigger
 trigger:
-- develop
-- CHK-1110-trigger-CD
-
+  branches:
+    include:
+    - refs/heads/develop
+    - refs/heads/main
+    
 # Execute agents (jobs) on latest Ubuntu version.
 # To change OS for a specific, ovverride "pool" attribute inside the job definition
 pool:
