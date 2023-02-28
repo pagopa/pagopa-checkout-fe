@@ -390,9 +390,11 @@ export const getPaymentPSPList = async ({
   const psp = pspList?.map((e) => ({
     name: e?.bundleName,
     label: e?.bundleDescription,
-    image: e?.abi, // image: e?.logoPSP, TODO capire come gestire i loghi
+    image: "https://assets.cdn.io.italia.it/logos/abi/"
+      .concat(e?.abi || "")
+      .concat(".png"),
     commission: e?.taxPayerFee ?? 0,
-    idPsp: e?.idPsp, // TODO gestito come stringa
+    idPsp: e?.idPsp,
   }));
 
   onResponse(psp || []);
