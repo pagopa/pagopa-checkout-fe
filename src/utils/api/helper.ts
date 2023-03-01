@@ -345,8 +345,8 @@ export const getPaymentPSPList = async ({
           body: {
             bin,
             paymentAmount: amount ? amount : 0,
-            primaryCreditorInstitution: "",
-            transferList: [],
+            primaryCreditorInstitution: "", //TODO get value from session when available
+            transferList: [], //TODO get value from session when available
           },
         }),
       (_e) => {
