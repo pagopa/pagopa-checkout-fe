@@ -68,10 +68,27 @@ export default function InputCardPage() {
     ref.current?.reset();
   };
 
-  const onResponse = () => {
-    setLoading(false);
-    navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
-  };
+  const onResponseActivate = async (bin: string) => () =>
+    getPaymentPSPList({
+      paymentMethodId:
+        (
+          getSessionItem(SessionItems.paymentMethod) as
+            | PaymentMethod
+            | undefined
+        )?.paymentMethodId || "",
+      bin,
+      onError: onErrorGetPSP,
+      onResponsePsp: (resp: Array<PspList>) => {
+        const firstPsp = sortPspByOnUsPolicy(resp);
+        setSessionItem(SessionItems.pspSelected, {
+          pspCode: firstPsp.at(0)?.idPsp || "",
+          fee: firstPsp.at(0)?.commission || 0,
+          businessName: firstPsp.at(0)?.name || "",
+        });
+        setLoading(false);
+        navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
+      },
+    });
 
   const onSubmit = React.useCallback(
     async (wallet: InputCardFormFields) => {
@@ -84,7 +101,7 @@ export default function InputCardPage() {
       };
       dispatch(setCardData(cardData));
       setLoading(true);
-      await getPaymentPSPList({
+      /* await getPaymentPSPList({
         paymentMethodId:
           (
             getSessionItem(SessionItems.paymentMethod) as
@@ -101,17 +118,18 @@ export default function InputCardPage() {
             businessName: firstPsp.at(0)?.name || "",
           });
         },
-      });
+      }); */
       const transactionId = (
         getSessionItem(SessionItems.transaction) as Transaction | undefined
       )?.transactionId;
       // If I want to change the card data but I have already activated the payment
       if (transactionId) {
-        onResponse();
+        await onResponseActivate(cardData.pan.substring(0, 8));
       } else {
         await activatePayment({
-          onResponse,
-          onError,
+          bin: cardData.pan.substring(0, 8),
+          onResponseActivate,
+          onErrorActivate: onError,
         });
       }
     },

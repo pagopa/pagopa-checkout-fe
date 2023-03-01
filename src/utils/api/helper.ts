@@ -164,11 +164,13 @@ export const getEcommercePaymentInfoTask = (
   );
 
 export const activatePayment = async ({
-  onResponse,
-  onError,
+  bin,
+  onResponseActivate,
+  onErrorActivate,
 }: {
-  onResponse: () => void;
-  onError: (e: string) => void;
+  bin: string;
+  onResponseActivate: (bin: string) => void;
+  onErrorActivate: (e: string) => void;
 }) => {
   const noticeInfo = getSessionItem(SessionItems.noticeInfo) as
     | PaymentFormFields
@@ -183,7 +185,7 @@ export const activatePayment = async ({
   pipe(
     PaymentRequestsGetResponse.decode(paymentInfo),
     E.fold(
-      () => onError(ErrorsType.INVALID_DECODE),
+      () => onErrorActivate(ErrorsType.INVALID_DECODE),
       (response) =>
         pipe(
           activePaymentTask(
@@ -194,11 +196,11 @@ export const activatePayment = async ({
           ),
           TE.fold(
             (e: string) => async () => {
-              onError(e);
+              onErrorActivate(e);
             },
             (res) => async () => {
               setSessionItem(SessionItems.transaction, res);
-              onResponse();
+              onResponseActivate(bin);
             }
           )
         )()
@@ -304,12 +306,12 @@ export const getPaymentPSPList = async ({
   paymentMethodId,
   bin,
   onError,
-  onResponse,
+  onResponsePsp,
 }: {
   paymentMethodId: string;
   bin: string;
   onError: (e: string) => void;
-  onResponse: (r: Array<PspList>) => void;
+  onResponsePsp: (r: Array<PspList>) => void;
 }) => {
   const amount: number | undefined = pipe(
     O.fromNullable(getSessionItem(SessionItems.cart) as Cart | undefined),
@@ -397,7 +399,7 @@ export const getPaymentPSPList = async ({
     idPsp: e?.idPsp,
   }));
 
-  onResponse(psp || []);
+  onResponsePsp(psp || []);
 };
 
 export const proceedToPayment = async (

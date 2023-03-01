@@ -187,7 +187,7 @@ export default function PaymentCheckPage() {
         paymentMethodId: paymentMethod?.paymentMethodId,
         bin: cardData?.pan.substring(0, 8),
         onError,
-        onResponse: onPspEditResponse,
+        onResponsePsp: onPspEditResponse,
       });
     }
   };
