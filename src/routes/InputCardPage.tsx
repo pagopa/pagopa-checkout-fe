@@ -68,7 +68,7 @@ export default function InputCardPage() {
     ref.current?.reset();
   };
 
-  const onResponseActivate = async (bin: string) => () =>
+  const onResponseActivate = (bin: string) =>
     getPaymentPSPList({
       paymentMethodId:
         (
@@ -108,7 +108,6 @@ export default function InputCardPage() {
               | PaymentMethod
               | undefined
           )?.paymentMethodId || "",
-        bin: cardData.pan.substring(0, 8),
         onError: onErrorGetPSP,
         onResponse: (resp: Array<PspList>) => {
           const firstPsp = sortPspByOnUsPolicy(resp);
@@ -122,12 +121,13 @@ export default function InputCardPage() {
       const transactionId = (
         getSessionItem(SessionItems.transaction) as Transaction | undefined
       )?.transactionId;
+      const bin = cardData.pan.substring(0, 8);
       // If I want to change the card data but I have already activated the payment
       if (transactionId) {
-        await onResponseActivate(cardData.pan.substring(0, 8));
+        void onResponseActivate(bin);
       } else {
         await activatePayment({
-          bin: cardData.pan.substring(0, 8),
+          bin,
           onResponseActivate,
           onErrorActivate: onError,
         });

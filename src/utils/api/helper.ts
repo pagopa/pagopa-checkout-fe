@@ -340,13 +340,15 @@ export const getPaymentPSPList = async ({
   const pspList = await pipe(
     TE.tryCatch(
       () =>
-        apiPaymentEcommerceClient.getPaymentMethodsPSPs({
-          id: paymentMethodId,
+        apiPaymentEcommerceClient.calculateFees({
+          maxOccurrences: undefined,
           body: {
             bin,
+            touchpoint: "CHECKOUT",
+            paymentMethodId,
             paymentAmount: amount ? amount : 0,
-            primaryCreditorInstitution: "", //TODO get value from session when available
-            transferList: [], //TODO get value from session when available
+            primaryCreditorInstitution: "", // TODO get value from session when available
+            transferList: [], // TODO get value from session when available
           },
         }),
       (_e) => {
@@ -392,8 +394,8 @@ export const getPaymentPSPList = async ({
   const psp = pspList?.map((e) => ({
     name: e?.bundleName,
     label: e?.bundleDescription,
-    image: "https://assets.cdn.io.italia.it/logos/abi/"
-      .concat(e?.abi || "")
+    image: getConfigOrThrow()
+      .CHECKOUT_PAGOPA_ASSETS_CDN.concat(e?.abi || "")
       .concat(".png"),
     commission: e?.taxPayerFee ?? 0,
     idPsp: e?.idPsp,
