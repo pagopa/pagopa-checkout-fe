@@ -15,7 +15,7 @@ import { useAppDispatch } from "../redux/hooks/hooks";
 import { setCardData } from "../redux/slices/cardData";
 import {
   activatePayment,
-  getPaymentPSPList,
+  calculateFees,
   onErrorGetPSP,
   sortPspByOnUsPolicy,
 } from "../utils/api/helper";
@@ -69,7 +69,7 @@ export default function InputCardPage() {
   };
 
   const onResponseActivate = (bin: string) =>
-    getPaymentPSPList({
+    calculateFees({
       paymentMethodId:
         (
           getSessionItem(SessionItems.paymentMethod) as

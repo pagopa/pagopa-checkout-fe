@@ -42,7 +42,7 @@ import { selectCardData } from "../redux/slices/cardData";
 import {
   cancelPayment,
   parseDate,
-  getPaymentPSPList,
+  calculateFees,
   proceedToPayment,
 } from "../utils/api/helper";
 import { onBrowserUnload } from "../utils/eventListeners";
@@ -183,7 +183,7 @@ export default function PaymentCheckPage() {
     setDrawerOpen(true);
     setPspEditLoading(true);
     if (paymentMethod) {
-      void getPaymentPSPList({
+      void calculateFees({
         paymentMethodId: paymentMethod?.paymentMethodId,
         bin: cardData?.pan.substring(0, 8),
         onError,

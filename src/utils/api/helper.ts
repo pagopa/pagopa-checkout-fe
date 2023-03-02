@@ -302,7 +302,7 @@ const activePaymentTask = (
     )
   );
 
-export const getPaymentPSPList = async ({
+export const calculateFees = async ({
   paymentMethodId,
   bin,
   onError,
@@ -332,6 +332,16 @@ export const getPaymentPSPList = async ({
     O.getOrElseW(() => undefined)
   );
 
+  const primaryCreditorInstitution = pipe(
+    O.fromNullable(getSessionItem(SessionItems.transaction) as Transaction),
+    O.map((transaction) => transaction.transactionId) //TODO replace with primaryCreditorInstitution property when available
+  )
+
+  const transferList = pipe(
+    O.fromNullable(getSessionItem(SessionItems.transaction) as Transaction),
+    O.map(() => []) //TODO replace with primaryCreditorInstitution property when available
+  )
+
   // const lang = "it";
 
   mixpanel.track(PAYMENT_PSPLIST_INIT.value, {
@@ -347,8 +357,14 @@ export const getPaymentPSPList = async ({
             touchpoint: "CHECKOUT",
             paymentMethodId,
             paymentAmount: amount ? amount : 0,
-            primaryCreditorInstitution: "", // TODO get value from session when available
-            transferList: [], // TODO get value from session when available
+            primaryCreditorInstitution: pipe(
+              primaryCreditorInstitution,
+              O.getOrElse(() => "")
+            ),
+            transferList: pipe(
+              transferList,
+              O.getOrElse(() => [])
+            ),
           },
         }),
       (_e) => {
