@@ -9,27 +9,31 @@ export default function PrivacyInfo(props: { showDonationPrivacy?: boolean }) {
     <>
       <Box mt={4}>
         <Typography variant="caption" component={"div"}>
-          {t("privacyInfo.privacyDesc")}
-          <Link
-            href={t("privacyInfo.privacyUrl")}
-            target="_blank"
-            rel="noreferrer"
-            style={{ fontWeight: 600, textDecoration: "none" }}
-          >
-            {t("privacyInfo.privacyTerms")}
-          </Link>
-          {t("privacyInfo.privacyDescContinue")}
-          <Link
-            href={t("privacyInfo.privacyUrl")}
-            target="_blank"
-            rel="noreferrer"
-            style={{ fontWeight: 600, textDecoration: "none" }}
-          >
-            {t("privacyInfo.privacyInfo")}
-          </Link>
+          {!props.showDonationPrivacy && (
+            <>
+              {t("privacyInfo.privacyDesc")}
+              <Link
+                href={t("privacyInfo.privacyUrl")}
+                target="_blank"
+                rel="noreferrer"
+                style={{ fontWeight: 600, textDecoration: "none" }}
+              >
+                {t("privacyInfo.privacyTerms")}
+              </Link>
+              {t("privacyInfo.privacyDescContinue")}
+              <Link
+                href={t("privacyInfo.privacyUrl")}
+                target="_blank"
+                rel="noreferrer"
+                style={{ fontWeight: 600, textDecoration: "none" }}
+              >
+                {t("privacyInfo.privacyInfo")}
+              </Link>
+            </>
+          )}
           {props.showDonationPrivacy && (
             <>
-              {` ${t("privacyInfo.and")} `}
+              {` ${t("privacyInfo.privacyDonationDesc")} `}
               <Link
                 href="https://www.pagopa.gov.it/it/privacy-policy-donazioni-ucraina/"
                 target="_blank"
@@ -40,7 +44,6 @@ export default function PrivacyInfo(props: { showDonationPrivacy?: boolean }) {
               </Link>
             </>
           )}
-          {"."}
           {`${t("privacyInfo.googleDesc")} (`}
           <Link
             href="https://policies.google.com/privacy"

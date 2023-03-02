@@ -28,8 +28,9 @@ export const TRANSLATIONS_IT = {
     serviceTerms: "Termini di servizio",
     privacyUrl: "/privacypolicy/it.html",
     and: "e i",
+    privacyDonationDesc: "Proseguendo dichiari di aver letto e compreso i ",
     privacyDonation:
-      "Termini aggiuntivi del servizio Donazioni a favore dell’emergenza in Ucraina",
+      "Termini e condizioni d’uso del servizio Donazioni a favore delle popolazioni colpite dal terremoto in Turchia e Siria",
   },
   paymentNoticePage: {
     title: "Cosa devi pagare?",
@@ -326,9 +327,9 @@ export const TRANSLATIONS_IT = {
     loading: "Caricamento",
   },
   donationPage: {
-    title: "Dona per la crisi in Ucraina",
+    title: "Dona per le popolazioni colpite dal terremoto",
     description:
-      "Hai tempo fino al 23 dicembre. Puoi donare con carta senza costi di commissione. L’importo verrà versato direttamente sul conto dell’organizzazione a cui scegli di donare.",
+      "Puoi donare con carta di credito, debito o prepagata, senza costi di commissione. L’importo verrà versato direttamente sul conto dell’organizzazione a cui scegli di donare.",
     entity: "A chi vuoi donare?",
     volunteer: "Quanto vuoi donare?",
     submitCard: "Dona con carta",
