@@ -77,7 +77,6 @@ export interface PaymentMethod {
   paymentMethodId: string;
 }
 
-
 export interface PaymentInstruments {
   id: string;
   name: string;

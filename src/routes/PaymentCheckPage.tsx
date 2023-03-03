@@ -43,6 +43,7 @@ import {
   calculateFees,
   proceedToPayment,
   sortPspByThresholdPolicy,
+  pspImagePath,
 } from "../utils/api/helper";
 import { onBrowserUnload } from "../utils/eventListeners";
 import { moneyFormat } from "../utils/form/formatters";
@@ -436,7 +437,7 @@ export default function PaymentCheckPage() {
                 key={index}
                 titleVariant="sidenav"
                 bodyVariant="body2"
-                image={psp.abi}
+                image={pspImagePath(psp.abi)}
                 body={psp.bundleName}
                 sx={{
                   ...pspContainerStyle,

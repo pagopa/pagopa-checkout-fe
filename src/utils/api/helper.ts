@@ -873,3 +873,16 @@ const getBrandByBrandCardValidator = (
       return BrandEnum.UNKNOWN;
   }
 };
+
+export const pspImagePath = (abi: string | undefined): string =>
+  pipe(
+    abi,
+    O.fromNullable,
+    O.map((abi) =>
+      getConfigOrThrow()
+        .CHECKOUT_PAGOPA_ASSETS_CDN.concat("/")
+        .concat(abi)
+        .concat(".png")
+    ),
+    O.getOrElse(() => "")
+  );
