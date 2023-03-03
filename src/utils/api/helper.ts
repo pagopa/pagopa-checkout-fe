@@ -18,7 +18,6 @@ import {
   PaymentInfo,
   PaymentInstruments,
   PaymentMethod,
-  PspList,
   PspSelected,
   Transaction,
 } from "../../features/payment/models/paymentModel";
@@ -74,6 +73,8 @@ import { AmountEuroCents } from "../../../generated/definitions/payment-ecommerc
 import { PaymentContextCode } from "../../../generated/definitions/payment-ecommerce/PaymentContextCode";
 import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-ecommerce/PaymentRequestsGetResponse";
 import { BrandEnum } from "../../../generated/definitions/payment-ecommerce/PaymentInstrumentDetail";
+import { BundleOption } from "../../../generated/definitions/payment-ecommerce/BundleOption";
+import { Transfer } from "../../../generated/definitions/payment-ecommerce/Transfer";
 import {
   apiPaymentEcommerceClient,
   apiPaymentTransactionsClient,
@@ -311,7 +312,7 @@ export const calculateFees = async ({
   paymentMethodId: string;
   bin: string;
   onError: (e: string) => void;
-  onResponsePsp: (r: Array<PspList>) => void;
+  onResponsePsp: (r: BundleOption) => void;
 }) => {
   const amount: number | undefined = pipe(
     O.fromNullable(getSessionItem(SessionItems.cart) as Cart | undefined),
@@ -334,20 +335,20 @@ export const calculateFees = async ({
 
   const primaryCreditorInstitution = pipe(
     O.fromNullable(getSessionItem(SessionItems.transaction) as Transaction),
-    O.map((transaction) => transaction.transactionId) //TODO replace with primaryCreditorInstitution property when available
-  )
+    O.map((transaction) => transaction.transactionId) // TODO replace with primaryCreditorInstitution property when available
+  );
 
   const transferList = pipe(
     O.fromNullable(getSessionItem(SessionItems.transaction) as Transaction),
-    O.map(() => []) //TODO replace with primaryCreditorInstitution property when available
-  )
+    O.map(() => []) // TODO replace with primaryCreditorInstitution property when available
+  );
 
   // const lang = "it";
 
   mixpanel.track(PAYMENT_PSPLIST_INIT.value, {
     EVENT_ID: PAYMENT_PSPLIST_INIT.value,
   });
-  const pspList = await pipe(
+  const bundleOption: BundleOption = await pipe(
     TE.tryCatch(
       () =>
         apiPaymentEcommerceClient.calculateFees({
@@ -381,7 +382,7 @@ export const calculateFees = async ({
         mixpanel.track(PAYMENT_PSPLIST_SVR_ERR.value, {
           EVENT_ID: PAYMENT_PSPLIST_SVR_ERR.value,
         });
-        return undefined;
+        return {};
       },
       (myResExt) => async () =>
         pipe(
@@ -393,13 +394,13 @@ export const calculateFees = async ({
                 mixpanel.track(PAYMENT_PSPLIST_SUCCESS.value, {
                   EVENT_ID: PAYMENT_PSPLIST_SUCCESS.value,
                 });
-                return myRes?.value.bundleOptions;
+                return myRes?.value;
               } else {
                 onError(ErrorsType.GENERIC_ERROR);
                 mixpanel.track(PAYMENT_PSPLIST_RESP_ERR.value, {
                   EVENT_ID: PAYMENT_PSPLIST_RESP_ERR.value,
                 });
-                return [];
+                return {};
               }
             }
           )
@@ -407,17 +408,7 @@ export const calculateFees = async ({
     )
   )();
 
-  const psp = pspList?.map((e) => ({
-    name: e?.bundleName,
-    label: e?.bundleDescription,
-    image: getConfigOrThrow()
-      .CHECKOUT_PAGOPA_ASSETS_CDN.concat(e?.abi || "")
-      .concat(".png"),
-    commission: e?.taxPayerFee ?? 0,
-    idPsp: e?.idPsp,
-  }));
-
-  onResponsePsp(psp || []);
+  onResponsePsp(bundleOption);
 };
 
 export const proceedToPayment = async (
@@ -768,9 +759,13 @@ export const onErrorGetPSP = (e: string): void => {
   throw new Error("Error getting psp list. " + e);
 };
 
-export const sortPspByOnUsPolicy = (pspList: Array<PspList>): Array<PspList> =>
+export const sortPspByOnUsPolicy = (
+  transferList: Array<Transfer>
+): Array<Transfer> =>
   // TODO Implement OnUs/NotOnUs sorting?
-  pspList;
+  transferList
+    .slice()
+    .sort((a, b) => ((a?.taxPayerFee || 0) > (b?.taxPayerFee || 0) ? 1 : -1));
 
 /*
   export const getTransactionData = async ({

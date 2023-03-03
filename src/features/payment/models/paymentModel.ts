@@ -83,14 +83,6 @@ export interface PspSelected {
   fee: number;
 }
 
-export interface PspList {
-  name: string | undefined;
-  label: string | undefined;
-  image: string | undefined;
-  commission: number;
-  idPsp: string | undefined;
-}
-
 export interface PaymentInstruments {
   id: string;
   name: string;

@@ -3,12 +3,13 @@ import cardValidator from "card-validator";
 import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useNavigate } from "react-router-dom";
+import * as O from "fp-ts/Option";
+import { pipe } from "fp-ts/function";
 import ErrorModal from "../components/modals/ErrorModal";
 import PageContainer from "../components/PageContent/PageContainer";
 import { InputCardForm } from "../features/payment/components/InputCardForm/InputCardForm";
 import {
   PaymentMethod,
-  PspList,
   Transaction,
 } from "../features/payment/models/paymentModel";
 import { useAppDispatch } from "../redux/hooks/hooks";
@@ -28,6 +29,7 @@ import {
   SessionItems,
   setSessionItem,
 } from "../utils/storage/sessionStorage";
+import { BundleOption } from "../../generated/definitions/payment-ecommerce/BundleOption";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function InputCardPage() {
@@ -78,12 +80,18 @@ export default function InputCardPage() {
         )?.paymentMethodId || "",
       bin,
       onError: onErrorGetPSP,
-      onResponsePsp: (resp: Array<PspList>) => {
-        const firstPsp = sortPspByOnUsPolicy(resp);
+      onResponsePsp: (resp: BundleOption) => {
+        const transferList = pipe(
+          resp.bundleOptions,
+          O.fromNullable,
+          O.map((t) => t.slice()),
+          O.getOrElseW(() => [])
+        );
+        const firstPsp = sortPspByOnUsPolicy(transferList);
         setSessionItem(SessionItems.pspSelected, {
           pspCode: firstPsp.at(0)?.idPsp || "",
-          fee: firstPsp.at(0)?.commission || 0,
-          businessName: firstPsp.at(0)?.name || "",
+          fee: firstPsp.at(0)?.taxPayerFee || 0,
+          businessName: firstPsp.at(0)?.bundleName || "",
         });
         setLoading(false);
         navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
@@ -101,23 +109,6 @@ export default function InputCardPage() {
       };
       dispatch(setCardData(cardData));
       setLoading(true);
-      /* await getPaymentPSPList({
-        paymentMethodId:
-          (
-            getSessionItem(SessionItems.paymentMethod) as
-              | PaymentMethod
-              | undefined
-          )?.paymentMethodId || "",
-        onError: onErrorGetPSP,
-        onResponse: (resp: Array<PspList>) => {
-          const firstPsp = sortPspByOnUsPolicy(resp);
-          setSessionItem(SessionItems.pspSelected, {
-            pspCode: firstPsp.at(0)?.idPsp || "",
-            fee: firstPsp.at(0)?.commission || 0,
-            businessName: firstPsp.at(0)?.name || "",
-          });
-        },
-      }); */
       const transactionId = (
         getSessionItem(SessionItems.transaction) as Transaction | undefined
       )?.transactionId;

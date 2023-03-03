@@ -33,7 +33,6 @@ import PspFieldContainer from "../components/TextFormField/PspFieldContainer";
 import {
   PaymentInfo,
   PaymentMethod,
-  PspList,
   PspSelected,
   Transaction,
 } from "../features/payment/models/paymentModel";
@@ -52,6 +51,8 @@ import {
   SessionItems,
   setSessionItem,
 } from "../utils/storage/sessionStorage";
+import { Transfer } from "../../generated/definitions/payment-ecommerce/Transfer";
+import { BundleOption } from "../../generated/definitions/payment-ecommerce/BundleOption";
 import { CheckoutRoutes } from "./models/routeModel";
 
 const defaultStyle = {
@@ -84,7 +85,7 @@ export default function PaymentCheckPage() {
   const [pspUpdateLoading, setPspUpdateLoading] = React.useState(false);
   const [payLoading, setPayLoading] = React.useState(false);
   const [cancelLoading, setCancelLoading] = React.useState(false);
-  const [pspList, setPspList] = React.useState<Array<PspList>>([]);
+  const [pspList, setPspList] = React.useState<Array<Transfer>>([]);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
   const cardData = useAppSelector(selectCardData);
@@ -174,8 +175,14 @@ export default function PaymentCheckPage() {
     void cancelPayment(onCancelResponse);
   };
 
-  const onPspEditResponse = (list: Array<PspList>) => {
-    setPspList(list.sort((a, b) => (a.commission > b.commission ? 1 : -1)));
+  const onPspEditResponse = (bundleOption: BundleOption) => {
+    const transferList: Array<Transfer> =
+      bundleOption.bundleOptions?.slice() || [];
+    setPspList(
+      transferList.sort((a, b) =>
+        (a?.taxPayerFee || 0) > (b?.taxPayerFee || 0) ? 1 : -1
+      )
+    );
     setPspEditLoading(false);
   };
 
@@ -192,13 +199,13 @@ export default function PaymentCheckPage() {
     }
   };
 
-  const updateWalletPSP = (psp: PspList) => {
+  const updateWalletPSP = (psp: Transfer) => {
     setDrawerOpen(false);
     setPspUpdateLoading(true);
     setSessionItem(SessionItems.pspSelected, {
       pspCode: psp.idPsp || "",
-      fee: psp.commission,
-      businessName: psp.name || "",
+      fee: psp.taxPayerFee || 0,
+      businessName: psp.bundleName || "",
     });
     setPspUpdateLoading(false);
   };
@@ -437,8 +444,8 @@ export default function PaymentCheckPage() {
                 key={index}
                 titleVariant="sidenav"
                 bodyVariant="body2"
-                image={psp.image}
-                body={psp.name}
+                image={psp.abi}
+                body={psp.bundleName}
                 sx={{
                   ...pspContainerStyle,
                   cursor: "pointer",
@@ -453,7 +460,7 @@ export default function PaymentCheckPage() {
                     color="primary"
                     component={"div"}
                   >
-                    {moneyFormat(psp.commission / 100, 0)}
+                    {moneyFormat((psp.taxPayerFee || 0) / 100, 0)}
                   </Typography>
                 }
                 onClick={() => {
