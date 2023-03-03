@@ -43,6 +43,7 @@ import {
   parseDate,
   calculateFees,
   proceedToPayment,
+  sortPspByThresholdPolicy,
 } from "../utils/api/helper";
 import { onBrowserUnload } from "../utils/eventListeners";
 import { moneyFormat } from "../utils/form/formatters";
@@ -178,11 +179,7 @@ export default function PaymentCheckPage() {
   const onPspEditResponse = (bundleOption: BundleOption) => {
     const transferList: Array<Transfer> =
       bundleOption.bundleOptions?.slice() || [];
-    setPspList(
-      transferList.sort((a, b) =>
-        (a?.taxPayerFee || 0) > (b?.taxPayerFee || 0) ? 1 : -1
-      )
-    );
+    setPspList(sortPspByThresholdPolicy(transferList));
     setPspEditLoading(false);
   };
 

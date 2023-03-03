@@ -18,7 +18,7 @@ import {
   activatePayment,
   calculateFees,
   onErrorGetPSP,
-  sortPspByOnUsPolicy,
+  sortPspByThresholdPolicy,
 } from "../utils/api/helper";
 import { InputCardFormFields } from "../features/payment/models/paymentModel";
 import { getConfigOrThrow } from "../utils/config/config";
@@ -87,7 +87,7 @@ export default function InputCardPage() {
           O.map((t) => t.slice()),
           O.getOrElseW(() => [])
         );
-        const firstPsp = sortPspByOnUsPolicy(transferList);
+        const firstPsp = sortPspByThresholdPolicy(transferList);
         setSessionItem(SessionItems.pspSelected, {
           pspCode: firstPsp.at(0)?.idPsp || "",
           fee: firstPsp.at(0)?.taxPayerFee || 0,

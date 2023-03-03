@@ -759,10 +759,10 @@ export const onErrorGetPSP = (e: string): void => {
   throw new Error("Error getting psp list. " + e);
 };
 
-export const sortPspByOnUsPolicy = (
+export const sortPspByThresholdPolicy = (
   transferList: Array<Transfer>
 ): Array<Transfer> =>
-  // TODO Implement OnUs/NotOnUs sorting?
+  // TODO Missing OnUs/NotOnUs sorting and threshold evaluation?
   transferList
     .slice()
     .sort((a, b) => ((a?.taxPayerFee || 0) > (b?.taxPayerFee || 0) ? 1 : -1));
