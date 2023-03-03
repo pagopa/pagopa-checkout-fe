@@ -30,6 +30,7 @@ import {
   setSessionItem,
 } from "../utils/storage/sessionStorage";
 import { BundleOption } from "../../generated/definitions/payment-ecommerce/BundleOption";
+import { Transfer } from "../../generated/definitions/payment-ecommerce/Transfer";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function InputCardPage() {
@@ -81,18 +82,18 @@ export default function InputCardPage() {
       bin,
       onError: onErrorGetPSP,
       onResponsePsp: (resp: BundleOption) => {
-        const transferList = pipe(
-          resp.bundleOptions,
+        const firstPsp = pipe(
+          resp,
           O.fromNullable,
-          O.map((t) => t.slice()),
-          O.getOrElseW(() => [])
+          O.chain((resp) => O.fromNullable(resp.bundleOptions)),
+          O.map((array) => array.slice()),
+          O.map((notSortedArray) => sortPspByThresholdPolicy(notSortedArray)),
+          O.chain((sortedArray) => O.fromNullable(sortedArray[0])),
+          O.map((a) => a as Transfer),
+          O.getOrElseW(() => undefined)
         );
-        const firstPsp = sortPspByThresholdPolicy(transferList);
-        setSessionItem(SessionItems.pspSelected, {
-          pspCode: firstPsp.at(0)?.idPsp || "",
-          fee: firstPsp.at(0)?.taxPayerFee || 0,
-          businessName: firstPsp.at(0)?.bundleName || "",
-        });
+
+        setSessionItem(SessionItems.pspSelected, firstPsp || {});
         setLoading(false);
         navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
       },

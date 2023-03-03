@@ -18,7 +18,6 @@ import {
   PaymentInfo,
   PaymentInstruments,
   PaymentMethod,
-  PspSelected,
   Transaction,
 } from "../../features/payment/models/paymentModel";
 import {
@@ -476,14 +475,14 @@ export const proceedToPayment = async (
       .map((p) => p.amount)
       .reduce((sum, current) => Number(sum) + Number(current), 0),
     fee:
-      (getSessionItem(SessionItems.pspSelected) as PspSelected | undefined)
-        ?.fee || 0,
+      (getSessionItem(SessionItems.pspSelected) as Transfer | undefined)
+        ?.taxPayerFee || 0,
     paymentInstrumentId:
       (getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined)
         ?.paymentMethodId || "",
     pspId:
-      (getSessionItem(SessionItems.pspSelected) as PspSelected | undefined)
-        ?.pspCode || "",
+      (getSessionItem(SessionItems.pspSelected) as Transfer | undefined)
+        ?.idPsp || "",
     details:
       (getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined)
         ?.paymentTypeCode === "CP"

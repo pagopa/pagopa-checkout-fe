@@ -33,7 +33,6 @@ import PspFieldContainer from "../components/TextFormField/PspFieldContainer";
 import {
   PaymentInfo,
   PaymentMethod,
-  PspSelected,
   Transaction,
 } from "../features/payment/models/paymentModel";
 import { useAppSelector } from "../redux/hooks/hooks";
@@ -94,7 +93,7 @@ export default function PaymentCheckPage() {
     | PaymentMethod
     | undefined;
   const pspSelected = getSessionItem(SessionItems.pspSelected) as
-    | PspSelected
+    | Transfer
     | undefined;
   const transaction = getSessionItem(SessionItems.transaction) as
     | Transaction
@@ -108,7 +107,7 @@ export default function PaymentCheckPage() {
       transaction?.payments
         .map((p) => p.amount)
         .reduce((sum, current) => sum + current, 0)
-    ) + Number(pspSelected?.fee || 0);
+    ) + Number(pspSelected?.taxPayerFee || 0);
 
   const onBrowserBackEvent = (e: any) => {
     e.preventDefault();
@@ -199,11 +198,7 @@ export default function PaymentCheckPage() {
   const updateWalletPSP = (psp: Transfer) => {
     setDrawerOpen(false);
     setPspUpdateLoading(true);
-    setSessionItem(SessionItems.pspSelected, {
-      pspCode: psp.idPsp || "",
-      fee: psp.taxPayerFee || 0,
-      businessName: psp.bundleName || "",
-    });
+    setSessionItem(SessionItems.pspSelected, psp);
     setPspUpdateLoading(false);
   };
 
@@ -221,7 +216,7 @@ export default function PaymentCheckPage() {
   const isDisabled = () =>
     pspEditLoading || payLoading || cancelLoading || pspUpdateLoading;
 
-  const isDisabledSubmit = () => isDisabled() || pspSelected?.pspCode === "";
+  const isDisabledSubmit = () => isDisabled() || pspSelected?.idPsp === "";
 
   return (
     <PageContainer>
@@ -307,10 +302,10 @@ export default function PaymentCheckPage() {
         loading={pspUpdateLoading}
         titleVariant="sidenav"
         bodyVariant="body2"
-        title={(pspSelected && moneyFormat(pspSelected.fee)) || ""}
+        title={(pspSelected && moneyFormat(pspSelected.taxPayerFee || 0)) || ""}
         body={
           (pspSelected &&
-            `${t("paymentCheckPage.psp")} ${pspSelected.businessName}`) ||
+            `${t("paymentCheckPage.psp")} ${pspSelected.bundleName}`) ||
           ""
         }
         sx={{

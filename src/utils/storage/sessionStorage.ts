@@ -1,3 +1,4 @@
+import { Transfer } from "../../../generated/definitions/payment-ecommerce/Transfer";
 import {
   Cart,
   PaymentFormFields,
@@ -6,7 +7,6 @@ import {
   Transaction,
   PaymentEmailFormFields,
   PaymentMethod,
-  PspSelected,
 } from "../../features/payment/models/paymentModel";
 import { getConfigOrThrow } from "../config/config";
 
@@ -39,7 +39,7 @@ export const getSessionItem = (item: SessionItems) => {
           | PaymentId
           | Transaction
           | Cart
-          | PspSelected)
+          | Transfer)
       : serializedState;
   } catch (e) {
     return undefined;
@@ -57,7 +57,7 @@ export function setSessionItem(
     | PaymentId
     | Transaction
     | Cart
-    | PspSelected
+    | Transfer
 ) {
   sessionStorage.setItem(
     name,

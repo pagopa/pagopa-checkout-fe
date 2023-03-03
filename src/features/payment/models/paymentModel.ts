@@ -77,11 +77,6 @@ export interface PaymentMethod {
   paymentMethodId: string;
 }
 
-export interface PspSelected {
-  pspCode: string;
-  businessName: string;
-  fee: number;
-}
 
 export interface PaymentInstruments {
   id: string;
