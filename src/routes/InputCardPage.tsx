@@ -8,10 +8,7 @@ import { pipe } from "fp-ts/function";
 import ErrorModal from "../components/modals/ErrorModal";
 import PageContainer from "../components/PageContent/PageContainer";
 import { InputCardForm } from "../features/payment/components/InputCardForm/InputCardForm";
-import {
-  PaymentMethod,
-  Transaction,
-} from "../features/payment/models/paymentModel";
+import { PaymentMethod } from "../features/payment/models/paymentModel";
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { setCardData } from "../redux/slices/cardData";
 import {
@@ -31,6 +28,7 @@ import {
 } from "../utils/storage/sessionStorage";
 import { BundleOption } from "../../generated/definitions/payment-ecommerce/BundleOption";
 import { Transfer } from "../../generated/definitions/payment-ecommerce/Transfer";
+import { NewTransactionResponse } from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function InputCardPage() {
@@ -47,8 +45,11 @@ export default function InputCardPage() {
 
   React.useEffect(() => {
     setHideCancelButton(
-      !!(getSessionItem(SessionItems.transaction) as Transaction | undefined)
-        ?.transactionId
+      !!(
+        getSessionItem(SessionItems.transaction) as
+          | NewTransactionResponse
+          | undefined
+      )?.transactionId
     );
   }, []);
 
@@ -111,7 +112,9 @@ export default function InputCardPage() {
       dispatch(setCardData(cardData));
       setLoading(true);
       const transactionId = (
-        getSessionItem(SessionItems.transaction) as Transaction | undefined
+        getSessionItem(SessionItems.transaction) as
+          | NewTransactionResponse
+          | undefined
       )?.transactionId;
       const bin = cardData.pan.substring(0, 8);
       // If I want to change the card data but I have already activated the payment

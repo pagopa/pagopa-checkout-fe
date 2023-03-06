@@ -22,11 +22,11 @@ import {
   createClient,
   Client as EcommerceClient,
 } from "../../../generated/definitions/payment-ecommerce/client";
-import { TransactionInfo } from "../../../generated/definitions/payment-ecommerce/TransactionInfo";
 import { TransactionStatusEnum } from "../../../generated/definitions/payment-ecommerce/TransactionStatus";
 import { EcommerceFinalStatusCodeEnumType } from "../transactions/TransactionResultUtil";
 import { getSessionItem, SessionItems } from "../storage/sessionStorage";
-import { Transaction } from "../../features/payment/models/paymentModel";
+import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
+import { TransactionInfo } from "../../../generated/definitions/payment-ecommerce/TransactionInfo";
 const config = getConfigOrThrow();
 /**
  * Polling configuration params
@@ -67,7 +67,7 @@ export const callServices = async (
   handleFinalStatusResult: (idStatus?: TransactionStatusEnum) => void
 ) => {
   const transaction = getSessionItem(SessionItems.transaction) as
-    | Transaction
+    | NewTransactionResponse
     | undefined;
 
   const bearerAuth = pipe(

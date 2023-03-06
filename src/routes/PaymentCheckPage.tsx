@@ -33,7 +33,6 @@ import PspFieldContainer from "../components/TextFormField/PspFieldContainer";
 import {
   PaymentInfo,
   PaymentMethod,
-  Transaction,
 } from "../features/payment/models/paymentModel";
 import { useAppSelector } from "../redux/hooks/hooks";
 import { selectCardData } from "../redux/slices/cardData";
@@ -54,6 +53,7 @@ import {
 } from "../utils/storage/sessionStorage";
 import { Transfer } from "../../generated/definitions/payment-ecommerce/Transfer";
 import { BundleOption } from "../../generated/definitions/payment-ecommerce/BundleOption";
+import { NewTransactionResponse } from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { CheckoutRoutes } from "./models/routeModel";
 
 const defaultStyle = {
@@ -97,7 +97,7 @@ export default function PaymentCheckPage() {
     | Transfer
     | undefined;
   const transaction = getSessionItem(SessionItems.transaction) as
-    | Transaction
+    | NewTransactionResponse
     | undefined;
   const email = getSessionItem(SessionItems.useremail) as string | undefined;
   const amount =

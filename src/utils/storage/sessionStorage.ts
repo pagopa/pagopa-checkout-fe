@@ -1,10 +1,10 @@
+import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { Transfer } from "../../../generated/definitions/payment-ecommerce/Transfer";
 import {
   Cart,
   PaymentFormFields,
   PaymentInfo,
   PaymentId,
-  Transaction,
   PaymentEmailFormFields,
   PaymentMethod,
 } from "../../features/payment/models/paymentModel";
@@ -37,7 +37,7 @@ export const getSessionItem = (item: SessionItems) => {
           | PaymentFormFields
           | PaymentEmailFormFields
           | PaymentId
-          | Transaction
+          | NewTransactionResponse
           | Cart
           | Transfer)
       : serializedState;
@@ -55,7 +55,7 @@ export function setSessionItem(
     | PaymentEmailFormFields
     | PaymentMethod
     | PaymentId
-    | Transaction
+    | NewTransactionResponse
     | Cart
     | Transfer
 ) {

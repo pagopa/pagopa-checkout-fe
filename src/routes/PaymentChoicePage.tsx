@@ -5,6 +5,7 @@ import { Box, Button, Link } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { NewTransactionResponse } from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { CancelPayment } from "../components/modals/CancelPayment";
 import ErrorModal from "../components/modals/ErrorModal";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
@@ -14,7 +15,6 @@ import {
   Cart,
   PaymentInfo,
   PaymentInstruments,
-  Transaction,
 } from "../features/payment/models/paymentModel";
 import { cancelPayment, getPaymentInstruments } from "../utils/api/helper";
 import { getTotalFromCart } from "../utils/cart/cart";
@@ -48,8 +48,11 @@ export default function PaymentChoicePage() {
 
   React.useEffect(() => {
     if (
-      (getSessionItem(SessionItems.transaction) as Transaction | undefined)
-        ?.transactionId
+      (
+        getSessionItem(SessionItems.transaction) as
+          | NewTransactionResponse
+          | undefined
+      )?.transactionId
     ) {
       window.addEventListener("beforeunload", onBrowserUnload);
       window.history.pushState(null, "", window.location.pathname);

@@ -9,7 +9,6 @@ import * as TE from "fp-ts/TaskEither";
 import * as T from "fp-ts/Task";
 import { RequestAuthorizationRequest } from "../../../generated/definitions/payment-ecommerce/RequestAuthorizationRequest";
 import { LanguageEnum } from "../../../generated/definitions/payment-ecommerce/Psp";
-import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { RptId } from "../../../generated/definitions/payment-ecommerce/RptId";
 import { ValidationFaultPaymentProblemJson } from "../../../generated/definitions/payment-ecommerce/ValidationFaultPaymentProblemJson";
 import {
@@ -18,7 +17,6 @@ import {
   PaymentInfo,
   PaymentInstruments,
   PaymentMethod,
-  Transaction,
 } from "../../features/payment/models/paymentModel";
 import {
   PaymentMethodRoutes,
@@ -70,15 +68,17 @@ import {
 } from "../storage/sessionStorage";
 import { AmountEuroCents } from "../../../generated/definitions/payment-ecommerce/AmountEuroCents";
 import { PaymentContextCode } from "../../../generated/definitions/payment-ecommerce/PaymentContextCode";
-import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-ecommerce/PaymentRequestsGetResponse";
 import { BrandEnum } from "../../../generated/definitions/payment-ecommerce/PaymentInstrumentDetail";
 import { BundleOption } from "../../../generated/definitions/payment-ecommerce/BundleOption";
 import { Transfer } from "../../../generated/definitions/payment-ecommerce/Transfer";
+import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-ecommerce/PaymentRequestsGetResponse";
+import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
+import { TransferListItem } from "../../../generated/definitions/payment-ecommerce/TransferListItem";
+import { getBrowserInfoTask, getEMVCompliantColorDepth } from "./checkHelper";
 import {
   apiPaymentEcommerceClient,
   apiPaymentTransactionsClient,
 } from "./client";
-import { getBrowserInfoTask, getEMVCompliantColorDepth } from "./checkHelper";
 
 export const getEcommercePaymentInfoTask = (
   rptId: RptId,
@@ -332,15 +332,21 @@ export const calculateFees = async ({
     O.getOrElseW(() => undefined)
   );
 
-  const primaryCreditorInstitution = pipe(
-    O.fromNullable(getSessionItem(SessionItems.transaction) as Transaction),
-    O.map((transaction) => transaction.transactionId) // TODO replace with primaryCreditorInstitution property when available
+  const transferList: Array<TransferListItem> = pipe(
+    getSessionItem(SessionItems.transaction) as NewTransactionResponse,
+    O.fromNullable,
+    O.map((transaction) => transaction.payments),
+    O.map((payments) =>
+      payments.map((p) => ({
+        creditorInstitution: p.rptId.substring(0, 11),
+        digitalStamp: false,
+      }))
+    ),
+    O.getOrElse(() => [] as Array<TransferListItem>)
   );
 
-  const transferList = pipe(
-    O.fromNullable(getSessionItem(SessionItems.transaction) as Transaction),
-    O.map(() => []) // TODO replace with primaryCreditorInstitution property when available
-  );
+  const primaryCreditorInstitution =
+    transferList.at(0)?.creditorInstitution || ""; // TODO replace with primaryCreditorInstitution from transaction response when available (activate V2)
 
   // const lang = "it";
 
@@ -357,14 +363,8 @@ export const calculateFees = async ({
             touchpoint: "CHECKOUT",
             paymentMethodId,
             paymentAmount: amount ? amount : 0,
-            primaryCreditorInstitution: pipe(
-              primaryCreditorInstitution,
-              O.getOrElse(() => "")
-            ),
-            transferList: pipe(
-              transferList,
-              O.getOrElse(() => [])
-            ),
+            primaryCreditorInstitution,
+            transferList,
           },
         }),
       (_e) => {
@@ -415,7 +415,7 @@ export const proceedToPayment = async (
     transaction,
     cardData,
   }: {
-    transaction: Transaction;
+    transaction: NewTransactionResponse;
     cardData: {
       brand: string;
       cvv: string;
