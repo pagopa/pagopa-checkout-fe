@@ -4,7 +4,7 @@ import { Box, Skeleton, SxProps, Typography } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-function FieldContainer(props: {
+interface FieldContainerProps {
   title: string;
   body: string | number | undefined;
   icon?: React.ReactNode;
@@ -19,24 +19,44 @@ function FieldContainer(props: {
   tabIndex?: number;
   role?: string;
   overflowWrapBody?: boolean;
-}) {
-  const { t } = useTranslation();
-  const defaultStyle = {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    borderBottom: "1px solid",
-    borderBottomColor: "divider",
-    py: 2,
-  };
+  disclaimer?: React.ReactNode;
+}
 
+const defaultStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  borderBottom: "1px solid",
+  borderBottomColor: "divider",
+  py: 2,
+};
+
+function FieldContainer(props: FieldContainerProps) {
+  const { t } = useTranslation();
+  const {
+    onClick,
+    onKeyDown,
+    tabIndex,
+    role,
+    sx,
+    loading,
+    icon,
+    flexDirection = "column",
+    titleVariant = "body2",
+    bodyVariant = "sidenav",
+    overflowWrapBody = true,
+    title,
+    body,
+    endAdornment,
+    disclaimer,
+  } = props;
   return (
     <Box
-      sx={{ ...defaultStyle, ...props.sx }}
-      onClick={props.onClick}
-      onKeyDown={props.onKeyDown}
-      tabIndex={props.tabIndex}
-      role={props.role}
+      sx={{ ...defaultStyle, ...sx }}
+      onClick={onClick}
+      onKeyDown={onKeyDown}
+      tabIndex={tabIndex}
+      role={role}
     >
       <Box
         sx={{
@@ -47,52 +67,46 @@ function FieldContainer(props: {
           width: "100%",
         }}
       >
-        {props.icon && props.loading ? (
+        {icon && loading ? (
           <Skeleton variant="circular" width="40px" height="40px" />
         ) : (
-          props.icon
+          icon
         )}
         <Box
           sx={{
             display: "flex",
-            alignItems: props.flexDirection === "row" ? "center" : "",
+            alignItems: flexDirection === "row" ? "center" : "",
             justifyContent: "space-between",
-            flexDirection: props.flexDirection,
+            flexDirection,
             width: "100%",
           }}
         >
-          <Typography variant={props.titleVariant} component={"div"} pr={2}>
-            {props.loading ? (
+          <Typography variant={titleVariant} component={"div"} pr={2}>
+            {loading ? (
               <Skeleton variant="text" width="125px" height="30px" />
             ) : (
-              t(props.title)
+              t(title)
             )}
           </Typography>
           <Typography
-            variant={props.bodyVariant}
+            variant={bodyVariant}
             component={"div"}
             sx={{
-              overflowWrap: props.overflowWrapBody ? "anywhere" : "normal",
+              overflowWrap: overflowWrapBody ? "anywhere" : "normal",
             }}
           >
-            {props.loading ? (
+            {loading ? (
               <Skeleton variant="text" width="188px" height="24px" />
             ) : (
-              props.body
+              body
             )}
           </Typography>
+          {!loading && disclaimer}
         </Box>
       </Box>
-      {props.endAdornment}
+      {endAdornment}
     </Box>
   );
 }
-
-FieldContainer.defaultProps = {
-  flexDirection: "column",
-  titleVariant: "body2",
-  bodyVariant: "sidenav",
-  overflowWrapBody: true,
-};
 
 export default FieldContainer;
