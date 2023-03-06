@@ -83,7 +83,7 @@ export interface PspSelected {
   fee: number;
 }
 
-export interface PspList {
+export interface PspItem {
   name: string | undefined;
   label: string | undefined;
   image: string | undefined;

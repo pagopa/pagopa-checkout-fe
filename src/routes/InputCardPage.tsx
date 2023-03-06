@@ -8,7 +8,7 @@ import PageContainer from "../components/PageContent/PageContainer";
 import { InputCardForm } from "../features/payment/components/InputCardForm/InputCardForm";
 import {
   PaymentMethod,
-  PspList,
+  PspItem,
   Transaction,
 } from "../features/payment/models/paymentModel";
 import { useAppDispatch } from "../redux/hooks/hooks";
@@ -92,7 +92,7 @@ export default function InputCardPage() {
               | undefined
           )?.paymentMethodId || "",
         onError: onErrorGetPSP,
-        onResponse: (resp: Array<PspList>) => {
+        onResponse: (resp: Array<PspItem>) => {
           const firstPsp = sortPspByOnUsPolicy(resp);
           setSessionItem(SessionItems.pspSelected, {
             pspCode: firstPsp.at(0)?.idPsp || "",

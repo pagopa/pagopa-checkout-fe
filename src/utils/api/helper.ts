@@ -18,7 +18,7 @@ import {
   PaymentInfo,
   PaymentInstruments,
   PaymentMethod,
-  PspList,
+  PspItem,
   PspSelected,
   Transaction,
 } from "../../features/payment/models/paymentModel";
@@ -307,7 +307,7 @@ export const getPaymentPSPList = async ({
 }: {
   paymentMethodId: string;
   onError: (e: string) => void;
-  onResponse: (r: Array<PspList>) => void;
+  onResponse: (r: Array<PspItem>) => void;
 }) => {
   const amount: number | undefined = pipe(
     O.fromNullable(getSessionItem(SessionItems.cart) as Cart | undefined),
@@ -740,7 +740,7 @@ export const onErrorGetPSP = (e: string): void => {
   throw new Error("Error getting psp list. " + e);
 };
 
-export const sortPspByOnUsPolicy = (pspList: Array<PspList>): Array<PspList> =>
+export const sortPspByOnUsPolicy = (pspList: Array<PspItem>): Array<PspItem> =>
   // TODO Implement OnUs/NotOnUs sorting?
   pspList;
 

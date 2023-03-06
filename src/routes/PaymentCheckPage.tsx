@@ -12,7 +12,6 @@ import {
   Skeleton,
   SvgIcon,
   Typography,
-  useTheme,
 } from "@mui/material";
 import { default as React } from "react";
 import { useTranslation } from "react-i18next";
@@ -22,18 +21,15 @@ import * as O from "fp-ts/Option";
 import sprite from "../assets/images/app.svg";
 import { FormButtons } from "../components/FormButtons/FormButtons";
 import { CancelPayment } from "../components/modals/CancelPayment";
-import { CustomDrawer } from "../components/modals/CustomDrawer";
 import ErrorModal from "../components/modals/ErrorModal";
 import InformationModal from "../components/modals/InformationModal";
 import PageContainer from "../components/PageContent/PageContainer";
-import SkeletonFieldContainer from "../components/Skeletons/SkeletonFieldContainer";
 import ClickableFieldContainer from "../components/TextFormField/ClickableFieldContainer";
 import FieldContainer from "../components/TextFormField/FieldContainer";
-import PspFieldContainer from "../components/TextFormField/PspFieldContainer";
 import {
   PaymentInfo,
   PaymentMethod,
-  PspList,
+  PspItem,
   PspSelected,
   Transaction,
 } from "../features/payment/models/paymentModel";
@@ -52,6 +48,8 @@ import {
   SessionItems,
   setSessionItem,
 } from "../utils/storage/sessionStorage";
+import { PaymentPspDrawer } from "../features/payment/components/modals/PaymentPspDrawer";
+import disclaimerIcon from "../assets/images/disclaimer.svg";
 import { CheckoutRoutes } from "./models/routeModel";
 
 const defaultStyle = {
@@ -63,28 +61,19 @@ const defaultStyle = {
   pb: 1,
 };
 
-const pspContainerStyle = {
-  border: "2px solid",
-  borderColor: "divider",
-  borderRadius: 2,
-  pl: 3,
-  pr: 3,
-  mb: 2,
-};
-
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export default function PaymentCheckPage() {
   const { t } = useTranslation();
-  const theme = useTheme();
   const navigate = useNavigate();
   const [modalOpen, setModalOpen] = React.useState(false);
+  const [showDisclaimer, setShowDisclaimer] = React.useState(true);
   const [cancelModalOpen, setCancelModalOpen] = React.useState(false);
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const [pspEditLoading, setPspEditLoading] = React.useState(false);
   const [pspUpdateLoading, setPspUpdateLoading] = React.useState(false);
   const [payLoading, setPayLoading] = React.useState(false);
   const [cancelLoading, setCancelLoading] = React.useState(false);
-  const [pspList, setPspList] = React.useState<Array<PspList>>([]);
+  const [pspList, setPspList] = React.useState<Array<PspItem>>([]);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
   const cardData = useAppSelector(selectCardData);
@@ -108,13 +97,12 @@ export default function PaymentCheckPage() {
         .reduce((sum, current) => sum + current, 0)
     ) + Number(pspSelected?.fee || 0);
 
-  const onBrowserBackEvent = (e: any) => {
-    e.preventDefault();
-    window.history.pushState(null, "", window.location.pathname);
-    setCancelModalOpen(true);
-  };
-
   React.useEffect(() => {
+    const onBrowserBackEvent = (e: any) => {
+      e.preventDefault();
+      window.history.pushState(null, "", window.location.pathname);
+      setCancelModalOpen(true);
+    };
     window.addEventListener("beforeunload", onBrowserUnload);
     window.history.pushState(null, "", window.location.pathname);
     window.addEventListener("popstate", onBrowserBackEvent);
@@ -174,7 +162,7 @@ export default function PaymentCheckPage() {
     void cancelPayment(onCancelResponse);
   };
 
-  const onPspEditResponse = (list: Array<PspList>) => {
+  const onPspEditResponse = (list: Array<PspItem>) => {
     setPspList(list.sort((a, b) => (a.commission > b.commission ? 1 : -1)));
     setPspEditLoading(false);
   };
@@ -182,6 +170,7 @@ export default function PaymentCheckPage() {
   const onPspEditClick = () => {
     setDrawerOpen(true);
     setPspEditLoading(true);
+    setShowDisclaimer(false);
     if (paymentMethod) {
       void getPaymentPSPList({
         paymentMethodId: paymentMethod?.paymentMethodId,
@@ -191,7 +180,7 @@ export default function PaymentCheckPage() {
     }
   };
 
-  const updateWalletPSP = (psp: PspList) => {
+  const updateWalletPSP = (psp: PspItem) => {
     setDrawerOpen(false);
     setPspUpdateLoading(true);
     setSessionItem(SessionItems.pspSelected, {
@@ -200,17 +189,6 @@ export default function PaymentCheckPage() {
       businessName: psp.name || "",
     });
     setPspUpdateLoading(false);
-  };
-
-  const getWalletIcon = () => {
-    if (!cardData.brand || cardData.brand.toLowerCase() === "other") {
-      return <CreditCardIcon color="action" />;
-    }
-    return (
-      <SvgIcon color="action">
-        <use href={sprite + `#icons-${cardData.brand.toLowerCase()}-mini`} />
-      </SvgIcon>
-    );
   };
 
   const isDisabled = () =>
@@ -253,7 +231,7 @@ export default function PaymentCheckPage() {
           3,
           5
         )} · ${cardData.cardHolderName}`}
-        icon={getWalletIcon()}
+        icon={<WalletIcon brand={cardData.brand || ""} />}
         sx={{
           border: "1px solid",
           borderColor: "divider",
@@ -307,6 +285,9 @@ export default function PaymentCheckPage() {
           (pspSelected &&
             `${t("paymentCheckPage.psp")} ${pspSelected.businessName}`) ||
           ""
+        }
+        disclaimer={
+          showDisclaimer ? <AmountDisclaimer amount={amount} /> : null
         }
         sx={{
           border: "1px solid",
@@ -386,81 +367,13 @@ export default function PaymentCheckPage() {
         onSubmit={onCancelPaymentSubmit}
       />
 
-      <CustomDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)}>
-        <Box
-          sx={{
-            pt: 1,
-            pb: 1,
-            mb: 2,
-          }}
-        >
-          <Typography variant="h6" component={"div"}>
-            {t("paymentCheckPage.drawer.title")}
-          </Typography>
-          <Typography variant="body2" sx={{ mt: 1, mb: 1 }}>
-            {t("paymentCheckPage.drawer.body")}
-          </Typography>
-          <Box
-            sx={{
-              ...defaultStyle,
-              borderBottom: "1px solid",
-              borderBottomColor: "divider",
-              pt: 3,
-              pb: 2,
-            }}
-          >
-            <Typography
-              variant={"caption-semibold"}
-              component={"div"}
-              aria-hidden="true"
-            >
-              {t("paymentCheckPage.drawer.header.name")}
-            </Typography>
-            <Typography
-              variant={"caption-semibold"}
-              component={"div"}
-              aria-hidden="true"
-            >
-              {t("paymentCheckPage.drawer.header.amount")}
-            </Typography>
-          </Box>
-        </Box>
-        {pspEditLoading
-          ? Array(3)
-              .fill(1)
-              .map((_, index) => (
-                <SkeletonFieldContainer key={index} sx={pspContainerStyle} />
-              ))
-          : pspList.map((psp, index) => (
-              <PspFieldContainer
-                key={index}
-                titleVariant="sidenav"
-                bodyVariant="body2"
-                image={psp.image}
-                body={psp.name}
-                sx={{
-                  ...pspContainerStyle,
-                  cursor: "pointer",
-                  "&:hover": {
-                    color: theme.palette.primary.dark,
-                    borderColor: "currentColor",
-                  },
-                }}
-                endAdornment={
-                  <Typography
-                    variant={"button"}
-                    color="primary"
-                    component={"div"}
-                  >
-                    {moneyFormat(psp.commission / 100, 0)}
-                  </Typography>
-                }
-                onClick={() => {
-                  updateWalletPSP(psp);
-                }}
-              />
-            ))}
-      </CustomDrawer>
+      <PaymentPspDrawer
+        pspList={pspList}
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        loading={pspEditLoading}
+        onSelect={updateWalletPSP}
+      />
 
       {!!error && (
         <ErrorModal
@@ -474,3 +387,41 @@ export default function PaymentCheckPage() {
     </PageContainer>
   );
 }
+
+const AmountDisclaimer = ({ amount }: { amount: number }) => {
+  const { t } = useTranslation();
+  const disclaimerUpperLimit = 50000;
+  const disclaimer =
+    amount < disclaimerUpperLimit
+      ? t("paymentCheckPage.disclaimer.cheaper")
+      : t("paymentCheckPage.disclaimer.yourCard");
+  return (
+    <Box display="flex" alignItems="center" flexDirection="row" gap={1} pt={1}>
+      <img
+        src={disclaimerIcon}
+        alt="disclaimer-icon"
+        style={{ width: "14px", height: "14px" }}
+      />
+      <Typography
+        variant="caption-semibold"
+        component="div"
+        sx={{
+          overflowWrap: "anywhere",
+        }}
+      >
+        {t(disclaimer)}
+      </Typography>
+    </Box>
+  );
+};
+
+const WalletIcon = ({ brand }: { brand: string }) => {
+  if (!brand || brand.toLowerCase() === "other") {
+    return <CreditCardIcon color="action" />;
+  }
+  return (
+    <SvgIcon color="action">
+      <use href={sprite + `#icons-${brand.toLowerCase()}-mini`} />
+    </SvgIcon>
+  );
+};
