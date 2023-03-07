@@ -8,6 +8,8 @@ describe("MoneyFormat function utility", () => {
 
     expect(moneyFormat(0)).toEqual("0,00\xa0€");
 
+    expect(moneyFormat(-0)).toEqual("0,00\xa0€");
+
     expect(moneyFormat(0, 2)).toEqual("0,00\xa0€");
 
     expect(moneyFormat(550)).toEqual("5,50\xa0€");
@@ -21,5 +23,9 @@ describe("MoneyFormat function utility", () => {
     expect(moneyFormat(127, 2, 3)).toEqual("1,270\xa0€");
 
     expect(moneyFormat(1, 0)).toEqual("1,00\xa0€");
+
+    expect(moneyFormat(-55)).toEqual("-0,55\xa0€");
+
+    expect(moneyFormat(-5, 0)).toEqual("-5,00\xa0€");
   });
 });
