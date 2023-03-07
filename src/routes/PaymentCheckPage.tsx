@@ -38,7 +38,6 @@ import {
   calculateFees,
   proceedToPayment,
   sortPspByThresholdPolicy,
-  pspImagePath,
 } from "../utils/api/helper";
 import { onBrowserUnload } from "../utils/eventListeners";
 import { moneyFormat } from "../utils/form/formatters";
