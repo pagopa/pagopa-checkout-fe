@@ -5,7 +5,6 @@ import { Box, Button, Link } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { NewTransactionResponse } from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { CancelPayment } from "../components/modals/CancelPayment";
 import ErrorModal from "../components/modals/ErrorModal";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
@@ -18,7 +17,6 @@ import {
 } from "../features/payment/models/paymentModel";
 import { cancelPayment, getPaymentInstruments } from "../utils/api/helper";
 import { getTotalFromCart } from "../utils/cart/cart";
-import { onBrowserUnload } from "../utils/eventListeners";
 import { getSessionItem, SessionItems } from "../utils/storage/sessionStorage";
 import { CheckoutRoutes } from "./models/routeModel";
 
@@ -39,28 +37,6 @@ export default function PaymentChoicePage() {
   const [paymentInstruments, setPaymentInstruments] = React.useState<
     Array<PaymentInstruments>
   >([]);
-
-  const onBrowserBackEvent = (e: any) => {
-    e.preventDefault();
-    window.history.pushState(null, "", window.location.pathname);
-    setCancelModalOpen(true);
-  };
-
-  React.useEffect(() => {
-    if (
-      (
-        getSessionItem(SessionItems.transaction) as
-          | NewTransactionResponse
-          | undefined
-      )?.transactionId
-    ) {
-      window.addEventListener("beforeunload", onBrowserUnload);
-      window.history.pushState(null, "", window.location.pathname);
-      window.addEventListener("popstate", onBrowserBackEvent);
-      return () => window.removeEventListener("popstate", onBrowserBackEvent);
-    }
-    return () => {};
-  }, []);
 
   const getPaymentMethods = React.useCallback(() => {
     setInstrumentsLoading(true);

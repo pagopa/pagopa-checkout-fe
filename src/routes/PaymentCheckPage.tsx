@@ -188,7 +188,7 @@ export default function PaymentCheckPage() {
     setPspEditLoading(true);
     if (paymentMethod) {
       void calculateFees({
-        paymentMethodId: paymentMethod?.paymentMethodId,
+        paymentTypeCode: paymentMethod?.paymentTypeCode,
         bin: cardData?.pan.substring(0, 8),
         onError,
         onResponsePsp: onPspEditResponse,

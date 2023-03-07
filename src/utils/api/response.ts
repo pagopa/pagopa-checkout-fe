@@ -66,9 +66,21 @@ const ecommerceClientWithPolling: EcommerceClient = createClient({
 export const callServices = async (
   handleFinalStatusResult: (idStatus?: TransactionStatusEnum) => void
 ) => {
-  const transaction = getSessionItem(SessionItems.transaction) as
-    | NewTransactionResponse
-    | undefined;
+  const transaction = pipe(
+    getSessionItem(SessionItems.transaction),
+    NewTransactionResponse.decode,
+    E.fold(
+      () => undefined,
+      (transaction) => transaction
+    )
+  );
+
+  const transactionId = pipe(
+    transaction,
+    O.fromNullable,
+    O.map((transaction) => transaction.transactionId),
+    O.getOrElse(() => "")
+  );
 
   const bearerAuth = pipe(
     transaction,
@@ -88,7 +100,7 @@ export const callServices = async (
         mixpanel.track(THREEDSMETHODURL_STEP1_RESP_ERR.value, {
           EVENT_ID: THREEDSMETHODURL_STEP1_RESP_ERR.value,
         });
-        return transaction?.transactionId || "";
+        return transactionId;
       },
       (idTransaction) => async () => {
         mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_RESP_ERR.value, {

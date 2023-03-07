@@ -7,8 +7,10 @@ import { toError } from "fp-ts/lib/Either";
 import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
 import * as T from "fp-ts/Task";
-import { RequestAuthorizationRequest } from "../../../generated/definitions/payment-ecommerce/RequestAuthorizationRequest";
-import { LanguageEnum } from "../../../generated/definitions/payment-ecommerce/Psp";
+import {
+  LanguageEnum,
+  RequestAuthorizationRequest,
+} from "../../../generated/definitions/payment-ecommerce/RequestAuthorizationRequest";
 import { RptId } from "../../../generated/definitions/payment-ecommerce/RptId";
 import { ValidationFaultPaymentProblemJson } from "../../../generated/definitions/payment-ecommerce/ValidationFaultPaymentProblemJson";
 import {
@@ -303,12 +305,12 @@ const activePaymentTask = (
   );
 
 export const calculateFees = async ({
-  paymentMethodId,
+  paymentTypeCode,
   bin,
   onError,
   onResponsePsp,
 }: {
-  paymentMethodId: string;
+  paymentTypeCode: string;
   bin: string;
   onError: (e: string) => void;
   onResponsePsp: (r: BundleOption) => void;
@@ -348,8 +350,6 @@ export const calculateFees = async ({
   const primaryCreditorInstitution =
     transferList.at(0)?.creditorInstitution || ""; // TODO replace with primaryCreditorInstitution from transaction response when available (activate V2)
 
-  // const lang = "it";
-
   mixpanel.track(PAYMENT_PSPLIST_INIT.value, {
     EVENT_ID: PAYMENT_PSPLIST_INIT.value,
   });
@@ -361,7 +361,7 @@ export const calculateFees = async ({
           body: {
             bin,
             touchpoint: "CHECKOUT",
-            paymentMethodId,
+            paymentMethod: paymentTypeCode,
             paymentAmount: amount ? amount : 0,
             primaryCreditorInstitution,
             transferList,

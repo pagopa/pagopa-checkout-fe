@@ -4,6 +4,7 @@ import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useNavigate } from "react-router-dom";
 import * as O from "fp-ts/Option";
+import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
 import ErrorModal from "../components/modals/ErrorModal";
 import PageContainer from "../components/PageContent/PageContainer";
@@ -45,11 +46,14 @@ export default function InputCardPage() {
 
   React.useEffect(() => {
     setHideCancelButton(
-      !!(
-        getSessionItem(SessionItems.transaction) as
-          | NewTransactionResponse
-          | undefined
-      )?.transactionId
+      !!pipe(
+        getSessionItem(SessionItems.transaction),
+        NewTransactionResponse.decode,
+        E.fold(
+          () => undefined,
+          (transaction) => transaction.transactionId
+        )
+      )
     );
   }, []);
 
@@ -74,12 +78,12 @@ export default function InputCardPage() {
 
   const onResponseActivate = (bin: string) =>
     calculateFees({
-      paymentMethodId:
+      paymentTypeCode:
         (
           getSessionItem(SessionItems.paymentMethod) as
             | PaymentMethod
             | undefined
-        )?.paymentMethodId || "",
+        )?.paymentTypeCode || "",
       bin,
       onError: onErrorGetPSP,
       onResponsePsp: (resp: BundleOption) => {
@@ -91,10 +95,10 @@ export default function InputCardPage() {
           O.map((notSortedArray) => sortPspByThresholdPolicy(notSortedArray)),
           O.chain((sortedArray) => O.fromNullable(sortedArray[0])),
           O.map((a) => a as Transfer),
-          O.getOrElseW(() => undefined)
+          O.getOrElseW(() => ({}))
         );
 
-        setSessionItem(SessionItems.pspSelected, firstPsp || {});
+        setSessionItem(SessionItems.pspSelected, firstPsp);
         setLoading(false);
         navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
       },
