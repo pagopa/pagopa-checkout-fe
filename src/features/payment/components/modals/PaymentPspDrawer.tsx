@@ -92,7 +92,7 @@ export const PaymentPspDrawer = (props: {
                     color="primary"
                     component={"div"}
                   >
-                    {moneyFormat(psp.commission, 0)}
+                    {moneyFormat(psp.commission)}
                   </Typography>
                 }
                 onClick={() => {

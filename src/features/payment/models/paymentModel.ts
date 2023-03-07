@@ -87,6 +87,7 @@ export interface PspItem {
   name: string | undefined;
   label: string | undefined;
   image: string | undefined;
+  /** CENTS */
   commission: number;
   idPsp: string | undefined;
 }
