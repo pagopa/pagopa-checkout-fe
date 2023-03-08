@@ -19,7 +19,6 @@ export enum SessionItems {
   sessionToken = "sessionToken",
   cart = "cart",
   transaction = "transaction",
-  belowTreshold = "belowTreshold",
 }
 const isParsable = (item: SessionItems) =>
   !(item === SessionItems.sessionToken || item === SessionItems.useremail);
@@ -51,7 +50,6 @@ export function setSessionItem(
   name: SessionItems,
   item:
     | string
-    | boolean
     | PaymentInfo
     | PaymentFormFields
     | PaymentEmailFormFields
