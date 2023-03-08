@@ -102,8 +102,6 @@ export default function InputCardPage() {
           resp,
           O.fromNullable,
           O.chain((resp) => O.fromNullable(resp.bundleOptions)),
-          // O.map((array) => array.slice()),
-          // O.map((notSortedArray) => sortPspByThresholdPolicy(notSortedArray)),
           O.chain((sortedArray) => O.fromNullable(sortedArray[0])),
           O.map((a) => a as Transfer),
           O.getOrElseW(() => ({}))
