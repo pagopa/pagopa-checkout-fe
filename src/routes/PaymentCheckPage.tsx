@@ -18,6 +18,8 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
+import { selectThreshoold } from "../redux/slices/threshold";
+import { ErrorsType } from "../utils/errors/checkErrorsModel";
 import sprite from "../assets/images/app.svg";
 import { FormButtons } from "../components/FormButtons/FormButtons";
 import { CancelPayment } from "../components/modals/CancelPayment";
@@ -37,7 +39,6 @@ import {
   parseDate,
   calculateFees,
   proceedToPayment,
-  sortPspByThresholdPolicy,
 } from "../utils/api/helper";
 import { onBrowserUnload } from "../utils/eventListeners";
 import { moneyFormat } from "../utils/form/formatters";
@@ -78,6 +79,7 @@ export default function PaymentCheckPage() {
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
   const cardData = useAppSelector(selectCardData);
+  const belowThreshold = useAppSelector(selectThreshoold);
   const paymentMethod = getSessionItem(SessionItems.paymentMethod) as
     | PaymentMethod
     | undefined;
@@ -97,12 +99,17 @@ export default function PaymentCheckPage() {
         .map((p) => p.amount)
         .reduce((sum, current) => sum + current, 0)
     ) + Number(pspSelected?.taxPayerFee || 0);
-  const belowThreshold = pipe(
-    getSessionItem(SessionItems.belowTreshold),
+
+  const belowThresholdValue = pipe(
+    belowThreshold,
     O.fromNullable,
+    O.chain((val) => O.fromNullable(val.belowThreshold)),
     O.fold(
-      () => false,
-      (res) => res as boolean
+      () => {
+        onError(ErrorsType.GENERIC_ERROR);
+        return false;
+      },
+      () => true
     )
   );
 
@@ -174,7 +181,7 @@ export default function PaymentCheckPage() {
   const onPspEditResponse = (bundleOption: BundleOption) => {
     const transferList: Array<Transfer> =
       bundleOption.bundleOptions?.slice() || [];
-    setPspList(sortPspByThresholdPolicy(transferList));
+    setPspList(transferList);
     setPspEditLoading(false);
   };
 
@@ -296,7 +303,7 @@ export default function PaymentCheckPage() {
         }
         disclaimer={
           showDisclaimer ? (
-            <AmountDisclaimer belowThreshold={belowThreshold} />
+            <AmountDisclaimer belowThreshold={belowThresholdValue} />
           ) : null
         }
         sx={{

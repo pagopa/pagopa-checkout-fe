@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import * as O from "fp-ts/Option";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
+import { setThreshold } from "../redux/slices/threshold";
 import ErrorModal from "../components/modals/ErrorModal";
 import PageContainer from "../components/PageContent/PageContainer";
 import { InputCardForm } from "../features/payment/components/InputCardForm/InputCardForm";
@@ -59,7 +60,7 @@ export default function InputCardPage() {
   React.useEffect(() => {
     if (loading && !errorModalOpen) {
       const id = window.setTimeout(() => {
-        setError(ErrorsType.POLLING_SLOW);
+        setError(ErrorsType.STATUS_ERROR);
         setErrorModalOpen(true);
       }, config.CHECKOUT_API_TIMEOUT as number);
       setTimeoutId(id);
@@ -91,10 +92,9 @@ export default function InputCardPage() {
           BundleOption.decode,
           O.fromEither,
           O.chain((r) => O.fromNullable(r.belowThreshold)),
-          O.foldW(
-            () => onError,
-            (belowThreshold) =>
-              setSessionItem(SessionItems.belowTreshold, belowThreshold)
+          O.fold(
+            () => onError(ErrorsType.GENERIC_ERROR),
+            (belowThreshold) => setThreshold({ belowThreshold })
           )
         );
 
