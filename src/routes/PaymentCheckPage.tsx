@@ -46,7 +46,7 @@ import {
   SessionItems,
   setSessionItem,
 } from "../utils/storage/sessionStorage";
-import { PaymentPspDrawer } from "../features/payment/components/modals/PaymentPspDrawer";
+import { PaymentPspDrawer } from "../features/payment/components/PaymentPspDrawer/PaymentPspDrawer";
 import disclaimerIcon from "../assets/images/disclaimer.svg";
 import { Transfer } from "../../generated/definitions/payment-ecommerce/Transfer";
 import { BundleOption } from "../../generated/definitions/payment-ecommerce/BundleOption";
