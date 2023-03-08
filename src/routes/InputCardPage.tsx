@@ -26,9 +26,9 @@ import {
   SessionItems,
   setSessionItem,
 } from "../utils/storage/sessionStorage";
-import { BundleOption } from "../../generated/definitions/payment-ecommerce/BundleOption";
 import { Transfer } from "../../generated/definitions/payment-ecommerce/Transfer";
 import { NewTransactionResponse } from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
+import { BundleOption } from "../../generated/definitions/payment-ecommerce/BundleOption";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function InputCardPage() {
@@ -91,8 +91,8 @@ export default function InputCardPage() {
           BundleOption.decode,
           O.fromEither,
           O.chain((r) => O.fromNullable(r.belowThreshold)),
-          O.fold(
-            () => undefined,
+          O.foldW(
+            () => onError,
             (belowThreshold) =>
               setSessionItem(SessionItems.belowTreshold, belowThreshold)
           )
