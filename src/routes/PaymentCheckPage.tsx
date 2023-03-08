@@ -97,6 +97,14 @@ export default function PaymentCheckPage() {
         .map((p) => p.amount)
         .reduce((sum, current) => sum + current, 0)
     ) + Number(pspSelected?.taxPayerFee || 0);
+  const belowThreshold = pipe(
+    getSessionItem(SessionItems.belowTreshold),
+    O.fromNullable,
+    O.fold(
+      () => false,
+      (res) => res as boolean
+    )
+  );
 
   React.useEffect(() => {
     const onBrowserBackEvent = (e: any) => {
@@ -184,7 +192,7 @@ export default function PaymentCheckPage() {
     }
   };
 
-  const updateWalletPSP = (psp: Transfer) => {
+  const updatePSP = (psp: Transfer) => {
     setDrawerOpen(false);
     setPspUpdateLoading(true);
     setSessionItem(SessionItems.pspSelected, psp);
@@ -287,7 +295,9 @@ export default function PaymentCheckPage() {
           ""
         }
         disclaimer={
-          showDisclaimer ? <AmountDisclaimer amount={amount} /> : null
+          showDisclaimer ? (
+            <AmountDisclaimer belowThreshold={belowThreshold} />
+          ) : null
         }
         sx={{
           border: "1px solid",
@@ -372,7 +382,7 @@ export default function PaymentCheckPage() {
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         loading={pspEditLoading}
-        onSelect={updateWalletPSP}
+        onSelect={updatePSP}
       />
 
       {!!error && (
@@ -388,13 +398,11 @@ export default function PaymentCheckPage() {
   );
 }
 
-const AmountDisclaimer = ({ amount }: { amount: number }) => {
+const AmountDisclaimer = ({ belowThreshold }: { belowThreshold: boolean }) => {
   const { t } = useTranslation();
-  const disclaimerUpperLimit = 50000;
-  const disclaimer =
-    amount < disclaimerUpperLimit
-      ? t("paymentCheckPage.disclaimer.cheaper")
-      : t("paymentCheckPage.disclaimer.yourCard");
+  const disclaimer = belowThreshold
+    ? t("paymentCheckPage.disclaimer.cheaper")
+    : t("paymentCheckPage.disclaimer.yourCard");
   return (
     <Box display="flex" alignItems="center" flexDirection="row" gap={1} pt={1}>
       <img

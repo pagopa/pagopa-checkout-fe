@@ -16,7 +16,6 @@ import {
   activatePayment,
   calculateFees,
   onErrorGetPSP,
-  sortPspByThresholdPolicy,
 } from "../utils/api/helper";
 import { InputCardFormFields } from "../features/payment/models/paymentModel";
 import { getConfigOrThrow } from "../utils/config/config";
@@ -87,12 +86,24 @@ export default function InputCardPage() {
       bin,
       onError: onErrorGetPSP,
       onResponsePsp: (resp: BundleOption) => {
+        pipe(
+          resp,
+          BundleOption.decode,
+          O.fromEither,
+          O.chain((r) => O.fromNullable(r.belowThreshold)),
+          O.fold(
+            () => undefined,
+            (belowThreshold) =>
+              setSessionItem(SessionItems.belowTreshold, belowThreshold)
+          )
+        );
+
         const firstPsp = pipe(
           resp,
           O.fromNullable,
           O.chain((resp) => O.fromNullable(resp.bundleOptions)),
-          O.map((array) => array.slice()),
-          O.map((notSortedArray) => sortPspByThresholdPolicy(notSortedArray)),
+          // O.map((array) => array.slice()),
+          // O.map((notSortedArray) => sortPspByThresholdPolicy(notSortedArray)),
           O.chain((sortedArray) => O.fromNullable(sortedArray[0])),
           O.map((a) => a as Transfer),
           O.getOrElseW(() => ({}))
