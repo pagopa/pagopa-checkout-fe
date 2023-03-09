@@ -28,11 +28,9 @@ import {
   ViewOutcomeEnum,
 } from "../utils/transactions/TransactionResultUtil";
 import { TransactionStatusEnum } from "../../generated/definitions/payment-ecommerce/TransactionStatus";
-import {
-  Cart,
-  PspSelected,
-  Transaction,
-} from "../features/payment/models/paymentModel";
+import { Cart } from "../features/payment/models/paymentModel";
+import { Transfer } from "../../generated/definitions/payment-ecommerce/Transfer";
+import { NewTransactionResponse } from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 
 type printData = {
   useremail: string;
@@ -47,10 +45,10 @@ export default function PaymentCheckPage() {
     cart ? cart.returnUrls.returnOkUrl : "/"
   );
   const transactionData = getSessionItem(SessionItems.transaction) as
-    | Transaction
+    | NewTransactionResponse
     | undefined;
   const pspSelected = getSessionItem(SessionItems.pspSelected) as
-    | PspSelected
+    | Transfer
     | undefined;
   const email = getSessionItem(SessionItems.useremail) as string | undefined;
   const totalAmount =
@@ -58,7 +56,7 @@ export default function PaymentCheckPage() {
       transactionData?.payments
         .map((p) => p.amount)
         .reduce((sum, current) => sum + current, 0)
-    ) + Number(pspSelected?.fee);
+    ) + Number(pspSelected?.taxPayerFee);
 
   const usefulPrintData: printData = {
     useremail: email || "",

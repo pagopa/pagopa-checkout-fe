@@ -33,17 +33,16 @@ import PspFieldContainer from "../components/TextFormField/PspFieldContainer";
 import {
   PaymentInfo,
   PaymentMethod,
-  PspList,
-  PspSelected,
-  Transaction,
 } from "../features/payment/models/paymentModel";
 import { useAppSelector } from "../redux/hooks/hooks";
 import { selectCardData } from "../redux/slices/cardData";
 import {
   cancelPayment,
   parseDate,
-  getPaymentPSPList,
+  calculateFees,
   proceedToPayment,
+  sortPspByThresholdPolicy,
+  pspImagePath,
 } from "../utils/api/helper";
 import { onBrowserUnload } from "../utils/eventListeners";
 import { moneyFormat } from "../utils/form/formatters";
@@ -52,6 +51,9 @@ import {
   SessionItems,
   setSessionItem,
 } from "../utils/storage/sessionStorage";
+import { Transfer } from "../../generated/definitions/payment-ecommerce/Transfer";
+import { BundleOption } from "../../generated/definitions/payment-ecommerce/BundleOption";
+import { NewTransactionResponse } from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { CheckoutRoutes } from "./models/routeModel";
 
 const defaultStyle = {
@@ -84,7 +86,7 @@ export default function PaymentCheckPage() {
   const [pspUpdateLoading, setPspUpdateLoading] = React.useState(false);
   const [payLoading, setPayLoading] = React.useState(false);
   const [cancelLoading, setCancelLoading] = React.useState(false);
-  const [pspList, setPspList] = React.useState<Array<PspList>>([]);
+  const [pspList, setPspList] = React.useState<Array<Transfer>>([]);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
   const cardData = useAppSelector(selectCardData);
@@ -92,10 +94,10 @@ export default function PaymentCheckPage() {
     | PaymentMethod
     | undefined;
   const pspSelected = getSessionItem(SessionItems.pspSelected) as
-    | PspSelected
+    | Transfer
     | undefined;
   const transaction = getSessionItem(SessionItems.transaction) as
-    | Transaction
+    | NewTransactionResponse
     | undefined;
   const email = getSessionItem(SessionItems.useremail) as string | undefined;
   const amount =
@@ -106,7 +108,7 @@ export default function PaymentCheckPage() {
       transaction?.payments
         .map((p) => p.amount)
         .reduce((sum, current) => sum + current, 0)
-    ) + Number(pspSelected?.fee || 0);
+    ) + Number(pspSelected?.taxPayerFee || 0);
 
   const onBrowserBackEvent = (e: any) => {
     e.preventDefault();
@@ -174,8 +176,10 @@ export default function PaymentCheckPage() {
     void cancelPayment(onCancelResponse);
   };
 
-  const onPspEditResponse = (list: Array<PspList>) => {
-    setPspList(list.sort((a, b) => (a.commission > b.commission ? 1 : -1)));
+  const onPspEditResponse = (bundleOption: BundleOption) => {
+    const transferList: Array<Transfer> =
+      bundleOption.bundleOptions?.slice() || [];
+    setPspList(sortPspByThresholdPolicy(transferList));
     setPspEditLoading(false);
   };
 
@@ -183,22 +187,19 @@ export default function PaymentCheckPage() {
     setDrawerOpen(true);
     setPspEditLoading(true);
     if (paymentMethod) {
-      void getPaymentPSPList({
-        paymentMethodId: paymentMethod?.paymentMethodId,
+      void calculateFees({
+        paymentTypeCode: paymentMethod?.paymentTypeCode,
+        bin: cardData?.pan.substring(0, 8),
         onError,
-        onResponse: onPspEditResponse,
+        onResponsePsp: onPspEditResponse,
       });
     }
   };
 
-  const updateWalletPSP = (psp: PspList) => {
+  const updateWalletPSP = (psp: Transfer) => {
     setDrawerOpen(false);
     setPspUpdateLoading(true);
-    setSessionItem(SessionItems.pspSelected, {
-      pspCode: psp.idPsp || "",
-      fee: psp.commission,
-      businessName: psp.name || "",
-    });
+    setSessionItem(SessionItems.pspSelected, psp);
     setPspUpdateLoading(false);
   };
 
@@ -216,7 +217,7 @@ export default function PaymentCheckPage() {
   const isDisabled = () =>
     pspEditLoading || payLoading || cancelLoading || pspUpdateLoading;
 
-  const isDisabledSubmit = () => isDisabled() || pspSelected?.pspCode === "";
+  const isDisabledSubmit = () => isDisabled() || pspSelected?.idPsp === "";
 
   return (
     <PageContainer>
@@ -302,10 +303,10 @@ export default function PaymentCheckPage() {
         loading={pspUpdateLoading}
         titleVariant="sidenav"
         bodyVariant="body2"
-        title={(pspSelected && moneyFormat(pspSelected.fee)) || ""}
+        title={(pspSelected && moneyFormat(pspSelected.taxPayerFee || 0)) || ""}
         body={
           (pspSelected &&
-            `${t("paymentCheckPage.psp")} ${pspSelected.businessName}`) ||
+            `${t("paymentCheckPage.psp")} ${pspSelected.bundleName}`) ||
           ""
         }
         sx={{
@@ -436,8 +437,8 @@ export default function PaymentCheckPage() {
                 key={index}
                 titleVariant="sidenav"
                 bodyVariant="body2"
-                image={psp.image}
-                body={psp.name}
+                image={pspImagePath(psp.abi)}
+                body={psp.bundleName}
                 sx={{
                   ...pspContainerStyle,
                   cursor: "pointer",
@@ -452,7 +453,7 @@ export default function PaymentCheckPage() {
                     color="primary"
                     component={"div"}
                   >
-                    {moneyFormat(psp.commission / 100, 0)}
+                    {moneyFormat((psp.taxPayerFee || 0) / 100, 0)}
                   </Typography>
                 }
                 onClick={() => {

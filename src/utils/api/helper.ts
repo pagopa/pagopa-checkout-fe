@@ -7,9 +7,10 @@ import { toError } from "fp-ts/lib/Either";
 import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
 import * as T from "fp-ts/Task";
-import { RequestAuthorizationRequest } from "../../../generated/definitions/payment-ecommerce/RequestAuthorizationRequest";
-import { LanguageEnum } from "../../../generated/definitions/payment-ecommerce/Psp";
-import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
+import {
+  LanguageEnum,
+  RequestAuthorizationRequest,
+} from "../../../generated/definitions/payment-ecommerce/RequestAuthorizationRequest";
 import { RptId } from "../../../generated/definitions/payment-ecommerce/RptId";
 import { ValidationFaultPaymentProblemJson } from "../../../generated/definitions/payment-ecommerce/ValidationFaultPaymentProblemJson";
 import {
@@ -18,9 +19,6 @@ import {
   PaymentInfo,
   PaymentInstruments,
   PaymentMethod,
-  PspList,
-  PspSelected,
-  Transaction,
 } from "../../features/payment/models/paymentModel";
 import {
   PaymentMethodRoutes,
@@ -72,13 +70,17 @@ import {
 } from "../storage/sessionStorage";
 import { AmountEuroCents } from "../../../generated/definitions/payment-ecommerce/AmountEuroCents";
 import { PaymentContextCode } from "../../../generated/definitions/payment-ecommerce/PaymentContextCode";
-import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-ecommerce/PaymentRequestsGetResponse";
 import { BrandEnum } from "../../../generated/definitions/payment-ecommerce/PaymentInstrumentDetail";
+import { BundleOption } from "../../../generated/definitions/payment-ecommerce/BundleOption";
+import { Transfer } from "../../../generated/definitions/payment-ecommerce/Transfer";
+import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-ecommerce/PaymentRequestsGetResponse";
+import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
+import { TransferListItem } from "../../../generated/definitions/payment-ecommerce/TransferListItem";
+import { getBrowserInfoTask, getEMVCompliantColorDepth } from "./checkHelper";
 import {
   apiPaymentEcommerceClient,
   apiPaymentTransactionsClient,
 } from "./client";
-import { getBrowserInfoTask, getEMVCompliantColorDepth } from "./checkHelper";
 
 export const getEcommercePaymentInfoTask = (
   rptId: RptId,
@@ -164,11 +166,13 @@ export const getEcommercePaymentInfoTask = (
   );
 
 export const activatePayment = async ({
-  onResponse,
-  onError,
+  bin,
+  onResponseActivate,
+  onErrorActivate,
 }: {
-  onResponse: () => void;
-  onError: (e: string) => void;
+  bin: string;
+  onResponseActivate: (bin: string) => void;
+  onErrorActivate: (e: string) => void;
 }) => {
   const noticeInfo = getSessionItem(SessionItems.noticeInfo) as
     | PaymentFormFields
@@ -183,7 +187,7 @@ export const activatePayment = async ({
   pipe(
     PaymentRequestsGetResponse.decode(paymentInfo),
     E.fold(
-      () => onError(ErrorsType.INVALID_DECODE),
+      () => onErrorActivate(ErrorsType.INVALID_DECODE),
       (response) =>
         pipe(
           activePaymentTask(
@@ -194,11 +198,11 @@ export const activatePayment = async ({
           ),
           TE.fold(
             (e: string) => async () => {
-              onError(e);
+              onErrorActivate(e);
             },
             (res) => async () => {
               setSessionItem(SessionItems.transaction, res);
-              onResponse();
+              onResponseActivate(bin);
             }
           )
         )()
@@ -300,14 +304,16 @@ const activePaymentTask = (
     )
   );
 
-export const getPaymentPSPList = async ({
-  paymentMethodId,
+export const calculateFees = async ({
+  paymentTypeCode,
+  bin,
   onError,
-  onResponse,
+  onResponsePsp,
 }: {
-  paymentMethodId: string;
+  paymentTypeCode: string;
+  bin: string;
   onError: (e: string) => void;
-  onResponse: (r: Array<PspList>) => void;
+  onResponsePsp: (r: BundleOption) => void;
 }) => {
   const amount: number | undefined = pipe(
     O.fromNullable(getSessionItem(SessionItems.cart) as Cart | undefined),
@@ -328,18 +334,38 @@ export const getPaymentPSPList = async ({
     O.getOrElseW(() => undefined)
   );
 
-  const lang = "it";
+  const transferList: Array<TransferListItem> = pipe(
+    getSessionItem(SessionItems.transaction) as NewTransactionResponse,
+    O.fromNullable,
+    O.map((transaction) => transaction.payments),
+    O.map((payments) =>
+      payments.map((p) => ({
+        creditorInstitution: p.rptId.substring(0, 11),
+        digitalStamp: false,
+      }))
+    ),
+    O.getOrElse(() => [] as Array<TransferListItem>)
+  );
+
+  const primaryCreditorInstitution =
+    transferList.at(0)?.creditorInstitution || ""; // TODO replace with primaryCreditorInstitution from transaction response when available (activate V2)
 
   mixpanel.track(PAYMENT_PSPLIST_INIT.value, {
     EVENT_ID: PAYMENT_PSPLIST_INIT.value,
   });
-  const pspList = await pipe(
+  const bundleOption: BundleOption = await pipe(
     TE.tryCatch(
       () =>
-        apiPaymentEcommerceClient.getPaymentMethodsPSPs({
-          amount,
-          lang,
-          id: paymentMethodId,
+        apiPaymentEcommerceClient.calculateFees({
+          maxOccurrences: undefined,
+          body: {
+            bin,
+            touchpoint: "CHECKOUT",
+            paymentMethod: paymentTypeCode,
+            paymentAmount: amount ? amount : 0,
+            primaryCreditorInstitution,
+            transferList,
+          },
         }),
       (_e) => {
         onError(ErrorsType.CONNECTION);
@@ -355,7 +381,7 @@ export const getPaymentPSPList = async ({
         mixpanel.track(PAYMENT_PSPLIST_SVR_ERR.value, {
           EVENT_ID: PAYMENT_PSPLIST_SVR_ERR.value,
         });
-        return undefined;
+        return {};
       },
       (myResExt) => async () =>
         pipe(
@@ -367,13 +393,13 @@ export const getPaymentPSPList = async ({
                 mixpanel.track(PAYMENT_PSPLIST_SUCCESS.value, {
                   EVENT_ID: PAYMENT_PSPLIST_SUCCESS.value,
                 });
-                return myRes?.value.psp;
+                return myRes?.value;
               } else {
                 onError(ErrorsType.GENERIC_ERROR);
                 mixpanel.track(PAYMENT_PSPLIST_RESP_ERR.value, {
                   EVENT_ID: PAYMENT_PSPLIST_RESP_ERR.value,
                 });
-                return [];
+                return {};
               }
             }
           )
@@ -381,15 +407,7 @@ export const getPaymentPSPList = async ({
     )
   )();
 
-  const psp = pspList?.map((e) => ({
-    name: e?.businessName,
-    label: e?.businessName,
-    image: undefined, // image: e?.logoPSP, TODO capire come gestire i loghi
-    commission: e?.fixedCost ?? 0,
-    idPsp: e?.code, // TODO gestito come stringa
-  }));
-
-  onResponse(psp || []);
+  onResponsePsp(bundleOption);
 };
 
 export const proceedToPayment = async (
@@ -397,7 +415,7 @@ export const proceedToPayment = async (
     transaction,
     cardData,
   }: {
-    transaction: Transaction;
+    transaction: NewTransactionResponse;
     cardData: {
       brand: string;
       cvv: string;
@@ -457,14 +475,14 @@ export const proceedToPayment = async (
       .map((p) => p.amount)
       .reduce((sum, current) => Number(sum) + Number(current), 0),
     fee:
-      (getSessionItem(SessionItems.pspSelected) as PspSelected | undefined)
-        ?.fee || 0,
+      (getSessionItem(SessionItems.pspSelected) as Transfer | undefined)
+        ?.taxPayerFee || 0,
     paymentInstrumentId:
       (getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined)
         ?.paymentMethodId || "",
     pspId:
-      (getSessionItem(SessionItems.pspSelected) as PspSelected | undefined)
-        ?.pspCode || "",
+      (getSessionItem(SessionItems.pspSelected) as Transfer | undefined)
+        ?.idPsp || "",
     details:
       (getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined)
         ?.paymentTypeCode === "CP"
@@ -740,9 +758,13 @@ export const onErrorGetPSP = (e: string): void => {
   throw new Error("Error getting psp list. " + e);
 };
 
-export const sortPspByOnUsPolicy = (pspList: Array<PspList>): Array<PspList> =>
-  // TODO Implement OnUs/NotOnUs sorting?
-  pspList;
+export const sortPspByThresholdPolicy = (
+  transferList: Array<Transfer>
+): Array<Transfer> =>
+  // TODO Missing OnUs/NotOnUs sorting and threshold evaluation?
+  transferList
+    .slice()
+    .sort((a, b) => ((a?.taxPayerFee || 0) > (b?.taxPayerFee || 0) ? 1 : -1));
 
 /*
   export const getTransactionData = async ({
@@ -851,3 +873,16 @@ const getBrandByBrandCardValidator = (
       return BrandEnum.UNKNOWN;
   }
 };
+
+export const pspImagePath = (abi: string | undefined): string =>
+  pipe(
+    abi,
+    O.fromNullable,
+    O.map((abi) =>
+      getConfigOrThrow()
+        .CHECKOUT_PAGOPA_ASSETS_CDN.concat("/")
+        .concat(abi)
+        .concat(".png")
+    ),
+    O.getOrElse(() => "")
+  );

@@ -22,11 +22,11 @@ import {
   createClient,
   Client as EcommerceClient,
 } from "../../../generated/definitions/payment-ecommerce/client";
-import { TransactionInfo } from "../../../generated/definitions/payment-ecommerce/TransactionInfo";
 import { TransactionStatusEnum } from "../../../generated/definitions/payment-ecommerce/TransactionStatus";
 import { EcommerceFinalStatusCodeEnumType } from "../transactions/TransactionResultUtil";
 import { getSessionItem, SessionItems } from "../storage/sessionStorage";
-import { Transaction } from "../../features/payment/models/paymentModel";
+import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
+import { TransactionInfo } from "../../../generated/definitions/payment-ecommerce/TransactionInfo";
 const config = getConfigOrThrow();
 /**
  * Polling configuration params
@@ -66,9 +66,21 @@ const ecommerceClientWithPolling: EcommerceClient = createClient({
 export const callServices = async (
   handleFinalStatusResult: (idStatus?: TransactionStatusEnum) => void
 ) => {
-  const transaction = getSessionItem(SessionItems.transaction) as
-    | Transaction
-    | undefined;
+  const transaction = pipe(
+    getSessionItem(SessionItems.transaction),
+    NewTransactionResponse.decode,
+    E.fold(
+      () => undefined,
+      (transaction) => transaction
+    )
+  );
+
+  const transactionId = pipe(
+    transaction,
+    O.fromNullable,
+    O.map((transaction) => transaction.transactionId),
+    O.getOrElse(() => "")
+  );
 
   const bearerAuth = pipe(
     transaction,
@@ -88,7 +100,7 @@ export const callServices = async (
         mixpanel.track(THREEDSMETHODURL_STEP1_RESP_ERR.value, {
           EVENT_ID: THREEDSMETHODURL_STEP1_RESP_ERR.value,
         });
-        return transaction?.transactionId || "";
+        return transactionId;
       },
       (idTransaction) => async () => {
         mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_RESP_ERR.value, {
