@@ -121,9 +121,9 @@ export default function PaymentCheckPage() {
     setErrorModalOpen(true);
   };
 
-  const missingThreshold = () => threshold?.belowThreshold;
+  const missingThreshold = () => threshold?.belowThreshold === undefined;
   React.useEffect(() => {
-    if(missingThreshold()) {
+    if (missingThreshold()) {
       onError(ErrorsType.GENERIC_ERROR);
     }
   }, [threshold]);
@@ -203,7 +203,8 @@ export default function PaymentCheckPage() {
   const isDisabled = () =>
     pspEditLoading || payLoading || cancelLoading || pspUpdateLoading;
 
-  const isDisabledSubmit = () => isDisabled() || pspSelected?.idPsp === "" || missingThreshold();
+  const isDisabledSubmit = () =>
+    isDisabled() || pspSelected?.idPsp === "" || missingThreshold();
 
   return (
     <PageContainer>
@@ -295,15 +296,18 @@ export default function PaymentCheckPage() {
             `${t("paymentCheckPage.psp")} ${pspSelected.bundleName}`) ||
           ""
         }
-        disclaimer={
-          pipe(
-            threshold.belowThreshold,
-            O.fromNullable,
-            O.filter(() => showDisclaimer),
-            O.map((threshold) => (<AmountDisclaimer belowThreshold={threshold}></AmountDisclaimer>)),
-            O.toNullable
-          )
-        }
+        disclaimer={pipe(
+          threshold.belowThreshold,
+          O.fromNullable,
+          O.filter(() => showDisclaimer),
+          O.map((threshold) => (
+            <AmountDisclaimer
+              key={1}
+              belowThreshold={threshold}
+            ></AmountDisclaimer>
+          )),
+          O.toNullable
+        )}
         sx={{
           border: "1px solid",
           borderColor: "divider",

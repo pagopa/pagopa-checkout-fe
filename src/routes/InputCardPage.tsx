@@ -13,10 +13,7 @@ import { InputCardForm } from "../features/payment/components/InputCardForm/Inpu
 import { PaymentMethod } from "../features/payment/models/paymentModel";
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { setCardData } from "../redux/slices/cardData";
-import {
-  activatePayment,
-  calculateFees
-} from "../utils/api/helper";
+import { activatePayment, calculateFees } from "../utils/api/helper";
 import { InputCardFormFields } from "../features/payment/models/paymentModel";
 import { getConfigOrThrow } from "../utils/config/config";
 import { ErrorsType } from "../utils/errors/checkErrorsModel";
@@ -100,11 +97,12 @@ export default function InputCardPage() {
                 O.map((a) => a as Transfer),
                 O.getOrElseW(() => ({}))
               );
-  
+
               setSessionItem(SessionItems.pspSelected, firstPsp);
               setLoading(false);
               navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
-            })
+            }
+          )
         );
       },
     });
@@ -176,4 +174,3 @@ export default function InputCardPage() {
     </PageContainer>
   );
 }
-

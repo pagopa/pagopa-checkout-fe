@@ -304,7 +304,7 @@ const activePaymentTask = (
     )
   );
 
-  // -> Promise<Either<string, BundleOptions>>
+// -> Promise<Either<string, BundleOptions>>
 export const calculateFees = async ({
   paymentTypeCode,
   bin,
