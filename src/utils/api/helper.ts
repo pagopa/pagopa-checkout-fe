@@ -304,6 +304,7 @@ const activePaymentTask = (
     )
   );
 
+  // -> Promise<Either<string, BundleOptions>>
 export const calculateFees = async ({
   paymentTypeCode,
   bin,
@@ -753,18 +754,6 @@ const expDateToString = (dateParsed: Date) =>
         useGrouping: false,
       })
     );
-
-export const onErrorGetPSP = (e: string): void => {
-  throw new Error("Error getting psp list. " + e);
-};
-
-export const sortPspByThresholdPolicy = (
-  transferList: Array<Transfer>
-): Array<Transfer> =>
-  // TODO Missing OnUs/NotOnUs sorting and threshold evaluation?
-  transferList
-    .slice()
-    .sort((a, b) => ((a?.taxPayerFee || 0) > (b?.taxPayerFee || 0) ? 1 : -1));
 
 /*
   export const getTransactionData = async ({

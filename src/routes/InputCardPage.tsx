@@ -15,8 +15,7 @@ import { useAppDispatch } from "../redux/hooks/hooks";
 import { setCardData } from "../redux/slices/cardData";
 import {
   activatePayment,
-  calculateFees,
-  onErrorGetPSP,
+  calculateFees
 } from "../utils/api/helper";
 import { InputCardFormFields } from "../features/payment/models/paymentModel";
 import { getConfigOrThrow } from "../utils/config/config";
@@ -85,31 +84,28 @@ export default function InputCardPage() {
             | undefined
         )?.paymentTypeCode || "",
       bin,
-      onError: onErrorGetPSP,
+      onError,
       onResponsePsp: (resp: BundleOption) => {
-        const v = pipe(
-          resp,
-          BundleOption.decode,
-          O.fromEither,
-          O.chain((bo) => O.fromNullable(bo.belowThreshold)),
-          O.getOrElseW(() => {
-            onError(ErrorsType.GENERIC_ERROR);
-            throw new Error();
-          })
-        );
-        dispatch(setThreshold({ belowThreshold: v }));
-        const firstPsp = pipe(
-          resp,
+        pipe(
+          resp?.belowThreshold,
           O.fromNullable,
-          O.chain((resp) => O.fromNullable(resp.bundleOptions)),
-          O.chain((sortedArray) => O.fromNullable(sortedArray[0])),
-          O.map((a) => a as Transfer),
-          O.getOrElseW(() => ({}))
+          O.fold(
+            () => onError(ErrorsType.GENERIC_ERROR),
+            (value) => {
+              dispatch(setThreshold({ belowThreshold: value }));
+              const firstPsp = pipe(
+                resp?.bundleOptions,
+                O.fromNullable,
+                O.chain((sortedArray) => O.fromNullable(sortedArray[0])),
+                O.map((a) => a as Transfer),
+                O.getOrElseW(() => ({}))
+              );
+  
+              setSessionItem(SessionItems.pspSelected, firstPsp);
+              setLoading(false);
+              navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
+            })
         );
-
-        setSessionItem(SessionItems.pspSelected, firstPsp);
-        setLoading(false);
-        navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
       },
     });
 
@@ -180,3 +176,4 @@ export default function InputCardPage() {
     </PageContainer>
   );
 }
+

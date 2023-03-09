@@ -31,6 +31,6 @@ export const thresholdSlice = createSlice({
 
 export const { setThreshold, resetThreshold } = thresholdSlice.actions;
 export default thresholdSlice.reducer;
-export const selectThreshoold = (state: RootState) => ({
+export const selectThreshold = (state: RootState) => ({
   belowThreshold: state.threshold.belowThreshold,
 });

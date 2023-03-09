@@ -18,7 +18,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
-import { selectThreshoold } from "../redux/slices/threshold";
+import { selectThreshold } from "../redux/slices/threshold";
 import { ErrorsType } from "../utils/errors/checkErrorsModel";
 import sprite from "../assets/images/app.svg";
 import { FormButtons } from "../components/FormButtons/FormButtons";
@@ -79,7 +79,7 @@ export default function PaymentCheckPage() {
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
   const cardData = useAppSelector(selectCardData);
-  const threshold = useAppSelector(selectThreshoold);
+  const threshold = useAppSelector(selectThreshold);
   const paymentMethod = getSessionItem(SessionItems.paymentMethod) as
     | PaymentMethod
     | undefined;
@@ -120,6 +120,13 @@ export default function PaymentCheckPage() {
     setError(m);
     setErrorModalOpen(true);
   };
+
+  const missingThreshold = () => threshold?.belowThreshold;
+  React.useEffect(() => {
+    if(missingThreshold()) {
+      onError(ErrorsType.GENERIC_ERROR);
+    }
+  }, [threshold]);
 
   const onResponse = (authorizationUrl: string) => {
     setPayLoading(false);
@@ -196,18 +203,7 @@ export default function PaymentCheckPage() {
   const isDisabled = () =>
     pspEditLoading || payLoading || cancelLoading || pspUpdateLoading;
 
-  const isDisabledSubmit = () => isDisabled() || pspSelected?.idPsp === "";
-
-  const belowThresholdValue = pipe(
-    threshold,
-    O.fromNullable,
-    O.map((t) => t.belowThreshold),
-    O.chain((b) => O.fromNullable(b)),
-    O.getOrElseW(() => {
-      onError(ErrorsType.GENERIC_ERROR);
-      return false;
-    })
-  );
+  const isDisabledSubmit = () => isDisabled() || pspSelected?.idPsp === "" || missingThreshold();
 
   return (
     <PageContainer>
@@ -300,9 +296,13 @@ export default function PaymentCheckPage() {
           ""
         }
         disclaimer={
-          showDisclaimer ? (
-            <AmountDisclaimer belowThreshold={belowThresholdValue} />
-          ) : null
+          pipe(
+            threshold.belowThreshold,
+            O.fromNullable,
+            O.filter(() => showDisclaimer),
+            O.map((threshold) => (<AmountDisclaimer belowThreshold={threshold}></AmountDisclaimer>)),
+            O.toNullable
+          )
         }
         sx={{
           border: "1px solid",
