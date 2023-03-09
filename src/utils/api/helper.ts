@@ -71,7 +71,6 @@ import {
 import { AmountEuroCents } from "../../../generated/definitions/payment-ecommerce/AmountEuroCents";
 import { PaymentContextCode } from "../../../generated/definitions/payment-ecommerce/PaymentContextCode";
 import { BrandEnum } from "../../../generated/definitions/payment-ecommerce/PaymentInstrumentDetail";
-import { BundleOption } from "../../../generated/definitions/payment-ecommerce/BundleOption";
 import { Transfer } from "../../../generated/definitions/payment-ecommerce/Transfer";
 import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-ecommerce/PaymentRequestsGetResponse";
 import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
@@ -306,15 +305,15 @@ const activePaymentTask = (
 
 // -> Promise<Either<string, BundleOptions>>
 export const calculateFees = async ({
-  paymentTypeCode,
+  paymentId,
   bin,
   onError,
   onResponsePsp,
 }: {
-  paymentTypeCode: string;
+  paymentId: string;
   bin: string;
   onError: (e: string) => void;
-  onResponsePsp: (r: BundleOption) => void;
+  onResponsePsp: (r: any) => void;
 }) => {
   const amount: number | undefined = pipe(
     O.fromNullable(getSessionItem(SessionItems.cart) as Cart | undefined),
@@ -354,15 +353,15 @@ export const calculateFees = async ({
   mixpanel.track(PAYMENT_PSPLIST_INIT.value, {
     EVENT_ID: PAYMENT_PSPLIST_INIT.value,
   });
-  const bundleOption: BundleOption = await pipe(
+  const bundleOption = await pipe(
     TE.tryCatch(
       () =>
         apiPaymentEcommerceClient.calculateFees({
+          id: paymentId,
           maxOccurrences: undefined,
           body: {
             bin,
             touchpoint: "CHECKOUT",
-            paymentMethod: paymentTypeCode,
             paymentAmount: amount ? amount : 0,
             primaryCreditorInstitution,
             transferList,

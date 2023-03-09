@@ -172,11 +172,19 @@ export default function PaymentCheckPage() {
     void cancelPayment(onCancelResponse);
   };
 
-  const onPspEditResponse = (bundleOption: BundleOption) => {
-    const transferList: Array<Transfer> =
-      bundleOption.bundleOptions?.slice() || [];
-    setPspList(transferList);
-    setPspEditLoading(false);
+  const onPspEditResponse = (bundleOption: any) => {
+    pipe(
+      bundleOption,
+      BundleOption.decode,
+      O.fromEither,
+      O.fold(
+        () => onError(ErrorsType.GENERIC_ERROR),
+        () => {
+          setPspList(bundleOption.bundleOptions?.slice() || []);
+          setPspEditLoading(false);
+        }
+      )
+    );
   };
 
   const onPspEditClick = () => {
@@ -185,7 +193,7 @@ export default function PaymentCheckPage() {
     setShowDisclaimer(false);
     if (paymentMethod) {
       void calculateFees({
-        paymentTypeCode: paymentMethod?.paymentTypeCode,
+        paymentId: paymentMethod?.paymentMethodId,
         bin: cardData?.pan.substring(0, 8),
         onError,
         onResponsePsp: onPspEditResponse,

@@ -74,18 +74,20 @@ export default function InputCardPage() {
 
   const onResponseActivate = (bin: string) =>
     calculateFees({
-      paymentTypeCode:
+      paymentId:
         (
           getSessionItem(SessionItems.paymentMethod) as
             | PaymentMethod
             | undefined
-        )?.paymentTypeCode || "",
+        )?.paymentMethodId || "",
       bin,
       onError,
-      onResponsePsp: (resp: BundleOption) => {
+      onResponsePsp: (resp) => {
         pipe(
-          resp?.belowThreshold,
-          O.fromNullable,
+          resp,
+          BundleOption.decode,
+          O.fromEither,
+          O.chain((bundle) => O.fromNullable(bundle.belowThreshold)),
           O.fold(
             () => onError(ErrorsType.GENERIC_ERROR),
             (value) => {
