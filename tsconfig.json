@@ -6,6 +6,7 @@
       "es6",
       "dom"
     ],
+    "baseUrl": "./src",
     "allowJs": false,
     "jsx": "react",
     "noEmit": true,

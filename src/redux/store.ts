@@ -1,8 +1,10 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import cardDataReducer from "./slices/cardData";
+import thresholdReducer from "./slices/threshold";
 
 const reducer = combineReducers({
   cardData: cardDataReducer,
+  threshold: thresholdReducer,
 });
 
 const store = configureStore({

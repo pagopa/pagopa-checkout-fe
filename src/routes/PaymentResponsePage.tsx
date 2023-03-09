@@ -31,6 +31,7 @@ import { TransactionStatusEnum } from "../../generated/definitions/payment-ecomm
 import { Cart } from "../features/payment/models/paymentModel";
 import { Transfer } from "../../generated/definitions/payment-ecommerce/Transfer";
 import { NewTransactionResponse } from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
+import { resetThreshold } from "../redux/slices/threshold";
 
 type printData = {
   useremail: string;
@@ -67,6 +68,7 @@ export default function PaymentCheckPage() {
 
   useEffect(() => {
     dispatch(resetCardData());
+    dispatch(resetThreshold());
 
     const handleFinalStatusResult = (idStatus?: TransactionStatusEnum) => {
       const outcome: ViewOutcomeEnum =

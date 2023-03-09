@@ -6,18 +6,14 @@ import { useNavigate } from "react-router-dom";
 import * as O from "fp-ts/Option";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
+import { setThreshold } from "../redux/slices/threshold";
 import ErrorModal from "../components/modals/ErrorModal";
 import PageContainer from "../components/PageContent/PageContainer";
 import { InputCardForm } from "../features/payment/components/InputCardForm/InputCardForm";
 import { PaymentMethod } from "../features/payment/models/paymentModel";
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { setCardData } from "../redux/slices/cardData";
-import {
-  activatePayment,
-  calculateFees,
-  onErrorGetPSP,
-  sortPspByThresholdPolicy,
-} from "../utils/api/helper";
+import { activatePayment, calculateFees } from "../utils/api/helper";
 import { InputCardFormFields } from "../features/payment/models/paymentModel";
 import { getConfigOrThrow } from "../utils/config/config";
 import { ErrorsType } from "../utils/errors/checkErrorsModel";
@@ -27,9 +23,9 @@ import {
   SessionItems,
   setSessionItem,
 } from "../utils/storage/sessionStorage";
-import { BundleOption } from "../../generated/definitions/payment-ecommerce/BundleOption";
 import { Transfer } from "../../generated/definitions/payment-ecommerce/Transfer";
 import { NewTransactionResponse } from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
+import { BundleOption } from "../../generated/definitions/payment-ecommerce/BundleOption";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function InputCardPage() {
@@ -60,7 +56,7 @@ export default function InputCardPage() {
   React.useEffect(() => {
     if (loading && !errorModalOpen) {
       const id = window.setTimeout(() => {
-        setError(ErrorsType.POLLING_SLOW);
+        setError(ErrorsType.STATUS_ERROR);
         setErrorModalOpen(true);
       }, config.CHECKOUT_API_TIMEOUT as number);
       setTimeoutId(id);
@@ -78,29 +74,38 @@ export default function InputCardPage() {
 
   const onResponseActivate = (bin: string) =>
     calculateFees({
-      paymentTypeCode:
+      paymentId:
         (
           getSessionItem(SessionItems.paymentMethod) as
             | PaymentMethod
             | undefined
-        )?.paymentTypeCode || "",
+        )?.paymentMethodId || "",
       bin,
-      onError: onErrorGetPSP,
-      onResponsePsp: (resp: BundleOption) => {
-        const firstPsp = pipe(
+      onError,
+      onResponsePsp: (resp) => {
+        pipe(
           resp,
-          O.fromNullable,
-          O.chain((resp) => O.fromNullable(resp.bundleOptions)),
-          O.map((array) => array.slice()),
-          O.map((notSortedArray) => sortPspByThresholdPolicy(notSortedArray)),
-          O.chain((sortedArray) => O.fromNullable(sortedArray[0])),
-          O.map((a) => a as Transfer),
-          O.getOrElseW(() => ({}))
-        );
+          BundleOption.decode,
+          O.fromEither,
+          O.chain((bundle) => O.fromNullable(bundle.belowThreshold)),
+          O.fold(
+            () => onError(ErrorsType.GENERIC_ERROR),
+            (value) => {
+              dispatch(setThreshold({ belowThreshold: value }));
+              const firstPsp = pipe(
+                resp?.bundleOptions,
+                O.fromNullable,
+                O.chain((sortedArray) => O.fromNullable(sortedArray[0])),
+                O.map((a) => a as Transfer),
+                O.getOrElseW(() => ({}))
+              );
 
-        setSessionItem(SessionItems.pspSelected, firstPsp);
-        setLoading(false);
-        navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
+              setSessionItem(SessionItems.pspSelected, firstPsp);
+              setLoading(false);
+              navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
+            }
+          )
+        );
       },
     });
 

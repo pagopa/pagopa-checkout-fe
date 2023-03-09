@@ -1,6 +1,7 @@
 import { Box, Button, Typography } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { resetThreshold } from "../redux/slices/threshold";
 import ko from "../assets/images/response-umbrella.svg";
 import PageContainer from "../components/PageContent/PageContainer";
 import { Cart } from "../features/payment/models/paymentModel";
@@ -22,6 +23,7 @@ export default function KOPage() {
 
   React.useEffect(() => {
     dispatch(resetCardData());
+    dispatch(resetThreshold());
     window.removeEventListener("beforeunload", onBrowserUnload);
     clearStorage();
   }, []);

@@ -71,7 +71,6 @@ import {
 import { AmountEuroCents } from "../../../generated/definitions/payment-ecommerce/AmountEuroCents";
 import { PaymentContextCode } from "../../../generated/definitions/payment-ecommerce/PaymentContextCode";
 import { BrandEnum } from "../../../generated/definitions/payment-ecommerce/PaymentInstrumentDetail";
-import { BundleOption } from "../../../generated/definitions/payment-ecommerce/BundleOption";
 import { Transfer } from "../../../generated/definitions/payment-ecommerce/Transfer";
 import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-ecommerce/PaymentRequestsGetResponse";
 import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
@@ -304,16 +303,17 @@ const activePaymentTask = (
     )
   );
 
+// -> Promise<Either<string, BundleOptions>>
 export const calculateFees = async ({
-  paymentTypeCode,
+  paymentId,
   bin,
   onError,
   onResponsePsp,
 }: {
-  paymentTypeCode: string;
+  paymentId: string;
   bin: string;
   onError: (e: string) => void;
-  onResponsePsp: (r: BundleOption) => void;
+  onResponsePsp: (r: any) => void;
 }) => {
   const amount: number | undefined = pipe(
     O.fromNullable(getSessionItem(SessionItems.cart) as Cart | undefined),
@@ -353,15 +353,15 @@ export const calculateFees = async ({
   mixpanel.track(PAYMENT_PSPLIST_INIT.value, {
     EVENT_ID: PAYMENT_PSPLIST_INIT.value,
   });
-  const bundleOption: BundleOption = await pipe(
+  const bundleOption = await pipe(
     TE.tryCatch(
       () =>
         apiPaymentEcommerceClient.calculateFees({
+          id: paymentId,
           maxOccurrences: undefined,
           body: {
             bin,
             touchpoint: "CHECKOUT",
-            paymentMethod: paymentTypeCode,
             paymentAmount: amount ? amount : 0,
             primaryCreditorInstitution,
             transferList,
@@ -754,18 +754,6 @@ const expDateToString = (dateParsed: Date) =>
       })
     );
 
-export const onErrorGetPSP = (e: string): void => {
-  throw new Error("Error getting psp list. " + e);
-};
-
-export const sortPspByThresholdPolicy = (
-  transferList: Array<Transfer>
-): Array<Transfer> =>
-  // TODO Missing OnUs/NotOnUs sorting and threshold evaluation?
-  transferList
-    .slice()
-    .sort((a, b) => ((a?.taxPayerFee || 0) > (b?.taxPayerFee || 0) ? 1 : -1));
-
 /*
   export const getTransactionData = async ({
     // va fatta la GET transaction
@@ -873,16 +861,3 @@ const getBrandByBrandCardValidator = (
       return BrandEnum.UNKNOWN;
   }
 };
-
-export const pspImagePath = (abi: string | undefined): string =>
-  pipe(
-    abi,
-    O.fromNullable,
-    O.map((abi) =>
-      getConfigOrThrow()
-        .CHECKOUT_PAGOPA_ASSETS_CDN.concat("/")
-        .concat(abi)
-        .concat(".png")
-    ),
-    O.getOrElse(() => "")
-  );

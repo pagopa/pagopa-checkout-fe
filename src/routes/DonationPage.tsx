@@ -23,6 +23,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import QRCode from "react-qr-code";
 import { useNavigate } from "react-router-dom";
+import { resetThreshold } from "../redux/slices/threshold";
 import sprite from "../assets/images/app.svg";
 import InformationModal from "../components/modals/InformationModal";
 import PageContainer from "../components/PageContent/PageContainer";
@@ -59,6 +60,7 @@ export default function DonationPage() {
 
   React.useEffect(() => {
     dispatch(resetCardData());
+    dispatch(resetThreshold());
     setLoadingList(true);
     void getDonationEntityList(onError, onResponse);
   }, []);
