@@ -87,17 +87,17 @@ export default function InputCardPage() {
       bin,
       onError: onErrorGetPSP,
       onResponsePsp: (resp: BundleOption) => {
-        pipe(
+        const v = pipe(
           resp,
           BundleOption.decode,
           O.fromEither,
-          O.chain((r) => O.fromNullable(r.belowThreshold)),
-          O.fold(
-            () => onError(ErrorsType.GENERIC_ERROR),
-            (belowThreshold) => setThreshold({ belowThreshold })
-          )
+          O.chain((bo) => O.fromNullable(bo.belowThreshold)),
+          O.getOrElseW(() => {
+            onError(ErrorsType.GENERIC_ERROR);
+            throw new Error();
+          })
         );
-
+        dispatch(setThreshold({ belowThreshold: v }));
         const firstPsp = pipe(
           resp,
           O.fromNullable,

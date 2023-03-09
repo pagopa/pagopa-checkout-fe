@@ -79,7 +79,7 @@ export default function PaymentCheckPage() {
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
   const cardData = useAppSelector(selectCardData);
-  const belowThreshold = useAppSelector(selectThreshoold);
+  const threshold = useAppSelector(selectThreshoold);
   const paymentMethod = getSessionItem(SessionItems.paymentMethod) as
     | PaymentMethod
     | undefined;
@@ -99,19 +99,6 @@ export default function PaymentCheckPage() {
         .map((p) => p.amount)
         .reduce((sum, current) => sum + current, 0)
     ) + Number(pspSelected?.taxPayerFee || 0);
-
-  const belowThresholdValue = pipe(
-    belowThreshold,
-    O.fromNullable,
-    O.chain((val) => O.fromNullable(val.belowThreshold)),
-    O.fold(
-      () => {
-        onError(ErrorsType.GENERIC_ERROR);
-        return false;
-      },
-      () => true
-    )
-  );
 
   React.useEffect(() => {
     const onBrowserBackEvent = (e: any) => {
@@ -210,6 +197,17 @@ export default function PaymentCheckPage() {
     pspEditLoading || payLoading || cancelLoading || pspUpdateLoading;
 
   const isDisabledSubmit = () => isDisabled() || pspSelected?.idPsp === "";
+
+  const belowThresholdValue = pipe(
+    threshold,
+    O.fromNullable,
+    O.map((t) => t.belowThreshold),
+    O.chain((b) => O.fromNullable(b)),
+    O.getOrElseW(() => {
+      onError(ErrorsType.GENERIC_ERROR);
+      return false;
+    })
+  );
 
   return (
     <PageContainer>
