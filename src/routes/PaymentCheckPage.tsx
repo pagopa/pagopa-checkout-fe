@@ -356,6 +356,7 @@ export default function PaymentCheckPage() {
         handleSubmit={onSubmit}
         handleCancel={onCancel}
         idSubmit="paymentCheckPageButtonPay"
+        idCancel="paymentCheckPageButtonCancel"
       />
       <InformationModal
         open={modalOpen}
@@ -428,6 +429,7 @@ const AmountDisclaimer = ({ belowThreshold }: { belowThreshold: boolean }) => {
         style={{ width: "14px", height: "14px" }}
       />
       <Typography
+        id="pspDisclaimer"
         variant="caption-semibold"
         component="div"
         sx={{

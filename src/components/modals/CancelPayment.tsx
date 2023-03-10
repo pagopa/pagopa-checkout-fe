@@ -34,10 +34,10 @@ export function CancelPayment(props: {
         justifyContent="flex-end"
         sx={{ mt: 3, gap: 2 }}
       >
-        <Button variant="text" onClick={props.onCancel}>
+        <Button id="cancel" variant="text" onClick={props.onCancel}>
           {t("paymentCheckPage.modal.cancelButton")}
         </Button>
-        <Button variant="contained" onClick={props.onSubmit}>
+        <Button id="confirm" variant="contained" onClick={props.onSubmit}>
           {t("paymentCheckPage.modal.submitButton")}
         </Button>
       </Box>

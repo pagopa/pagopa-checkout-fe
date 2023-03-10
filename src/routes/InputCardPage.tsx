@@ -164,6 +164,8 @@ export default function InputCardPage() {
             setErrorModalOpen(false);
           }}
           onRetry={onRetry}
+          titleId="inputCardPageErrorTitleId"
+          bodyId="inputCardPageErrorBodyId"
         />
       )}
       <Box display="none">

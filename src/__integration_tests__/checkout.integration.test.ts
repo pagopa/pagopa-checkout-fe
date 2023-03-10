@@ -1,4 +1,4 @@
-import { payNotice, acceptCookiePolicy, verifyPaymentAndGetError, activatePaymentAndGetError, authorizePaymentAndGetError } from "./utils/helpers";
+import { payNotice, acceptCookiePolicy, verifyPaymentAndGetError, activatePaymentAndGetError, authorizePaymentAndGetError, checkPspDisclaimerBeforeAuthorizePayment, checkErrorOnCardDataFormSubmit, cancelPayment, closeErrorModal } from "./utils/helpers";
 
 describe("Checkout payment activation tests", () => {
   /**
@@ -29,6 +29,12 @@ describe("Checkout payment activation tests", () => {
   const FAIL_ACTIVATE_PPT_DOMINIO_SCONOSCIUTO = "302016723749670011";
   /* FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND end with 41 */
   const FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND = "302016723749670041";
+  /* PSP_UPTHRESHOLD end with 55 */
+  const PSP_UPTHRESHOLD = "302016723749670055";
+  /* PSP_BELOWTHRESHOLD end with 55 */
+  const PSP_BELOWTHRESHOLD = "302016723749670056";
+  /* PSP_FAIL end with 55 */
+  const PSP_FAIL = "302016723749670057";
   
 
   /**
@@ -38,7 +44,7 @@ describe("Checkout payment activation tests", () => {
   jest.setTimeout(80000);
   jest.retryTimes(3);
   page.setDefaultNavigationTimeout(80000);
-  page.setDefaultTimeout(80000)
+  page.setDefaultTimeout(80000);
 
   beforeAll(async () => {
     await page.goto(CHECKOUT_URL);
@@ -144,6 +150,52 @@ describe("Checkout payment activation tests", () => {
       errorMessageXPath
     );
 
+    expect(resultMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
+  });
+
+  it("Should show up threshold disclaimer (why manage creditcard)", async () => {
+    /*
+     * Credit card manage psp
+    */
+    const resultMessage = await checkPspDisclaimerBeforeAuthorizePayment(
+      PSP_UPTHRESHOLD,
+      VALID_FISCAL_CODE,
+      EMAIL,
+      VALID_CARD_DATA
+    );
+
+    expect(resultMessage).toContain("Perché gestisce la tua carta");
+
+    await cancelPayment();
+  });
+
+  it("Should show below threshold disclaimer (why is cheaper)", async () => {
+    /*
+     * Cheaper psp
+    */
+    const resultMessage = await checkPspDisclaimerBeforeAuthorizePayment(
+      PSP_BELOWTHRESHOLD,
+      VALID_FISCAL_CODE,
+      EMAIL,
+      VALID_CARD_DATA
+    );
+
+    expect(resultMessage).toContain("Suggerito perché il più economico");
+
+    await cancelPayment();
+  });
+
+
+  it("Should fails calculate fee", async () => {
+    /*
+     * Calculate fee fails
+    */
+    const resultMessage = await checkErrorOnCardDataFormSubmit(
+      PSP_FAIL,
+      VALID_FISCAL_CODE,
+      EMAIL,
+      VALID_CARD_DATA
+    );
     expect(resultMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
   });
 });
