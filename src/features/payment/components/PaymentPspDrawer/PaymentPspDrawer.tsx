@@ -11,11 +11,11 @@ import { useTranslation } from "react-i18next";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import { getConfigOrThrow } from "../../../../utils/config/config";
-import { Transfer } from "../../../../../generated/definitions/payment-ecommerce/Transfer";
 import { CustomDrawer } from "../../../../components/modals/CustomDrawer";
 import SkeletonFieldContainer from "../../../../components/Skeletons/SkeletonFieldContainer";
 import PspFieldContainer from "../../../../components/TextFormField/PspFieldContainer";
 import { moneyFormat } from "../../../../utils/form/formatters";
+import { Bundle } from "../../../../../generated/definitions/payment-ecommerce/Bundle";
 
 const pspImagePath = (abi: string | undefined): string =>
   pipe(
@@ -34,8 +34,8 @@ export const PaymentPspDrawer = (props: {
   open: boolean;
   onClose: () => void;
   loading: boolean;
-  pspList: Array<Transfer>;
-  onSelect: (selectedPsp: Transfer) => void;
+  pspList: Array<Bundle>;
+  onSelect: (selectedPsp: Bundle) => void;
 }) => {
   const { open, onClose, loading, pspList, onSelect } = props;
   const { t } = useTranslation();
@@ -121,8 +121,7 @@ export const PaymentPspDrawer = (props: {
 };
 
 const sortBy =
-  (field: PspField, direction: "asc" | "desc") =>
-  (a: Transfer, b: Transfer) => {
+  (field: PspField, direction: "asc" | "desc") => (a: Bundle, b: Bundle) => {
     const fieldA = a[field];
     const fieldB = b[field];
     const order = direction === "asc" ? 1 : -1;

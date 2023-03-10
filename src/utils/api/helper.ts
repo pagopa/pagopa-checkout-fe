@@ -71,10 +71,10 @@ import {
 import { AmountEuroCents } from "../../../generated/definitions/payment-ecommerce/AmountEuroCents";
 import { PaymentContextCode } from "../../../generated/definitions/payment-ecommerce/PaymentContextCode";
 import { BrandEnum } from "../../../generated/definitions/payment-ecommerce/PaymentInstrumentDetail";
-import { Transfer } from "../../../generated/definitions/payment-ecommerce/Transfer";
 import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-ecommerce/PaymentRequestsGetResponse";
 import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { TransferListItem } from "../../../generated/definitions/payment-ecommerce/TransferListItem";
+import { Bundle } from "../../../generated/definitions/payment-ecommerce/Bundle";
 import { getBrowserInfoTask, getEMVCompliantColorDepth } from "./checkHelper";
 import {
   apiPaymentEcommerceClient,
@@ -475,14 +475,14 @@ export const proceedToPayment = async (
       .map((p) => p.amount)
       .reduce((sum, current) => Number(sum) + Number(current), 0),
     fee:
-      (getSessionItem(SessionItems.pspSelected) as Transfer | undefined)
+      (getSessionItem(SessionItems.pspSelected) as Bundle | undefined)
         ?.taxPayerFee || 0,
     paymentInstrumentId:
       (getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined)
         ?.paymentMethodId || "",
     pspId:
-      (getSessionItem(SessionItems.pspSelected) as Transfer | undefined)
-        ?.idPsp || "",
+      (getSessionItem(SessionItems.pspSelected) as Bundle | undefined)?.idPsp ||
+      "",
     details:
       (getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined)
         ?.paymentTypeCode === "CP"

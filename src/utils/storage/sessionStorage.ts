@@ -1,5 +1,5 @@
+import { Bundle } from "../../../generated/definitions/payment-ecommerce/Bundle";
 import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
-import { Transfer } from "../../../generated/definitions/payment-ecommerce/Transfer";
 import {
   Cart,
   PaymentFormFields,
@@ -39,7 +39,7 @@ export const getSessionItem = (item: SessionItems) => {
           | PaymentId
           | NewTransactionResponse
           | Cart
-          | Transfer)
+          | Bundle)
       : serializedState;
   } catch (e) {
     return undefined;
@@ -57,7 +57,7 @@ export function setSessionItem(
     | PaymentId
     | NewTransactionResponse
     | Cart
-    | Transfer
+    | Bundle
 ) {
   sessionStorage.setItem(
     name,
