@@ -30,7 +30,7 @@ describe("Checkout payment activation tests", () => {
   /* FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND end with 41 */
   const FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND = "302016723749670041";
   /* PSP_UPTHRESHOLD end with 55 */
-  const PSP_UPTHRESHOLD = "302016723749670055";
+  const PSP_ABOVETHRESHOLD = "302016723749670055";
   /* PSP_BELOWTHRESHOLD end with 55 */
   const PSP_BELOWTHRESHOLD = "302016723749670056";
   /* PSP_FAIL end with 55 */
@@ -158,7 +158,7 @@ describe("Checkout payment activation tests", () => {
      * Credit card manage psp
     */
     const resultMessage = await checkPspDisclaimerBeforeAuthorizePayment(
-      PSP_UPTHRESHOLD,
+      PSP_ABOVETHRESHOLD,
       VALID_FISCAL_CODE,
       EMAIL,
       VALID_CARD_DATA
