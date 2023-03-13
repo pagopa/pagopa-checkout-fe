@@ -181,9 +181,6 @@ export const cancelPayment = async () => {
 }
 
 export const closeErrorModal = async () => {
-  console.log("closeError start");
   const closeErrorBtn = await page.waitForXPath("/html/body/div[6]/div[3]/div/div/div[2]/div[1]/button");
-  console.log("closeError await done");
   await closeErrorBtn.click();
-  console.log("closeError end");
 }
