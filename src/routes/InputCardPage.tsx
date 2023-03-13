@@ -93,7 +93,7 @@ export default function InputCardPage() {
             (value) => {
               dispatch(setThreshold({ belowThreshold: value }));
               const firstPsp = pipe(
-                resp?.bundleOptions,
+                resp?.bundles,
                 O.fromNullable,
                 O.chain((sortedArray) => O.fromNullable(sortedArray[0])),
                 O.map((a) => a as Bundle),
