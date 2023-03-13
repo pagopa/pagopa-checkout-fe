@@ -34,7 +34,7 @@ resources:
     - repository: checkout-be-mock
       type: github
       name: pagopa/pagopa-checkout-be-mock
-      ref: master
+      ref: CHK-1201-added-mock-for-post-psps-request
       endpoint: 'io-azure-devops-github-ro'
 
 stages:

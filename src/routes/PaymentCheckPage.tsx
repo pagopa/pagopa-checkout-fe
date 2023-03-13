@@ -49,9 +49,9 @@ import {
 } from "../utils/storage/sessionStorage";
 import { PaymentPspDrawer } from "../features/payment/components/PaymentPspDrawer/PaymentPspDrawer";
 import disclaimerIcon from "../assets/images/disclaimer.svg";
-import { Transfer } from "../../generated/definitions/payment-ecommerce/Transfer";
-import { BundleOption } from "../../generated/definitions/payment-ecommerce/BundleOption";
 import { NewTransactionResponse } from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
+import { Bundle } from "../../generated/definitions/payment-ecommerce/Bundle";
+import { CalculateFeeResponse } from "../../generated/definitions/payment-ecommerce/CalculateFeeResponse";
 import { CheckoutRoutes } from "./models/routeModel";
 
 const defaultStyle = {
@@ -75,7 +75,7 @@ export default function PaymentCheckPage() {
   const [pspUpdateLoading, setPspUpdateLoading] = React.useState(false);
   const [payLoading, setPayLoading] = React.useState(false);
   const [cancelLoading, setCancelLoading] = React.useState(false);
-  const [pspList, setPspList] = React.useState<Array<Transfer>>([]);
+  const [pspList, setPspList] = React.useState<Array<Bundle>>([]);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
   const cardData = useAppSelector(selectCardData);
@@ -84,7 +84,7 @@ export default function PaymentCheckPage() {
     | PaymentMethod
     | undefined;
   const pspSelected = getSessionItem(SessionItems.pspSelected) as
-    | Transfer
+    | Bundle
     | undefined;
   const transaction = getSessionItem(SessionItems.transaction) as
     | NewTransactionResponse
@@ -172,15 +172,15 @@ export default function PaymentCheckPage() {
     void cancelPayment(onCancelResponse);
   };
 
-  const onPspEditResponse = (bundleOption: any) => {
+  const onPspEditResponse = (calculateFeeResponse: any) => {
     pipe(
-      bundleOption,
-      BundleOption.decode,
+      calculateFeeResponse,
+      CalculateFeeResponse.decode,
       O.fromEither,
       O.fold(
         () => onError(ErrorsType.GENERIC_ERROR),
-        () => {
-          setPspList(bundleOption.bundleOptions?.slice() || []);
+        (resp) => {
+          setPspList(resp?.bundles?.slice() || []);
           setPspEditLoading(false);
         }
       )
@@ -201,7 +201,7 @@ export default function PaymentCheckPage() {
     }
   };
 
-  const updatePSP = (psp: Transfer) => {
+  const updatePSP = (psp: Bundle) => {
     setDrawerOpen(false);
     setPspUpdateLoading(true);
     setSessionItem(SessionItems.pspSelected, psp);
@@ -356,6 +356,7 @@ export default function PaymentCheckPage() {
         handleSubmit={onSubmit}
         handleCancel={onCancel}
         idSubmit="paymentCheckPageButtonPay"
+        idCancel="paymentCheckPageButtonCancel"
       />
       <InformationModal
         open={modalOpen}
@@ -428,6 +429,7 @@ const AmountDisclaimer = ({ belowThreshold }: { belowThreshold: boolean }) => {
         style={{ width: "14px", height: "14px" }}
       />
       <Typography
+        id="pspDisclaimer"
         variant="caption-semibold"
         component="div"
         sx={{

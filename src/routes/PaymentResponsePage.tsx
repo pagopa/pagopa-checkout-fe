@@ -29,9 +29,9 @@ import {
 } from "../utils/transactions/TransactionResultUtil";
 import { TransactionStatusEnum } from "../../generated/definitions/payment-ecommerce/TransactionStatus";
 import { Cart } from "../features/payment/models/paymentModel";
-import { Transfer } from "../../generated/definitions/payment-ecommerce/Transfer";
 import { NewTransactionResponse } from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { resetThreshold } from "../redux/slices/threshold";
+import { Bundle } from "../../generated/definitions/payment-ecommerce/Bundle";
 
 type printData = {
   useremail: string;
@@ -49,7 +49,7 @@ export default function PaymentCheckPage() {
     | NewTransactionResponse
     | undefined;
   const pspSelected = getSessionItem(SessionItems.pspSelected) as
-    | Transfer
+    | Bundle
     | undefined;
   const email = getSessionItem(SessionItems.useremail) as string | undefined;
   const totalAmount =

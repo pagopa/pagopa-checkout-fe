@@ -31,6 +31,7 @@ export function ErrorButtons(props: {
             item
           >
             <Button
+              id="closeError"
               variant={index ? "contained" : "text"}
               onClick={button.action ? button.action : props.handleClose}
               style={{
