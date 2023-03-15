@@ -194,7 +194,7 @@ export default function PaymentCheckPage() {
     if (paymentMethod) {
       void calculateFees({
         paymentId: paymentMethod?.paymentMethodId,
-        bin: cardData?.pan.substring(0, 8),
+        bin: cardData?.pan.substring(0, 6),
         onError,
         onResponsePsp: onPspEditResponse,
       });

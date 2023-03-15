@@ -125,7 +125,7 @@ export default function InputCardPage() {
           | NewTransactionResponse
           | undefined
       )?.transactionId;
-      const bin = cardData.pan.substring(0, 8);
+      const bin = cardData.pan.substring(0, 6);
       // If I want to change the card data but I have already activated the payment
       if (transactionId) {
         void onResponseActivate(bin);
