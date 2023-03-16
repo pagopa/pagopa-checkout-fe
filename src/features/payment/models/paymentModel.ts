@@ -1,10 +1,6 @@
 import { Theme } from "@emotion/react";
 import { SxProps } from "@mui/material";
-import { ClientIdEnum } from "../../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
-import { TransactionStatusEnum } from "../../../../generated/definitions/payment-ecommerce/TransactionStatus";
-import { PaymentInfo as PaymentData } from "../../../../generated/definitions/payment-ecommerce/PaymentInfo";
 import { TransactionMethods } from "../../../routes/models/paymentMethodRoutes";
-import { AmountEuroCents } from "../../../../generated/definitions/payment-ecommerce/AmountEuroCents";
 
 export interface PaymentFormFields {
   billCode: string;
@@ -77,20 +73,6 @@ export interface PaymentMethod {
   paymentMethodId: string;
 }
 
-export interface PspSelected {
-  pspCode: string;
-  businessName: string;
-  fee: number;
-}
-
-export interface PspList {
-  name: string | undefined;
-  label: string | undefined;
-  image: string | undefined;
-  commission: number;
-  idPsp: string | undefined;
-}
-
 export interface PaymentInstruments {
   id: string;
   name: string;
@@ -123,13 +105,4 @@ export interface Cart {
   paymentNotices: Array<PaymentNotice>;
   returnUrls: ReturnUrls;
   emailNotice?: string;
-}
-
-export interface Transaction {
-  transactionId: string;
-  status: TransactionStatusEnum;
-  payments: ReadonlyArray<PaymentData>;
-  feeTotal?: AmountEuroCents;
-  clientId?: ClientIdEnum;
-  authToken?: string;
 }

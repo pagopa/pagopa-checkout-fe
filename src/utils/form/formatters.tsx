@@ -18,7 +18,10 @@ export function expireDateFormatter(old: string, current: string) {
 export function cleanSpaces(text: string) {
   return text.replace(/\s/g, "");
 }
-
+/**
+ * This function format number to EUR currency by it-IT locale
+ * by default amount is in CENTS
+ */
 export function moneyFormat(
   amount: number,
   decimalDigits: number = 2,

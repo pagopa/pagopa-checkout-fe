@@ -1,4 +1,5 @@
 import React from "react";
+import { resetThreshold } from "../redux/slices/threshold";
 import PageContainer from "../components/PageContent/PageContainer";
 import PrivacyInfo from "../components/PrivacyPolicy/PrivacyInfo";
 import { PaymentNoticeChoice } from "../features/payment/components/PaymentNoticeChoice/PaymentNoticeChoice";
@@ -11,6 +12,7 @@ export default function IndexPage() {
 
   React.useEffect(() => {
     dispatch(resetCardData());
+    dispatch(resetThreshold());
   }, []);
   clearStorage();
 

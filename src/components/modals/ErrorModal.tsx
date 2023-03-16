@@ -30,6 +30,8 @@ function ErrorModal(props: {
   onClose: () => void;
   onRetry?: () => void;
   style?: React.CSSProperties;
+  titleId?: string;
+  bodyId?: string;
 }) {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -110,12 +112,17 @@ function ErrorModal(props: {
       aria-live="assertive"
     >
       <DialogTitle sx={{ p: 0 }}>
-        <Typography variant="h6" component={"div"} sx={{ mb: 2 }}>
+        <Typography
+          id={props.titleId}
+          variant="h6"
+          component={"div"}
+          sx={{ mb: 2 }}
+        >
           {t(title)}
         </Typography>
       </DialogTitle>
       <DialogContent sx={{ p: 0 }}>
-        <Typography variant="body1" component={"div"}>
+        <Typography id={props.bodyId} variant="body1" component={"div"}>
           {t(body)}
         </Typography>
         {showDetail(body) && (

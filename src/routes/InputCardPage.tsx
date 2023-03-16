@@ -3,22 +3,17 @@ import cardValidator from "card-validator";
 import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useNavigate } from "react-router-dom";
+import * as O from "fp-ts/Option";
+import * as E from "fp-ts/Either";
+import { pipe } from "fp-ts/function";
+import { setThreshold } from "../redux/slices/threshold";
 import ErrorModal from "../components/modals/ErrorModal";
 import PageContainer from "../components/PageContent/PageContainer";
 import { InputCardForm } from "../features/payment/components/InputCardForm/InputCardForm";
-import {
-  PaymentMethod,
-  PspList,
-  Transaction,
-} from "../features/payment/models/paymentModel";
+import { PaymentMethod } from "../features/payment/models/paymentModel";
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { setCardData } from "../redux/slices/cardData";
-import {
-  activatePayment,
-  getPaymentPSPList,
-  onErrorGetPSP,
-  sortPspByOnUsPolicy,
-} from "../utils/api/helper";
+import { activatePayment, calculateFees } from "../utils/api/helper";
 import { InputCardFormFields } from "../features/payment/models/paymentModel";
 import { getConfigOrThrow } from "../utils/config/config";
 import { ErrorsType } from "../utils/errors/checkErrorsModel";
@@ -28,6 +23,9 @@ import {
   SessionItems,
   setSessionItem,
 } from "../utils/storage/sessionStorage";
+import { NewTransactionResponse } from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
+import { CalculateFeeResponse } from "../../generated/definitions/payment-ecommerce/CalculateFeeResponse";
+import { Bundle } from "../../generated/definitions/payment-ecommerce/Bundle";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function InputCardPage() {
@@ -44,15 +42,21 @@ export default function InputCardPage() {
 
   React.useEffect(() => {
     setHideCancelButton(
-      !!(getSessionItem(SessionItems.transaction) as Transaction | undefined)
-        ?.transactionId
+      !!pipe(
+        getSessionItem(SessionItems.transaction),
+        NewTransactionResponse.decode,
+        E.fold(
+          () => undefined,
+          (transaction) => transaction.transactionId
+        )
+      )
     );
   }, []);
 
   React.useEffect(() => {
     if (loading && !errorModalOpen) {
       const id = window.setTimeout(() => {
-        setError(ErrorsType.POLLING_SLOW);
+        setError(ErrorsType.STATUS_ERROR);
         setErrorModalOpen(true);
       }, config.CHECKOUT_API_TIMEOUT as number);
       setTimeoutId(id);
@@ -68,10 +72,42 @@ export default function InputCardPage() {
     ref.current?.reset();
   };
 
-  const onResponse = () => {
-    setLoading(false);
-    navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
-  };
+  const onResponseActivate = (bin: string) =>
+    calculateFees({
+      paymentId:
+        (
+          getSessionItem(SessionItems.paymentMethod) as
+            | PaymentMethod
+            | undefined
+        )?.paymentMethodId || "",
+      bin,
+      onError,
+      onResponsePsp: (resp) => {
+        pipe(
+          resp,
+          CalculateFeeResponse.decode,
+          O.fromEither,
+          O.chain((resp) => O.fromNullable(resp.belowThreshold)),
+          O.fold(
+            () => onError(ErrorsType.GENERIC_ERROR),
+            (value) => {
+              dispatch(setThreshold({ belowThreshold: value }));
+              const firstPsp = pipe(
+                resp?.bundles,
+                O.fromNullable,
+                O.chain((sortedArray) => O.fromNullable(sortedArray[0])),
+                O.map((a) => a as Bundle),
+                O.getOrElseW(() => ({}))
+              );
+
+              setSessionItem(SessionItems.pspSelected, firstPsp);
+              setLoading(false);
+              navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
+            }
+          )
+        );
+      },
+    });
 
   const onSubmit = React.useCallback(
     async (wallet: InputCardFormFields) => {
@@ -84,33 +120,20 @@ export default function InputCardPage() {
       };
       dispatch(setCardData(cardData));
       setLoading(true);
-      await getPaymentPSPList({
-        paymentMethodId:
-          (
-            getSessionItem(SessionItems.paymentMethod) as
-              | PaymentMethod
-              | undefined
-          )?.paymentMethodId || "",
-        onError: onErrorGetPSP,
-        onResponse: (resp: Array<PspList>) => {
-          const firstPsp = sortPspByOnUsPolicy(resp);
-          setSessionItem(SessionItems.pspSelected, {
-            pspCode: firstPsp.at(0)?.idPsp || "",
-            fee: firstPsp.at(0)?.commission || 0,
-            businessName: firstPsp.at(0)?.name || "",
-          });
-        },
-      });
       const transactionId = (
-        getSessionItem(SessionItems.transaction) as Transaction | undefined
+        getSessionItem(SessionItems.transaction) as
+          | NewTransactionResponse
+          | undefined
       )?.transactionId;
+      const bin = cardData.pan.substring(0, 6);
       // If I want to change the card data but I have already activated the payment
       if (transactionId) {
-        onResponse();
+        void onResponseActivate(bin);
       } else {
         await activatePayment({
-          onResponse,
-          onError,
+          bin,
+          onResponseActivate,
+          onErrorActivate: onError,
         });
       }
     },
@@ -141,6 +164,8 @@ export default function InputCardPage() {
             setErrorModalOpen(false);
           }}
           onRetry={onRetry}
+          titleId="inputCardPageErrorTitleId"
+          bodyId="inputCardPageErrorBodyId"
         />
       )}
       <Box display="none">
