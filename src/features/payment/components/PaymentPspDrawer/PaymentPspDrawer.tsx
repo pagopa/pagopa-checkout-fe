@@ -23,7 +23,7 @@ const pspImagePath = (abi: string | undefined): string =>
     O.fromNullable,
     O.map((abi) =>
       getConfigOrThrow()
-        .CHECKOUT_PAGOPA_ASSETS_CDN.concat("/")
+        .CHECKOUT_PAGOPA_LOGOS_CDN.concat("/")
         .concat(abi)
         .concat(".png")
     ),

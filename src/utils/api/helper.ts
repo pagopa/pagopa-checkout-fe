@@ -69,7 +69,6 @@ import {
   setSessionItem,
 } from "../storage/sessionStorage";
 import { AmountEuroCents } from "../../../generated/definitions/payment-ecommerce/AmountEuroCents";
-import { PaymentContextCode } from "../../../generated/definitions/payment-ecommerce/PaymentContextCode";
 import { BrandEnum } from "../../../generated/definitions/payment-ecommerce/PaymentInstrumentDetail";
 import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-ecommerce/PaymentRequestsGetResponse";
 import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
@@ -189,12 +188,7 @@ export const activatePayment = async ({
       () => onErrorActivate(ErrorsType.INVALID_DECODE),
       (response) =>
         pipe(
-          activePaymentTask(
-            response.amount,
-            response.paymentContextCode,
-            userEmail || "",
-            rptId
-          ),
+          activePaymentTask(response.amount, userEmail || "", rptId),
           TE.fold(
             (e: string) => async () => {
               onErrorActivate(e);
@@ -211,7 +205,6 @@ export const activatePayment = async ({
 
 const activePaymentTask = (
   amountSinglePayment: AmountEuroCents,
-  paymentContextCode: PaymentContextCode,
   userEmail: string,
   rptId: RptId
 ): TE.TaskEither<string, NewTransactionResponse> =>
@@ -227,7 +220,6 @@ const activePaymentTask = (
             paymentNotices: [
               {
                 rptId,
-                paymentContextCode,
                 amount: amountSinglePayment,
               },
             ],
