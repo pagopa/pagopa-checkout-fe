@@ -90,7 +90,7 @@ stages:
               ecommerce_host: 'https://api.dev.platform.pagopa.it'
               api_ecommerce_basepath: '/ecommerce/checkout/v1'
               pagopa_assets_cdn: 'https://assets.cdn.platform.pagopa.it/payment-methods'
-              pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi/'
+              pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi'
 
           - script: |
               yarn build
