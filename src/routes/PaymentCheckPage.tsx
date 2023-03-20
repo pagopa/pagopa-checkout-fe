@@ -169,7 +169,7 @@ export default function PaymentCheckPage() {
   const onCancelPaymentSubmit = () => {
     setCancelModalOpen(false);
     setCancelLoading(true);
-    void cancelPayment(onCancelResponse);
+    void cancelPayment(onError, onCancelResponse);
   };
 
   const onPspEditResponse = (calculateFeeResponse: any) => {
