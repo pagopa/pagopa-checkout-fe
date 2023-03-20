@@ -77,6 +77,7 @@ export default function PaymentCheckPage() {
   const [cancelLoading, setCancelLoading] = React.useState(false);
   const [pspList, setPspList] = React.useState<Array<Bundle>>([]);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
+  const [userCancelRedirect, setUserCancelRedirect] = React.useState(false);
   const [error, setError] = React.useState("");
   const cardData = useAppSelector(selectCardData);
   const threshold = useAppSelector(selectThreshold);
@@ -112,13 +113,16 @@ export default function PaymentCheckPage() {
     return () => window.removeEventListener("popstate", onBrowserBackEvent);
   }, []);
 
-  const onError = (m: string) => {
+  const onError = (m: string, userCancelRedirect?: boolean) => {
     setPayLoading(false);
     setCancelLoading(false);
     setPspEditLoading(false);
     setPspUpdateLoading(false);
     setError(m);
     setErrorModalOpen(true);
+    setUserCancelRedirect(
+      userCancelRedirect === undefined ? false : userCancelRedirect
+    );
   };
 
   const missingThreshold = () => threshold?.belowThreshold === undefined;
@@ -408,6 +412,9 @@ export default function PaymentCheckPage() {
           error={error}
           open={errorModalOpen}
           onClose={() => {
+            if (userCancelRedirect) {
+              navigate(`/`);
+            }
             setErrorModalOpen(false);
           }}
         />

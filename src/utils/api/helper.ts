@@ -540,7 +540,7 @@ export const proceedToPayment = async (
 };
 
 export const cancelPayment = async (
-  onError: (e: string) => void,
+  onError: (e: string, userCancelRedirect: boolean) => void,
   onResponse: () => void
 ) => {
   mixpanel.track(PAYMENT_ACTION_DELETE_INIT.value, {
@@ -568,7 +568,7 @@ export const cancelPayment = async (
     )(transactionId),
     TE.fold(
       () => async () => {
-        onError(ErrorsType.GENERIC_ERROR);
+        onError(ErrorsType.GENERIC_ERROR, true);
         return toError;
       },
       () => async () =>
@@ -580,7 +580,7 @@ export const cancelPayment = async (
                 transactionId,
               }),
             () => {
-              onError(ErrorsType.CONNECTION);
+              onError(ErrorsType.CONNECTION, false);
               mixpanel.track(PAYMENT_ACTION_DELETE_NET_ERR.value, {
                 EVENT_ID: PAYMENT_ACTION_DELETE_NET_ERR.value,
               });
@@ -589,7 +589,7 @@ export const cancelPayment = async (
           ),
           TE.fold(
             () => async () => {
-              onError(ErrorsType.SERVER);
+              onError(ErrorsType.SERVER, false);
               mixpanel.track(PAYMENT_ACTION_DELETE_SVR_ERR.value, {
                 EVENT_ID: PAYMENT_ACTION_DELETE_SVR_ERR.value,
               });
@@ -607,8 +607,14 @@ export const cancelPayment = async (
                         EVENT_ID: PAYMENT_ACTION_DELETE_SUCCESS.value,
                       });
                       return myRes?.value;
+                    } else if (myRes.status >= 400 && myRes.status < 500) {
+                      onError(ErrorsType.GENERIC_ERROR, true);
+                      mixpanel.track(PAYMENT_ACTION_DELETE_RESP_ERR.value, {
+                        EVENT_ID: PAYMENT_ACTION_DELETE_RESP_ERR.value,
+                      });
+                      return {};
                     } else {
-                      onError(ErrorsType.GENERIC_ERROR);
+                      onError(ErrorsType.GENERIC_ERROR, false);
                       mixpanel.track(PAYMENT_ACTION_DELETE_RESP_ERR.value, {
                         EVENT_ID: PAYMENT_ACTION_DELETE_RESP_ERR.value,
                       });
