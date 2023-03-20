@@ -79,6 +79,7 @@ import { TransferListItem } from "../../../generated/definitions/payment-ecommer
 import { Bundle } from "../../../generated/definitions/payment-ecommerce/Bundle";
 import { getBrowserInfoTask, getEMVCompliantColorDepth } from "./checkHelper";
 import {
+  apiPaymentEcommerceCalculateFeesClientWithRetry,
   apiPaymentEcommerceClient,
   apiPaymentTransactionsClient,
 } from "./client";
@@ -351,7 +352,7 @@ export const calculateFees = async ({
   const bundleOption = await pipe(
     TE.tryCatch(
       () =>
-        apiPaymentEcommerceClient.calculateFees({
+        apiPaymentEcommerceCalculateFeesClientWithRetry.calculateFees({
           id: paymentId,
           maxOccurrences: undefined,
           body: {
