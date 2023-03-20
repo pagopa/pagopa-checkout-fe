@@ -178,6 +178,7 @@ export const cancelPayment = async () => {
 
   const cancPayment = await page.waitForSelector("#confirm");
   await cancPayment.click();
+  await page.waitForNavigation();
 }
 
 export const closeErrorModal = async () => {
