@@ -199,7 +199,7 @@ export const cancelPaymentKO = async (noticeCode, fiscalCode, email, cardData) =
   await paymentCheckPageButtonCancel.click();
   const cancPayment = await page.waitForSelector("#confirm");
   await cancPayment.click();
-  const message = await page.waitForXPath(resultMessageXPath);
+  const message = await page.waitForSelector("#idTitleErrorModalPaymentCheckPage");
   return await message.evaluate((el) => el.textContent);
 };
 
