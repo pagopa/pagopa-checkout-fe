@@ -13,7 +13,7 @@ afterEach(() => {
 describe("TransactionResultUtil", () => {
   it("should return view outcome with ecommerce athorization", async () => {
     expect(
-      getViewOutcomeFromEcommerceResultCode(TransactionStatusEnum.NOTIFIED)
+      getViewOutcomeFromEcommerceResultCode(TransactionStatusEnum.NOTIFIED_OK)
     ).toEqual(ViewOutcomeEnum.SUCCESS);
 
     expect(
@@ -60,6 +60,10 @@ describe("TransactionResultUtil", () => {
 
     expect(
       getViewOutcomeFromEcommerceResultCode(TransactionStatusEnum.REFUNDED)
+    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
+
+    expect(
+      getViewOutcomeFromEcommerceResultCode(TransactionStatusEnum.NOTIFIED_KO)
     ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
   });
 });
