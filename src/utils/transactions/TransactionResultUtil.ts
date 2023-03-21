@@ -14,10 +14,10 @@ export enum ViewOutcomeEnum {
 }
 
 export enum EcommerceFinalStatusCodeEnum {
-  NOTIFIED,
+  NOTIFIED_OK,
   AUTHORIZATION_FAILED,
   CLOSURE_FAILED,
-  NOTIFIED_FAILED,
+  NOTIFIED_KO,
 }
 
 export const getViewOutcomeFromEcommerceResultCode = (
