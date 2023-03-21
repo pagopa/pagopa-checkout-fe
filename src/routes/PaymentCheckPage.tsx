@@ -29,6 +29,7 @@ import PageContainer from "../components/PageContent/PageContainer";
 import ClickableFieldContainer from "../components/TextFormField/ClickableFieldContainer";
 import FieldContainer from "../components/TextFormField/FieldContainer";
 import {
+  Cart,
   PaymentInfo,
   PaymentMethod,
 } from "../features/payment/models/paymentModel";
@@ -78,6 +79,7 @@ export default function PaymentCheckPage() {
   const [pspList, setPspList] = React.useState<Array<Bundle>>([]);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [userCancelRedirect, setUserCancelRedirect] = React.useState(false);
+  const [errorKOPage, setErrorKOPage] = React.useState("/");
   const [error, setError] = React.useState("");
   const cardData = useAppSelector(selectCardData);
   const threshold = useAppSelector(selectThreshold);
@@ -120,9 +122,15 @@ export default function PaymentCheckPage() {
     setPspUpdateLoading(false);
     setError(m);
     setErrorModalOpen(true);
-    setUserCancelRedirect(
-      userCancelRedirect === undefined ? false : userCancelRedirect
-    );
+    if (userCancelRedirect !== undefined) {
+      setUserCancelRedirect(
+        userCancelRedirect === undefined ? false : userCancelRedirect
+      );
+      setErrorKOPage(
+        (getSessionItem(SessionItems.cart) as Cart | undefined)?.returnUrls
+          .returnErrorUrl || "/"
+      );
+    }
   };
 
   const missingThreshold = () => threshold?.belowThreshold === undefined;
@@ -412,10 +420,10 @@ export default function PaymentCheckPage() {
           error={error}
           open={errorModalOpen}
           onClose={() => {
-            if (userCancelRedirect) {
-              navigate(`/`);
-            }
             setErrorModalOpen(false);
+            if (userCancelRedirect) {
+              navigate(errorKOPage);
+            }
           }}
         />
       )}
