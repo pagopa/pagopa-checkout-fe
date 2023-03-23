@@ -35,7 +35,10 @@ import {
   DONATION_LIST_ERROR,
   DONATION_LIST_SUCCESS,
   PAYMENT_ACTION_DELETE_INIT,
+  PAYMENT_ACTION_DELETE_NET_ERR,
+  PAYMENT_ACTION_DELETE_RESP_ERR,
   PAYMENT_ACTION_DELETE_SUCCESS,
+  PAYMENT_ACTION_DELETE_SVR_ERR,
   PAYMENT_ACTIVATE_INIT,
   PAYMENT_ACTIVATE_NET_ERR,
   PAYMENT_ACTIVATE_RESP_ERR,
@@ -76,6 +79,7 @@ import { TransferListItem } from "../../../generated/definitions/payment-ecommer
 import { Bundle } from "../../../generated/definitions/payment-ecommerce/Bundle";
 import { getBrowserInfoTask, getEMVCompliantColorDepth } from "./checkHelper";
 import {
+  apiPaymentEcommerceCalculateFeesClientWithRetry,
   apiPaymentEcommerceClient,
   apiPaymentTransactionsClient,
 } from "./client";
@@ -348,7 +352,7 @@ export const calculateFees = async ({
   const bundleOption = await pipe(
     TE.tryCatch(
       () =>
-        apiPaymentEcommerceClient.calculateFees({
+        apiPaymentEcommerceCalculateFeesClientWithRetry.calculateFees({
           id: paymentId,
           maxOccurrences: undefined,
           body: {
@@ -536,17 +540,94 @@ export const proceedToPayment = async (
   )();
 };
 
-// TODO Invoke ecommerce api to perform cancel payment CHK-1007
-export const cancelPayment = async (onResponse: () => void) => {
-  // Payment action DELETE
+export const cancelPayment = async (
+  onError: (e: string, userCancelRedirect: boolean) => void,
+  onResponse: () => void
+) => {
   mixpanel.track(PAYMENT_ACTION_DELETE_INIT.value, {
     EVENT_ID: PAYMENT_ACTION_DELETE_INIT.value,
   });
 
-  mixpanel.track(PAYMENT_ACTION_DELETE_SUCCESS.value, {
-    EVENT_ID: PAYMENT_ACTION_DELETE_SUCCESS.value,
-  });
-  onResponse();
+  const transactionId = pipe(
+    getSessionItem(SessionItems.transaction) as NewTransactionResponse,
+    O.fromNullable,
+    O.map((transaction) => transaction.transactionId),
+    O.getOrElse(() => "")
+  );
+
+  const bearerAuth = pipe(
+    getSessionItem(SessionItems.transaction) as NewTransactionResponse,
+    O.fromNullable,
+    O.chain((transaction) => O.fromNullable(transaction.authToken)),
+    O.getOrElse(() => "")
+  );
+
+  await pipe(
+    TE.fromPredicate(
+      (idTransaction) => idTransaction !== "",
+      E.toError
+    )(transactionId),
+    TE.fold(
+      () => async () => {
+        onError(ErrorsType.GENERIC_ERROR, true);
+        return toError;
+      },
+      () => async () =>
+        await pipe(
+          TE.tryCatch(
+            () =>
+              apiPaymentEcommerceClient.requestTransactionUserCancellation({
+                bearerAuth,
+                transactionId,
+              }),
+            () => {
+              onError(ErrorsType.CONNECTION, false);
+              mixpanel.track(PAYMENT_ACTION_DELETE_NET_ERR.value, {
+                EVENT_ID: PAYMENT_ACTION_DELETE_NET_ERR.value,
+              });
+              return toError;
+            }
+          ),
+          TE.fold(
+            () => async () => {
+              onError(ErrorsType.SERVER, false);
+              mixpanel.track(PAYMENT_ACTION_DELETE_SVR_ERR.value, {
+                EVENT_ID: PAYMENT_ACTION_DELETE_SVR_ERR.value,
+              });
+              return {};
+            },
+            (myResExt) => async () =>
+              pipe(
+                myResExt,
+                E.fold(
+                  () => PAYMENT_ACTION_DELETE_RESP_ERR.value,
+                  (myRes) => {
+                    if (myRes?.status === 202) {
+                      onResponse();
+                      mixpanel.track(PAYMENT_ACTION_DELETE_SUCCESS.value, {
+                        EVENT_ID: PAYMENT_ACTION_DELETE_SUCCESS.value,
+                      });
+                      return myRes?.value;
+                    } else if (myRes.status >= 400 && myRes.status < 500) {
+                      onError(ErrorsType.GENERIC_ERROR, true);
+                      mixpanel.track(PAYMENT_ACTION_DELETE_RESP_ERR.value, {
+                        EVENT_ID: PAYMENT_ACTION_DELETE_RESP_ERR.value,
+                      });
+                      return {};
+                    } else {
+                      onError(ErrorsType.GENERIC_ERROR, false);
+                      mixpanel.track(PAYMENT_ACTION_DELETE_RESP_ERR.value, {
+                        EVENT_ID: PAYMENT_ACTION_DELETE_RESP_ERR.value,
+                      });
+                      return {};
+                    }
+                  }
+                )
+              )
+          )
+        )()
+    )
+  )();
 };
 
 export const getDonationEntityList = async (

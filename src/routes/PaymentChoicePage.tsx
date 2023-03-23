@@ -15,7 +15,7 @@ import {
   PaymentInfo,
   PaymentInstruments,
 } from "../features/payment/models/paymentModel";
-import { cancelPayment, getPaymentInstruments } from "../utils/api/helper";
+import { getPaymentInstruments } from "../utils/api/helper";
 import { getTotalFromCart } from "../utils/cart/cart";
 import { getSessionItem, SessionItems } from "../utils/storage/sessionStorage";
 import { CheckoutRoutes } from "./models/routeModel";
@@ -64,7 +64,7 @@ export default function PaymentChoicePage() {
   const onCancelPaymentSubmit = React.useCallback(() => {
     setCancelModalOpen(false);
     setLoading(true);
-    void cancelPayment(onCancelResponse);
+    onCancelResponse();
   }, []);
 
   const handleBackNavigate = React.useCallback(() => navigate(-1), []);

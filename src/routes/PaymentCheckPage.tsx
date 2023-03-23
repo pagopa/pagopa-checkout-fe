@@ -29,6 +29,7 @@ import PageContainer from "../components/PageContent/PageContainer";
 import ClickableFieldContainer from "../components/TextFormField/ClickableFieldContainer";
 import FieldContainer from "../components/TextFormField/FieldContainer";
 import {
+  Cart,
   PaymentInfo,
   PaymentMethod,
 } from "../features/payment/models/paymentModel";
@@ -77,6 +78,8 @@ export default function PaymentCheckPage() {
   const [cancelLoading, setCancelLoading] = React.useState(false);
   const [pspList, setPspList] = React.useState<Array<Bundle>>([]);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
+  const [userCancelRedirect, setUserCancelRedirect] = React.useState(false);
+  const [errorKOPage, setErrorKOPage] = React.useState("/");
   const [error, setError] = React.useState("");
   const cardData = useAppSelector(selectCardData);
   const threshold = useAppSelector(selectThreshold);
@@ -112,13 +115,22 @@ export default function PaymentCheckPage() {
     return () => window.removeEventListener("popstate", onBrowserBackEvent);
   }, []);
 
-  const onError = (m: string) => {
+  const onError = (m: string, userCancelRedirect?: boolean) => {
     setPayLoading(false);
     setCancelLoading(false);
     setPspEditLoading(false);
     setPspUpdateLoading(false);
     setError(m);
     setErrorModalOpen(true);
+    if (userCancelRedirect !== undefined) {
+      setUserCancelRedirect(
+        userCancelRedirect === undefined ? false : userCancelRedirect
+      );
+      setErrorKOPage(
+        (getSessionItem(SessionItems.cart) as Cart | undefined)?.returnUrls
+          .returnErrorUrl || "/"
+      );
+    }
   };
 
   const missingThreshold = () => threshold?.belowThreshold === undefined;
@@ -169,7 +181,7 @@ export default function PaymentCheckPage() {
   const onCancelPaymentSubmit = () => {
     setCancelModalOpen(false);
     setCancelLoading(true);
-    void cancelPayment(onCancelResponse);
+    void cancelPayment(onError, onCancelResponse);
   };
 
   const onPspEditResponse = (calculateFeeResponse: any) => {
@@ -409,6 +421,9 @@ export default function PaymentCheckPage() {
           open={errorModalOpen}
           onClose={() => {
             setErrorModalOpen(false);
+            if (userCancelRedirect) {
+              navigate(errorKOPage);
+            }
           }}
         />
       )}
