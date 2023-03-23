@@ -172,14 +172,36 @@ export const fillCardDataForm = async (cardData) => {
   await continueBtn.click();
 };
 
-export const cancelPayment = async () => {
+export const cancelPaymentAction = async () => {
   const paymentCheckPageButtonCancel = await page.waitForSelector("#paymentCheckPageButtonCancel");
   await paymentCheckPageButtonCancel.click();
-
   const cancPayment = await page.waitForSelector("#confirm");
   await cancPayment.click();
   await page.waitForNavigation();
 }
+
+export const cancelPaymentOK = async (noticeCode, fiscalCode, email, cardData) => {
+  const resultMessageXPath = "/html/body/div[1]/div/div[2]/div/div/div/div[1]/div";
+  await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData)
+  const paymentCheckPageButtonCancel = await page.waitForSelector("#paymentCheckPageButtonCancel");
+  await paymentCheckPageButtonCancel.click();
+  const cancPayment = await page.waitForSelector("#confirm");
+  await cancPayment.click();
+  await page.waitForNavigation();
+  const message = await page.waitForXPath(resultMessageXPath);
+  return await message.evaluate((el) => el.textContent);
+};
+
+export const cancelPaymentKO = async (noticeCode, fiscalCode, email, cardData) => {
+  const resultMessageXPath = "/html/body/div[7]/div[3]/div/h2/div";
+  await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData)
+  const paymentCheckPageButtonCancel = await page.waitForSelector("#paymentCheckPageButtonCancel");
+  await paymentCheckPageButtonCancel.click();
+  const cancPayment = await page.waitForSelector("#confirm");
+  await cancPayment.click();
+  const message = await page.waitForSelector("#idTitleErrorModalPaymentCheckPage");
+  return await message.evaluate((el) => el.textContent);
+};
 
 export const closeErrorModal = async () => {
   const closeErrorBtn = await page.waitForXPath("/html/body/div[6]/div[3]/div/div/div[2]/div[1]/button");

@@ -419,6 +419,7 @@ export default function PaymentCheckPage() {
         <ErrorModal
           error={error}
           open={errorModalOpen}
+          titleId="idTitleErrorModalPaymentCheckPage"
           onClose={() => {
             setErrorModalOpen(false);
             if (userCancelRedirect) {

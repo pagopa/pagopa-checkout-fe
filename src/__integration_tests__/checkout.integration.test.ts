@@ -1,4 +1,4 @@
-import { payNotice, acceptCookiePolicy, verifyPaymentAndGetError, activatePaymentAndGetError, authorizePaymentAndGetError, checkPspDisclaimerBeforeAuthorizePayment, checkErrorOnCardDataFormSubmit, cancelPayment, closeErrorModal } from "./utils/helpers";
+import { payNotice, acceptCookiePolicy, verifyPaymentAndGetError, activatePaymentAndGetError, authorizePaymentAndGetError, checkPspDisclaimerBeforeAuthorizePayment, checkErrorOnCardDataFormSubmit, closeErrorModal, cancelPaymentOK, cancelPaymentAction, cancelPaymentKO } from "./utils/helpers";
 
 describe("Checkout payment activation tests", () => {
   /**
@@ -31,10 +31,14 @@ describe("Checkout payment activation tests", () => {
   const FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND = "302016723749670041";
   /* PSP_UPTHRESHOLD end with 55 */
   const PSP_ABOVETHRESHOLD = "302016723749670055";
-  /* PSP_BELOWTHRESHOLD end with 55 */
+  /* PSP_BELOWTHRESHOLD end with 56 */
   const PSP_BELOWTHRESHOLD = "302016723749670056";
-  /* PSP_FAIL end with 55 */
+  /* PSP_FAIL end with 57 */
   const PSP_FAIL = "302016723749670057";
+  /* CANCEL_PAYMENT SUCCESS end with 58 */
+  const CANCEL_PAYMENT_OK = "302016723749670058";
+  /* CANCEL_PAYMENT_FAIL end with 59 */
+  const CANCEL_PAYMENT_KO = "302016723749670059";
   
 
   /**
@@ -166,7 +170,7 @@ describe("Checkout payment activation tests", () => {
 
     expect(resultMessage).toContain("Perché gestisce la tua carta");
 
-    await cancelPayment();
+    await cancelPaymentAction();
   });
 
   it("Should show below threshold disclaimer (why is cheaper)", async () => {
@@ -182,7 +186,7 @@ describe("Checkout payment activation tests", () => {
 
     expect(resultMessage).toContain("Suggerito perché il più economico");
 
-    await cancelPayment();
+    await cancelPaymentAction();
   });
 
 
@@ -192,6 +196,32 @@ describe("Checkout payment activation tests", () => {
     */
     const resultMessage = await checkErrorOnCardDataFormSubmit(
       PSP_FAIL,
+      VALID_FISCAL_CODE,
+      EMAIL,
+      VALID_CARD_DATA
+    );
+    expect(resultMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
+  });
+
+  it("SShould correctly execute CANCEL PAYMENT by user", async () => {
+    /*
+     * Cancel payment OK
+    */
+    const resultMessage = await cancelPaymentOK(
+      CANCEL_PAYMENT_OK,
+      VALID_FISCAL_CODE,
+      EMAIL,
+      VALID_CARD_DATA
+    );
+    expect(resultMessage).toContain("L'operazione è stata annullata");
+  });
+
+  it("Should fail a CANCEL PAYMENT by user", async () => {
+    /*
+     * Cancel payment KO
+    */
+    const resultMessage = await cancelPaymentKO(
+      CANCEL_PAYMENT_KO,
       VALID_FISCAL_CODE,
       EMAIL,
       VALID_CARD_DATA
