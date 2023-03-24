@@ -2,7 +2,7 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import cardDataReducer from "./slices/cardData";
 import thresholdReducer from "./slices/threshold";
 
-const { CHECKOUT_ENV } = process.env;
+const ENV = process.env.CHECKOUT_ENV;
 
 const reducer = combineReducers({
   cardData: cardDataReducer,
@@ -11,7 +11,7 @@ const reducer = combineReducers({
 
 const store = configureStore({
   reducer,
-  devTools: CHECKOUT_ENV !== "PROD",
+  devTools: ENV !== "PROD",
 });
 
 export default store;
