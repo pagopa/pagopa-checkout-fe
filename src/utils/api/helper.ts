@@ -333,11 +333,12 @@ export const calculateFees = async ({
   const transferList: Array<TransferListItem> = pipe(
     getSessionItem(SessionItems.transaction) as NewTransactionResponse,
     O.fromNullable,
-    O.map((transaction) => transaction.payments),
-    O.map((payments) =>
-      payments.map((p) => ({
-        creditorInstitution: p.rptId.substring(0, 11),
-        digitalStamp: false,
+    O.map((transaction) => transaction.payments[0].transferList), // TODO By now we can handle only single rptId notice, since GEC is not compliant with multiple rptIds notice (cart)
+    O.map((transferList) =>
+      transferList.map((transfer) => ({
+        creditorInstitution: transfer.paFiscalCode,
+        digitalStamp: transfer.digitalStamp,
+        transferCategory: transfer.transferCategory,
       }))
     ),
     O.getOrElse(() => [] as Array<TransferListItem>)
