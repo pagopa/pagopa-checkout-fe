@@ -15,7 +15,6 @@ import { useAppDispatch } from "../redux/hooks/hooks";
 import { setCardData } from "../redux/slices/cardData";
 import { activatePayment, calculateFees } from "../utils/api/helper";
 import { InputCardFormFields } from "../features/payment/models/paymentModel";
-import { getConfigOrThrow } from "../utils/config/config";
 import { ErrorsType } from "../utils/errors/checkErrorsModel";
 import {
   getReCaptchaKey,
@@ -33,11 +32,9 @@ export default function InputCardPage() {
   const [loading, setLoading] = React.useState(false);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
-  const [timeoutId, setTimeoutId] = React.useState<number>();
   const [wallet] = React.useState<InputCardFormFields>();
   const [hideCancelButton, setHideCancelButton] = React.useState(false);
   const ref = React.useRef<ReCAPTCHA>(null);
-  const config = getConfigOrThrow();
   const dispatch = useAppDispatch();
 
   React.useEffect(() => {
@@ -52,18 +49,6 @@ export default function InputCardPage() {
       )
     );
   }, []);
-
-  React.useEffect(() => {
-    if (loading && !errorModalOpen) {
-      const id = window.setTimeout(() => {
-        setError(ErrorsType.STATUS_ERROR);
-        setErrorModalOpen(true);
-      }, config.CHECKOUT_API_TIMEOUT as number);
-      setTimeoutId(id);
-    } else if (timeoutId) {
-      window.clearTimeout(timeoutId);
-    }
-  }, [loading, errorModalOpen]);
 
   const onError = (m: string) => {
     setLoading(false);
