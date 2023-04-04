@@ -113,7 +113,7 @@ describe("Checkout payment activation tests", () => {
     /*
      * 2. Payment with notice code that fails on activation and get PPT_STAZIONE_INT_PA_TIMEOUT
      */
-    const errorMessageXPath = 'html/body/div[9]/div[3]/div/div/div[2]/div[2]/div'
+    const errorMessageXPath = '/html/body/div[4]/div[3]/div/div/div[2]/div[2]/div'
     const resultMessage = await activatePaymentAndGetError(
       FAIL_ACTIVATE_PPT_STAZIONE_INT_PA_TIMEOUT,
       VALID_FISCAL_CODE,
@@ -129,7 +129,7 @@ describe("Checkout payment activation tests", () => {
     /*
      * 2. Payment with notice code that fails on activation and get PPT_DOMINIO_SCONOSCIUTO
      */
-    const errorMessageXPath = 'html/body/div[9]/div[3]/div/div/div[2]/div[2]/div'
+    const errorMessageXPath = '/html/body/div[4]/div[3]/div/div/div[2]/div[2]/div'
     const resultMessage = await activatePaymentAndGetError(
       FAIL_ACTIVATE_PPT_DOMINIO_SCONOSCIUTO,
       VALID_FISCAL_CODE,
