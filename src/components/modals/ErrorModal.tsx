@@ -31,6 +31,7 @@ function ErrorModal(props: {
   onRetry?: () => void;
   style?: React.CSSProperties;
   titleId?: string;
+  errorId?: string;
   bodyId?: string;
 }) {
   const { t } = useTranslation();
@@ -157,6 +158,7 @@ function ErrorModal(props: {
             }
           >
             <AlertTitle
+              id={props.errorId}
               sx={{
                 mb: 0,
               }}
