@@ -150,6 +150,7 @@ export default function InputCardPage() {
           }}
           onRetry={onRetry}
           titleId="inputCardPageErrorTitleId"
+          errorId="inputCardPageErrorId"
           bodyId="inputCardPageErrorBodyId"
         />
       )}

@@ -1,4 +1,4 @@
-import { payNotice, acceptCookiePolicy, verifyPaymentAndGetError, activatePaymentAndGetError, authorizePaymentAndGetError, checkPspDisclaimerBeforeAuthorizePayment, checkErrorOnCardDataFormSubmit, closeErrorModal, cancelPaymentOK, cancelPaymentAction, cancelPaymentKO } from "./utils/helpers";
+import { payNotice, acceptCookiePolicy, verifyPaymentAndGetError, activatePaymentAndGetError, authorizePaymentAndGetError, checkPspDisclaimerBeforeAuthorizePayment, checkErrorOnCardDataFormSubmit, cancelPaymentOK, cancelPaymentAction, cancelPaymentKO } from "./utils/helpers";
 
 describe("Checkout payment activation tests", () => {
   /**
@@ -97,13 +97,13 @@ describe("Checkout payment activation tests", () => {
     /*
      * 2. Payment with notice code that fails on activation and get PPT_PAGAMENTO_IN_CORSO
      */
-    const errorMessageXPath = '/html/body/div[7]/div[3]/div/h2/div'
+    const ErrorTitleID = '#inputCardPageErrorTitleId'
     const resultMessage = await activatePaymentAndGetError(
       FAIL_ACTIVATE_PPT_PAGAMENTO_IN_CORSO,
       VALID_FISCAL_CODE,
       EMAIL,
       VALID_CARD_DATA,
-      errorMessageXPath
+      ErrorTitleID
     );
 
     expect(resultMessage).toContain("Il pagamento è già in corso");
@@ -113,13 +113,13 @@ describe("Checkout payment activation tests", () => {
     /*
      * 2. Payment with notice code that fails on activation and get PPT_STAZIONE_INT_PA_TIMEOUT
      */
-    const errorMessageXPath = 'html/body/div[9]/div[3]/div/div/div[2]/div[2]/div'
+    const errorID = '#inputCardPageErrorId'
     const resultMessage = await activatePaymentAndGetError(
       FAIL_ACTIVATE_PPT_STAZIONE_INT_PA_TIMEOUT,
       VALID_FISCAL_CODE,
       EMAIL,
       VALID_CARD_DATA,
-      errorMessageXPath
+      errorID
     );
 
     expect(resultMessage).toContain("PPT_STAZIONE_INT_PA_TIMEOUT");
@@ -129,13 +129,13 @@ describe("Checkout payment activation tests", () => {
     /*
      * 2. Payment with notice code that fails on activation and get PPT_DOMINIO_SCONOSCIUTO
      */
-    const errorMessageXPath = 'html/body/div[9]/div[3]/div/div/div[2]/div[2]/div'
+    const errorID = '#inputCardPageErrorId'
     const resultMessage = await activatePaymentAndGetError(
       FAIL_ACTIVATE_PPT_DOMINIO_SCONOSCIUTO,
       VALID_FISCAL_CODE,
       EMAIL,
       VALID_CARD_DATA,
-      errorMessageXPath
+      errorID
     );
 
     expect(resultMessage).toContain("PPT_DOMINIO_SCONOSCIUTO");
@@ -188,7 +188,6 @@ describe("Checkout payment activation tests", () => {
 
     await cancelPaymentAction();
   });
-
 
   it("Should fails calculate fee", async () => {
     /*

@@ -17,9 +17,9 @@ export const verifyPaymentAndGetError = async (noticeCode, fiscalCode) => {
   return await errorMessageElem.evaluate(el => el.textContent);
 };
 
-export const activatePaymentAndGetError = async (noticeCode, fiscalCode, email, cardData, errorMessageXPath) => {
+export const activatePaymentAndGetError = async (noticeCode, fiscalCode, email, cardData, selectorId) => {
   await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData)
-  const errorMessageElem = await page.waitForXPath(errorMessageXPath);
+  const errorMessageElem = await page.waitForSelector(selectorId);
   return await errorMessageElem.evaluate((el) => el.textContent);
 };
 
