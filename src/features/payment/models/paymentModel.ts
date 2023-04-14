@@ -105,4 +105,5 @@ export interface Cart {
   paymentNotices: Array<PaymentNotice>;
   returnUrls: ReturnUrls;
   emailNotice?: string;
+  idCart?: string;
 }

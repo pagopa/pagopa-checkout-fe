@@ -185,6 +185,7 @@ export const activatePayment = async ({
   const userEmail = getSessionItem(SessionItems.useremail) as
     | string
     | undefined;
+  const cartInfo = getSessionItem(SessionItems.cart) as Cart | undefined;
   const rptId: RptId = `${noticeInfo?.cf}${noticeInfo?.billCode}` as RptId;
   pipe(
     PaymentRequestsGetResponse.decode(paymentInfo),
@@ -192,7 +193,12 @@ export const activatePayment = async ({
       () => onErrorActivate(ErrorsType.INVALID_DECODE),
       (response) =>
         pipe(
-          activePaymentTask(response.amount, userEmail || "", rptId),
+          activePaymentTask(
+            response.amount,
+            userEmail || "",
+            rptId,
+            cartInfo?.idCart || undefined
+          ),
           TE.fold(
             (e: string) => async () => {
               onErrorActivate(e);
@@ -210,7 +216,8 @@ export const activatePayment = async ({
 const activePaymentTask = (
   amountSinglePayment: AmountEuroCents,
   userEmail: string,
-  rptId: RptId
+  rptId: RptId,
+  idCart?: string
 ): TE.TaskEither<string, NewTransactionResponse> =>
   pipe(
     TE.tryCatch(
@@ -227,6 +234,7 @@ const activePaymentTask = (
                 amount: amountSinglePayment,
               },
             ],
+            idCart,
             email: userEmail,
           },
         });
