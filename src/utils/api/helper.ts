@@ -350,12 +350,13 @@ export const calculateFees = async ({
   mixpanel.track(PAYMENT_PSPLIST_INIT.value, {
     EVENT_ID: PAYMENT_PSPLIST_INIT.value,
   });
+  const MAX_OCCURENCES_AFM = 2147483647;
   const bundleOption = await pipe(
     TE.tryCatch(
       () =>
         apiPaymentEcommerceCalculateFeesClientWithRetry.calculateFees({
           id: paymentId,
-          maxOccurrences: undefined,
+          maxOccurrences: MAX_OCCURENCES_AFM,
           body: {
             bin,
             touchpoint: "CHECKOUT",
