@@ -42,7 +42,7 @@ const decodeToUUID = (base64: string) => {
   bytes[6] |= 0x40;
   bytes[8] &= 0x3f;
   bytes[8] |= 0x80;
-  return hexToUuid(bytes.toString("hex"));
+  return hexToUuid(bytes.toString("hex")).replace("-", "");
 };
 
 const ecommerceClientWithPolling: EcommerceClient = createClient({
