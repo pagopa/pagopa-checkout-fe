@@ -1288,8 +1288,8 @@ export const getPaymentInstruments = async (
                 mixpanel.track(PAYMENT_METHODS_SUCCESS.value, {
                   EVENT_ID: PAYMENT_METHODS_SUCCESS.value,
                 });
-                return myRes.value
-                  .filter(
+                return myRes.value.paymentMethods
+                  ?.filter(
                     (method) =>
                       !!PaymentMethodRoutes[
                         method.paymentTypeCode as TransactionMethods
