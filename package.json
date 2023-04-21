@@ -32,7 +32,7 @@
     "@mui/lab": "^5.0.0-alpha.69",
     "@mui/material": "^5.6.3",
     "@pagopa/mui-italia": "0.6.10",
-    "@pagopa/openapi-codegen-ts": "^11.3.0",
+    "@pagopa/openapi-codegen-ts": "^12.1.2",
     "@reduxjs/toolkit": "^1.7.2",
     "@types/dotenv": "^8.2.0",
     "@types/mixpanel-browser": "^2.35.6",
