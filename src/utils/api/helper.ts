@@ -77,6 +77,7 @@ import { PaymentRequestsGetResponse } from "../../../generated/definitions/payme
 import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { TransferListItem } from "../../../generated/definitions/payment-ecommerce/TransferListItem";
 import { Bundle } from "../../../generated/definitions/payment-ecommerce/Bundle";
+import { PaymentNoticeInfo } from "../../../generated/definitions/payment-ecommerce/PaymentNoticeInfo";
 import { getBrowserInfoTask, getEMVCompliantColorDepth } from "./checkHelper";
 import {
   apiPaymentEcommerceCalculateFeesClientWithRetry,
@@ -193,12 +194,7 @@ export const activatePayment = async ({
       () => onErrorActivate(ErrorsType.INVALID_DECODE),
       (response) =>
         pipe(
-          activePaymentTask(
-            response.amount,
-            userEmail || "",
-            rptId,
-            cartInfo?.idCart || undefined
-          ),
+          activePaymentTask(response.amount, userEmail || "", rptId, cartInfo),
           TE.fold(
             (e: string) => async () => {
               onErrorActivate(e);
@@ -217,7 +213,7 @@ const activePaymentTask = (
   amountSinglePayment: AmountEuroCents,
   userEmail: string,
   rptId: RptId,
-  idCart?: string
+  cart?: Cart
 ): TE.TaskEither<string, NewTransactionResponse> =>
   pipe(
     TE.tryCatch(
@@ -228,13 +224,8 @@ const activePaymentTask = (
         return apiPaymentEcommerceClient.newTransaction({
           // recaptchaResponse,
           body: {
-            paymentNotices: [
-              {
-                rptId,
-                amount: amountSinglePayment,
-              },
-            ],
-            idCart,
+            paymentNotices: getPaymentNotices(amountSinglePayment, rptId, cart),
+            idCart: cart?.idCart,
             email: userEmail,
           },
         });
@@ -305,6 +296,32 @@ const activePaymentTask = (
           )
         )
     )
+  );
+
+const getPaymentNotices = (
+  amountSinglePayment: AmountEuroCents,
+  rptId: RptId,
+  cart?: Cart
+): Array<PaymentNoticeInfo> =>
+  pipe(
+    O.fromNullable(cart?.paymentNotices),
+    O.map((paymentNotices) =>
+      paymentNotices.map(
+        (paymentNotice) =>
+          ({
+            rptId: paymentNotice.fiscalCode
+              .toString()
+              .concat(paymentNotice.noticeNumber),
+            amount: paymentNotice.amount,
+          } as PaymentNoticeInfo)
+      )
+    ),
+    O.getOrElse(() => [
+      {
+        rptId,
+        amount: amountSinglePayment,
+      },
+    ])
   );
 
 // -> Promise<Either<string, BundleOptions>>
