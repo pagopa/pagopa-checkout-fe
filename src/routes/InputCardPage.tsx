@@ -105,6 +105,12 @@ export default function InputCardPage() {
       };
       dispatch(setCardData(cardData));
       setLoading(true);
+      const recaptchaResponse = await ref.current?.executeAsync();
+      const token = pipe(
+        recaptchaResponse,
+        O.fromNullable,
+        O.getOrElse(() => "")
+      );
       const transactionId = (
         getSessionItem(SessionItems.transaction) as
           | NewTransactionResponse
@@ -117,6 +123,7 @@ export default function InputCardPage() {
       } else {
         await activatePayment({
           bin,
+          token,
           onResponseActivate,
           onErrorActivate: onError,
         });
