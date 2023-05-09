@@ -25,8 +25,8 @@ function amountToShow() {
     | PaymentInfo
     | undefined;
   return (
-    paymentInfo?.amount ||
     (cartInfo && cartInfo.paymentNotices && getTotalFromCart(cartInfo)) ||
+    paymentInfo?.amount ||
     0
   );
 }
