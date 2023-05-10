@@ -87,7 +87,7 @@ stages:
               pm_host: 'https://api.dev.platform.pagopa.it/payment-manager'
               pm_api_basepath: '/pp-restapi/v4'
               donations_url: 'https://api.dev.platform.pagopa.it/donations/api/v1/availabledonations'
-              ecommerce_host: 'https://api.dev.platform.pagopa.it'
+              ecommerce_host: 'https://api.uat.platform.pagopa.it'
               api_ecommerce_basepath: '/ecommerce/checkout/v1'
               pagopa_assets_cdn: 'https://assets.cdn.platform.pagopa.it/payment-methods'
               pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi'
