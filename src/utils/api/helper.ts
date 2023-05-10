@@ -170,10 +170,12 @@ export const getEcommercePaymentInfoTask = (
 
 export const activatePayment = async ({
   bin,
+  token,
   onResponseActivate,
   onErrorActivate,
 }: {
   bin: string;
+  token: string;
   onResponseActivate: (bin: string) => void;
   onErrorActivate: (e: string) => void;
 }) => {
@@ -194,7 +196,13 @@ export const activatePayment = async ({
       () => onErrorActivate(ErrorsType.INVALID_DECODE),
       (response) =>
         pipe(
-          activePaymentTask(response.amount, userEmail || "", rptId, cartInfo),
+          activePaymentTask(
+            response.amount,
+            userEmail || "",
+            rptId,
+            token,
+            cartInfo
+          ),
           TE.fold(
             (e: string) => async () => {
               onErrorActivate(e);
@@ -213,6 +221,7 @@ const activePaymentTask = (
   amountSinglePayment: AmountEuroCents,
   userEmail: string,
   rptId: RptId,
+  recaptchaResponse: string,
   cart?: Cart
 ): TE.TaskEither<string, NewTransactionResponse> =>
   pipe(
@@ -222,7 +231,7 @@ const activePaymentTask = (
           EVENT_ID: PAYMENT_ACTIVATE_INIT.value,
         });
         return apiPaymentEcommerceClient.newTransaction({
-          // recaptchaResponse,
+          recaptchaResponse,
           body: {
             paymentNotices: getPaymentNotices(amountSinglePayment, rptId, cart),
             idCart: cart?.idCart,
