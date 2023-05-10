@@ -4,12 +4,12 @@ describe("Checkout payment activation tests", () => {
   /**
    * Test input and configuration
    */
-  const CHECKOUT_URL = "http://dev.checkout.pagopa.it/";
-  const CHECKOUT_URL_AFTER_AUTHORIZATION = "http://dev.checkout.pagopa.it/esito";
+  const CHECKOUT_URL = "http://localhost:1234/";
+  const CHECKOUT_URL_AFTER_AUTHORIZATION = "http://localhost:1234/esito";
   const VALID_FISCAL_CODE = "77777777777";
   const EMAIL = "mario.rossi@email.com";
   const VALID_CARD_DATA = {
-    number: "4000000000000101",
+    number: "4333334000098346",
     expirationDate: "1230",
     ccv: "123",
     holderName: "Mario Rossi",
