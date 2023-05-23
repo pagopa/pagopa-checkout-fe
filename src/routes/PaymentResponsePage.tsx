@@ -32,13 +32,14 @@ import { Cart } from "../features/payment/models/paymentModel";
 import { NewTransactionResponse } from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { resetThreshold } from "../redux/slices/threshold";
 import { Bundle } from "../../generated/definitions/payment-ecommerce/Bundle";
+import { TransactionInfo } from "../../generated/definitions/payment-ecommerce/TransactionInfo";
 
 type printData = {
   useremail: string;
   amount: string;
 };
 
-export default function PaymentCheckPage() {
+export default function PaymentResponsePage() {
   const [loading, setLoading] = useState(true);
   const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
   const [outcomeMessage, setOutcomeMessage] = useState<responseMessage>();
@@ -64,18 +65,25 @@ export default function PaymentCheckPage() {
     amount: moneyFormat(totalAmount),
   };
 
+  const errorCode = transactionData?.errorCode;
+  const authorizationCode = transactionData?.authorizationCode;
+  const paymentGateway = transactionData?.gateway;
+  const authorizationResult = transactionData?.authorizationResult;
+
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(resetCardData());
     dispatch(resetThreshold());
 
-    const handleFinalStatusResult = (idStatus?: TransactionStatusEnum) => {
+    const handleFinalStatusResult = (
+      transactionData?: NewTransactionResponse
+    ) => {
       const outcome: ViewOutcomeEnum =
-        getViewOutcomeFromEcommerceResultCode(idStatus);
+        getViewOutcomeFromEcommerceResultCode(transactionData);
       mixpanel.track(PAYMENT_OUTCOME_CODE.value, {
         EVENT_ID: PAYMENT_OUTCOME_CODE.value,
-        idStatus,
+        idStatus: transactionData?.status,
         outcome,
       });
       showFinalResult(outcome);
