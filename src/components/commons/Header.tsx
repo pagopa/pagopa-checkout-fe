@@ -62,7 +62,7 @@ export default function Header() {
     : [
         {
           noticeNumber: paymentInfoData?.rptId
-            ? paymentInfoData?.rptId.slice(10)
+            ? paymentInfoData?.rptId.slice(11)
             : "",
           fiscalCode: paymentInfoData?.paFiscalCode || "",
           amount: paymentInfoData?.amount || 0,
