@@ -202,11 +202,13 @@ function evaluateUnauthorizedStatus(
     return ViewOutcomeEnum.AUTH_ERROR;
   }
 }
-function evaluateExpiredStatus(gateway: string | undefined, authorizationResult: string | undefined): ViewOutcomeEnum {
-  return gateway !== undefined ? 
-  ViewOutcomeEnum.GENERIC_ERROR :
-    authorizationResult !== "OK" ? 
-    ViewOutcomeEnum.TIMEOUT : 
-    ViewOutcomeEnum.GENERIC_ERROR
+function evaluateExpiredStatus(
+  gateway: string | undefined,
+  authorizationResult: string | undefined
+): ViewOutcomeEnum {
+  return gateway !== undefined
+    ? ViewOutcomeEnum.GENERIC_ERROR
+    : authorizationResult !== "OK"
+    ? ViewOutcomeEnum.TIMEOUT
+    : ViewOutcomeEnum.GENERIC_ERROR;
 }
-
