@@ -47,7 +47,10 @@ export const getViewOutcomeFromEcommerceResultCode = (
       // TODO Check expired status conditions
       return ViewOutcomeEnum.GENERIC_ERROR;
     case TransactionStatusEnum.UNAUTHORIZED:
-      return evaluateUnauthorizedStatus(transactionData.gateway, transactionData.errorCode);
+      return evaluateUnauthorizedStatus(
+        transactionData.gateway,
+        transactionData.errorCode
+      );
     default:
       return ViewOutcomeEnum.GENERIC_ERROR;
   }
