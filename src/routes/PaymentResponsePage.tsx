@@ -27,12 +27,11 @@ import {
   getViewOutcomeFromEcommerceResultCode,
   ViewOutcomeEnum,
 } from "../utils/transactions/TransactionResultUtil";
-import { TransactionStatusEnum } from "../../generated/definitions/payment-ecommerce/TransactionStatus";
 import { Cart } from "../features/payment/models/paymentModel";
 import { NewTransactionResponse } from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { resetThreshold } from "../redux/slices/threshold";
 import { Bundle } from "../../generated/definitions/payment-ecommerce/Bundle";
-import { TransactionInfo } from "../../generated/definitions/payment-ecommerce/TransactionInfo";
+import { TransactionStatusEnum } from "../../generated/definitions/payment-ecommerce/TransactionStatus";
 
 type printData = {
   useremail: string;
@@ -65,11 +64,6 @@ export default function PaymentResponsePage() {
     amount: moneyFormat(totalAmount),
   };
 
-  const errorCode = transactionData?.errorCode;
-  const authorizationCode = transactionData?.authorizationCode;
-  const paymentGateway = transactionData?.gateway;
-  const authorizationResult = transactionData?.authorizationResult;
-
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -77,10 +71,17 @@ export default function PaymentResponsePage() {
     dispatch(resetThreshold());
 
     const handleFinalStatusResult = (
-      transactionData?: NewTransactionResponse
+      status?: TransactionStatusEnum,
+      authorizationResult?: string,
+      gateway?: string,
+      errorCode?: string
     ) => {
-      const outcome: ViewOutcomeEnum =
-        getViewOutcomeFromEcommerceResultCode(transactionData);
+      const outcome: ViewOutcomeEnum = getViewOutcomeFromEcommerceResultCode(
+        status,
+        authorizationResult,
+        gateway,
+        errorCode
+      );
       mixpanel.track(PAYMENT_OUTCOME_CODE.value, {
         EVENT_ID: PAYMENT_OUTCOME_CODE.value,
         idStatus: transactionData?.status,

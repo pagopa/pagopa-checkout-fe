@@ -1,7 +1,6 @@
 import * as t from "io-ts";
 import { enumType } from "@pagopa/ts-commons/lib/types";
 import { TransactionStatusEnum } from "../../../generated/definitions/payment-ecommerce/TransactionStatus";
-import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 
 export enum ViewOutcomeEnum {
   SUCCESS = "0",
@@ -83,14 +82,17 @@ export enum VposResultCodeEnum {
 }
 
 export const getViewOutcomeFromEcommerceResultCode = (
-  transactionData?: NewTransactionResponse
+  transactionStatus?: TransactionStatusEnum,
+  authorizationResult?: string,
+  gateway?: string,
+  errorCode?: string
 ): ViewOutcomeEnum => {
-  switch (transactionData?.status) {
+  switch (transactionStatus) {
     case TransactionStatusEnum.NOTIFIED_OK:
       return ViewOutcomeEnum.SUCCESS;
     case TransactionStatusEnum.NOTIFICATION_REQUESTED:
     case TransactionStatusEnum.NOTIFICATION_ERROR:
-      return transactionData.authorizationResult === "OK"
+      return authorizationResult === "OK"
         ? ViewOutcomeEnum.SUCCESS
         : ViewOutcomeEnum.GENERIC_ERROR;
     case TransactionStatusEnum.NOTIFIED_KO:
@@ -105,15 +107,9 @@ export const getViewOutcomeFromEcommerceResultCode = (
     case TransactionStatusEnum.CANCELLATION_EXPIRED:
       return ViewOutcomeEnum.CANCELED_BY_USER;
     case TransactionStatusEnum.EXPIRED:
-      return evaluateExpiredStatus(
-        transactionData.gateway,
-        transactionData.authorizationResult
-      );
+      return evaluateExpiredStatus(gateway, authorizationResult);
     case TransactionStatusEnum.UNAUTHORIZED:
-      return evaluateUnauthorizedStatus(
-        transactionData.gateway,
-        transactionData.errorCode
-      );
+      return evaluateUnauthorizedStatus(gateway, errorCode);
     default:
       return ViewOutcomeEnum.GENERIC_ERROR;
   }
@@ -136,8 +132,8 @@ export const EcommerceFinalStatusCodeEnumType =
 
 // eslint-disable-next-line complexity
 function evaluateUnauthorizedStatus(
-  gateway: string,
-  errorCode?: string
+  gateway: string | undefined,
+  errorCode: string | undefined
 ): ViewOutcomeEnum {
   // eslint-disable-next-line sonarjs/no-all-duplicated-branches
   if (gateway === "XPAY") {
