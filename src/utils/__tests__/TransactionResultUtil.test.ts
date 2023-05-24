@@ -572,5 +572,5 @@ describe("TransactionResultUtil", () => {
 
   expect(
     getViewOutcomeFromEcommerceResultCode(TransactionStatusEnum.UNAUTHORIZED)
-  ).toEqual(ViewOutcomeEnum.AUTH_ERROR);
+  ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
 });
