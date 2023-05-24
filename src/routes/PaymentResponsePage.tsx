@@ -71,20 +71,20 @@ export default function PaymentResponsePage() {
     dispatch(resetThreshold());
 
     const handleFinalStatusResult = (
-      status?: TransactionStatusEnum,
+      idStatus?: TransactionStatusEnum,
       authorizationResult?: string,
       gateway?: string,
       errorCode?: string
     ) => {
       const outcome: ViewOutcomeEnum = getViewOutcomeFromEcommerceResultCode(
-        status,
+        idStatus,
         authorizationResult,
         gateway,
         errorCode
       );
       mixpanel.track(PAYMENT_OUTCOME_CODE.value, {
         EVENT_ID: PAYMENT_OUTCOME_CODE.value,
-        idStatus: transactionData?.status,
+        idStatus,
         outcome,
       });
       showFinalResult(outcome);
