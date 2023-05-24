@@ -72,13 +72,13 @@ export default function PaymentResponsePage() {
 
     const handleFinalStatusResult = (
       idStatus?: TransactionStatusEnum,
-      authorizationResult?: string,
+      sendPaymentResultOutcome?: string,
       gateway?: string,
       errorCode?: string
     ) => {
       const outcome: ViewOutcomeEnum = getViewOutcomeFromEcommerceResultCode(
         idStatus,
-        authorizationResult,
+        sendPaymentResultOutcome,
         gateway,
         errorCode
       );

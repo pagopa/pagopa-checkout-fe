@@ -1,8 +1,10 @@
+import { SendPaymentResultOutcomeEnum } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { TransactionStatusEnum } from "../../../generated/definitions/payment-ecommerce/TransactionStatus";
 
 import {
   getViewOutcomeFromEcommerceResultCode,
   NexiResultCodeEnum,
+  PaymentGateway,
   ViewOutcomeEnum,
   VposResultCodeEnum,
 } from "../transactions/TransactionResultUtil";
@@ -27,49 +29,49 @@ describe("TransactionResultUtil", () => {
       )
     ).toEqual(ViewOutcomeEnum.SUCCESS);
 
-    // check success when status is NOTIFICATION_ERROR and authorizationResult OK
+    // check success when status is NOTIFICATION_ERROR and sendPaymentResultOutcome OK
     expect(
       getViewOutcomeFromEcommerceResultCode(
         TransactionStatusEnum.NOTIFICATION_ERROR,
-        "OK"
+        SendPaymentResultOutcomeEnum.OK
       )
     ).toEqual(ViewOutcomeEnum.SUCCESS);
 
-    // check success when status is NOTIFICATION_REQUESTED and authorizationResult OK
+    // check success when status is NOTIFICATION_REQUESTED and sendPaymentResultOutcome OK
     expect(
       getViewOutcomeFromEcommerceResultCode(
         TransactionStatusEnum.NOTIFICATION_REQUESTED,
-        "OK"
+        SendPaymentResultOutcomeEnum.OK
       )
     ).toEqual(ViewOutcomeEnum.SUCCESS);
 
-    // check GENERIC_ERROR when status is NOTIFICATION_ERROR and authorizationResult undefined
+    // check GENERIC_ERROR when status is NOTIFICATION_ERROR and sendPaymentResultOutcome undefined
     expect(
       getViewOutcomeFromEcommerceResultCode(
         TransactionStatusEnum.NOTIFICATION_ERROR
       )
     ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
 
-    // check GENERIC_ERROR when status is NOTIFICATION_REQUESTED and authorizationResult undefined
+    // check GENERIC_ERROR when status is NOTIFICATION_REQUESTED and sendPaymentResultOutcome undefined
     expect(
       getViewOutcomeFromEcommerceResultCode(
         TransactionStatusEnum.NOTIFICATION_REQUESTED
       )
     ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
 
-    // check GENERIC_ERROR when status is NOTIFICATION_ERROR and authorizationResult KO
+    // check GENERIC_ERROR when status is NOTIFICATION_ERROR and sendPaymentResultOutcome KO
     expect(
       getViewOutcomeFromEcommerceResultCode(
         TransactionStatusEnum.NOTIFICATION_ERROR,
-        "KO"
+        SendPaymentResultOutcomeEnum.KO
       )
     ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
 
-    // check GENERIC_ERROR when status is NOTIFICATION_REQUESTED and authorizationResult KO
+    // check GENERIC_ERROR when status is NOTIFICATION_REQUESTED and sendPaymentResultOutcome KO
     expect(
       getViewOutcomeFromEcommerceResultCode(
         TransactionStatusEnum.NOTIFICATION_REQUESTED,
-        "KO"
+        SendPaymentResultOutcomeEnum.KO
       )
     ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
 
@@ -162,8 +164,18 @@ describe("TransactionResultUtil", () => {
     expect(
       getViewOutcomeFromEcommerceResultCode(
         TransactionStatusEnum.EXPIRED,
-        "OK",
-        "testGateway",
+        SendPaymentResultOutcomeEnum.OK,
+        PaymentGateway.XPAY,
+        undefined
+      )
+    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
+
+    // Check EXPIRED cases wasAuthRequested sendPaymentResultOK
+    expect(
+      getViewOutcomeFromEcommerceResultCode(
+        TransactionStatusEnum.EXPIRED,
+        SendPaymentResultOutcomeEnum.OK,
+        PaymentGateway.VPOS,
         undefined
       )
     ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
@@ -172,15 +184,27 @@ describe("TransactionResultUtil", () => {
     expect(
       getViewOutcomeFromEcommerceResultCode(
         TransactionStatusEnum.EXPIRED,
-        "KO",
-        "testGateway",
+        SendPaymentResultOutcomeEnum.KO,
+        PaymentGateway.VPOS,
+        undefined
+      )
+    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
+
+    expect(
+      getViewOutcomeFromEcommerceResultCode(
+        TransactionStatusEnum.EXPIRED,
+        SendPaymentResultOutcomeEnum.KO,
+        PaymentGateway.XPAY,
         undefined
       )
     ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
 
     // Check EXPIRED cases !wasAuthRequested !sendPaymentResultOK (KO)
     expect(
-      getViewOutcomeFromEcommerceResultCode(TransactionStatusEnum.EXPIRED, "KO")
+      getViewOutcomeFromEcommerceResultCode(
+        TransactionStatusEnum.EXPIRED,
+        SendPaymentResultOutcomeEnum.KO
+      )
     ).toEqual(ViewOutcomeEnum.TIMEOUT);
   });
 

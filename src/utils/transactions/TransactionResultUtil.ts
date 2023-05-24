@@ -1,6 +1,7 @@
 import * as t from "io-ts";
 import { enumType } from "@pagopa/ts-commons/lib/types";
 import { TransactionStatusEnum } from "../../../generated/definitions/payment-ecommerce/TransactionStatus";
+import { SendPaymentResultOutcomeEnum } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 
 export enum ViewOutcomeEnum {
   SUCCESS = "0",
@@ -81,9 +82,14 @@ export enum VposResultCodeEnum {
   TRANSACTION_FAILED = "99",
 }
 
+export enum PaymentGateway {
+  VPOS = "VPOS",
+  XPAY = "XPAY",
+}
+
 export const getViewOutcomeFromEcommerceResultCode = (
   transactionStatus?: TransactionStatusEnum,
-  authorizationResult?: string,
+  sendPaymentResultOutcome?: string,
   gateway?: string,
   errorCode?: string
 ): ViewOutcomeEnum => {
@@ -92,7 +98,7 @@ export const getViewOutcomeFromEcommerceResultCode = (
       return ViewOutcomeEnum.SUCCESS;
     case TransactionStatusEnum.NOTIFICATION_REQUESTED:
     case TransactionStatusEnum.NOTIFICATION_ERROR:
-      return authorizationResult === "OK"
+      return sendPaymentResultOutcome === SendPaymentResultOutcomeEnum.OK
         ? ViewOutcomeEnum.SUCCESS
         : ViewOutcomeEnum.GENERIC_ERROR;
     case TransactionStatusEnum.NOTIFIED_KO:
@@ -107,7 +113,7 @@ export const getViewOutcomeFromEcommerceResultCode = (
     case TransactionStatusEnum.CANCELLATION_EXPIRED:
       return ViewOutcomeEnum.CANCELED_BY_USER;
     case TransactionStatusEnum.EXPIRED:
-      return evaluateExpiredStatus(gateway, authorizationResult);
+      return evaluateExpiredStatus(gateway, sendPaymentResultOutcome);
     case TransactionStatusEnum.UNAUTHORIZED:
       return evaluateUnauthorizedStatus(gateway, errorCode);
     default:
@@ -136,75 +142,76 @@ function evaluateUnauthorizedStatus(
   errorCode: string | undefined
 ): ViewOutcomeEnum {
   // eslint-disable-next-line sonarjs/no-all-duplicated-branches
-  if (gateway === "XPAY") {
-    switch (errorCode) {
-      case NexiResultCodeEnum.INVALID_CARD:
-      case NexiResultCodeEnum.EXPIRED_CARD:
-      case NexiResultCodeEnum.CARD_BRAND_NOT_PERMITTED:
-        return ViewOutcomeEnum.INVALID_CARD;
-      case NexiResultCodeEnum.DUPLICATE_TRANSACTION:
-      case NexiResultCodeEnum.FORBIDDEN_OPERATION:
-      case NexiResultCodeEnum.UNAVAILABLE_METHOD:
-      case NexiResultCodeEnum.KO_RETRIABLE:
-      case NexiResultCodeEnum.GENERIC_ERROR:
-      case NexiResultCodeEnum.INTERNAL_ERROR:
-      case NexiResultCodeEnum.INVALID_STATUS:
-        return ViewOutcomeEnum.GENERIC_ERROR;
-      case NexiResultCodeEnum.CANCELED_3DS_AUTH:
-        return ViewOutcomeEnum.CANCELED_BY_USER;
-      default:
-        return ViewOutcomeEnum.AUTH_ERROR;
-    }
-  } else if (gateway === "VPOS") {
-    switch (errorCode) {
-      case VposResultCodeEnum.TIMEOUT:
-        return ViewOutcomeEnum.TIMEOUT;
-      case VposResultCodeEnum.REQREFNUM_INVALID:
-      case VposResultCodeEnum.INCORRECT_FORMAT:
-      case VposResultCodeEnum.INCORRECT_MAC_OR_TIMESTAMP:
-      case VposResultCodeEnum.INCORRECT_DATE:
-      case VposResultCodeEnum.TRANSACTION_ID_NOT_CONSISTENT:
-      case VposResultCodeEnum.UNSUPPORTED_CURRENCY:
-      case VposResultCodeEnum.UNSUPPORTED_EXPONENT:
-      case VposResultCodeEnum.INVALID_PAN:
-      case VposResultCodeEnum.XML_NOT_PARSABLE:
-      case VposResultCodeEnum.INSTALLMENT_NUMBER_OUT_OF_BOUNDS:
-        return ViewOutcomeEnum.INVALID_DATA;
-      case VposResultCodeEnum.MISSING_CVV2:
-      case VposResultCodeEnum.XML_EMPTY:
-      case VposResultCodeEnum.TRANSACTION_ID_NOT_FOUND:
-      case VposResultCodeEnum.CIRCUIT_DISABLED:
-      case VposResultCodeEnum.INSTALLMENTS_NOT_AVAILABLE:
-      case VposResultCodeEnum.OPERATOR_NOT_FOUND:
-      case VposResultCodeEnum.ORDER_OR_REQREFNUM_NOT_FOUND:
-      case VposResultCodeEnum.DUPLICATED_ORDER:
-      case VposResultCodeEnum.UNKNOWN_ERROR:
-      case VposResultCodeEnum.APPLICATION_ERROR:
-      case VposResultCodeEnum.REDIRECTION_3DS1:
-      case VposResultCodeEnum.METHOD_REQUESTED:
-      case VposResultCodeEnum.CHALLENGE_REQUESTED:
-      case VposResultCodeEnum.INCORRECT_STATUS:
-        return ViewOutcomeEnum.GENERIC_ERROR;
-      case VposResultCodeEnum.TRANSACTION_FAILED:
-        return ViewOutcomeEnum.AUTH_ERROR;
-      case VposResultCodeEnum.EXCEEDING_AMOUNT:
-        return ViewOutcomeEnum.EXCESSIVE_AMOUNT;
-      case VposResultCodeEnum.PAYMENT_INSTRUMENT_NOT_ACCEPTED:
-        return ViewOutcomeEnum.INVALID_CARD;
-      default:
-        return ViewOutcomeEnum.AUTH_ERROR;
-    }
-  } else {
-    return ViewOutcomeEnum.AUTH_ERROR;
+  switch (gateway) {
+    case PaymentGateway.XPAY:
+      switch (errorCode) {
+        case NexiResultCodeEnum.INVALID_CARD:
+        case NexiResultCodeEnum.EXPIRED_CARD:
+        case NexiResultCodeEnum.CARD_BRAND_NOT_PERMITTED:
+          return ViewOutcomeEnum.INVALID_CARD;
+        case NexiResultCodeEnum.DUPLICATE_TRANSACTION:
+        case NexiResultCodeEnum.FORBIDDEN_OPERATION:
+        case NexiResultCodeEnum.UNAVAILABLE_METHOD:
+        case NexiResultCodeEnum.KO_RETRIABLE:
+        case NexiResultCodeEnum.GENERIC_ERROR:
+        case NexiResultCodeEnum.INTERNAL_ERROR:
+        case NexiResultCodeEnum.INVALID_STATUS:
+          return ViewOutcomeEnum.GENERIC_ERROR;
+        case NexiResultCodeEnum.CANCELED_3DS_AUTH:
+          return ViewOutcomeEnum.CANCELED_BY_USER;
+        default:
+          return ViewOutcomeEnum.AUTH_ERROR;
+      }
+    case PaymentGateway.VPOS:
+      switch (errorCode) {
+        case VposResultCodeEnum.TIMEOUT:
+          return ViewOutcomeEnum.TIMEOUT;
+        case VposResultCodeEnum.REQREFNUM_INVALID:
+        case VposResultCodeEnum.INCORRECT_FORMAT:
+        case VposResultCodeEnum.INCORRECT_MAC_OR_TIMESTAMP:
+        case VposResultCodeEnum.INCORRECT_DATE:
+        case VposResultCodeEnum.TRANSACTION_ID_NOT_CONSISTENT:
+        case VposResultCodeEnum.UNSUPPORTED_CURRENCY:
+        case VposResultCodeEnum.UNSUPPORTED_EXPONENT:
+        case VposResultCodeEnum.INVALID_PAN:
+        case VposResultCodeEnum.XML_NOT_PARSABLE:
+        case VposResultCodeEnum.INSTALLMENT_NUMBER_OUT_OF_BOUNDS:
+          return ViewOutcomeEnum.INVALID_DATA;
+        case VposResultCodeEnum.MISSING_CVV2:
+        case VposResultCodeEnum.XML_EMPTY:
+        case VposResultCodeEnum.TRANSACTION_ID_NOT_FOUND:
+        case VposResultCodeEnum.CIRCUIT_DISABLED:
+        case VposResultCodeEnum.INSTALLMENTS_NOT_AVAILABLE:
+        case VposResultCodeEnum.OPERATOR_NOT_FOUND:
+        case VposResultCodeEnum.ORDER_OR_REQREFNUM_NOT_FOUND:
+        case VposResultCodeEnum.DUPLICATED_ORDER:
+        case VposResultCodeEnum.UNKNOWN_ERROR:
+        case VposResultCodeEnum.APPLICATION_ERROR:
+        case VposResultCodeEnum.REDIRECTION_3DS1:
+        case VposResultCodeEnum.METHOD_REQUESTED:
+        case VposResultCodeEnum.CHALLENGE_REQUESTED:
+        case VposResultCodeEnum.INCORRECT_STATUS:
+          return ViewOutcomeEnum.GENERIC_ERROR;
+        case VposResultCodeEnum.TRANSACTION_FAILED:
+          return ViewOutcomeEnum.AUTH_ERROR;
+        case VposResultCodeEnum.EXCEEDING_AMOUNT:
+          return ViewOutcomeEnum.EXCESSIVE_AMOUNT;
+        case VposResultCodeEnum.PAYMENT_INSTRUMENT_NOT_ACCEPTED:
+          return ViewOutcomeEnum.INVALID_CARD;
+        default:
+          return ViewOutcomeEnum.AUTH_ERROR;
+      }
+    default:
+      return ViewOutcomeEnum.GENERIC_ERROR;
   }
 }
 function evaluateExpiredStatus(
   gateway: string | undefined,
-  authorizationResult: string | undefined
+  sendPaymentResultOutcome: string | undefined
 ): ViewOutcomeEnum {
   return gateway !== undefined
     ? ViewOutcomeEnum.GENERIC_ERROR
-    : authorizationResult !== "OK"
+    : sendPaymentResultOutcome !== SendPaymentResultOutcomeEnum.OK
     ? ViewOutcomeEnum.TIMEOUT
     : ViewOutcomeEnum.GENERIC_ERROR;
 }

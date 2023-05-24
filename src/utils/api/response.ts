@@ -66,7 +66,7 @@ const ecommerceClientWithPolling: EcommerceClient = createClient({
 export const callServices = async (
   handleFinalStatusResult: (
     status?: TransactionStatusEnum,
-    authorizationResult?: string,
+    sendPaymentResultOutcome?: string,
     gateway?: string,
     errorCode?: string
   ) => void
@@ -132,7 +132,7 @@ export const callServices = async (
               });
               handleFinalStatusResult(
                 transactionInfo.status,
-                transactionInfo.authorizationResult,
+                transactionInfo.sendPaymentResultOutcome,
                 transactionInfo.gateway,
                 transactionInfo.errorCode
               );
