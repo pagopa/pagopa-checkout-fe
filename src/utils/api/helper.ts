@@ -378,6 +378,20 @@ export const calculateFees = async ({
     O.getOrElse(() => [] as Array<TransferListItem>)
   );
 
+  const transactionId = pipe(
+    getSessionItem(SessionItems.transaction) as NewTransactionResponse,
+    O.fromNullable,
+    O.map((transaction) => transaction.transactionId),
+    O.getOrElse(() => "")
+  );
+
+  const bearerAuth = pipe(
+    getSessionItem(SessionItems.transaction) as NewTransactionResponse,
+    O.fromNullable,
+    O.chain((transaction) => O.fromNullable(transaction.authToken)),
+    O.getOrElse(() => "")
+  );
+
   const primaryCreditorInstitution =
     transferList.at(0)?.creditorInstitution || ""; // TODO replace with primaryCreditorInstitution from transaction response when available (activate V2)
 
@@ -389,6 +403,8 @@ export const calculateFees = async ({
     TE.tryCatch(
       () =>
         apiPaymentEcommerceCalculateFeesClientWithRetry.calculateFees({
+          bearerAuth,
+          transactionId,
           id: paymentId,
           maxOccurrences: MAX_OCCURENCES_AFM,
           body: {
