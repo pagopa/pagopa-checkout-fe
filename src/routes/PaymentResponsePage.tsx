@@ -139,10 +139,19 @@ export default function PaymentResponsePage() {
               alt="cancelled"
               style={{ width: "80px", height: "80px" }}
             />
-            <Typography variant="h6" py={3} textAlign="center">
+            <Typography
+              variant="h6"
+              py={3}
+              textAlign="center"
+              id="responsePageMessageTitle"
+            >
               {outcomeMessage ? t(outcomeMessage.title, usefulPrintData) : ""}
             </Typography>
-            <Typography variant="body1" textAlign="center">
+            <Typography
+              variant="body1"
+              textAlign="center"
+              id="responsePageMessageBody"
+            >
               {outcomeMessage && outcomeMessage.body
                 ? t(outcomeMessage.body, usefulPrintData)
                 : ""}
