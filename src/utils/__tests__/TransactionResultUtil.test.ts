@@ -22,11 +22,7 @@ describe("TransactionResultUtil", () => {
     ).toEqual(ViewOutcomeEnum.SUCCESS);
 
     expect(
-      getViewOutcomeFromEcommerceResultCode(
-        TransactionStatusEnum.NOTIFIED_OK,
-        "authResult",
-        "gateway"
-      )
+      getViewOutcomeFromEcommerceResultCode(TransactionStatusEnum.NOTIFIED_OK)
     ).toEqual(ViewOutcomeEnum.SUCCESS);
 
     // check success when status is NOTIFICATION_ERROR and sendPaymentResultOutcome OK

@@ -24,7 +24,10 @@ import {
 } from "../../../generated/definitions/payment-ecommerce/client";
 import { EcommerceFinalStatusCodeEnumType } from "../transactions/TransactionResultUtil";
 import { getSessionItem, SessionItems } from "../storage/sessionStorage";
-import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
+import {
+  NewTransactionResponse,
+  SendPaymentResultOutcomeEnum,
+} from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { TransactionInfo } from "../../../generated/definitions/payment-ecommerce/TransactionInfo";
 import { TransactionStatusEnum } from "../../../generated/definitions/payment-ecommerce/TransactionStatus";
 const config = getConfigOrThrow();
@@ -66,7 +69,7 @@ const ecommerceClientWithPolling: EcommerceClient = createClient({
 export const callServices = async (
   handleFinalStatusResult: (
     status?: TransactionStatusEnum,
-    sendPaymentResultOutcome?: string,
+    sendPaymentResultOutcome?: SendPaymentResultOutcomeEnum,
     gateway?: string,
     errorCode?: string
   ) => void
