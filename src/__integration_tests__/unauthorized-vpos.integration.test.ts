@@ -1,4 +1,4 @@
-import { payNotice, acceptCookiePolicy, verifyPaymentAndGetError, activatePaymentAndGetError, authorizePaymentAndGetError, checkPspDisclaimerBeforeAuthorizePayment, checkErrorOnCardDataFormSubmit, cancelPaymentOK, cancelPaymentAction, cancelPaymentKO } from "./utils/helpers";
+import { payNotice, acceptCookiePolicy } from "./utils/helpers";
 
 describe("Unauthorized final status mapping tests", () => {
 

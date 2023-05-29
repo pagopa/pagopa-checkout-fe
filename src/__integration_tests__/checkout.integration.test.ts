@@ -141,17 +141,17 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
     expect(resultMessage).toContain("PPT_DOMINIO_SCONOSCIUTO");
   });
 
-  xit("Should fail a payment AUTHORIZATION REQUEST and get FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND", async () => {
+  it("Should fail a payment AUTHORIZATION REQUEST and get FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND", async () => {
     /*
      * 2. Payment with notice code that fails on activation and get FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND
      */                        
-    const errorMessageXPath = '/html/body/div[6]/div[3]/div' 
+    const errorMessageTitleSelector = '#idTitleErrorModalPaymentCheckPage' 
     const resultMessage = await authorizePaymentAndGetError(
       FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND,
       VALID_FISCAL_CODE,
       EMAIL,
       VALID_CARD_DATA,
-      errorMessageXPath
+      errorMessageTitleSelector
     );
 
     expect(resultMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
