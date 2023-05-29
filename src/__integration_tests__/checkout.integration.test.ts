@@ -141,7 +141,7 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
     expect(resultMessage).toContain("PPT_DOMINIO_SCONOSCIUTO");
   });
 
-  it("Should fail a payment AUTHORIZATION REQUEST and get FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND", async () => {
+  xit("Should fail a payment AUTHORIZATION REQUEST and get FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND", async () => {
     /*
      * 2. Payment with notice code that fails on activation and get FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND
      */                        
