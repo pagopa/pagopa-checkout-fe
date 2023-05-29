@@ -60,7 +60,7 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
     await page.goto(CHECKOUT_URL);
   });
 
-  i  it("Should correctly execute a payment", async () => {
+  it("Should correctly execute a payment", async () => {
     /*
      * 1. Payment with valid notice code
     */
