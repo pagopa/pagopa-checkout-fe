@@ -4,7 +4,6 @@ import { TransactionStatusEnum } from "../../../generated/definitions/payment-ec
 import {
   getViewOutcomeFromEcommerceResultCode,
   NexiResultCodeEnum,
-  PaymentGateway,
   ViewOutcomeEnum,
   VposResultCodeEnum,
 } from "../transactions/TransactionResultUtil";
@@ -22,11 +21,7 @@ describe("TransactionResultUtil", () => {
     ).toEqual(ViewOutcomeEnum.SUCCESS);
 
     expect(
-      getViewOutcomeFromEcommerceResultCode(
-        TransactionStatusEnum.NOTIFIED_OK,
-        "authResult",
-        "gateway"
-      )
+      getViewOutcomeFromEcommerceResultCode(TransactionStatusEnum.NOTIFIED_OK)
     ).toEqual(ViewOutcomeEnum.SUCCESS);
 
     // check success when status is NOTIFICATION_ERROR and sendPaymentResultOutcome OK
@@ -148,64 +143,7 @@ describe("TransactionResultUtil", () => {
     // Check EXPIRED cases !wasAuthRequested !sendPaymentResultOK
     expect(
       getViewOutcomeFromEcommerceResultCode(TransactionStatusEnum.EXPIRED)
-    ).toEqual(ViewOutcomeEnum.TIMEOUT);
-
-    // Check EXPIRED cases wasAuthRequested !sendPaymentResultOK (undefined)
-    expect(
-      getViewOutcomeFromEcommerceResultCode(
-        TransactionStatusEnum.EXPIRED,
-        undefined,
-        "testGateway",
-        undefined
-      )
     ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
-
-    // Check EXPIRED cases wasAuthRequested sendPaymentResultOK
-    expect(
-      getViewOutcomeFromEcommerceResultCode(
-        TransactionStatusEnum.EXPIRED,
-        SendPaymentResultOutcomeEnum.OK,
-        PaymentGateway.XPAY,
-        undefined
-      )
-    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
-
-    // Check EXPIRED cases wasAuthRequested sendPaymentResultOK
-    expect(
-      getViewOutcomeFromEcommerceResultCode(
-        TransactionStatusEnum.EXPIRED,
-        SendPaymentResultOutcomeEnum.OK,
-        PaymentGateway.VPOS,
-        undefined
-      )
-    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
-
-    // Check EXPIRED cases wasAuthRequested !sendPaymentResultOK (KO)
-    expect(
-      getViewOutcomeFromEcommerceResultCode(
-        TransactionStatusEnum.EXPIRED,
-        SendPaymentResultOutcomeEnum.KO,
-        PaymentGateway.VPOS,
-        undefined
-      )
-    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
-
-    expect(
-      getViewOutcomeFromEcommerceResultCode(
-        TransactionStatusEnum.EXPIRED,
-        SendPaymentResultOutcomeEnum.KO,
-        PaymentGateway.XPAY,
-        undefined
-      )
-    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
-
-    // Check EXPIRED cases !wasAuthRequested !sendPaymentResultOK (KO)
-    expect(
-      getViewOutcomeFromEcommerceResultCode(
-        TransactionStatusEnum.EXPIRED,
-        SendPaymentResultOutcomeEnum.KO
-      )
-    ).toEqual(ViewOutcomeEnum.TIMEOUT);
   });
 
   // Check UNAUTHORIZED cases NEXI

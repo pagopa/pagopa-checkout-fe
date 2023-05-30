@@ -302,6 +302,7 @@ export const TRANSLATIONS_IT = {
     },
     "8": {
       title: "L’operazione è stata annullata",
+      body: "",
     },
     "10": {
       title: "Autorizzazione negata",

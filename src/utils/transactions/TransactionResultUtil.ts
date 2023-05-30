@@ -28,6 +28,7 @@ export enum EcommerceFinalStatusCodeEnum {
   CANCELLATION_EXPIRED,
   CANCELED_BY_USER,
   UNAUTHORIZED,
+  EXPIRED,
 }
 
 export enum NexiResultCodeEnum {
@@ -98,7 +99,7 @@ export enum PaymentGateway {
 
 export const getViewOutcomeFromEcommerceResultCode = (
   transactionStatus?: TransactionStatusEnum,
-  sendPaymentResultOutcome?: string,
+  sendPaymentResultOutcome?: SendPaymentResultOutcomeEnum,
   gateway?: string,
   errorCode?: string
 ): ViewOutcomeEnum => {
@@ -115,14 +116,13 @@ export const getViewOutcomeFromEcommerceResultCode = (
     case TransactionStatusEnum.REFUND_REQUESTED:
     case TransactionStatusEnum.REFUND_ERROR:
     case TransactionStatusEnum.CLOSURE_ERROR:
+    case TransactionStatusEnum.EXPIRED:
       return ViewOutcomeEnum.GENERIC_ERROR;
     case TransactionStatusEnum.EXPIRED_NOT_AUTHORIZED:
       return ViewOutcomeEnum.TIMEOUT;
     case TransactionStatusEnum.CANCELED:
     case TransactionStatusEnum.CANCELLATION_EXPIRED:
       return ViewOutcomeEnum.CANCELED_BY_USER;
-    case TransactionStatusEnum.EXPIRED:
-      return evaluateExpiredStatus(gateway, sendPaymentResultOutcome);
     case TransactionStatusEnum.UNAUTHORIZED:
       return evaluateUnauthorizedStatus(gateway, errorCode);
     default:
@@ -150,7 +150,6 @@ function evaluateUnauthorizedStatus(
   gateway: string | undefined,
   errorCode: string | undefined
 ): ViewOutcomeEnum {
-  // eslint-disable-next-line sonarjs/no-all-duplicated-branches
   switch (gateway) {
     case PaymentGateway.XPAY:
       switch (errorCode) {
@@ -169,7 +168,7 @@ function evaluateUnauthorizedStatus(
         case NexiResultCodeEnum.CANCELED_3DS_AUTH:
           return ViewOutcomeEnum.CANCELED_BY_USER;
         default:
-          return ViewOutcomeEnum.AUTH_ERROR;
+          return ViewOutcomeEnum.GENERIC_ERROR;
       }
     case PaymentGateway.VPOS:
       switch (errorCode) {
@@ -208,19 +207,9 @@ function evaluateUnauthorizedStatus(
         case VposResultCodeEnum.PAYMENT_INSTRUMENT_NOT_ACCEPTED:
           return ViewOutcomeEnum.INVALID_CARD;
         default:
-          return ViewOutcomeEnum.AUTH_ERROR;
+          return ViewOutcomeEnum.GENERIC_ERROR;
       }
     default:
       return ViewOutcomeEnum.GENERIC_ERROR;
   }
-}
-function evaluateExpiredStatus(
-  gateway: string | undefined,
-  sendPaymentResultOutcome: string | undefined
-): ViewOutcomeEnum {
-  return gateway !== undefined
-    ? ViewOutcomeEnum.GENERIC_ERROR
-    : sendPaymentResultOutcome !== SendPaymentResultOutcomeEnum.OK
-    ? ViewOutcomeEnum.TIMEOUT
-    : ViewOutcomeEnum.GENERIC_ERROR;
 }

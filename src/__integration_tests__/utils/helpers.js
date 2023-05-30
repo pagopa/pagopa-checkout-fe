@@ -1,12 +1,12 @@
 export const payNotice = async (noticeCode, fiscalCode, email, cardData, checkoutUrlAfterAuth) => {
   const payBtnSelector = "#paymentCheckPageButtonPay";
-  const resultMessageXPath = "/html/body/div[1]/div/div[2]/div/div/div/div/h6";
+  const resultTitleSelector = "#responsePageMessageTitle";
   await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData)
   const payBtn = await page.waitForSelector(payBtnSelector);
   await payBtn.click();
   await page.waitForNavigation();
   await page.goto(checkoutUrlAfterAuth)
-  const message = await page.waitForXPath(resultMessageXPath);
+  const message = await page.waitForSelector(resultTitleSelector);
   return await message.evaluate((el) => el.textContent);
 };
 
@@ -23,12 +23,12 @@ export const activatePaymentAndGetError = async (noticeCode, fiscalCode, email, 
   return await errorMessageElem.evaluate((el) => el.textContent);
 };
 
-export const authorizePaymentAndGetError = async (noticeCode, fiscalCode, email, cardData, errorMessageXPath) => {
+export const authorizePaymentAndGetError = async (noticeCode, fiscalCode, email, cardData, errorMessageTitleSelector) => {
   const payBtnSelector = "#paymentCheckPageButtonPay";
   await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData)
   const payBtn = await page.waitForSelector(payBtnSelector);
   await payBtn.click();
-  const errorMessageElem = await page.waitForXPath(errorMessageXPath);
+  const errorMessageElem = await page.waitForSelector(errorMessageTitleSelector);
   return await errorMessageElem.evaluate((el) => el.textContent);
 };
 

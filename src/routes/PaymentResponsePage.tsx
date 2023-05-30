@@ -28,7 +28,10 @@ import {
   ViewOutcomeEnum,
 } from "../utils/transactions/TransactionResultUtil";
 import { Cart } from "../features/payment/models/paymentModel";
-import { NewTransactionResponse } from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
+import {
+  NewTransactionResponse,
+  SendPaymentResultOutcomeEnum,
+} from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { resetThreshold } from "../redux/slices/threshold";
 import { Bundle } from "../../generated/definitions/payment-ecommerce/Bundle";
 import { TransactionStatusEnum } from "../../generated/definitions/payment-ecommerce/TransactionStatus";
@@ -72,7 +75,7 @@ export default function PaymentResponsePage() {
 
     const handleFinalStatusResult = (
       idStatus?: TransactionStatusEnum,
-      sendPaymentResultOutcome?: string,
+      sendPaymentResultOutcome?: SendPaymentResultOutcomeEnum,
       gateway?: string,
       errorCode?: string
     ) => {
@@ -136,10 +139,19 @@ export default function PaymentResponsePage() {
               alt="cancelled"
               style={{ width: "80px", height: "80px" }}
             />
-            <Typography variant="h6" py={3} textAlign="center">
+            <Typography
+              variant="h6"
+              py={3}
+              textAlign="center"
+              id="responsePageMessageTitle"
+            >
               {outcomeMessage ? t(outcomeMessage.title, usefulPrintData) : ""}
             </Typography>
-            <Typography variant="body1" textAlign="center">
+            <Typography
+              variant="body1"
+              textAlign="center"
+              id="responsePageMessageBody"
+            >
               {outcomeMessage && outcomeMessage.body
                 ? t(outcomeMessage.body, usefulPrintData)
                 : ""}
