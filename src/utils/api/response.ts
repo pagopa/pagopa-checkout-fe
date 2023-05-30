@@ -22,11 +22,14 @@ import {
   createClient,
   Client as EcommerceClient,
 } from "../../../generated/definitions/payment-ecommerce/client";
-import { TransactionStatusEnum } from "../../../generated/definitions/payment-ecommerce/TransactionStatus";
 import { EcommerceFinalStatusCodeEnumType } from "../transactions/TransactionResultUtil";
 import { getSessionItem, SessionItems } from "../storage/sessionStorage";
-import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
+import {
+  NewTransactionResponse,
+  SendPaymentResultOutcomeEnum,
+} from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { TransactionInfo } from "../../../generated/definitions/payment-ecommerce/TransactionInfo";
+import { TransactionStatusEnum } from "../../../generated/definitions/payment-ecommerce/TransactionStatus";
 const config = getConfigOrThrow();
 /**
  * Polling configuration params
@@ -64,7 +67,12 @@ const ecommerceClientWithPolling: EcommerceClient = createClient({
 });
 
 export const callServices = async (
-  handleFinalStatusResult: (idStatus?: TransactionStatusEnum) => void
+  handleFinalStatusResult: (
+    status?: TransactionStatusEnum,
+    sendPaymentResultOutcome?: SendPaymentResultOutcomeEnum,
+    gateway?: string,
+    errorCode?: string
+  ) => void
 ) => {
   const transaction = pipe(
     getSessionItem(SessionItems.transaction),
@@ -125,7 +133,12 @@ export const callServices = async (
               mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value, {
                 EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value,
               });
-              handleFinalStatusResult(transactionInfo.status);
+              handleFinalStatusResult(
+                transactionInfo.status,
+                transactionInfo.sendPaymentResultOutcome,
+                transactionInfo.gateway,
+                transactionInfo.errorCode
+              );
             }
           )
         )()

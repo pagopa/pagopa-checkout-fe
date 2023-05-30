@@ -27,18 +27,21 @@ import {
   getViewOutcomeFromEcommerceResultCode,
   ViewOutcomeEnum,
 } from "../utils/transactions/TransactionResultUtil";
-import { TransactionStatusEnum } from "../../generated/definitions/payment-ecommerce/TransactionStatus";
 import { Cart } from "../features/payment/models/paymentModel";
-import { NewTransactionResponse } from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
+import {
+  NewTransactionResponse,
+  SendPaymentResultOutcomeEnum,
+} from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { resetThreshold } from "../redux/slices/threshold";
 import { Bundle } from "../../generated/definitions/payment-ecommerce/Bundle";
+import { TransactionStatusEnum } from "../../generated/definitions/payment-ecommerce/TransactionStatus";
 
 type printData = {
   useremail: string;
   amount: string;
 };
 
-export default function PaymentCheckPage() {
+export default function PaymentResponsePage() {
   const [loading, setLoading] = useState(true);
   const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
   const [outcomeMessage, setOutcomeMessage] = useState<responseMessage>();
@@ -70,9 +73,18 @@ export default function PaymentCheckPage() {
     dispatch(resetCardData());
     dispatch(resetThreshold());
 
-    const handleFinalStatusResult = (idStatus?: TransactionStatusEnum) => {
-      const outcome: ViewOutcomeEnum =
-        getViewOutcomeFromEcommerceResultCode(idStatus);
+    const handleFinalStatusResult = (
+      idStatus?: TransactionStatusEnum,
+      sendPaymentResultOutcome?: SendPaymentResultOutcomeEnum,
+      gateway?: string,
+      errorCode?: string
+    ) => {
+      const outcome: ViewOutcomeEnum = getViewOutcomeFromEcommerceResultCode(
+        idStatus,
+        sendPaymentResultOutcome,
+        gateway,
+        errorCode
+      );
       mixpanel.track(PAYMENT_OUTCOME_CODE.value, {
         EVENT_ID: PAYMENT_OUTCOME_CODE.value,
         idStatus,
@@ -127,10 +139,19 @@ export default function PaymentCheckPage() {
               alt="cancelled"
               style={{ width: "80px", height: "80px" }}
             />
-            <Typography variant="h6" py={3} textAlign="center">
+            <Typography
+              variant="h6"
+              py={3}
+              textAlign="center"
+              id="responsePageMessageTitle"
+            >
               {outcomeMessage ? t(outcomeMessage.title, usefulPrintData) : ""}
             </Typography>
-            <Typography variant="body1" textAlign="center">
+            <Typography
+              variant="body1"
+              textAlign="center"
+              id="responsePageMessageBody"
+            >
               {outcomeMessage && outcomeMessage.body
                 ? t(outcomeMessage.body, usefulPrintData)
                 : ""}

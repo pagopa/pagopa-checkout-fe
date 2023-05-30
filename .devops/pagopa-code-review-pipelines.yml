@@ -123,7 +123,7 @@ stages:
     dependsOn: []
     jobs:
       - job: run_integration_tests
-        timeoutInMinutes: 10
+        timeoutInMinutes: 30
         steps:
       
         - checkout: checkout-be-mock

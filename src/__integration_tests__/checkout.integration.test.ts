@@ -1,45 +1,45 @@
 import { payNotice, acceptCookiePolicy, verifyPaymentAndGetError, activatePaymentAndGetError, authorizePaymentAndGetError, checkPspDisclaimerBeforeAuthorizePayment, checkErrorOnCardDataFormSubmit, cancelPaymentOK, cancelPaymentAction, cancelPaymentKO } from "./utils/helpers";
 
 describe("Checkout payment activation tests", () => {
-  /**
+/**
    * Test input and configuration
-   */
-  const CHECKOUT_URL = "http://localhost:1234/";
-  const CHECKOUT_URL_AFTER_AUTHORIZATION = "http://localhost:1234/esito";
-  const VALID_FISCAL_CODE = "77777777777";
-  const EMAIL = "mario.rossi@email.com";
-  const VALID_CARD_DATA = {
-    number: "4333334000098346",
-    expirationDate: "1230",
-    ccv: "123",
-    holderName: "Mario Rossi",
-  };
-
-  /* VALID_NOTICE_CODE */
-  const VALID_NOTICE_CODE = "302016723749670000"
-  /* FAIL_VERIFY_PPT_STAZIONE_INT_PA_SCONOSCIUTA end with 03 */
-  const FAIL_VERIFY_PPT_STAZIONE_INT_PA_SCONOSCIUTA = "302016723749670003";
-  /* FAIL_VERIFY_PPT_DOMINIO_SCONOSCIUTO end with 04 */
-  const FAIL_VERIFY_PPT_DOMINIO_SCONOSCIUTO = "302016723749670004";
-  /* FAIL_ACTIVATE_PPT_PAGAMENTO_IN_CORSO end with 12 */
-  const FAIL_ACTIVATE_PPT_PAGAMENTO_IN_CORSO = "302016723749670012";
-  /* FAIL_ACTIVATE_PPT_STAZIONE_INT_PA_TIMEOUT end with 15 */
-  const FAIL_ACTIVATE_PPT_STAZIONE_INT_PA_TIMEOUT = "302016723749670015";
-  /* FAIL_ACTIVATE_PPT_DOMINIO_SCONOSCIUTO end with 11 */
-  const FAIL_ACTIVATE_PPT_DOMINIO_SCONOSCIUTO = "302016723749670011";
-  /* FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND end with 41 */
-  const FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND = "302016723749670041";
-  /* PSP_UPTHRESHOLD end with 55 */
-  const PSP_ABOVETHRESHOLD = "302016723749670055";
-  /* PSP_BELOWTHRESHOLD end with 56 */
-  const PSP_BELOWTHRESHOLD = "302016723749670056";
-  /* PSP_FAIL end with 57 */
-  const PSP_FAIL = "302016723749670057";
-  /* CANCEL_PAYMENT SUCCESS end with 58 */
-  const CANCEL_PAYMENT_OK = "302016723749670058";
-  /* CANCEL_PAYMENT_FAIL end with 59 */
-  const CANCEL_PAYMENT_KO = "302016723749670059";
+*/
   
+const CHECKOUT_URL = "http://localhost:1234/";
+const CHECKOUT_URL_AFTER_AUTHORIZATION = "http://localhost:1234/esito";
+const VALID_FISCAL_CODE = "77777777777";
+const EMAIL = "mario.rossi@email.com";
+const VALID_CARD_DATA = {
+  number: "4333334000098346",
+  expirationDate: "1230",
+  ccv: "123",
+  holderName: "Mario Rossi",
+};
+
+/* VALID_NOTICE_CODE */
+const VALID_NOTICE_CODE = "302016723749670000"
+/* FAIL_VERIFY_PPT_STAZIONE_INT_PA_SCONOSCIUTA end with 03 */
+const FAIL_VERIFY_PPT_STAZIONE_INT_PA_SCONOSCIUTA = "302016723749670003";
+/* FAIL_VERIFY_PPT_DOMINIO_SCONOSCIUTO end with 04 */
+const FAIL_VERIFY_PPT_DOMINIO_SCONOSCIUTO = "302016723749670004";
+/* FAIL_ACTIVATE_PPT_PAGAMENTO_IN_CORSO end with 12 */
+const FAIL_ACTIVATE_PPT_PAGAMENTO_IN_CORSO = "302016723749670012";
+/* FAIL_ACTIVATE_PPT_STAZIONE_INT_PA_TIMEOUT end with 15 */
+const FAIL_ACTIVATE_PPT_STAZIONE_INT_PA_TIMEOUT = "302016723749670015";
+/* FAIL_ACTIVATE_PPT_DOMINIO_SCONOSCIUTO end with 11 */
+const FAIL_ACTIVATE_PPT_DOMINIO_SCONOSCIUTO = "302016723749670011";
+/* FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND end with 41 */
+const FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND = "302016723749670041";
+/* PSP_UPTHRESHOLD end with 55 */
+const PSP_ABOVETHRESHOLD = "302016723749670055";
+/* PSP_BELOWTHRESHOLD end with 56 */
+const PSP_BELOWTHRESHOLD = "302016723749670056";
+/* PSP_FAIL end with 57 */
+const PSP_FAIL = "302016723749670057";
+/* CANCEL_PAYMENT SUCCESS end with 58 */
+const CANCEL_PAYMENT_OK = "302016723749670058";
+/* CANCEL_PAYMENT_FAIL end with 59 */
+const CANCEL_PAYMENT_KO = "302016723749670059";
 
   /**
    * Increase default test timeout (80000ms)
@@ -145,13 +145,13 @@ describe("Checkout payment activation tests", () => {
     /*
      * 2. Payment with notice code that fails on activation and get FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND
      */                        
-    const errorMessageXPath = '/html/body/div[6]/div[3]/div' 
+    const errorMessageTitleSelector = '#idTitleErrorModalPaymentCheckPage' 
     const resultMessage = await authorizePaymentAndGetError(
       FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND,
       VALID_FISCAL_CODE,
       EMAIL,
       VALID_CARD_DATA,
-      errorMessageXPath
+      errorMessageTitleSelector
     );
 
     expect(resultMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
@@ -202,7 +202,7 @@ describe("Checkout payment activation tests", () => {
     expect(resultMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
   });
 
-  it("SShould correctly execute CANCEL PAYMENT by user", async () => {
+  it("Should correctly execute CANCEL PAYMENT by user", async () => {
     /*
      * Cancel payment OK
     */
@@ -227,4 +227,5 @@ describe("Checkout payment activation tests", () => {
     );
     expect(resultMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
   });
+
 });
