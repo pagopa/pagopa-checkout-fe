@@ -404,7 +404,7 @@ export const calculateFees = async ({
       () =>
         apiPaymentEcommerceCalculateFeesClientWithRetry.calculateFees({
           bearerAuth,
-          "x-transaction-id": transactionId,
+          "x-transaction-id-from-client": transactionId,
           id: paymentId,
           maxOccurrences: MAX_OCCURENCES_AFM,
           body: {
