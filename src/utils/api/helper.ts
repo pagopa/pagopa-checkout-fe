@@ -364,6 +364,13 @@ export const calculateFees = async ({
     O.getOrElseW(() => undefined)
   );
 
+  const isAllCCP: boolean = pipe(
+    getSessionItem(SessionItems.transaction) as NewTransactionResponse,
+    O.fromNullable,
+    O.map((transaction) => transaction.payments[0].isAllCCP),
+    O.getOrElse(() => false as boolean)
+  );
+
   const transferList: Array<TransferListItem> = pipe(
     getSessionItem(SessionItems.transaction) as NewTransactionResponse,
     O.fromNullable,
@@ -413,6 +420,7 @@ export const calculateFees = async ({
             paymentAmount: amount ? amount : 0,
             primaryCreditorInstitution,
             transferList,
+            isAllCCP,
           },
         }),
       (_e) => {
