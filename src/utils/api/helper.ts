@@ -532,41 +532,49 @@ export const proceedToPayment = async (
     mobilePhone: null,
   };
 
-  const authParams = {
-    amount: transaction.payments
-      .map((p) => p.amount)
-      .reduce((sum, current) => Number(sum) + Number(current), 0),
-    fee:
-      (getSessionItem(SessionItems.pspSelected) as Bundle | undefined)
-        ?.taxPayerFee || 0,
-    paymentInstrumentId:
-      (getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined)
-        ?.paymentMethodId || "",
-    pspId:
-      (getSessionItem(SessionItems.pspSelected) as Bundle | undefined)?.idPsp ||
-      "",
-    details:
-      (getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined)
-        ?.paymentTypeCode === "CP"
-        ? {
-            detailType: "card",
-            brand: getBrandByBrandCardValidator(cardData.brand),
-            cvv: cardData.cvv,
-            pan: cardData.pan,
-            expiryDate: cardData.expiryDate,
-            holderName: cardData.holderName,
-            threeDsData: JSON.stringify(threeDSData),
-          }
-        : {
-            detailType: "postepay",
-            accountEmail:
-              (getSessionItem(SessionItems.useremail) as string) || "",
-          },
-    language: LanguageEnum.IT,
-  };
-
   await pipe(
-    authParams,
+    getSessionItem(SessionItems.transaction) as NewTransactionResponse,
+    O.fromNullable,
+    O.map((transaction) => transaction.payments[0].isAllCCP),
+    O.map((val) => ({
+      amount: transaction.payments
+        .map((p) => p.amount)
+        .reduce((sum, current) => Number(sum) + Number(current), 0),
+      fee:
+        (getSessionItem(SessionItems.pspSelected) as Bundle | undefined)
+          ?.taxPayerFee || 0,
+      paymentInstrumentId:
+        (
+          getSessionItem(SessionItems.paymentMethod) as
+            | PaymentMethod
+            | undefined
+        )?.paymentMethodId || "",
+      pspId:
+        (getSessionItem(SessionItems.pspSelected) as Bundle | undefined)
+          ?.idPsp || "",
+      isAllCCP: val,
+      details:
+        (
+          getSessionItem(SessionItems.paymentMethod) as
+            | PaymentMethod
+            | undefined
+        )?.paymentTypeCode === "CP"
+          ? {
+              detailType: "card",
+              brand: getBrandByBrandCardValidator(cardData.brand),
+              cvv: cardData.cvv,
+              pan: cardData.pan,
+              expiryDate: cardData.expiryDate,
+              holderName: cardData.holderName,
+              threeDsData: JSON.stringify(threeDSData),
+            }
+          : {
+              detailType: "postepay",
+              accountEmail:
+                (getSessionItem(SessionItems.useremail) as string) || "",
+            },
+      language: LanguageEnum.IT,
+    })),
     RequestAuthorizationRequest.decode,
     TE.fromEither,
     TE.chain(
