@@ -364,11 +364,10 @@ export const calculateFees = async ({
     O.getOrElseW(() => undefined)
   );
 
-  const isAllCCP: boolean = pipe(
+  const allCCP: O.Option<boolean> = pipe(
     getSessionItem(SessionItems.transaction) as NewTransactionResponse,
     O.fromNullable,
-    O.map((transaction) => transaction.payments[0].isAllCCP),
-    O.getOrElse(() => false as boolean)
+    O.map((transaction) => transaction.payments[0].isAllCCP)
   );
 
   const transferList: Array<TransferListItem> = pipe(
@@ -407,29 +406,33 @@ export const calculateFees = async ({
   });
   const MAX_OCCURENCES_AFM = 2147483647;
   const bundleOption = await pipe(
-    TE.tryCatch(
-      () =>
-        apiPaymentEcommerceCalculateFeesClientWithRetry.calculateFees({
-          bearerAuth,
-          "x-transaction-id-from-client": transactionId,
-          id: paymentId,
-          maxOccurrences: MAX_OCCURENCES_AFM,
-          body: {
-            bin,
-            touchpoint: "CHECKOUT",
-            paymentAmount: amount ? amount : 0,
-            primaryCreditorInstitution,
-            transferList,
-            isAllCCP,
-          },
-        }),
-      (_e) => {
-        onError(ErrorsType.CONNECTION);
-        mixpanel.track(PAYMENT_PSPLIST_NET_ERR.value, {
-          EVENT_ID: PAYMENT_PSPLIST_NET_ERR.value,
-        });
-        return toError;
-      }
+    allCCP,
+    TE.fromOption(() => toError),
+    TE.chain((isAllCCP) =>
+      TE.tryCatch(
+        () =>
+          apiPaymentEcommerceCalculateFeesClientWithRetry.calculateFees({
+            bearerAuth,
+            "x-transaction-id-from-client": transactionId,
+            id: paymentId,
+            maxOccurrences: MAX_OCCURENCES_AFM,
+            body: {
+              bin,
+              touchpoint: "CHECKOUT",
+              paymentAmount: amount ? amount : 0,
+              primaryCreditorInstitution,
+              transferList,
+              isAllCCP,
+            },
+          }),
+        (_e) => {
+          onError(ErrorsType.CONNECTION);
+          mixpanel.track(PAYMENT_PSPLIST_NET_ERR.value, {
+            EVENT_ID: PAYMENT_PSPLIST_NET_ERR.value,
+          });
+          return toError;
+        }
+      )
     ),
     TE.fold(
       (_r) => async () => {
