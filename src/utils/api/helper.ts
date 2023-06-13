@@ -407,7 +407,10 @@ export const calculateFees = async ({
   const MAX_OCCURENCES_AFM = 2147483647;
   const bundleOption = await pipe(
     allCCP,
-    TE.fromOption(() => toError),
+    TE.fromOption(() => {
+      onError(ErrorsType.GENERIC_ERROR);
+      return toError;
+    }),
     TE.chain((isAllCCP) =>
       TE.tryCatch(
         () =>
