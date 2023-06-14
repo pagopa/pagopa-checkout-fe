@@ -12,6 +12,7 @@ export enum ViewOutcomeEnum {
   INVALID_CARD = "7",
   CANCELED_BY_USER = "8",
   EXCESSIVE_AMOUNT = "10",
+  TAKING_CHARGE = "15",
 }
 
 export enum EcommerceFinalStatusCodeEnum {
@@ -125,6 +126,8 @@ export const getViewOutcomeFromEcommerceResultCode = (
       return ViewOutcomeEnum.CANCELED_BY_USER;
     case TransactionStatusEnum.UNAUTHORIZED:
       return evaluateUnauthorizedStatus(gateway, errorCode);
+    case TransactionStatusEnum.CLOSED:
+      return ViewOutcomeEnum.TAKING_CHARGE;
     default:
       return ViewOutcomeEnum.GENERIC_ERROR;
   }

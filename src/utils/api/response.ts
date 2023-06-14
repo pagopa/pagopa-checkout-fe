@@ -8,6 +8,7 @@ import * as T from "fp-ts/Task";
 import { pipe } from "fp-ts/function";
 import { DeferredPromise } from "@pagopa/ts-commons//lib/promises";
 import { Millisecond } from "@pagopa/ts-commons//lib/units";
+import nodeFetch from "node-fetch";
 import {
   THREEDSACSCHALLENGEURL_STEP2_RESP_ERR,
   THREEDSACSCHALLENGEURL_STEP2_SUCCESS,
@@ -34,7 +35,7 @@ const config = getConfigOrThrow();
 /**
  * Polling configuration params
  */
-const retries: number = 10;
+const retries: number = 20;
 const delay: number = 3000;
 const timeout: Millisecond = config.CHECKOUT_API_TIMEOUT as Millisecond;
 
@@ -63,6 +64,12 @@ const ecommerceClientWithPolling: EcommerceClient = createClient({
       );
     }
   ),
+  basePath: config.CHECKOUT_API_ECOMMERCE_BASEPATH,
+});
+
+const ecommerceClientWithoutpolling: EcommerceClient = createClient({
+  baseUrl: config.CHECKOUT_ECOMMERCE_HOST,
+  fetchApi: nodeFetch as any as typeof fetch,
   basePath: config.CHECKOUT_API_ECOMMERCE_BASEPATH,
 });
 
@@ -127,7 +134,29 @@ export const callServices = async (
           ),
           TE.fold(
             // eslint-disable-next-line sonarjs/no-identical-functions
-            () => async () => handleFinalStatusResult(),
+            () => async () =>
+              await pipe(
+                ecommerceTransaction(
+                  transactionId,
+                  bearerAuth,
+                  ecommerceClientWithoutpolling
+                ),
+                TE.fold(
+                  () => async () => handleFinalStatusResult(),
+                  // eslint-disable-next-line sonarjs/no-identical-functions
+                  (transactionInfo) => async () => {
+                    mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value, {
+                      EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value,
+                    });
+                    handleFinalStatusResult(
+                      transactionInfo.status,
+                      transactionInfo.sendPaymentResultOutcome,
+                      transactionInfo.gateway,
+                      transactionInfo.errorCode
+                    );
+                  }
+                )
+              )(),
             // eslint-disable-next-line sonarjs/no-identical-functions
             (transactionInfo) => async () => {
               mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value, {
