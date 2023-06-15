@@ -40,6 +40,8 @@ const PSP_FAIL = "302016723749670057";
 const CANCEL_PAYMENT_OK = "302016723749670058";
 /* CANCEL_PAYMENT_FAIL end with 59 */
 const CANCEL_PAYMENT_KO = "302016723749670059";
+/* page of taking charge end with 73 */
+const TAKING_CHARGE_PAGE_NO_SEND_PAYMENT_RESULT = "302016723749670073";
 
   /**
    * Increase default test timeout (80000ms)
@@ -226,6 +228,21 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
       VALID_CARD_DATA
     );
     expect(resultMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
+  });
+
+  it.only("Should result taking charge page - final status CLOSED", async () => {
+    /*
+     * Taking charge page sendPaymentResult not received
+    */
+    const resultMessage = await payNotice(
+      TAKING_CHARGE_PAGE_NO_SEND_PAYMENT_RESULT,
+      VALID_FISCAL_CODE,
+      EMAIL,
+      VALID_CARD_DATA,
+      CHECKOUT_URL_AFTER_AUTHORIZATION
+    );
+  
+    expect(resultMessage).toContain("L'operazione è stata presa in carico");
   });
 
 });
