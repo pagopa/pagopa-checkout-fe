@@ -116,7 +116,7 @@ describe("TransactionResultUtil", () => {
 
     expect(
       getViewOutcomeFromEcommerceResultCode(TransactionStatusEnum.CLOSED)
-    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
+    ).toEqual(ViewOutcomeEnum.TAKING_CHARGE);
 
     expect(
       getViewOutcomeFromEcommerceResultCode(TransactionStatusEnum.CLOSURE_ERROR)
