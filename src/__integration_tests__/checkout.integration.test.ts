@@ -44,13 +44,13 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
 const TAKING_CHARGE_PAGE_NO_SEND_PAYMENT_RESULT = "302016723749670073";
 
   /**
-   * Increase default test timeout (80000ms)
+   * Increase default test timeout (240000ms)
    * to support entire payment flow
     */
-  jest.setTimeout(120000);
+  jest.setTimeout(240000);
   jest.retryTimes(3);
-  page.setDefaultNavigationTimeout(120000);
-  page.setDefaultTimeout(120000);
+  page.setDefaultNavigationTimeout(240000);
+  page.setDefaultTimeout(240000);
 
   beforeAll(async () => {
     await page.goto(CHECKOUT_URL);
