@@ -230,7 +230,7 @@ const TAKING_CHARGE_PAGE_NO_SEND_PAYMENT_RESULT = "302016723749670073";
     expect(resultMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
   });
 
-  it.only("Should result taking charge page - final status CLOSED", async () => {
+  it("Should result taking charge page - final status CLOSED", async () => {
     /*
      * Taking charge page sendPaymentResult not received
     */
