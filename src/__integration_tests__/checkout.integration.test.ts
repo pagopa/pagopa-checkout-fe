@@ -41,13 +41,13 @@ const CANCEL_PAYMENT_OK = "302016723749670058";
 /* CANCEL_PAYMENT_FAIL end with 59 */
 const CANCEL_PAYMENT_KO = "302016723749670059";
   /**
-   * Increase default test timeout (240000ms)
+   * Increase default test timeout (120000ms)
    * to support entire payment flow
     */
-  jest.setTimeout(240000);
+  jest.setTimeout(120000);
   jest.retryTimes(3);
-  page.setDefaultNavigationTimeout(240000);
-  page.setDefaultTimeout(240000);
+  page.setDefaultNavigationTimeout(120000);
+  page.setDefaultTimeout(120000);
 
   beforeAll(async () => {
     await page.goto(CHECKOUT_URL);
