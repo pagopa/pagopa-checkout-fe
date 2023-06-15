@@ -40,9 +40,8 @@ const PSP_FAIL = "302016723749670057";
 const CANCEL_PAYMENT_OK = "302016723749670058";
 /* CANCEL_PAYMENT_FAIL end with 59 */
 const CANCEL_PAYMENT_KO = "302016723749670059";
-
   /**
-   * Increase default test timeout (80000ms)
+   * Increase default test timeout (120000ms)
    * to support entire payment flow
     */
   jest.setTimeout(120000);

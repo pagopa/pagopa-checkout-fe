@@ -1,5 +1,6 @@
 import { ViewOutcomeEnum } from "../../../utils/transactions/TransactionResultUtil";
 import ok from "../../../assets/images/response-ok.svg";
+import wait from "../../../assets/images/response-wait.svg";
 import umbrella from "../../../assets/images/response-umbrella.svg";
 import ko from "../../../assets/images/response-ko.svg";
 import question from "../../../assets/images/response-question.svg";
@@ -52,5 +53,10 @@ export const responseOutcome: Record<ViewOutcomeEnum, responseMessage> = {
     title: "paymentResponsePage.10.title",
     body: "paymentResponsePage.10.body",
     icon: ko,
+  },
+  15: {
+    title: "paymentResponsePage.15.title",
+    body: "paymentResponsePage.15.body",
+    icon: wait,
   },
 };
