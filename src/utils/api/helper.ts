@@ -262,6 +262,29 @@ const activePaymentTask = (
               let reason;
               if (responseType.status === 200) {
                 reason = "";
+                const cartInfo = getSessionItem(SessionItems.cart) as
+                  | Cart
+                  | undefined;
+                if (cartInfo !== undefined) {
+                  const updatedPaymentNotices = cartInfo.paymentNotices.map(
+                    (paymentNotice) => {
+                      const updatedAmount = responseType.value.payments.find(
+                        (p) =>
+                          p.rptId ===
+                          (`${paymentNotice.fiscalCode}${paymentNotice.noticeNumber}` as RptId)
+                      )?.amount;
+
+                      return {
+                        ...paymentNotice,
+                        amount: updatedAmount ?? paymentNotice.amount,
+                      };
+                    }
+                  );
+                  setSessionItem(SessionItems.cart, {
+                    ...cart,
+                    paymentNotices: updatedPaymentNotices,
+                  });
+                }
               }
               if (responseType.status === 400) {
                 reason = (
