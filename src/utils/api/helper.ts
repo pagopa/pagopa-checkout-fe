@@ -266,13 +266,17 @@ const activePaymentTask = (
                   | Cart
                   | undefined;
                 if (cartInfo !== undefined) {
+                  const rptIdAmountMap = new Map(
+                    responseType.value.payments.map(
+                      (p) => [p.rptId, p.amount] as [RptId, AmountEuroCents]
+                    )
+                  );
+
                   const updatedPaymentNotices = cartInfo.paymentNotices.map(
                     (paymentNotice) => {
-                      const updatedAmount = responseType.value.payments.find(
-                        (p) =>
-                          p.rptId ===
-                          (`${paymentNotice.fiscalCode}${paymentNotice.noticeNumber}` as RptId)
-                      )?.amount;
+                      const updatedAmount = rptIdAmountMap.get(
+                        `${paymentNotice.fiscalCode}${paymentNotice.noticeNumber}` as RptId
+                      );
 
                       return {
                         ...paymentNotice,
