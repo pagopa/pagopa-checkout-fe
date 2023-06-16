@@ -391,6 +391,12 @@ export const calculateFees = async ({
     O.getOrElseW(() => undefined)
   );
 
+  const allCCP: O.Option<boolean> = pipe(
+    getSessionItem(SessionItems.transaction) as NewTransactionResponse,
+    O.fromNullable,
+    O.map((transaction) => transaction.payments[0].isAllCCP)
+  );
+
   const transferList: Array<TransferListItem> = pipe(
     getSessionItem(SessionItems.transaction) as NewTransactionResponse,
     O.fromNullable,
@@ -427,28 +433,36 @@ export const calculateFees = async ({
   });
   const MAX_OCCURENCES_AFM = 2147483647;
   const bundleOption = await pipe(
-    TE.tryCatch(
-      () =>
-        apiPaymentEcommerceCalculateFeesClientWithRetry.calculateFees({
-          bearerAuth,
-          "x-transaction-id-from-client": transactionId,
-          id: paymentId,
-          maxOccurrences: MAX_OCCURENCES_AFM,
-          body: {
-            bin,
-            touchpoint: "CHECKOUT",
-            paymentAmount: amount ? amount : 0,
-            primaryCreditorInstitution,
-            transferList,
-          },
-        }),
-      (_e) => {
-        onError(ErrorsType.CONNECTION);
-        mixpanel.track(PAYMENT_PSPLIST_NET_ERR.value, {
-          EVENT_ID: PAYMENT_PSPLIST_NET_ERR.value,
-        });
-        return toError;
-      }
+    allCCP,
+    TE.fromOption(() => {
+      onError(ErrorsType.GENERIC_ERROR);
+      return toError;
+    }),
+    TE.chain((isAllCCP) =>
+      TE.tryCatch(
+        () =>
+          apiPaymentEcommerceCalculateFeesClientWithRetry.calculateFees({
+            bearerAuth,
+            "x-transaction-id-from-client": transactionId,
+            id: paymentId,
+            maxOccurrences: MAX_OCCURENCES_AFM,
+            body: {
+              bin,
+              touchpoint: "CHECKOUT",
+              paymentAmount: amount ? amount : 0,
+              primaryCreditorInstitution,
+              transferList,
+              isAllCCP,
+            },
+          }),
+        (_e) => {
+          onError(ErrorsType.CONNECTION);
+          mixpanel.track(PAYMENT_PSPLIST_NET_ERR.value, {
+            EVENT_ID: PAYMENT_PSPLIST_NET_ERR.value,
+          });
+          return toError;
+        }
+      )
     ),
     TE.fold(
       (_r) => async () => {
@@ -520,6 +534,13 @@ export const proceedToPayment = async (
     O.getOrElse(() => "")
   );
 
+  const isAllCCP = pipe(
+    transaction,
+    O.fromNullable,
+    O.map((transaction) => transaction.payments[0].isAllCCP),
+    O.getOrElseW(() => undefined)
+  );
+
   const browserInfo = await pipe(
     getBrowserInfoTask(apiPaymentTransactionsClient),
     TE.mapLeft(() => ({
@@ -545,7 +566,7 @@ export const proceedToPayment = async (
     mobilePhone: null,
   };
 
-  const authParams = {
+  const authParam = {
     amount: transaction.payments
       .map((p) => p.amount)
       .reduce((sum, current) => Number(sum) + Number(current), 0),
@@ -558,6 +579,7 @@ export const proceedToPayment = async (
     pspId:
       (getSessionItem(SessionItems.pspSelected) as Bundle | undefined)?.idPsp ||
       "",
+    isAllCCP,
     details:
       (getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined)
         ?.paymentTypeCode === "CP"
@@ -579,7 +601,7 @@ export const proceedToPayment = async (
   };
 
   await pipe(
-    authParams,
+    authParam,
     RequestAuthorizationRequest.decode,
     TE.fromEither,
     TE.chain(
