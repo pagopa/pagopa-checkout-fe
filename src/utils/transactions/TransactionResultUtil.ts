@@ -127,7 +127,8 @@ export const getViewOutcomeFromEcommerceResultCode = (
     case TransactionStatusEnum.UNAUTHORIZED:
       return evaluateUnauthorizedStatus(gateway, errorCode);
     case TransactionStatusEnum.CLOSED:
-      return sendPaymentResultOutcome === SendPaymentResultOutcomeEnum.NOT_RECEIVED
+      return sendPaymentResultOutcome ===
+        SendPaymentResultOutcomeEnum.NOT_RECEIVED
         ? ViewOutcomeEnum.TAKING_CHARGE
         : ViewOutcomeEnum.GENERIC_ERROR;
     default:
