@@ -115,8 +115,29 @@ describe("TransactionResultUtil", () => {
     ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
 
     expect(
-      getViewOutcomeFromEcommerceResultCode(TransactionStatusEnum.CLOSED)
+      getViewOutcomeFromEcommerceResultCode(
+        TransactionStatusEnum.CLOSED,
+        SendPaymentResultOutcomeEnum.NOT_RECEIVED
+      )
     ).toEqual(ViewOutcomeEnum.TAKING_CHARGE);
+
+    expect(
+      getViewOutcomeFromEcommerceResultCode(
+        TransactionStatusEnum.CLOSED,
+        SendPaymentResultOutcomeEnum.OK
+      )
+    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
+
+    expect(
+      getViewOutcomeFromEcommerceResultCode(
+        TransactionStatusEnum.CLOSED,
+        SendPaymentResultOutcomeEnum.KO
+      )
+    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
+
+    expect(
+      getViewOutcomeFromEcommerceResultCode(TransactionStatusEnum.CLOSED)
+    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
 
     expect(
       getViewOutcomeFromEcommerceResultCode(TransactionStatusEnum.CLOSURE_ERROR)
