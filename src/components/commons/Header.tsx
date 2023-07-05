@@ -1,8 +1,8 @@
 /* eslint-disable sonarjs/cognitive-complexity */
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { Box, Grid, Typography } from "@mui/material";
 import React from "react";
 import { useLocation } from "react-router-dom";
+import { HelpOutlineOutlined } from "@mui/icons-material";
 import pagopaLogo from "../../assets/images/pagopa-logo.svg";
 import {
   Cart,
@@ -18,6 +18,7 @@ import { getTotalFromCart } from "../../utils/cart/cart";
 import { moneyFormat } from "../../utils/form/formatters";
 import { paymentSubjectTransform } from "../../utils/transformers/paymentTransformers";
 import DrawerDetail from "../Header/DrawerDetail";
+import cartIcon from "../../assets/images/cart.png";
 
 function amountToShow() {
   const cartInfo = getSessionItem(SessionItems.cart) as Cart | undefined;
@@ -104,7 +105,13 @@ export default function Header() {
                   onClick={() => toggleDrawer(true)}
                 >
                   {moneyFormat(amountToShow())}
-                  <InfoOutlinedIcon color="primary" sx={{ ml: 1 }} />
+                  <img
+                    src={cartIcon}
+                    alt="Icona carrello"
+                    style={{ width: "15px", height: "auto" }}
+                    aria-hidden="true"
+                  />
+                  <HelpOutlineOutlined color="primary" sx={{ ml: 2 }} />
                 </Typography>
               </Grid>
               <DrawerDetail
