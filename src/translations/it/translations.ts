@@ -313,8 +313,8 @@ export const TRANSLATIONS_IT = {
       body: "Riceverai l’esito del pagamento all'indirizzo {{useremail}}",
     },
     survey: {
-      title: "Puoi dirci come è andata?",
-      body: "Raccontaci la tua esperienza con il pagamento e aiutaci a migliorare",
+      title: "Puoi dirci com'è andata?",
+      body: "Raccontaci la tua esperienza con il pagamento e aiutaci a migliorare.",
       link: {
         text: "Vai al sondaggio",
         href: "https://pagopa.qualtrics.com/jfe/form/SV_064FV80j4PXaUsu",

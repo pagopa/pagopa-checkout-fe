@@ -92,6 +92,7 @@ export default function PaymentResponsePage() {
         idStatus,
         outcome,
       });
+      setOutcome(outcome);
       showFinalResult(outcome);
     };
 
@@ -105,7 +106,6 @@ export default function PaymentResponsePage() {
           : cart
           ? cart.returnUrls.returnErrorUrl
           : "/";
-      setOutcome(outcome);
       setOutcomeMessage(message);
       setRedirectUrl(redirectTo || "");
       setLoading(false);
@@ -176,7 +176,7 @@ export default function PaymentResponsePage() {
               </Button>
             </Box>
             {outcome === ViewOutcomeEnum.SUCCESS && (
-              <Box>
+              <Box sx={{ width: "100%" }}>
                 <SurveyLink />
               </Box>
             )}
