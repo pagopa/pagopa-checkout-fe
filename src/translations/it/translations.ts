@@ -312,6 +312,14 @@ export const TRANSLATIONS_IT = {
       title: "L'operazione è stata presa in carico",
       body: "Riceverai l’esito del pagamento all'indirizzo {{useremail}}",
     },
+    survey: {
+      title: "Puoi dirci come è andata?",
+      body: "Raccontaci la tua esperienza con il pagamento e aiutaci a migliorare",
+      link: {
+        text: "Vai al sondaggio",
+        href: "https://pagopa.qualtrics.com/jfe/form/SV_064FV80j4PXaUsu",
+      },
+    },
   },
   cancelledPage: {
     body: "L'operazione è stata annullata",
