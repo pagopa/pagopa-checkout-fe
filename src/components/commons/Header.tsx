@@ -1,8 +1,8 @@
 /* eslint-disable sonarjs/cognitive-complexity */
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { Box, Grid, Typography } from "@mui/material";
 import React from "react";
 import { useLocation } from "react-router-dom";
+import { HelpOutlineOutlined, ShoppingCart } from "@mui/icons-material";
 import pagopaLogo from "../../assets/images/pagopa-logo.svg";
 import {
   Cart,
@@ -104,7 +104,11 @@ export default function Header() {
                   onClick={() => toggleDrawer(true)}
                 >
                   {moneyFormat(amountToShow())}
-                  <InfoOutlinedIcon color="primary" sx={{ ml: 1 }} />
+                  <ShoppingCart
+                    color="primary"
+                    style={{ width: "15px", height: "auto" }}
+                  />
+                  <HelpOutlineOutlined color="primary" sx={{ ml: 2 }} />
                 </Typography>
               </Grid>
               <DrawerDetail
