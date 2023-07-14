@@ -176,7 +176,7 @@ export default function PaymentResponsePage() {
               </Button>
             </Box>
             {outcome === ViewOutcomeEnum.SUCCESS && (
-              <Box sx={{ width: "100%" }} px={{ xs: 8, sm: 4 }}>
+              <Box sx={{ width: "100%" }} px={{ xs: 8, sm: 0 }}>
                 <SurveyLink />
               </Box>
             )}
