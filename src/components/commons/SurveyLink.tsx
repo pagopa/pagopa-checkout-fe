@@ -3,16 +3,9 @@ import { Typography, Alert, AlertTitle, Link } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { ThemeProvider } from "@mui/material";
 import { theme } from "@pagopa/mui-italia";
-import { mixpanel } from "../../utils/config/mixpanelHelperInit";
 
 const SurveyLink = () => {
   const { t } = useTranslation();
-
-  const onClick = () => {
-    mixpanel.track("hereNewMixpanelActionId", {
-      EVENT_ID: "hereNewMixpanelActionId",
-    });
-  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -37,8 +30,8 @@ const SurveyLink = () => {
         <Link
           variant="body1"
           target="_blank"
+          rel="nofollow"
           href={t("paymentResponsePage.survey.link.href")}
-          onClick={onClick}
           sx={{ textDecoration: "none", fontWeight: 700 }}
         >
           {t("paymentResponsePage.survey.link.text")}

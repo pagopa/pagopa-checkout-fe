@@ -317,7 +317,7 @@ export const TRANSLATIONS_IT = {
       body: "Raccontaci la tua esperienza con il pagamento e aiutaci a migliorare.",
       link: {
         text: "Vai al sondaggio",
-        href: "https://pagopa.qualtrics.com/jfe/form/SV_064FV80j4PXaUsu",
+        href: "https://pagopa.gov.it/diccilatua/ces-pagamento",
       },
     },
   },
