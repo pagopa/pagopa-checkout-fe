@@ -3,7 +3,7 @@ import { Box, Grid, Typography } from "@mui/material";
 import React from "react";
 import { useLocation } from "react-router-dom";
 import { HelpOutlineOutlined, ShoppingCart } from "@mui/icons-material";
-import pagopaLogo from "../../assets/logos/logo_pagopa.png";
+import pagopaLogo from "../../assets/images/pagopa-logo.svg";
 import {
   Cart,
   PaymentInfo,
