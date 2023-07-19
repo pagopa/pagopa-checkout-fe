@@ -6,7 +6,6 @@ import { pipe } from "fp-ts/function";
 import { toError } from "fp-ts/lib/Either";
 import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
-import * as T from "fp-ts/Task";
 import {
   LanguageEnum,
   RequestAuthorizationRequest,
@@ -600,17 +599,41 @@ export const proceedToPayment = async (
     language: LanguageEnum.IT,
   };
 
-  await pipe(
-    authParam,
-    RequestAuthorizationRequest.decode,
-    TE.fromEither,
-    TE.chain(
-      (request) => () =>
-        apiPaymentEcommerceClient.requestTransactionAuthorization({
-          bearerAuth,
-          transactionId,
-          body: request,
-        })
+  const authRequest: O.Option<RequestAuthorizationRequest> = pipe(
+    pipe(
+      authParam,
+      RequestAuthorizationRequest.decode,
+      E.fold(
+        () => undefined,
+        (authRequest) => authRequest
+      )
+    ),
+    O.fromNullable,
+    O.map((authRequest) => authRequest)
+  );
+
+  const authorizationUrl = await pipe(
+    authRequest,
+    TE.fromOption(() => {
+      onError(ErrorsType.GENERIC_ERROR);
+      return toError;
+    }),
+    TE.chain((request) =>
+      TE.tryCatch(
+        () =>
+          apiPaymentEcommerceClient.requestTransactionAuthorization({
+            bearerAuth,
+            transactionId,
+            body: request,
+          }),
+        (_e) => {
+          onError(ErrorsType.CONNECTION);
+          mixpanel.track(TRANSACTION_AUTH_NET_ERROR.value, {
+            EVENT_ID: TRANSACTION_AUTH_NET_ERROR.value,
+          });
+          return toError;
+        }
+      )
     ),
     TE.fold(
       (_r) => async () => {
@@ -618,25 +641,31 @@ export const proceedToPayment = async (
         mixpanel.track(TRANSACTION_AUTH_NET_ERROR.value, {
           EVENT_ID: TRANSACTION_AUTH_NET_ERROR.value,
         });
+        return "";
       }, // to be replaced with logic to handle failures
-      (response) => {
-        if (response.status === 200) {
-          mixpanel.track(TRANSACTION_AUTH_SUCCES.value, {
-            EVENT_ID: TRANSACTION_AUTH_SUCCES.value,
-          });
-          const authorizationUrl = response.value.authorizationUrl;
-          onResponse(authorizationUrl);
-          // eslint-disable-next-line @typescript-eslint/no-empty-function
-          return T.fromIO(() => {});
-        } else {
-          onError(ErrorsType.GENERIC_ERROR);
-          mixpanel.track(TRANSACTION_AUTH_RESP_ERROR.value, {
-            EVENT_ID: TRANSACTION_AUTH_RESP_ERROR.value,
-          });
-          // eslint-disable-next-line @typescript-eslint/no-empty-function
-          return T.fromIO(() => {});
-        }
-      }
+      (myResExt) => async () =>
+        pipe(
+          myResExt,
+          E.fold(
+            () => "",
+            (myRes) => {
+              if (myRes?.status === 200) {
+                onResponse(authorizationUrl);
+                mixpanel.track(TRANSACTION_AUTH_SUCCES.value, {
+                  EVENT_ID: TRANSACTION_AUTH_SUCCES.value,
+                });
+                return myRes.value.authorizationUrl;
+              } else {
+                onError(ErrorsType.GENERIC_ERROR);
+                mixpanel.track(TRANSACTION_AUTH_RESP_ERROR.value, {
+                  EVENT_ID: TRANSACTION_AUTH_RESP_ERROR.value,
+                });
+                // eslint-disable-next-line @typescript-eslint/no-empty-function
+                return "";
+              }
+            }
+          )
+        )
     )
   )();
 };
