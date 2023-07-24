@@ -107,6 +107,7 @@ export default function Header() {
                   <ShoppingCart
                     color="primary"
                     style={{ width: "15px", height: "auto" }}
+                    sx={{ ml: 1 }}
                   />
                   <HelpOutlineOutlined color="primary" sx={{ ml: 2 }} />
                 </Typography>
