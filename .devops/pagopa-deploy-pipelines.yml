@@ -138,7 +138,7 @@ stages:
           - script : |
              echo "##[debug] Change placeholder for CHECKOUT_URL ..."
              cd e2e-tests 
-             mv dev.env .env
+             mv uat.env .env
           - script: |
              docker build -t ui_test e2e-tests
             displayName: 'Build test image'
