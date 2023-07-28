@@ -54,7 +54,7 @@ function PspFieldContainer(props: {
           <img
             src={props.image}
             alt="Logo gestore"
-            style={{ width: "125px", height: "40px" }}
+            style={{ maxWidth: "80%" }}
           />
           <Typography
             variant={props.bodyVariant}
