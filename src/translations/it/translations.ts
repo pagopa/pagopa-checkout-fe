@@ -164,6 +164,10 @@ export const TRANSLATIONS_IT = {
     title: "Questo avviso è stato già pagato!",
     body: "La ricevuta è stata inviata all'indirizzo email che hai indicato durante il pagamento.",
   },
+  PAA_PAGAMENTO_SCONOSCIUTO: {
+    title: "Non riusciamo a trovare l'avviso",
+    body: "L'avviso potrebbe essere già pagato. Per ricevere assistenza, contatta l'Ente Creditore che lo ha emesso.",
+  },
   PAA_PAGAMENTO_IN_CORSO: {
     title: "Il pagamento è già in corso, riprova tra qualche minuto",
     body: "Se è passato troppo tempo, segnalacelo!",

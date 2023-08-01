@@ -29,6 +29,8 @@ app.get("/checkout/payments/v1/payment-requests/:rptId", (_, res) => {
     res.status(400).send({ detail: "PPT_PAGAMENTO_DUPLICATO" });
   } else if (_.params.rptId == "00000000000000000000000000011") {
     res.status(400).send({ detail: "PPT_PAGAMENTO_IN_CORSO" });
+  } else if (_.params.rptId == "00000000000000000000000000012") {
+    res.status(400).send({ detail: "PAA_PAGAMENTO_SCONOSCIUTO" });
   } else {
     res.send({
       importoSingoloVersamento: 1100,

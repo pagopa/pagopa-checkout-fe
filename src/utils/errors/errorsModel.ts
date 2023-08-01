@@ -197,7 +197,14 @@ export const PaymentResponses: Record<string, PaymentFaultErrorMessage> = {
     category: PaymentFaultCategory.ERRORE_EC,
   },
   PAA_PAGAMENTO_SCONOSCIUTO: {
-    category: PaymentFaultCategory.ERRORE_DATI,
+    title: "PAA_PAGAMENTO_SCONOSCIUTO.title",
+    body: "PAA_PAGAMENTO_SCONOSCIUTO.body",
+    category: PaymentFaultCategory.CUSTOM,
+    buttons: [
+      {
+        title: "errorButton.close",
+      },
+    ],
   },
   PAA_SEMANTICA: {
     category: PaymentFaultCategory.ERRORE_TECNICO,
