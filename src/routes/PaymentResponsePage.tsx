@@ -5,6 +5,7 @@
 import { Box, Button, Typography } from "@mui/material";
 import { default as React, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import SurveyLink from "../components/commons/SurveyLink";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
 import PageContainer from "../components/PageContent/PageContainer";
 import {
@@ -44,6 +45,7 @@ type printData = {
 export default function PaymentResponsePage() {
   const [loading, setLoading] = useState(true);
   const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
+  const [outcome, setOutcome] = useState<ViewOutcomeEnum>();
   const [outcomeMessage, setOutcomeMessage] = useState<responseMessage>();
   const [redirectUrl, setRedirectUrl] = useState<string>(
     cart ? cart.returnUrls.returnOkUrl : "/"
@@ -90,6 +92,7 @@ export default function PaymentResponsePage() {
         idStatus,
         outcome,
       });
+      setOutcome(outcome);
       showFinalResult(outcome);
     };
 
@@ -172,6 +175,11 @@ export default function PaymentResponsePage() {
                 {t("errorButton.close")}
               </Button>
             </Box>
+            {outcome === ViewOutcomeEnum.SUCCESS && (
+              <Box sx={{ width: "100%" }} px={{ xs: 8, sm: 0 }}>
+                <SurveyLink />
+              </Box>
+            )}
           </Box>
         )}
       </Box>

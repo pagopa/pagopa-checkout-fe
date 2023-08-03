@@ -463,3 +463,6 @@ export const TRANSACTION_AUTH_RESP_ERROR = t.literal(
 export type TRANSACTION_AUTH_RESP_ERROR = t.TypeOf<
   typeof TRANSACTION_AUTH_RESP_ERROR
 >;
+
+export const VOC_USER_EXIT = t.literal("VOC_USER_EXIT");
+export type VOC_USER_EXIT = t.TypeOf<typeof VOC_USER_EXIT>;
