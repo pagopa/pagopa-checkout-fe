@@ -56,6 +56,7 @@ describe("Checkout payment activation tests", () => {
       EMAIL,
       VALID_CARD_DATA
     );
+    
 
     expect(resultMessage).toContain("Grazie, hai pagato");
   });

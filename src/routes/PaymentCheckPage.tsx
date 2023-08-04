@@ -266,6 +266,7 @@ export default function PaymentCheckPage() {
         disabledCancel={isDisabled()}
         handleSubmit={onSubmit}
         handleCancel={onCancel}
+        idSubmit="paymentCheckPageButtonPay"
       />
       <InformationModal
         open={modalOpen}

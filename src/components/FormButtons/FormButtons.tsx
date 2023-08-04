@@ -13,6 +13,8 @@ export function FormButtons(props: {
   disabledCancel?: boolean;
   loadingSubmit?: boolean;
   loadingCancel?: boolean;
+  idCancel?: string;
+  idSubmit?: string;
   submitTitle: string;
   cancelTitle: string;
   hideCancel?: boolean;
@@ -48,6 +50,7 @@ export function FormButtons(props: {
             onSubmit={props.handleSubmit}
             loading={props.loadingSubmit || false}
             variant="contained"
+            id={props.idSubmit}
             onClick={props.type === "button" ? props.handleSubmit : undefined}
             disabled={props.disabledSubmit}
             style={{
@@ -84,6 +87,7 @@ export function FormButtons(props: {
                 ? t("ariaLabels.loading")
                 : t(props.cancelTitle)
             }
+            id={props.idCancel}
             aria-hidden={props.loadingSubmit}
           >
             {props.loadingCancel ? "" : t(props.cancelTitle)}
