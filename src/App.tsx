@@ -12,7 +12,8 @@ import RptidGuard from "./components/commons/RptidGuard";
 import CancelledPage from "./routes/CancelledPage";
 import DonationPageDismissed from "./routes/DonationPageDismissed";
 import IndexPage from "./routes/IndexPage";
-import InputCardPage from "./routes/InputCardPage";
+// import InputCardPage from "./routes/InputCardPage";
+import IframeCardPage from "./routes/IframeCardPage";
 import KOPage from "./routes/KOPage";
 import { CheckoutRoutes } from "./routes/models/routeModel";
 import PaymentCartPage from "./routes/PaymentCartPage";
@@ -144,7 +145,7 @@ export function App() {
                 path={CheckoutRoutes.INSERISCI_CARTA}
                 element={
                   <Guard item={SessionItems.useremail}>
-                    <InputCardPage />
+                    <IframeCardPage />
                   </Guard>
                 }
               />
