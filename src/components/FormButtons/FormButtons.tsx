@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { useSmallDevice } from "../../hooks/useSmallDevice";
 
 export function FormButtons(props: {
-  handleSubmit: () => void;
+  handleSubmit: (e: React.FormEvent) => void;
   handleCancel: () => void;
   type?: "submit" | "button";
   disabledSubmit: boolean;
