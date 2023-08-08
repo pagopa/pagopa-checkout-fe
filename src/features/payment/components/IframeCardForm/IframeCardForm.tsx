@@ -1,4 +1,6 @@
 import React from "react";
+import { Box } from "@mui/material";
+import { FormButtons } from "../../../../components/FormButtons/FormButtons";
 
 interface Props {
   loading?: boolean;
@@ -20,28 +22,59 @@ interface BuildResp {
   fields: Array<Field>;
 }
 
+const getSrcFromFieldsByID = (fields: Array<Field>, id: string) =>
+  fields.find((field) => field.id === id)?.src;
+
+const renderIframeInput = (
+  fields?: Array<Field>,
+  id?: string,
+  style?: React.CSSProperties
+) => {
+  if (!fields) {
+    return;
+  }
+  if (!id) {
+    return;
+  }
+  const src = getSrcFromFieldsByID(fields, id);
+  if (!src) {
+    return;
+  }
+  return (
+    <iframe
+      src={src}
+      style={{
+        display: "block",
+        border: "none",
+        height: 40,
+        width: "100%",
+        ...style,
+      }}
+    />
+  );
+};
+
 export default function IframeCardForm(props: Props) {
-  const { loading = true, onCancel, hideCancel } = props;
+  const { loading = true, onCancel, onSubmit = () => null, hideCancel } = props;
   const [error, setError] = React.useState(false);
   const [form, setForm] = React.useState<BuildResp>();
   const [spinner, setSpineer] = React.useState(loading);
 
   React.useEffect(() => {
     const fetchForm = async () => {
-      const response = await fetch("/checkout/payments/v1/build", {
-        method: "GET",
-      });
-      const body = (await response.json()) as BuildResp;
-      setForm(body);
-      setSpineer(false);
+      try {
+        const response = await fetch("/checkout/payments/v1/build", {
+          method: "GET",
+        });
+        const body = (await response.json()) as BuildResp;
+        setForm(body);
+      } catch (e) {
+        setError(true);
+      } finally {
+        setSpineer(false);
+      }
     };
-
-    try {
-      void fetchForm();
-    } catch (e) {
-      setError(true);
-      setSpineer(false);
-    }
+    void fetchForm();
   }, []);
 
   return (
@@ -51,17 +84,32 @@ export default function IframeCardForm(props: Props) {
           "spinner"
         ) : (
           <form id="iframe-card-form">
-            {form?.fields.map((input, i) => (
-              <iframe
-                src={input.src}
-                key={`${form.sessionId}-${i}`}
-                style={{ display: "block", border: "none", height: 40 }}
-              />
-            ))}
-            {!hideCancel && (
-              <input type="button" value="indietro" onClick={onCancel} />
-            )}
-            <input type="button" value="continua" disabled />
+            <Box>
+              {renderIframeInput(form?.fields, "CARD_NUMBER")}
+              <Box
+                display={"flex"}
+                justifyContent={"space-between"}
+                sx={{ gap: 2 }}
+              >
+                {renderIframeInput(form?.fields, "EXPIRATION_DATE", {
+                  width: "50%",
+                })}
+                {renderIframeInput(form?.fields, "SECURITY_CODE", {
+                  width: "50%",
+                })}
+              </Box>
+              {renderIframeInput(form?.fields, "CARDHOLDER_NAME")}
+            </Box>
+            <FormButtons
+              loadingSubmit={loading}
+              type="submit"
+              submitTitle="paymentNoticePage.formButtons.submit"
+              cancelTitle="paymentNoticePage.formButtons.cancel"
+              disabledSubmit={true}
+              handleSubmit={onSubmit}
+              handleCancel={onCancel}
+              hideCancel={hideCancel}
+            />
           </form>
         )
       ) : (
