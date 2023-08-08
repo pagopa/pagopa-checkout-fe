@@ -82,6 +82,8 @@ fieldformStatus.set("CARDHOLDER_NAME", initialFormStatus);
 
 // eslint-disable-next-line functional/no-let
 let formStatus = false;
+// eslint-disable-next-line functional/no-let, @typescript-eslint/ban-ts-comment
+// @ts-ignore
 // eslint-disable-next-line functional/no-let
 let setSdkBuildIstance;
 
@@ -146,6 +148,7 @@ export default function IframeCardForm(props: Props) {
         setDummyState(Math.random);
       },
     });
+
     // any dependency will initialize the build istance more than one time
     // and I think it's not a good idea. For the same reason I am not using
     // a react state to track the form status
