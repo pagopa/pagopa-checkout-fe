@@ -13,7 +13,6 @@ import PageContainer from "../components/PageContent/PageContainer";
 import IframeCardForm from "../features/payment/components/IframeCardForm/IframeCardForm";
 import { PaymentMethod } from "../features/payment/models/paymentModel";
 import { useAppDispatch } from "../redux/hooks/hooks";
-import { setCardData } from "../redux/slices/cardData";
 import { activatePayment, calculateFees } from "../utils/api/helper";
 import { InputCardFormFields } from "../features/payment/models/paymentModel";
 import { ErrorsType } from "../utils/errors/checkErrorsModel";
@@ -104,7 +103,7 @@ export default function InputCardPage() {
         cvv: wallet.cvv,
         pan: wallet.number,
       };
-      dispatch(setCardData(cardData));
+      // dispatch(setCardData(cardData));
       setLoading(true);
       const recaptchaResponse = await ref.current?.executeAsync();
       const token = pipe(

@@ -13,7 +13,6 @@ import {
   responseOutcome,
 } from "../features/payment/models/responseOutcome";
 import { useAppDispatch } from "../redux/hooks/hooks";
-import { resetCardData } from "../redux/slices/cardData";
 import { callServices } from "../utils/api/response";
 import { PAYMENT_OUTCOME_CODE } from "../utils/config/mixpanelDefs";
 import { mixpanel } from "../utils/config/mixpanelHelperInit";
@@ -72,7 +71,6 @@ export default function PaymentResponsePage() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(resetCardData());
     dispatch(resetThreshold());
 
     const handleFinalStatusResult = (

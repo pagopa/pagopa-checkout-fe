@@ -4,7 +4,6 @@ import { theme } from "@pagopa/mui-italia";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import CvvGuard from "./components/commons/CvvGuard";
 import Guard from "./components/commons/Guard";
 import { Layout } from "./components/commons/Layout";
 import NoticeGuard from "./components/commons/NoticeGuard";
@@ -161,9 +160,7 @@ export function App() {
                 path={CheckoutRoutes.RIEPILOGO_PAGAMENTO}
                 element={
                   <Guard item={SessionItems.transaction}>
-                    <CvvGuard>
-                      <PaymentCheckPage />
-                    </CvvGuard>
+                    <PaymentCheckPage />
                   </Guard>
                 }
               />
