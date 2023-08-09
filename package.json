@@ -50,7 +50,6 @@
     "react-i18next": "^11.15.3",
     "react-qr-code": "^2.0.3",
     "react-qr-reader": "^2.2.1",
-    "react-redux": "^7.2.6",
     "react-router-dom": "6",
     "set-value": "^4.0.1"
   },

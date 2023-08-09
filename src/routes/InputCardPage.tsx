@@ -6,12 +6,10 @@ import { useNavigate } from "react-router-dom";
 import * as O from "fp-ts/Option";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
-import { setThreshold } from "../redux/slices/threshold";
 import ErrorModal from "../components/modals/ErrorModal";
 import PageContainer from "../components/PageContent/PageContainer";
 import { InputCardForm } from "../features/payment/components/InputCardForm/InputCardForm";
 import { PaymentMethod } from "../features/payment/models/paymentModel";
-import { useAppDispatch } from "../redux/hooks/hooks";
 import { activatePayment, calculateFees } from "../utils/api/helper";
 import { InputCardFormFields } from "../features/payment/models/paymentModel";
 import { ErrorsType } from "../utils/errors/checkErrorsModel";
@@ -34,7 +32,6 @@ export default function InputCardPage() {
   const [wallet] = React.useState<InputCardFormFields>();
   const [hideCancelButton, setHideCancelButton] = React.useState(false);
   const ref = React.useRef<ReCAPTCHA>(null);
-  const dispatch = useAppDispatch();
 
   React.useEffect(() => {
     setHideCancelButton(
@@ -75,7 +72,7 @@ export default function InputCardPage() {
           O.fold(
             () => onError(ErrorsType.GENERIC_ERROR),
             (value) => {
-              dispatch(setThreshold({ belowThreshold: value }));
+              setSessionItem(SessionItems.belowThreshold, value);
               const firstPsp = pipe(
                 resp?.bundles,
                 O.fromNullable,

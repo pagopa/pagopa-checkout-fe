@@ -73,6 +73,8 @@ export interface PaymentMethod {
   paymentMethodId: string;
 }
 
+export type BelowThreshold = boolean | null;
+
 export interface PaymentInstruments {
   id: string;
   name: string;

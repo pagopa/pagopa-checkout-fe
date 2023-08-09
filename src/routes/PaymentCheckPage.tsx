@@ -18,7 +18,6 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
-import { selectThreshold } from "../redux/slices/threshold";
 import { ErrorsType } from "../utils/errors/checkErrorsModel";
 import sprite from "../assets/images/app.svg";
 import { FormButtons } from "../components/FormButtons/FormButtons";
@@ -29,11 +28,11 @@ import PageContainer from "../components/PageContent/PageContainer";
 import ClickableFieldContainer from "../components/TextFormField/ClickableFieldContainer";
 import FieldContainer from "../components/TextFormField/FieldContainer";
 import {
+  BelowThreshold,
   Cart,
   PaymentInfo,
   PaymentMethod,
 } from "../features/payment/models/paymentModel";
-import { useAppSelector } from "../redux/hooks/hooks";
 import {
   cancelPayment,
   parseDate,
@@ -92,7 +91,9 @@ export default function PaymentCheckPage() {
   const [userCancelRedirect, setUserCancelRedirect] = React.useState(false);
   const [errorKOPage, setErrorKOPage] = React.useState("/");
   const [error, setError] = React.useState("");
-  const threshold = useAppSelector(selectThreshold);
+  const threshold = getSessionItem(SessionItems.belowThreshold) as
+    | BelowThreshold
+    | undefined;
   const paymentMethod = getSessionItem(SessionItems.paymentMethod) as
     | PaymentMethod
     | undefined;
@@ -143,7 +144,7 @@ export default function PaymentCheckPage() {
     }
   };
 
-  const missingThreshold = () => threshold?.belowThreshold === undefined;
+  const missingThreshold = () => !threshold;
   React.useEffect(() => {
     if (missingThreshold()) {
       onError(ErrorsType.GENERIC_ERROR);
@@ -327,7 +328,7 @@ export default function PaymentCheckPage() {
           ""
         }
         disclaimer={pipe(
-          threshold.belowThreshold,
+          threshold,
           O.fromNullable,
           O.filter(() => showDisclaimer),
           O.map((threshold) => (
@@ -442,7 +443,11 @@ export default function PaymentCheckPage() {
   );
 }
 
-const AmountDisclaimer = ({ belowThreshold }: { belowThreshold: boolean }) => {
+const AmountDisclaimer = ({
+  belowThreshold,
+}: {
+  belowThreshold: BelowThreshold;
+}) => {
   const { t } = useTranslation();
   const disclaimer = belowThreshold
     ? t("paymentCheckPage.disclaimer.cheaper")

@@ -7,6 +7,7 @@ import {
   PaymentId,
   PaymentEmailFormFields,
   PaymentMethod,
+  BelowThreshold,
 } from "../../features/payment/models/paymentModel";
 import { getConfigOrThrow } from "../config/config";
 
@@ -19,6 +20,7 @@ export enum SessionItems {
   sessionToken = "sessionToken",
   cart = "cart",
   transaction = "transaction",
+  belowThreshold = "belowThreshold",
 }
 const isParsable = (item: SessionItems) =>
   !(item === SessionItems.sessionToken || item === SessionItems.useremail);
@@ -39,7 +41,8 @@ export const getSessionItem = (item: SessionItems) => {
           | PaymentId
           | NewTransactionResponse
           | Cart
-          | Bundle)
+          | Bundle
+          | BelowThreshold)
       : serializedState;
   } catch (e) {
     return undefined;
@@ -58,6 +61,7 @@ export function setSessionItem(
     | NewTransactionResponse
     | Cart
     | Bundle
+    | BelowThreshold
 ) {
   sessionStorage.setItem(
     name,

@@ -1,11 +1,9 @@
 import { Box, Button, Typography } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { resetThreshold } from "../redux/slices/threshold";
 import cancelled from "../assets/images/response-unrecognized.svg";
 import PageContainer from "../components/PageContent/PageContainer";
 import { Cart } from "../features/payment/models/paymentModel";
-import { useAppDispatch } from "../redux/hooks/hooks";
 import { onBrowserUnload } from "../utils/eventListeners";
 import {
   clearStorage,
@@ -15,13 +13,11 @@ import {
 
 export default function CancelledPage() {
   const { t } = useTranslation();
-  const dispatch = useAppDispatch();
   const redirectUrl =
     (getSessionItem(SessionItems.cart) as Cart | undefined)?.returnUrls
       .returnCancelUrl || "/";
 
   React.useEffect(() => {
-    dispatch(resetThreshold());
     window.removeEventListener("beforeunload", onBrowserUnload);
     clearStorage();
   }, []);

@@ -23,7 +23,6 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import QRCode from "react-qr-code";
 import { useNavigate } from "react-router-dom";
-import { resetThreshold } from "../redux/slices/threshold";
 import sprite from "../assets/images/app.svg";
 import InformationModal from "../components/modals/InformationModal";
 import PageContainer from "../components/PageContent/PageContainer";
@@ -34,7 +33,6 @@ import {
   Donation,
   DonationSlice,
 } from "../features/payment/models/donationModel";
-import { useAppDispatch } from "../redux/hooks/hooks";
 import { getDonationEntityList } from "../utils/api/helper";
 import {
   DONATION_APPIO_VISIT,
@@ -45,7 +43,6 @@ import { moneyFormat } from "../utils/form/formatters";
 
 export default function DonationPage() {
   const { t } = useTranslation();
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const theme = useTheme();
   const [loadingList, setLoadingList] = React.useState(false);
@@ -58,7 +55,6 @@ export default function DonationPage() {
   const isMobileDevice = useMediaQuery(theme.breakpoints.down("sm"));
 
   React.useEffect(() => {
-    dispatch(resetThreshold());
     setLoadingList(true);
     void getDonationEntityList(onError, onResponse);
   }, []);

@@ -12,7 +12,6 @@ import {
   responseMessage,
   responseOutcome,
 } from "../features/payment/models/responseOutcome";
-import { useAppDispatch } from "../redux/hooks/hooks";
 import { callServices } from "../utils/api/response";
 import { PAYMENT_OUTCOME_CODE } from "../utils/config/mixpanelDefs";
 import { mixpanel } from "../utils/config/mixpanelHelperInit";
@@ -21,6 +20,7 @@ import { moneyFormat } from "../utils/form/formatters";
 import {
   clearStorage,
   getSessionItem,
+  setSessionItem,
   SessionItems,
 } from "../utils/storage/sessionStorage";
 import {
@@ -32,7 +32,6 @@ import {
   NewTransactionResponse,
   SendPaymentResultOutcomeEnum,
 } from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
-import { resetThreshold } from "../redux/slices/threshold";
 import { Bundle } from "../../generated/definitions/payment-ecommerce/Bundle";
 import { TransactionStatusEnum } from "../../generated/definitions/payment-ecommerce/TransactionStatus";
 
@@ -68,11 +67,8 @@ export default function PaymentResponsePage() {
     amount: moneyFormat(totalAmount),
   };
 
-  const dispatch = useAppDispatch();
-
   useEffect(() => {
-    dispatch(resetThreshold());
-
+    setSessionItem(SessionItems.belowThreshold, null);
     const handleFinalStatusResult = (
       idStatus?: TransactionStatusEnum,
       sendPaymentResultOutcome?: SendPaymentResultOutcomeEnum,
