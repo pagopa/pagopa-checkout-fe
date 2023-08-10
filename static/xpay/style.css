@@ -1,0 +1,52 @@
+@import  '../normalize.css';
+
+body {
+	height: 100%;
+	width: 100%;
+	padding: 0;
+	margin: 0;
+}
+
+.x-pay-container {
+	font-family: "Titillium Web",sans-serif;
+	font-weight: 400;
+	font-size: 1.125rem;
+	line-height: 1.4375em;
+	color: #17324D;
+	letter-spacing: 0;
+	box-sizing: border-box;
+	position: relative;
+	cursor: text;
+	display: -webkit-inline-box;
+	display: -webkit-inline-flex;
+	display: -ms-inline-flexbox;
+	display: inline-flex;
+	-webkit-align-items: center;
+	-webkit-box-align: center;
+	-ms-flex-align: center;
+	align-items: center;
+	width: 100%;
+	position: relative;
+	font-weight: 600;
+}
+
+.x-pay-container, div {
+  width: 100%;
+	height: 100%;
+}
+
+.x-pay-component {
+	display: flex;
+	align-items: center;
+  font: inherit;
+	letter-spacing: inherit;
+	color: currentColor;
+	box-sizing: content-box;
+	height: 100%;
+	margin: 0;
+	-webkit-tap-highlight-color: transparent;
+	min-width: 0;
+	width: 100%;
+  outline: none;
+	border: 0;
+}

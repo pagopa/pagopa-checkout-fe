@@ -89,8 +89,8 @@ const renderIframeInput = (
             style={{
               display: "block",
               border: "none",
-              height: 30,
               width: "100%",
+              height: 30,
               ...style,
             }}
           />
@@ -126,6 +126,10 @@ export default function IframeCardForm(props: Props) {
   const [spinner, setSpineer] = React.useState(loading);
   // this dummy state is only used to permorm a component udpate, not the best solution but works
   const [, setDummyState] = React.useState(0);
+
+  const { hostname, protocol, port } = window.location;
+
+  console.debug(`${protocol}://${hostname}:${port}/xpay/style.css`);
 
   const calculateFormValidStatus = (
     fieldformStatus: Map<string, FieldFormStatus>
@@ -246,6 +250,9 @@ export default function IframeCardForm(props: Props) {
             setError(true);
           }
         },
+        cssLink: `${protocol}//${hostname}:${port}/xpay/style.css`,
+        defaultComponentCssClassName: "x-pay-component",
+        defaultContainerCssClassName: "x-pay-container",
         // any dependency will initialize the build istance more than one time
         // and I think it's not a good idea. For the same reason I am not using
         // a react state to track the form status
