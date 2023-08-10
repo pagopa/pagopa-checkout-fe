@@ -1,5 +1,6 @@
 import React from "react";
-import { Box } from "@mui/material";
+import { Box, FormControl, FormHelperText, InputLabel } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { FormButtons } from "../../../../components/FormButtons/FormButtons";
 
 interface Props {
@@ -40,6 +41,7 @@ const getSrcFromFieldsByID = (fields: Array<Field>, id: string) =>
   fields.find((field) => field.id === id)?.src;
 
 const renderIframeInput = (
+  label: string,
   fields?: Array<Field>,
   id?: string,
   style?: React.CSSProperties
@@ -54,17 +56,44 @@ const renderIframeInput = (
   if (!src) {
     return;
   }
+
   return (
-    <iframe
-      src={src}
-      style={{
-        display: "block",
-        border: "none",
-        height: 30,
-        width: "100%",
-        ...style,
-      }}
-    />
+    <>
+      <FormControl fullWidth={true} margin="dense" sx={{ marginY: 3 }}>
+        <InputLabel
+          margin="dense"
+          shrink={true}
+          sx={{
+            background: "#fff",
+            paddingX: 1,
+          }}
+        >
+          {label}
+        </InputLabel>
+        <Box
+          sx={{
+            borderRadius: 1,
+            padding: 2,
+            borderColor: "grey.400",
+            borderStyle: "solid",
+            borderWidth: "1px",
+            position: "relative",
+          }}
+        >
+          <iframe
+            src={src}
+            style={{
+              display: "block",
+              border: "none",
+              height: 30,
+              width: "100%",
+              ...style,
+            }}
+          />
+        </Box>
+        <FormHelperText id="my-helper-text">Campo obbligatorio</FormHelperText>
+      </FormControl>
+    </>
   );
 };
 
@@ -199,6 +228,7 @@ export default function IframeCardForm(props: Props) {
     sdkBuildIstance?.confirmData();
     onSubmit();
   };
+  const { t } = useTranslation();
 
   return (
     <>
@@ -209,7 +239,11 @@ export default function IframeCardForm(props: Props) {
           <form id="iframe-card-form" onSubmit={handleSubmit}>
             <Box>
               <Box minHeight={60}>
-                {renderIframeInput(form?.fields, "CARD_NUMBER")}
+                {renderIframeInput(
+                  t("inputCardPage.formFields.number"),
+                  form?.fields,
+                  "CARD_NUMBER"
+                )}
                 {fieldformStatus.get("CARD_NUMBER")?.errorMessage}
               </Box>
               <Box
@@ -218,16 +252,28 @@ export default function IframeCardForm(props: Props) {
                 sx={{ gap: 2 }}
               >
                 <Box minHeight={60}>
-                  {renderIframeInput(form?.fields, "EXPIRATION_DATE")}
+                  {renderIframeInput(
+                    t("inputCardPage.formFields.expirationDate"),
+                    form?.fields,
+                    "EXPIRATION_DATE"
+                  )}
                   {fieldformStatus.get("EXPIRATION_DATE")?.errorMessage}
                 </Box>
                 <Box minHeight={60}>
-                  {renderIframeInput(form?.fields, "SECURITY_CODE")}
+                  {renderIframeInput(
+                    t("inputCardPage.formFields.cvv"),
+                    form?.fields,
+                    "SECURITY_CODE"
+                  )}
                   {fieldformStatus.get("SECURITY_CODE")?.errorMessage}
                 </Box>
               </Box>
               <Box minHeight={60}>
-                {renderIframeInput(form?.fields, "CARDHOLDER_NAME")}
+                {renderIframeInput(
+                  t("inputCardPage.formFields.name"),
+                  form?.fields,
+                  "CARDHOLDER_NAME"
+                )}
                 {fieldformStatus.get("CARDHOLDER_NAME")?.errorMessage}
               </Box>
             </Box>
