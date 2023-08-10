@@ -32,7 +32,8 @@ export default function InputCardPage() {
   const [loading, setLoading] = React.useState(false);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
-  const [wallet] = React.useState<InputCardFormFields>();
+  // Is It allowed to store the bin temporary?
+  const [bin, setBin] = React.useState("");
   const [hideCancelButton, setHideCancelButton] = React.useState(false);
   const ref = React.useRef<ReCAPTCHA>(null);
   const dispatch = useAppDispatch();
@@ -95,16 +96,9 @@ export default function InputCardPage() {
     });
 
   const onSubmit = React.useCallback(
-    async (wallet: InputCardFormFields) => {
-      const cardData = {
-        brand: cardValidator.number(wallet.number).card?.type || "",
-        expDate: wallet.expirationDate,
-        cardHolderName: wallet.name,
-        cvv: wallet.cvv,
-        pan: wallet.number,
-      };
-      // dispatch(setCardData(cardData));
+    async (bin: string) => {
       setLoading(true);
+      setBin(bin);
       const recaptchaResponse = await ref.current?.executeAsync();
       const token = pipe(
         recaptchaResponse,
@@ -116,7 +110,6 @@ export default function InputCardPage() {
           | NewTransactionResponse
           | undefined
       )?.transactionId;
-      const bin = cardData.pan.substring(0, 6);
       // If I want to change the card data but I have already activated the payment
       if (transactionId) {
         void onResponseActivate(bin);
@@ -134,8 +127,8 @@ export default function InputCardPage() {
 
   const onRetry = React.useCallback(() => {
     setErrorModalOpen(false);
-    void onSubmit(wallet as InputCardFormFields);
-  }, [wallet, error]);
+    void onSubmit(bin);
+  }, [bin, error]);
 
   const onCancel = () => navigate(-1);
   return (
@@ -143,6 +136,7 @@ export default function InputCardPage() {
       <Box sx={{ mt: 6 }}>
         <IframeCardForm
           onCancel={onCancel}
+          onSubmit={onSubmit}
           hideCancel={hideCancelButton}
           loading={loading}
         />

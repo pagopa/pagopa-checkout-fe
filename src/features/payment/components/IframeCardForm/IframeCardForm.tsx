@@ -10,7 +10,7 @@ import { PaymentMethod } from "../../../../features/payment/models/paymentModel"
 interface Props {
   loading?: boolean;
   onCancel: () => void;
-  onSubmit?: () => void;
+  onSubmit?: (bin: string) => void;
   hideCancel?: boolean;
 }
 
@@ -236,10 +236,10 @@ export default function IframeCardForm(props: Props) {
                     method: "GET",
                   }
                 );
-                debugger;
-                console.log(await response.json());
+                const { bin } = await response.json();
+                onSubmit(bin);
               } catch (e) {
-                console.error(e);
+                setError(true);
               }
             })();
           } else {
@@ -260,11 +260,9 @@ export default function IframeCardForm(props: Props) {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       sdkBuildIstance?.confirmData(() => setSpineer(false));
-      onSubmit();
     } catch (e) {
       setSpineer(false);
       setError(true);
-      console.error(e);
     }
   };
   const { t } = useTranslation();

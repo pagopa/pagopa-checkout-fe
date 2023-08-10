@@ -132,6 +132,7 @@ export default function InputCardPage() {
 
   const onRetry = React.useCallback(() => {
     setErrorModalOpen(false);
+    // it's useless without a setWallet
     void onSubmit(wallet as InputCardFormFields);
   }, [wallet, error]);
 
