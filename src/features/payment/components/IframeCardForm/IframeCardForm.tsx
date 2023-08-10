@@ -1,7 +1,11 @@
 import React from "react";
 import { Box } from "@mui/material";
+import {
+  getSessionItem,
+  SessionItems,
+} from "../../../../utils/storage/sessionStorage";
 import { FormButtons } from "../../../../components/FormButtons/FormButtons";
-
+import { PaymentMethod } from "../../../../features/payment/models/paymentModel";
 interface Props {
   loading?: boolean;
   onCancel: () => void;
@@ -36,12 +40,12 @@ interface BuildResp {
   fields: Array<Field>;
 }
 
-const getSrcFromFieldsByID = (fields: Array<Field>, id: string) =>
+const getSrcFromFieldsByID = (fields: Array<Field>, id: IdFields) =>
   fields.find((field) => field.id === id)?.src;
 
 const renderIframeInput = (
   fields?: Array<Field>,
-  id?: string,
+  id?: IdFields,
   style?: React.CSSProperties
 ) => {
   if (!fields) {
@@ -106,9 +110,15 @@ export default function IframeCardForm(props: Props) {
   React.useEffect(() => {
     const fetchForm = async () => {
       try {
-        const response = await fetch("/checkout/payments/v1/build", {
-          method: "GET",
-        });
+        const { paymentMethodId } = getSessionItem(
+          SessionItems.paymentMethod
+        ) as PaymentMethod;
+        const response = await fetch(
+          `/ecommerce/checkout/v1/payment-methods/${paymentMethodId}/sessions`,
+          {
+            method: "POST",
+          }
+        );
         const body = (await response.json()) as BuildResp;
         setForm(body);
       } catch (e) {
@@ -193,11 +203,18 @@ export default function IframeCardForm(props: Props) {
   }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    sdkBuildIstance?.confirmData();
-    onSubmit();
+    try {
+      e.preventDefault();
+      setSpineer(true);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      sdkBuildIstance?.confirmData(() => setSpineer(false));
+      onSubmit();
+    } catch (e) {
+      setSpineer(false);
+      setError(true);
+      console.error(e);
+    }
   };
 
   return (
