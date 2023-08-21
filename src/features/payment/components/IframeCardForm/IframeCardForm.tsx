@@ -129,8 +129,6 @@ export default function IframeCardForm(props: Props) {
 
   const { hostname, protocol, port } = window.location;
 
-  console.debug(`${protocol}://${hostname}:${port}/xpay/style.css`);
-
   const calculateFormValidStatus = (
     fieldformStatus: Map<string, FieldFormStatus>
   ) =>

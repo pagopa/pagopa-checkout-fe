@@ -1,5 +1,4 @@
 import { Box } from "@mui/material";
-import cardValidator from "card-validator";
 import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useNavigate } from "react-router-dom";
@@ -14,7 +13,6 @@ import IframeCardForm from "../features/payment/components/IframeCardForm/Iframe
 import { PaymentMethod } from "../features/payment/models/paymentModel";
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { activatePayment, calculateFees } from "../utils/api/helper";
-import { InputCardFormFields } from "../features/payment/models/paymentModel";
 import { ErrorsType } from "../utils/errors/checkErrorsModel";
 import {
   getReCaptchaKey,
