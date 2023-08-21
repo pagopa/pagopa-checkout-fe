@@ -248,7 +248,9 @@ export default function IframeCardForm(props: Props) {
             setError(true);
           }
         },
-        cssLink: `${protocol}//${hostname}:${port}/xpay/style.css`,
+        cssLink: `${protocol}//${hostname}${
+          process.env.NODE_ENV === "development" ? `:${port}` : ""
+        }/xpay/style.css`,
         defaultComponentCssClassName: "x-pay-component",
         defaultContainerCssClassName: "x-pay-container",
         // any dependency will initialize the build istance more than one time
