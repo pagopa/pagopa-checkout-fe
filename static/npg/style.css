@@ -7,7 +7,7 @@ body {
 	margin: 0;
 }
 
-.x-pay-container {
+.npg-container {
 	font-family: "Titillium Web",sans-serif;
 	font-weight: 400;
 	font-size: 1.125rem;
@@ -30,12 +30,12 @@ body {
 	font-weight: 600;
 }
 
-.x-pay-container, div {
+.npg-container, div {
   width: 100%;
 	height: 100%;
 }
 
-.x-pay-component {
+.npg-component {
 	display: flex;
 	align-items: center;
   font: inherit;
