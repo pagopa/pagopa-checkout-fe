@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, FormControl, FormHelperText, InputLabel } from "@mui/material";
+import { Box } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import {
   getSessionItem,
@@ -7,6 +7,7 @@ import {
 } from "../../../../utils/storage/sessionStorage";
 import { FormButtons } from "../../../../components/FormButtons/FormButtons";
 import { PaymentMethod } from "../../../../features/payment/models/paymentModel";
+import { Field, RenderField } from "./IframeCardField";
 interface Props {
   loading?: boolean;
   onCancel: () => void;
@@ -20,86 +21,19 @@ interface FieldFormStatus {
   errorMessage: null | string;
 }
 
-type IdFields =
-  | "CARD_NUMBER"
-  | "EXPIRATION_DATE"
-  | "SECURITY_CODE"
-  | "CARDHOLDER_NAME";
-
-type FieldsFormStatus = Map<IdFields, FieldFormStatus>;
-
-interface Field {
-  type: string;
-  id: string;
-  src: string;
-  class: string;
-}
-
 interface BuildResp {
   sessionId: string;
   securityToken: string;
   fields: Array<Field>;
 }
 
-const getSrcFromFieldsByID = (fields: Array<Field>, id: IdFields) =>
-  fields.find((field) => field.id === id)?.src;
+export type IdFields =
+  | "CARD_NUMBER"
+  | "EXPIRATION_DATE"
+  | "SECURITY_CODE"
+  | "CARDHOLDER_NAME";
 
-const renderIframeInput = (
-  label: string,
-  fields?: Array<Field>,
-  id?: IdFields,
-  style?: React.CSSProperties
-) => {
-  if (!fields) {
-    return;
-  }
-  if (!id) {
-    return;
-  }
-  const src = getSrcFromFieldsByID(fields, id);
-  if (!src) {
-    return;
-  }
-
-  return (
-    <>
-      <FormControl fullWidth={true} margin="dense" sx={{ marginY: 3 }}>
-        <InputLabel
-          margin="dense"
-          shrink={true}
-          sx={{
-            background: "#fff",
-            paddingX: 1,
-          }}
-        >
-          {label}
-        </InputLabel>
-        <Box
-          sx={{
-            borderRadius: 1,
-            padding: 2,
-            borderColor: "grey.400",
-            borderStyle: "solid",
-            borderWidth: "1px",
-            position: "relative",
-          }}
-        >
-          <iframe
-            src={src}
-            style={{
-              display: "block",
-              border: "none",
-              height: 30,
-              width: "100%",
-              ...style,
-            }}
-          />
-        </Box>
-        <FormHelperText id="my-helper-text">Campo obbligatorio</FormHelperText>
-      </FormControl>
-    </>
-  );
-};
+type FieldsFormStatus = Map<IdFields, FieldFormStatus>;
 
 const initialFormStatus: FieldFormStatus = {
   isValid: false,
@@ -123,7 +57,7 @@ export default function IframeCardForm(props: Props) {
   const { loading = true, onCancel, onSubmit = () => null, hideCancel } = props;
   const [error, setError] = React.useState(false);
   const [form, setForm] = React.useState<BuildResp>();
-  const [spinner, setSpineer] = React.useState(loading);
+  const [spinner, setSpinner] = React.useState(loading);
   // this dummy state is only used to permorm a component udpate, not the best solution but works
   const [, setDummyState] = React.useState(0);
 
@@ -155,7 +89,7 @@ export default function IframeCardForm(props: Props) {
         } catch (e) {
           setError(true);
         } finally {
-          setSpineer(false);
+          setSpinner(false);
         }
       };
       void fetchForm();
@@ -256,12 +190,12 @@ export default function IframeCardForm(props: Props) {
   const handleSubmit = (e: React.FormEvent) => {
     try {
       e.preventDefault();
-      setSpineer(true);
+      setSpinner(true);
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      sdkBuildIstance?.confirmData(() => setSpineer(false));
+      sdkBuildIstance?.confirmData(() => setSpinner(false));
     } catch (e) {
-      setSpineer(false);
+      setSpinner(false);
       setError(true);
     }
   };
@@ -275,43 +209,51 @@ export default function IframeCardForm(props: Props) {
         ) : (
           <form id="iframe-card-form" onSubmit={handleSubmit}>
             <Box>
-              <Box minHeight={60}>
-                {renderIframeInput(
-                  t("inputCardPage.formFields.number"),
-                  form?.fields,
-                  "CARD_NUMBER"
-                )}
-                {fieldformStatus.get("CARD_NUMBER")?.errorMessage}
+              <Box>
+                <RenderField
+                  label={t("inputCardPage.formFields.number")}
+                  fields={form?.fields}
+                  id={"CARD_NUMBER"}
+                  helperMessage={
+                    fieldformStatus.get("CARD_NUMBER")?.errorMessage
+                  }
+                ></RenderField>
               </Box>
               <Box
                 display={"flex"}
                 justifyContent={"space-between"}
                 sx={{ gap: 2 }}
               >
-                <Box minHeight={60}>
-                  {renderIframeInput(
-                    t("inputCardPage.formFields.expirationDate"),
-                    form?.fields,
-                    "EXPIRATION_DATE"
-                  )}
-                  {fieldformStatus.get("EXPIRATION_DATE")?.errorMessage}
+                <Box>
+                  <RenderField
+                    label={t("inputCardPage.formFields.expirationDate")}
+                    fields={form?.fields}
+                    id={"EXPIRATION_DATE"}
+                    helperMessage={
+                      fieldformStatus.get("EXPIRATION_DATE")?.errorMessage
+                    }
+                  ></RenderField>
                 </Box>
-                <Box minHeight={60}>
-                  {renderIframeInput(
-                    t("inputCardPage.formFields.cvv"),
-                    form?.fields,
-                    "SECURITY_CODE"
-                  )}
-                  {fieldformStatus.get("SECURITY_CODE")?.errorMessage}
+                <Box>
+                  <RenderField
+                    label={t("inputCardPage.formFields.cvv")}
+                    fields={form?.fields}
+                    id={"SECURITY_CODE"}
+                    helperMessage={
+                      fieldformStatus.get("SECURITY_CODE")?.errorMessage
+                    }
+                  ></RenderField>
                 </Box>
               </Box>
-              <Box minHeight={60}>
-                {renderIframeInput(
-                  t("inputCardPage.formFields.name"),
-                  form?.fields,
-                  "CARDHOLDER_NAME"
-                )}
-                {fieldformStatus.get("CARDHOLDER_NAME")?.errorMessage}
+              <Box>
+                <RenderField
+                  label={t("inputCardPage.formFields.name")}
+                  fields={form?.fields}
+                  id={"CARDHOLDER_NAME"}
+                  helperMessage={
+                    fieldformStatus.get("CARDHOLDER_NAME")?.errorMessage
+                  }
+                ></RenderField>
               </Box>
             </Box>
             <FormButtons
