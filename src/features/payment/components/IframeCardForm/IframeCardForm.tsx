@@ -214,7 +214,8 @@ export default function IframeCardForm(props: Props) {
                   label={t("inputCardPage.formFields.number")}
                   fields={form?.fields}
                   id={"CARD_NUMBER"}
-                  helperMessage={
+                  errorCode={fieldformStatus.get("CARD_NUMBER")?.errorCode}
+                  errorMessage={
                     fieldformStatus.get("CARD_NUMBER")?.errorMessage
                   }
                 ></RenderField>
@@ -229,7 +230,10 @@ export default function IframeCardForm(props: Props) {
                     label={t("inputCardPage.formFields.expirationDate")}
                     fields={form?.fields}
                     id={"EXPIRATION_DATE"}
-                    helperMessage={
+                    errorCode={
+                      fieldformStatus.get("EXPIRATION_DATE")?.errorCode
+                    }
+                    errorMessage={
                       fieldformStatus.get("EXPIRATION_DATE")?.errorMessage
                     }
                   ></RenderField>
@@ -239,7 +243,8 @@ export default function IframeCardForm(props: Props) {
                     label={t("inputCardPage.formFields.cvv")}
                     fields={form?.fields}
                     id={"SECURITY_CODE"}
-                    helperMessage={
+                    errorCode={fieldformStatus.get("SECURITY_CODE")?.errorCode}
+                    errorMessage={
                       fieldformStatus.get("SECURITY_CODE")?.errorMessage
                     }
                   ></RenderField>
@@ -250,7 +255,8 @@ export default function IframeCardForm(props: Props) {
                   label={t("inputCardPage.formFields.name")}
                   fields={form?.fields}
                   id={"CARDHOLDER_NAME"}
-                  helperMessage={
+                  errorCode={fieldformStatus.get("CARDHOLDER_NAME")?.errorCode}
+                  errorMessage={
                     fieldformStatus.get("CARDHOLDER_NAME")?.errorMessage
                   }
                 ></RenderField>
