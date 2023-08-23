@@ -12,14 +12,16 @@ export interface Field {
 interface Props {
   label: string;
   fields?: Array<Field>;
-  id?: IdFields;
+  id?: keyof typeof IdFields;
   style?: React.CSSProperties;
   errorCode?: string | null;
   errorMessage?: string | null;
 }
 
-const getSrcFromFieldsByID = (fields: Array<Field>, id: IdFields) =>
-  fields.find((field) => field.id === id)?.src;
+const getSrcFromFieldsByID = (
+  fields: Array<Field>,
+  id: keyof typeof IdFields
+) => fields.find((field) => field.id === id)?.src;
 
 export function RenderField(props: Props) {
   if (!props.fields) {

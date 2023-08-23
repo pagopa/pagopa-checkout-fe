@@ -8,6 +8,7 @@ import {
 import { FormButtons } from "../../../../components/FormButtons/FormButtons";
 import { PaymentMethod } from "../../../../features/payment/models/paymentModel";
 import { Field, RenderField } from "./IframeCardField";
+
 interface Props {
   loading?: boolean;
   onCancel: () => void;
@@ -27,13 +28,13 @@ interface BuildResp {
   fields: Array<Field>;
 }
 
-export type IdFields =
-  | "CARD_NUMBER"
-  | "EXPIRATION_DATE"
-  | "SECURITY_CODE"
-  | "CARDHOLDER_NAME";
-
-type FieldsFormStatus = Map<IdFields, FieldFormStatus>;
+export enum IdFields {
+  "CARD_NUMBER" = "CARD_NUMBER",
+  "EXPIRATION_DATE" = "EXPIRATION_DATE",
+  "SECURITY_CODE" = "SECURITY_CODE",
+  "CARDHOLDER_NAME" = "CARDHOLDER_NAME",
+}
+type FieldsFormStatus = Map<keyof typeof IdFields | string, FieldFormStatus>;
 
 const initialFormStatus: FieldFormStatus = {
   isValid: false,
@@ -42,15 +43,9 @@ const initialFormStatus: FieldFormStatus = {
 };
 
 const fieldformStatus: FieldsFormStatus = new Map();
-fieldformStatus.set("CARD_NUMBER", initialFormStatus);
-fieldformStatus.set("EXPIRATION_DATE", initialFormStatus);
-fieldformStatus.set("SECURITY_CODE", initialFormStatus);
-fieldformStatus.set("CARDHOLDER_NAME", initialFormStatus);
-
-// eslint-disable-next-line functional/no-let
-let formStatus = false;
-// eslint-disable-next-line functional/no-let
-let sdkBuildIstance: { confirmData: () => void };
+Object.values(IdFields).forEach((k) => {
+  fieldformStatus.set(k as keyof typeof IdFields, initialFormStatus);
+});
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export default function IframeCardForm(props: Props) {
@@ -58,18 +53,14 @@ export default function IframeCardForm(props: Props) {
   const [error, setError] = React.useState(false);
   const [form, setForm] = React.useState<BuildResp>();
   const [spinner, setSpinner] = React.useState(loading);
+  const [enabledForm, setEnabledForm] = React.useState(false);
+  const [sdkBuildIstance, setSdkBuildIstance] = React.useState({});
   // this dummy state is only used to permorm a component udpate, not the best solution but works
   const [, setDummyState] = React.useState(0);
 
   const calculateFormValidStatus = (
     fieldformStatus: Map<string, FieldFormStatus>
-  ) =>
-    [
-      fieldformStatus.get("CARD_NUMBER")?.isValid,
-      fieldformStatus.get("EXPIRATION_DATE")?.isValid,
-      fieldformStatus.get("SECURITY_CODE")?.isValid,
-      fieldformStatus.get("CARDHOLDER_NAME")?.isValid,
-    ].every((isValid) => isValid);
+  ) => Array.from(fieldformStatus.values()).every((el) => el.isValid);
 
   React.useEffect(() => {
     if (!form) {
@@ -94,22 +85,25 @@ export default function IframeCardForm(props: Props) {
       };
       void fetchForm();
     } else {
+      // THIS is mandatory cause the Build class is defined in the external library called NPG SDK
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      sdkBuildIstance = new Build({
-        onBuildSuccess(evtData: { id: IdFields }) {
+      const buildInstance = new Build({
+        onBuildSuccess(evtData: { id: keyof typeof IdFields }) {
+          const { id } = evtData;
           // write some code to manage the successful data entering in the specifiedfield: evtData.id
-          fieldformStatus.set(evtData.id, {
-            isValid: true,
-            errorCode: null,
-            errorMessage: null,
-          });
-          formStatus = calculateFormValidStatus(fieldformStatus);
-          setDummyState(Math.random);
+          if (Object.keys(IdFields).includes(id)) {
+            fieldformStatus.set(id as unknown as keyof typeof IdFields, {
+              isValid: true,
+              errorCode: null,
+              errorMessage: null,
+            });
+            setEnabledForm(calculateFormValidStatus(fieldformStatus));
+            setDummyState(Math.random);
+          }
         },
-        // eslint-disable-next-line sonarjs/no-identical-functions
         onBuildError(evtData: {
-          id: IdFields;
+          id: keyof typeof IdFields;
           errorCode: string;
           errorMessage: string;
         }) {
@@ -125,13 +119,15 @@ export default function IframeCardForm(props: Props) {
           //   HF0007 –internal error –if the issue persists the payment has to be restarted
           //   HF0009 –3DS GDI verification failed –the payment experience has to be stopped with failure.
           const { id, errorCode, errorMessage } = evtData;
-          fieldformStatus.set(id, {
-            isValid: false,
-            errorCode,
-            errorMessage,
-          });
-          formStatus = calculateFormValidStatus(fieldformStatus);
-          setDummyState(Math.random);
+          if (Object.keys(IdFields).includes(id)) {
+            fieldformStatus.set(id as unknown as keyof typeof IdFields, {
+              isValid: false,
+              errorCode,
+              errorMessage,
+            });
+            setEnabledForm(calculateFormValidStatus(fieldformStatus));
+            setDummyState(Math.random);
+          }
         },
         onConfirmError(evtData: any) {
           // this event is returned as a consequence of the invocation of confirmData() SDK function.
@@ -143,7 +139,7 @@ export default function IframeCardForm(props: Props) {
           console.log("onConfirmError", evtData);
         },
         onBuildFlowStateChange(
-          evtData: any,
+          _evtData: any,
           state:
             | "READY_FOR_PAYMENT"
             | "REDIRECTED_TO_EXTERNAL_DOMAIN"
@@ -159,8 +155,7 @@ export default function IframeCardForm(props: Props) {
           //   the evtData.data.url external domain for strong customer authentication (i.e ACS URL).
           // PAYMENT_COMPLETE: the payment experience is finished. It is required to invoke
           //   the get https://{nexiDomain}/api/phoenix-0.0/psp/api/v1/build/state?sessionId={thesessionId}  },
-          // eslint-disable-next-line no-console
-          console.log("onBuildFlowStateChange", evtData, state);
+          // console.log("onBuildFlowStateChange", evtData, state);
           if (state === "READY_FOR_PAYMENT") {
             void (async () => {
               try {
@@ -184,6 +179,8 @@ export default function IframeCardForm(props: Props) {
         // and I think it's not a good idea. For the same reason I am not using
         // a react state to track the form status
       });
+
+      setSdkBuildIstance(buildInstance);
     }
   }, [form?.sessionId]);
 
@@ -267,7 +264,7 @@ export default function IframeCardForm(props: Props) {
               type="submit"
               submitTitle="paymentNoticePage.formButtons.submit"
               cancelTitle="paymentNoticePage.formButtons.cancel"
-              disabledSubmit={!formStatus}
+              disabledSubmit={!enabledForm}
               handleSubmit={handleSubmit}
               handleCancel={onCancel}
               hideCancel={hideCancel}
