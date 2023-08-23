@@ -41,16 +41,16 @@ const initialFormStatus: FieldFormStatus = {
   errorMessage: null,
 };
 
-const fieldformStatus: FieldsFormStatus = new Map();
-fieldformStatus.set("CARD_NUMBER", initialFormStatus);
-fieldformStatus.set("EXPIRATION_DATE", initialFormStatus);
-fieldformStatus.set("SECURITY_CODE", initialFormStatus);
-fieldformStatus.set("CARDHOLDER_NAME", initialFormStatus);
+const fieldFormStatus: FieldsFormStatus = new Map();
+fieldFormStatus.set("CARD_NUMBER", initialFormStatus);
+fieldFormStatus.set("EXPIRATION_DATE", initialFormStatus);
+fieldFormStatus.set("SECURITY_CODE", initialFormStatus);
+fieldFormStatus.set("CARDHOLDER_NAME", initialFormStatus);
 
 // eslint-disable-next-line functional/no-let
 let formStatus = false;
 // eslint-disable-next-line functional/no-let
-let sdkBuildIstance: { confirmData: () => void };
+let sdkBuildInstance: { confirmData: () => void };
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export default function IframeCardForm(props: Props) {
@@ -58,17 +58,19 @@ export default function IframeCardForm(props: Props) {
   const [error, setError] = React.useState(false);
   const [form, setForm] = React.useState<BuildResp>();
   const [spinner, setSpinner] = React.useState(loading);
-  // this dummy state is only used to permorm a component udpate, not the best solution but works
+  // this dummy state is only used to perform a component update, not the best solution but works
   const [, setDummyState] = React.useState(0);
 
+  const { hostname, protocol, port } = window.location;
+
   const calculateFormValidStatus = (
-    fieldformStatus: Map<string, FieldFormStatus>
+    fieldFormStatus: Map<string, FieldFormStatus>
   ) =>
     [
-      fieldformStatus.get("CARD_NUMBER")?.isValid,
-      fieldformStatus.get("EXPIRATION_DATE")?.isValid,
-      fieldformStatus.get("SECURITY_CODE")?.isValid,
-      fieldformStatus.get("CARDHOLDER_NAME")?.isValid,
+      fieldFormStatus.get("CARD_NUMBER")?.isValid,
+      fieldFormStatus.get("EXPIRATION_DATE")?.isValid,
+      fieldFormStatus.get("SECURITY_CODE")?.isValid,
+      fieldFormStatus.get("CARDHOLDER_NAME")?.isValid,
     ].every((isValid) => isValid);
 
   React.useEffect(() => {
@@ -96,15 +98,15 @@ export default function IframeCardForm(props: Props) {
     } else {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      sdkBuildIstance = new Build({
+      sdkBuildInstance = new Build({
         onBuildSuccess(evtData: { id: IdFields }) {
-          // write some code to manage the successful data entering in the specifiedfield: evtData.id
-          fieldformStatus.set(evtData.id, {
+          // write some code to manage the successful data entering in the specified field: evtData.id
+          fieldFormStatus.set(evtData.id, {
             isValid: true,
             errorCode: null,
             errorMessage: null,
           });
-          formStatus = calculateFormValidStatus(fieldformStatus);
+          formStatus = calculateFormValidStatus(fieldFormStatus);
           setDummyState(Math.random);
         },
         // eslint-disable-next-line sonarjs/no-identical-functions
@@ -113,24 +115,24 @@ export default function IframeCardForm(props: Props) {
           errorCode: string;
           errorMessage: string;
         }) {
-          // write some code to manage the wrongdata entering in the specifiedfield: evtData.id
+          // write some code to manage the wrong data entering in the specified field: evtData.id
           // the action can be finely tuned based on the provided error code available at evtData.errorCode
-          // the possible casesare:
+          // the possible cases are:
           //   HF0001 -generic build field error
           //   HF0002 -temporary unavailability of the service
           //   HF0003 -session expired–the payment experience shall be restarted from the post orders/build
-          //   HF0004 -card validation error–the luhn key check on the card number was failed
+          //   HF0004 -card validation error–the key check on the card number was failed
           //   HF0005 -brand not found–the card brand is not in the list of supported brands
           //   HF0006 -expiration date exceeded–the provided card is expired
           //   HF0007 –internal error –if the issue persists the payment has to be restarted
           //   HF0009 –3DS GDI verification failed –the payment experience has to be stopped with failure.
           const { id, errorCode, errorMessage } = evtData;
-          fieldformStatus.set(id, {
+          fieldFormStatus.set(id, {
             isValid: false,
             errorCode,
             errorMessage,
           });
-          formStatus = calculateFormValidStatus(fieldformStatus);
+          formStatus = calculateFormValidStatus(fieldFormStatus);
           setDummyState(Math.random);
         },
         onConfirmError(evtData: any) {
@@ -180,7 +182,12 @@ export default function IframeCardForm(props: Props) {
             setError(true);
           }
         },
-        // any dependency will initialize the build istance more than one time
+        cssLink: `${protocol}//${hostname}${
+          process.env.NODE_ENV === "development" ? `:${port}` : ""
+        }/npg/style.css`,
+        defaultComponentCssClassName: "npg-component",
+        defaultContainerCssClassName: "npg-container",
+        // any dependency will initialize the build instance more than one time
         // and I think it's not a good idea. For the same reason I am not using
         // a react state to track the form status
       });
@@ -193,7 +200,7 @@ export default function IframeCardForm(props: Props) {
       setSpinner(true);
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      sdkBuildIstance?.confirmData(() => setSpinner(false));
+      sdkBuildInstance?.confirmData(() => setSpinner(false));
     } catch (e) {
       setSpinner(false);
       setError(true);
@@ -218,7 +225,7 @@ export default function IframeCardForm(props: Props) {
                   errorMessage={
                     fieldformStatus.get("CARD_NUMBER")?.errorMessage
                   }
-                ></RenderField>
+                />
               </Box>
               <Box
                 display={"flex"}
@@ -236,7 +243,7 @@ export default function IframeCardForm(props: Props) {
                     errorMessage={
                       fieldformStatus.get("EXPIRATION_DATE")?.errorMessage
                     }
-                  ></RenderField>
+                  />
                 </Box>
                 <Box>
                   <RenderField
@@ -247,7 +254,7 @@ export default function IframeCardForm(props: Props) {
                     errorMessage={
                       fieldformStatus.get("SECURITY_CODE")?.errorMessage
                     }
-                  ></RenderField>
+                  />
                 </Box>
               </Box>
               <Box>
@@ -259,7 +266,7 @@ export default function IframeCardForm(props: Props) {
                   errorMessage={
                     fieldformStatus.get("CARDHOLDER_NAME")?.errorMessage
                   }
-                ></RenderField>
+                />
               </Box>
             </Box>
             <FormButtons

@@ -46,19 +46,19 @@ The table below describes all the Environment variables needed by the applicatio
    ```sh
    yarn install
    ```
-4. Generate api client 
+4. Generate api client
    ```sh
    yarn generate
    ```
-5. Build 
+5. Build
    ```sh
    yarn build
    ```
-6. tests 
+6. tests
    ```sh
    yarn test
    ```
-7. Linter 
+7. Linter
    ```sh
    yarn lint
    ```
@@ -75,6 +75,11 @@ To run the application on a local dev server with real API:
 -  ```sh
    yarn dev:proxy
    ```
+### Static Files
+
+Files put inside the static folder will be copied to the parcel output dir 'dist' during the build.
+
+In a development environment, if using the default parcel .proxyrc configuration, the static folder will be served alongside the dist folder, so that most change made in the static folder will be visible on a page reload during development.
 
 ## Azure Pipeline
 
