@@ -10,6 +10,8 @@
  */
 
 const {createProxyMiddleware} = require("http-proxy-middleware");
+const express = require('express')
+const path = require('path')
 
 const apiHost = "http://127.0.0.1:8080";
 const apiBasepath = "/checkout/payments/v1";
@@ -33,4 +35,6 @@ module.exports = function (app) {
     app.use(createProxyMiddleware(ecommerceBasepath, {
         target: apiHost,
     }));
+
+    app.use('/', express.static(path.join(__dirname, 'static')))
 }
