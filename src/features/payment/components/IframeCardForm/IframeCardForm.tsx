@@ -221,8 +221,9 @@ export default function IframeCardForm(props: Props) {
                   label={t("inputCardPage.formFields.number")}
                   fields={form?.fields}
                   id={"CARD_NUMBER"}
-                  helperMessage={
-                    fieldFormStatus.get("CARD_NUMBER")?.errorMessage
+                  errorCode={fieldformStatus.get("CARD_NUMBER")?.errorCode}
+                  errorMessage={
+                    fieldformStatus.get("CARD_NUMBER")?.errorMessage
                   }
                 />
               </Box>
@@ -236,8 +237,11 @@ export default function IframeCardForm(props: Props) {
                     label={t("inputCardPage.formFields.expirationDate")}
                     fields={form?.fields}
                     id={"EXPIRATION_DATE"}
-                    helperMessage={
-                      fieldFormStatus.get("EXPIRATION_DATE")?.errorMessage
+                    errorCode={
+                      fieldformStatus.get("EXPIRATION_DATE")?.errorCode
+                    }
+                    errorMessage={
+                      fieldformStatus.get("EXPIRATION_DATE")?.errorMessage
                     }
                   />
                 </Box>
@@ -246,8 +250,9 @@ export default function IframeCardForm(props: Props) {
                     label={t("inputCardPage.formFields.cvv")}
                     fields={form?.fields}
                     id={"SECURITY_CODE"}
-                    helperMessage={
-                      fieldFormStatus.get("SECURITY_CODE")?.errorMessage
+                    errorCode={fieldformStatus.get("SECURITY_CODE")?.errorCode}
+                    errorMessage={
+                      fieldformStatus.get("SECURITY_CODE")?.errorMessage
                     }
                   />
                 </Box>
@@ -257,8 +262,9 @@ export default function IframeCardForm(props: Props) {
                   label={t("inputCardPage.formFields.name")}
                   fields={form?.fields}
                   id={"CARDHOLDER_NAME"}
-                  helperMessage={
-                    fieldFormStatus.get("CARDHOLDER_NAME")?.errorMessage
+                  errorCode={fieldformStatus.get("CARDHOLDER_NAME")?.errorCode}
+                  errorMessage={
+                    fieldformStatus.get("CARDHOLDER_NAME")?.errorMessage
                   }
                 />
               </Box>

@@ -14,7 +14,8 @@ interface Props {
   fields?: Array<Field>;
   id?: IdFields;
   style?: React.CSSProperties;
-  helperMessage?: string | udefined;
+  errorCode?: string | null;
+  errorMessage?: string | null;
 }
 
 const getSrcFromFieldsByID = (fields: Array<Field>, id: IdFields) =>
@@ -68,8 +69,12 @@ export function RenderField(props: Props) {
             }}
           />
         </Box>
-        {props.helperMessage && (
-          <FormHelperText required={true}>{props.helperMessage}</FormHelperText>
+        {(props.errorMessage || props.errorCode) && (
+          <FormHelperText required={true} error={true}>
+            {t(`errorMessageNPG.${props.errorCode}`, {
+              defaultValue: props.errorMessage,
+            })}
+          </FormHelperText>
         )}
       </FormControl>
     </>
