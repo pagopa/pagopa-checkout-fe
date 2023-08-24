@@ -1,11 +1,10 @@
-// import { TRANSLATIONS_EN } from "./en/translations";
-import { TRANSLATIONS_IT } from "./it/translations";
+import translationIT from "./it/translations.json";
 
 const lang: Languages = {
   it: {
     label: "Italiano",
     lang: "it-IT",
-    translation: TRANSLATIONS_IT,
+    translation: translationIT,
   },
   /*
   en: {
