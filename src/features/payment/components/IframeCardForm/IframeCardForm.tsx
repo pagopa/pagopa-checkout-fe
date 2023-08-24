@@ -53,7 +53,7 @@ Object.values(IdFields).forEach((k) => {
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export default function IframeCardForm(props: Props) {
-  const { loading = true, onCancel, onSubmit = () => null, hideCancel } = props;
+  const { loading = true, onCancel, hideCancel } = props;
   const [error, setError] = React.useState(false);
   const [form, setForm] = React.useState<BuildResp>();
   const [spinner, setSpinner] = React.useState(loading);
@@ -164,6 +164,7 @@ export default function IframeCardForm(props: Props) {
           //   the get https://{nexiDomain}/api/phoenix-0.0/psp/api/v1/build/state?sessionId={thesessionId}  },
           // console.log("onBuildFlowStateChange", evtData, state);
           if (state === "READY_FOR_PAYMENT") {
+            console.log("DENTRO")
             void (async () => {
               // TO-DO
             })();
