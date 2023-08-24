@@ -24,8 +24,12 @@ interface FieldFormStatus {
 
 interface BuildResp {
   sessionId: string;
-  securityToken: string;
-  fields: Array<Field>;
+  paymentMethodData: PaymentMethodData;
+}
+
+interface PaymentMethodData {
+  paymentMethod: string;
+  form: Array<Field>;
 }
 
 export enum IdFields {
@@ -72,7 +76,7 @@ export default function IframeCardForm(props: Props) {
             SessionItems.paymentMethod
           ) as PaymentMethod;
           const response = await fetch(
-            `/ecommerce/checkout/v1/payment-methods/${paymentMethodId}/preauthorization`,
+            `/ecommerce/checkout/v1/payment-methods/${paymentMethodId}/sessions`,
             {
               method: "POST",
             }
@@ -216,7 +220,7 @@ export default function IframeCardForm(props: Props) {
               <Box>
                 <RenderField
                   label={t("inputCardPage.formFields.number")}
-                  fields={form?.fields}
+                  fields={form?.paymentMethodData.form}
                   id={"CARD_NUMBER"}
                   errorCode={fieldformStatus.get("CARD_NUMBER")?.errorCode}
                   errorMessage={
@@ -232,7 +236,7 @@ export default function IframeCardForm(props: Props) {
                 <Box>
                   <RenderField
                     label={t("inputCardPage.formFields.expirationDate")}
-                    fields={form?.fields}
+                    fields={form?.paymentMethodData.form}
                     id={"EXPIRATION_DATE"}
                     errorCode={
                       fieldformStatus.get("EXPIRATION_DATE")?.errorCode
@@ -245,7 +249,7 @@ export default function IframeCardForm(props: Props) {
                 <Box>
                   <RenderField
                     label={t("inputCardPage.formFields.cvv")}
-                    fields={form?.fields}
+                    fields={form?.paymentMethodData.form}
                     id={"SECURITY_CODE"}
                     errorCode={fieldformStatus.get("SECURITY_CODE")?.errorCode}
                     errorMessage={
@@ -257,7 +261,7 @@ export default function IframeCardForm(props: Props) {
               <Box>
                 <RenderField
                   label={t("inputCardPage.formFields.name")}
-                  fields={form?.fields}
+                  fields={form?.paymentMethodData.form}
                   id={"CARDHOLDER_NAME"}
                   errorCode={fieldformStatus.get("CARDHOLDER_NAME")?.errorCode}
                   errorMessage={
