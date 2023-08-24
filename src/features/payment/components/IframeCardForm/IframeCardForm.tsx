@@ -29,6 +29,8 @@ import { useAppDispatch } from "../../../../redux/hooks/hooks";
 import { setThreshold } from "../../../../redux/slices/threshold";
 import { RenderField } from "./IframeCardField";
 import { CreateSessionResponse } from "../../../../../generated/definitions/payment-ecommerce/CreateSessionResponse";
+import type { FieldFormStatus, FieldsFormStatus } from "./types";
+import { IdFields } from "./types";
 
 interface Props {
   loading?: boolean;
@@ -37,29 +39,15 @@ interface Props {
   hideCancel?: boolean;
 }
 
-interface FieldFormStatus {
-  isValid: boolean;
-  errorCode: null | string;
-  errorMessage: null | string;
-}
-
-export enum IdFields {
-  "CARD_NUMBER" = "CARD_NUMBER",
-  "EXPIRATION_DATE" = "EXPIRATION_DATE",
-  "SECURITY_CODE" = "SECURITY_CODE",
-  "CARDHOLDER_NAME" = "CARDHOLDER_NAME",
-}
-type FieldsFormStatus = Map<keyof typeof IdFields | string, FieldFormStatus>;
-
 const initialFormStatus: FieldFormStatus = {
-  isValid: false,
+  isValid: undefined,
   errorCode: null,
   errorMessage: null,
 };
 
-const fieldformStatus: FieldsFormStatus = new Map();
+const fieldFormStatus: FieldsFormStatus = new Map();
 Object.values(IdFields).forEach((k) => {
-  fieldformStatus.set(k as keyof typeof IdFields, initialFormStatus);
+  fieldFormStatus.set(k as keyof typeof IdFields, initialFormStatus);
 });
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
@@ -79,8 +67,8 @@ export default function IframeCardForm(props: Props) {
   const [buildInstance, setBuildInstance] = React.useState();
 
   const calculateFormValidStatus = (
-    fieldformStatus: Map<string, FieldFormStatus>
-  ) => Array.from(fieldformStatus.values()).every((el) => el.isValid);
+    fieldFormStatus: Map<string, FieldFormStatus>
+  ) => Array.from(fieldFormStatus.values()).every((el) => el.isValid);
 
   const onError = (m: string) => {
     setLoading(false);
@@ -192,12 +180,12 @@ export default function IframeCardForm(props: Props) {
             const { id } = evtData;
             // write some code to manage the successful data entering in the specifiedfield: evtData.id
             if (Object.keys(IdFields).includes(id)) {
-              fieldformStatus.set(id as unknown as keyof typeof IdFields, {
+              fieldFormStatus.set(id as unknown as keyof typeof IdFields, {
                 isValid: true,
                 errorCode: null,
                 errorMessage: null,
               });
-              setEnabledForm(calculateFormValidStatus(fieldformStatus));
+              setEnabledForm(calculateFormValidStatus(fieldFormStatus));
               setDummyState(Math.random);
             }
           },
@@ -219,12 +207,12 @@ export default function IframeCardForm(props: Props) {
             //   HF0009 –3DS GDI verification failed –the payment experience has to be stopped with failure.
             const { id, errorCode, errorMessage } = evtData;
             if (Object.keys(IdFields).includes(id)) {
-              fieldformStatus.set(id as unknown as keyof typeof IdFields, {
+              fieldFormStatus.set(id as unknown as keyof typeof IdFields, {
                 isValid: false,
                 errorCode,
                 errorMessage,
               });
-              setEnabledForm(calculateFormValidStatus(fieldformStatus));
+              setEnabledForm(calculateFormValidStatus(fieldFormStatus));
               setDummyState(Math.random);
             }
           },
@@ -308,10 +296,11 @@ export default function IframeCardForm(props: Props) {
                   label={t("inputCardPage.formFields.number")}
                   fields={form?.paymentMethodData.form}
                   id={"CARD_NUMBER"}
-                  errorCode={fieldformStatus.get("CARD_NUMBER")?.errorCode}
+                  errorCode={fieldFormStatus.get("CARD_NUMBER")?.errorCode}
                   errorMessage={
-                    fieldformStatus.get("CARD_NUMBER")?.errorMessage
+                    fieldFormStatus.get("CARD_NUMBER")?.errorMessage
                   }
+                  isValid={fieldFormStatus.get("CARD_NUMBER")?.isValid}
                 />
               </Box>
               <Box
@@ -325,11 +314,12 @@ export default function IframeCardForm(props: Props) {
                     fields={form?.paymentMethodData.form}
                     id={"EXPIRATION_DATE"}
                     errorCode={
-                      fieldformStatus.get("EXPIRATION_DATE")?.errorCode
+                      fieldFormStatus.get("EXPIRATION_DATE")?.errorCode
                     }
                     errorMessage={
-                      fieldformStatus.get("EXPIRATION_DATE")?.errorMessage
+                      fieldFormStatus.get("EXPIRATION_DATE")?.errorMessage
                     }
+                    isValid={fieldFormStatus.get("EXPIRATION_DATE")?.isValid}
                   />
                 </Box>
                 <Box>
@@ -337,10 +327,11 @@ export default function IframeCardForm(props: Props) {
                     label={t("inputCardPage.formFields.cvv")}
                     fields={form?.paymentMethodData.form}
                     id={"SECURITY_CODE"}
-                    errorCode={fieldformStatus.get("SECURITY_CODE")?.errorCode}
+                    errorCode={fieldFormStatus.get("SECURITY_CODE")?.errorCode}
                     errorMessage={
-                      fieldformStatus.get("SECURITY_CODE")?.errorMessage
+                      fieldFormStatus.get("SECURITY_CODE")?.errorMessage
                     }
+                    isValid={fieldFormStatus.get("SECURITY_CODE")?.isValid}
                   />
                 </Box>
               </Box>
@@ -349,10 +340,11 @@ export default function IframeCardForm(props: Props) {
                   label={t("inputCardPage.formFields.name")}
                   fields={form?.paymentMethodData.form}
                   id={"CARDHOLDER_NAME"}
-                  errorCode={fieldformStatus.get("CARDHOLDER_NAME")?.errorCode}
+                  errorCode={fieldFormStatus.get("CARDHOLDER_NAME")?.errorCode}
                   errorMessage={
-                    fieldformStatus.get("CARDHOLDER_NAME")?.errorMessage
+                    fieldFormStatus.get("CARDHOLDER_NAME")?.errorMessage
                   }
+                  isValid={fieldFormStatus.get("CARDHOLDER_NAME")?.isValid}
                 />
               </Box>
             </Box>
