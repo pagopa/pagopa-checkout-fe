@@ -34,6 +34,11 @@ import {
   DONATION_INIT_SESSION,
   DONATION_LIST_ERROR,
   DONATION_LIST_SUCCESS,
+  NPG_INIT,
+  NPG_NET_ERR,
+  NPG_RESP_ERROR,
+  NPG_SUCCESS,
+  NPG_SVR_ERR,
   PAYMENT_ACTION_DELETE_INIT,
   PAYMENT_ACTION_DELETE_NET_ERR,
   PAYMENT_ACTION_DELETE_RESP_ERR,
@@ -1035,3 +1040,67 @@ const getBrandByBrandCardValidator = (
       return BrandEnum.UNKNOWN;
   }
 };
+
+export const npgSessionsFields = async (
+  onError: (e: string) => void,
+  onResponse: (data: any) => void
+) =>
+  await pipe(
+    TE.tryCatch(
+      () => {
+        mixpanel.track(NPG_INIT.value, {
+          EVENT_ID: NPG_INIT.value,
+        });
+        const paymentId =
+          (
+            getSessionItem(SessionItems.paymentMethod) as
+              | PaymentMethod
+              | undefined
+          )?.paymentMethodId || "";
+        return apiPaymentEcommerceClient.createSession({
+          id: paymentId,
+        });
+      },
+      () => {
+        mixpanel.track(NPG_NET_ERR.value, {
+          EVENT_ID: NPG_NET_ERR.value,
+        });
+        onError(NPG_NET_ERR.value);
+        return NPG_NET_ERR.value;
+      }
+    ),
+    TE.fold(
+      (err) => {
+        mixpanel.track(NPG_SVR_ERR.value, {
+          EVENT_ID: NPG_SVR_ERR.value,
+        });
+        return TE.left(err);
+      },
+      (myResExt) => async () =>
+        pipe(
+          myResExt,
+          E.fold(
+            () => {
+              mixpanel.track(NPG_RESP_ERROR.value, {
+                EVENT_ID: NPG_RESP_ERROR.value,
+              });
+              return {};
+            },
+            (myRes) => {
+              if (myRes.status === 200) {
+                mixpanel.track(NPG_SUCCESS.value, {
+                  EVENT_ID: NPG_SUCCESS.value,
+                });
+                onResponse(myRes.value);
+                return myRes;
+              } else {
+                mixpanel.track(NPG_RESP_ERROR.value, {
+                  EVENT_ID: NPG_RESP_ERROR.value,
+                });
+                return {};
+              }
+            }
+          )
+        )
+    )
+  )();

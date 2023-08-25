@@ -1,6 +1,7 @@
 import React from "react";
 import { Box } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { npgSessionsFields } from "../../../../utils/api/helper";
 import {
   getSessionItem,
   SessionItems,
@@ -69,119 +70,106 @@ export default function IframeCardForm(props: Props) {
 
   React.useEffect(() => {
     if (!form) {
-      const fetchForm = async () => {
-        try {
-          const { paymentMethodId } = getSessionItem(
-            SessionItems.paymentMethod
-          ) as PaymentMethod;
-          const response = await fetch(
-            `/ecommerce/checkout/v1/payment-methods/${paymentMethodId}/sessions`,
-            {
-              method: "POST",
-            }
-          );
-          const body = (await response.json()) as BuildResp;
-          setForm(body);
-        } catch (e) {
-          setError(true);
-        } finally {
-          setSpinner(false);
-        }
-      };
-      void fetchForm();
-
       const { hostname, protocol, port } = window.location;
+      const onResponse = (body: any) => {
+        setForm(body);
 
-      // THIS is mandatory cause the Build class is defined in the external library called NPG SDK
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      const newBuild = new Build({
-        onBuildSuccess(evtData: { id: keyof typeof IdFields }) {
-          const { id } = evtData;
-          // write some code to manage the successful data entering in the specifiedfield: evtData.id
-          if (Object.keys(IdFields).includes(id)) {
-            fieldformStatus.set(id as unknown as keyof typeof IdFields, {
-              isValid: true,
-              errorCode: null,
-              errorMessage: null,
-            });
-            setEnabledForm(calculateFormValidStatus(fieldformStatus));
-            setDummyState(Math.random);
-          }
-        },
-        onBuildError(evtData: {
-          id: keyof typeof IdFields;
-          errorCode: string;
-          errorMessage: string;
-        }) {
-          // write some code to manage the wrong data entering in the specified field: evtData.id
-          // the action can be finely tuned based on the provided error code available at evtData.errorCode
-          // the possible cases are:
-          //   HF0001 -generic build field error
-          //   HF0002 -temporary unavailability of the service
-          //   HF0003 -session expired–the payment experience shall be restarted from the post orders/build
-          //   HF0004 -card validation error–the key check on the card number was failed
-          //   HF0005 -brand not found–the card brand is not in the list of supported brands
-          //   HF0006 -expiration date exceeded–the provided card is expired
-          //   HF0007 –internal error –if the issue persists the payment has to be restarted
-          //   HF0009 –3DS GDI verification failed –the payment experience has to be stopped with failure.
-          const { id, errorCode, errorMessage } = evtData;
-          if (Object.keys(IdFields).includes(id)) {
-            fieldformStatus.set(id as unknown as keyof typeof IdFields, {
-              isValid: false,
-              errorCode,
-              errorMessage,
-            });
-            setEnabledForm(calculateFormValidStatus(fieldformStatus));
-            setDummyState(Math.random);
-          }
-        },
-        onConfirmError(evtData: any) {
-          // this event is returned as a consequence of the invocation of confirmData() SDK function.
-          // the possible cases are:
-          //   HF0002 –temporary unavailability of the service
-          //   HF0003 -session expired–the payment experience shall be restarted from the post orders/build
-          //   HF0007 –internal error–if the issue persists the payment has to be restarted
-          // eslint-disable-next-line no-console
-          console.log("onConfirmError", evtData);
-        },
-        onBuildFlowStateChange(
-          _evtData: any,
-          state:
-            | "READY_FOR_PAYMENT"
-            | "REDIRECTED_TO_EXTERNAL_DOMAIN"
-            | "PAYMENT_COMPLETE"
-        ) {
-          // this event is returned for each state transition of the payment state machine.
-          // the possible states expressed by the value state are:
-          // READY_FOR_PAYMENT: the card data has been properly collected and it is now possible to
-          //   invoke the server to server
-          //   posthttps://{nexiDomain}/api/phoenix-0.0/psp/api/v1/build/cardData?sessionId={thesessionId}
-          //   to collect the non-PCI card information.
-          // REDIRECTED_TO_EXTERNAL_DOMAIN: when this state is provided, the browser has to be redirected to
-          //   the evtData.data.url external domain for strong customer authentication (i.e ACS URL).
-          // PAYMENT_COMPLETE: the payment experience is finished. It is required to invoke
-          //   the get https://{nexiDomain}/api/phoenix-0.0/psp/api/v1/build/state?sessionId={thesessionId}  },
-          // console.log("onBuildFlowStateChange", evtData, state);
-          if (state === "READY_FOR_PAYMENT") {
-            console.log("DENTRO")
-            void (async () => {
-              // TO-DO
-            })();
-          } else {
-            setError(true);
-          }
-        },
-        cssLink: `${protocol}//${hostname}${
-          process.env.NODE_ENV === "development" ? `:${port}` : ""
-        }/npg/style.css`,
-        defaultComponentCssClassName: "npg-component",
-        defaultContainerCssClassName: "npg-container",
-        // any dependency will initialize the build instance more than one time
-        // and I think it's not a good idea. For the same reason I am not using
-        // a react state to track the form status
-      });
-      setBuildInstance(newBuild);
+        // THIS is mandatory cause the Build class is defined in the external library called NPG SDK
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        const newBuild = new Build({
+          onBuildSuccess(evtData: { id: keyof typeof IdFields }) {
+            const { id } = evtData;
+            // write some code to manage the successful data entering in the specifiedfield: evtData.id
+            if (Object.keys(IdFields).includes(id)) {
+              fieldformStatus.set(id as unknown as keyof typeof IdFields, {
+                isValid: true,
+                errorCode: null,
+                errorMessage: null,
+              });
+              setEnabledForm(calculateFormValidStatus(fieldformStatus));
+              setDummyState(Math.random);
+            }
+          },
+          onBuildError(evtData: {
+            id: keyof typeof IdFields;
+            errorCode: string;
+            errorMessage: string;
+          }) {
+            // write some code to manage the wrong data entering in the specified field: evtData.id
+            // the action can be finely tuned based on the provided error code available at evtData.errorCode
+            // the possible cases are:
+            //   HF0001 -generic build field error
+            //   HF0002 -temporary unavailability of the service
+            //   HF0003 -session expired–the payment experience shall be restarted from the post orders/build
+            //   HF0004 -card validation error–the key check on the card number was failed
+            //   HF0005 -brand not found–the card brand is not in the list of supported brands
+            //   HF0006 -expiration date exceeded–the provided card is expired
+            //   HF0007 –internal error –if the issue persists the payment has to be restarted
+            //   HF0009 –3DS GDI verification failed –the payment experience has to be stopped with failure.
+            const { id, errorCode, errorMessage } = evtData;
+            if (Object.keys(IdFields).includes(id)) {
+              fieldformStatus.set(id as unknown as keyof typeof IdFields, {
+                isValid: false,
+                errorCode,
+                errorMessage,
+              });
+              setEnabledForm(calculateFormValidStatus(fieldformStatus));
+              setDummyState(Math.random);
+            }
+          },
+          onConfirmError(evtData: any) {
+            // this event is returned as a consequence of the invocation of confirmData() SDK function.
+            // the possible cases are:
+            //   HF0002 –temporary unavailability of the service
+            //   HF0003 -session expired–the payment experience shall be restarted from the post orders/build
+            //   HF0007 –internal error–if the issue persists the payment has to be restarted
+            // eslint-disable-next-line no-console
+            console.log("onConfirmError", evtData);
+          },
+          onBuildFlowStateChange(
+            _evtData: any,
+            state:
+              | "READY_FOR_PAYMENT"
+              | "REDIRECTED_TO_EXTERNAL_DOMAIN"
+              | "PAYMENT_COMPLETE"
+          ) {
+            // this event is returned for each state transition of the payment state machine.
+            // the possible states expressed by the value state are:
+            // READY_FOR_PAYMENT: the card data has been properly collected and it is now possible to
+            //   invoke the server to server
+            //   posthttps://{nexiDomain}/api/phoenix-0.0/psp/api/v1/build/cardData?sessionId={thesessionId}
+            //   to collect the non-PCI card information.
+            // REDIRECTED_TO_EXTERNAL_DOMAIN: when this state is provided, the browser has to be redirected to
+            //   the evtData.data.url external domain for strong customer authentication (i.e ACS URL).
+            // PAYMENT_COMPLETE: the payment experience is finished. It is required to invoke
+            //   the get https://{nexiDomain}/api/phoenix-0.0/psp/api/v1/build/state?sessionId={thesessionId}  },
+            // console.log("onBuildFlowStateChange", evtData, state);
+            if (state === "READY_FOR_PAYMENT") {
+              void (async () => {
+                // TO-DO
+              })();
+            } else {
+              setError(true);
+            }
+          },
+          cssLink: `${protocol}//${hostname}${
+            process.env.NODE_ENV === "development" ? `:${port}` : ""
+          }/npg/style.css`,
+          defaultComponentCssClassName: "npg-component",
+          defaultContainerCssClassName: "npg-container",
+          // any dependency will initialize the build instance more than one time
+          // and I think it's not a good idea. For the same reason I am not using
+          // a react state to track the form status
+        });
+        setBuildInstance(newBuild);
+      };
+
+      const onError = (e: string) => {
+        // TO-DO
+      };
+
+      void npgSessionsFields(onError, onResponse);
     }
   }, [form?.sessionId]);
 
