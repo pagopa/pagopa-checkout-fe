@@ -1,8 +1,8 @@
 import React from "react";
 import { Box, FormControl, FormHelperText, InputLabel } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { IdFields } from "./IframeCardForm";
 import { Field } from "../../../../../generated/definitions/payment-ecommerce/Field";
+import { IdFields } from "./IframeCardForm";
 
 interface Props {
   label: string;

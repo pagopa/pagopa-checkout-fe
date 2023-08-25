@@ -83,13 +83,13 @@ import { NewTransactionResponse } from "../../../generated/definitions/payment-e
 import { TransferListItem } from "../../../generated/definitions/payment-ecommerce/TransferListItem";
 import { Bundle } from "../../../generated/definitions/payment-ecommerce/Bundle";
 import { PaymentNoticeInfo } from "../../../generated/definitions/payment-ecommerce/PaymentNoticeInfo";
+import { CreateSessionResponse } from "../../../generated/definitions/payment-ecommerce/CreateSessionResponse";
 import { getBrowserInfoTask, getEMVCompliantColorDepth } from "./checkHelper";
 import {
   apiPaymentEcommerceCalculateFeesClientWithRetry,
   apiPaymentEcommerceClient,
   apiPaymentTransactionsClient,
 } from "./client";
-import { CreateSessionResponse } from "../../../generated/definitions/payment-ecommerce/CreateSessionResponse";
 
 export const getEcommercePaymentInfoTask = (
   rptId: RptId,
