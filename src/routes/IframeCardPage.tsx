@@ -12,7 +12,11 @@ import PageContainer from "../components/PageContent/PageContainer";
 import IframeCardForm from "../features/payment/components/IframeCardForm/IframeCardForm";
 import { PaymentMethod } from "../features/payment/models/paymentModel";
 import { useAppDispatch } from "../redux/hooks/hooks";
-import { activatePayment, calculateFees } from "../utils/api/helper";
+import {
+  activatePayment,
+  calculateFees,
+  retrieveCardData,
+} from "../utils/api/helper";
 import { ErrorsType } from "../utils/errors/checkErrorsModel";
 import {
   getReCaptchaKey,
@@ -23,6 +27,7 @@ import {
 import { NewTransactionResponse } from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { CalculateFeeResponse } from "../../generated/definitions/payment-ecommerce/CalculateFeeResponse";
 import { Bundle } from "../../generated/definitions/payment-ecommerce/Bundle";
+import { SessionPaymentMethodResponse } from "../../generated/definitions/payment-ecommerce/SessionPaymentMethodResponse";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function InputCardPage() {
@@ -31,7 +36,7 @@ export default function InputCardPage() {
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
   // Is It allowed to store the bin temporary?
-  const [bin, setBin] = React.useState("");
+  // const [bin, setBin] = React.useState("");
   const [hideCancelButton, setHideCancelButton] = React.useState(false);
   const ref = React.useRef<ReCAPTCHA>(null);
   const dispatch = useAppDispatch();
@@ -56,7 +61,22 @@ export default function InputCardPage() {
     ref.current?.reset();
   };
 
-  const onResponseActivate = (bin: string) =>
+  const retrievePaymentSession = (paymentMethodId: string, sessionId: string) =>
+    retrieveCardData({
+      paymentId: paymentMethodId,
+      sessionId,
+      onError,
+      onResponseSessionPaymentMethod: (resp) => {
+        pipe(
+          resp,
+          SessionPaymentMethodResponse.decode,
+          E.map((resp) => getFees(resp.bin)),
+          E.mapLeft(() => onError(ErrorsType.GENERIC_ERROR))
+        );
+      },
+    });
+
+  const getFees = (bin: string) =>
     calculateFees({
       paymentId:
         (
@@ -93,40 +113,51 @@ export default function InputCardPage() {
       },
     });
 
-  const onSubmit = React.useCallback(
-    async (bin: string) => {
-      setLoading(true);
-      setBin(bin);
-      const recaptchaResponse = await ref.current?.executeAsync();
-      const token = pipe(
-        recaptchaResponse,
-        O.fromNullable,
-        O.getOrElse(() => "")
+  const onSubmit = React.useCallback(async () => {
+    /* const cardData = {
+          brand: cardValidator.number(wallet.number).card?.type || "",
+          expDate: wallet.expirationDate,
+          cardHolderName: wallet.name,
+          cvv: wallet.cvv,
+          pan: wallet.number,
+        };
+        dispatch(setCardData(cardData)); */
+    setLoading(true);
+    const recaptchaResponse = await ref.current?.executeAsync();
+    const token = pipe(
+      recaptchaResponse,
+      O.fromNullable,
+      O.getOrElse(() => "")
+    );
+    const transactionId = (
+      getSessionItem(SessionItems.transaction) as
+        | NewTransactionResponse
+        | undefined
+    )?.transactionId;
+    // const bin = cardData.pan.substring(0, 6);
+    // If I want to change the card data but I have already activated the payment
+    if (transactionId) {
+      void retrievePaymentSession(
+        (
+          getSessionItem(SessionItems.paymentMethod) as
+            | PaymentMethod
+            | undefined
+        )?.paymentMethodId || "",
+        "sessionId"
       );
-      const transactionId = (
-        getSessionItem(SessionItems.transaction) as
-          | NewTransactionResponse
-          | undefined
-      )?.transactionId;
-      // If I want to change the card data but I have already activated the payment
-      if (transactionId) {
-        void onResponseActivate(bin);
-      } else {
-        await activatePayment({
-          bin,
-          token,
-          onResponseActivate,
-          onErrorActivate: onError,
-        });
-      }
-    },
-    [ref, error]
-  );
+    } else {
+      await activatePayment({
+        token,
+        onResponseActivate: retrievePaymentSession,
+        onErrorActivate: onError,
+      });
+    }
+  }, [ref, error]);
 
   const onRetry = React.useCallback(() => {
     setErrorModalOpen(false);
-    void onSubmit(bin);
-  }, [bin, error]);
+    void onSubmit();
+  }, [error]);
 
   const onCancel = () => navigate(-1);
   return (

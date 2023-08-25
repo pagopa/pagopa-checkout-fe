@@ -52,6 +52,7 @@ import disclaimerIcon from "../assets/images/disclaimer.svg";
 import { NewTransactionResponse } from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { Bundle } from "../../generated/definitions/payment-ecommerce/Bundle";
 import { CalculateFeeResponse } from "../../generated/definitions/payment-ecommerce/CalculateFeeResponse";
+import { SessionPaymentMethodResponse } from "../../generated/definitions/payment-ecommerce/SessionPaymentMethodResponse";
 import { CheckoutRoutes } from "./models/routeModel";
 
 const defaultStyle = {
@@ -61,18 +62,6 @@ const defaultStyle = {
   borderColor: "divider",
   pt: 1,
   pb: 1,
-};
-
-// we don't need anymore the manage the cardData information FE side
-// I removed the related redux state
-// the dummy one following is temporary declared and need to be retrieved
-// in a proper way via api call
-const cardData = {
-  brand: "",
-  cvv: "",
-  pan: "",
-  cardHolderName: "",
-  expDate: "",
 };
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
@@ -112,6 +101,10 @@ export default function PaymentCheckPage() {
         .map((p) => p.amount)
         .reduce((sum, current) => sum + current, 0)
     ) + Number(pspSelected?.taxPayerFee || 0);
+
+  const sessionPaymentMethodResponse = getSessionItem(
+    SessionItems.sessionPaymentMethod
+  ) as SessionPaymentMethodResponse;
 
   React.useEffect(() => {
     const onBrowserBackEvent = (e: any) => {
@@ -163,12 +156,12 @@ export default function PaymentCheckPage() {
         {
           transaction,
           cardData: {
-            brand: cardData?.brand || "",
-            cvv: cardData?.cvv || "",
-            pan: cardData?.pan || "",
-            holderName: cardData?.cardHolderName || "",
+            brand: sessionPaymentMethodResponse?.brand || "",
+            cvv: "",
+            pan: "",
+            holderName: "",
             expiryDate: pipe(
-              parseDate(cardData?.expDate),
+              parseDate(sessionPaymentMethodResponse?.expiringDate),
               O.getOrElse(() => "")
             ),
           },
@@ -216,12 +209,14 @@ export default function PaymentCheckPage() {
     if (paymentMethod) {
       void calculateFees({
         paymentId: paymentMethod?.paymentMethodId,
-        bin: cardData?.pan.substring(0, 6),
+        bin: sessionPaymentMethodResponse?.bin,
         onError,
         onResponsePsp: onPspEditResponse,
       });
     }
   };
+
+  const cardHolderName = "Card Holder";
 
   const updatePSP = (psp: Bundle) => {
     setDrawerOpen(false);
@@ -266,12 +261,15 @@ export default function PaymentCheckPage() {
       <FieldContainer
         titleVariant="sidenav"
         bodyVariant="body2"
-        title={`· · · · ${cardData.pan.slice(-4)}`}
-        body={`${cardData.expDate.slice(0, 2)}/${cardData.expDate.slice(
-          3,
-          5
-        )} · ${cardData.cardHolderName}`}
-        icon={<WalletIcon brand={cardData.brand || ""} />}
+        title={`· · · · ${sessionPaymentMethodResponse.lastFourDigits}`}
+        body={`${sessionPaymentMethodResponse.expiringDate.slice(
+          0,
+          2
+        )}/${sessionPaymentMethodResponse.expiringDate.slice(
+          4,
+          6
+        )} · ${cardHolderName}`}
+        icon={<WalletIcon brand={sessionPaymentMethodResponse.brand || ""} />}
         sx={{
           border: "1px solid",
           borderColor: "divider",

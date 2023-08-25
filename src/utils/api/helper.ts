@@ -169,14 +169,12 @@ export const getEcommercePaymentInfoTask = (
   );
 
 export const activatePayment = async ({
-  bin,
   token,
   onResponseActivate,
   onErrorActivate,
 }: {
-  bin: string;
   token: string;
-  onResponseActivate: (bin: string) => void;
+  onResponseActivate: (paymentMethodId: string, sessionId: string) => void;
   onErrorActivate: (e: string) => void;
 }) => {
   const noticeInfo = getSessionItem(SessionItems.noticeInfo) as
@@ -190,6 +188,10 @@ export const activatePayment = async ({
     | undefined;
   const cartInfo = getSessionItem(SessionItems.cart) as Cart | undefined;
   const rptId: RptId = `${noticeInfo?.cf}${noticeInfo?.billCode}` as RptId;
+  const paymentMethod: PaymentMethod = getSessionItem(
+    SessionItems.paymentMethod
+  ) as PaymentMethod;
+  const sessionId: string = "sessionId";
   pipe(
     PaymentRequestsGetResponse.decode(paymentInfo),
     E.fold(
@@ -209,7 +211,7 @@ export const activatePayment = async ({
             },
             (res) => async () => {
               setSessionItem(SessionItems.transaction, res);
-              onResponseActivate(bin);
+              onResponseActivate(paymentMethod.paymentMethodId, sessionId);
             }
           )
         )()
@@ -359,6 +361,86 @@ const getPaymentNotices = (
       },
     ])
   );
+
+// ->Promise<Either<string,SessionPaymentMethodResponse>>
+export const retrieveCardData = async ({
+  paymentId,
+  sessionId,
+  onError,
+  onResponseSessionPaymentMethod,
+}: {
+  paymentId: string;
+  sessionId: string;
+  onError: (e: string) => void;
+  onResponseSessionPaymentMethod: (r: any) => void;
+}) => {
+  /*
+  const transactionId = pipe(
+    getSessionItem(SessionItems.transaction) as NewTransactionResponse,
+    O.fromNullable,
+    O.map((transaction) => transaction.transactionId),
+    O.getOrElse(() => "")
+  );
+
+  const bearerAuth = pipe(
+    getSessionItem(SessionItems.transaction) as NewTransactionResponse,
+    O.fromNullable,
+    O.chain((transaction) => O.fromNullable(transaction.authToken)),
+    O.getOrElse(() => "")
+  );
+
+  mixpanel.track(PAYMENT_PSPLIST_INIT.value, {
+    EVENT_ID: PAYMENT_PSPLIST_INIT.value,
+  });
+  */
+  const sessionPaymentMethod = await pipe(
+    TE.tryCatch(
+      () =>
+        apiPaymentEcommerceClient.getSessionPaymentMethod({
+          id: paymentId,
+          sessionId,
+        }),
+      (_e) => {
+        onError(ErrorsType.CONNECTION);
+        mixpanel.track(PAYMENT_PSPLIST_NET_ERR.value, {
+          EVENT_ID: PAYMENT_PSPLIST_NET_ERR.value,
+        });
+        return toError;
+      }
+    ),
+    TE.fold(
+      (_r) => async () => {
+        onError(ErrorsType.SERVER);
+        mixpanel.track(PAYMENT_PSPLIST_SVR_ERR.value, {
+          EVENT_ID: PAYMENT_PSPLIST_SVR_ERR.value,
+        });
+        return {};
+      },
+      (myResExt) => async () =>
+        pipe(
+          myResExt,
+          E.fold(
+            () => [],
+            (myRes) => {
+              if (myRes?.status === 200) {
+                const sessionPaymentMethodResponse = myRes?.value;
+                setSessionItem(
+                  SessionItems.sessionPaymentMethod,
+                  sessionPaymentMethodResponse
+                );
+                return sessionPaymentMethodResponse;
+              } else {
+                onError(ErrorsType.GENERIC_ERROR);
+                return {};
+              }
+            }
+          )
+        )
+    )
+  )();
+
+  onResponseSessionPaymentMethod(sessionPaymentMethod);
+};
 
 // -> Promise<Either<string, BundleOptions>>
 export const calculateFees = async ({
