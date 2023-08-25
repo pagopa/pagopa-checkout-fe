@@ -177,7 +177,7 @@ export default function IframeCardForm(props: Props) {
             | PaymentMethod
             | undefined
         )?.paymentMethodId || "",
-        getSessionItem(SessionItems.sessiondId) as string
+        getSessionItem(SessionItems.sessionId) as string
       );
     } else {
       await activatePayment({
@@ -202,7 +202,7 @@ export default function IframeCardForm(props: Props) {
             }
           );
           const body = (await response.json()) as BuildResp;
-          setSessionItem(SessionItems.sessiondId, body.sessionId);
+          setSessionItem(SessionItems.sessionId, body.sessionId);
           setForm(body);
         } catch (e) {
           onError(ErrorsType.GENERIC_ERROR);

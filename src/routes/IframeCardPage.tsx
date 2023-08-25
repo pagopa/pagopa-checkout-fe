@@ -143,7 +143,7 @@ export default function InputCardPage() {
             | PaymentMethod
             | undefined
         )?.paymentMethodId || "",
-        getSessionItem(SessionItems.sessiondId) as string
+        getSessionItem(SessionItems.sessionId) as string
       );
     } else {
       await activatePayment({

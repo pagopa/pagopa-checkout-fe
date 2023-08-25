@@ -191,7 +191,7 @@ export const activatePayment = async ({
   const paymentMethod: PaymentMethod = getSessionItem(
     SessionItems.paymentMethod
   ) as PaymentMethod;
-  const sessionId: string = getSessionItem(SessionItems.sessiondId) as string;
+  const sessionId: string = getSessionItem(SessionItems.sessionId) as string;
   pipe(
     PaymentRequestsGetResponse.decode(paymentInfo),
     E.fold(
