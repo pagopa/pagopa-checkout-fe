@@ -262,13 +262,7 @@ export default function PaymentCheckPage() {
         titleVariant="sidenav"
         bodyVariant="body2"
         title={`· · · · ${sessionPaymentMethodResponse.lastFourDigits}`}
-        body={`${sessionPaymentMethodResponse.expiringDate.slice(
-          0,
-          2
-        )}/${sessionPaymentMethodResponse.expiringDate.slice(
-          4,
-          6
-        )} · ${cardHolderName}`}
+        body={`${sessionPaymentMethodResponse.expiringDate} · ${cardHolderName}`}
         icon={<WalletIcon brand={sessionPaymentMethodResponse.brand || ""} />}
         sx={{
           border: "1px solid",

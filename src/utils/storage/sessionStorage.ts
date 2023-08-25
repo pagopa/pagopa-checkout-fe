@@ -21,6 +21,7 @@ export enum SessionItems {
   cart = "cart",
   transaction = "transaction",
   sessionPaymentMethod = "sessionPayment",
+  sessiondId = "sessionId",
 }
 const isParsable = (item: SessionItems) =>
   !(item === SessionItems.sessionToken || item === SessionItems.useremail);
