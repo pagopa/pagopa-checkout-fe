@@ -1,5 +1,4 @@
 import { Box } from "@mui/material";
-import cardValidator from "card-validator";
 import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useNavigate } from "react-router-dom";
@@ -9,11 +8,11 @@ import { pipe } from "fp-ts/function";
 import { setThreshold } from "../redux/slices/threshold";
 import ErrorModal from "../components/modals/ErrorModal";
 import PageContainer from "../components/PageContent/PageContainer";
-import { InputCardForm } from "../features/payment/components/InputCardForm/InputCardForm";
+// import { InputCardForm } from "../features/payment/components/InputCardForm/InputCardForm";
+import IframeCardForm from "../features/payment/components/IframeCardForm/IframeCardForm";
 import { PaymentMethod } from "../features/payment/models/paymentModel";
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { activatePayment, calculateFees } from "../utils/api/helper";
-import { InputCardFormFields } from "../features/payment/models/paymentModel";
 import { ErrorsType } from "../utils/errors/checkErrorsModel";
 import {
   getReCaptchaKey,
@@ -31,7 +30,8 @@ export default function InputCardPage() {
   const [loading, setLoading] = React.useState(false);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
-  const [wallet] = React.useState<InputCardFormFields>();
+  // Is It allowed to store the bin temporary?
+  const [bin, setBin] = React.useState("");
   const [hideCancelButton, setHideCancelButton] = React.useState(false);
   const ref = React.useRef<ReCAPTCHA>(null);
   const dispatch = useAppDispatch();
@@ -94,15 +94,9 @@ export default function InputCardPage() {
     });
 
   const onSubmit = React.useCallback(
-    async (wallet: InputCardFormFields) => {
-      const cardData = {
-        brand: cardValidator.number(wallet.number).card?.type || "",
-        expDate: wallet.expirationDate,
-        cardHolderName: wallet.name,
-        cvv: wallet.cvv,
-        pan: wallet.number,
-      };
+    async (bin: string) => {
       setLoading(true);
+      setBin(bin);
       const recaptchaResponse = await ref.current?.executeAsync();
       const token = pipe(
         recaptchaResponse,
@@ -114,7 +108,6 @@ export default function InputCardPage() {
           | NewTransactionResponse
           | undefined
       )?.transactionId;
-      const bin = cardData.pan.substring(0, 6);
       // If I want to change the card data but I have already activated the payment
       if (transactionId) {
         void onResponseActivate(bin);
@@ -132,15 +125,14 @@ export default function InputCardPage() {
 
   const onRetry = React.useCallback(() => {
     setErrorModalOpen(false);
-    // it's useless without a setWallet
-    void onSubmit(wallet as InputCardFormFields);
-  }, [wallet, error]);
+    void onSubmit(bin);
+  }, [bin, error]);
 
   const onCancel = () => navigate(-1);
   return (
     <PageContainer title="inputCardPage.title">
       <Box sx={{ mt: 6 }}>
-        <InputCardForm
+        <IframeCardForm
           onCancel={onCancel}
           onSubmit={onSubmit}
           hideCancel={hideCancelButton}

@@ -34,7 +34,6 @@ import {
   PaymentMethod,
 } from "../features/payment/models/paymentModel";
 import { useAppSelector } from "../redux/hooks/hooks";
-import { selectCardData } from "../redux/slices/cardData";
 import {
   cancelPayment,
   parseDate,
@@ -64,6 +63,18 @@ const defaultStyle = {
   pb: 1,
 };
 
+// we don't need anymore the manage the cardData information FE side
+// I removed the related redux state
+// the dummy one following is temporary declared and need to be retrieved
+// in a proper way via api call
+const cardData = {
+  brand: "",
+  cvv: "",
+  pan: "",
+  cardHolderName: "",
+  expDate: "",
+};
+
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export default function PaymentCheckPage() {
   const { t } = useTranslation();
@@ -81,7 +92,6 @@ export default function PaymentCheckPage() {
   const [userCancelRedirect, setUserCancelRedirect] = React.useState(false);
   const [errorKOPage, setErrorKOPage] = React.useState("/");
   const [error, setError] = React.useState("");
-  const cardData = useAppSelector(selectCardData);
   const threshold = useAppSelector(selectThreshold);
   const paymentMethod = getSessionItem(SessionItems.paymentMethod) as
     | PaymentMethod
