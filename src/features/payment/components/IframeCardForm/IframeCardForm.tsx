@@ -2,12 +2,7 @@ import React from "react";
 import { Box } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { npgSessionsFields } from "../../../../utils/api/helper";
-import {
-  getSessionItem,
-  SessionItems,
-} from "../../../../utils/storage/sessionStorage";
 import { FormButtons } from "../../../../components/FormButtons/FormButtons";
-import { PaymentMethod } from "../../../../features/payment/models/paymentModel";
 import { Field, RenderField } from "./IframeCardField";
 
 interface Props {
@@ -165,7 +160,7 @@ export default function IframeCardForm(props: Props) {
         setBuildInstance(newBuild);
       };
 
-      const onError = (e: string) => {
+      const onError = (_e: string) => {
         // TO-DO
       };
 
