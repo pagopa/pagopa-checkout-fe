@@ -89,6 +89,7 @@ import {
   apiPaymentEcommerceClient,
   apiPaymentTransactionsClient,
 } from "./client";
+import { CreateSessionResponse } from "../../../generated/definitions/payment-ecommerce/CreateSessionResponse";
 
 export const getEcommercePaymentInfoTask = (
   rptId: RptId,
@@ -1043,7 +1044,7 @@ const getBrandByBrandCardValidator = (
 
 export const npgSessionsFields = async (
   onError: (e: string) => void,
-  onResponse: (data: any) => void
+  onResponse: (data: CreateSessionResponse) => void
 ) =>
   await pipe(
     TE.tryCatch(

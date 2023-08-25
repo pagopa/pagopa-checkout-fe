@@ -3,7 +3,8 @@ import { Box } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { npgSessionsFields } from "../../../../utils/api/helper";
 import { FormButtons } from "../../../../components/FormButtons/FormButtons";
-import { Field, RenderField } from "./IframeCardField";
+import { CreateSessionResponse } from "../../../../../generated/definitions/payment-ecommerce/CreateSessionResponse";
+import { RenderField } from "./IframeCardField";
 
 interface Props {
   loading?: boolean;
@@ -16,16 +17,6 @@ interface FieldFormStatus {
   isValid: boolean;
   errorCode: null | string;
   errorMessage: null | string;
-}
-
-interface BuildResp {
-  sessionId: string;
-  paymentMethodData: PaymentMethodData;
-}
-
-interface PaymentMethodData {
-  paymentMethod: string;
-  form: Array<Field>;
 }
 
 export enum IdFields {
@@ -51,7 +42,7 @@ Object.values(IdFields).forEach((k) => {
 export default function IframeCardForm(props: Props) {
   const { loading = true, onCancel, hideCancel } = props;
   const [error, setError] = React.useState(false);
-  const [form, setForm] = React.useState<BuildResp>();
+  const [form, setForm] = React.useState<CreateSessionResponse>();
   const [spinner, setSpinner] = React.useState(loading);
   const [enabledForm, setEnabledForm] = React.useState(false);
   // this dummy state is only used to permorm a component udpate, not the best solution but works
@@ -66,7 +57,7 @@ export default function IframeCardForm(props: Props) {
   React.useEffect(() => {
     if (!form) {
       const { hostname, protocol, port } = window.location;
-      const onResponse = (body: any) => {
+      const onResponse = (body: CreateSessionResponse) => {
         setForm(body);
 
         // THIS is mandatory cause the Build class is defined in the external library called NPG SDK
