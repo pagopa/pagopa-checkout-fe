@@ -75,7 +75,6 @@ export default function IframeCardForm(props: Props) {
   const { onCancel, hideCancel } = props;
   const navigate = useNavigate();
   const [loading, setLoading] = React.useState(false);
-  const [setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
   const [form, setForm] = React.useState<BuildResp>();
   const [spinner, setSpinner] = React.useState(loading);
