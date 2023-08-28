@@ -1,4 +1,10 @@
-import { Box, FormControl, FormHelperText, InputLabel } from "@mui/material";
+import {
+  Box,
+  FormControl,
+  FormHelperText,
+  InputLabel,
+  useTheme,
+} from "@mui/material";
 import { SxProps } from "@mui/system";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -67,19 +73,13 @@ export function RenderField(props: Props) {
   );
 }
 
-const COLORS = {
-  LABEL: "#5c6f82",
-  BOX: "#c4c4c4",
-  VALID: "#0073e6",
-  INVALID: "#d85757",
-  HOVER: "#17324D",
-};
-
 // Function to calculate border styles based on validity
-const borderStyles = (isValid: boolean | undefined) => {
+const useBorderStyles = (isValid: boolean | undefined) => {
+  const { palette } = useTheme();
+
   // If validity is defined, determine colors for valid or invalid state
   if (isValid !== undefined) {
-    const validityColor = isValid ? COLORS.VALID : COLORS.INVALID;
+    const validityColor = isValid ? palette.primary.main : palette.error.dark;
     return {
       labelColor: validityColor,
       boxColor: validityColor,
@@ -90,15 +90,15 @@ const borderStyles = (isValid: boolean | undefined) => {
 
   // Default styles for undefined validity (neutral state)
   return {
-    labelColor: COLORS.LABEL,
-    boxColor: COLORS.BOX,
+    labelColor: palette.text.secondary,
+    boxColor: palette.grey[500],
     hoverShadowWidth: "1px",
-    hoverShadowColor: COLORS.HOVER,
+    hoverShadowColor: palette.text.primary,
   };
 };
 
 const useStyles = ({ isValid, style }: Props): Styles => {
-  const borderStyle = borderStyles(isValid);
+  const borderStyle = useBorderStyles(isValid);
 
   return {
     formControl: {
