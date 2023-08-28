@@ -30,7 +30,7 @@ import { Bundle } from "../../generated/definitions/payment-ecommerce/Bundle";
 import { SessionPaymentMethodResponse } from "../../generated/definitions/payment-ecommerce/SessionPaymentMethodResponse";
 import { CheckoutRoutes } from "./models/routeModel";
 
-export default function InputCardPage() {
+export default function IFrameCardPage() {
   const navigate = useNavigate();
   const [loading, setLoading] = React.useState(false);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
@@ -114,14 +114,6 @@ export default function InputCardPage() {
     });
 
   const onSubmit = React.useCallback(async () => {
-    /* const cardData = {
-          brand: cardValidator.number(wallet.number).card?.type || "",
-          expDate: wallet.expirationDate,
-          cardHolderName: wallet.name,
-          cvv: wallet.cvv,
-          pan: wallet.number,
-        };
-        dispatch(setCardData(cardData)); */
     setLoading(true);
     const recaptchaResponse = await ref.current?.executeAsync();
     const token = pipe(

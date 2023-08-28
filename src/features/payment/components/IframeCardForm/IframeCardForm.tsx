@@ -95,8 +95,6 @@ export default function IframeCardForm(props: Props) {
     setLoading(false);
     setError(m);
     setErrorModalOpen(true);
-    // eslint-disable-next-line no-console
-    console.log(errorModalOpen);
     ref.current?.reset();
   };
 
@@ -168,8 +166,6 @@ export default function IframeCardForm(props: Props) {
         | NewTransactionResponse
         | undefined
     )?.transactionId;
-    // eslint-disable-next-line no-console
-    console.log(transactionId);
     if (transactionId) {
       void retrievePaymentSession(
         (
