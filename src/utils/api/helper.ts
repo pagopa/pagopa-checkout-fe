@@ -34,6 +34,11 @@ import {
   DONATION_INIT_SESSION,
   DONATION_LIST_ERROR,
   DONATION_LIST_SUCCESS,
+  NPG_INIT,
+  NPG_NET_ERR,
+  NPG_RESP_ERROR,
+  NPG_SUCCESS,
+  NPG_SVR_ERR,
   PAYMENT_ACTION_DELETE_INIT,
   PAYMENT_ACTION_DELETE_NET_ERR,
   PAYMENT_ACTION_DELETE_RESP_ERR,
@@ -78,6 +83,7 @@ import { NewTransactionResponse } from "../../../generated/definitions/payment-e
 import { TransferListItem } from "../../../generated/definitions/payment-ecommerce/TransferListItem";
 import { Bundle } from "../../../generated/definitions/payment-ecommerce/Bundle";
 import { PaymentNoticeInfo } from "../../../generated/definitions/payment-ecommerce/PaymentNoticeInfo";
+import { CreateSessionResponse } from "../../../generated/definitions/payment-ecommerce/CreateSessionResponse";
 import { getBrowserInfoTask, getEMVCompliantColorDepth } from "./checkHelper";
 import {
   apiPaymentEcommerceCalculateFeesClientWithRetry,
@@ -1035,3 +1041,67 @@ const getBrandByBrandCardValidator = (
       return BrandEnum.UNKNOWN;
   }
 };
+
+export const npgSessionsFields = async (
+  onError: (e: string) => void,
+  onResponse: (data: CreateSessionResponse) => void
+) =>
+  await pipe(
+    TE.tryCatch(
+      () => {
+        mixpanel.track(NPG_INIT.value, {
+          EVENT_ID: NPG_INIT.value,
+        });
+        const paymentMethodId =
+          (
+            getSessionItem(SessionItems.paymentMethod) as
+              | PaymentMethod
+              | undefined
+          )?.paymentMethodId || "";
+        return apiPaymentEcommerceClient.createSession({
+          id: paymentMethodId,
+        });
+      },
+      () => {
+        mixpanel.track(NPG_NET_ERR.value, {
+          EVENT_ID: NPG_NET_ERR.value,
+        });
+        onError(NPG_NET_ERR.value);
+        return NPG_NET_ERR.value;
+      }
+    ),
+    TE.fold(
+      (err) => {
+        mixpanel.track(NPG_SVR_ERR.value, {
+          EVENT_ID: NPG_SVR_ERR.value,
+        });
+        return TE.left(err);
+      },
+      (myResExt) => async () =>
+        pipe(
+          myResExt,
+          E.fold(
+            () => {
+              mixpanel.track(NPG_RESP_ERROR.value, {
+                EVENT_ID: NPG_RESP_ERROR.value,
+              });
+              return {};
+            },
+            (myRes) => {
+              if (myRes.status === 200) {
+                mixpanel.track(NPG_SUCCESS.value, {
+                  EVENT_ID: NPG_SUCCESS.value,
+                });
+                onResponse(myRes.value);
+                return myRes;
+              } else {
+                mixpanel.track(NPG_RESP_ERROR.value, {
+                  EVENT_ID: NPG_RESP_ERROR.value,
+                });
+                return {};
+              }
+            }
+          )
+        )
+    )
+  )();

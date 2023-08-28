@@ -1,17 +1,12 @@
 import React from "react";
 import { Box, FormControl, FormHelperText, InputLabel } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { Field } from "../../../../../generated/definitions/payment-ecommerce/Field";
 import { IdFields } from "./IframeCardForm";
 
-export interface Field {
-  type: string;
-  id: string;
-  src: string;
-  class: string;
-}
 interface Props {
   label: string;
-  fields?: Array<Field>;
+  fields?: ReadonlyArray<Field>;
   id?: keyof typeof IdFields;
   style?: React.CSSProperties;
   errorCode?: string | null;
@@ -19,7 +14,7 @@ interface Props {
 }
 
 const getSrcFromFieldsByID = (
-  fields: Array<Field>,
+  fields: ReadonlyArray<Field>,
   id: keyof typeof IdFields
 ) => fields.find((field) => field.id === id)?.src;
 
