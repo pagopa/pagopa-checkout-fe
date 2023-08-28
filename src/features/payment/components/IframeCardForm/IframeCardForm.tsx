@@ -9,7 +9,6 @@ import {
 } from "../../../../utils/storage/sessionStorage";
 import { FormButtons } from "../../../../components/FormButtons/FormButtons";
 import { PaymentMethod } from "../../../../features/payment/models/paymentModel";
-import { Field, RenderField } from "./IframeCardField";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useNavigate } from "react-router-dom";
 import * as O from "fp-ts/Option";
@@ -19,9 +18,9 @@ import {
   activatePayment,
   calculateFees,
   npgSessionsFields,
-  retrieveCardData
+  retrieveCardData,
 } from "../../../../utils/api/helper";
-import { CreateSessionResponse, SessionPaymentMethodResponse } from "../../../../../generated/definitions/payment-ecommerce/SessionPaymentMethodResponse";
+import { SessionPaymentMethodResponse } from "../../../../../generated/definitions/payment-ecommerce/SessionPaymentMethodResponse";
 import { CheckoutRoutes } from "../../../../routes/models/routeModel";
 import { Bundle } from "../../../../../generated/definitions/payment-ecommerce/Bundle";
 import { CalculateFeeResponse } from "../../../../../generated/definitions/payment-ecommerce/CalculateFeeResponse";
@@ -29,6 +28,7 @@ import { ErrorsType } from "../../../../utils/errors/checkErrorsModel";
 import { useAppDispatch } from "../../../../redux/hooks/hooks";
 import { setThreshold } from "../../../../redux/slices/threshold";
 import { RenderField } from "./IframeCardField";
+import { CreateSessionResponse } from "../../../../../generated/definitions/payment-ecommerce/CreateSessionResponse";
 
 interface Props {
   loading?: boolean;
@@ -64,7 +64,7 @@ Object.values(IdFields).forEach((k) => {
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export default function IframeCardForm(props: Props) {
-  const { loading = true, onCancel, hideCancel } = props;
+  const { onCancel, hideCancel } = props;
   const navigate = useNavigate();
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState("");
@@ -240,9 +240,7 @@ export default function IframeCardForm(props: Props) {
           onBuildFlowStateChange(
             _evtData: any,
             state:
-              | "
-            
-            PAYMENT"
+              | "READY_FOR_PAYMENT"
               | "REDIRECTED_TO_EXTERNAL_DOMAIN"
               | "PAYMENT_COMPLETE"
           ) {
