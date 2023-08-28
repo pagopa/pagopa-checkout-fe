@@ -1052,14 +1052,14 @@ export const npgSessionsFields = async (
         mixpanel.track(NPG_INIT.value, {
           EVENT_ID: NPG_INIT.value,
         });
-        const paymentId =
+        const paymentMethodId =
           (
             getSessionItem(SessionItems.paymentMethod) as
               | PaymentMethod
               | undefined
           )?.paymentMethodId || "";
         return apiPaymentEcommerceClient.createSession({
-          id: paymentId,
+          id: paymentMethodId,
         });
       },
       () => {
