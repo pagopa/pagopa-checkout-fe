@@ -6,7 +6,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { SxProps } from "@mui/system";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Field } from "../../../../../generated/definitions/payment-ecommerce/Field";
 import { IdFields } from "./types";
@@ -33,35 +33,73 @@ interface Styles {
   iframe: React.CSSProperties;
 }
 
+const HiddenFocusProxy = ({ id }: { id: string }) => (
+  <div
+    id={`proxy_${id}`}
+    style={{
+      position: "absolute",
+      opacity: 0,
+      width: "100%",
+      height: "100%",
+      zIndex: 3,
+      cursor: "vertical-text",
+    }}
+    tabIndex={0}
+  />
+);
+
 export function RenderField(props: Props) {
-  if (!props.fields) {
-    return <Box></Box>;
+  if (!props.fields || !props.id) {
+    return <Box />;
   }
-  if (!props.id) {
-    return <Box></Box>;
-  }
+
+  const [active, setActive] = useState<boolean>(false);
 
   const { fields, id, errorCode, errorMessage, label } = props;
   const { t } = useTranslation();
-  const styles = useStyles(props);
+  const styles = useStyles(props, active);
 
   // Find src based on ID
   const src = getSrcFromFieldsByID(fields, id);
   if (!src) {
-    return <Box></Box>;
+    return <Box />;
   }
+
+  // Adding focus and blur event listeners for focus management
+  useEffect(() => {
+    const frameFocus = () => {
+      document.getElementById(`frame_${id}`)?.focus();
+      setActive(true);
+    };
+    const frameLoseFocus = () => setActive(false);
+
+    const hiddenFocusProxy = document.getElementById(`proxy_${id}`);
+
+    hiddenFocusProxy?.addEventListener("focus", frameFocus);
+    window?.addEventListener("focus", frameLoseFocus);
+
+    return () => {
+      hiddenFocusProxy?.removeEventListener("focus", frameFocus);
+      window?.removeEventListener("focus", frameLoseFocus);
+    };
+  }, []);
 
   return (
     <FormControl sx={styles.formControl}>
-      {/* Input label */}
+      <HiddenFocusProxy id={id} />
       <InputLabel sx={styles.label} margin="dense" shrink>
         {label}
       </InputLabel>
-      {/* Box with embedded content */}
       <Box sx={styles.box}>
-        {src && <iframe src={src} style={styles.iframe} />}
+        {src && (
+          <iframe
+            src={src}
+            style={styles.iframe}
+            id={`frame_${id}`}
+            tabIndex={-1}
+          />
+        )}
       </Box>
-      {/* Error message or code */}
       {(errorMessage || errorCode) && (
         <FormHelperText required error>
           {t(`errorMessageNPG.${errorCode}`, {
@@ -73,38 +111,21 @@ export function RenderField(props: Props) {
   );
 }
 
-// Function to calculate border styles based on validity
-const useBorderStyles = (isValid: boolean | undefined) => {
-  const { palette } = useTheme();
-
-  // If validity is defined, determine colors for valid or invalid state
-  if (isValid !== undefined) {
-    const validityColor = isValid ? palette.primary.main : palette.error.dark;
-    return {
-      labelColor: validityColor,
-      boxColor: validityColor,
-      hoverShadowWidth: "2px",
-      hoverShadowColor: validityColor,
-    };
-  }
-
-  // Default styles for undefined validity (neutral state)
-  return {
-    labelColor: palette.text.secondary,
-    boxColor: palette.grey[500],
-    hoverShadowWidth: "1px",
-    hoverShadowColor: palette.text.primary,
-  };
-};
-
-const useStyles = ({ isValid, style }: Props): Styles => {
-  const borderStyle = useBorderStyles(isValid);
+const useStyles = (props: Props, active: boolean | undefined): Styles => {
+  const { style } = props;
+  const borderStyle = useBorderStyles(props, active);
 
   return {
     formControl: {
       width: "100%",
       margin: "dense",
       marginY: 3,
+      borderRadius: "4px",
+      boxShadow: `0 0 0 1px ${borderStyle.boxColor}`,
+      transition: "box-shadow 0.1s ease-in",
+      "&:hover": {
+        boxShadow: `0 0 0 ${borderStyle.hoverShadowWidth} ${borderStyle.hoverShadowColor}`,
+      },
     },
     label: {
       background: "#fff",
@@ -112,14 +133,8 @@ const useStyles = ({ isValid, style }: Props): Styles => {
       color: borderStyle.labelColor,
     },
     box: {
-      borderRadius: "4px",
       padding: 2,
       position: "relative",
-      boxShadow: `0 0 0 1px ${borderStyle.boxColor}`,
-      transition: "box-shadow 0.1s ease-in",
-      "&:hover": {
-        boxShadow: `0 0 0 ${borderStyle.hoverShadowWidth} ${borderStyle.hoverShadowColor}`,
-      },
     },
     iframe: {
       display: "block",
@@ -128,5 +143,40 @@ const useStyles = ({ isValid, style }: Props): Styles => {
       width: "100%",
       ...(style || {}),
     },
+  };
+};
+
+// Function to calculate border styles based on validity and active focus
+const useBorderStyles = ({ isValid }: Props, active: boolean | undefined) => {
+  const { palette } = useTheme();
+  const errorColor = palette.error.dark;
+  const focusColor = palette.primary.main;
+
+  // Styles for active focus
+  if (active) {
+    return {
+      labelColor: focusColor,
+      boxColor: focusColor,
+      hoverShadowWidth: "2px",
+      hoverShadowColor: focusColor,
+    };
+  }
+
+  // Default styles for neutral state or undefined validity
+  if (isValid === undefined) {
+    return {
+      labelColor: palette.text.secondary,
+      boxColor: palette.grey[500],
+      hoverShadowWidth: "1px",
+      hoverShadowColor: palette.text.primary,
+    };
+  }
+
+  // Inactive focus
+  return {
+    labelColor: isValid ? palette.text.secondary : errorColor,
+    boxColor: isValid ? palette.grey[500] : errorColor,
+    hoverShadowWidth: "1px",
+    hoverShadowColor: palette.text.primary,
   };
 };
