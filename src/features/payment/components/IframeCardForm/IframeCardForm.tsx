@@ -75,7 +75,7 @@ export default function IframeCardForm(props: Props) {
   const { onCancel, hideCancel } = props;
   const navigate = useNavigate();
   const [loading, setLoading] = React.useState(false);
-  const [errorModalOpen, setErrorModalOpen] = React.useState(false);
+  const [setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
   const [form, setForm] = React.useState<BuildResp>();
   const [spinner, setSpinner] = React.useState(loading);
@@ -94,7 +94,9 @@ export default function IframeCardForm(props: Props) {
   const onError = (m: string) => {
     setLoading(false);
     setError(m);
-    setErrorModalOpen(true);
+    // the on error function as defined till now should open the error modal.
+    // By the way we are developing the happy path and we can face this issue when we manage the error path
+    // setErrorModalOpen(true);
     ref.current?.reset();
   };
 
