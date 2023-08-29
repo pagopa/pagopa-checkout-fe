@@ -37,67 +37,6 @@ export default function IFrameCardPage() {
     );
   }, []);
 
-  /*
-  const onError = (m: string) => {
-    setLoading(false);
-    setError(m);
-    setErrorModalOpen(true);
-    ref.current?.reset();
-  };
-  
-
-  const retrievePaymentSession = (paymentMethodId: string, sessionId: string) =>
-    retrieveCardData({
-      paymentId: paymentMethodId,
-      sessionId,
-      onError,
-      onResponseSessionPaymentMethod: (resp) => {
-        pipe(
-          resp,
-          SessionPaymentMethodResponse.decode,
-          E.map((resp) => getFees(resp.bin)),
-          E.mapLeft(() => onError(ErrorsType.GENERIC_ERROR))
-        );
-      },
-    });
-
-  const getFees = (bin: string) =>
-    calculateFees({
-      paymentId:
-        (
-          getSessionItem(SessionItems.paymentMethod) as
-            | PaymentMethod
-            | undefined
-        )?.paymentMethodId || "",
-      bin,
-      onError,
-      onResponsePsp: (resp) => {
-        pipe(
-          resp,
-          CalculateFeeResponse.decode,
-          O.fromEither,
-          O.chain((resp) => O.fromNullable(resp.belowThreshold)),
-          O.fold(
-            () => onError(ErrorsType.GENERIC_ERROR),
-            (value) => {
-              dispatch(setThreshold({ belowThreshold: value }));
-              const firstPsp = pipe(
-                resp?.bundles,
-                O.fromNullable,
-                O.chain((sortedArray) => O.fromNullable(sortedArray[0])),
-                O.map((a) => a as Bundle),
-                O.getOrElseW(() => ({}))
-              );
-
-              setSessionItem(SessionItems.pspSelected, firstPsp);
-              setLoading(false);
-              navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
-            }
-          )
-        );
-      },
-    });
-*/
   const onCancel = () => navigate(-1);
   return (
     <PageContainer title="inputCardPage.title">
