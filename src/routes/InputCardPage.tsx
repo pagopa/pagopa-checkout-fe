@@ -120,7 +120,6 @@ export default function InputCardPage() {
         void onResponseActivate(bin);
       } else {
         await activatePayment({
-          bin,
           token,
           onResponseActivate,
           onErrorActivate: onError,

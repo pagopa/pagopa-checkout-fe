@@ -1,10 +1,34 @@
+/* eslint-disable import/order */
 import React from "react";
 import { Box } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { npgSessionsFields } from "../../../../utils/api/helper";
+import {
+  getSessionItem,
+  SessionItems,
+  setSessionItem,
+} from "../../../../utils/storage/sessionStorage";
 import { FormButtons } from "../../../../components/FormButtons/FormButtons";
-import { CreateSessionResponse } from "../../../../../generated/definitions/payment-ecommerce/CreateSessionResponse";
+import { PaymentMethod } from "../../../../features/payment/models/paymentModel";
+import ReCAPTCHA from "react-google-recaptcha";
+import { useNavigate } from "react-router-dom";
+import * as O from "fp-ts/Option";
+import { pipe } from "fp-ts/function";
+import { NewTransactionResponse } from "../../../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
+import {
+  activatePayment,
+  calculateFees,
+  npgSessionsFields,
+  retrieveCardData,
+} from "../../../../utils/api/helper";
+import { SessionPaymentMethodResponse } from "../../../../../generated/definitions/payment-ecommerce/SessionPaymentMethodResponse";
+import { CheckoutRoutes } from "../../../../routes/models/routeModel";
+import { Bundle } from "../../../../../generated/definitions/payment-ecommerce/Bundle";
+import { CalculateFeeResponse } from "../../../../../generated/definitions/payment-ecommerce/CalculateFeeResponse";
+import { ErrorsType } from "../../../../utils/errors/checkErrorsModel";
+import { useAppDispatch } from "../../../../redux/hooks/hooks";
+import { setThreshold } from "../../../../redux/slices/threshold";
 import { RenderField } from "./IframeCardField";
+import { CreateSessionResponse } from "../../../../../generated/definitions/payment-ecommerce/CreateSessionResponse";
 
 interface Props {
   loading?: boolean;
@@ -40,13 +64,17 @@ Object.values(IdFields).forEach((k) => {
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export default function IframeCardForm(props: Props) {
-  const { loading = true, onCancel, hideCancel } = props;
-  const [error, setError] = React.useState(false);
+  const { onCancel, hideCancel } = props;
+  const navigate = useNavigate();
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState("");
   const [form, setForm] = React.useState<CreateSessionResponse>();
   const [spinner, setSpinner] = React.useState(loading);
   const [enabledForm, setEnabledForm] = React.useState(false);
+  const ref = React.useRef<ReCAPTCHA>(null);
   // this dummy state is only used to permorm a component udpate, not the best solution but works
   const [, setDummyState] = React.useState(0);
+  const dispatch = useAppDispatch();
 
   const [buildInstance, setBuildInstance] = React.useState();
 
@@ -54,10 +82,106 @@ export default function IframeCardForm(props: Props) {
     fieldformStatus: Map<string, FieldFormStatus>
   ) => Array.from(fieldformStatus.values()).every((el) => el.isValid);
 
+  const onError = (m: string) => {
+    setLoading(false);
+    setError(m);
+    // the on error function as defined till now should open the error modal.
+    // By the way we are developing the happy path and we can face this issue when we manage the error path
+    // setErrorModalOpen(true);
+    ref.current?.reset();
+  };
+
+  const getFees = (bin: string) =>
+    calculateFees({
+      paymentId:
+        (
+          getSessionItem(SessionItems.paymentMethod) as
+            | PaymentMethod
+            | undefined
+        )?.paymentMethodId || "",
+      bin,
+      onError,
+      onResponsePsp: (resp) => {
+        pipe(
+          resp,
+          CalculateFeeResponse.decode,
+          O.fromEither,
+          O.chain((resp) => O.fromNullable(resp.belowThreshold)),
+          O.fold(
+            () => onError(ErrorsType.GENERIC_ERROR),
+            (value) => {
+              dispatch(setThreshold({ belowThreshold: value }));
+              const firstPsp = pipe(
+                resp?.bundles,
+                O.fromNullable,
+                O.chain((sortedArray) => O.fromNullable(sortedArray[0])),
+                O.map((a) => a as Bundle),
+                O.getOrElseW(() => ({}))
+              );
+
+              setSessionItem(SessionItems.pspSelected, firstPsp);
+              setLoading(false);
+              navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
+            }
+          )
+        );
+      },
+    });
+
+  const retrievePaymentSession = (paymentMethodId: string, sessionId: string) =>
+    retrieveCardData({
+      paymentId: paymentMethodId,
+      sessionId,
+      onError,
+      onResponseSessionPaymentMethod: (resp) => {
+        pipe(
+          resp,
+          SessionPaymentMethodResponse.decode,
+          O.fromEither,
+          O.chain((resp) => O.fromNullable(resp.bin)),
+          O.fold(
+            () => onError(ErrorsType.GENERIC_ERROR),
+            () => getFees(resp.bin)
+          )
+        );
+      },
+    });
+
+  const transaction = async () => {
+    const recaptchaResponse = await ref.current?.executeAsync();
+    const token = pipe(
+      recaptchaResponse,
+      O.fromNullable,
+      O.getOrElse(() => "")
+    );
+    const transactionId = (
+      getSessionItem(SessionItems.transaction) as
+        | NewTransactionResponse
+        | undefined
+    )?.transactionId;
+    if (transactionId) {
+      void retrievePaymentSession(
+        (
+          getSessionItem(SessionItems.paymentMethod) as
+            | PaymentMethod
+            | undefined
+        )?.paymentMethodId || "",
+        getSessionItem(SessionItems.sessionId) as string
+      );
+    } else {
+      await activatePayment({
+        token,
+        onResponseActivate: retrievePaymentSession,
+        onErrorActivate: onError,
+      });
+    }
+  };
+
   React.useEffect(() => {
     if (!form) {
       const { hostname, protocol, port } = window.location;
       const onResponse = (body: CreateSessionResponse) => {
+        setSessionItem(SessionItems.sessionId, body.sessionId);
         setForm(body);
 
         // THIS is mandatory cause the Build class is defined in the external library called NPG SDK
@@ -132,11 +256,9 @@ export default function IframeCardForm(props: Props) {
             //   the get https://{nexiDomain}/api/phoenix-0.0/psp/api/v1/build/state?sessionId={thesessionId}  },
             // console.log("onBuildFlowStateChange", evtData, state);
             if (state === "READY_FOR_PAYMENT") {
-              void (async () => {
-                // TO-DO
-              })();
+              void transaction();
             } else {
-              setError(true);
+              onError(ErrorsType.GENERIC_ERROR);
             }
           },
           cssLink: `${protocol}//${hostname}${
@@ -168,7 +290,7 @@ export default function IframeCardForm(props: Props) {
       buildInstance.confirmData(() => setSpinner(false));
     } catch (e) {
       setSpinner(false);
-      setError(true);
+      onError(ErrorsType.GENERIC_ERROR);
     }
   };
   const { t } = useTranslation();
