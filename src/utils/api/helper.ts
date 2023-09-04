@@ -394,9 +394,10 @@ export const retrieveCardData = async ({
     O.getOrElse(() => "")
   );
 
-  mixpanel.track(PAYMENT_PSPLIST_INIT.value, {
+  /*
+    mixpanel.track(PAYMENT_PSPLIST_INIT.value, {
     EVENT_ID: PAYMENT_PSPLIST_INIT.value,
-  });
+   }); */
 
   const sessionPaymentMethod = await pipe(
     TE.tryCatch(
