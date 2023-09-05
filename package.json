@@ -5,7 +5,7 @@
     "type-check": "tsc",
     "generate": "npm-run-all generate:*",
     "generate:payment-transactions-api": "rimraf generated/definitions/payment-transactions-api && shx mkdir -p generated/definitions/payment-transactions-api && gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/pagopa-functions-checkout/v1.1.2/openapi/index.yaml --no-strict --out-dir ./generated/definitions/payment-transactions-api --request-types --response-decoders --client",
-    "generate:payment-ecommerce": "rimraf generated/definitions/payment-ecommerce && shx mkdir -p generated/definitions/payment-ecommerce && gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/pagopa-infra/4b4ed539a6889d5a13f87274ced5151e91e6c654/src/domains/ecommerce-app/api/ecommerce-checkout/v1/_openapi.json.tpl --no-strict --out-dir ./generated/definitions/payment-ecommerce --request-types --response-decoders --client",
+    "generate:payment-ecommerce": "rimraf generated/definitions/payment-ecommerce && shx mkdir -p generated/definitions/payment-ecommerce && gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/pagopa-infra/main/src/domains/ecommerce-app/api/ecommerce-checkout/v1/_openapi.json.tpl --no-strict --out-dir ./generated/definitions/payment-ecommerce --request-types --response-decoders --client",
     "lint": "eslint . -c .eslintrc.js --ext .ts,.tsx",
     "lint-autofix": "eslint . -c .eslintrc.js --ext .ts,.tsx --fix",
     "prebuild": "npm-run-all generate type-check lint",
