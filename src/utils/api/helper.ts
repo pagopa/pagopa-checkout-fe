@@ -1096,8 +1096,6 @@ const expDateToString = (dateParsed: Date) =>
     );
   }; */
 
-
-
 export const npgSessionsFields = async (
   onError: (e: string) => void,
   onResponse: (data: CreateSessionResponse) => void
