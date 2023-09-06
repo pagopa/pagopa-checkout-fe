@@ -33,22 +33,23 @@ interface Styles {
   iframe: React.CSSProperties;
 }
 
-const HiddenFocusProxy = ({ id }: { id: string }) => (
+const HiddenFocusProxy = ({ id, active }: { id: string; active: boolean }) => (
   <div
     id={`proxy_${id}`}
+    aria-hidden
+    tabIndex={active ? -1 : 1}
     style={{
       position: "absolute",
       opacity: 0,
       width: "100%",
       height: "100%",
       zIndex: 3,
-      cursor: "vertical-text",
+      cursor: "text",
     }}
-    tabIndex={0}
   />
 );
 
-export function RenderField(props: Props) {
+export function IframeCardField(props: Props) {
   if (!props.fields || !props.id) {
     return <Box />;
   }
@@ -67,27 +68,36 @@ export function RenderField(props: Props) {
 
   // Adding focus and blur event listeners for focus management
   useEffect(() => {
+    const hiddenFocusProxy = document.getElementById(`proxy_${id}`);
+
     const frameFocus = () => {
+      setActive(false);
       document.getElementById(`frame_${id}`)?.focus();
       setActive(true);
     };
-    const frameLoseFocus = () => setActive(false);
 
-    const hiddenFocusProxy = document.getElementById(`proxy_${id}`);
+    const windowFocus = () => {
+      setActive(false);
+    };
 
     hiddenFocusProxy?.addEventListener("focus", frameFocus);
-    window?.addEventListener("focus", frameLoseFocus);
+    window?.addEventListener("focus", windowFocus);
 
     return () => {
       hiddenFocusProxy?.removeEventListener("focus", frameFocus);
-      window?.removeEventListener("focus", frameLoseFocus);
+      window?.removeEventListener("focus", windowFocus);
     };
   }, []);
 
   return (
     <FormControl sx={styles.formControl}>
-      <HiddenFocusProxy id={id} />
-      <InputLabel sx={styles.label} margin="dense" shrink>
+      <HiddenFocusProxy id={id} active={active} />
+      <InputLabel
+        sx={styles.label}
+        margin="dense"
+        shrink
+        htmlFor={`frame_${id}`}
+      >
         {label}
       </InputLabel>
       <Box sx={styles.box}>
@@ -96,12 +106,19 @@ export function RenderField(props: Props) {
             src={src}
             style={styles.iframe}
             id={`frame_${id}`}
+            title={label}
             tabIndex={-1}
           />
         )}
       </Box>
       {(errorMessage || errorCode) && (
-        <FormHelperText required error>
+        <FormHelperText
+          required
+          error
+          id={`frame_${id}_hint`}
+          aria-hidden={!errorMessage}
+          aria-live="assertive"
+        >
           {t(`errorMessageNPG.${errorCode}`, {
             defaultValue: errorMessage,
           })}

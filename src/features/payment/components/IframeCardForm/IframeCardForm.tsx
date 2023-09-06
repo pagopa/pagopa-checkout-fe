@@ -27,7 +27,7 @@ import { CalculateFeeResponse } from "../../../../../generated/definitions/payme
 import { ErrorsType } from "../../../../utils/errors/checkErrorsModel";
 import { useAppDispatch } from "../../../../redux/hooks/hooks";
 import { setThreshold } from "../../../../redux/slices/threshold";
-import { RenderField } from "./IframeCardField";
+import { IframeCardField } from "./IframeCardField";
 import { CreateSessionResponse } from "../../../../../generated/definitions/payment-ecommerce/CreateSessionResponse";
 import type { FieldFormStatus, FieldsFormStatus } from "./types";
 import { IdFields } from "./types";
@@ -60,7 +60,7 @@ export default function IframeCardForm(props: Props) {
   const [spinner, setSpinner] = React.useState(loading);
   const [enabledForm, setEnabledForm] = React.useState(false);
   const ref = React.useRef<ReCAPTCHA>(null);
-  // this dummy state is only used to permorm a component udpate, not the best solution but works
+  // this dummy state is only used to perform a component update, not the best solution but works
   const [, setDummyState] = React.useState(0);
   const dispatch = useAppDispatch();
 
@@ -178,7 +178,7 @@ export default function IframeCardForm(props: Props) {
         const newBuild = new Build({
           onBuildSuccess(evtData: { id: keyof typeof IdFields }) {
             const { id } = evtData;
-            // write some code to manage the successful data entering in the specifiedfield: evtData.id
+            // write some code to manage the successful data entering in the specified field: evtData.id
             if (Object.keys(IdFields).includes(id)) {
               fieldFormStatus.set(id as unknown as keyof typeof IdFields, {
                 isValid: true,
@@ -292,7 +292,7 @@ export default function IframeCardForm(props: Props) {
           <form id="iframe-card-form" onSubmit={handleSubmit}>
             <Box>
               <Box>
-                <RenderField
+                <IframeCardField
                   label={t("inputCardPage.formFields.number")}
                   fields={form?.paymentMethodData.form}
                   id={"CARD_NUMBER"}
@@ -309,7 +309,7 @@ export default function IframeCardForm(props: Props) {
                 sx={{ gap: 2 }}
               >
                 <Box>
-                  <RenderField
+                  <IframeCardField
                     label={t("inputCardPage.formFields.expirationDate")}
                     fields={form?.paymentMethodData.form}
                     id={"EXPIRATION_DATE"}
@@ -323,7 +323,7 @@ export default function IframeCardForm(props: Props) {
                   />
                 </Box>
                 <Box>
-                  <RenderField
+                  <IframeCardField
                     label={t("inputCardPage.formFields.cvv")}
                     fields={form?.paymentMethodData.form}
                     id={"SECURITY_CODE"}
@@ -336,7 +336,7 @@ export default function IframeCardForm(props: Props) {
                 </Box>
               </Box>
               <Box>
-                <RenderField
+                <IframeCardField
                   label={t("inputCardPage.formFields.name")}
                   fields={form?.paymentMethodData.form}
                   id={"CARDHOLDER_NAME"}
