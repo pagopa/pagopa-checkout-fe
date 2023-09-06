@@ -380,7 +380,6 @@ export const retrieveCardData = async ({
   onError: (e: string) => void;
   onResponseSessionPaymentMethod: (r: any) => void;
 }) => {
-  /*
   const transactionId = pipe(
     getSessionItem(SessionItems.transaction) as NewTransactionResponse,
     O.fromNullable,
@@ -395,16 +394,19 @@ export const retrieveCardData = async ({
     O.getOrElse(() => "")
   );
 
-  mixpanel.track(PAYMENT_PSPLIST_INIT.value, {
+  /*
+    mixpanel.track(PAYMENT_PSPLIST_INIT.value, {
     EVENT_ID: PAYMENT_PSPLIST_INIT.value,
-  });
-  */
+   }); */
+
   const sessionPaymentMethod = await pipe(
     TE.tryCatch(
       () =>
         apiPaymentEcommerceClient.getSessionPaymentMethod({
+          bearerAuth,
           id: paymentId,
           sessionId,
+          "x-transaction-id-from-client": transactionId,
         }),
       (_e) => {
         onError(ErrorsType.CONNECTION);
