@@ -161,6 +161,11 @@ export default function PaymentCheckPage() {
     }
   }, []);
 
+  const onCardEdit = () => {
+    window.removeEventListener("beforeunload", onBrowserUnload);
+    window.location.replace(`/${CheckoutRoutes.INSERISCI_CARTA}`);
+  };
+
   const onCancel = React.useCallback(() => {
     setCancelModalOpen(true);
   }, []);
@@ -263,7 +268,7 @@ export default function PaymentCheckPage() {
         endAdornment={
           <Button
             variant="text"
-            onClick={() => navigate(`/${CheckoutRoutes.INSERISCI_CARTA}`)}
+            onClick={onCardEdit}
             startIcon={<EditIcon />}
             disabled={isDisabled()}
             aria-label={t("ariaLabels.editCard")}

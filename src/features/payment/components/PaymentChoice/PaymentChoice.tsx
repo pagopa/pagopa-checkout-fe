@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable functional/immutable-data */
 import React from "react";
-import { useNavigate } from "react-router";
 import ClickableFieldContainer from "../../../../components/TextFormField/ClickableFieldContainer";
 import {
   PaymentMethodRoutes,
@@ -58,8 +57,6 @@ export function PaymentChoice(props: {
   paymentInstruments: Array<PaymentInstruments>;
   loading?: boolean;
 }) {
-  const navigate = useNavigate();
-
   const handleClickOnMethod = React.useCallback(
     (paymentType: TransactionMethods, paymentMethodId: string) => {
       const route: string = PaymentMethodRoutes[paymentType]?.route;
@@ -79,7 +76,8 @@ export function PaymentChoice(props: {
           });
         },
       }); */
-      navigate(`/${route}`);
+
+      window.location.assign(`/${route}`);
     },
     []
   );
