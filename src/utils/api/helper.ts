@@ -77,7 +77,6 @@ import {
   setSessionItem,
 } from "../storage/sessionStorage";
 import { AmountEuroCents } from "../../../generated/definitions/payment-ecommerce/AmountEuroCents";
-import { BrandEnum } from "../../../generated/definitions/payment-ecommerce/PaymentInstrumentDetail";
 import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-ecommerce/PaymentRequestsGetResponse";
 import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { TransferListItem } from "../../../generated/definitions/payment-ecommerce/TransferListItem";
@@ -590,16 +589,8 @@ export const calculateFees = async ({
 export const proceedToPayment = async (
   {
     transaction,
-    cardData,
   }: {
     transaction: NewTransactionResponse;
-    cardData: {
-      brand: string;
-      cvv: string;
-      pan: string;
-      expiryDate: string;
-      holderName: string;
-    };
   },
   onError: (e: string) => void,
   onResponse: (authUrl: string) => void
@@ -638,6 +629,7 @@ export const proceedToPayment = async (
     })),
     TE.toUnion
   )();
+
   const threeDSData = {
     browserJavaEnabled: navigator.javaEnabled().toString(),
     browserLanguage: navigator.language,
@@ -653,7 +645,6 @@ export const proceedToPayment = async (
       (getSessionItem(SessionItems.useremail) as string) || "",
     mobilePhone: null,
   };
-
   const authParam = {
     amount: transaction.payments
       .map((p) => p.amount)
@@ -672,12 +663,10 @@ export const proceedToPayment = async (
       (getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined)
         ?.paymentTypeCode === "CP"
         ? {
-            detailType: "card",
-            brand: getBrandByBrandCardValidator(cardData.brand),
-            cvv: cardData.cvv,
-            pan: cardData.pan,
-            expiryDate: cardData.expiryDate,
-            holderName: cardData.holderName,
+            detailType: "cards",
+            sessionId:
+              (getSessionItem(SessionItems.sessionId) as string | undefined) ||
+              "",
             threeDsData: JSON.stringify(threeDSData),
           }
         : {
@@ -1105,24 +1094,7 @@ const expDateToString = (dateParsed: Date) =>
     );
   }; */
 
-const getBrandByBrandCardValidator = (
-  brandCardValidator: string
-): BrandEnum => {
-  switch (brandCardValidator) {
-    case "visa":
-      return BrandEnum.VISA;
-    case "american-express":
-      return BrandEnum.AMEX;
-    case "maestro":
-      return BrandEnum.MAESTRO;
-    case "mastercard":
-      return BrandEnum.MASTERCARD;
-    case "diners-club":
-      return BrandEnum.DINERS;
-    default:
-      return BrandEnum.UNKNOWN;
-  }
-};
+
 
 export const npgSessionsFields = async (
   onError: (e: string) => void,
