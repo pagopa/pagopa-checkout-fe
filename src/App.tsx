@@ -24,6 +24,7 @@ import PaymentOutlet from "./routes/PaymentOutlet";
 import PaymentQrPage from "./routes/PaymentQrPage";
 import PaymentResponsePage from "./routes/PaymentResponsePage";
 import PaymentSummaryPage from "./routes/PaymentSummaryPage";
+import GDICheckPage from "./routes/GDICheckPage";
 import "./translations/i18n";
 import { mixpanelInit } from "./utils/config/mixpanelHelperInit";
 import { SessionItems } from "./utils/storage/sessionStorage";
@@ -163,6 +164,10 @@ export function App() {
                     <PaymentCheckPage />
                   </Guard>
                 }
+              />
+              <Route
+                path={CheckoutRoutes.GDI_CHECK}
+                element={<GDICheckPage />}
               />
               <Route
                 path={CheckoutRoutes.ESITO}
