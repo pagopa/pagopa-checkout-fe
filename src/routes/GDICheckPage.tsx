@@ -1,14 +1,18 @@
 import React from "react";
 import PageContainer from "../components/PageContent/PageContainer";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
+import { getFragmentParameter } from "../utils/regex/urlUtilities";
 
-const GDICheckPage = () => {
-  const iframeUrl = window.location.hash.substring(1);
+const GdiCheckPage = () => {
+  const gdiIframeUrl = getFragmentParameter(
+    window.location.href,
+    "gdiIframeUrl"
+  );
   return (
     <PageContainer>
       <CheckoutLoader />
-      <iframe src={`https://${iframeUrl}`} style={{ display: "none" }} />
+      <iframe src={gdiIframeUrl} style={{ display: "none" }} />
     </PageContainer>
   );
 };
-export default GDICheckPage;
+export default GdiCheckPage;

@@ -24,7 +24,7 @@ import PaymentOutlet from "./routes/PaymentOutlet";
 import PaymentQrPage from "./routes/PaymentQrPage";
 import PaymentResponsePage from "./routes/PaymentResponsePage";
 import PaymentSummaryPage from "./routes/PaymentSummaryPage";
-import GDICheckPage from "./routes/GDICheckPage";
+import GdiCheckPage from "./routes/GdiCheckPage";
 import "./translations/i18n";
 import { mixpanelInit } from "./utils/config/mixpanelHelperInit";
 import { SessionItems } from "./utils/storage/sessionStorage";
@@ -159,15 +159,15 @@ export function App() {
               />
               <Route
                 path={CheckoutRoutes.RIEPILOGO_PAGAMENTO}
-                element={
-                  <Guard item={SessionItems.transaction}>
-                    <PaymentCheckPage />
-                  </Guard>
-                }
+                element={<PaymentCheckPage />}
               />
               <Route
                 path={CheckoutRoutes.GDI_CHECK}
-                element={<GDICheckPage />}
+                element={
+                  <Guard item={SessionItems.sessionId}>
+                    <GdiCheckPage />
+                  </Guard>
+                }
               />
               <Route
                 path={CheckoutRoutes.ESITO}
