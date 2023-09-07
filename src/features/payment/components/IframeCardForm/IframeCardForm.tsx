@@ -55,9 +55,9 @@ export default function IframeCardForm(props: Props) {
   const { onCancel, hideCancel } = props;
   const navigate = useNavigate();
   const [loading, setLoading] = React.useState(false);
+  const [spinner, setSpinner] = React.useState(true);
   const [error, setError] = React.useState("");
   const [form, setForm] = React.useState<CreateSessionResponse>();
-  const [spinner, setSpinner] = React.useState(loading);
   const [enabledForm, setEnabledForm] = React.useState(false);
   const ref = React.useRef<ReCAPTCHA>(null);
   // this dummy state is only used to perform a component update, not the best solution but works
@@ -72,6 +72,7 @@ export default function IframeCardForm(props: Props) {
 
   const onError = (m: string) => {
     setLoading(false);
+    setSpinner(false);
     setError(m);
     // the on error function as defined till now should open the error modal.
     // By the way we are developing the happy path and we can face this issue when we manage the error path
@@ -108,7 +109,6 @@ export default function IframeCardForm(props: Props) {
               );
 
               setSessionItem(SessionItems.pspSelected, firstPsp);
-              setLoading(false);
               navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
             }
           )
@@ -165,10 +165,12 @@ export default function IframeCardForm(props: Props) {
     }
   };
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   React.useEffect(() => {
     if (!form) {
       const { hostname, protocol, port } = window.location;
       const onResponse = (body: CreateSessionResponse) => {
+        setSpinner(true);
         setSessionItem(SessionItems.sessionId, body.sessionId);
         setForm(body);
 
@@ -222,8 +224,7 @@ export default function IframeCardForm(props: Props) {
             //   HF0002 –temporary unavailability of the service
             //   HF0003 -session expired–the payment experience shall be restarted from the post orders/build
             //   HF0007 –internal error–if the issue persists the payment has to be restarted
-            // eslint-disable-next-line no-console
-            console.log("onConfirmError", evtData);
+            onError(ErrorsType.GENERIC_ERROR);
           },
           onBuildFlowStateChange(
             _evtData: any,
@@ -242,7 +243,6 @@ export default function IframeCardForm(props: Props) {
             //   the evtData.data.url external domain for strong customer authentication (i.e ACS URL).
             // PAYMENT_COMPLETE: the payment experience is finished. It is required to invoke
             //   the get https://{nexiDomain}/api/phoenix-0.0/psp/api/v1/build/state?sessionId={thesessionId}  },
-            // console.log("onBuildFlowStateChange", evtData, state);
             if (state === "READY_FOR_PAYMENT") {
               void transaction();
             } else {
@@ -259,10 +259,7 @@ export default function IframeCardForm(props: Props) {
           // a react state to track the form status
         });
         setBuildInstance(newBuild);
-      };
-
-      const onError = (_e: string) => {
-        // TO-DO
+        setSpinner(false);
       };
 
       void npgSessionsFields(onError, onResponse);
@@ -272,97 +269,75 @@ export default function IframeCardForm(props: Props) {
   const handleSubmit = (e: React.FormEvent) => {
     try {
       e.preventDefault();
-      setSpinner(true);
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      buildInstance.confirmData(() => setSpinner(false));
+      buildInstance.confirmData(() => setLoading(true));
     } catch (e) {
-      setSpinner(false);
       onError(ErrorsType.GENERIC_ERROR);
     }
   };
   const { t } = useTranslation();
 
   return (
-    <>
-      {!error ? (
-        spinner ? (
-          "spinner"
-        ) : (
-          <form id="iframe-card-form" onSubmit={handleSubmit}>
-            <Box>
-              <Box>
-                <IframeCardField
-                  label={t("inputCardPage.formFields.number")}
-                  fields={form?.paymentMethodData.form}
-                  id={"CARD_NUMBER"}
-                  errorCode={fieldFormStatus.get("CARD_NUMBER")?.errorCode}
-                  errorMessage={
-                    fieldFormStatus.get("CARD_NUMBER")?.errorMessage
-                  }
-                  isValid={fieldFormStatus.get("CARD_NUMBER")?.isValid}
-                />
-              </Box>
-              <Box
-                display={"flex"}
-                justifyContent={"space-between"}
-                sx={{ gap: 2 }}
-              >
-                <Box>
-                  <IframeCardField
-                    label={t("inputCardPage.formFields.expirationDate")}
-                    fields={form?.paymentMethodData.form}
-                    id={"EXPIRATION_DATE"}
-                    errorCode={
-                      fieldFormStatus.get("EXPIRATION_DATE")?.errorCode
-                    }
-                    errorMessage={
-                      fieldFormStatus.get("EXPIRATION_DATE")?.errorMessage
-                    }
-                    isValid={fieldFormStatus.get("EXPIRATION_DATE")?.isValid}
-                  />
-                </Box>
-                <Box>
-                  <IframeCardField
-                    label={t("inputCardPage.formFields.cvv")}
-                    fields={form?.paymentMethodData.form}
-                    id={"SECURITY_CODE"}
-                    errorCode={fieldFormStatus.get("SECURITY_CODE")?.errorCode}
-                    errorMessage={
-                      fieldFormStatus.get("SECURITY_CODE")?.errorMessage
-                    }
-                    isValid={fieldFormStatus.get("SECURITY_CODE")?.isValid}
-                  />
-                </Box>
-              </Box>
-              <Box>
-                <IframeCardField
-                  label={t("inputCardPage.formFields.name")}
-                  fields={form?.paymentMethodData.form}
-                  id={"CARDHOLDER_NAME"}
-                  errorCode={fieldFormStatus.get("CARDHOLDER_NAME")?.errorCode}
-                  errorMessage={
-                    fieldFormStatus.get("CARDHOLDER_NAME")?.errorMessage
-                  }
-                  isValid={fieldFormStatus.get("CARDHOLDER_NAME")?.isValid}
-                />
-              </Box>
-            </Box>
-            <FormButtons
-              loadingSubmit={loading}
-              type="submit"
-              submitTitle="paymentNoticePage.formButtons.submit"
-              cancelTitle="paymentNoticePage.formButtons.cancel"
-              disabledSubmit={!enabledForm}
-              handleSubmit={handleSubmit}
-              handleCancel={onCancel}
-              hideCancel={hideCancel}
+    <form id="iframe-card-form" onSubmit={handleSubmit}>
+      <Box>
+        {error && "Ops! something went wrong..."}
+        {spinner && "spinner"}
+        <Box>
+          <IframeCardField
+            label={t("inputCardPage.formFields.number")}
+            fields={form?.paymentMethodData.form}
+            id={"CARD_NUMBER"}
+            errorCode={fieldFormStatus.get("CARD_NUMBER")?.errorCode}
+            errorMessage={fieldFormStatus.get("CARD_NUMBER")?.errorMessage}
+            isValid={fieldFormStatus.get("CARD_NUMBER")?.isValid}
+          />
+        </Box>
+        <Box display={"flex"} justifyContent={"space-between"} sx={{ gap: 2 }}>
+          <Box>
+            <IframeCardField
+              label={t("inputCardPage.formFields.expirationDate")}
+              fields={form?.paymentMethodData.form}
+              id={"EXPIRATION_DATE"}
+              errorCode={fieldFormStatus.get("EXPIRATION_DATE")?.errorCode}
+              errorMessage={
+                fieldFormStatus.get("EXPIRATION_DATE")?.errorMessage
+              }
+              isValid={fieldFormStatus.get("EXPIRATION_DATE")?.isValid}
             />
-          </form>
-        )
-      ) : (
-        "Ops! something went wrong..."
-      )}
-    </>
+          </Box>
+          <Box>
+            <IframeCardField
+              label={t("inputCardPage.formFields.cvv")}
+              fields={form?.paymentMethodData.form}
+              id={"SECURITY_CODE"}
+              errorCode={fieldFormStatus.get("SECURITY_CODE")?.errorCode}
+              errorMessage={fieldFormStatus.get("SECURITY_CODE")?.errorMessage}
+              isValid={fieldFormStatus.get("SECURITY_CODE")?.isValid}
+            />
+          </Box>
+        </Box>
+        <Box>
+          <IframeCardField
+            label={t("inputCardPage.formFields.name")}
+            fields={form?.paymentMethodData.form}
+            id={"CARDHOLDER_NAME"}
+            errorCode={fieldFormStatus.get("CARDHOLDER_NAME")?.errorCode}
+            errorMessage={fieldFormStatus.get("CARDHOLDER_NAME")?.errorMessage}
+            isValid={fieldFormStatus.get("CARDHOLDER_NAME")?.isValid}
+          />
+        </Box>
+      </Box>
+      <FormButtons
+        loadingSubmit={loading}
+        type="submit"
+        submitTitle="paymentNoticePage.formButtons.submit"
+        cancelTitle="paymentNoticePage.formButtons.cancel"
+        disabledSubmit={loading || !enabledForm}
+        handleSubmit={handleSubmit}
+        handleCancel={onCancel}
+        hideCancel={hideCancel}
+      />
+    </form>
   );
 }
