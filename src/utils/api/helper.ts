@@ -589,11 +589,7 @@ export const calculateFees = async ({
 };
 
 export const proceedToPayment = async (
-  {
-    transaction,
-  }: {
-    transaction: NewTransactionResponse;
-  },
+  transaction: NewTransactionResponse,
   onError: (e: string) => void,
   onResponse: (authUrl: string) => void
 ) => {

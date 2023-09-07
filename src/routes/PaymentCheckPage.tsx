@@ -151,13 +151,7 @@ export default function PaymentCheckPage() {
   const onSubmit = React.useCallback(() => {
     setPayLoading(true);
     if (transaction) {
-      void proceedToPayment(
-        {
-          transaction,
-        },
-        onError,
-        onResponse
-      );
+      void proceedToPayment(transaction, onError, onResponse);
     }
   }, []);
 
