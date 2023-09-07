@@ -1,18 +1,17 @@
-/* eslint-disable import/order */
 import React from "react";
 import { Box } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import ReCAPTCHA from "react-google-recaptcha";
+import { useNavigate } from "react-router-dom";
+import * as O from "fp-ts/Option";
+import { pipe } from "fp-ts/function";
+import { PaymentMethod } from "../../../../features/payment/models/paymentModel";
+import { FormButtons } from "../../../../components/FormButtons/FormButtons";
 import {
   getSessionItem,
   SessionItems,
   setSessionItem,
 } from "../../../../utils/storage/sessionStorage";
-import { FormButtons } from "../../../../components/FormButtons/FormButtons";
-import { PaymentMethod } from "../../../../features/payment/models/paymentModel";
-import ReCAPTCHA from "react-google-recaptcha";
-import { useNavigate } from "react-router-dom";
-import * as O from "fp-ts/Option";
-import { pipe } from "fp-ts/function";
 import { NewTransactionResponse } from "../../../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import {
   activatePayment,
@@ -27,9 +26,9 @@ import { CalculateFeeResponse } from "../../../../../generated/definitions/payme
 import { ErrorsType } from "../../../../utils/errors/checkErrorsModel";
 import { useAppDispatch } from "../../../../redux/hooks/hooks";
 import { setThreshold } from "../../../../redux/slices/threshold";
-import { IframeCardField } from "./IframeCardField";
 import { CreateSessionResponse } from "../../../../../generated/definitions/payment-ecommerce/CreateSessionResponse";
-import type { FieldFormStatus, FieldsFormStatus } from "./types";
+import { IframeCardField } from "./IframeCardField";
+import type { FieldId, FieldStatus, FormStatus, NpgEvtData } from "./types";
 import { IdFields } from "./types";
 
 interface Props {
@@ -39,16 +38,18 @@ interface Props {
   hideCancel?: boolean;
 }
 
-const initialFormStatus: FieldFormStatus = {
+const initialFieldStatus: FieldStatus = {
   isValid: undefined,
   errorCode: null,
   errorMessage: null,
 };
 
-const fieldFormStatus: FieldsFormStatus = new Map();
-Object.values(IdFields).forEach((k) => {
-  fieldFormStatus.set(k as keyof typeof IdFields, initialFormStatus);
-});
+const initialFieldsState: FormStatus = Object.values(
+  IdFields
+).reduce<FormStatus>(
+  (acc, idField) => ({ ...acc, [idField]: initialFieldStatus }),
+  {} as FormStatus
+);
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export default function IframeCardForm(props: Props) {
@@ -58,17 +59,15 @@ export default function IframeCardForm(props: Props) {
   const [spinner, setSpinner] = React.useState(true);
   const [error, setError] = React.useState("");
   const [form, setForm] = React.useState<CreateSessionResponse>();
-  const [enabledForm, setEnabledForm] = React.useState(false);
+  const [formStatus, setFormStatus] =
+    React.useState<FormStatus>(initialFieldsState);
   const ref = React.useRef<ReCAPTCHA>(null);
-  // this dummy state is only used to perform a component update, not the best solution but works
-  const [, setDummyState] = React.useState(0);
   const dispatch = useAppDispatch();
 
   const [buildInstance, setBuildInstance] = React.useState();
 
-  const calculateFormValidStatus = (
-    fieldFormStatus: Map<string, FieldFormStatus>
-  ) => Array.from(fieldFormStatus.values()).every((el) => el.isValid);
+  const formIsValid = (fieldFormStatus: FormStatus) =>
+    Object.values(fieldFormStatus).every((el) => el.isValid);
 
   const onError = (m: string) => {
     setLoading(false);
@@ -165,7 +164,15 @@ export default function IframeCardForm(props: Props) {
     }
   };
 
-  // eslint-disable-next-line sonarjs/cognitive-complexity
+  const updateFormStatus = (id: FieldId, status: FieldStatus) => {
+    if (Object.keys(IdFields).includes(id)) {
+      setFormStatus((fields) => ({
+        ...fields,
+        [id]: status,
+      }));
+    }
+  };
+
   React.useEffect(() => {
     if (!form) {
       const { hostname, protocol, port } = window.location;
@@ -178,24 +185,15 @@ export default function IframeCardForm(props: Props) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         const newBuild = new Build({
-          onBuildSuccess(evtData: { id: keyof typeof IdFields }) {
-            const { id } = evtData;
+          onBuildSuccess({ id }: NpgEvtData) {
             // write some code to manage the successful data entering in the specified field: evtData.id
-            if (Object.keys(IdFields).includes(id)) {
-              fieldFormStatus.set(id as unknown as keyof typeof IdFields, {
-                isValid: true,
-                errorCode: null,
-                errorMessage: null,
-              });
-              setEnabledForm(calculateFormValidStatus(fieldFormStatus));
-              setDummyState(Math.random);
-            }
+            updateFormStatus(id, {
+              isValid: true,
+              errorCode: null,
+              errorMessage: null,
+            });
           },
-          onBuildError(evtData: {
-            id: keyof typeof IdFields;
-            errorCode: string;
-            errorMessage: string;
-          }) {
+          onBuildError({ id, errorCode, errorMessage }: NpgEvtData) {
             // write some code to manage the wrong data entering in the specified field: evtData.id
             // the action can be finely tuned based on the provided error code available at evtData.errorCode
             // the possible cases are:
@@ -207,18 +205,13 @@ export default function IframeCardForm(props: Props) {
             //   HF0006 -expiration date exceeded–the provided card is expired
             //   HF0007 –internal error –if the issue persists the payment has to be restarted
             //   HF0009 –3DS GDI verification failed –the payment experience has to be stopped with failure.
-            const { id, errorCode, errorMessage } = evtData;
-            if (Object.keys(IdFields).includes(id)) {
-              fieldFormStatus.set(id as unknown as keyof typeof IdFields, {
-                isValid: false,
-                errorCode,
-                errorMessage,
-              });
-              setEnabledForm(calculateFormValidStatus(fieldFormStatus));
-              setDummyState(Math.random);
-            }
+            updateFormStatus(id, {
+              isValid: false,
+              errorCode,
+              errorMessage,
+            });
           },
-          onConfirmError(evtData: any) {
+          onConfirmError(_evtData: NpgEvtData) {
             // this event is returned as a consequence of the invocation of confirmData() SDK function.
             // the possible cases are:
             //   HF0002 –temporary unavailability of the service
@@ -227,7 +220,7 @@ export default function IframeCardForm(props: Props) {
             onError(ErrorsType.GENERIC_ERROR);
           },
           onBuildFlowStateChange(
-            _evtData: any,
+            _evtData: NpgEvtData,
             state:
               | "READY_FOR_PAYMENT"
               | "REDIRECTED_TO_EXTERNAL_DOMAIN"
@@ -288,9 +281,9 @@ export default function IframeCardForm(props: Props) {
             label={t("inputCardPage.formFields.number")}
             fields={form?.paymentMethodData.form}
             id={"CARD_NUMBER"}
-            errorCode={fieldFormStatus.get("CARD_NUMBER")?.errorCode}
-            errorMessage={fieldFormStatus.get("CARD_NUMBER")?.errorMessage}
-            isValid={fieldFormStatus.get("CARD_NUMBER")?.isValid}
+            errorCode={formStatus.CARD_NUMBER?.errorCode}
+            errorMessage={formStatus.CARD_NUMBER?.errorMessage}
+            isValid={formStatus.CARD_NUMBER?.isValid}
           />
         </Box>
         <Box display={"flex"} justifyContent={"space-between"} sx={{ gap: 2 }}>
@@ -299,11 +292,9 @@ export default function IframeCardForm(props: Props) {
               label={t("inputCardPage.formFields.expirationDate")}
               fields={form?.paymentMethodData.form}
               id={"EXPIRATION_DATE"}
-              errorCode={fieldFormStatus.get("EXPIRATION_DATE")?.errorCode}
-              errorMessage={
-                fieldFormStatus.get("EXPIRATION_DATE")?.errorMessage
-              }
-              isValid={fieldFormStatus.get("EXPIRATION_DATE")?.isValid}
+              errorCode={formStatus.EXPIRATION_DATE?.errorCode}
+              errorMessage={formStatus.EXPIRATION_DATE?.errorMessage}
+              isValid={formStatus.EXPIRATION_DATE?.isValid}
             />
           </Box>
           <Box>
@@ -311,9 +302,9 @@ export default function IframeCardForm(props: Props) {
               label={t("inputCardPage.formFields.cvv")}
               fields={form?.paymentMethodData.form}
               id={"SECURITY_CODE"}
-              errorCode={fieldFormStatus.get("SECURITY_CODE")?.errorCode}
-              errorMessage={fieldFormStatus.get("SECURITY_CODE")?.errorMessage}
-              isValid={fieldFormStatus.get("SECURITY_CODE")?.isValid}
+              errorCode={formStatus.SECURITY_CODE?.errorCode}
+              errorMessage={formStatus.SECURITY_CODE?.errorMessage}
+              isValid={formStatus.SECURITY_CODE?.isValid}
             />
           </Box>
         </Box>
@@ -322,9 +313,9 @@ export default function IframeCardForm(props: Props) {
             label={t("inputCardPage.formFields.name")}
             fields={form?.paymentMethodData.form}
             id={"CARDHOLDER_NAME"}
-            errorCode={fieldFormStatus.get("CARDHOLDER_NAME")?.errorCode}
-            errorMessage={fieldFormStatus.get("CARDHOLDER_NAME")?.errorMessage}
-            isValid={fieldFormStatus.get("CARDHOLDER_NAME")?.isValid}
+            errorCode={formStatus.CARDHOLDER_NAME?.errorCode}
+            errorMessage={formStatus.CARDHOLDER_NAME?.errorMessage}
+            isValid={formStatus.CARDHOLDER_NAME?.isValid}
           />
         </Box>
       </Box>
@@ -333,7 +324,7 @@ export default function IframeCardForm(props: Props) {
         type="submit"
         submitTitle="paymentNoticePage.formButtons.submit"
         cancelTitle="paymentNoticePage.formButtons.cancel"
-        disabledSubmit={loading || !enabledForm}
+        disabledSubmit={loading || !formIsValid(formStatus)}
         handleSubmit={handleSubmit}
         handleCancel={onCancel}
         hideCancel={hideCancel}
