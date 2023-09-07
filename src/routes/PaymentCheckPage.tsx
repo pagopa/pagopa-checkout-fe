@@ -36,7 +36,6 @@ import {
 import { useAppSelector } from "../redux/hooks/hooks";
 import {
   cancelPayment,
-  parseDate,
   calculateFees,
   proceedToPayment,
 } from "../utils/api/helper";
@@ -152,23 +151,7 @@ export default function PaymentCheckPage() {
   const onSubmit = React.useCallback(() => {
     setPayLoading(true);
     if (transaction) {
-      void proceedToPayment(
-        {
-          transaction,
-          cardData: {
-            brand: sessionPaymentMethodResponse?.brand || "",
-            cvv: "",
-            pan: "",
-            holderName: "",
-            expiryDate: pipe(
-              parseDate(sessionPaymentMethodResponse?.expiringDate),
-              O.getOrElse(() => "")
-            ),
-          },
-        },
-        onError,
-        onResponse
-      );
+      void proceedToPayment(transaction, onError, onResponse);
     }
   }, []);
 
