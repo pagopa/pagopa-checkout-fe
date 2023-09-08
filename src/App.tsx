@@ -24,6 +24,7 @@ import PaymentOutlet from "./routes/PaymentOutlet";
 import PaymentQrPage from "./routes/PaymentQrPage";
 import PaymentResponsePage from "./routes/PaymentResponsePage";
 import PaymentSummaryPage from "./routes/PaymentSummaryPage";
+import GdiCheckPage from "./routes/GdiCheckPage";
 import "./translations/i18n";
 import { mixpanelInit } from "./utils/config/mixpanelHelperInit";
 import { SessionItems } from "./utils/storage/sessionStorage";
@@ -161,6 +162,14 @@ export function App() {
                 element={
                   <Guard item={SessionItems.transaction}>
                     <PaymentCheckPage />
+                  </Guard>
+                }
+              />
+              <Route
+                path={CheckoutRoutes.GDI_CHECK}
+                element={
+                  <Guard item={SessionItems.sessionId}>
+                    <GdiCheckPage />
                   </Guard>
                 }
               />
