@@ -3,13 +3,11 @@ import { useNavigate } from "react-router-dom";
 import PageContainer from "../components/PageContent/PageContainer";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
 import { getFragmentParameter } from "../utils/regex/urlUtilities";
+import {
+  NpgFlowState,
+  NpgFlowStateEvtData,
+} from "../features/payment/models/npgModel";
 import { CheckoutRoutes } from "./models/routeModel";
-
-export interface NpgFlowStateEvtData {
-  data: {
-    url: string;
-  };
-}
 
 const GdiCheckPage = () => {
   const navigate = useNavigate();
@@ -19,22 +17,17 @@ const GdiCheckPage = () => {
     new Build({
       onBuildFlowStateChange(
         npgFlowStateEvtData: NpgFlowStateEvtData,
-        // creare un typo condiviso e riutilizzabile
-        state: "REDIRECTED_TO_EXTERNAL_DOMAIN" | "PAYMENT_COMPLETE"
+        npgFlowState: NpgFlowState
       ) {
-        switch (state) {
-          case "PAYMENT_COMPLETE":
+        switch (npgFlowState) {
+          case NpgFlowState.PAYMENT_COMPLETE:
             navigate(`/${CheckoutRoutes.ESITO}`);
             break;
-          case "REDIRECTED_TO_EXTERNAL_DOMAIN":
-            // replace? href? indagare quale è migliore
-            // eslint-disable-next-line functional/immutable-data
+          case NpgFlowState.REDIRECTED_TO_EXTERNAL_DOMAIN:
             window.location.replace(npgFlowStateEvtData.data.url);
             break;
           default:
-            // gestire l'eventualità di ricevere uno stato non gestito o previsto in questa fase
-            // console debug da rimuovere
-            console.debug(state);
+          // gestire l'eventualità di ricevere uno stato non gestito o previsto in questa fase
         }
       },
     });

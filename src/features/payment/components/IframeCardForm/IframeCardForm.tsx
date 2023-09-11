@@ -27,8 +27,13 @@ import { ErrorsType } from "../../../../utils/errors/checkErrorsModel";
 import { useAppDispatch } from "../../../../redux/hooks/hooks";
 import { setThreshold } from "../../../../redux/slices/threshold";
 import { CreateSessionResponse } from "../../../../../generated/definitions/payment-ecommerce/CreateSessionResponse";
+import {
+  NpgEvtData,
+  NpgFlowState,
+  NpgFlowStateEvtData,
+} from "../../../../features/payment/models/npgModel";
 import { IframeCardField } from "./IframeCardField";
-import type { FieldId, FieldStatus, FormStatus, NpgEvtData } from "./types";
+import type { FieldId, FieldStatus, FormStatus } from "./types";
 import { IdFields } from "./types";
 
 interface Props {
@@ -220,11 +225,8 @@ export default function IframeCardForm(props: Props) {
             onError(ErrorsType.GENERIC_ERROR);
           },
           onBuildFlowStateChange(
-            _evtData: NpgEvtData,
-            state:
-              | "READY_FOR_PAYMENT"
-              | "REDIRECTED_TO_EXTERNAL_DOMAIN"
-              | "PAYMENT_COMPLETE"
+            _npgFlowStateEvtData: NpgFlowStateEvtData,
+            npgFlowState: NpgFlowState
           ) {
             // this event is returned for each state transition of the payment state machine.
             // the possible states expressed by the value state are:
@@ -236,7 +238,7 @@ export default function IframeCardForm(props: Props) {
             //   the evtData.data.url external domain for strong customer authentication (i.e ACS URL).
             // PAYMENT_COMPLETE: the payment experience is finished. It is required to invoke
             //   the get https://{nexiDomain}/api/phoenix-0.0/psp/api/v1/build/state?sessionId={thesessionId}  },
-            if (state === "READY_FOR_PAYMENT") {
+            if (npgFlowState === NpgFlowState.READY_FOR_PAYMENT) {
               void transaction();
             } else {
               onError(ErrorsType.GENERIC_ERROR);
