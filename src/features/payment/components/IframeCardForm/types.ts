@@ -14,9 +14,3 @@ export enum IdFields {
 }
 
 export type FieldId = keyof typeof IdFields;
-
-export interface NpgEvtData {
-  id: FieldId;
-  errorCode: string;
-  errorMessage: string;
-}
