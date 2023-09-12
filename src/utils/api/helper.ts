@@ -83,11 +83,9 @@ import { TransferListItem } from "../../../generated/definitions/payment-ecommer
 import { Bundle } from "../../../generated/definitions/payment-ecommerce/Bundle";
 import { PaymentNoticeInfo } from "../../../generated/definitions/payment-ecommerce/PaymentNoticeInfo";
 import { CreateSessionResponse } from "../../../generated/definitions/payment-ecommerce/CreateSessionResponse";
-import { getBrowserInfoTask, getEMVCompliantColorDepth } from "./checkHelper";
 import {
   apiPaymentEcommerceCalculateFeesClientWithRetry,
   apiPaymentEcommerceClient,
-  apiPaymentTransactionsClient,
 } from "./client";
 
 export const getEcommercePaymentInfoTask = (
@@ -618,31 +616,6 @@ export const proceedToPayment = async (
     O.getOrElseW(() => undefined)
   );
 
-  const browserInfo = await pipe(
-    getBrowserInfoTask(apiPaymentTransactionsClient),
-    TE.mapLeft(() => ({
-      ip: "",
-      useragent: "",
-      accept: "",
-    })),
-    TE.toUnion
-  )();
-
-  const threeDSData = {
-    browserJavaEnabled: navigator.javaEnabled().toString(),
-    browserLanguage: navigator.language,
-    browserColorDepth: getEMVCompliantColorDepth(screen.colorDepth).toString(),
-    browserScreenHeight: screen.height.toString(),
-    browserScreenWidth: screen.width.toString(),
-    browserTZ: new Date().getTimezoneOffset().toString(),
-    browserAcceptHeader: browserInfo.accept,
-    browserIP: browserInfo.ip,
-    browserUserAgent: navigator.userAgent,
-    acctID: `ACCT_${transactionId}`,
-    deliveryEmailAddress:
-      (getSessionItem(SessionItems.useremail) as string) || "",
-    mobilePhone: null,
-  };
   const authParam = {
     amount: transaction.payments
       .map((p) => p.amount)
@@ -665,7 +638,6 @@ export const proceedToPayment = async (
             sessionId:
               (getSessionItem(SessionItems.sessionId) as string | undefined) ||
               "",
-            threeDsData: JSON.stringify(threeDSData),
           }
         : {
             detailType: "postepay",
@@ -680,7 +652,7 @@ export const proceedToPayment = async (
     RequestAuthorizationRequest.decode,
     TE.fromEither,
     TE.chain(
-      (request) => () =>
+      (request: RequestAuthorizationRequest) => () =>
         apiPaymentEcommerceClient.requestTransactionAuthorization({
           bearerAuth,
           transactionId,
