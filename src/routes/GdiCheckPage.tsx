@@ -13,6 +13,7 @@ const GdiCheckPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     new Build({
       onBuildFlowStateChange(
