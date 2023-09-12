@@ -12,32 +12,48 @@ import { CheckoutRoutes } from "./models/routeModel";
 const GdiCheckPage = () => {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    new Build({
-      onBuildFlowStateChange(
-        npgFlowStateEvtData: NpgFlowStateEvtData,
-        npgFlowState: NpgFlowState
-      ) {
-        switch (npgFlowState) {
-          case NpgFlowState.PAYMENT_COMPLETE:
-            navigate(`/${CheckoutRoutes.ESITO}`);
-            break;
-          case NpgFlowState.REDIRECTED_TO_EXTERNAL_DOMAIN:
-            window.location.replace(npgFlowStateEvtData.data.url);
-            break;
-          default:
-          // gestire l'eventualità di ricevere uno stato non gestito o previsto in questa fase
-        }
-      },
-    });
-  }, []);
+  const replace = (route: string) => navigate(route, { replace: true });
+
+  const gdiCheckTimeout =
+    Number(process.env.CHECKOUT_GDI_CHECK_TIMEOUT) || 12000;
 
   const gdiIframeUrl = getFragmentParameter(
     window.location.href,
     "gdiIframeUrl"
   );
+
+  const buildConf = {
+    onBuildFlowStateChange(
+      npgFlowStateEvtData: NpgFlowStateEvtData,
+      npgFlowState: NpgFlowState
+    ) {
+      switch (npgFlowState) {
+        case NpgFlowState.PAYMENT_COMPLETE:
+          replace(`/${CheckoutRoutes.ESITO}`);
+          break;
+        case NpgFlowState.REDIRECTED_TO_EXTERNAL_DOMAIN:
+          replace(npgFlowStateEvtData.data.url);
+          break;
+        default:
+          replace(`/${CheckoutRoutes.ERRORE}`);
+      }
+    },
+  };
+
+  useEffect(() => {
+    try {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      new Build(buildConf);
+      const timeoutId = setTimeout(
+        () => replace(`/${CheckoutRoutes.ESITO}`),
+        gdiCheckTimeout
+      );
+      return () => clearTimeout(timeoutId);
+    } catch {
+      return replace(`/${CheckoutRoutes.ERRORE}`);
+    }
+  }, []);
 
   return (
     <PageContainer>
