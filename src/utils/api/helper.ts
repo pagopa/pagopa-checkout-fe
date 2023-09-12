@@ -85,7 +85,7 @@ import { PaymentNoticeInfo } from "../../../generated/definitions/payment-ecomme
 import { CreateSessionResponse } from "../../../generated/definitions/payment-ecommerce/CreateSessionResponse";
 import { getBrowserInfoTask, getEMVCompliantColorDepth } from "./checkHelper";
 import {
-  apiPaymentEcommerceCalculateFeesClientWithRetry,
+  apiPaymentEcommerceClientWithRetry,
   apiPaymentEcommerceClient,
   apiPaymentTransactionsClient,
 } from "./client";
@@ -530,7 +530,7 @@ export const calculateFees = async ({
     TE.chain((isAllCCP) =>
       TE.tryCatch(
         () =>
-          apiPaymentEcommerceCalculateFeesClientWithRetry.calculateFees({
+          apiPaymentEcommerceClientWithRetry.calculateFees({
             bearerAuth,
             "x-transaction-id-from-client": transactionId,
             id: paymentId,
@@ -1108,7 +1108,7 @@ export const npgSessionsFields = async (
               | PaymentMethod
               | undefined
           )?.paymentMethodId || "";
-        return apiPaymentEcommerceClient.createSession({
+        return apiPaymentEcommerceClientWithRetry.createSession({
           id: paymentMethodId,
         });
       },
