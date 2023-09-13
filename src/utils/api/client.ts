@@ -33,15 +33,14 @@ export const apiPaymentEcommerceClient = createEcommerceClient({
 /**
  * Api client for ecommerce API calculate fee with retry execution
  */
-export const apiPaymentEcommerceCalculateFeesClientWithRetry =
-  createEcommerceClient({
-    baseUrl: conf.CHECKOUT_ECOMMERCE_HOST,
-    basePath: conf.CHECKOUT_API_ECOMMERCE_BASEPATH as string,
-    fetchApi: constantPollingWithPromisePredicateFetch(
-      DeferredPromise<boolean>().e1,
-      retries,
-      delay,
-      conf.CHECKOUT_API_TIMEOUT as Millisecond,
-      async (r: Response): Promise<boolean> => r.status !== 200
-    ),
-  });
+export const apiPaymentEcommerceClientWithRetry = createEcommerceClient({
+  baseUrl: conf.CHECKOUT_ECOMMERCE_HOST,
+  basePath: conf.CHECKOUT_API_ECOMMERCE_BASEPATH as string,
+  fetchApi: constantPollingWithPromisePredicateFetch(
+    DeferredPromise<boolean>().e1,
+    retries,
+    delay,
+    conf.CHECKOUT_API_TIMEOUT as Millisecond,
+    async (r: Response): Promise<boolean> => r.status !== 200
+  ),
+});
