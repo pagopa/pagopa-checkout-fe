@@ -4,14 +4,7 @@ describe("getFragmentParameter function utility", () => {
   it("Should return the param value correctly", () => {
     expect(
       getFragmentParameter(
-        "https://dev.checkout.it/gdi-check#gdiIframeUrl=https://google.it/",
-        "gdiIframeUrl"
-      )
-    ).toEqual("https://google.it/");
-
-    expect(
-      getFragmentParameter(
-        "https://dev.checkout.it/gdi-check#gdiIframeUrl=https%3A%2F%2Fgoogle.it%2F",
+        "https://dev.checkout.it/gdi-check#gdiIframeUrl=aHR0cHM6Ly9nb29nbGUuaXQv",
         "gdiIframeUrl"
       )
     ).toEqual("https://google.it/");
