@@ -402,7 +402,7 @@ export const retrieveCardData = async ({
         apiPaymentEcommerceClient.getSessionPaymentMethod({
           bearerAuth,
           id: paymentId,
-          sessionId,
+          sessionId: encodeURIComponent(sessionId),
           "x-transaction-id-from-client": transactionId,
         }),
       (_e) => {

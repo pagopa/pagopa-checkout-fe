@@ -32,7 +32,7 @@ const GdiCheckPage = () => {
           replace(`/${CheckoutRoutes.ESITO}`);
           break;
         case NpgFlowState.REDIRECTED_TO_EXTERNAL_DOMAIN:
-          replace(npgFlowStateEvtData.data.url);
+          window.location.replace(npgFlowStateEvtData.data.url);
           break;
         default:
           replace(`/${CheckoutRoutes.ERRORE}`);
