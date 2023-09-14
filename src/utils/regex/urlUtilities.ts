@@ -8,7 +8,7 @@ export function getUrlParameter(name: string) {
 }
 
 /**
- * This function requires a valid URI with a querystrings as the fragment URI
+ * This function requires a valid base64-encoded URI with a querystrings as the fragment URI
  * example: http://dev.checkout.it/gdi-check#param1=value1&param2=value2.
  * The function return an ampty string if the uri parameter is not valid
  * or the param can't be found
@@ -21,7 +21,8 @@ export function getFragmentParameter(uri: string, name: string): string {
     if (gdiFragmentUrl === null) {
       return "";
     }
-    return urlParams.get(name) || "";
+
+    return Buffer.from(gdiFragmentUrl, "base64").toString("ascii");
   } catch (e) {
     return "";
   }
