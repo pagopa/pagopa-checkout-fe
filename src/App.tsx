@@ -168,7 +168,7 @@ export function App() {
               <Route
                 path={CheckoutRoutes.GDI_CHECK}
                 element={
-                  <Guard item={SessionItems.sessionId}>
+                  <Guard item={SessionItems.orderId}>
                     <GdiCheckPage />
                   </Guard>
                 }

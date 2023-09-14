@@ -177,7 +177,7 @@ export const activatePayment = async ({
   onErrorActivate,
 }: {
   token: string;
-  onResponseActivate: (paymentMethodId: string, sessionId: string) => void;
+  onResponseActivate: (paymentMethodId: string, orderId: string) => void;
   onErrorActivate: (e: string) => void;
 }) => {
   const noticeInfo = getSessionItem(SessionItems.noticeInfo) as
@@ -194,7 +194,7 @@ export const activatePayment = async ({
   const paymentMethod: PaymentMethod = getSessionItem(
     SessionItems.paymentMethod
   ) as PaymentMethod;
-  const sessionId: string = getSessionItem(SessionItems.sessionId) as string;
+  const orderId: string = getSessionItem(SessionItems.orderId) as string;
   pipe(
     PaymentRequestsGetResponse.decode(paymentInfo),
     E.fold(
@@ -214,7 +214,7 @@ export const activatePayment = async ({
             },
             (res) => async () => {
               setSessionItem(SessionItems.transaction, res);
-              onResponseActivate(paymentMethod.paymentMethodId, sessionId);
+              onResponseActivate(paymentMethod.paymentMethodId, orderId);
             }
           )
         )()
@@ -368,12 +368,12 @@ const getPaymentNotices = (
 // ->Promise<Either<string,SessionPaymentMethodResponse>>
 export const retrieveCardData = async ({
   paymentId,
-  sessionId,
+  orderId,
   onError,
   onResponseSessionPaymentMethod,
 }: {
   paymentId: string;
-  sessionId: string;
+  orderId: string;
   onError: (e: string) => void;
   onResponseSessionPaymentMethod: (r: any) => void;
 }) => {
@@ -402,7 +402,7 @@ export const retrieveCardData = async ({
         apiPaymentEcommerceClient.getSessionPaymentMethod({
           bearerAuth,
           id: paymentId,
-          sessionId,
+          sessionId: orderId, // FIXME to be checkoed when getCardData will be modified with orderId
           "x-transaction-id-from-client": transactionId,
         }),
       (_e) => {
@@ -635,8 +635,8 @@ export const proceedToPayment = async (
         ?.paymentTypeCode === "CP"
         ? {
             detailType: "cards",
-            sessionId:
-              (getSessionItem(SessionItems.sessionId) as string | undefined) ||
+            orderId:
+              (getSessionItem(SessionItems.orderId) as string | undefined) ||
               "",
           }
         : {
