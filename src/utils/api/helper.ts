@@ -653,7 +653,7 @@ export const proceedToPayment = async (
     TE.fromEither,
     TE.chain(
       (request: RequestAuthorizationRequest) => () =>
-        apiPaymentEcommerceClient.requestTransactionAuthorization({
+        apiPaymentEcommerceClientWithRetry.requestTransactionAuthorization({
           bearerAuth,
           transactionId,
           body: request,

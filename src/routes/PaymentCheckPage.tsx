@@ -152,6 +152,8 @@ export default function PaymentCheckPage() {
     setPayLoading(true);
     if (transaction) {
       void proceedToPayment(transaction, onError, onResponse);
+    } else {
+      onError(ErrorsType.GENERIC_ERROR);
     }
   }, []);
 
@@ -204,8 +206,6 @@ export default function PaymentCheckPage() {
     }
   };
 
-  const cardHolderName = "Card Holder";
-
   const updatePSP = (psp: Bundle) => {
     setDrawerOpen(false);
     setPspUpdateLoading(true);
@@ -250,7 +250,7 @@ export default function PaymentCheckPage() {
         titleVariant="sidenav"
         bodyVariant="body2"
         title={`· · · · ${sessionPaymentMethodResponse.lastFourDigits}`}
-        body={`${sessionPaymentMethodResponse.expiringDate} · ${cardHolderName}`}
+        body={sessionPaymentMethodResponse.expiringDate}
         icon={<WalletIcon brand={sessionPaymentMethodResponse.brand || ""} />}
         sx={{
           border: "1px solid",
