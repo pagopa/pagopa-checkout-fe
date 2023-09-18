@@ -9,7 +9,7 @@ import { SxProps } from "@mui/system";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Field } from "../../../../../generated/definitions/payment-ecommerce/Field";
-import { IdFields } from "./types";
+import { FieldId, IdFields } from "./types";
 
 interface Props {
   label: string;
@@ -19,6 +19,7 @@ interface Props {
   errorCode?: string | null;
   errorMessage?: string | null;
   isValid?: boolean;
+  activeField: FieldId | undefined;
 }
 
 const getSrcFromFieldsByID = (
@@ -33,32 +34,14 @@ interface Styles {
   iframe: React.CSSProperties;
 }
 
-const HiddenFocusProxy = ({ id, active }: { id: string; active: boolean }) => (
-  <div
-    id={`proxy_${id}`}
-    aria-hidden
-    tabIndex={active ? -1 : 1}
-    style={{
-      position: "absolute",
-      opacity: 0,
-      width: "100%",
-      height: "100%",
-      zIndex: 3,
-      cursor: "text",
-    }}
-  />
-);
-
 export function IframeCardField(props: Props) {
   if (!props.fields || !props.id) {
     return <Box />;
   }
 
-  const [active, setActive] = useState<boolean>(false);
-
   const { fields, id, errorCode, errorMessage, label } = props;
   const { t } = useTranslation();
-  const styles = useStyles(props, active);
+  const styles = useStyles(props);
 
   // Find src based on ID
   const src = getSrcFromFieldsByID(fields, id);
@@ -66,32 +49,8 @@ export function IframeCardField(props: Props) {
     return <Box />;
   }
 
-  // Adding focus and blur event listeners for focus management
-  useEffect(() => {
-    const hiddenFocusProxy = document.getElementById(`proxy_${id}`);
-
-    const frameFocus = () => {
-      setActive(false);
-      document.getElementById(`frame_${id}`)?.focus();
-      setActive(true);
-    };
-
-    const windowFocus = () => {
-      setActive(false);
-    };
-
-    hiddenFocusProxy?.addEventListener("focus", frameFocus);
-    window?.addEventListener("focus", windowFocus);
-
-    return () => {
-      hiddenFocusProxy?.removeEventListener("focus", frameFocus);
-      window?.removeEventListener("focus", windowFocus);
-    };
-  }, []);
-
   return (
     <FormControl sx={styles.formControl}>
-      <HiddenFocusProxy id={id} active={active} />
       <InputLabel
         sx={styles.label}
         margin="dense"
@@ -107,7 +66,6 @@ export function IframeCardField(props: Props) {
             style={styles.iframe}
             id={`frame_${id}`}
             title={label}
-            tabIndex={-1}
           />
         )}
       </Box>
@@ -128,9 +86,9 @@ export function IframeCardField(props: Props) {
   );
 }
 
-const useStyles = (props: Props, active: boolean | undefined): Styles => {
+const useStyles = (props: Props): Styles => {
   const { style } = props;
-  const borderStyle = useBorderStyles(props, active);
+  const borderStyle = useBorderStyles(props);
 
   return {
     formControl: {
@@ -164,28 +122,28 @@ const useStyles = (props: Props, active: boolean | undefined): Styles => {
 };
 
 // Function to calculate border styles based on validity and active focus
-const useBorderStyles = ({ isValid }: Props, active: boolean | undefined) => {
+const useBorderStyles = ({ isValid, activeField, id }: Props) => {
   const { palette } = useTheme();
   const errorColor = palette.error.dark;
   const focusColor = palette.primary.main;
 
-  // Styles for active focus
-  if (active) {
-    return {
-      labelColor: focusColor,
-      boxColor: focusColor,
-      hoverShadowWidth: "2px",
-      hoverShadowColor: focusColor,
-    };
-  }
-
   // Default styles for neutral state or undefined validity
-  if (isValid === undefined) {
+  if (activeField === undefined || isValid === undefined) {
     return {
       labelColor: palette.text.secondary,
       boxColor: palette.grey[500],
       hoverShadowWidth: "1px",
       hoverShadowColor: palette.text.primary,
+    };
+  }
+
+  // Styles for active focus
+  if (activeField === id) {
+    return {
+      labelColor: focusColor,
+      boxColor: focusColor,
+      hoverShadowWidth: "2px",
+      hoverShadowColor: focusColor,
     };
   }
 
