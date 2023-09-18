@@ -120,10 +120,10 @@ export default function IframeCardForm(props: Props) {
       },
     });
 
-  const retrievePaymentSession = (paymentMethodId: string, sessionId: string) =>
+  const retrievePaymentSession = (paymentMethodId: string, orderId: string) =>
     retrieveCardData({
       paymentId: paymentMethodId,
-      sessionId,
+      orderId,
       onError,
       onResponseSessionPaymentMethod: (resp) => {
         pipe(
@@ -158,7 +158,7 @@ export default function IframeCardForm(props: Props) {
             | PaymentMethod
             | undefined
         )?.paymentMethodId || "",
-        getSessionItem(SessionItems.sessionId) as string
+        getSessionItem(SessionItems.orderId) as string
       );
     } else {
       await activatePayment({
@@ -188,7 +188,7 @@ export default function IframeCardForm(props: Props) {
       };
       const onResponse = (body: CreateSessionResponse) => {
         setSpinner(true);
-        setSessionItem(SessionItems.sessionId, body.sessionId);
+        setSessionItem(SessionItems.orderId, body.orderId);
         setForm(body);
         try {
           // THIS is mandatory cause the Build class is defined in the external library called NPG SDK
@@ -237,12 +237,12 @@ export default function IframeCardForm(props: Props) {
               // the possible states expressed by the value state are:
               // READY_FOR_PAYMENT: the card data has been properly collected and it is now possible to
               //   invoke the server to server
-              //   posthttps://{nexiDomain}/api/phoenix-0.0/psp/api/v1/build/cardData?sessionId={thesessionId}
+              //   posthttps://{nexiDomain}/api/phoenix-0.0/psp/api/v1/build/cardData?orderId={theorderId}
               //   to collect the non-PCI card information.
               // REDIRECTED_TO_EXTERNAL_DOMAIN: when this state is provided, the browser has to be redirected to
               //   the evtData.data.url external domain for strong customer authentication (i.e ACS URL).
               // PAYMENT_COMPLETE: the payment experience is finished. It is required to invoke
-              //   the get https://{nexiDomain}/api/phoenix-0.0/psp/api/v1/build/state?sessionId={thesessionId}  },
+              //   the get https://{nexiDomain}/api/phoenix-0.0/psp/api/v1/build/state?orderId={theorderId}  },
               if (npgFlowState === NpgFlowState.READY_FOR_PAYMENT) {
                 void transaction();
               } else {
@@ -267,7 +267,7 @@ export default function IframeCardForm(props: Props) {
 
       void npgSessionsFields(onError, onResponse);
     }
-  }, [form?.sessionId]);
+  }, [form?.orderId]);
 
   const handleSubmit = (e: React.FormEvent) => {
     try {

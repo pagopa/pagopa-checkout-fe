@@ -21,13 +21,13 @@ export enum SessionItems {
   cart = "cart",
   transaction = "transaction",
   sessionPaymentMethod = "sessionPayment",
-  sessionId = "sessionId",
+  orderId = "orderId",
 }
 const isParsable = (item: SessionItems) =>
   !(
     item === SessionItems.sessionToken ||
     item === SessionItems.useremail ||
-    item === SessionItems.sessionId
+    item === SessionItems.orderId
   );
 
 export const getSessionItem = (item: SessionItems) => {
