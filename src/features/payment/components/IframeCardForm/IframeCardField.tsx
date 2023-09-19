@@ -6,7 +6,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { SxProps } from "@mui/system";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { Field } from "../../../../../generated/definitions/payment-ecommerce/Field";
 import { FieldId, IdFields } from "./types";
