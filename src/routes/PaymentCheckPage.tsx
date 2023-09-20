@@ -143,9 +143,14 @@ export default function PaymentCheckPage() {
   }, [threshold]);
 
   const onResponse = (authorizationUrl: string) => {
-    setPayLoading(false);
-    window.removeEventListener("beforeunload", onBrowserUnload);
-    window.location.replace(authorizationUrl);
+    try {
+      setPayLoading(false);
+      window.removeEventListener("beforeunload", onBrowserUnload);
+      const url = new URL(authorizationUrl);
+      navigate(`${url.pathname}${url.hash}`);
+    } catch {
+      onError(ErrorsType.GENERIC_ERROR);
+    }
   };
 
   const onSubmit = React.useCallback(() => {
