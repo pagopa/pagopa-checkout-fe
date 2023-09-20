@@ -63,12 +63,14 @@ export function IframeCardField(props: Props) {
       </InputLabel>
       <Box sx={styles.box}>
         {src && (
-          <iframe
-            src={src}
-            style={styles.iframe}
-            id={`frame_${id}`}
-            title={label}
-          />
+          <Box width={1}>
+            <iframe
+              src={src}
+              style={styles.iframe}
+              id={`frame_${id}`}
+              title={label}
+            />
+          </Box>
         )}
         <Box
           style={styles.fieldStatusIcon}
