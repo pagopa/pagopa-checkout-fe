@@ -171,6 +171,6 @@ const useBorderStyles = ({ isValid, activeField, id }: Props) => {
     labelColor: isValid ? palette.text.secondary : errorColor,
     boxColor: isValid ? palette.grey[500] : errorColor,
     hoverShadowWidth: "1px",
-    hoverShadowColor: palette.text.primary,
+    hoverShadowColor: isValid ? palette.text.primary : errorColor,
   };
 };
