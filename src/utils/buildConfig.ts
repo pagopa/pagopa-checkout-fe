@@ -3,19 +3,23 @@ import {
   NpgFlowState,
   NpgFlowStateEvtData,
 } from "../features/payment/models/npgModel";
+import type {
+  FieldId,
+  FieldStatus,
+} from "../features/payment/components/IframeCardForm/types";
 
 interface BuildConfig {
-  onChange: any;
-  onReadyForPayment: any;
-  onPaymentComplete: any;
-  onPaymentRedirect: any;
-  onError: any;
+  onChange: (field: FieldId, fieldStatus: FieldStatus) => void;
+  onReadyForPayment: () => void;
+  onPaymentComplete: () => void;
+  onPaymentRedirect: (urlRedirect: string) => void;
+  onBuildError: () => void;
 }
 
 export default (buildConfig: BuildConfig) => {
   const { hostname, protocol, port } = window.location;
   const {
-    onError,
+    onBuildError,
     onChange,
     onReadyForPayment,
     onPaymentComplete,
@@ -54,7 +58,7 @@ export default (buildConfig: BuildConfig) => {
       //   HF0002 –temporary unavailability of the service
       //   HF0003 -session expired–the payment experience shall be restarted from the post orders/build
       //   HF0007 –internal error–if the issue persists the payment has to be restarted
-      onError();
+      onBuildError();
     },
     onBuildFlowStateChange(
       npgFlowStateEvtData: NpgFlowStateEvtData,
@@ -81,7 +85,7 @@ export default (buildConfig: BuildConfig) => {
           void onPaymentRedirect(npgFlowStateEvtData.data.url);
           break;
         default:
-          onError();
+          onBuildError();
       }
     },
     cssLink: `${protocol}//${hostname}${

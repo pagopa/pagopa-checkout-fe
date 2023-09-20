@@ -180,33 +180,31 @@ export default function IframeCardForm(props: Props) {
     }
   };
 
-  const onReadyForPayment = () => {
-    void transaction();
-  };
-
-  const onPaymentComplete = () => {
-    clearNavigationEvents();
-    window.location.replace(`/${CheckoutRoutes.ESITO}`);
-  };
-
-  const onPaymentRedirect = (urlredirect: string) => {
-    clearNavigationEvents();
-    window.location.replace(urlredirect);
-  };
-
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   React.useEffect(() => {
     if (!form) {
-      const onError = (_error: string) => {
-        setLoading(false);
-        setSpinner(false);
-        window.location.replace(`/${CheckoutRoutes.ERRORE}`);
-      };
-
       const onResponse = (body: CreateSessionResponse) => {
         setSpinner(true);
         setSessionItem(SessionItems.orderId, body.orderId);
         setForm(body);
+
+        const onReadyForPayment = () => void transaction();
+
+        const onPaymentComplete = () => {
+          clearNavigationEvents();
+          window.location.replace(`/${CheckoutRoutes.ESITO}`);
+        };
+
+        const onPaymentRedirect = (urlredirect: string) => {
+          clearNavigationEvents();
+          window.location.replace(urlredirect);
+        };
+
+        const onBuildError = () => {
+          setLoading(false);
+          setSpinner(false);
+          window.location.replace(`/${CheckoutRoutes.ERRORE}`);
+        };
+
         try {
           // THIS is mandatory cause the Build class is defined in the external library called NPG SDK
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -217,13 +215,13 @@ export default function IframeCardForm(props: Props) {
               onReadyForPayment,
               onPaymentComplete,
               onPaymentRedirect,
-              onError,
+              onBuildError,
             })
           );
           setBuildInstance(newBuild);
           setSpinner(false);
         } catch {
-          window.location.replace(`/${CheckoutRoutes.ERRORE}`);
+          onBuildError();
         }
       };
 
@@ -241,6 +239,7 @@ export default function IframeCardForm(props: Props) {
       onError(ErrorsType.GENERIC_ERROR);
     }
   };
+
   const { t } = useTranslation();
 
   return (

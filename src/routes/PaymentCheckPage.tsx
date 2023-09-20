@@ -39,7 +39,7 @@ import {
   calculateFees,
   proceedToPayment,
 } from "../utils/api/helper";
-import { onBrowserUnload } from "../utils/eventListeners";
+import { onBrowserUnload, onBrowserBackEvent } from "../utils/eventListeners";
 import { moneyFormat } from "../utils/form/formatters";
 import {
   getSessionItem,
@@ -106,15 +106,14 @@ export default function PaymentCheckPage() {
   ) as SessionPaymentMethodResponse;
 
   React.useEffect(() => {
-    const onBrowserBackEvent = (e: any) => {
-      e.preventDefault();
-      window.history.pushState(null, "", window.location.pathname);
+    const onBack = (e: any) => {
+      onBrowserBackEvent(e);
       setCancelModalOpen(true);
     };
     window.addEventListener("beforeunload", onBrowserUnload);
     window.history.pushState(null, "", window.location.pathname);
-    window.addEventListener("popstate", onBrowserBackEvent);
-    return () => window.removeEventListener("popstate", onBrowserBackEvent);
+    window.addEventListener("popstate", onBack);
+    return () => window.removeEventListener("popstate", onBack);
   }, []);
 
   const onError = (m: string, userCancelRedirect?: boolean) => {
@@ -136,6 +135,7 @@ export default function PaymentCheckPage() {
   };
 
   const missingThreshold = () => threshold?.belowThreshold === undefined;
+
   React.useEffect(() => {
     if (missingThreshold()) {
       onError(ErrorsType.GENERIC_ERROR);
