@@ -50,3 +50,12 @@ body {
   outline: none;
 	border: 0;
 }
+
+input[id="CARD_NUMBER"][style] {
+	background-position-x: 0 !important;
+	padding-left: 50px;
+	transition: all 0.5s ease;
+}
+input[id="CARD_NUMBER"][style]:placeholder-shown {
+    padding-left: 0;
+}
