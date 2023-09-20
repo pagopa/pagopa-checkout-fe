@@ -29,6 +29,7 @@ import { setThreshold } from "../../../../redux/slices/threshold";
 import { CreateSessionResponse } from "../../../../../generated/definitions/payment-ecommerce/CreateSessionResponse";
 import ErrorModal from "../../../../components/modals/ErrorModal";
 import createBuildConfig from "../../../../utils/buildConfig";
+import { clearNavigationEvents } from "../../../../utils/eventListeners";
 import { IframeCardField } from "./IframeCardField";
 import type { FieldId, FieldStatus, FormStatus } from "./types";
 import { IdFields } from "./types";
@@ -169,7 +170,7 @@ export default function IframeCardForm(props: Props) {
     }
   };
 
-  const updateFormStatus = (id: FieldId, status: FieldStatus) => {
+  const onChange = (id: FieldId, status: FieldStatus) => {
     if (Object.keys(IdFields).includes(id)) {
       setActiveField(id);
       setFormStatus((fields) => ({
@@ -177,6 +178,20 @@ export default function IframeCardForm(props: Props) {
         [id]: status,
       }));
     }
+  };
+
+  const onReadyForPayment = () => {
+    void transaction();
+  };
+
+  const onPaymentComplete = () => {
+    clearNavigationEvents();
+    window.location.replace(`/${CheckoutRoutes.ESITO}`);
+  };
+
+  const onPaymentRedirect = (urlredirect: string) => {
+    clearNavigationEvents();
+    window.location.replace(urlredirect);
   };
 
   // eslint-disable-next-line sonarjs/cognitive-complexity
@@ -197,7 +212,13 @@ export default function IframeCardForm(props: Props) {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           const newBuild = new Build(
-            createBuildConfig(updateFormStatus, onError, transaction)
+            createBuildConfig({
+              onChange,
+              onReadyForPayment,
+              onPaymentComplete,
+              onPaymentRedirect,
+              onError,
+            })
           );
           setBuildInstance(newBuild);
           setSpinner(false);

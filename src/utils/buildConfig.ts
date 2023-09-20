@@ -1,16 +1,30 @@
-import { CheckoutRoutes } from "../routes/models/routeModel";
 import {
   NpgEvtData,
   NpgFlowState,
   NpgFlowStateEvtData,
 } from "../features/payment/models/npgModel";
 
-export default (updateFormStatus: any, onError: any, transaction: any) => {
+interface BuildConfig {
+  onChange: any;
+  onReadyForPayment: any;
+  onPaymentComplete: any;
+  onPaymentRedirect: any;
+  onError: any;
+}
+
+export default (buildConfig: BuildConfig) => {
   const { hostname, protocol, port } = window.location;
+  const {
+    onError,
+    onChange,
+    onReadyForPayment,
+    onPaymentComplete,
+    onPaymentRedirect,
+  } = buildConfig;
   return {
     onBuildSuccess({ id }: NpgEvtData) {
       // write some code to manage the successful data entering in the specified field: evtData.id
-      updateFormStatus(id, {
+      onChange(id, {
         isValid: true,
         errorCode: null,
         errorMessage: null,
@@ -28,7 +42,7 @@ export default (updateFormStatus: any, onError: any, transaction: any) => {
       //   HF0006 -expiration date exceeded–the provided card is expired
       //   HF0007 –internal error –if the issue persists the payment has to be restarted
       //   HF0009 –3DS GDI verification failed –the payment experience has to be stopped with failure.
-      updateFormStatus(id, {
+      onChange(id, {
         isValid: false,
         errorCode,
         errorMessage,
@@ -58,13 +72,13 @@ export default (updateFormStatus: any, onError: any, transaction: any) => {
       //   the get https://{nexiDomain}/api/phoenix-0.0/psp/api/v1/build/state?orderId={theorderId}  },
       switch (npgFlowState) {
         case NpgFlowState.READY_FOR_PAYMENT:
-          void transaction();
+          void onReadyForPayment();
           break;
         case NpgFlowState.PAYMENT_COMPLETE:
-          window.location.replace(`/${CheckoutRoutes.ESITO}`);
+          void onPaymentComplete();
           break;
         case NpgFlowState.REDIRECTED_TO_EXTERNAL_DOMAIN:
-          window.location.replace(npgFlowStateEvtData.data.url);
+          void onPaymentRedirect(npgFlowStateEvtData.data.url);
           break;
         default:
           onError();

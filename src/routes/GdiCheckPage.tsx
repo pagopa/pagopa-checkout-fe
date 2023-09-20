@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import PageContainer from "../components/PageContent/PageContainer";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
 import { getFragmentParameter } from "../utils/regex/urlUtilities";
-import { onBrowserUnload } from "../utils/eventListeners";
+import { onBrowserUnload, onBrowserBackEvent } from "../utils/eventListeners";
 import { CheckoutRoutes } from "./models/routeModel";
 
 const GdiCheckPage = () => {
@@ -19,11 +19,6 @@ const GdiCheckPage = () => {
 
   useEffect(() => {
     try {
-      const onBrowserBackEvent = (e: any) => {
-        e.preventDefault();
-        window.history.pushState(null, "", window.location.pathname);
-      };
-
       window.addEventListener("beforeunload", onBrowserUnload);
       window.history.pushState(null, "", window.location.pathname);
       window.addEventListener("popstate", onBrowserBackEvent);
