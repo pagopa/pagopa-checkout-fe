@@ -1,3 +1,4 @@
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import {
   Box,
   FormControl,
@@ -32,6 +33,7 @@ interface Styles {
   label: SxProps;
   box: SxProps;
   iframe: React.CSSProperties;
+  fieldStatusIcon: React.CSSProperties;
 }
 
 export function IframeCardField(props: Props) {
@@ -39,7 +41,7 @@ export function IframeCardField(props: Props) {
     return <Box />;
   }
 
-  const { fields, id, errorCode, errorMessage, label } = props;
+  const { fields, id, errorCode, errorMessage, label, isValid } = props;
   const { t } = useTranslation();
   const styles = useStyles(props);
 
@@ -61,20 +63,29 @@ export function IframeCardField(props: Props) {
       </InputLabel>
       <Box sx={styles.box}>
         {src && (
-          <iframe
-            src={src}
-            style={styles.iframe}
-            id={`frame_${id}`}
-            title={label}
-          />
+          <Box width={1}>
+            <iframe
+              src={src}
+              style={styles.iframe}
+              id={`frame_${id}`}
+              title={label}
+            />
+          </Box>
         )}
+        <Box
+          style={styles.fieldStatusIcon}
+          aria-role="presentation"
+          visibility={isValid === false ? "visible" : "hidden"}
+        >
+          <ErrorOutlineIcon sx={{ mr: 1 }} color="error" />
+        </Box>
       </Box>
       {(errorMessage || errorCode) && (
         <FormHelperText
           required
           error
           id={`frame_${id}_hint`}
-          aria-hidden={!errorMessage}
+          aria-hidden={isValid}
           aria-live="assertive"
         >
           {t(`errorMessageNPG.${errorCode}`, {
@@ -110,6 +121,8 @@ const useStyles = (props: Props): Styles => {
     box: {
       padding: 2,
       position: "relative",
+      display: "flex",
+      flexDirection: "row",
     },
     iframe: {
       display: "block",
@@ -117,6 +130,12 @@ const useStyles = (props: Props): Styles => {
       height: "30px",
       width: "100%",
       ...(style || {}),
+    },
+    fieldStatusIcon: {
+      display: "flex",
+      alignItems: "center",
+      width: "10%",
+      justifyContent: "flex-end",
     },
   };
 };
@@ -152,6 +171,6 @@ const useBorderStyles = ({ isValid, activeField, id }: Props) => {
     labelColor: isValid ? palette.text.secondary : errorColor,
     boxColor: isValid ? palette.grey[500] : errorColor,
     hoverShadowWidth: "1px",
-    hoverShadowColor: palette.text.primary,
+    hoverShadowColor: isValid ? palette.text.primary : errorColor,
   };
 };
