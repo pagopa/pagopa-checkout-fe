@@ -60,6 +60,10 @@ parameters:
     type: string
     default: ''
 
+  - name: 'checkout_npg_sdk_url'
+    type: string
+    default: ''
+
 steps:
 - bash: |
     chmod +x env.sh
@@ -79,6 +83,7 @@ steps:
       CHECKOUT_API_ECOMMERCE_BASEPATH=${{ parameters.api_ecommerce_basepath }} \
       CHECKOUT_PAGOPA_ASSETS_CDN=${{ parameters.pagopa_assets_cdn }} \
       CHECKOUT_PAGOPA_LOGOS_CDN=${{ parameters.pagopa_logos_cdn }} \
+      CHECKOUT_NPG_SDK_URL=${{ parameters.checkout_npg_sdk_url }} \
       bash env.sh
 
   displayName: 'Populate environment file'
