@@ -69,12 +69,12 @@ export function IframeCardField(props: Props) {
               style={styles.iframe}
               id={`frame_${id}`}
               title={label}
+              loading="lazy"
             />
           </Box>
         )}
         <Box
           style={styles.fieldStatusIcon}
-          aria-role="presentation"
           visibility={isValid === false ? "visible" : "hidden"}
         >
           <ErrorOutlineIcon sx={{ mr: 1 }} color="error" />
