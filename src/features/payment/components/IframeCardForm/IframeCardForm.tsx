@@ -59,7 +59,6 @@ export default function IframeCardForm(props: Props) {
   const { onCancel, hideCancel } = props;
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
-  const [spinner, setSpinner] = React.useState(true);
   const [error, setError] = React.useState("");
   const [form, setForm] = React.useState<CreateSessionResponse>();
   const [activeField, setActiveField] = React.useState<FieldId | undefined>(
@@ -77,7 +76,6 @@ export default function IframeCardForm(props: Props) {
 
   const onError = (m: string) => {
     setLoading(false);
-    setSpinner(false);
     setError(m);
     setErrorModalOpen(true);
     ref.current?.reset();
@@ -183,7 +181,6 @@ export default function IframeCardForm(props: Props) {
   React.useEffect(() => {
     if (!form) {
       const onResponse = (body: CreateSessionResponse) => {
-        setSpinner(true);
         setSessionItem(SessionItems.orderId, body.orderId);
         setForm(body);
 
@@ -201,7 +198,6 @@ export default function IframeCardForm(props: Props) {
 
         const onBuildError = () => {
           setLoading(false);
-          setSpinner(false);
           window.location.replace(`/${CheckoutRoutes.ERRORE}`);
         };
 
@@ -219,7 +215,6 @@ export default function IframeCardForm(props: Props) {
             })
           );
           setBuildInstance(newBuild);
-          setSpinner(false);
         } catch {
           onBuildError();
         }
@@ -246,7 +241,6 @@ export default function IframeCardForm(props: Props) {
     <>
       <form id="iframe-card-form" onSubmit={handleSubmit}>
         <Box>
-          {spinner && "spinner"}
           <Box>
             <IframeCardField
               label={t("inputCardPage.formFields.number")}

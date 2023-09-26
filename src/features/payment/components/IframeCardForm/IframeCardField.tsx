@@ -5,6 +5,7 @@ import {
   FormHelperText,
   InputLabel,
   useTheme,
+  Skeleton,
 } from "@mui/material";
 import { SxProps } from "@mui/system";
 import React from "react";
@@ -23,6 +24,10 @@ interface Props {
   activeField: FieldId | undefined;
 }
 
+interface State {
+  loaded: boolean;
+}
+
 const getSrcFromFieldsByID = (
   fields: ReadonlyArray<Field>,
   id: keyof typeof IdFields
@@ -33,25 +38,27 @@ interface Styles {
   label: SxProps;
   box: SxProps;
   iframe: React.CSSProperties;
+  skeleton: SxProps;
   fieldStatusIcon: React.CSSProperties;
 }
 
 export function IframeCardField(props: Props) {
-  if (!props.fields || !props.id) {
-    return <Box />;
-  }
-
   const { fields, id, errorCode, errorMessage, label, isValid } = props;
   const { t } = useTranslation();
+
+  const [loaded, setLoaded] = React.useState<State["loaded"]>(false);
   const styles = useStyles(props);
 
   // Find src based on ID
-  const src = getSrcFromFieldsByID(fields, id);
-  if (!src) {
-    return <Box />;
-  }
+  const src = fields && id ? getSrcFromFieldsByID(fields, id) : "";
 
-  return (
+  React.useEffect(() => {
+    if (src) {
+      setTimeout(() => setLoaded(true), 2000);
+    }
+  }, [src]);
+
+  const InnerComponent = (
     <FormControl sx={styles.formControl}>
       <InputLabel
         sx={styles.label}
@@ -62,17 +69,14 @@ export function IframeCardField(props: Props) {
         {label}
       </InputLabel>
       <Box sx={styles.box}>
-        {src && (
-          <Box width={1}>
-            <iframe
-              src={src}
-              style={styles.iframe}
-              id={`frame_${id}`}
-              title={label}
-              loading="lazy"
-            />
-          </Box>
-        )}
+        <iframe
+          aria-labelledby={label}
+          id={`frame_${id}`}
+          loading="lazy"
+          seamless
+          src={src}
+          style={styles.iframe}
+        />
         <Box
           style={styles.fieldStatusIcon}
           visibility={isValid === false ? "visible" : "hidden"}
@@ -94,6 +98,21 @@ export function IframeCardField(props: Props) {
         </FormHelperText>
       )}
     </FormControl>
+  );
+
+  return (
+    <>
+      {loaded || (
+        <Skeleton
+          variant="text"
+          sx={styles.skeleton}
+          animation="wave"
+        >
+          {InnerComponent}
+        </Skeleton>
+      )}
+      <Box display={loaded ? "flex" : "none"}>{InnerComponent}</Box>
+    </>
   );
 }
 
@@ -119,17 +138,29 @@ const useStyles = (props: Props): Styles => {
       color: borderStyle.labelColor,
     },
     box: {
-      padding: 2,
+      height: 61,
+      width: "100%",
+      padding: "1px",
+      paddingLeft: 1,
       position: "relative",
       display: "flex",
       flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "flex-end",
     },
     iframe: {
-      display: "block",
+      display: "flex",
       border: "none",
-      height: "30px",
+      height: "100%",
       width: "100%",
+      justifyContent: "center",
       ...(style || {}),
+    },
+    skeleton: {
+      display: "flex",
+      width: "100%",
+      maxWidth: "100%",
+      cursor: "progress",
     },
     fieldStatusIcon: {
       display: "flex",
