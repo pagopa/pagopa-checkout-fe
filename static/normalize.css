@@ -149,28 +149,28 @@ template {
   font-family: "Titillium Web";
   font-style: normal;
   font-weight: 400;
-  src: url("../fonts/TitilliumWeb-Regular.ttf") format("truetype");
+  src: url("./fonts/TitilliumWeb-Regular.ttf") format("truetype");
 }
 
 @font-face {
   font-family: "Titillium Web";
   font-style: italic;
   font-weight: 400;
-  src: url("../fonts/TitilliumWeb-Italic.ttf") format("truetype");
+  src: url("./fonts/TitilliumWeb-Italic.ttf") format("truetype");
 }
 
 @font-face {
   font-family: "Titillium Web";
   font-style: normal;
   font-weight: 600;
-  src: url("../fonts/TitilliumWeb-SemiBold.ttf") format("truetype");
+  src: url("./fonts/TitilliumWeb-SemiBold.ttf") format("truetype");
 }
 
 @font-face {
   font-family: "Titillium Web";
   font-style: italic;
   font-weight: 600;
-  src: url("../fonts/TitilliumWeb-SemiBoldItalic.ttf") format("truetype");
+  src: url("./fonts/TitilliumWeb-SemiBoldItalic.ttf") format("truetype");
 }
 html {
   font-family: "Titillium Web";
