@@ -54,11 +54,10 @@ body {
 	border: 0;
 }
 
-input[id="CARD_NUMBER"][style] {
-	background-position-x: 0 !important;
+#CARD_NUMBER {
 	padding-left: 50px;
-	transition: all 0.5s ease;
-}
-input[id="CARD_NUMBER"][style]:placeholder-shown {
-    padding-left: 0;
+	background-position: 5px !important;
+	background-image: url('./card-default.svg');
+	background-repeat: no-repeat;
+	background-size: 35px;
 }
