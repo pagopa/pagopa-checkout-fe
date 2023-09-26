@@ -81,7 +81,7 @@ export function IframeCardField(props: Props) {
           style={styles.fieldStatusIcon}
           visibility={isValid === false ? "visible" : "hidden"}
         >
-          <ErrorOutlineIcon sx={{ mr: 1 }} color="error" />
+          <ErrorOutlineIcon sx={{ mr: 2.5 }} color="error" />
         </Box>
       </Box>
       {(errorMessage || errorCode) && (
@@ -164,9 +164,11 @@ const useStyles = (props: Props): Styles => {
     },
     fieldStatusIcon: {
       display: "flex",
+      position: "absolute",
       alignItems: "center",
-      width: "10%",
-      justifyContent: "flex-end",
+      width: "10%%",
+      justifySelf: "flex-end",
+      cursor: "initial",
     },
   };
 };
@@ -201,7 +203,7 @@ const useBorderStyles = ({ isValid, activeField, id }: Props) => {
   return {
     labelColor: isValid ? palette.text.secondary : errorColor,
     boxColor: isValid ? palette.grey[500] : errorColor,
-    hoverShadowWidth: "1px",
+    hoverShadowWidth: "2px",
     hoverShadowColor: isValid ? palette.text.primary : errorColor,
   };
 };
