@@ -64,11 +64,12 @@ export function IframeCardField(props: Props) {
         sx={styles.label}
         margin="dense"
         shrink
-        htmlFor={`frame_${id}`}
+        htmlFor={id}
+        id={label}
       >
         {label}
       </InputLabel>
-      <Box sx={styles.box}>
+      <Box sx={styles.box} aria-busy={!loaded}>
         <iframe
           aria-labelledby={label}
           id={`frame_${id}`}
@@ -79,6 +80,7 @@ export function IframeCardField(props: Props) {
         />
         <Box
           style={styles.fieldStatusIcon}
+          role="presentation"
           visibility={isValid === false ? "visible" : "hidden"}
         >
           <ErrorOutlineIcon sx={{ mr: 2.5 }} color="error" />
@@ -106,6 +108,7 @@ export function IframeCardField(props: Props) {
         <Skeleton
           variant="text"
           sx={styles.skeleton}
+          aria-busy={true}
           animation="wave"
         >
           {InnerComponent}
