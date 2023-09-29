@@ -205,6 +205,7 @@ export const activatePayment = async ({
             response.amount,
             userEmail || "",
             rptId,
+            orderId,
             token,
             cartInfo
           ),
@@ -226,6 +227,7 @@ const activePaymentTask = (
   amountSinglePayment: AmountEuroCents,
   userEmail: string,
   rptId: RptId,
+  orderId: string,
   recaptchaResponse: string,
   cart?: Cart
 ): TE.TaskEither<string, NewTransactionResponse> =>
@@ -241,6 +243,7 @@ const activePaymentTask = (
             paymentNotices: getPaymentNotices(amountSinglePayment, rptId, cart),
             idCart: cart?.idCart,
             email: userEmail,
+            orderId
           },
         });
       },
