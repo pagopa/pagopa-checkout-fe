@@ -257,7 +257,7 @@ export default function IframeCardForm(props: Props) {
             justifyContent={"space-between"}
             sx={{ gap: 2 }}
           >
-            <Box>
+            <Box sx={{ flex: "1 1 0" }}>
               <IframeCardField
                 label={t("inputCardPage.formFields.expirationDate")}
                 fields={form?.paymentMethodData.form}
@@ -268,7 +268,7 @@ export default function IframeCardForm(props: Props) {
                 activeField={activeField}
               />
             </Box>
-            <Box>
+            <Box width="50%">
               <IframeCardField
                 label={t("inputCardPage.formFields.cvv")}
                 fields={form?.paymentMethodData.form}
