@@ -110,9 +110,7 @@ export function IframeCardField(props: Props) {
           sx={styles.skeleton}
           aria-busy={true}
           animation="wave"
-        >
-          {InnerComponent}
-        </Skeleton>
+        />
       )}
       <Box display={loaded ? "flex" : "none"}>{InnerComponent}</Box>
     </>
@@ -164,6 +162,7 @@ const useStyles = (props: Props): Styles => {
       width: "100%",
       maxWidth: "100%",
       cursor: "progress",
+      height: "108px",
     },
     fieldStatusIcon: {
       display: "flex",
