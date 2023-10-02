@@ -17,6 +17,7 @@ export const IConfig = t.interface({
   CHECKOUT_ECOMMERCE_HOST: NonEmptyString,
   CHECKOUT_PM_API_BASEPATH: NonEmptyString,
   CHECKOUT_API_ECOMMERCE_BASEPATH: NonEmptyString,
+  CHECKOUT_API_ECOMMERCE_BASEPATH_V2: NonEmptyString,
   CHECKOUT_API_TIMEOUT: t.number,
   CHECKOUT_ENV: NonEmptyString,
   CHECKOUT_PAGOPA_APIM_HOST: NonEmptyString,
