@@ -51,6 +51,10 @@ parameters:
   - name: 'api_ecommerce_basepath'
     type: string
     default: ''
+  
+  - name: 'api_ecommerce_basepath_v2'
+    type: string
+    default: ''
 
   - name: 'pagopa_assets_cdn'
     type: string
@@ -81,6 +85,7 @@ steps:
       CHECKOUT_DONATIONS_URL=${{ parameters.donations_url }} \
       CHECKOUT_ECOMMERCE_HOST=${{ parameters.ecommerce_host }} \
       CHECKOUT_API_ECOMMERCE_BASEPATH=${{ parameters.api_ecommerce_basepath }} \
+      CHECKOUT_API_ECOMMERCE_BASEPATH_V2=${{ parameters.api_ecommerce_basepath_v2 }} \
       CHECKOUT_PAGOPA_ASSETS_CDN=${{ parameters.pagopa_assets_cdn }} \
       CHECKOUT_PAGOPA_LOGOS_CDN=${{ parameters.pagopa_logos_cdn }} \
       CHECKOUT_NPG_SDK_URL=${{ parameters.checkout_npg_sdk_url }} \

@@ -1,6 +1,7 @@
 import { Millisecond } from "@pagopa/ts-commons/lib/units";
 import { DeferredPromise } from "@pagopa/ts-commons//lib/promises";
 import { createClient as createEcommerceClient } from "../../../generated/definitions/payment-ecommerce/client";
+import { createClient as createEcommerceClientV2 } from "../../../generated/definitions/payment-ecommerce-v2/client";
 import { createClient as createTransactionsClient } from "../../../generated/definitions/payment-transactions-api/client";
 import { getConfigOrThrow } from "../config/config";
 import {
@@ -22,11 +23,20 @@ export const apiPaymentTransactionsClient = createTransactionsClient({
 });
 
 /**
- * Api client for payment ecommerce API
+ * Api client for payment ecommerce API V1
  */
 export const apiPaymentEcommerceClient = createEcommerceClient({
   baseUrl: conf.CHECKOUT_ECOMMERCE_HOST,
   basePath: conf.CHECKOUT_API_ECOMMERCE_BASEPATH as string,
+  fetchApi: retryingFetch(fetch, conf.CHECKOUT_API_TIMEOUT as Millisecond, 3),
+});
+
+/**
+ * Api client for payment ecommerce API V2
+ */
+export const apiPaymentEcommerceClientV2 = createEcommerceClientV2({
+  baseUrl: conf.CHECKOUT_ECOMMERCE_HOST,
+  basePath: conf.CHECKOUT_API_ECOMMERCE_BASEPATH_V2 as string,
   fetchApi: retryingFetch(fetch, conf.CHECKOUT_API_TIMEOUT as Millisecond, 3),
 });
 
