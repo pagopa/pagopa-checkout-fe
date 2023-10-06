@@ -86,6 +86,7 @@ import { CreateSessionResponse } from "../../../generated/definitions/payment-ec
 import {
   apiPaymentEcommerceClientWithRetry,
   apiPaymentEcommerceClient,
+  apiPaymentEcommerceClientV2,
 } from "./client";
 
 export const getEcommercePaymentInfoTask = (
@@ -206,6 +207,7 @@ export const activatePayment = async ({
             userEmail || "",
             rptId,
             token,
+            orderId,
             cartInfo
           ),
           TE.fold(
@@ -227,6 +229,7 @@ const activePaymentTask = (
   userEmail: string,
   rptId: RptId,
   recaptchaResponse: string,
+  orderId: string,
   cart?: Cart
 ): TE.TaskEither<string, NewTransactionResponse> =>
   pipe(
@@ -235,12 +238,13 @@ const activePaymentTask = (
         mixpanel.track(PAYMENT_ACTIVATE_INIT.value, {
           EVENT_ID: PAYMENT_ACTIVATE_INIT.value,
         });
-        return apiPaymentEcommerceClient.newTransaction({
+        return apiPaymentEcommerceClientV2.newTransaction({
           recaptchaResponse,
           body: {
             paymentNotices: getPaymentNotices(amountSinglePayment, rptId, cart),
             idCart: cart?.idCart,
             email: userEmail,
+            orderId,
           },
         });
       },
