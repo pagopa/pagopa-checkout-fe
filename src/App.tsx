@@ -4,6 +4,7 @@ import { theme } from "@pagopa/mui-italia";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import type { MuiLoadingButton } from '@mui/lab/themeAugmentation';
 import Guard from "./components/commons/Guard";
 import { Layout } from "./components/commons/Layout";
 import NoticeGuard from "./components/commons/NoticeGuard";
@@ -75,6 +76,23 @@ const checkoutTheme = createTheme({
         root: {
           borderRadius: "8px",
         },
+      },
+    },
+    MuiLoadingButton: {
+      styleOverrides: {
+        loadingIndicator: {
+          color: "white !important",
+        },
+        root: ({ ownerState }) =>
+          (ownerState.loading && {
+            backgroundColor: "#0B3EE3 !important",
+            color: "transparent !important",
+          }) ||
+          (ownerState.disabled &&
+            ownerState.type === "submit" && {
+              backgroundColor: "#0B3EE3 !important",
+              color: "white !important",
+            }),
       },
     },
     MuiButton: {
