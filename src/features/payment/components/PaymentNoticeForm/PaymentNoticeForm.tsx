@@ -27,17 +27,17 @@ export function PaymentNoticeForm(props: {
     const errors: PaymentFormErrors = {
       ...(values.billCode
         ? {
-            ...(/\b^\d{18}$\b/.test(values.billCode)
-              ? {}
-              : { billCode: "paymentNoticePage.formErrors.minCode" }),
-          }
+          ...(/\b^\d{18}$\b/.test(values.billCode)
+            ? {}
+            : { billCode: "paymentNoticePage.formErrors.minCode" }),
+        }
         : { billCode: "paymentNoticePage.formErrors.required" }),
       ...(values.cf
         ? {
-            ...(/\b^\d{11}$\b/.test(values.cf)
-              ? {}
-              : { cf: "paymentNoticePage.formErrors.minCf" }),
-          }
+          ...(/\b^\d{11}$\b/.test(values.cf)
+            ? {}
+            : { cf: "paymentNoticePage.formErrors.minCf" }),
+        }
         : { cf: "paymentNoticePage.formErrors.required" }),
     };
 

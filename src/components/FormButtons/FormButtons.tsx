@@ -4,7 +4,6 @@ import { Grid } from "@mui/material";
 import { default as React } from "react";
 import { useTranslation } from "react-i18next";
 import { useSmallDevice } from "../../hooks/useSmallDevice";
-
 export function FormButtons(props: {
   handleSubmit: (e: React.FormEvent) => void;
   handleCancel: () => void;
@@ -51,6 +50,15 @@ export function FormButtons(props: {
             loading={props.loadingSubmit || false}
             variant="contained"
             id={props.idSubmit}
+            sx={{
+              "&.Mui-disabled": {
+                background: "#0B3EE3",
+                color: "white",
+              },
+              ".MuiLoadingButton-loadingIndicator": {
+                color: "white",
+              },
+            }}
             onClick={props.type === "button" ? props.handleSubmit : undefined}
             disabled={props.disabledSubmit}
             style={{

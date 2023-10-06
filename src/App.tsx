@@ -43,6 +43,13 @@ const checkoutTheme = createTheme({
       paper: theme.palette.background.default,
       default: theme.palette.background.paper,
     },
+    primary: {
+      main: "#0B3EE3",
+    },
+  },
+
+  typography: {
+    fontFamily: "Arial",
   },
   components: {
     ...theme.components,
@@ -60,6 +67,20 @@ const checkoutTheme = createTheme({
           whiteSpace: "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis",
+        },
+      },
+    },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          borderRadius: "8px",
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: "8px",
         },
       },
     },
