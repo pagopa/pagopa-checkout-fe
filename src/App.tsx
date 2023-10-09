@@ -4,7 +4,7 @@ import { theme } from "@pagopa/mui-italia";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import type { MuiLoadingButton } from '@mui/lab/themeAugmentation';
+import "@mui/lab/themeAugmentation";
 import ReadexPro from 'url:./assets/fonts/ReadexPro-Regular.ttf'
 import Guard from "./components/commons/Guard";
 import { Layout } from "./components/commons/Layout";
@@ -94,18 +94,16 @@ const checkoutTheme = createTheme({
     MuiLoadingButton: {
       styleOverrides: {
         loadingIndicator: {
-          color: "white !important",
+          color: "white",
+          size: "24px",
         },
-        root: ({ ownerState }) =>
-          (ownerState.loading && {
-            backgroundColor: "#0B3EE3 !important",
-            color: "transparent !important",
-          }) ||
-          (ownerState.disabled &&
-            ownerState.type === "submit" && {
-              backgroundColor: "#0B3EE3 !important",
-              color: "white !important",
-            }),
+        root: ({ theme }) => ({
+          textTransform: "capitalize",
+          "&.MuiLoadingButton-loading": {
+            backgroundColor: theme.palette.primary,
+            color: "transparent",
+          },
+        }),
       },
     },
     MuiButton: {
