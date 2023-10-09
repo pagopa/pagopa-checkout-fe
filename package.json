@@ -27,6 +27,7 @@
   "dependencies": {
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.8.1",
+    "@fontsource-variable/readex-pro": "^5.0.8",
     "@mui/icons-material": "^5.2.5",
     "@mui/lab": "^5.0.0-alpha.69",
     "@mui/material": "^5.6.3",

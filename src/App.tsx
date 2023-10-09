@@ -5,7 +5,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import "@mui/lab/themeAugmentation";
-import ReadexPro from 'url:./assets/fonts/ReadexPro-Regular.ttf'
+import "@fontsource-variable/readex-pro";
 import Guard from "./components/commons/Guard";
 import { Layout } from "./components/commons/Layout";
 import NoticeGuard from "./components/commons/NoticeGuard";
@@ -51,22 +51,10 @@ const checkoutTheme = createTheme({
   },
 
   typography: {
-    fontFamily: "Readex Pro",
+    fontFamily: "Readex Pro Variable",
   },
   components: {
     ...theme.components,
-    MuiCssBaseline: {
-      styleOverrides: `
-        @font-face {
-          font-family: 'Readex Pro';
-          font-style: normal;
-          font-display: swap;
-          font-weight: 400;
-          src: local('Raleway'), local('Raleway-Regular'), url(${ReadexPro}) format('woff2');
-          unicodeRange: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF;
-        }
-      `,
-    },
     MuiFormHelperText: {
       styleOverrides: {
         root: {

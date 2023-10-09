@@ -547,6 +547,11 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
+"@fontsource-variable/readex-pro@^5.0.8":
+  version "5.0.8"
+  resolved "https://registry.yarnpkg.com/@fontsource-variable/readex-pro/-/readex-pro-5.0.8.tgz#64d50637862d390e47c603fa1b2504caf871e9ab"
+  integrity sha512-hl1pW5gcDtKxufNLf7Tjxw3uUO/kp/dfK0UmiZlCNZqyOQI/awvVtsOXcAHceU4BhnRsoVf8QYvR95SSidBC6g==
+
 "@fontsource/titillium-web@^4.5.3":
   version "4.5.3"
   resolved "https://registry.yarnpkg.com/@fontsource/titillium-web/-/titillium-web-4.5.3.tgz#36053f80be1d92a6c9a3a9f71cd202ffe1aedead"
