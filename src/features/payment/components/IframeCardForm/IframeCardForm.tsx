@@ -11,6 +11,7 @@ import {
   getSessionItem,
   SessionItems,
   setSessionItem,
+  getReCaptchaKey,
 } from "../../../../utils/storage/sessionStorage";
 import { NewTransactionResponse } from "../../../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import {
@@ -53,6 +54,18 @@ const initialFieldsState: FormStatus = Object.values(
   (acc, idField) => ({ ...acc, [idField]: initialFieldStatus }),
   {} as FormStatus
 );
+
+const callRecaptcha = async (recaptchaInstance: ReCAPTCHA, reset = false) => {
+  if (reset) {
+    void recaptchaInstance.reset();
+  }
+  const recaptchaResponse = await recaptchaInstance.executeAsync();
+  return pipe(
+    recaptchaResponse,
+    O.fromNullable,
+    O.getOrElse(() => "")
+  );
+};
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export default function IframeCardForm(props: Props) {
@@ -138,13 +151,8 @@ export default function IframeCardForm(props: Props) {
       },
     });
 
-  const transaction = async () => {
-    const recaptchaResponse = await ref.current?.executeAsync();
-    const token = pipe(
-      recaptchaResponse,
-      O.fromNullable,
-      O.getOrElse(() => "")
-    );
+  const transaction = async (recaptchaRef: ReCAPTCHA) => {
+    const token = await callRecaptcha(recaptchaRef, true);
     const transactionId = (
       getSessionItem(SessionItems.transaction) as
         | NewTransactionResponse
@@ -183,8 +191,8 @@ export default function IframeCardForm(props: Props) {
       const onResponse = (body: CreateSessionResponse) => {
         setSessionItem(SessionItems.orderId, body.orderId);
         setForm(body);
-
-        const onReadyForPayment = () => void transaction();
+        const onReadyForPayment = () =>
+          ref.current && void transaction(ref.current);
 
         const onPaymentComplete = () => {
           clearNavigationEvents();
@@ -220,7 +228,10 @@ export default function IframeCardForm(props: Props) {
         }
       };
 
-      void npgSessionsFields(onError, onResponse);
+      void (async () => {
+        const token = ref.current ? await callRecaptcha(ref.current) : "";
+        void npgSessionsFields(onError, onResponse, token);
+      })();
     }
   }, [form?.orderId]);
 
@@ -303,6 +314,13 @@ export default function IframeCardForm(props: Props) {
           hideCancel={hideCancel}
         />
       </form>
+      <Box display="none">
+        <ReCAPTCHA
+          ref={ref}
+          size="invisible"
+          sitekey={getReCaptchaKey() as string}
+        />
+      </Box>
       {!!errorModalOpen && (
         <ErrorModal
           error={error}
