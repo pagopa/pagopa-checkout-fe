@@ -79,6 +79,14 @@ const checkoutTheme = createTheme({
         },
       },
     },
+    MuiCircularProgress: {
+      styleOverrides: {
+        root: {
+          width: "24px !important",
+          height: "24px !important",
+        },
+      },
+    },
     MuiLoadingButton: {
       styleOverrides: {
         loadingIndicator: {
