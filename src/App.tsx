@@ -83,12 +83,11 @@ const checkoutTheme = createTheme({
       styleOverrides: {
         loadingIndicator: {
           color: "white",
-          size: "24px",
         },
         root: ({ theme }) => ({
           textTransform: "capitalize",
           "&.MuiLoadingButton-loading": {
-            backgroundColor: theme.palette.primary,
+            backgroundColor: theme.palette.primary.main,
             color: "transparent",
           },
         }),
