@@ -127,10 +127,12 @@ stages:
         steps:
       
         - checkout: checkout-be-mock
-        
+
         - script: cp env.example .env
           workingDirectory: pagopa-checkout-be-mock
           displayName: 'Setup env for mock'
+
+        - script: PYTHON=
 
         - script: yarn install && yarn build
           workingDirectory: pagopa-checkout-be-mock
