@@ -140,7 +140,7 @@ stages:
           - script : |
              echo "##[debug] Change test execution environment"
              cd e2e-tests 
-             rm -f .env && cp uat.env .env
+             rm -f .env && cp dev.env .env
           - script: |
              cd e2e-tests && yarn install
             displayName: 'Yarn install checkout tests'
