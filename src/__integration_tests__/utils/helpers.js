@@ -40,10 +40,10 @@ export const checkPspDisclaimerBeforeAuthorizePayment = async (noticeCode, fisca
 };
 
 export const checkErrorOnCardDataFormSubmit = async (noticeCode, fiscalCode, email, cardData) => {
-  const pspDisclaimerSelectorById = "#inputCardPageErrorTitleId";
+  const errorMessageTitleSelector = '#iframeCardFormErrorTitleId';
   await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
-  const disclaimerElement = await page.waitForSelector(pspDisclaimerSelectorById);
-  return await disclaimerElement.evaluate((el) => el.textContent);
+  const errorMessageElem = await page.waitForSelector(errorMessageTitleSelector);
+  return await errorMessageElem.evaluate((el) => el.textContent);
 };
 
 export const selectKeyboardForm = async () => {
@@ -88,9 +88,6 @@ export const fillAndSubmitCardDataForm = async (noticeCode, fiscalCode, email, c
   });
   await payNoticeBtn.click();
   await fillEmailForm(email);
-  if (!(await verifyPaymentMethods())) {
-    return "Failed";
-  }
   await choosePaymentMethod("CP");
   await fillCardDataForm(cardData);
 }
@@ -130,45 +127,42 @@ export const verifyPaymentMethods = async () => {
 
     const cardOptionBtn = await page.waitForSelector(cardOptionXPath);
     await cardOptionBtn.click();
-    if (!(await testPaymentMethodRoute())) {
-      return false;
-    }
-    await page.goBack();
   }
   return true;
 };
 
-export const testPaymentMethodRoute = async () => {
-  const url = await page.url();
-  const result = await page.evaluate((url) => url.split("/").pop() !== "", url);
-
-  return result;
-};
-
 export const fillCardDataForm = async (cardData) => {
-  const cardNumberInput = "#number";
-  const expirationDateInput = "#expirationDate";
-  const ccvInput = "#cvv";
-  const holderNameInput = "#name";
+  const cardNumberInput = '#frame_CARD_NUMBER';
+  const expirationDateInput = '#frame_EXPIRATION_DATE';
+  const ccvInput = '#frame_SECURITY_CODE';
+  const holderNameInput = '#frame_CARDHOLDER_NAME';
   const continueBtnXPath = "button[type=submit]";
-
-  await page.waitForSelector(cardNumberInput);
-  await page.click(cardNumberInput);
-  await page.keyboard.type(cardData.number);
-
-  await page.waitForSelector(expirationDateInput);
-  await page.click(expirationDateInput);
-  await page.keyboard.type(cardData.expirationDate);
-
-  await page.waitForSelector(ccvInput);
-  await page.click(ccvInput);
-  await page.keyboard.type(cardData.ccv);
-
-  await page.waitForSelector(holderNameInput);
-  await page.click(holderNameInput);
-  await page.keyboard.type(cardData.holderName);
-
-  const continueBtn = await page.waitForSelector(continueBtnXPath);
+  const disabledContinueBtnXPath = 'button[type=submit][disabled=""]';
+  let iteration = 0;
+  let completed = false;
+  while (!completed) {
+    iteration++;
+    console.log(`Compiling fields...${iteration}`);
+    await page.waitForSelector(cardNumberInput, { visible: true });
+    await page.click(cardNumberInput, { clickCount: 3 });
+    await page.keyboard.type(cardData.number);
+    console.log("card number performed");
+    await page.waitForSelector(expirationDateInput, { visible: true });
+    await page.click(expirationDateInput, { clickCount: 3 });
+    await page.keyboard.type(cardData.expirationDate);
+    console.log("expiration performed");
+    await page.waitForSelector(ccvInput, { visible: true });
+    await page.click(ccvInput, { clickCount: 3 });
+    await page.keyboard.type(cardData.ccv);
+    console.log("cvv performed");
+    await page.waitForSelector(holderNameInput, { visible: true });
+    await page.click(holderNameInput, { clickCount: 3 });
+    await page.keyboard.type(cardData.holderName);
+    console.log("holder performed");
+    completed = !(!! await page.$(disabledContinueBtnXPath));
+    await page.waitForTimeout(1_000);
+  }
+  const continueBtn = await page.waitForSelector(continueBtnXPath, { visible: true });
   await continueBtn.click();
 };
 

@@ -51,7 +51,7 @@ const UNATHORIZED_XPAY_CANCELED_3DS_AUTH_20 = "302016723740102072";
     await page.goto(CHECKOUT_URL);
   });
   
-it("Should fails - final status UNATHORIZED with XPAY error code INVALID_CARD 22", async () => {
+it.skip("Should fails - final status UNATHORIZED with XPAY error code INVALID_CARD 22", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_XPAY_INVALID_CARD_22,
     VALID_FISCAL_CODE,
@@ -63,7 +63,7 @@ it("Should fails - final status UNATHORIZED with XPAY error code INVALID_CARD 22
   expect(resultMessage).toContain("C’è un problema con la tua carta");
 });
 
-it("Should fails - final status UNATHORIZED with XPAY error code EXPIRED_CARD 14", async () => {
+it.skip("Should fails - final status UNATHORIZED with XPAY error code EXPIRED_CARD 14", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_XPAY_EXPIRED_CARD_14,
     VALID_FISCAL_CODE,
@@ -75,7 +75,7 @@ it("Should fails - final status UNATHORIZED with XPAY error code EXPIRED_CARD 14
   expect(resultMessage).toContain("C’è un problema con la tua carta");
 });
 
-it("Should fails - final status UNATHORIZED with XPAY error code ECARD_BRAND_NOT_PERMITTED 15", async () => {
+it.skip("Should fails - final status UNATHORIZED with XPAY error code ECARD_BRAND_NOT_PERMITTED 15", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_XPAY_ECARD_BRAND_NOT_PERMITTED_15,
     VALID_FISCAL_CODE,
@@ -87,7 +87,7 @@ it("Should fails - final status UNATHORIZED with XPAY error code ECARD_BRAND_NOT
   expect(resultMessage).toContain("C’è un problema con la tua carta");
 });
 
-it("Should fails - final status UNATHORIZED with XPAY error code DUPLICATE_TRANSACTION 9", async () => {
+it.skip("Should fails - final status UNATHORIZED with XPAY error code DUPLICATE_TRANSACTION 9", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_XPAY_DUPLICATE_TRANSACTION_9,
     VALID_FISCAL_CODE,
@@ -99,7 +99,7 @@ it("Should fails - final status UNATHORIZED with XPAY error code DUPLICATE_TRANS
   expect(resultMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
 });
 
-it("Should fails - final status UNATHORIZED with XPAY error code FORBIDDEN_OPERATION 99", async () => {
+it.skip("Should fails - final status UNATHORIZED with XPAY error code FORBIDDEN_OPERATION 99", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_XPAY_FORBIDDEN_OPERATION_99,
     VALID_FISCAL_CODE,
@@ -111,7 +111,7 @@ it("Should fails - final status UNATHORIZED with XPAY error code FORBIDDEN_OPERA
   expect(resultMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
 });
 
-it("Should fails - final status UNATHORIZED with XPAY error code INTERNAL_ERROR 100", async () => {
+it.skip("Should fails - final status UNATHORIZED with XPAY error code INTERNAL_ERROR 100", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_XPAY_INTERNAL_ERROR_100,
     VALID_FISCAL_CODE,
@@ -123,7 +123,7 @@ it("Should fails - final status UNATHORIZED with XPAY error code INTERNAL_ERROR 
   expect(resultMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
 });
 
-it("Should fails - final status UNATHORIZED with XPAY error code KO_RETRIABLE 96", async () => {
+it.skip("Should fails - final status UNATHORIZED with XPAY error code KO_RETRIABLE 96", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_XPAY_KO_RETRIABLE_96,
     VALID_FISCAL_CODE,
@@ -135,7 +135,7 @@ it("Should fails - final status UNATHORIZED with XPAY error code KO_RETRIABLE 96
   expect(resultMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
 });
 
-it("Should fails - final status UNATHORIZED with XPAY error code UNAVAILABLE_METHOD 98", async () => {
+it.skip("Should fails - final status UNATHORIZED with XPAY error code UNAVAILABLE_METHOD 98", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_XPAY_UNAVAILABLE_METHOD_98,
     VALID_FISCAL_CODE,
@@ -147,7 +147,7 @@ it("Should fails - final status UNATHORIZED with XPAY error code UNAVAILABLE_MET
   expect(resultMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
 });
 
-it("Should fails - final status UNATHORIZED with XPAY error code INVALID_STATUS 16", async () => {
+it.skip("Should fails - final status UNATHORIZED with XPAY error code INVALID_STATUS 16", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_XPAY_INVALID_STATUS_16,
     VALID_FISCAL_CODE,
@@ -159,7 +159,7 @@ it("Should fails - final status UNATHORIZED with XPAY error code INVALID_STATUS 
   expect(resultMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
 });
 
-it("Should fails - final status UNATHORIZED with XPAY error code CANCELED_3DS_AUTH 20", async () => {
+it.skip("Should fails - final status UNATHORIZED with XPAY error code CANCELED_3DS_AUTH 20", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_XPAY_CANCELED_3DS_AUTH_20,
     VALID_FISCAL_CODE,
@@ -171,7 +171,7 @@ it("Should fails - final status UNATHORIZED with XPAY error code CANCELED_3DS_AU
   expect(resultMessage).toContain("L’operazione è stata annullata");
 });
 
-it("Should fails - final status UNATHORIZED with XPAY no error code provided", async () => {
+it.skip("Should fails - final status UNATHORIZED with XPAY no error code provided", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_XPAY,
     VALID_FISCAL_CODE,

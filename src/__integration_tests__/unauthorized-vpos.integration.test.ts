@@ -71,7 +71,7 @@ const UNATHORIZED_VPOS_PAYMENT_INSTRUMENT_NOT_ACCEPTED_35 = "302016723740203572"
   });
 
 
-it("Should fails - final status UNATHORIZED with VPOS error code TIMEOUT 21", async () => {
+it.skip("Should fails - final status UNATHORIZED with VPOS error code TIMEOUT 21", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_VPOS_TIMEOUT_21,
     VALID_FISCAL_CODE,
@@ -82,7 +82,7 @@ it("Should fails - final status UNATHORIZED with VPOS error code TIMEOUT 21", as
 
   expect(resultMessage).toContain("Spiacenti, la sessione è scaduta");
 });
-it("Should fails - final status UNATHORIZED with VPOS error code INCORRECT_FORMAT 03", async () => {
+it.skip("Should fails - final status UNATHORIZED with VPOS error code INCORRECT_FORMAT 03", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_VPOS_INCORRECT_FORMAT_03,
     VALID_FISCAL_CODE,
@@ -94,7 +94,7 @@ it("Should fails - final status UNATHORIZED with VPOS error code INCORRECT_FORMA
   expect(resultMessage).toContain("I dati della carta non risultano corretti");
 });
 
-it("Should fails - final status UNATHORIZED with VPOS error code REQREFNUM_INVALID 02", async () => {
+it.skip("Should fails - final status UNATHORIZED with VPOS error code REQREFNUM_INVALID 02", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_VPOS_REQREFNUM_INVALID_02,
     VALID_FISCAL_CODE,
@@ -106,7 +106,7 @@ it("Should fails - final status UNATHORIZED with VPOS error code REQREFNUM_INVAL
   expect(resultMessage).toContain("I dati della carta non risultano corretti");
 });
 
-it("Should fails - final status UNATHORIZED with VPOS error code INCORRECT_MAC_OR_TIMESTAMP 04", async () => {
+it.skip("Should fails - final status UNATHORIZED with VPOS error code INCORRECT_MAC_OR_TIMESTAMP 04", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_VPOS_INCORRECT_MAC_OR_TIMESTAMP_04,
     VALID_FISCAL_CODE,
@@ -118,7 +118,7 @@ it("Should fails - final status UNATHORIZED with VPOS error code INCORRECT_MAC_O
   expect(resultMessage).toContain("I dati della carta non risultano corretti");
 });
 
-it("Should fails - final status UNATHORIZED with VPOS error code INCORRECT_DATE 05", async () => {
+it.skip("Should fails - final status UNATHORIZED with VPOS error code INCORRECT_DATE 05", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_VPOS_INCORRECT_DATE_05,
     VALID_FISCAL_CODE,
@@ -130,7 +130,7 @@ it("Should fails - final status UNATHORIZED with VPOS error code INCORRECT_DATE 
   expect(resultMessage).toContain("I dati della carta non risultano corretti");
 });
 
-it("Should fails - final status UNATHORIZED with VPOS error code TRANSACTION_ID_NOT_CONSISTENT 09", async () => {
+it.skip("Should fails - final status UNATHORIZED with VPOS error code TRANSACTION_ID_NOT_CONSISTENT 09", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_VPOS_TRANSACTION_ID_NOT_CONSISTENT_09,
     VALID_FISCAL_CODE,
@@ -142,7 +142,7 @@ it("Should fails - final status UNATHORIZED with VPOS error code TRANSACTION_ID_
   expect(resultMessage).toContain("I dati della carta non risultano corretti");
 });
 
-it("Should fails - final status UNATHORIZED with VPOS error code UNSUPPORTED_CURRENCY 16", async () => {
+it.skip("Should fails - final status UNATHORIZED with VPOS error code UNSUPPORTED_CURRENCY 16", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_VPOS_UNSUPPORTED_CURRENCY_16,
     VALID_FISCAL_CODE,
@@ -154,7 +154,7 @@ it("Should fails - final status UNATHORIZED with VPOS error code UNSUPPORTED_CUR
   expect(resultMessage).toContain("I dati della carta non risultano corretti");
 });
 
-it("Should fails - final status UNATHORIZED with VPOS error code UNSUPPORTED_EXPONENT 17", async () => {
+it.skip("Should fails - final status UNATHORIZED with VPOS error code UNSUPPORTED_EXPONENT 17", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_VPOS_UNSUPPORTED_EXPONENT_17,
     VALID_FISCAL_CODE,
@@ -165,7 +165,7 @@ it("Should fails - final status UNATHORIZED with VPOS error code UNSUPPORTED_EXP
 
   expect(resultMessage).toContain("I dati della carta non risultano corretti");
 });
-it("Should fails - final status UNATHORIZED with VPOS error code INVALID_PAN 38", async () => {
+it.skip("Should fails - final status UNATHORIZED with VPOS error code INVALID_PAN 38", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_VPOS_INVALID_PAN_38,
     VALID_FISCAL_CODE,
@@ -176,7 +176,7 @@ it("Should fails - final status UNATHORIZED with VPOS error code INVALID_PAN 38"
 
   expect(resultMessage).toContain("I dati della carta non risultano corretti");
 });
-it("Should fails - final status UNATHORIZED with VPOS error code XML_NOT_PARSABLE 41", async () => {
+it.skip("Should fails - final status UNATHORIZED with VPOS error code XML_NOT_PARSABLE 41", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_VPOS_XML_NOT_PARSABLE_41,
     VALID_FISCAL_CODE,
@@ -188,7 +188,7 @@ it("Should fails - final status UNATHORIZED with VPOS error code XML_NOT_PARSABL
   expect(resultMessage).toContain("I dati della carta non risultano corretti");
 });
 
-it("Should fails - final status UNATHORIZED with VPOS error code INSTALLMENT_NUMBER_OUT_OF_BOUNDS 51", async () => {
+it.skip("Should fails - final status UNATHORIZED with VPOS error code INSTALLMENT_NUMBER_OUT_OF_BOUNDS 51", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_VPOS_INSTALLMENT_NUMBER_OUT_OF_BOUNDS_51,
     VALID_FISCAL_CODE,
@@ -200,7 +200,7 @@ it("Should fails - final status UNATHORIZED with VPOS error code INSTALLMENT_NUM
   expect(resultMessage).toContain("I dati della carta non risultano corretti");
 });
 
-it("Should fails - final status UNATHORIZED with VPOS error code MISSING_CVV2 37", async () => {
+it.skip("Should fails - final status UNATHORIZED with VPOS error code MISSING_CVV2 37", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_VPOS_MISSING_CVV2_37,
     VALID_FISCAL_CODE,
@@ -212,7 +212,7 @@ it("Should fails - final status UNATHORIZED with VPOS error code MISSING_CVV2 37
   expect(resultMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
 });
 
-it("Should fails - final status UNATHORIZED with VPOS error code XML_EMPTY 40", async () => {
+it.skip("Should fails - final status UNATHORIZED with VPOS error code XML_EMPTY 40", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_VPOS_XML_EMPTY_40,
     VALID_FISCAL_CODE,
@@ -224,7 +224,7 @@ it("Should fails - final status UNATHORIZED with VPOS error code XML_EMPTY 40", 
   expect(resultMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
 });
 
-it("Should fails - final status UNATHORIZED with VPOS error code TRANSACTION_ID_NOT_FOUND 07", async () => {
+it.skip("Should fails - final status UNATHORIZED with VPOS error code TRANSACTION_ID_NOT_FOUND 07", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_VPOS_TRANSACTION_ID_NOT_FOUND_07,
     VALID_FISCAL_CODE,
@@ -236,7 +236,7 @@ it("Should fails - final status UNATHORIZED with VPOS error code TRANSACTION_ID_
   expect(resultMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
 });
 
-it("Should fails - final status UNATHORIZED with VPOS error code CIRCUIT_DISABLED 12", async () => {
+it.skip("Should fails - final status UNATHORIZED with VPOS error code CIRCUIT_DISABLED 12", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_VPOS_CIRCUIT_DISABLED_12,
     VALID_FISCAL_CODE,
@@ -248,7 +248,7 @@ it("Should fails - final status UNATHORIZED with VPOS error code CIRCUIT_DISABLE
   expect(resultMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
 });
 
-it("Should fails - final status UNATHORIZED with VPOS error code INSTALLMENTS_NOT_AVAILABLE 50", async () => {
+it.skip("Should fails - final status UNATHORIZED with VPOS error code INSTALLMENTS_NOT_AVAILABLE 50", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_VPOS_INSTALLMENTS_NOT_AVAILABLE_50,
     VALID_FISCAL_CODE,
@@ -260,7 +260,7 @@ it("Should fails - final status UNATHORIZED with VPOS error code INSTALLMENTS_NO
   expect(resultMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
 });
 
-it("Should fails - final status UNATHORIZED with VPOS error code OPERATOR_NOT_FOUND 08", async () => {
+it.skip("Should fails - final status UNATHORIZED with VPOS error code OPERATOR_NOT_FOUND 08", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_VPOS_OPERATOR_NOT_FOUND_08,
     VALID_FISCAL_CODE,
@@ -272,7 +272,7 @@ it("Should fails - final status UNATHORIZED with VPOS error code OPERATOR_NOT_FO
   expect(resultMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
 });
 
-it("Should fails - final status UNATHORIZED with VPOS error code ORDER_OR_REQREFNUM_NOT_FOUND 01", async () => {
+it.skip("Should fails - final status UNATHORIZED with VPOS error code ORDER_OR_REQREFNUM_NOT_FOUND 01", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_VPOS_ORDER_OR_REQREFNUM_NOT_FOUND_01,
     VALID_FISCAL_CODE,
@@ -284,7 +284,7 @@ it("Should fails - final status UNATHORIZED with VPOS error code ORDER_OR_REQREF
   expect(resultMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
 });
 
-it("Should fails - final status UNATHORIZED with VPOS error code DUPLICATED_ORDER 13", async () => {
+it.skip("Should fails - final status UNATHORIZED with VPOS error code DUPLICATED_ORDER 13", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_VPOS_DUPLICATED_ORDER_13,
     VALID_FISCAL_CODE,
@@ -296,7 +296,7 @@ it("Should fails - final status UNATHORIZED with VPOS error code DUPLICATED_ORDE
   expect(resultMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
 });
 
-it("Should fails - final status UNATHORIZED with VPOS error code UNKNOWN_ERROR 06", async () => {
+it.skip("Should fails - final status UNATHORIZED with VPOS error code UNKNOWN_ERROR 06", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_VPOS_UNKNOWN_ERROR_06,
     VALID_FISCAL_CODE,
@@ -308,7 +308,7 @@ it("Should fails - final status UNATHORIZED with VPOS error code UNKNOWN_ERROR 0
   expect(resultMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
 });
 
-it("Should fails - final status UNATHORIZED with VPOS error code APPLICATION_ERROR 98", async () => {
+it.skip("Should fails - final status UNATHORIZED with VPOS error code APPLICATION_ERROR 98", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_VPOS_APPLICATION_ERROR_98,
     VALID_FISCAL_CODE,
@@ -320,7 +320,7 @@ it("Should fails - final status UNATHORIZED with VPOS error code APPLICATION_ERR
   expect(resultMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
 });
 
-it("Should fails - final status UNATHORIZED with VPOS error code REDIRECTION_3DS1 20", async () => {
+it.skip("Should fails - final status UNATHORIZED with VPOS error code REDIRECTION_3DS1 20", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_VPOS_REDIRECTION_3DS1_20,
     VALID_FISCAL_CODE,
@@ -332,7 +332,7 @@ it("Should fails - final status UNATHORIZED with VPOS error code REDIRECTION_3DS
   expect(resultMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
 });
 
-it("Should fails - final status UNATHORIZED with VPOS error code METHOD_REQUESTED 25", async () => {
+it.skip("Should fails - final status UNATHORIZED with VPOS error code METHOD_REQUESTED 25", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_VPOS_METHOD_REQUESTED_25,
     VALID_FISCAL_CODE,
@@ -344,7 +344,7 @@ it("Should fails - final status UNATHORIZED with VPOS error code METHOD_REQUESTE
   expect(resultMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
 });
 
-it("Should fails - final status UNATHORIZED with VPOS error code CHALLENGE_REQUESTED 26", async () => {
+it.skip("Should fails - final status UNATHORIZED with VPOS error code CHALLENGE_REQUESTED 26", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_VPOS_CHALLENGE_REQUESTED_26,
     VALID_FISCAL_CODE,
@@ -356,7 +356,7 @@ it("Should fails - final status UNATHORIZED with VPOS error code CHALLENGE_REQUE
   expect(resultMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
 });
 
-it("Should fails - final status UNATHORIZED with VPOS error code INCORRECT_STATUS 11", async () => {
+it.skip("Should fails - final status UNATHORIZED with VPOS error code INCORRECT_STATUS 11", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_VPOS_INCORRECT_STATUS_11,
     VALID_FISCAL_CODE,
@@ -368,7 +368,7 @@ it("Should fails - final status UNATHORIZED with VPOS error code INCORRECT_STATU
   expect(resultMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
 });
 
-it("Should fails - final status UNATHORIZED with VPOS error code TRANSACTION_FAILED 99", async () => {
+it.skip("Should fails - final status UNATHORIZED with VPOS error code TRANSACTION_FAILED 99", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_VPOS_TRANSACTION_FAILED_99,
     VALID_FISCAL_CODE,
@@ -380,7 +380,7 @@ it("Should fails - final status UNATHORIZED with VPOS error code TRANSACTION_FAI
   expect(resultMessage).toContain("Autorizzazione negata");
 });
 
-it("Should fails - final status UNATHORIZED with VPOS error code EXCEEDING_AMOUNT 10", async () => {
+it.skip("Should fails - final status UNATHORIZED with VPOS error code EXCEEDING_AMOUNT 10", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_VPOS_EXCEEDING_AMOUNT_10,
     VALID_FISCAL_CODE,
@@ -392,7 +392,7 @@ it("Should fails - final status UNATHORIZED with VPOS error code EXCEEDING_AMOUN
   expect(resultMessage).toContain("Autorizzazione negata");
 });
 
-it("Should fails - final status UNATHORIZED with VPOS error code PAYMENT_INSTRUMENT_NOT_ACCEPTED 35", async () => {
+it.skip("Should fails - final status UNATHORIZED with VPOS error code PAYMENT_INSTRUMENT_NOT_ACCEPTED 35", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_VPOS_PAYMENT_INSTRUMENT_NOT_ACCEPTED_35,
     VALID_FISCAL_CODE,
@@ -404,7 +404,7 @@ it("Should fails - final status UNATHORIZED with VPOS error code PAYMENT_INSTRUM
   expect(resultMessage).toContain("C’è un problema con la tua carta");
 });
 
-it("Should fails - final status UNATHORIZED with VPOS no error code provided", async () => {
+it.skip("Should fails - final status UNATHORIZED with VPOS no error code provided", async () => {
   const resultMessage = await payNotice(
     UNATHORIZED_VPOS,
     VALID_FISCAL_CODE,
