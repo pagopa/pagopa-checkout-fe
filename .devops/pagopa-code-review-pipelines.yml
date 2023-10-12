@@ -132,7 +132,7 @@ stages:
           workingDirectory: pagopa-checkout-be-mock
           displayName: 'Setup env for mock'
 
-        - script: yarn install && yarn build
+        - script: yarn global add node-gyp && yarn install && yarn build
           workingDirectory: pagopa-checkout-be-mock
           displayName: 'Setup deps for mock'
 
