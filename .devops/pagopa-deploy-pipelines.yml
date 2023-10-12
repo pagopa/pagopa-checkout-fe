@@ -138,23 +138,16 @@ stages:
         steps:
           - checkout: checkoutTests
           - script : |
-             echo "##[debug] Change placeholder for CHECKOUT_URL ..."
+             echo "##[debug] Change test execution environment"
              cd e2e-tests 
-             mv dev.env .env
+             rm -f .env && cp uat.env .env
           - script: |
-             docker build -t ui_test e2e-tests
-            displayName: 'Build test image'
-
+             cd e2e-tests && yarn install
+            displayName: 'Yarn install checkout tests'
           - script: |
-              docker run --name=ui_test ui_test
-            displayName: 'Run UI test container'
+             cd e2e-tests && yarn test
+            displayName: 'Run UI test'
             continueOnError: true 
-
-          - script: |
-              docker cp ui_test:/puppeteer/test_reports  test_reports
-            displayName: 'Copy test result'
-            continueOnError: true 
-
           - task: PublishTestResults@2
             inputs:
               testResultsFormat: 'JUnit'
@@ -297,23 +290,16 @@ stages:
         steps:
           - checkout: checkoutTests
           - script : |
-             echo "##[debug] Change placeholder for CHECKOUT_URL ..."
+             echo "##[debug] Change test execution environment"
              cd e2e-tests 
-             mv uat.env .env
+             rm -f .env && cp uat.env .env
           - script: |
-             docker build -t ui_test e2e-tests
-            displayName: 'Build test image'
-
+             cd e2e-tests && yarn install
+            displayName: 'Yarn install checkout tests'
           - script: |
-              docker run --name=ui_test ui_test
-            displayName: 'Run UI test container'
+             cd e2e-tests && yarn test
+            displayName: 'Run UI test'
             continueOnError: true 
-
-          - script: |
-              docker cp ui_test:/puppeteer/test_reports  test_reports
-            displayName: 'Copy test result'
-            continueOnError: true 
-
           - task: PublishTestResults@2
             inputs:
               testResultsFormat: 'JUnit'
