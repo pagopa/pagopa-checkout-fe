@@ -58,8 +58,6 @@ resources:
 
 stages:
   - stage: End_to_End_Tests_DEV
-    dependsOn:
-      - Deploy_DEV_pagoPA
     pool:
       vmImage: 'ubuntu-latest'
     jobs:
@@ -71,8 +69,6 @@ stages:
               CHECKOUT_RESOURCE_REPO_NAME: checkoutTests
 
   - stage: End_to_End_Tests_UAT
-    dependsOn:
-      - Deploy_UAT_pagoPA
     pool:
       vmImage: 'ubuntu-latest'
     jobs:
