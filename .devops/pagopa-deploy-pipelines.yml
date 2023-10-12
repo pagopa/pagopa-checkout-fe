@@ -134,25 +134,12 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
     jobs:
-      - job: end_to_end_tests_dev
+      - job: e2e_tests
         steps:
-          - checkout: checkoutTests
-          - script : |
-             echo "##[debug] Change test execution environment"
-             cd e2e-tests 
-             rm -f .env && cp dev.env .env
-          - script: |
-             cd e2e-tests && yarn install
-            displayName: 'Yarn install checkout tests'
-          - script: |
-             cd e2e-tests && yarn test
-            displayName: 'Run UI test'
-            continueOnError: true 
-          - task: PublishTestResults@2
-            inputs:
-              testResultsFormat: 'JUnit'
-              testResultsFiles: '**/*-TEST.xml' 
-              searchFolder: '$(System.DefaultWorkingDirectory)'
+          - template: azure-templates/e2e-tests.yaml@checkoutTests
+            parameters:
+              ENVIRONMENT: DEV
+              CHECKOUT_RESOURCE_REPO_NAME: checkoutTests
 
   # Create a relase
   # Activated when ONE OF these are met:
@@ -286,25 +273,12 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
     jobs:
-      - job: end_to_end_tests_uat
+      - job: e2e_tests
         steps:
-          - checkout: checkoutTests
-          - script : |
-             echo "##[debug] Change test execution environment"
-             cd e2e-tests 
-             rm -f .env && cp uat.env .env
-          - script: |
-             cd e2e-tests && yarn install
-            displayName: 'Yarn install checkout tests'
-          - script: |
-             cd e2e-tests && yarn test
-            displayName: 'Run UI test'
-            continueOnError: true 
-          - task: PublishTestResults@2
-            inputs:
-              testResultsFormat: 'JUnit'
-              testResultsFiles: '**/*-TEST.xml' 
-              searchFolder: '$(System.DefaultWorkingDirectory)'
+          - template: azure-templates/e2e-tests.yaml@checkoutTests
+            parameters:
+              ENVIRONMENT: UAT
+              CHECKOUT_RESOURCE_REPO_NAME: checkoutTests
 
     # Prepare Artifact
   - stage: Prepare_artifact_prod
