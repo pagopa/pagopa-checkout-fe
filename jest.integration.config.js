@@ -1,6 +1,6 @@
 module.exports = {
   preset: "jest-puppeteer",
-  testRegex: "./*integration.test\\.ts$",
+  testRegex: "./*checkout.integration.test\\.ts$",
   reporters: [
       'default',
       [ 'jest-junit', {
