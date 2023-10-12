@@ -128,7 +128,10 @@ stages:
       
         - checkout: checkout-be-mock
 
-        - script: cp env.example .env
+        - script: | 
+            cp env.example .env
+            sed -i "s/^NPG_API_KEY=.*$/NPG_API_KEY=$(CHECKOUT-TEST-NPG-API-KEY)/" .env
+            sed -i "s/^PSP_API_KEY=.*$/PSP_API_KEY=$(CHECKOUT-TEST-NPG-API-KEY)/" .env
           workingDirectory: pagopa-checkout-be-mock
           displayName: 'Setup env for mock'
 
