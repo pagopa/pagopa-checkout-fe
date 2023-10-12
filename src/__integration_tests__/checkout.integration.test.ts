@@ -60,7 +60,7 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
     await page.goto(CHECKOUT_URL);
   });
 
-  it.only("Should correctly execute a payment", async () => {
+  it("Should correctly execute a payment", async () => {
     /*
      * 1. Payment with valid notice code
     */
@@ -75,7 +75,7 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
     expect(resultMessage).toContain("Grazie, hai pagato");
   });
 
-  it("Should fail a payment VERIFY and get PPT_STAZIONE_INT_PA_SCONOSCIUTA", async () => {
+  it.only("Should fail a payment VERIFY and get PPT_STAZIONE_INT_PA_SCONOSCIUTA", async () => {
     /*
      * 2. Payment with notice code that fails on verify and get PA_IRRAGGIUNGIBILE
      */
