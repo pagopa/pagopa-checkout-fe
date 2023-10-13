@@ -122,6 +122,13 @@
     },
     "testMatch": [
       "**/__tests__/*.ts"
+    ],
+    "reporters": [
+      "default",
+      [ "jest-junit", {
+        "outputDirectory": "./test_reports",
+        "outputName": "checkout-integration-TEST.xml"
+      } ]
     ]
   }
 }
