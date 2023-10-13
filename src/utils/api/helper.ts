@@ -2,11 +2,10 @@
 /* eslint-disable sonarjs/cognitive-complexity */
 /* eslint-disable sonarjs/no-identical-functions */
 import * as E from "fp-ts/Either";
-import { pipe } from "fp-ts/function";
+import { pipe, flow } from "fp-ts/function";
 import { toError } from "fp-ts/lib/Either";
 import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
-import * as T from "fp-ts/Task";
 import {
   LanguageEnum,
   RequestAuthorizationRequest,
@@ -65,7 +64,6 @@ import {
   PAYMENT_VERIFY_SUCCESS,
   PAYMENT_VERIFY_SVR_ERR,
   TRANSACTION_AUTH_INIT,
-  TRANSACTION_AUTH_NET_ERROR,
   TRANSACTION_AUTH_RESP_ERROR,
   TRANSACTION_AUTH_SUCCES,
 } from "../config/mixpanelDefs";
@@ -651,8 +649,7 @@ export const proceedToPayment = async (
     language: LanguageEnum.IT,
   };
 
-  await pipe(
-    authParam,
+  const requestAuth = flow(
     RequestAuthorizationRequest.decode,
     TE.fromEither,
     TE.chain(
@@ -663,32 +660,25 @@ export const proceedToPayment = async (
           body: request,
         })
     ),
-    TE.fold(
-      (_r) => async () => {
-        onError(ErrorsType.SERVER);
-        mixpanel.track(TRANSACTION_AUTH_NET_ERROR.value, {
-          EVENT_ID: TRANSACTION_AUTH_NET_ERROR.value,
+    TE.map((response) => {
+      if (response.status === 200) {
+        mixpanel.track(TRANSACTION_AUTH_SUCCES.value, {
+          EVENT_ID: TRANSACTION_AUTH_SUCCES.value,
         });
-      }, // to be replaced with logic to handle failures
-      (response) => {
-        if (response.status === 200) {
-          mixpanel.track(TRANSACTION_AUTH_SUCCES.value, {
-            EVENT_ID: TRANSACTION_AUTH_SUCCES.value,
-          });
-          const authorizationUrl = response.value.authorizationUrl;
-          onResponse(authorizationUrl);
-          // eslint-disable-next-line @typescript-eslint/no-empty-function
-          return T.fromIO(() => {});
-        } else {
-          onError(ErrorsType.GENERIC_ERROR);
-          mixpanel.track(TRANSACTION_AUTH_RESP_ERROR.value, {
-            EVENT_ID: TRANSACTION_AUTH_RESP_ERROR.value,
-          });
-          // eslint-disable-next-line @typescript-eslint/no-empty-function
-          return T.fromIO(() => {});
-        }
+        const { authorizationUrl } = response.value;
+        onResponse(authorizationUrl);
+      } else {
+        mixpanel.track(TRANSACTION_AUTH_RESP_ERROR.value, {
+          EVENT_ID: TRANSACTION_AUTH_RESP_ERROR.value,
+        });
+        onError(ErrorsType.CONNECTION);
       }
-    )
+    })
+  );
+
+  void TE.tryCatch(
+    () => requestAuth(authParam)(),
+    () => onError(ErrorsType.GENERIC_ERROR)
   )();
 };
 
@@ -1043,7 +1033,7 @@ const expDateToString = (dateParsed: Date) =>
                       if (response.status === 200) {
                         pipe(
                           maybePayment,
-  
+
                           E.map((payment) => {
                             setSessionItem(SessionItems.transaction, payment);
                             onResponse();
