@@ -6,6 +6,7 @@ import { pipe, flow } from "fp-ts/function";
 import { toError } from "fp-ts/lib/Either";
 import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
+import { validateSessionWalletCardFormFields } from "../../utils/regex/validators";
 import {
   LanguageEnum,
   RequestAuthorizationRequest,
@@ -1110,7 +1111,14 @@ export const npgSessionsFields = async (
                 mixpanel.track(NPG_SUCCESS.value, {
                   EVENT_ID: NPG_SUCCESS.value,
                 });
-                onResponse(myRes.value);
+                pipe(
+                  myRes.value.paymentMethodData.form,
+                  validateSessionWalletCardFormFields,
+                  O.match(
+                    () => onError(NPG_RESP_ERROR.value),
+                    () => onResponse(myRes.value)
+                  )
+                );
                 return myRes;
               } else {
                 mixpanel.track(NPG_RESP_ERROR.value, {
