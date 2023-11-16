@@ -13,7 +13,6 @@ import {
   setSessionItem,
   getReCaptchaKey,
 } from "../../../../utils/storage/sessionStorage";
-import { NewTransactionResponse } from "../../../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import {
   activatePayment,
   calculateFees,
@@ -153,6 +152,7 @@ export default function IframeCardForm(props: Props) {
 
   const transaction = async (recaptchaRef: ReCAPTCHA) => {
     const token = await callRecaptcha(recaptchaRef, true);
+    /* temporarily dropped 
     const transactionId = (
       getSessionItem(SessionItems.transaction) as
         | NewTransactionResponse
@@ -173,7 +173,12 @@ export default function IframeCardForm(props: Props) {
         onResponseActivate: retrievePaymentSession,
         onErrorActivate: onError,
       });
-    }
+    } */
+    await activatePayment({
+      token,
+      onResponseActivate: retrievePaymentSession,
+      onErrorActivate: onError,
+    });
   };
 
   const onChange = (id: FieldId, status: FieldStatus) => {
