@@ -49,12 +49,21 @@ export function IframeCardField(props: Props) {
   const [loaded, setLoaded] = React.useState<State["loaded"]>(false);
   const styles = useStyles(props);
 
+  // function to set SRC to the iframe el avoind firefox back button bug
+  const setSrcOnIframe = (src: string) => {
+    const iframeEl: HTMLIFrameElement | null = document.getElementById(
+      `frame_${id}`
+    ) as HTMLIFrameElement;
+    iframeEl?.contentWindow?.location.replace(src);
+    setLoaded(true);
+  };
+
   // Find src based on ID
   const src = fields && id ? getSrcFromFieldsByID(fields, id) : "";
 
   React.useEffect(() => {
     if (src) {
-      setTimeout(() => setLoaded(true), 2000);
+      setTimeout(() => setSrcOnIframe(src), 2000);
     }
   }, [src]);
 
@@ -75,7 +84,6 @@ export function IframeCardField(props: Props) {
           id={`frame_${id}`}
           loading="lazy"
           seamless
-          src={src}
           style={styles.iframe}
         />
         <Box
