@@ -138,7 +138,7 @@ export default function PaymentCheckPage() {
 
   React.useEffect(() => {
     if (missingThreshold()) {
-      onError(ErrorsType.GENERIC_ERROR);
+      onCardEdit();
     }
   }, [threshold]);
 
