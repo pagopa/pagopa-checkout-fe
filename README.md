@@ -1,10 +1,10 @@
-# IO Pay Portal - frontend
+# checkout pagoPA
 
-The repository contains the code implementing IO Pay Portal frontend.
+The repository contains the code implementing _checkout pagoPA Portal_ frontend.
 
 ## About The Project
 
-This project is a simple frontend that interacts with the services implemented in _io-functions-pay-portal_, and the goal is to verify and start a payment given a "Codice Avviso Pagamento". If the verification is successful, the app redirects to [io-pay](https://github.com/pagopa/io-pay).
+This project is frontend that interacts with the services implemented in _ecommerce platform_, and the goal is to verify and start a payment pagoPA given a "Codice Avviso Pagamento" with one of the methods available by the _ecommerce pagoPA_ platform.
 
 ### Built With
 
