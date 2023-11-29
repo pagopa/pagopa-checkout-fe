@@ -14,3 +14,12 @@ export enum CheckoutRoutes {
   ANNULLATO = "annullato",
   ERRORE = "errore",
 }
+
+export enum ROUTE_FRAGMENT {
+  GDI_IFRAME_URL = "gdiIframeUrl",
+  CLIENT_ID = "clientId",
+}
+
+export enum CLIENT_TYPE {
+  IO = "IO",
+}
