@@ -91,6 +91,7 @@ stages:
               api_ecommerce_basepath: '/ecommerce/checkout/v1'
               pagopa_assets_cdn: 'https://assets.cdn.platform.pagopa.it/payment-methods'
               pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi'
+              survey_show: 'false'
 
           - script: |
               yarn build
@@ -234,6 +235,7 @@ stages:
               api_ecommerce_basepath: '/ecommerce/checkout/v1'
               pagopa_assets_cdn: 'https://assets.cdn.platform.pagopa.it/payment-methods'
               pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi/'
+              survey_show: 'false'
 
           - script: |
               yarn build
@@ -351,6 +353,7 @@ stages:
               api_ecommerce_basepath: '/ecommerce/checkout/v1'
               pagopa_assets_cdn: 'https://assets.cdn.platform.pagopa.it/payment-methods'
               pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi/'
+              survey_show: 'false'
 
           - script: |
               yarn build

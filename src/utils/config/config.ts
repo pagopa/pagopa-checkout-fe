@@ -28,6 +28,7 @@ export const IConfig = t.interface({
   CHECKOUT_POLLING_ACTIVATION_ATTEMPTS: t.number,
   CHECKOUT_RECAPTCHA_SITE_KEY: NonEmptyString,
   CHECKOUT_DONATIONS_URL: NonEmptyString,
+  CHECKOUT_SURVEY_SHOW: NonEmptyString,
 });
 
 // No need to re-evaluate this object for each call
