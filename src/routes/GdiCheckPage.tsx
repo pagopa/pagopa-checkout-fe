@@ -61,7 +61,7 @@ const GdiCheckPage = () => {
         onBuildError();
       }
     }
-  }, []);
+  }, [clientId]);
 
   useEffect(() => {
     try {
