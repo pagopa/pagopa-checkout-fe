@@ -1,9 +1,9 @@
-import { getFragmentParameter } from "../../utils/regex/urlUtilities";
+import { getBase64Fragment } from "../../utils/regex/urlUtilities";
 
-describe("getFragmentParameter function utility", () => {
+describe("getBase64Fragment function utility", () => {
   it("Should return the param value correctly", () => {
     expect(
-      getFragmentParameter(
+      getBase64Fragment(
         "https://dev.checkout.it/gdi-check#gdiIframeUrl=aHR0cHM6Ly9nb29nbGUuaXQv",
         "gdiIframeUrl"
       )
@@ -12,16 +12,16 @@ describe("getFragmentParameter function utility", () => {
 
   it("Should return an empty string when the url is not valid or the paramater cant't be found", () => {
     expect(
-      getFragmentParameter(
+      getBase64Fragment(
         "https://dev.checkout.it/gdi-check#gdiIframeUrl=https://google.it/",
         "invalidParamName"
       )
     ).toEqual("");
 
     expect(
-      getFragmentParameter("https://dev.checkout.it/gdi-check", "gdiIframeUrl")
+      getBase64Fragment("https://dev.checkout.it/gdi-check", "gdiIframeUrl")
     ).toEqual("");
 
-    expect(getFragmentParameter("invalidUrl", "gdiIframeUrl")).toEqual("");
+    expect(getBase64Fragment("invalidUrl", "gdiIframeUrl")).toEqual("");
   });
 });

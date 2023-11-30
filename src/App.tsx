@@ -171,11 +171,7 @@ export function App() {
               />
               <Route
                 path={CheckoutRoutes.ESITO}
-                element={
-                  <Guard item={SessionItems.transaction}>
-                    <PaymentResponsePage />
-                  </Guard>
-                }
+                element={<PaymentResponsePage />}
               />
               <Route
                 path={CheckoutRoutes.ANNULLATO}

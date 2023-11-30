@@ -1,9 +1,12 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  getBase64Fragment,
+  getFragmentParameter,
+} from "utils/regex/urlUtilities";
 import PageContainer from "../components/PageContent/PageContainer";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
 import createBuildConfig from "../utils/buildConfig";
-import { getFragmentParameter } from "../utils/regex/urlUtilities";
 import {
   onBrowserUnload,
   onBrowserBackEvent,
@@ -21,7 +24,7 @@ const GdiCheckPage = () => {
   const gdiCheckTimeout =
     Number(process.env.CHECKOUT_GDI_CHECK_TIMEOUT) || 12000;
 
-  const gdiIframeUrl = getFragmentParameter(
+  const decodedGdiIframeUrl = getBase64Fragment(
     window.location.href,
     ROUTE_FRAGMENT.GDI_IFRAME_URL
   );
@@ -32,7 +35,7 @@ const GdiCheckPage = () => {
   );
 
   useEffect(() => {
-    if (clientId === CLIENT_TYPE.IO) {
+    if (clientId === CLIENT_TYPE.IO && decodedGdiIframeUrl) {
       const onPaymentComplete = () => {
         clearNavigationEvents();
         window.location.replace(
@@ -87,7 +90,7 @@ const GdiCheckPage = () => {
   return (
     <PageContainer>
       <CheckoutLoader />
-      <iframe src={gdiIframeUrl} style={{ display: "none" }} />
+      <iframe src={decodedGdiIframeUrl} style={{ display: "none" }} />
     </PageContainer>
   );
 };
