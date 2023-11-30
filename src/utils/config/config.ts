@@ -28,7 +28,7 @@ export const IConfig = t.interface({
   CHECKOUT_POLLING_ACTIVATION_ATTEMPTS: t.number,
   CHECKOUT_RECAPTCHA_SITE_KEY: NonEmptyString,
   CHECKOUT_DONATIONS_URL: NonEmptyString,
-  CHECKOUT_SURVEY_SHOW: NonEmptyString,
+  CHECKOUT_SURVEY_SHOW: t.boolean,
 });
 
 // No need to re-evaluate this object for each call
@@ -49,6 +49,11 @@ const errorOrConfig: t.Validation<IConfig> = IConfig.decode({
     // eslint-disable-next-line no-underscore-dangle
     (window as any)._env_.CHECKOUT_POLLING_ACTIVATION_ATTEMPTS,
     10
+  ),
+  CHECKOUT_SURVEY_SHOW: !!parseInt(
+    // eslint-disable-next-line no-underscore-dangle
+    (window as any)._env_.CHECKOUT_SURVEY_SHOW,
+    2
   ),
 });
 
