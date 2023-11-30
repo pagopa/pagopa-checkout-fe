@@ -1,3 +1,5 @@
+import { ROUTE_FRAGMENT } from "routes/models/routeModel";
+
 export function getUrlParameter(name: string) {
   const myname = name.replace(/[[]/, "\\[").replace(/[\]]/, "\\]");
   const regex = new RegExp("[\\?&]" + myname + "=([^&#]*)");
@@ -40,4 +42,23 @@ export function getFragmentParameter(uri: string, name: string): string {
   } catch (e) {
     return "";
   }
+}
+
+/**
+ * returns all requested fragments in an object using the fragments as keys
+ * example: http://dev.checkout.it/gdi-check#param1=value1&param2=value2&param3&....
+ * The object values are set to empty string if its fragment is not found
+ * or the parameter can't be found
+ */
+export function getFragments(
+  ...fragments: Array<ROUTE_FRAGMENT>
+): Record<ROUTE_FRAGMENT, string> {
+  const uri = window.location.href;
+  return fragments.reduce<Record<string, string>>(
+    (acc, fragment) => ({
+      ...acc,
+      [fragment]: getFragmentParameter(uri, fragment),
+    }),
+    {}
+  );
 }

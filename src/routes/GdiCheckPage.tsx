@@ -1,9 +1,7 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  getBase64Fragment,
-  getFragmentParameter,
-} from "utils/regex/urlUtilities";
+import { SessionItems, setSessionItem } from "../utils/storage/sessionStorage";
+import { getBase64Fragment, getFragments } from "../utils/regex/urlUtilities";
 import PageContainer from "../components/PageContent/PageContainer";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
 import createBuildConfig from "../utils/buildConfig";
@@ -29,17 +27,24 @@ const GdiCheckPage = () => {
     ROUTE_FRAGMENT.GDI_IFRAME_URL
   );
 
-  const clientId = getFragmentParameter(
-    window.location.href,
-    ROUTE_FRAGMENT.CLIENT_ID
+  const { sessionToken, clientId, transactionId } = getFragments(
+    ROUTE_FRAGMENT.SESSION_TOKEN,
+    ROUTE_FRAGMENT.CLIENT_ID,
+    ROUTE_FRAGMENT.TRANSACTION_ID
   );
 
   useEffect(() => {
-    if (clientId === CLIENT_TYPE.IO && decodedGdiIframeUrl) {
+    if (sessionToken && clientId === CLIENT_TYPE.IO) {
+      setSessionItem(SessionItems.sessionToken, sessionToken);
+    }
+  }, [sessionToken]);
+
+  useEffect(() => {
+    if (clientId === CLIENT_TYPE.IO && decodedGdiIframeUrl && transactionId) {
       const onPaymentComplete = () => {
         clearNavigationEvents();
         window.location.replace(
-          `/${CheckoutRoutes.ESITO}#${ROUTE_FRAGMENT.CLIENT_ID}=${clientId}`
+          `/${CheckoutRoutes.ESITO}#${ROUTE_FRAGMENT.CLIENT_ID}=${clientId}&${ROUTE_FRAGMENT.TRANSACTION_ID}=${transactionId}`
         );
       };
 
@@ -90,7 +95,9 @@ const GdiCheckPage = () => {
   return (
     <PageContainer>
       <CheckoutLoader />
-      <iframe src={decodedGdiIframeUrl} style={{ display: "none" }} />
+      {decodedGdiIframeUrl && (
+        <iframe src={decodedGdiIframeUrl} style={{ display: "none" }} />
+      )}
     </PageContainer>
   );
 };
