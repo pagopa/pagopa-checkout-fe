@@ -29,6 +29,7 @@ import {
   SessionItems,
 } from "../utils/storage/sessionStorage";
 import {
+  getOnboardingPaymentOutcome,
   getViewOutcomeFromEcommerceResultCode,
   ViewOutcomeEnum,
 } from "../utils/transactions/TransactionResultUtil";
@@ -132,13 +133,11 @@ export default function PaymentResponsePage() {
             mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value, {
               EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value,
             });
-            const outcome = getViewOutcomeFromEcommerceResultCode(
-              transactionInfo.status,
-              transactionInfo.sendPaymentResultOutcome,
-              transactionInfo.gateway,
-              transactionInfo.errorCode
+            const outcome = getOnboardingPaymentOutcome(transactionInfo.status);
+            // TODO check correct PATH and add HOST
+            window.location.replace(
+              `ecommerce/io/v1/transactions/${transactionId}/outcomes?outcome=${outcome}`
             );
-            console.debug(outcome);
           }
         )
       );

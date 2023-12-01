@@ -170,7 +170,10 @@ export const callServices = async (
   )();
 };
 
-export const pollTransaction = (transactionId: string, bearerAuth: string) =>
+export const pollTransaction = async (
+  transactionId: string,
+  bearerAuth: string
+) =>
   pipe(
     ecommerceTransaction(transactionId, bearerAuth, ecommerceClientWithPolling),
     TE.match(
