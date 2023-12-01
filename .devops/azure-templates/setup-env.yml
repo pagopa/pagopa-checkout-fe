@@ -61,8 +61,8 @@ parameters:
     default: ''
 
   - name: 'survey_show'
-    type: string
-    default: ''
+    type: number
+    default: 0
 
 steps:
 - bash: |
