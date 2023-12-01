@@ -62,7 +62,7 @@ parameters:
 
   - name: 'survey_show'
     type: number
-    default: ''
+    default: 0
 
 steps:
 - bash: |
