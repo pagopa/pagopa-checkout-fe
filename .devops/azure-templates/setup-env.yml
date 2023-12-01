@@ -66,7 +66,7 @@ parameters:
 
   - name: 'survey_show'
     type: number
-    default: ''
+    default: 0
     
   - name: 'checkout_npg_sdk_url'
     type: string
