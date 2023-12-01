@@ -5,16 +5,21 @@
 import { Box, Button, Typography } from "@mui/material";
 import { default as React, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import SurveyLink from "../components/commons/SurveyLink";
-import CheckoutLoader from "../components/PageContent/CheckoutLoader";
-import PageContainer from "../components/PageContent/PageContainer";
+import * as O from "fp-ts/Option";
+import { pipe } from "fp-ts/function";
 import {
   responseMessage,
   responseOutcome,
 } from "../features/payment/models/responseOutcome";
+import PageContainer from "../components/PageContent/PageContainer";
+import CheckoutLoader from "../components/PageContent/CheckoutLoader";
+import SurveyLink from "../components/commons/SurveyLink";
 import { useAppDispatch } from "../redux/hooks/hooks";
-import { callServices } from "../utils/api/response";
-import { PAYMENT_OUTCOME_CODE } from "../utils/config/mixpanelDefs";
+import { callServices, pollTransaction } from "../utils/api/response";
+import {
+  PAYMENT_OUTCOME_CODE,
+  THREEDSACSCHALLENGEURL_STEP2_SUCCESS,
+} from "../utils/config/mixpanelDefs";
 import { mixpanel } from "../utils/config/mixpanelHelperInit";
 import { onBrowserUnload } from "../utils/eventListeners";
 import { moneyFormat } from "../utils/form/formatters";
@@ -35,6 +40,8 @@ import {
 import { resetThreshold } from "../redux/slices/threshold";
 import { Bundle } from "../../generated/definitions/payment-ecommerce/Bundle";
 import { TransactionStatusEnum } from "../../generated/definitions/payment-ecommerce/TransactionStatus";
+import { getFragments } from "../utils/regex/urlUtilities";
+import { CLIENT_TYPE, ROUTE_FRAGMENT } from "./models/routeModel";
 
 type printData = {
   useremail: string;
@@ -70,46 +77,83 @@ export default function PaymentResponsePage() {
 
   const dispatch = useAppDispatch();
 
+  const handleFinalStatusResult = (
+    idStatus?: TransactionStatusEnum,
+    sendPaymentResultOutcome?: SendPaymentResultOutcomeEnum,
+    gateway?: string,
+    errorCode?: string
+  ) => {
+    const outcome: ViewOutcomeEnum = getViewOutcomeFromEcommerceResultCode(
+      idStatus,
+      sendPaymentResultOutcome,
+      gateway,
+      errorCode
+    );
+    mixpanel.track(PAYMENT_OUTCOME_CODE.value, {
+      EVENT_ID: PAYMENT_OUTCOME_CODE.value,
+      idStatus,
+      outcome,
+    });
+    setOutcome(outcome);
+    showFinalResult(outcome);
+  };
+
+  const showFinalResult = (outcome: ViewOutcomeEnum) => {
+    const message = responseOutcome[outcome];
+    const redirectTo =
+      outcome === "0"
+        ? cart
+          ? cart.returnUrls.returnOkUrl
+          : "/"
+        : cart
+        ? cart.returnUrls.returnErrorUrl
+        : "/";
+    setOutcomeMessage(message);
+    setRedirectUrl(redirectTo || "");
+    setLoading(false);
+    window.removeEventListener("beforeunload", onBrowserUnload);
+    clearStorage();
+  };
+  const { clientId, transactionId } = getFragments(
+    ROUTE_FRAGMENT.CLIENT_ID,
+    ROUTE_FRAGMENT.TRANSACTION_ID
+  );
+
+  const appClientPolling = async () => {
+    const sessionToken = getSessionItem(SessionItems.sessionToken) as
+      | string
+      | undefined;
+    if (sessionToken) {
+      pipe(
+        await pollTransaction(transactionId, sessionToken),
+        O.match(
+          () => handleFinalStatusResult(),
+          (transactionInfo) => {
+            mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value, {
+              EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value,
+            });
+            const outcome = getViewOutcomeFromEcommerceResultCode(
+              transactionInfo.status,
+              transactionInfo.sendPaymentResultOutcome,
+              transactionInfo.gateway,
+              transactionInfo.errorCode
+            );
+            console.debug(outcome);
+          }
+        )
+      );
+    }
+  };
+
+  useEffect(() => {
+    if (clientId === CLIENT_TYPE.IO) {
+      void appClientPolling();
+    }
+  }, [clientId]);
+
   useEffect(() => {
     dispatch(resetThreshold());
 
-    const handleFinalStatusResult = (
-      idStatus?: TransactionStatusEnum,
-      sendPaymentResultOutcome?: SendPaymentResultOutcomeEnum,
-      gateway?: string,
-      errorCode?: string
-    ) => {
-      const outcome: ViewOutcomeEnum = getViewOutcomeFromEcommerceResultCode(
-        idStatus,
-        sendPaymentResultOutcome,
-        gateway,
-        errorCode
-      );
-      mixpanel.track(PAYMENT_OUTCOME_CODE.value, {
-        EVENT_ID: PAYMENT_OUTCOME_CODE.value,
-        idStatus,
-        outcome,
-      });
-      setOutcome(outcome);
-      showFinalResult(outcome);
-    };
-
-    const showFinalResult = (outcome: ViewOutcomeEnum) => {
-      const message = responseOutcome[outcome];
-      const redirectTo =
-        outcome === "0"
-          ? cart
-            ? cart.returnUrls.returnOkUrl
-            : "/"
-          : cart
-          ? cart.returnUrls.returnErrorUrl
-          : "/";
-      setOutcomeMessage(message);
-      setRedirectUrl(redirectTo || "");
-      setLoading(false);
-      window.removeEventListener("beforeunload", onBrowserUnload);
-      clearStorage();
-    };
     void callServices(handleFinalStatusResult);
   }, []);
 
