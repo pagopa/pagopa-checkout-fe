@@ -87,11 +87,13 @@ stages:
               pm_host: 'https://api.dev.platform.pagopa.it/payment-manager'
               pm_api_basepath: '/pp-restapi/v4'
               donations_url: 'https://api.dev.platform.pagopa.it/donations/api/v1/availabledonations'
-              ecommerce_host: 'https://api.uat.platform.pagopa.it'
+              ecommerce_host: 'https://api.dev.platform.pagopa.it'
               api_ecommerce_basepath: '/ecommerce/checkout/v1'
+              api_ecommerce_basepath_v2: '/ecommerce/checkout/v2'
               pagopa_assets_cdn: 'https://assets.cdn.platform.pagopa.it/payment-methods'
               pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi'
               survey_show: 0
+              checkout_npg_sdk_url: 'https://stg-ta.nexigroup.com/monetaweb/resources/hfsdk.js'
 
           - script: |
               yarn build
@@ -133,32 +135,12 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
     jobs:
-      - job: end_to_end_tests_dev
+      - job: e2e_tests
         steps:
-          - checkout: checkoutTests
-          - script : |
-             echo "##[debug] Change placeholder for CHECKOUT_URL ..."
-             cd e2e-tests 
-             mv dev.env .env
-          - script: |
-             docker build -t ui_test e2e-tests
-            displayName: 'Build test image'
-
-          - script: |
-              docker run --name=ui_test ui_test
-            displayName: 'Run UI test container'
-            continueOnError: true 
-
-          - script: |
-              docker cp ui_test:/puppeteer/test_reports  test_reports
-            displayName: 'Copy test result'
-            continueOnError: true 
-
-          - task: PublishTestResults@2
-            inputs:
-              testResultsFormat: 'JUnit'
-              testResultsFiles: '**/*-TEST.xml' 
-              searchFolder: '$(System.DefaultWorkingDirectory)'
+          - template: .devops/azure-templates/e2e-tests.yaml@checkoutTests
+            parameters:
+              ENVIRONMENT: DEV
+              CHECKOUT_RESOURCE_REPO_NAME: checkoutTests
 
   # Create a relase
   # Activated when ONE OF these are met:
@@ -233,9 +215,11 @@ stages:
               donations_url: 'https://api.uat.platform.pagopa.it/donations/api/v1/availabledonations'
               ecommerce_host: 'https://api.uat.platform.pagopa.it'
               api_ecommerce_basepath: '/ecommerce/checkout/v1'
+              api_ecommerce_basepath_v2: '/ecommerce/checkout/v2'
               pagopa_assets_cdn: 'https://assets.cdn.platform.pagopa.it/payment-methods'
               pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi/'
               survey_show: 0
+              checkout_npg_sdk_url: 'https://stg-ta.nexigroup.com/monetaweb/resources/hfsdk.js'
 
           - script: |
               yarn build
@@ -291,32 +275,12 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
     jobs:
-      - job: end_to_end_tests_uat
+      - job: e2e_tests
         steps:
-          - checkout: checkoutTests
-          - script : |
-             echo "##[debug] Change placeholder for CHECKOUT_URL ..."
-             cd e2e-tests 
-             mv uat.env .env
-          - script: |
-             docker build -t ui_test e2e-tests
-            displayName: 'Build test image'
-
-          - script: |
-              docker run --name=ui_test ui_test
-            displayName: 'Run UI test container'
-            continueOnError: true 
-
-          - script: |
-              docker cp ui_test:/puppeteer/test_reports  test_reports
-            displayName: 'Copy test result'
-            continueOnError: true 
-
-          - task: PublishTestResults@2
-            inputs:
-              testResultsFormat: 'JUnit'
-              testResultsFiles: '**/*-TEST.xml' 
-              searchFolder: '$(System.DefaultWorkingDirectory)'
+          - template: .devops/azure-templates/e2e-tests.yaml@checkoutTests
+            parameters:
+              ENVIRONMENT: UAT
+              CHECKOUT_RESOURCE_REPO_NAME: checkoutTests
 
     # Prepare Artifact
   - stage: Prepare_artifact_prod
@@ -351,9 +315,11 @@ stages:
               donations_url: 'https://api.platform.pagopa.it/donations/api/v1/availabledonations'
               ecommerce_host: 'https://api.platform.pagopa.it'
               api_ecommerce_basepath: '/ecommerce/checkout/v1'
+              api_ecommerce_basepath_v2: '/ecommerce/checkout/v2'
               pagopa_assets_cdn: 'https://assets.cdn.platform.pagopa.it/payment-methods'
               pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi/'
               survey_show: 0
+              checkout_npg_sdk_url: 'https://xpay.nexigroup.com/monetaweb/resources/hfsdk.js'
 
           - script: |
               yarn build

@@ -4,7 +4,6 @@ import { theme } from "@pagopa/mui-italia";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import CvvGuard from "./components/commons/CvvGuard";
 import Guard from "./components/commons/Guard";
 import { Layout } from "./components/commons/Layout";
 import NoticeGuard from "./components/commons/NoticeGuard";
@@ -12,7 +11,8 @@ import RptidGuard from "./components/commons/RptidGuard";
 import CancelledPage from "./routes/CancelledPage";
 import DonationPageDismissed from "./routes/DonationPageDismissed";
 import IndexPage from "./routes/IndexPage";
-import InputCardPage from "./routes/InputCardPage";
+// import InputCardPage from "./routes/InputCardPage";
+import IframeCardPage from "./routes/IframeCardPage";
 import KOPage from "./routes/KOPage";
 import { CheckoutRoutes } from "./routes/models/routeModel";
 import PaymentCartPage from "./routes/PaymentCartPage";
@@ -24,6 +24,7 @@ import PaymentOutlet from "./routes/PaymentOutlet";
 import PaymentQrPage from "./routes/PaymentQrPage";
 import PaymentResponsePage from "./routes/PaymentResponsePage";
 import PaymentSummaryPage from "./routes/PaymentSummaryPage";
+import GdiCheckPage from "./routes/GdiCheckPage";
 import "./translations/i18n";
 import { mixpanelInit } from "./utils/config/mixpanelHelperInit";
 import { SessionItems } from "./utils/storage/sessionStorage";
@@ -144,7 +145,7 @@ export function App() {
                 path={CheckoutRoutes.INSERISCI_CARTA}
                 element={
                   <Guard item={SessionItems.useremail}>
-                    <InputCardPage />
+                    <IframeCardPage />
                   </Guard>
                 }
               />
@@ -160,9 +161,15 @@ export function App() {
                 path={CheckoutRoutes.RIEPILOGO_PAGAMENTO}
                 element={
                   <Guard item={SessionItems.transaction}>
-                    <CvvGuard>
-                      <PaymentCheckPage />
-                    </CvvGuard>
+                    <PaymentCheckPage />
+                  </Guard>
+                }
+              />
+              <Route
+                path={CheckoutRoutes.GDI_CHECK}
+                element={
+                  <Guard item={SessionItems.orderId}>
+                    <GdiCheckPage />
                   </Guard>
                 }
               />

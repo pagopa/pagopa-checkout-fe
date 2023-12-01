@@ -6,7 +6,6 @@ import cancelled from "../assets/images/response-unrecognized.svg";
 import PageContainer from "../components/PageContent/PageContainer";
 import { Cart } from "../features/payment/models/paymentModel";
 import { useAppDispatch } from "../redux/hooks/hooks";
-import { resetCardData } from "../redux/slices/cardData";
 import { onBrowserUnload } from "../utils/eventListeners";
 import {
   clearStorage,
@@ -22,7 +21,6 @@ export default function CancelledPage() {
       .returnCancelUrl || "/";
 
   React.useEffect(() => {
-    dispatch(resetCardData());
     dispatch(resetThreshold());
     window.removeEventListener("beforeunload", onBrowserUnload);
     clearStorage();

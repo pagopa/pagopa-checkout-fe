@@ -17,6 +17,7 @@ export const IConfig = t.interface({
   CHECKOUT_ECOMMERCE_HOST: NonEmptyString,
   CHECKOUT_PM_API_BASEPATH: NonEmptyString,
   CHECKOUT_API_ECOMMERCE_BASEPATH: NonEmptyString,
+  CHECKOUT_API_ECOMMERCE_BASEPATH_V2: NonEmptyString,
   CHECKOUT_API_TIMEOUT: t.number,
   CHECKOUT_ENV: NonEmptyString,
   CHECKOUT_PAGOPA_APIM_HOST: NonEmptyString,
@@ -29,6 +30,7 @@ export const IConfig = t.interface({
   CHECKOUT_RECAPTCHA_SITE_KEY: NonEmptyString,
   CHECKOUT_DONATIONS_URL: NonEmptyString,
   CHECKOUT_SURVEY_SHOW: t.boolean,
+  CHECKOUT_NPG_SDK_URL: NonEmptyString,
 });
 
 // No need to re-evaluate this object for each call

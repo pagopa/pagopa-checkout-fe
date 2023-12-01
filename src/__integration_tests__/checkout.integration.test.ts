@@ -40,6 +40,7 @@ const PSP_FAIL = "302016723749670057";
 const CANCEL_PAYMENT_OK = "302016723749670058";
 /* CANCEL_PAYMENT_FAIL end with 59 */
 const CANCEL_PAYMENT_KO = "302016723749670059";
+
   /**
    * Increase default test timeout (120000ms)
    * to support entire payment flow
@@ -96,7 +97,7 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
     /*
      * 2. Payment with notice code that fails on activation and get PPT_PAGAMENTO_IN_CORSO
      */
-    const ErrorTitleID = '#inputCardPageErrorTitleId'
+    const ErrorTitleID = '#iframeCardFormErrorTitleId'
     const resultMessage = await activatePaymentAndGetError(
       FAIL_ACTIVATE_PPT_PAGAMENTO_IN_CORSO,
       VALID_FISCAL_CODE,
@@ -112,7 +113,7 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
     /*
      * 2. Payment with notice code that fails on activation and get PPT_STAZIONE_INT_PA_TIMEOUT
      */
-    const errorID = '#inputCardPageErrorId'
+    const errorID = '#iframeCardFormErrorId'
     const resultMessage = await activatePaymentAndGetError(
       FAIL_ACTIVATE_PPT_STAZIONE_INT_PA_TIMEOUT,
       VALID_FISCAL_CODE,
@@ -128,7 +129,7 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
     /*
      * 2. Payment with notice code that fails on activation and get PPT_DOMINIO_SCONOSCIUTO
      */
-    const errorID = '#inputCardPageErrorId'
+    const errorID = '#iframeCardFormErrorId'
     const resultMessage = await activatePaymentAndGetError(
       FAIL_ACTIVATE_PPT_DOMINIO_SCONOSCIUTO,
       VALID_FISCAL_CODE,
@@ -199,6 +200,14 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
       VALID_CARD_DATA
     );
     expect(resultMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
+    const closeErrorModalButton = "#closeError";
+    await page.waitForSelector(closeErrorModalButton);
+    await page.click(closeErrorModalButton);
+    const errorDescriptionXpath = "/html/body/div[1]/div/div[2]/div/div/div/div[1]/div[1]";
+    const errorMessageElem = await page.waitForXPath(errorDescriptionXpath);
+    const errorMessage = await errorMessageElem.evaluate((el) => el.textContent)
+    expect(errorMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
+
   });
 
   it("Should correctly execute CANCEL PAYMENT by user", async () => {

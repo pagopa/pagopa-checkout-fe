@@ -35,7 +35,6 @@ import {
   DonationSlice,
 } from "../features/payment/models/donationModel";
 import { useAppDispatch } from "../redux/hooks/hooks";
-import { resetCardData } from "../redux/slices/cardData";
 import { getDonationEntityList } from "../utils/api/helper";
 import {
   DONATION_APPIO_VISIT,
@@ -59,7 +58,6 @@ export default function DonationPage() {
   const isMobileDevice = useMediaQuery(theme.breakpoints.down("sm"));
 
   React.useEffect(() => {
-    dispatch(resetCardData());
     dispatch(resetThreshold());
     setLoadingList(true);
     void getDonationEntityList(onError, onResponse);
