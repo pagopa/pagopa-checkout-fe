@@ -126,14 +126,9 @@ export const callServices = async (
     ),
     T.chain(
       (transactionId) => async () =>
-        await pipe(
-          ecommerceTransaction(
-            transactionId,
-            bearerAuth,
-            ecommerceClientWithPolling
-          ),
-          TE.fold(
-            // eslint-disable-next-line sonarjs/no-identical-functions
+        pipe(
+          await pollTransaction(transactionId, bearerAuth),
+          O.match(
             () => async () =>
               await pipe(
                 ecommerceTransaction(
@@ -170,7 +165,19 @@ export const callServices = async (
               );
             }
           )
-        )()
+        )
     )
   )();
 };
+
+export const pollTransaction = async (
+  transactionId: string,
+  bearerAuth: string
+) =>
+  pipe(
+    ecommerceTransaction(transactionId, bearerAuth, ecommerceClientWithPolling),
+    TE.match(
+      () => O.none,
+      (transactionInfo) => O.some(transactionInfo)
+    )
+  )();

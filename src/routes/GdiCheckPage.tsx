@@ -52,6 +52,11 @@ const GdiCheckPage = () => {
         window.location.replace(`/${CheckoutRoutes.ERRORE}`);
       };
 
+      const onPaymentRedirect = (urlredirect: string) => {
+        clearNavigationEvents();
+        window.location.replace(urlredirect);
+      };
+
       try {
         // THIS is mandatory cause the Build class is defined in the external library called NPG SDK
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -60,7 +65,7 @@ const GdiCheckPage = () => {
           createBuildConfig({
             onChange: () => null,
             onReadyForPayment: () => null,
-            onPaymentRedirect: () => null,
+            onPaymentRedirect,
             onPaymentComplete,
             onBuildError,
           })

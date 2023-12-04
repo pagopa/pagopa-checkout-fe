@@ -7,7 +7,7 @@ parameters:
   - name: 'api_payment_activations_basepath'
     type: string
     default: ''
-  
+
   - name: 'api_payment_transactions_basepath'
     type: string
     default: ''
@@ -47,11 +47,11 @@ parameters:
   - name: 'ecommerce_host'
     type: string
     default: ''
-  
+
   - name: 'api_ecommerce_basepath'
     type: string
     default: ''
-  
+
   - name: 'api_ecommerce_basepath_v2'
     type: string
     default: ''
@@ -68,6 +68,13 @@ parameters:
     type: string
     default: ''
 
+  - name: 'checkout_webview_pm'
+    type: string
+    default: ''
+
+  - name: 'checkout_transaction_basepath'
+    type: string
+    default: ''
 steps:
 - bash: |
     chmod +x env.sh
@@ -89,6 +96,8 @@ steps:
       CHECKOUT_PAGOPA_ASSETS_CDN=${{ parameters.pagopa_assets_cdn }} \
       CHECKOUT_PAGOPA_LOGOS_CDN=${{ parameters.pagopa_logos_cdn }} \
       CHECKOUT_NPG_SDK_URL=${{ parameters.checkout_npg_sdk_url }} \
+      CHECKOUT_CONFIG_WEBVIEW_PM_HOST=${{ parameters.checkout_webview_pm }} \
+      CHECKOUT_TRANSACTION_BASEPATH=${{ parameters.checkout_transaction_basepath }} \
       bash env.sh
 
   displayName: 'Populate environment file'

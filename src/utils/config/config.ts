@@ -30,6 +30,8 @@ export const IConfig = t.interface({
   CHECKOUT_RECAPTCHA_SITE_KEY: NonEmptyString,
   CHECKOUT_DONATIONS_URL: NonEmptyString,
   CHECKOUT_NPG_SDK_URL: NonEmptyString,
+  CHECKOUT_CONFIG_WEBVIEW_PM_HOST: NonEmptyString,
+  CHECKOUT_TRANSACTION_BASEPATH: NonEmptyString,
 });
 
 // No need to re-evaluate this object for each call
