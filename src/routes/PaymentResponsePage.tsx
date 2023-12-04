@@ -16,10 +16,7 @@ import CheckoutLoader from "../components/PageContent/CheckoutLoader";
 import SurveyLink from "../components/commons/SurveyLink";
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { callServices, pollTransaction } from "../utils/api/response";
-import {
-  PAYMENT_OUTCOME_CODE,
-  THREEDSACSCHALLENGEURL_STEP2_SUCCESS,
-} from "../utils/config/mixpanelDefs";
+import { PAYMENT_OUTCOME_CODE } from "../utils/config/mixpanelDefs";
 import { mixpanel } from "../utils/config/mixpanelHelperInit";
 import { onBrowserUnload } from "../utils/eventListeners";
 import { moneyFormat } from "../utils/form/formatters";
@@ -79,6 +76,13 @@ export default function PaymentResponsePage() {
 
   const dispatch = useAppDispatch();
 
+  const redirectToClient = (transactionId: string, outcome: ViewOutcomeEnum) =>
+    window.location.replace(
+      `${getConfigOrThrow().CHECKOUT_CONFIG_WEBVIEW_PM_HOST}${
+        getConfigOrThrow().CHECKOUT_TRANSACTION_BASEPATH
+      }/${transactionId}/outcomes?outcome=${outcome}`
+    );
+
   const showFinalResult = (outcome: ViewOutcomeEnum) => {
     const message = responseOutcome[outcome];
     const redirectTo =
@@ -126,18 +130,14 @@ export default function PaymentResponsePage() {
     const sessionToken = getSessionItem(SessionItems.sessionToken) as
       | string
       | undefined;
-    if (sessionToken) {
+    if (sessionToken && clientId && transactionId) {
       pipe(
         await pollTransaction(transactionId, sessionToken),
         O.match(
-          () => handleFinalStatusResult(),
+          () => redirectToClient(transactionId, ViewOutcomeEnum.GENERIC_ERROR),
           (transactionInfo) => {
             const outcome = getOnboardingPaymentOutcome(transactionInfo.status);
-            window.location.replace(
-              `${getConfigOrThrow().CHECKOUT_CONFIG_WEBVIEW_PM_HOST}${
-                getConfigOrThrow().CHECKOUT_TRANSACTION_BASEPATH
-              }/${transactionId}/outcomes?outcome=${outcome}`
-            );
+            redirectToClient(transactionId, outcome);
           }
         )
       );
@@ -148,7 +148,7 @@ export default function PaymentResponsePage() {
     if (clientId === CLIENT_TYPE.IO) {
       void appClientPolling();
     }
-  }, [clientId]);
+  }, [clientId, transactionId]);
 
   useEffect(() => {
     if (!clientId) {
