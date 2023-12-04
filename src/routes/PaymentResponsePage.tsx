@@ -42,6 +42,7 @@ import { resetThreshold } from "../redux/slices/threshold";
 import { Bundle } from "../../generated/definitions/payment-ecommerce/Bundle";
 import { TransactionStatusEnum } from "../../generated/definitions/payment-ecommerce/TransactionStatus";
 import { getFragments } from "../utils/regex/urlUtilities";
+import { getConfigOrThrow } from "../utils/config/config";
 import { CLIENT_TYPE, ROUTE_FRAGMENT } from "./models/routeModel";
 
 type printData = {
@@ -78,6 +79,23 @@ export default function PaymentResponsePage() {
 
   const dispatch = useAppDispatch();
 
+  const showFinalResult = (outcome: ViewOutcomeEnum) => {
+    const message = responseOutcome[outcome];
+    const redirectTo =
+      outcome === "0"
+        ? cart
+          ? cart.returnUrls.returnOkUrl
+          : "/"
+        : cart
+        ? cart.returnUrls.returnErrorUrl
+        : "/";
+    setOutcomeMessage(message);
+    setRedirectUrl(redirectTo || "");
+    setLoading(false);
+    window.removeEventListener("beforeunload", onBrowserUnload);
+    clearStorage();
+  };
+
   const handleFinalStatusResult = (
     idStatus?: TransactionStatusEnum,
     sendPaymentResultOutcome?: SendPaymentResultOutcomeEnum,
@@ -99,22 +117,6 @@ export default function PaymentResponsePage() {
     showFinalResult(outcome);
   };
 
-  const showFinalResult = (outcome: ViewOutcomeEnum) => {
-    const message = responseOutcome[outcome];
-    const redirectTo =
-      outcome === "0"
-        ? cart
-          ? cart.returnUrls.returnOkUrl
-          : "/"
-        : cart
-        ? cart.returnUrls.returnErrorUrl
-        : "/";
-    setOutcomeMessage(message);
-    setRedirectUrl(redirectTo || "");
-    setLoading(false);
-    window.removeEventListener("beforeunload", onBrowserUnload);
-    clearStorage();
-  };
   const { clientId, transactionId } = getFragments(
     ROUTE_FRAGMENT.CLIENT_ID,
     ROUTE_FRAGMENT.TRANSACTION_ID
@@ -130,13 +132,11 @@ export default function PaymentResponsePage() {
         O.match(
           () => handleFinalStatusResult(),
           (transactionInfo) => {
-            mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value, {
-              EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value,
-            });
             const outcome = getOnboardingPaymentOutcome(transactionInfo.status);
-            // TODO check correct PATH and add HOST
             window.location.replace(
-              `ecommerce/io/v1/transactions/${transactionId}/outcomes?outcome=${outcome}`
+              `${getConfigOrThrow().CHECKOUT_CONFIG_WEBVIEW_PM_HOST}${
+                getConfigOrThrow().CHECKOUT_TRANSACTION_BASEPATH
+              }/${transactionId}/outcomes?outcome=${outcome}`
             );
           }
         )
@@ -151,9 +151,11 @@ export default function PaymentResponsePage() {
   }, [clientId]);
 
   useEffect(() => {
-    dispatch(resetThreshold());
+    if (!clientId) {
+      dispatch(resetThreshold());
 
-    void callServices(handleFinalStatusResult);
+      void callServices(handleFinalStatusResult);
+    }
   }, []);
 
   const { t } = useTranslation();
