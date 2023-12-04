@@ -31,6 +31,8 @@ export const IConfig = t.interface({
   CHECKOUT_DONATIONS_URL: NonEmptyString,
   CHECKOUT_SURVEY_SHOW: t.boolean,
   CHECKOUT_NPG_SDK_URL: NonEmptyString,
+  CHECKOUT_CONFIG_WEBVIEW_PM_HOST: NonEmptyString,
+  CHECKOUT_TRANSACTION_BASEPATH: NonEmptyString,
 });
 
 // No need to re-evaluate this object for each call

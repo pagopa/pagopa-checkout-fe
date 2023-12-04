@@ -1,10 +1,20 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { SessionItems, setSessionItem } from "../utils/storage/sessionStorage";
+import { getBase64Fragment, getFragments } from "../utils/regex/urlUtilities";
 import PageContainer from "../components/PageContent/PageContainer";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
-import { getFragmentParameter } from "../utils/regex/urlUtilities";
-import { onBrowserUnload, onBrowserBackEvent } from "../utils/eventListeners";
-import { CheckoutRoutes } from "./models/routeModel";
+import createBuildConfig from "../utils/buildConfig";
+import {
+  onBrowserUnload,
+  onBrowserBackEvent,
+  clearNavigationEvents,
+} from "../utils/eventListeners";
+import {
+  CLIENT_TYPE,
+  CheckoutRoutes,
+  ROUTE_FRAGMENT,
+} from "./models/routeModel";
 
 const GdiCheckPage = () => {
   const navigate = useNavigate();
@@ -12,10 +22,59 @@ const GdiCheckPage = () => {
   const gdiCheckTimeout =
     Number(process.env.CHECKOUT_GDI_CHECK_TIMEOUT) || 12000;
 
-  const gdiIframeUrl = getFragmentParameter(
+  const decodedGdiIframeUrl = getBase64Fragment(
     window.location.href,
-    "gdiIframeUrl"
+    ROUTE_FRAGMENT.GDI_IFRAME_URL
   );
+
+  const { sessionToken, clientId, transactionId } = getFragments(
+    ROUTE_FRAGMENT.SESSION_TOKEN,
+    ROUTE_FRAGMENT.CLIENT_ID,
+    ROUTE_FRAGMENT.TRANSACTION_ID
+  );
+
+  useEffect(() => {
+    if (sessionToken && clientId === CLIENT_TYPE.IO) {
+      setSessionItem(SessionItems.sessionToken, sessionToken);
+    }
+  }, [sessionToken]);
+
+  useEffect(() => {
+    if (clientId === CLIENT_TYPE.IO && decodedGdiIframeUrl && transactionId) {
+      const onPaymentComplete = () => {
+        clearNavigationEvents();
+        window.location.replace(
+          `/${CheckoutRoutes.ESITO}#${ROUTE_FRAGMENT.CLIENT_ID}=${clientId}&${ROUTE_FRAGMENT.TRANSACTION_ID}=${transactionId}`
+        );
+      };
+
+      const onBuildError = () => {
+        window.location.replace(`/${CheckoutRoutes.ERRORE}`);
+      };
+
+      const onPaymentRedirect = (urlredirect: string) => {
+        clearNavigationEvents();
+        window.location.replace(urlredirect);
+      };
+
+      try {
+        // THIS is mandatory cause the Build class is defined in the external library called NPG SDK
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        const newBuild = new Build(
+          createBuildConfig({
+            onChange: () => null,
+            onReadyForPayment: () => null,
+            onPaymentRedirect,
+            onPaymentComplete,
+            onBuildError,
+          })
+        );
+      } catch {
+        onBuildError();
+      }
+    }
+  }, [clientId]);
 
   useEffect(() => {
     try {
@@ -41,7 +100,9 @@ const GdiCheckPage = () => {
   return (
     <PageContainer>
       <CheckoutLoader />
-      <iframe src={gdiIframeUrl} style={{ display: "none" }} />
+      {decodedGdiIframeUrl && (
+        <iframe src={decodedGdiIframeUrl} style={{ display: "none" }} />
+      )}
     </PageContainer>
   );
 };
