@@ -48,6 +48,7 @@ type printData = {
 };
 
 export default function PaymentResponsePage() {
+  const conf = getConfigOrThrow();
   const [loading, setLoading] = useState(true);
   const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
   const [outcome, setOutcome] = useState<ViewOutcomeEnum>();
@@ -218,7 +219,7 @@ export default function PaymentResponsePage() {
                 {t("errorButton.close")}
               </Button>
             </Box>
-            {outcome === ViewOutcomeEnum.SUCCESS && (
+            {conf.CHECKOUT_SURVEY_SHOW && outcome === ViewOutcomeEnum.SUCCESS && (
               <Box sx={{ width: "100%" }} px={{ xs: 8, sm: 0 }}>
                 <SurveyLink />
               </Box>
