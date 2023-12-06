@@ -104,6 +104,9 @@ export default function PaymentCheckPage() {
     ) + Number(pspSelected?.taxPayerFee || 0);
 
   React.useEffect(() => {
+    if (!pspSelected?.onUs) {
+      setShowDisclaimer(false);
+    }
     const onBrowserBackEvent = (e: any) => {
       e.preventDefault();
       window.history.pushState(null, "", window.location.pathname);
