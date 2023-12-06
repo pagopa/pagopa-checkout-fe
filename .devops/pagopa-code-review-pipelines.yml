@@ -1,10 +1,10 @@
 # Azure DevOps pipeline to build, check source codes and run tests.
 #
-# To make Danger JS run on a pull request you need to add the following pipeline 
-# variable and set it with a GitHub access token (scope public_repo); otherwise 
-# set its value to 'skip' without marking it secret: 
+# To make Danger JS run on a pull request you need to add the following pipeline
+# variable and set it with a GitHub access token (scope public_repo); otherwise
+# set its value to 'skip' without marking it secret:
 # - DANGER_GITHUB_API_TOKEN
-# 
+#
 
 variables:
   NODE_VERSION: '14.16.0'
@@ -41,9 +41,9 @@ stages:
   - stage: Build
     dependsOn: []
     jobs:
-      - job: make_build  
+      - job: make_build
         pool:
-          vmImage: 'ubuntu-latest'  
+          vmImage: 'ubuntu-latest'
         steps:
         - template: templates/node-job-setup/template.yaml@pagopaCommons
 
@@ -59,21 +59,23 @@ stages:
             api_payment_activations_basepath: '/checkout/payments/v1'
             pm_host: 'https://acardste.vaservices.eu'
             pm_api_basepath: '/pp-restapi/v4'
+            checkout_webview_pm: 'https://api.dev.platform.pagopa.it'
+            checkout_transaction_basepath: '/ecommerce/io/v1/transactions'
 
         - script: |
             yarn build
           displayName: 'Build'
-  
+
   - stage: Static_Analysis
     dependsOn: []
     jobs:
-      - job: lint     
+      - job: lint
         steps:
         - template: templates/node-job-setup/template.yaml@pagopaCommons
         - script: yarn lint
           displayName: 'Lint'
       - job: danger
-        condition: 
+        condition:
           and(
             succeeded(),
             ne(variables['DANGER_GITHUB_API_TOKEN'], 'skip')
@@ -95,18 +97,18 @@ stages:
       - job: run_unit_tests
         steps:
         - template: templates/node-job-setup/template.yaml@pagopaCommons
-        
+
         - script: yarn generate
           displayName: 'Generate definitions'
 
         - script: yarn test:coverage
           displayName: 'Unit tests exec'
-        
+
         - task: PublishTestResults@2
           displayName: 'Publish test results from Jest tests'
           inputs:
             testResultsFormat: 'JUnit'
-            testResultsFiles: '**/*TEST.xml' 
+            testResultsFiles: '**/*TEST.xml'
             searchFolder: '$(System.DefaultWorkingDirectory)'
             failTaskOnFailedTests: true
 
@@ -114,8 +116,8 @@ stages:
           displayName: 'Publish code coverage from Jest tests'
           inputs:
             codeCoverageTool: Cobertura
-            summaryFileLocation: 'coverage/clover.xml'      
-        
+            summaryFileLocation: 'coverage/clover.xml'
+
 # B) Run integration tests if there is a push or pull request on any branch.
   - stage: Integration_Tests
     pool:
@@ -125,10 +127,10 @@ stages:
       - job: run_integration_tests
         timeoutInMinutes: 30
         steps:
-      
+
         - checkout: checkout-be-mock
 
-        - script: | 
+        - script: |
             cp env.example .env
             sed -i "s/^NPG_API_KEY=.*$/NPG_API_KEY=$(CHECKOUT-TEST-NPG-API-KEY)/" .env
             sed -i "s/^PSP_API_KEY=.*$/PSP_API_KEY=$(CHECKOUT-TEST-NPG-API-KEY)/" .env
@@ -145,7 +147,7 @@ stages:
           workingDirectory: pagopa-checkout-be-mock
 
         - checkout: self
-        
+
         - template: templates/node-job-setup/template.yaml@pagopaCommons
           parameters:
            projectDir: pagopa-checkout-fe
@@ -163,7 +165,7 @@ stages:
         - script: while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:1234)" != "200" ]]; do sleep 5; done
           displayName: 'Wait for backend to be up and running'
           workingDirectory: pagopa-checkout-fe
-        
+
         - script: yarn test:integration
           displayName: 'Integration tests exec'
           workingDirectory: pagopa-checkout-fe

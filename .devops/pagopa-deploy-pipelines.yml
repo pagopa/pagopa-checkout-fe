@@ -94,6 +94,8 @@ stages:
               pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi'
               survey_show: 0
               checkout_npg_sdk_url: 'https://stg-ta.nexigroup.com/monetaweb/resources/hfsdk.js'
+              checkout_webview_pm: 'https://api.dev.platform.pagopa.it'
+              checkout_transaction_basepath: '/ecommerce/io/v1/transactions'
 
           - script: |
               yarn build
@@ -128,7 +130,7 @@ stages:
               scriptLocation: inlineScript
               inlineScript: |
                 call az cdn endpoint purge -g pagopa-d-checkout-fe-rg -n pagopa-d-checkout-cdn-endpoint --profile-name pagopa-d-checkout-cdn-profile --content-paths "/*"
-   
+
   - stage: End_to_End_Tests_DEV
     dependsOn:
       - Deploy_DEV_pagoPA
@@ -220,6 +222,8 @@ stages:
               pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi/'
               survey_show: 0
               checkout_npg_sdk_url: 'https://stg-ta.nexigroup.com/monetaweb/resources/hfsdk.js'
+              checkout_webview_pm: 'https://api.uat.platform.pagopa.it'
+              checkout_transaction_basepath: '/ecommerce/io/v1/transactions'
 
           - script: |
               yarn build
@@ -268,7 +272,7 @@ stages:
               scriptLocation: inlineScript
               inlineScript: |
                 call az cdn endpoint purge -g pagopa-u-checkout-fe-rg -n pagopa-u-checkout-cdn-endpoint --profile-name pagopa-u-checkout-cdn-profile --content-paths "/*"
- 
+
   - stage: End_to_End_Tests_UAT
     dependsOn:
       - Deploy_UAT_pagoPA
@@ -320,6 +324,8 @@ stages:
               pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi/'
               survey_show: 0
               checkout_npg_sdk_url: 'https://xpay.nexigroup.com/monetaweb/resources/hfsdk.js'
+              checkout_webview_pm: 'https://api.platform.pagopa.it'
+              checkout_transaction_basepath: '/ecommerce/io/v1/transactions'
 
           - script: |
               yarn build

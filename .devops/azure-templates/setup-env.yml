@@ -78,7 +78,7 @@ parameters:
 
   - name: 'checkout_transaction_basepath'
     type: string
-    default: ''
+    default: '/ecommerce/io/v1/transactions'
 steps:
 - bash: |
     chmod +x env.sh
