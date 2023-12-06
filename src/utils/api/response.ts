@@ -128,7 +128,7 @@ export const callServices = async (
       (transactionId) => async () =>
         pipe(
           await pollTransaction(transactionId, bearerAuth),
-          O.match(
+          O.fold(
             () => async () =>
               await pipe(
                 ecommerceTransaction(
@@ -165,7 +165,7 @@ export const callServices = async (
               );
             }
           )
-        )
+        )()
     )
   )();
 };
