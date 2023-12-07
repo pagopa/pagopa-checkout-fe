@@ -106,6 +106,9 @@ export default function PaymentCheckPage() {
   ) as SessionPaymentMethodResponse;
 
   React.useEffect(() => {
+    if (!pspSelected?.onUs) {
+      setShowDisclaimer(false);
+    }
     const onBack = (e: any) => {
       onBrowserBackEvent(e);
       setCancelModalOpen(true);
