@@ -33,6 +33,8 @@ const GdiCheckPage = () => {
     ROUTE_FRAGMENT.TRANSACTION_ID
   );
 
+  const [sdkReady, setSdkReady] = React.useState(false);
+
   useEffect(() => {
     if (sessionToken && clientId === CLIENT_TYPE.IO) {
       setSessionItem(SessionItems.sessionToken, sessionToken);
@@ -40,7 +42,22 @@ const GdiCheckPage = () => {
   }, [sessionToken]);
 
   useEffect(() => {
-    if (clientId === CLIENT_TYPE.IO && decodedGdiIframeUrl && transactionId) {
+    if (clientId) {
+      const scriptTag = document.createElement("script");
+      // eslint-disable-next-line functional/immutable-data
+      scriptTag.src = "npgsdk.js";
+      scriptTag.addEventListener("load", () => setSdkReady(true));
+      document.body.appendChild(scriptTag);
+    }
+  }, [clientId]);
+
+  useEffect(() => {
+    if (
+      sdkReady &&
+      clientId === CLIENT_TYPE.IO &&
+      decodedGdiIframeUrl &&
+      transactionId
+    ) {
       const onPaymentComplete = () => {
         clearNavigationEvents();
         window.location.replace(
@@ -70,11 +87,11 @@ const GdiCheckPage = () => {
             onBuildError,
           })
         );
-      } catch {
+      } catch (_e) {
         onBuildError();
       }
     }
-  }, [clientId]);
+  }, [clientId, sdkReady]);
 
   useEffect(() => {
     try {
