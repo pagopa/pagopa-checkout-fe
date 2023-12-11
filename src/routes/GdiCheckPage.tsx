@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { getConfigOrThrow } from "../utils/config/config";
 import { SessionItems, setSessionItem } from "../utils/storage/sessionStorage";
 import { getBase64Fragment, getFragments } from "../utils/regex/urlUtilities";
 import PageContainer from "../components/PageContent/PageContainer";
@@ -33,7 +34,7 @@ const GdiCheckPage = () => {
     ROUTE_FRAGMENT.TRANSACTION_ID
   );
 
-  // const [sdkReady, setSdkReady] = React.useState(false);
+  const [sdkReady, setSdkReady] = React.useState(false);
 
   useEffect(() => {
     if (sessionToken && clientId === CLIENT_TYPE.IO) {
@@ -54,7 +55,12 @@ const GdiCheckPage = () => {
   }, [clientId]); */
 
   useEffect(() => {
-    if (clientId === CLIENT_TYPE.IO && decodedGdiIframeUrl && transactionId) {
+    if (
+      clientId === CLIENT_TYPE.IO &&
+      sdkReady &&
+      decodedGdiIframeUrl &&
+      transactionId
+    ) {
       const onPaymentComplete = () => {
         clearNavigationEvents();
         window.location.replace(
@@ -88,11 +94,18 @@ const GdiCheckPage = () => {
         onBuildError();
       }
     }
-  }, [clientId]);
+  }, [clientId, sdkReady]);
 
   useEffect(() => {
     try {
       if (clientId === CLIENT_TYPE.IO) {
+        const npgScriptEl = document.createElement("script");
+        const npgDomainScript = getConfigOrThrow().CHECKOUT_NPG_SDK_URL;
+        npgScriptEl.setAttribute("src", npgDomainScript);
+        npgScriptEl.setAttribute("type", "text/javascript");
+        npgScriptEl.setAttribute("charset", "UTF-8");
+        document.head.appendChild(npgScriptEl);
+        npgScriptEl.addEventListener("load", () => setSdkReady(true));
         const timeoutId = setTimeout(
           () =>
             navigate(
