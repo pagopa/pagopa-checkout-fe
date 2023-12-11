@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { getConfigOrThrow } from "../utils/config/config";
 import { SessionItems, setSessionItem } from "../utils/storage/sessionStorage";
 import { getBase64Fragment, getFragments } from "../utils/regex/urlUtilities";
 import PageContainer from "../components/PageContent/PageContainer";
@@ -43,11 +44,13 @@ const GdiCheckPage = () => {
 
   useEffect(() => {
     if (clientId) {
-      const scriptTag = document.createElement("script");
-      // eslint-disable-next-line functional/immutable-data
-      scriptTag.src = "npgsdk.js";
-      scriptTag.addEventListener("load", () => setSdkReady(true));
-      document.body.appendChild(scriptTag);
+      const npgScriptEl = document.createElement("script");
+      const npgDomainScript = getConfigOrThrow().CHECKOUT_NPG_SDK_URL;
+      npgScriptEl.setAttribute("src", npgDomainScript);
+      npgScriptEl.setAttribute("type", "text/javascript");
+      npgScriptEl.setAttribute("charset", "UTF-8");
+      document.head.appendChild(npgScriptEl);
+      npgScriptEl.addEventListener("load", () => setSdkReady(true));
     }
   }, [clientId]);
 
