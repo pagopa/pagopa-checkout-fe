@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getConfigOrThrow } from "../utils/config/config";
 import { SessionItems, setSessionItem } from "../utils/storage/sessionStorage";
 import { getBase64Fragment, getFragments } from "../utils/regex/urlUtilities";
 import PageContainer from "../components/PageContent/PageContainer";
@@ -93,20 +92,34 @@ const GdiCheckPage = () => {
 
   useEffect(() => {
     try {
-      window.addEventListener("beforeunload", onBrowserUnload);
-      window.history.pushState(null, "", window.location.pathname);
-      window.addEventListener("popstate", onBrowserBackEvent);
+      if (clientId === CLIENT_TYPE.IO) {
+        const timeoutId = setTimeout(
+          () =>
+            navigate(
+              `/${CheckoutRoutes.ESITO}#${ROUTE_FRAGMENT.CLIENT_ID}=${clientId}&${ROUTE_FRAGMENT.TRANSACTION_ID}=${transactionId}`,
+              { replace: true }
+            ),
+          gdiCheckTimeout
+        );
+        return () => {
+          clearTimeout(timeoutId);
+        };
+      } else {
+        window.addEventListener("beforeunload", onBrowserUnload);
+        window.history.pushState(null, "", window.location.pathname);
+        window.addEventListener("popstate", onBrowserBackEvent);
 
-      const timeoutId = setTimeout(
-        () => navigate(`/${CheckoutRoutes.ESITO}`, { replace: true }),
-        gdiCheckTimeout
-      );
+        const timeoutId = setTimeout(
+          () => navigate(`/${CheckoutRoutes.ESITO}`, { replace: true }),
+          gdiCheckTimeout
+        );
 
-      return () => {
-        window.removeEventListener("popstate", onBrowserBackEvent);
-        window.removeEventListener("beforeunload", onBrowserUnload);
-        clearTimeout(timeoutId);
-      };
+        return () => {
+          window.removeEventListener("popstate", onBrowserBackEvent);
+          window.removeEventListener("beforeunload", onBrowserUnload);
+          clearTimeout(timeoutId);
+        };
+      }
     } catch {
       return navigate(`/${CheckoutRoutes.ERRORE}`, { replace: true });
     }
