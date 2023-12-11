@@ -15,7 +15,10 @@ import {
   THREEDSMETHODURL_STEP1_RESP_ERR,
 } from "../config/mixpanelDefs";
 import { mixpanel } from "../config/mixpanelHelperInit";
-import { ecommerceTransaction } from "../transactions/transactionHelper";
+import {
+  ecommerceIOTransaction,
+  ecommerceTransaction,
+} from "../transactions/transactionHelper";
 import { constantPollingWithPromisePredicateFetch } from "../config/fetch";
 import { getUrlParameter } from "../regex/urlUtilities";
 import { getConfigOrThrow } from "../config/config";
@@ -23,6 +26,10 @@ import {
   createClient,
   Client as EcommerceClient,
 } from "../../../generated/definitions/payment-ecommerce/client";
+import {
+  createClient as createIOClient,
+  Client as IOClient,
+} from "../../../generated/definitions/payment-ecommerce-IO/client";
 import { EcommerceFinalStatusCodeEnumType } from "../transactions/TransactionResultUtil";
 import { getSessionItem, SessionItems } from "../storage/sessionStorage";
 import {
@@ -65,6 +72,25 @@ const ecommerceClientWithPolling: EcommerceClient = createClient({
     }
   ),
   basePath: config.CHECKOUT_API_ECOMMERCE_BASEPATH,
+});
+
+const ecommerceIOClientWithPolling: IOClient = createIOClient({
+  baseUrl: config.CHECKOUT_ECOMMERCE_HOST,
+  fetchApi: constantPollingWithPromisePredicateFetch(
+    DeferredPromise<boolean>().e1,
+    retries,
+    delay,
+    timeout,
+    // eslint-disable-next-line sonarjs/no-identical-functions
+    async (r: Response): Promise<boolean> => {
+      const myJson = (await r.clone().json()) as TransactionInfo;
+      return (
+        r.status === 200 &&
+        !pipe(EcommerceFinalStatusCodeEnumType.decode(myJson.status), E.isRight)
+      );
+    }
+  ),
+  basePath: "/ecommerce/io/v1",
 });
 
 const ecommerceClientWithoutpolling: EcommerceClient = createClient({
@@ -127,8 +153,12 @@ export const callServices = async (
     T.chain(
       (transactionId) => async () =>
         pipe(
-          await pollTransaction(transactionId, bearerAuth),
-          O.fold(
+          ecommerceTransaction(
+            transactionId,
+            bearerAuth,
+            ecommerceClientWithPolling
+          ),
+          TE.fold(
             () => async () =>
               await pipe(
                 ecommerceTransaction(
@@ -175,7 +205,11 @@ export const pollTransaction = async (
   bearerAuth: string
 ) =>
   pipe(
-    ecommerceTransaction(transactionId, bearerAuth, ecommerceClientWithPolling),
+    ecommerceIOTransaction(
+      transactionId,
+      bearerAuth,
+      ecommerceIOClientWithPolling
+    ),
     TE.match(
       () => O.none,
       (transactionInfo) => O.some(transactionInfo)
