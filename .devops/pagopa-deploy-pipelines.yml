@@ -96,6 +96,7 @@ stages:
               checkout_npg_sdk_url: 'https://stg-ta.nexigroup.com/monetaweb/resources/hfsdk.js'
               checkout_webview_pm: 'https://api.dev.platform.pagopa.it'
               checkout_transaction_basepath: '/ecommerce/io/v1/transactions'
+              checkout_gdi_check_timeout: 60000
 
           - script: |
               yarn build
