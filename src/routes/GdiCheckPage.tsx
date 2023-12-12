@@ -1,11 +1,10 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getConfigOrThrow } from "../utils/config/config";
+import { useNpgSdk } from "hooks/useNpgSdk";
 import { SessionItems, setSessionItem } from "../utils/storage/sessionStorage";
 import { getBase64Fragment, getFragments } from "../utils/regex/urlUtilities";
 import PageContainer from "../components/PageContent/PageContainer";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
-import createBuildConfig from "../utils/buildConfig";
 import {
   onBrowserUnload,
   onBrowserBackEvent,
@@ -34,25 +33,33 @@ const GdiCheckPage = () => {
     ROUTE_FRAGMENT.TRANSACTION_ID
   );
 
-  const [sdkReady, setSdkReady] = React.useState(false);
+  const onPaymentComplete = () => {
+    clearNavigationEvents();
+    window.location.replace(
+      `/${CheckoutRoutes.ESITO}#${ROUTE_FRAGMENT.CLIENT_ID}=${clientId}&${ROUTE_FRAGMENT.TRANSACTION_ID}=${transactionId}`
+    );
+  };
+
+  const onBuildError = () => {
+    window.location.replace(`/${CheckoutRoutes.ERRORE}`);
+  };
+
+  const onPaymentRedirect = (urlredirect: string) => {
+    clearNavigationEvents();
+    window.location.replace(urlredirect);
+  };
+
+  const { buildSdk, sdkReady } = useNpgSdk({
+    onPaymentComplete,
+    onBuildError,
+    onPaymentRedirect,
+  });
 
   useEffect(() => {
     if (sessionToken && clientId === CLIENT_TYPE.IO) {
       setSessionItem(SessionItems.sessionToken, sessionToken);
     }
   }, [sessionToken]);
-
-  /* useEffect(() => {
-    if (clientId) {
-      const npgScriptEl = document.createElement("script");
-      const npgDomainScript = getConfigOrThrow().CHECKOUT_NPG_SDK_URL;
-      npgScriptEl.setAttribute("src", npgDomainScript);
-      npgScriptEl.setAttribute("type", "text/javascript");
-      npgScriptEl.setAttribute("charset", "UTF-8");
-      document.head.appendChild(npgScriptEl);
-      npgScriptEl.addEventListener("load", () => setSdkReady(true));
-    }
-  }, [clientId]); */
 
   useEffect(() => {
     if (
@@ -61,51 +68,13 @@ const GdiCheckPage = () => {
       decodedGdiIframeUrl &&
       transactionId
     ) {
-      const onPaymentComplete = () => {
-        clearNavigationEvents();
-        window.location.replace(
-          `/${CheckoutRoutes.ESITO}#${ROUTE_FRAGMENT.CLIENT_ID}=${clientId}&${ROUTE_FRAGMENT.TRANSACTION_ID}=${transactionId}`
-        );
-      };
-
-      const onBuildError = () => {
-        window.location.replace(`/${CheckoutRoutes.ERRORE}`);
-      };
-
-      const onPaymentRedirect = (urlredirect: string) => {
-        clearNavigationEvents();
-        window.location.replace(urlredirect);
-      };
-
-      try {
-        // THIS is mandatory cause the Build class is defined in the external library called NPG SDK
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        const newBuild = new Build(
-          createBuildConfig({
-            onChange: () => null,
-            onReadyForPayment: () => null,
-            onPaymentRedirect,
-            onPaymentComplete,
-            onBuildError,
-          })
-        );
-      } catch (_e) {
-        onBuildError();
-      }
+      buildSdk();
     }
-  }, [clientId, sdkReady]);
+  }, [clientId, sdkReady, decodedGdiIframeUrl, transactionId]);
 
   useEffect(() => {
     try {
       if (clientId === CLIENT_TYPE.IO) {
-        const npgScriptEl = document.createElement("script");
-        const npgDomainScript = getConfigOrThrow().CHECKOUT_NPG_SDK_URL;
-        npgScriptEl.setAttribute("src", npgDomainScript);
-        npgScriptEl.setAttribute("type", "text/javascript");
-        npgScriptEl.setAttribute("charset", "UTF-8");
-        document.head.appendChild(npgScriptEl);
-        npgScriptEl.addEventListener("load", () => setSdkReady(true));
         const timeoutId = setTimeout(
           () =>
             navigate(
