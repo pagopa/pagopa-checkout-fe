@@ -1,52 +1,51 @@
-/* eslint-disable sonarjs/cognitive-complexity */
-/* eslint-disable functional/immutable-data */
-/* eslint-disable @typescript-eslint/no-empty-function */
-/* eslint-disable @typescript-eslint/restrict-plus-operands */
 import { Box, Button, Typography } from "@mui/material";
-import { default as React, useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 import * as O from "fp-ts/Option";
 import { pipe } from "fp-ts/function";
+import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { ecommerceIOClientWithPolling } from "../utils/api/client";
+import { ecommerceIOTransaction } from "../utils/api/transactions/io";
 import {
-  responseMessage,
-  responseOutcome,
-} from "../features/payment/models/responseOutcome";
-import PageContainer from "../components/PageContent/PageContainer";
-import CheckoutLoader from "../components/PageContent/CheckoutLoader";
-import SurveyLink from "../components/commons/SurveyLink";
-import { useAppDispatch } from "../redux/hooks/hooks";
-import { callServices, pollTransaction } from "../utils/api/response";
-import { PAYMENT_OUTCOME_CODE } from "../utils/config/mixpanelDefs";
-import { mixpanel } from "../utils/config/mixpanelHelperInit";
-import { onBrowserUnload } from "../utils/eventListeners";
-import { moneyFormat } from "../utils/form/formatters";
-import {
-  clearStorage,
-  getSessionItem,
-  SessionItems,
-} from "../utils/storage/sessionStorage";
-import {
+  ViewOutcomeEnum,
   getOnboardingPaymentOutcome,
   getViewOutcomeFromEcommerceResultCode,
-  ViewOutcomeEnum,
-} from "../utils/transactions/TransactionResultUtil";
-import { Cart } from "../features/payment/models/paymentModel";
+} from "../utils/api/transactions/TransactionResultUtil";
+import { Bundle } from "../../generated/definitions/payment-ecommerce/Bundle";
 import {
   NewTransactionResponse,
   SendPaymentResultOutcomeEnum,
 } from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
-import { resetThreshold } from "../redux/slices/threshold";
-import { Bundle } from "../../generated/definitions/payment-ecommerce/Bundle";
 import { TransactionStatusEnum } from "../../generated/definitions/payment-ecommerce/TransactionStatus";
-import { getFragments } from "../utils/regex/urlUtilities";
+import CheckoutLoader from "../components/PageContent/CheckoutLoader";
+import PageContainer from "../components/PageContent/PageContainer";
+import SurveyLink from "../components/commons/SurveyLink";
+import { Cart } from "../features/payment/models/paymentModel";
+import {
+  responseMessage,
+  responseOutcome,
+} from "../features/payment/models/responseOutcome";
+import { useAppDispatch } from "../redux/hooks/hooks";
+import { resetThreshold } from "../redux/slices/threshold";
+import { callServices } from "../utils/api/response";
 import { getConfigOrThrow } from "../utils/config/config";
+import { PAYMENT_OUTCOME_CODE } from "../utils/config/mixpanelDefs";
+import { mixpanel } from "../utils/config/mixpanelHelperInit";
+import { onBrowserUnload } from "../utils/eventListeners";
+import { moneyFormat } from "../utils/form/formatters";
+import { getFragments } from "../utils/regex/urlUtilities";
+import {
+  SessionItems,
+  clearStorage,
+  getSessionItem,
+} from "../utils/storage/sessionStorage";
 import { CLIENT_TYPE, ROUTE_FRAGMENT } from "./models/routeModel";
 
-type printData = {
+type PrintData = {
   useremail: string;
   amount: string;
 };
 
+// eslint-disable-next-line sonarjs/cognitive-complexity
 export default function PaymentResponsePage() {
   const conf = getConfigOrThrow();
   const [loading, setLoading] = useState(true);
@@ -56,47 +55,55 @@ export default function PaymentResponsePage() {
   const [redirectUrl, setRedirectUrl] = useState<string>(
     cart ? cart.returnUrls.returnOkUrl : "/"
   );
-  const transactionData = getSessionItem(SessionItems.transaction) as
-    | NewTransactionResponse
-    | undefined;
-  const pspSelected = getSessionItem(SessionItems.pspSelected) as
-    | Bundle
-    | undefined;
-  const email = getSessionItem(SessionItems.useremail) as string | undefined;
-  const totalAmount =
-    Number(
-      transactionData?.payments
-        .map((p) => p.amount)
-        .reduce((sum, current) => sum + current, 0)
-    ) + Number(pspSelected?.taxPayerFee);
-
-  const usefulPrintData: printData = {
-    useremail: email || "",
-    amount: moneyFormat(totalAmount),
-  };
 
   const dispatch = useAppDispatch();
 
+  const config = getConfigOrThrow();
+
+  const getPrintData = (): PrintData => {
+    const transactionData = getSessionItem(SessionItems.transaction) as
+      | NewTransactionResponse
+      | undefined;
+    const pspSelected = getSessionItem(SessionItems.pspSelected) as
+      | Bundle
+      | undefined;
+    const email = getSessionItem(SessionItems.useremail) as string | undefined;
+
+    const paymentAmount = Number(
+      transactionData?.payments
+        .map((p) => p.amount as number)
+        .reduce((sum, current) => sum + current, 0)
+    );
+
+    const taxPayerFee = Number(pspSelected?.taxPayerFee);
+    const totalAmount = paymentAmount + taxPayerFee;
+
+    return {
+      useremail: email || "",
+      amount: moneyFormat(totalAmount),
+    };
+  };
+
+  const usefulPrintData = getPrintData();
+
   const redirectToClient = (transactionId: string, outcome: ViewOutcomeEnum) =>
     window.location.replace(
-      `${getConfigOrThrow().CHECKOUT_CONFIG_WEBVIEW_PM_HOST}${
-        getConfigOrThrow().CHECKOUT_TRANSACTION_BASEPATH
-      }/${transactionId}/outcomes?outcome=${outcome}`
+      `${config.CHECKOUT_CONFIG_WEBVIEW_PM_HOST}${config.CHECKOUT_TRANSACTION_BASEPATH}/${transactionId}/outcomes?outcome=${outcome}`
     );
 
   const showFinalResult = (outcome: ViewOutcomeEnum) => {
     const message = responseOutcome[outcome];
+    const returnUrls = cart?.returnUrls;
     const redirectTo =
       outcome === "0"
-        ? cart
-          ? cart.returnUrls.returnOkUrl
-          : "/"
-        : cart
-        ? cart.returnUrls.returnErrorUrl
-        : "/";
+        ? returnUrls?.returnOkUrl || "/"
+        : returnUrls?.returnErrorUrl || "/";
+
     setOutcomeMessage(message);
-    setRedirectUrl(redirectTo || "");
+    setRedirectUrl(redirectTo);
     setLoading(false);
+
+    // cleanup
     window.removeEventListener("beforeunload", onBrowserUnload);
     clearStorage();
   };
@@ -133,7 +140,11 @@ export default function PaymentResponsePage() {
       | undefined;
     if (sessionToken && clientId && transactionId) {
       pipe(
-        await pollTransaction(transactionId, sessionToken),
+        await ecommerceIOTransaction(
+          transactionId,
+          sessionToken,
+          ecommerceIOClientWithPolling
+        ),
         O.match(
           () => redirectToClient(transactionId, ViewOutcomeEnum.GENERIC_ERROR),
           (transactionInfo) => {

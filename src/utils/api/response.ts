@@ -1,103 +1,27 @@
-/* eslint-disable functional/immutable-data */
-/* eslint-disable no-bitwise */
-/* eslint @typescript-eslint/no-var-requires: "off" */
 import * as E from "fp-ts/Either";
-import * as TE from "fp-ts/TaskEither";
 import * as O from "fp-ts/Option";
 import * as T from "fp-ts/Task";
+import * as TE from "fp-ts/TaskEither";
 import { pipe } from "fp-ts/function";
-import { DeferredPromise } from "@pagopa/ts-commons//lib/promises";
-import { Millisecond } from "@pagopa/ts-commons//lib/units";
-import nodeFetch from "node-fetch";
+import {
+  NewTransactionResponse,
+  SendPaymentResultOutcomeEnum,
+} from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
+import { TransactionStatusEnum } from "../../../generated/definitions/payment-ecommerce/TransactionStatus";
+import { decodeToUUID } from "../../utils/uuid";
 import {
   THREEDSACSCHALLENGEURL_STEP2_RESP_ERR,
   THREEDSACSCHALLENGEURL_STEP2_SUCCESS,
   THREEDSMETHODURL_STEP1_RESP_ERR,
 } from "../config/mixpanelDefs";
 import { mixpanel } from "../config/mixpanelHelperInit";
-import {
-  ecommerceIOTransaction,
-  ecommerceTransaction,
-} from "../transactions/transactionHelper";
-import { constantPollingWithPromisePredicateFetch } from "../config/fetch";
 import { getUrlParameter } from "../regex/urlUtilities";
-import { getConfigOrThrow } from "../config/config";
+import { SessionItems, getSessionItem } from "../storage/sessionStorage";
 import {
-  createClient,
-  Client as EcommerceClient,
-} from "../../../generated/definitions/payment-ecommerce/client";
-import {
-  createClient as createIOClient,
-  Client as IOClient,
-} from "../../../generated/definitions/payment-ecommerce-IO/client";
-import { EcommerceFinalStatusCodeEnumType } from "../transactions/TransactionResultUtil";
-import { getSessionItem, SessionItems } from "../storage/sessionStorage";
-import {
-  NewTransactionResponse,
-  SendPaymentResultOutcomeEnum,
-} from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
-import { TransactionInfo } from "../../../generated/definitions/payment-ecommerce/TransactionInfo";
-import { TransactionStatusEnum } from "../../../generated/definitions/payment-ecommerce/TransactionStatus";
-const config = getConfigOrThrow();
-/**
- * Polling configuration params
- */
-const retries: number = 20;
-const delay: number = 3000;
-const timeout: Millisecond = config.CHECKOUT_API_TIMEOUT as Millisecond;
-
-const hexToUuid = require("hex-to-uuid");
-const decodeToUUID = (base64: string) => {
-  const bytes = Buffer.from(base64, "base64");
-  bytes[6] &= 0x0f;
-  bytes[6] |= 0x40;
-  bytes[8] &= 0x3f;
-  bytes[8] |= 0x80;
-  return hexToUuid(bytes.toString("hex")).replace(/-/g, "");
-};
-
-const ecommerceClientWithPolling: EcommerceClient = createClient({
-  baseUrl: config.CHECKOUT_ECOMMERCE_HOST,
-  fetchApi: constantPollingWithPromisePredicateFetch(
-    DeferredPromise<boolean>().e1,
-    retries,
-    delay,
-    timeout,
-    async (r: Response): Promise<boolean> => {
-      const myJson = (await r.clone().json()) as TransactionInfo;
-      return (
-        r.status === 200 &&
-        !pipe(EcommerceFinalStatusCodeEnumType.decode(myJson.status), E.isRight)
-      );
-    }
-  ),
-  basePath: config.CHECKOUT_API_ECOMMERCE_BASEPATH,
-});
-
-const ecommerceIOClientWithPolling: IOClient = createIOClient({
-  baseUrl: config.CHECKOUT_ECOMMERCE_HOST,
-  fetchApi: constantPollingWithPromisePredicateFetch(
-    DeferredPromise<boolean>().e1,
-    retries,
-    delay,
-    timeout,
-    // eslint-disable-next-line sonarjs/no-identical-functions
-    async (r: Response): Promise<boolean> => {
-      const myJson = (await r.clone().json()) as TransactionInfo;
-      return (
-        r.status === 200 &&
-        !pipe(EcommerceFinalStatusCodeEnumType.decode(myJson.status), E.isRight)
-      );
-    }
-  ),
-  basePath: "/ecommerce/io/v1",
-});
-
-const ecommerceClientWithoutpolling: EcommerceClient = createClient({
-  baseUrl: config.CHECKOUT_ECOMMERCE_HOST,
-  fetchApi: nodeFetch as any as typeof fetch,
-  basePath: config.CHECKOUT_API_ECOMMERCE_BASEPATH,
-});
+  ecommerceClientWithPolling,
+  ecommerceClientWithoutPolling,
+} from "./client";
+import { ecommerceTransaction } from "./transactions/ecommerce";
 
 export const callServices = async (
   handleFinalStatusResult: (
@@ -164,7 +88,7 @@ export const callServices = async (
                 ecommerceTransaction(
                   transactionId,
                   bearerAuth,
-                  ecommerceClientWithoutpolling
+                  ecommerceClientWithoutPolling
                 ),
                 TE.fold(
                   () => async () => handleFinalStatusResult(),
@@ -199,19 +123,3 @@ export const callServices = async (
     )
   )();
 };
-
-export const pollTransaction = async (
-  transactionId: string,
-  bearerAuth: string
-) =>
-  pipe(
-    ecommerceIOTransaction(
-      transactionId,
-      bearerAuth,
-      ecommerceIOClientWithPolling
-    ),
-    TE.match(
-      () => O.none,
-      (transactionInfo) => O.some(transactionInfo)
-    )
-  )();

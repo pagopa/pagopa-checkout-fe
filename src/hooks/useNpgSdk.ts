@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import type {
   FieldId,
   FieldStatus,
-} from "features/payment/components/IframeCardForm/types";
-import { getConfigOrThrow } from "utils/config/config";
+} from "../features/payment/components/IframeCardForm/types";
+import { getConfigOrThrow } from "../utils/config/config";
 import createBuildConfig from "../utils/buildConfig";
 
 export type SdkBuild = {

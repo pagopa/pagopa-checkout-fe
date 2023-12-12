@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useNpgSdk } from "hooks/useNpgSdk";
+import { useNpgSdk } from "../hooks/useNpgSdk";
 import { SessionItems, setSessionItem } from "../utils/storage/sessionStorage";
 import { getBase64Fragment, getFragments } from "../utils/regex/urlUtilities";
 import PageContainer from "../components/PageContent/PageContainer";
@@ -33,11 +33,14 @@ const GdiCheckPage = () => {
     ROUTE_FRAGMENT.TRANSACTION_ID
   );
 
+  const esitoPath =
+    clientId === CLIENT_TYPE.IO
+      ? `/${CheckoutRoutes.ESITO}#${ROUTE_FRAGMENT.CLIENT_ID}=${clientId}&${ROUTE_FRAGMENT.TRANSACTION_ID}=${transactionId}`
+      : `/${CheckoutRoutes.ESITO}`;
+
   const onPaymentComplete = () => {
     clearNavigationEvents();
-    window.location.replace(
-      `/${CheckoutRoutes.ESITO}#${ROUTE_FRAGMENT.CLIENT_ID}=${clientId}&${ROUTE_FRAGMENT.TRANSACTION_ID}=${transactionId}`
-    );
+    window.location.replace(esitoPath);
   };
 
   const onBuildError = () => {
@@ -56,55 +59,37 @@ const GdiCheckPage = () => {
   });
 
   useEffect(() => {
-    if (sessionToken && clientId === CLIENT_TYPE.IO) {
-      setSessionItem(SessionItems.sessionToken, sessionToken);
-    }
-  }, [sessionToken]);
-
-  useEffect(() => {
     if (
       clientId === CLIENT_TYPE.IO &&
       sdkReady &&
       decodedGdiIframeUrl &&
-      transactionId
+      transactionId &&
+      sessionToken
     ) {
+      setSessionItem(SessionItems.sessionToken, sessionToken);
       buildSdk();
     }
-  }, [clientId, sdkReady, decodedGdiIframeUrl, transactionId]);
+  }, [clientId, sdkReady, decodedGdiIframeUrl, transactionId, sessionToken]);
 
   useEffect(() => {
-    try {
-      if (clientId === CLIENT_TYPE.IO) {
-        const timeoutId = setTimeout(
-          () =>
-            navigate(
-              `/${CheckoutRoutes.ESITO}#${ROUTE_FRAGMENT.CLIENT_ID}=${clientId}&${ROUTE_FRAGMENT.TRANSACTION_ID}=${transactionId}`,
-              { replace: true }
-            ),
-          gdiCheckTimeout
-        );
-        return () => {
-          clearTimeout(timeoutId);
-        };
-      } else {
-        window.addEventListener("beforeunload", onBrowserUnload);
-        window.history.pushState(null, "", window.location.pathname);
-        window.addEventListener("popstate", onBrowserBackEvent);
+    const timeoutId = setTimeout(
+      () => navigate(esitoPath, { replace: true }),
+      gdiCheckTimeout
+    );
+    if (!clientId || clientId !== CLIENT_TYPE.IO) {
+      window.addEventListener("beforeunload", onBrowserUnload);
+      window.history.pushState(null, "", window.location.pathname);
+      window.addEventListener("popstate", onBrowserBackEvent);
 
-        const timeoutId = setTimeout(
-          () => navigate(`/${CheckoutRoutes.ESITO}`, { replace: true }),
-          gdiCheckTimeout
-        );
-
-        return () => {
-          window.removeEventListener("popstate", onBrowserBackEvent);
-          window.removeEventListener("beforeunload", onBrowserUnload);
-          clearTimeout(timeoutId);
-        };
-      }
-    } catch {
-      return navigate(`/${CheckoutRoutes.ERRORE}`, { replace: true });
+      return () => {
+        window.removeEventListener("popstate", onBrowserBackEvent);
+        clearTimeout(timeoutId);
+        window.removeEventListener("beforeunload", onBrowserUnload);
+      };
     }
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, []);
 
   return (
