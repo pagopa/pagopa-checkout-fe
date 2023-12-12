@@ -101,7 +101,7 @@ export const ecommerceIOClientWithPolling = createIOClient({
     pollingConfig.timeout,
     decodeFinalStatusResult
   ),
-  basePath: "/ecommerce/io/v1",
+  basePath: config.CHECKOUT_TRANSACTION_IO_BASEPATH,
 });
 
 export const ecommerceClientWithoutPolling = createEcommerceClient({
