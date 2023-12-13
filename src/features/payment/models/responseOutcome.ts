@@ -1,4 +1,4 @@
-import { ViewOutcomeEnum } from "../../../utils/transactions/TransactionResultUtil";
+import { ViewOutcomeEnum } from "../../../utils/api/transactions/TransactionResultUtil";
 import ok from "../../../assets/images/response-ok.svg";
 import wait from "../../../assets/images/response-wait.svg";
 import umbrella from "../../../assets/images/response-umbrella.svg";

@@ -1,7 +1,7 @@
 import * as t from "io-ts";
 import { enumType } from "@pagopa/ts-commons/lib/types";
-import { TransactionStatusEnum } from "../../../generated/definitions/payment-ecommerce/TransactionStatus";
-import { SendPaymentResultOutcomeEnum } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
+import { TransactionStatusEnum } from "../../../../generated/definitions/payment-ecommerce/TransactionStatus";
+import { SendPaymentResultOutcomeEnum } from "../../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 
 export enum ViewOutcomeEnum {
   SUCCESS = "0",

@@ -67,7 +67,7 @@ parameters:
   - name: 'survey_show'
     type: number
     default: 0
-    
+
   - name: 'checkout_npg_sdk_url'
     type: string
     default: ''
@@ -79,6 +79,16 @@ parameters:
   - name: 'checkout_transaction_basepath'
     type: string
     default: '/ecommerce/io/v1/transactions'
+
+  - name: 'checkout_gdi_check_timeout'
+    type: number
+    default: 12000
+
+  - name: 'checkout_transaction_io_basepath'
+    type: string
+    default: '/ecommerce/io/v1'
+
+
 steps:
 - bash: |
     chmod +x env.sh
@@ -103,6 +113,8 @@ steps:
       CHECKOUT_NPG_SDK_URL=${{ parameters.checkout_npg_sdk_url }} \
       CHECKOUT_CONFIG_WEBVIEW_PM_HOST=${{ parameters.checkout_webview_pm }} \
       CHECKOUT_TRANSACTION_BASEPATH=${{ parameters.checkout_transaction_basepath }} \
+      CHECKOUT_GDI_CHECK_TIMEOUT=${{ parameters.checkout_gdi_check_timeout }} \
+      CHECKOUT_TRANSACTION_IO_BASEPATH=${{ parameters.checkout_transaction_io_basepath }} \
       bash env.sh
 
   displayName: 'Populate environment file'

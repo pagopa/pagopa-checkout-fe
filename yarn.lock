@@ -2218,6 +2218,11 @@
   dependencies:
     "@types/node" "*"
 
+"@types/hex-to-uuid@^1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@types/hex-to-uuid/-/hex-to-uuid-1.1.2.tgz#6609746e3d4f619ea9aacb4028229ca7462b2bda"
+  integrity sha512-sQp2/vAuk/JMVddCTh3X3V3DZFgK0yn+V92CAFl1r3dbk5t6ZVaRQOypIXUBkG/dUpwfiQCCwBcuVGjjMuwdPA==
+
 "@types/hoist-non-react-statics@^3.3.0":
   version "3.3.1"
   resolved "https://registry.npmjs.org/@types/hoist-non-react-statics/-/hoist-non-react-statics-3.3.1.tgz"

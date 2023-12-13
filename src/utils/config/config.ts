@@ -33,6 +33,7 @@ export const IConfig = t.interface({
   CHECKOUT_NPG_SDK_URL: NonEmptyString,
   CHECKOUT_CONFIG_WEBVIEW_PM_HOST: NonEmptyString,
   CHECKOUT_TRANSACTION_BASEPATH: NonEmptyString,
+  CHECKOUT_TRANSACTION_IO_BASEPATH: NonEmptyString,
 });
 
 // No need to re-evaluate this object for each call

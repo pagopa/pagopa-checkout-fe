@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useNpgSdk } from "../hooks/useNpgSdk";
 import { SessionItems, setSessionItem } from "../utils/storage/sessionStorage";
 import { getBase64Fragment, getFragments } from "../utils/regex/urlUtilities";
 import PageContainer from "../components/PageContent/PageContainer";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
-import createBuildConfig from "../utils/buildConfig";
 import {
   onBrowserUnload,
   onBrowserBackEvent,
@@ -33,68 +33,63 @@ const GdiCheckPage = () => {
     ROUTE_FRAGMENT.TRANSACTION_ID
   );
 
+  const esitoPath =
+    clientId === CLIENT_TYPE.IO
+      ? `/${CheckoutRoutes.ESITO}#${ROUTE_FRAGMENT.CLIENT_ID}=${clientId}&${ROUTE_FRAGMENT.TRANSACTION_ID}=${transactionId}`
+      : `/${CheckoutRoutes.ESITO}`;
+
+  const onPaymentComplete = () => {
+    clearNavigationEvents();
+    window.location.replace(esitoPath);
+  };
+
+  const onBuildError = () => {
+    window.location.replace(`/${CheckoutRoutes.ERRORE}`);
+  };
+
+  const onPaymentRedirect = (urlredirect: string) => {
+    clearNavigationEvents();
+    window.location.replace(urlredirect);
+  };
+
+  const { buildSdk, sdkReady } = useNpgSdk({
+    onPaymentComplete,
+    onBuildError,
+    onPaymentRedirect,
+  });
+
   useEffect(() => {
-    if (sessionToken && clientId === CLIENT_TYPE.IO) {
+    if (
+      clientId === CLIENT_TYPE.IO &&
+      sdkReady &&
+      decodedGdiIframeUrl &&
+      transactionId &&
+      sessionToken
+    ) {
       setSessionItem(SessionItems.sessionToken, sessionToken);
+      buildSdk();
     }
-  }, [sessionToken]);
+  }, [clientId, sdkReady, decodedGdiIframeUrl, transactionId, sessionToken]);
 
   useEffect(() => {
-    if (clientId === CLIENT_TYPE.IO && decodedGdiIframeUrl && transactionId) {
-      const onPaymentComplete = () => {
-        clearNavigationEvents();
-        window.location.replace(
-          `/${CheckoutRoutes.ESITO}#${ROUTE_FRAGMENT.CLIENT_ID}=${clientId}&${ROUTE_FRAGMENT.TRANSACTION_ID}=${transactionId}`
-        );
-      };
-
-      const onBuildError = () => {
-        window.location.replace(`/${CheckoutRoutes.ERRORE}`);
-      };
-
-      const onPaymentRedirect = (urlredirect: string) => {
-        clearNavigationEvents();
-        window.location.replace(urlredirect);
-      };
-
-      try {
-        // THIS is mandatory cause the Build class is defined in the external library called NPG SDK
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        const newBuild = new Build(
-          createBuildConfig({
-            onChange: () => null,
-            onReadyForPayment: () => null,
-            onPaymentRedirect,
-            onPaymentComplete,
-            onBuildError,
-          })
-        );
-      } catch {
-        onBuildError();
-      }
-    }
-  }, [clientId]);
-
-  useEffect(() => {
-    try {
+    const timeoutId = setTimeout(
+      () => navigate(esitoPath, { replace: true }),
+      gdiCheckTimeout
+    );
+    if (!clientId || clientId !== CLIENT_TYPE.IO) {
       window.addEventListener("beforeunload", onBrowserUnload);
       window.history.pushState(null, "", window.location.pathname);
       window.addEventListener("popstate", onBrowserBackEvent);
 
-      const timeoutId = setTimeout(
-        () => navigate(`/${CheckoutRoutes.ESITO}`, { replace: true }),
-        gdiCheckTimeout
-      );
-
       return () => {
         window.removeEventListener("popstate", onBrowserBackEvent);
-        window.removeEventListener("beforeunload", onBrowserUnload);
         clearTimeout(timeoutId);
+        window.removeEventListener("beforeunload", onBrowserUnload);
       };
-    } catch {
-      return navigate(`/${CheckoutRoutes.ERRORE}`, { replace: true });
     }
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, []);
 
   return (
