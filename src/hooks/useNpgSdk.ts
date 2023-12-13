@@ -32,7 +32,7 @@ export const useNpgSdk = ({
       // THIS is mandatory cause the Build class is defined in the external library called NPG SDK
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      const newBuild = new Build(
+      new Build(
         createBuildConfig({
           onChange,
           onReadyForPayment,
