@@ -152,7 +152,7 @@ export default function IframeCardForm(props: Props) {
 
   const transaction = async (recaptchaRef: ReCAPTCHA) => {
     const token = await callRecaptcha(recaptchaRef, true);
-    /* temporarily dropped 
+    /* temporarily dropped
     const transactionId = (
       getSessionItem(SessionItems.transaction) as
         | NewTransactionResponse
@@ -215,9 +215,6 @@ export default function IframeCardForm(props: Props) {
         };
 
         try {
-          // THIS is mandatory cause the Build class is defined in the external library called NPG SDK
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
           const newBuild = new Build(
             createBuildConfig({
               onChange,
