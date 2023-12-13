@@ -72,7 +72,7 @@ export default function PaymentResponsePage() {
     const paymentAmount = Number(
       transactionData?.payments
         .map((p) => p.amount as number)
-        .reduce((sum, current) => sum + current, 0)
+        .reduce((sum: number, current: number) => sum + current, 0)
     );
 
     const taxPayerFee = Number(pspSelected?.taxPayerFee);
