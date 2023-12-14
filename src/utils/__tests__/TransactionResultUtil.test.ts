@@ -6,7 +6,7 @@ import {
   NexiResultCodeEnum,
   ViewOutcomeEnum,
   VposResultCodeEnum,
-} from "../api/transactions/TransactionResultUtil";
+} from "../transactions/TransactionResultUtil";
 
 afterEach(() => {
   jest.resetAllMocks();

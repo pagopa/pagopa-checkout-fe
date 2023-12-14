@@ -1,27 +1,33 @@
-import { getBase64Fragment } from "../../utils/regex/urlUtilities";
+import { ROUTE_FRAGMENT } from "routes/models/routeModel";
+import { getFragmentParameter } from "../../utils/regex/urlUtilities";
 
-describe("getBase64Fragment function utility", () => {
+describe("getFragmentParameter function utility", () => {
   it("Should return the param value correctly", () => {
     expect(
-      getBase64Fragment(
+      getFragmentParameter(
         "https://dev.checkout.it/gdi-check#gdiIframeUrl=aHR0cHM6Ly9nb29nbGUuaXQv",
-        "gdiIframeUrl"
+        ROUTE_FRAGMENT.GDI_IFRAME_URL
       )
     ).toEqual("https://google.it/");
   });
 
   it("Should return an empty string when the url is not valid or the paramater cant't be found", () => {
     expect(
-      getBase64Fragment(
+      getFragmentParameter(
         "https://dev.checkout.it/gdi-check#gdiIframeUrl=https://google.it/",
-        "invalidParamName"
+        "invalidParamName" as ROUTE_FRAGMENT
       )
     ).toEqual("");
 
     expect(
-      getBase64Fragment("https://dev.checkout.it/gdi-check", "gdiIframeUrl")
+      getFragmentParameter(
+        "https://dev.checkout.it/gdi-check",
+        ROUTE_FRAGMENT.GDI_IFRAME_URL
+      )
     ).toEqual("");
 
-    expect(getBase64Fragment("invalidUrl", "gdiIframeUrl")).toEqual("");
+    expect(
+      getFragmentParameter("invalidUrl", ROUTE_FRAGMENT.GDI_IFRAME_URL)
+    ).toEqual("");
   });
 });

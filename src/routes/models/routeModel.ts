@@ -17,11 +17,4 @@ export enum CheckoutRoutes {
 
 export enum ROUTE_FRAGMENT {
   GDI_IFRAME_URL = "gdiIframeUrl",
-  CLIENT_ID = "clientId",
-  SESSION_TOKEN = "sessionToken",
-  TRANSACTION_ID = "transactionId",
-}
-
-export enum CLIENT_TYPE {
-  IO = "IO",
 }
