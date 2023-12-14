@@ -1,7 +1,7 @@
 import * as t from "io-ts";
 import { enumType } from "@pagopa/ts-commons/lib/types";
-import { TransactionStatusEnum } from "../../../../generated/definitions/payment-ecommerce/TransactionStatus";
-import { SendPaymentResultOutcomeEnum } from "../../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
+import { TransactionStatusEnum } from "../../../generated/definitions/payment-ecommerce/TransactionStatus";
+import { SendPaymentResultOutcomeEnum } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 
 export enum ViewOutcomeEnum {
   SUCCESS = "0",
@@ -219,28 +219,3 @@ function evaluateUnauthorizedStatus(
       return ViewOutcomeEnum.GENERIC_ERROR;
   }
 }
-
-export const getOnboardingPaymentOutcome = (
-  transactionStatus?: TransactionStatusEnum
-): ViewOutcomeEnum => {
-  switch (transactionStatus) {
-    case TransactionStatusEnum.NOTIFIED_OK:
-      return ViewOutcomeEnum.SUCCESS;
-    case TransactionStatusEnum.NOTIFICATION_REQUESTED:
-    case TransactionStatusEnum.NOTIFICATION_ERROR:
-    case TransactionStatusEnum.NOTIFIED_KO:
-    case TransactionStatusEnum.REFUNDED:
-    case TransactionStatusEnum.REFUND_REQUESTED:
-    case TransactionStatusEnum.REFUND_ERROR:
-    case TransactionStatusEnum.CLOSURE_ERROR:
-    case TransactionStatusEnum.EXPIRED:
-    case TransactionStatusEnum.EXPIRED_NOT_AUTHORIZED:
-    case TransactionStatusEnum.CANCELED:
-    case TransactionStatusEnum.CANCELLATION_EXPIRED:
-    case TransactionStatusEnum.UNAUTHORIZED:
-    case TransactionStatusEnum.CLOSED:
-      return ViewOutcomeEnum.GENERIC_ERROR;
-    default:
-      return ViewOutcomeEnum.GENERIC_ERROR;
-  }
-};

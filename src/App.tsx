@@ -167,11 +167,19 @@ export function App() {
               />
               <Route
                 path={CheckoutRoutes.GDI_CHECK}
-                element={<GdiCheckPage />}
+                element={
+                  <Guard item={SessionItems.orderId}>
+                    <GdiCheckPage />
+                  </Guard>
+                }
               />
               <Route
                 path={CheckoutRoutes.ESITO}
-                element={<PaymentResponsePage />}
+                element={
+                  <Guard item={SessionItems.transaction}>
+                    <PaymentResponsePage />
+                  </Guard>
+                }
               />
               <Route
                 path={CheckoutRoutes.ANNULLATO}
