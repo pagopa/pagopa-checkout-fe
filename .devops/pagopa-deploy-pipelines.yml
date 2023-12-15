@@ -80,14 +80,14 @@ stages:
               polling_activation_interval: 6000
               polling_activation_attempts: 16
               env: 'DEV'
-              recaptcha_site_key: $(CHECKOUT_CAPTCHA_ID_UAT)
+              recaptcha_site_key: $(CHECKOUT_CAPTCHA_ID_DEV)
               api_payment_transactions_basepath: '/api/checkout/payment-transactions/v1'
               api_timeout: 10000
               api_payment_activations_basepath: '/checkout/payments/v1'
               pm_host: 'https://api.dev.platform.pagopa.it/payment-manager'
               pm_api_basepath: '/pp-restapi/v4'
               donations_url: 'https://api.dev.platform.pagopa.it/donations/api/v1/availabledonations'
-              ecommerce_host: 'https://api.dev.platform.pagopa.it'
+              ecommerce_host: 'https://api.platform.pagopa.it'
               api_ecommerce_basepath: '/ecommerce/checkout/v1'
               api_ecommerce_basepath_v2: '/ecommerce/checkout/v2'
               pagopa_assets_cdn: 'https://assets.cdn.platform.pagopa.it/payment-methods'
