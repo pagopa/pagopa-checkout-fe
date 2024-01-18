@@ -1,4 +1,4 @@
-import { ROUTE_FRAGMENT } from "routes/models/routeModel";
+import { ROUTE_FRAGMENT } from "../../routes/models/routeModel";
 import { getFragmentParameter } from "../../utils/regex/urlUtilities";
 
 describe("getFragmentParameter function utility", () => {
