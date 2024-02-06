@@ -1,56 +1,70 @@
 import React from "react";
 import { Box, Link, Typography } from "@mui/material";
-import { useTranslation } from "react-i18next";
+import { Trans } from "react-i18next";
+
+const PrivacyLink = (props: {
+  href: string;
+  children?: string;
+  rel?: string;
+}) => {
+  const { href, children, rel = "noreferrer" } = props;
+  return (
+    <Link
+      href={href}
+      target="_blank"
+      rel={rel}
+      style={{ fontWeight: 600, textDecoration: "none" }}
+    >
+      {children}
+    </Link>
+  );
+};
 
 export default function PrivacyInfo(props: { showDonationPrivacy?: boolean }) {
-  const { t } = useTranslation();
-
   return (
     <>
       <Box mt={4}>
         <Typography variant="caption" component={"div"}>
-          {t("privacyInfo.privacyDesc")}
-          <Link
-            href={t("privacyInfo.privacyUrl")}
-            target="_blank"
-            rel="noreferrer"
-            style={{ fontWeight: 600, textDecoration: "none" }}
-          >
-            {t("privacyInfo.privacy")}
-          </Link>
-          {props.showDonationPrivacy && (
-            <>
-              {` ${t("privacyInfo.and")} `}
-              <Link
-                href="https://www.pagopa.gov.it/it/privacy-policy-donazioni-ucraina/"
-                target="_blank"
-                rel="noopener noreferrer"
-                sx={{ fontWeight: 600, textDecoration: "none" }}
-              >
-                {t("privacyInfo.privacyDonation")}
-              </Link>
-            </>
+          <Trans
+            i18nKey="privacyInfo.privacyDesc"
+            components={{
+              privacy: <PrivacyLink href="/privacypolicy/it.html" />,
+              terms: <PrivacyLink href="/privacypolicy/it.html" />,
+            }}
+          />
+          {props.showDonationPrivacy ? (
+            <Trans
+              i18nKey="privacyInfo.privacyDonation"
+              components={{
+                terms: (
+                  <Link
+                    href="https://www.pagopa.gov.it/it/privacy-policy-donazioni-ucraina/"
+                    rel="noopener noreferrer"
+                    sx={{ fontWeight: 600, textDecoration: "none" }}
+                  />
+                ),
+              }}
+            />
+          ) : (
+            "."
           )}
-          {"."}
-          {`${t("privacyInfo.googleDesc")} (`}
-          <Link
-            href="https://policies.google.com/privacy"
-            target="_blank"
-            rel="noopener noreferrer"
-            sx={{ fontWeight: 600, textDecoration: "none" }}
-          >
-            {t("privacyInfo.privacyPolicy")}
-          </Link>
-          {` ${t("general.and")} `}
-          <Link
-            href="https://policies.google.com/terms"
-            target="_blank"
-            rel="noopener noreferrer"
-            sx={{ fontWeight: 600, textDecoration: "none" }}
-          >
-            {t("privacyInfo.serviceTerms")}
-          </Link>
-          {")."}
+          <Trans
+            i18nKey="privacyInfo.googleDesc"
+            components={{
+              privacy: (
+                <PrivacyLink
+                  rel="noopener noreferrer"
+                  href="https://policies.google.com/privacy"
+                />
+              ),
+              terms: (
+                <PrivacyLink
+                  rel="noopener noreferrer"
+                  href="https://policies.google.com/terms"
+                />
+              ),
+            }}
+          />
         </Typography>
       </Box>
     </>
