@@ -28,8 +28,12 @@ export default function PrivacyInfo(props: { showDonationPrivacy?: boolean }) {
           <Trans
             i18nKey="privacyInfo.privacyDesc"
             components={{
-              privacy: <PrivacyLink href="/privacypolicy/it.html" />,
-              terms: <PrivacyLink href="/privacypolicy/it.html" />,
+              privacy: (
+                <PrivacyLink href="/privacypolicy/it.html#informativa-sul-trattamento-dei-dati-personali" />
+              ),
+              terms: (
+                <PrivacyLink href="/privacypolicy/it.html#termini-e-condizioni-di-uso" />
+              ),
             }}
           />
           {props.showDonationPrivacy ? (
@@ -46,7 +50,7 @@ export default function PrivacyInfo(props: { showDonationPrivacy?: boolean }) {
               }}
             />
           ) : (
-            "."
+            ". "
           )}
           <Trans
             i18nKey="privacyInfo.googleDesc"
