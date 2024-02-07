@@ -18,14 +18,9 @@
       }
     },
     "privacyInfo": {
-      "privacyDesc": "Proseguendo dichiari di aver letto e compreso l'",
-      "googleDesc": " Form protetto tramite reCAPTCHA e Google",
-      "privacy": "Informativa Privacy e i Termini e condizioni d'uso del servizio",
-      "privacyPolicy": "Privacy Policy",
-      "serviceTerms": "Termini di servizio",
-      "privacyUrl": "/privacypolicy/it.html",
-      "and": "e i",
-      "privacyDonation": "Termini aggiuntivi del servizio Donazioni a favore dell’emergenza in Ucraina"
+      "privacyDesc": "Proseguendo accetti i <terms>Termini e condizioni d'uso</terms> del servizio e confermi di aver letto l'<privacy>Informativa Privacy</privacy>",
+      "googleDesc": "Form protetto tramite reCAPTCHA e Google (<privacy>Privacy Policy</privacy> e <terms>Termini di servizio</terms>).",
+      "privacyDonation": " e i <terms>Termini aggiuntivi del servizio Donazioni a favore dell’emergenza in Ucraina. </terms>"
     },
     "paymentNoticePage": {
       "title": "Cosa devi pagare?",
