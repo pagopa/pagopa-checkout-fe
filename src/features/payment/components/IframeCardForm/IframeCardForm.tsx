@@ -195,6 +195,7 @@ export default function IframeCardForm(props: Props) {
     if (!form) {
       const onResponse = (body: CreateSessionResponse) => {
         setSessionItem(SessionItems.orderId, body.orderId);
+        setSessionItem(SessionItems.correlationId, body.correlationId);
         setForm(body);
         const onReadyForPayment = () =>
           ref.current && void transaction(ref.current);
