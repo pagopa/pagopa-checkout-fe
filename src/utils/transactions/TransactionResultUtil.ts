@@ -158,12 +158,13 @@ export const NpgErrorCodeToOutcome = new Map<NpgErrorCode, ViewOutcomeEnum>([
   ["124", ViewOutcomeEnum.AUTH_ERROR],
   ["125", ViewOutcomeEnum.INVALID_DATA],
   ["126", ViewOutcomeEnum.AUTH_ERROR],
+  ["129", ViewOutcomeEnum.AUTH_ERROR],
   ["200", ViewOutcomeEnum.AUTH_ERROR],
   ["202", ViewOutcomeEnum.AUTH_ERROR],
   ["204", ViewOutcomeEnum.AUTH_ERROR],
   ["208", ViewOutcomeEnum.INVALID_DATA],
-  ["209", ViewOutcomeEnum.INVALID_CARD],
-  ["210", ViewOutcomeEnum.INVALID_CARD],
+  ["209", ViewOutcomeEnum.INVALID_DATA],
+  ["210", ViewOutcomeEnum.INVALID_DATA],
   ["413", ViewOutcomeEnum.AUTH_ERROR],
   ["888", ViewOutcomeEnum.AUTH_ERROR],
   ["902", ViewOutcomeEnum.AUTH_ERROR],
@@ -198,12 +199,14 @@ export enum NpgAuthorizationStatus {
   FAILED = "FAILED",
 }
 
+export type GatewayAuthorizationStatus = NpgAuthorizationStatus | string;
+
 export type GetViewOutcomeFromEcommerceResultCode = (
   transactionStatus?: TransactionStatusEnum,
   sendPaymentResultOutcome?: SendPaymentResultOutcomeEnum,
   gateway?: string,
   errorCode?: string,
-  gatewayAuthorizationStatus?: string
+  gatewayAuthorizationStatus?: GatewayAuthorizationStatus
 ) => ViewOutcomeEnum;
 
 export const getViewOutcomeFromEcommerceResultCode: GetViewOutcomeFromEcommerceResultCode =
@@ -215,28 +218,6 @@ export const getViewOutcomeFromEcommerceResultCode: GetViewOutcomeFromEcommerceR
     errorCode,
     gatewayAuthorizationStatus
   ): ViewOutcomeEnum => {
-    if (gateway === PaymentGateway.NPG) {
-      switch (gatewayAuthorizationStatus) {
-        case NpgAuthorizationStatus.EXECUTED:
-          return ViewOutcomeEnum.SUCCESS;
-        case NpgAuthorizationStatus.AUTHORIZED:
-        case NpgAuthorizationStatus.PENDING:
-        case NpgAuthorizationStatus.VOIDED:
-        case NpgAuthorizationStatus.REFUNDED:
-        case NpgAuthorizationStatus.FAILED:
-          return ViewOutcomeEnum.GENERIC_ERROR;
-        case NpgAuthorizationStatus.CANCELED:
-          return ViewOutcomeEnum.CANCELED_BY_USER;
-        case NpgAuthorizationStatus.DENIED_BY_RISK:
-        case NpgAuthorizationStatus.THREEDS_VALIDATED:
-        case NpgAuthorizationStatus.THREEDS_FAILED:
-          return ViewOutcomeEnum.AUTH_ERROR;
-        case NpgAuthorizationStatus.DECLINED:
-          return evaluateUnauthorizedStatus(PaymentGateway.NPG, errorCode);
-        default:
-          return ViewOutcomeEnum.GENERIC_ERROR;
-      }
-    }
     switch (transactionStatus) {
       case TransactionStatusEnum.NOTIFIED_OK:
         return ViewOutcomeEnum.SUCCESS;
@@ -258,7 +239,11 @@ export const getViewOutcomeFromEcommerceResultCode: GetViewOutcomeFromEcommerceR
       case TransactionStatusEnum.CANCELLATION_EXPIRED:
         return ViewOutcomeEnum.CANCELED_BY_USER;
       case TransactionStatusEnum.UNAUTHORIZED:
-        return evaluateUnauthorizedStatus(gateway, errorCode);
+        return evaluateUnauthorizedStatus(
+          gateway,
+          errorCode,
+          gatewayAuthorizationStatus
+        );
       case TransactionStatusEnum.CLOSED:
         return sendPaymentResultOutcome ===
           SendPaymentResultOutcomeEnum.NOT_RECEIVED
@@ -286,8 +271,9 @@ export const EcommerceFinalStatusCodeEnumType =
 
 // eslint-disable-next-line complexity
 function evaluateUnauthorizedStatus(
-  gateway: string | undefined,
-  errorCode: string | undefined
+  gateway?: string,
+  errorCode?: string,
+  gatewayAuthorizationStatus?: string
 ): ViewOutcomeEnum {
   switch (gateway) {
     case PaymentGateway.XPAY:
@@ -349,10 +335,29 @@ function evaluateUnauthorizedStatus(
           return ViewOutcomeEnum.GENERIC_ERROR;
       }
     case PaymentGateway.NPG:
-      return (
-        NpgErrorCodeToOutcome.get(errorCode as NpgErrorCode) ||
-        ViewOutcomeEnum.GENERIC_ERROR
-      );
+      switch (gatewayAuthorizationStatus) {
+        case NpgAuthorizationStatus.EXECUTED:
+          return ViewOutcomeEnum.SUCCESS;
+        case NpgAuthorizationStatus.AUTHORIZED:
+        case NpgAuthorizationStatus.PENDING:
+        case NpgAuthorizationStatus.VOIDED:
+        case NpgAuthorizationStatus.REFUNDED:
+        case NpgAuthorizationStatus.FAILED:
+          return ViewOutcomeEnum.GENERIC_ERROR;
+        case NpgAuthorizationStatus.CANCELED:
+          return ViewOutcomeEnum.CANCELED_BY_USER;
+        case NpgAuthorizationStatus.DENIED_BY_RISK:
+        case NpgAuthorizationStatus.THREEDS_VALIDATED:
+        case NpgAuthorizationStatus.THREEDS_FAILED:
+          return ViewOutcomeEnum.AUTH_ERROR;
+        case NpgAuthorizationStatus.DECLINED:
+          return (
+            NpgErrorCodeToOutcome.get(errorCode as NpgErrorCode) ||
+            ViewOutcomeEnum.GENERIC_ERROR
+          );
+        default:
+          return ViewOutcomeEnum.GENERIC_ERROR;
+      }
     default:
       return ViewOutcomeEnum.GENERIC_ERROR;
   }

@@ -4,6 +4,8 @@ import { TransactionStatusEnum } from "../../../generated/definitions/payment-ec
 import {
   getViewOutcomeFromEcommerceResultCode,
   NexiResultCodeEnum,
+  NpgAuthorizationStatus,
+  PaymentGateway,
   ViewOutcomeEnum,
   VposResultCodeEnum,
 } from "../transactions/TransactionResultUtil";
@@ -532,4 +534,173 @@ describe("TransactionResultUtil", () => {
   expect(
     getViewOutcomeFromEcommerceResultCode(TransactionStatusEnum.UNAUTHORIZED)
   ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
+
+  // NPG
+  // SUCCESS(0)
+  it("should return correct SUCCESS(0) outcome with NPG gateway", async () => {
+    expect(
+      getViewOutcomeFromEcommerceResultCode(
+        TransactionStatusEnum.UNAUTHORIZED,
+        undefined,
+        PaymentGateway.NPG,
+        undefined,
+        NpgAuthorizationStatus.EXECUTED
+      )
+    ).toEqual(ViewOutcomeEnum.SUCCESS);
+
+    expect(
+      getViewOutcomeFromEcommerceResultCode(
+        TransactionStatusEnum.UNAUTHORIZED,
+        undefined,
+        PaymentGateway.NPG,
+        "000",
+        NpgAuthorizationStatus.DECLINED
+      )
+    ).toEqual(ViewOutcomeEnum.SUCCESS);
+  });
+
+  // GENERIC_ERROR(1)
+  it("should return correctly GENERIC_ERROR(1) outcome with NPG gateway", async () => {
+    // Testing dinamically on NpgAuthorizationStatus
+    [
+      NpgAuthorizationStatus.AUTHORIZED,
+      NpgAuthorizationStatus.PENDING,
+      NpgAuthorizationStatus.VOIDED,
+      NpgAuthorizationStatus.REFUNDED,
+      NpgAuthorizationStatus.FAILED,
+    ].forEach((npgAuthorizationStatus) => {
+      expect(
+        getViewOutcomeFromEcommerceResultCode(
+          TransactionStatusEnum.UNAUTHORIZED,
+          undefined,
+          PaymentGateway.NPG,
+          undefined,
+          npgAuthorizationStatus
+        )
+      ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
+    });
+
+    // Testing dinamically on errorCode when NpgAuthorizationStatus is declined
+    [
+      "109",
+      "115",
+      "904",
+      "906",
+      "907",
+      "908",
+      "909",
+      "911",
+      "913",
+      "999",
+    ].forEach((errorCode) => {
+      expect(
+        getViewOutcomeFromEcommerceResultCode(
+          TransactionStatusEnum.UNAUTHORIZED,
+          undefined,
+          PaymentGateway.NPG,
+          errorCode,
+          NpgAuthorizationStatus.DECLINED
+        )
+      ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
+    });
+  });
+
+  // AUTH_ERROR(2)
+  it("should return correctly AUTH_ERROR(2) outcome with NPG gateway", async () => {
+    // Testing dinamically on NpgAuthorizationStatus
+    [
+      NpgAuthorizationStatus.DENIED_BY_RISK,
+      NpgAuthorizationStatus.THREEDS_VALIDATED,
+      NpgAuthorizationStatus.THREEDS_FAILED,
+    ].forEach((npgAuthorizationStatus) => {
+      expect(
+        getViewOutcomeFromEcommerceResultCode(
+          TransactionStatusEnum.UNAUTHORIZED,
+          undefined,
+          PaymentGateway.NPG,
+          undefined,
+          npgAuthorizationStatus
+        )
+      ).toEqual(ViewOutcomeEnum.AUTH_ERROR);
+    });
+
+    // Testing dinamically on errorCode when NpgAuthorizationStatus is declined
+    [
+      "100",
+      "102",
+      "106",
+      "116",
+      "117",
+      "119",
+      "120",
+      "121",
+      "122",
+      "123",
+      "124",
+      "126",
+      "129",
+      "200",
+      "202",
+      "204",
+      "413",
+      "888",
+      "902",
+      "903",
+    ].forEach((errorCode) => {
+      expect(
+        getViewOutcomeFromEcommerceResultCode(
+          TransactionStatusEnum.UNAUTHORIZED,
+          undefined,
+          PaymentGateway.NPG,
+          errorCode,
+          NpgAuthorizationStatus.DECLINED
+        )
+      ).toEqual(ViewOutcomeEnum.AUTH_ERROR);
+    });
+  });
+
+  // INVALID_DATA(3)
+  it("should return correctly INVALID_DATA(3) outcome with NPG gateway", async () => {
+    // Testing dinamically on errorCode when NpgAuthorizationStatus is declined
+    ["104", "110", "118", "125", "208", "209", "210"].forEach((errorCode) => {
+      expect(
+        getViewOutcomeFromEcommerceResultCode(
+          TransactionStatusEnum.UNAUTHORIZED,
+          undefined,
+          PaymentGateway.NPG,
+          errorCode,
+          NpgAuthorizationStatus.DECLINED
+        )
+      ).toEqual(ViewOutcomeEnum.INVALID_DATA);
+    });
+  });
+
+  // INVALID_CARD(7)
+  it("should return correctly INVALID_CARD(7) outcome with NPG gateway", async () => {
+    // Testing dinamically on errorCode when NpgAuthorizationStatus is declined
+    ["101", "111"].forEach((errorCode) => {
+      expect(
+        getViewOutcomeFromEcommerceResultCode(
+          TransactionStatusEnum.UNAUTHORIZED,
+          undefined,
+          PaymentGateway.NPG,
+          errorCode,
+          NpgAuthorizationStatus.DECLINED
+        )
+      ).toEqual(ViewOutcomeEnum.INVALID_CARD);
+    });
+  });
+
+  // CANCELED_BY_USER(8)
+  it("should return correctly CANCELED_BY_USER(8) outcome with NPG gateway", async () => {
+    expect(
+      getViewOutcomeFromEcommerceResultCode(
+        TransactionStatusEnum.UNAUTHORIZED,
+        undefined,
+        PaymentGateway.NPG,
+        undefined,
+        NpgAuthorizationStatus.CANCELED
+      )
+    ).toEqual(ViewOutcomeEnum.CANCELED_BY_USER);
+  });
 });

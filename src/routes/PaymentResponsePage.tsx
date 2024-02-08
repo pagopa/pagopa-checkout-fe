@@ -25,6 +25,7 @@ import {
   SessionItems,
 } from "../utils/storage/sessionStorage";
 import {
+  GatewayAuthorizationStatus,
   getViewOutcomeFromEcommerceResultCode,
   ViewOutcomeEnum,
 } from "../utils/transactions/TransactionResultUtil";
@@ -80,7 +81,7 @@ export default function PaymentResponsePage() {
       sendPaymentResultOutcome?: SendPaymentResultOutcomeEnum,
       gateway?: string,
       errorCode?: string,
-      gatewayAuthorizationStatus?: string
+      gatewayAuthorizationStatus?: GatewayAuthorizationStatus
     ) => {
       const outcome: ViewOutcomeEnum = getViewOutcomeFromEcommerceResultCode(
         idStatus,
