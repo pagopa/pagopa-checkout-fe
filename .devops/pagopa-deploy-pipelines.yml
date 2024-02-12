@@ -133,32 +133,12 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
     jobs:
-      - job: end_to_end_tests_dev
+      - job: e2e_tests
         steps:
-          - checkout: checkoutTests
-          - script : |
-             echo "##[debug] Change placeholder for CHECKOUT_URL ..."
-             cd e2e-tests 
-             mv dev.env .env
-          - script: |
-             docker build -t ui_test e2e-tests
-            displayName: 'Build test image'
-
-          - script: |
-              docker run --name=ui_test ui_test
-            displayName: 'Run UI test container'
-            continueOnError: true 
-
-          - script: |
-              docker cp ui_test:/puppeteer/test_reports  test_reports
-            displayName: 'Copy test result'
-            continueOnError: true 
-
-          - task: PublishTestResults@2
-            inputs:
-              testResultsFormat: 'JUnit'
-              testResultsFiles: '**/*-TEST.xml' 
-              searchFolder: '$(System.DefaultWorkingDirectory)'
+          - template: .devops/azure-templates/e2e-tests.yaml@checkoutTests
+            parameters:
+              ENVIRONMENT: DEV
+              CHECKOUT_RESOURCE_REPO_NAME: checkoutTests
 
   # Create a relase
   # Activated when ONE OF these are met:
@@ -291,32 +271,12 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
     jobs:
-      - job: end_to_end_tests_uat
+      - job: e2e_tests
         steps:
-          - checkout: checkoutTests
-          - script : |
-             echo "##[debug] Change placeholder for CHECKOUT_URL ..."
-             cd e2e-tests 
-             mv uat.env .env
-          - script: |
-             docker build -t ui_test e2e-tests
-            displayName: 'Build test image'
-
-          - script: |
-              docker run --name=ui_test ui_test
-            displayName: 'Run UI test container'
-            continueOnError: true 
-
-          - script: |
-              docker cp ui_test:/puppeteer/test_reports  test_reports
-            displayName: 'Copy test result'
-            continueOnError: true 
-
-          - task: PublishTestResults@2
-            inputs:
-              testResultsFormat: 'JUnit'
-              testResultsFiles: '**/*-TEST.xml' 
-              searchFolder: '$(System.DefaultWorkingDirectory)'
+          - template: .devops/azure-templates/e2e-tests.yaml@checkoutTests
+            parameters:
+              ENVIRONMENT: UAT
+              CHECKOUT_RESOURCE_REPO_NAME: checkoutTests
 
     # Prepare Artifact
   - stage: Prepare_artifact_prod
