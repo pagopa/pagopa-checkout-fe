@@ -244,12 +244,12 @@ const activePaymentTask = (
         });
         return apiPaymentEcommerceClientV2.newTransaction({
           recaptchaResponse,
+          correlationId,
           body: {
             paymentNotices: getPaymentNotices(amountSinglePayment, rptId, cart),
             idCart: cart?.idCart,
             email: userEmail,
             orderId,
-            correlationId,
           },
         });
       },
