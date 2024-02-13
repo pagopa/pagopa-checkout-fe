@@ -243,8 +243,8 @@ const activePaymentTask = (
           EVENT_ID: PAYMENT_ACTIVATE_INIT.value,
         });
         return apiPaymentEcommerceClientV2.newTransaction({
+          "x-correlation-id": correlationId,
           recaptchaResponse,
-          correlationId,
           body: {
             paymentNotices: getPaymentNotices(amountSinglePayment, rptId, cart),
             idCart: cart?.idCart,
