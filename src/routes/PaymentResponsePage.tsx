@@ -25,6 +25,7 @@ import {
   SessionItems,
 } from "../utils/storage/sessionStorage";
 import {
+  GatewayAuthorizationStatus,
   getViewOutcomeFromEcommerceResultCode,
   ViewOutcomeEnum,
 } from "../utils/transactions/TransactionResultUtil";
@@ -79,13 +80,15 @@ export default function PaymentResponsePage() {
       idStatus?: TransactionStatusEnum,
       sendPaymentResultOutcome?: SendPaymentResultOutcomeEnum,
       gateway?: string,
-      errorCode?: string
+      errorCode?: string,
+      gatewayAuthorizationStatus?: GatewayAuthorizationStatus
     ) => {
       const outcome: ViewOutcomeEnum = getViewOutcomeFromEcommerceResultCode(
         idStatus,
         sendPaymentResultOutcome,
         gateway,
-        errorCode
+        errorCode,
+        gatewayAuthorizationStatus
       );
       mixpanel.track(PAYMENT_OUTCOME_CODE.value, {
         EVENT_ID: PAYMENT_OUTCOME_CODE.value,

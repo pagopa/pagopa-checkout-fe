@@ -78,7 +78,8 @@ export const callServices = async (
     status?: TransactionStatusEnum,
     sendPaymentResultOutcome?: SendPaymentResultOutcomeEnum,
     gateway?: string,
-    errorCode?: string
+    errorCode?: string,
+    gatewayAuthorizationStatus?: string
   ) => void
 ) => {
   const transaction = pipe(
@@ -152,7 +153,8 @@ export const callServices = async (
                       transactionInfo.status,
                       transactionInfo.sendPaymentResultOutcome,
                       transactionInfo.gateway,
-                      transactionInfo.errorCode
+                      transactionInfo.errorCode,
+                      transactionInfo.gatewayAuthorizationStatus
                     );
                   }
                 )
