@@ -168,7 +168,8 @@ export const callServices = async (
                 transactionInfo.status,
                 transactionInfo.sendPaymentResultOutcome,
                 transactionInfo.gateway,
-                transactionInfo.errorCode
+                transactionInfo.errorCode,
+                transactionInfo.gatewayAuthorizationStatus
               );
             }
           )
