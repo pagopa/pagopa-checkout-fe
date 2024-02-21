@@ -44,7 +44,9 @@ export function retryingFetch(
     (_: Response) => _.status === 429,
     retryLogic
   );
-  return retriableFetch(retryWithTransient429s)(timeoutFetch);
+  return retriableFetch(retryWithTransient429s)((input, init) =>
+    timeoutFetch(input instanceof URL ? input.toString() : input, init)
+  );
 }
 
 //
@@ -127,5 +129,10 @@ export const constantPollingWithPromisePredicateFetch = (
     retryLogic
   );
 
-  return retriableFetch(retryWithPromisePredicate, shouldAbort)(timeoutFetch);
+  return retriableFetch(
+    retryWithPromisePredicate,
+    shouldAbort
+  )((input, init) =>
+    timeoutFetch(input instanceof URL ? input.toString() : input, init)
+  );
 };

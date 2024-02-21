@@ -6,8 +6,8 @@ import * as TE from "fp-ts/TaskEither";
 import * as O from "fp-ts/Option";
 import * as T from "fp-ts/Task";
 import { pipe } from "fp-ts/function";
-import { DeferredPromise } from "@pagopa/ts-commons//lib/promises";
-import { Millisecond } from "@pagopa/ts-commons//lib/units";
+import { DeferredPromise } from "@pagopa/ts-commons/lib/promises";
+import { Millisecond } from "@pagopa/ts-commons/lib/units";
 import nodeFetch from "node-fetch";
 import {
   THREEDSACSCHALLENGEURL_STEP2_RESP_ERR,

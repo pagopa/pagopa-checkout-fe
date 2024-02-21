@@ -45,8 +45,8 @@
     "lodash": "^4.17.21",
     "mixpanel-browser": "^2.41.0",
     "mui": "^0.0.1",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-google-recaptcha": "^2.1.0",
     "react-i18next": "^11.15.3",
     "react-qr-code": "^2.0.3",
@@ -61,8 +61,8 @@
     "@types/jest": "^25.2.1",
     "@types/node-fetch": "^2.5.7",
     "@types/puppeteer": "5.4.2",
-    "@types/react": "^17.0.37",
-    "@types/react-dom": "^17.0.11",
+    "@types/react": "^18.2.57",
+    "@types/react-dom": "^18.2.19",
     "@types/react-google-recaptcha": "^2.1.4",
     "@types/react-qr-reader": "^2.1.4",
     "@typescript-eslint/eslint-plugin": "^4.8.2",
@@ -125,10 +125,13 @@
     ],
     "reporters": [
       "default",
-      [ "jest-junit", {
-        "outputDirectory": "./test_reports",
-        "outputName": "checkout-unit-TEST.xml"
-      } ]
+      [
+        "jest-junit",
+        {
+          "outputDirectory": "./test_reports",
+          "outputName": "checkout-unit-TEST.xml"
+        }
+      ]
     ]
   }
 }
