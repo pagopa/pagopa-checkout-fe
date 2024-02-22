@@ -1,8 +1,8 @@
 /* eslint-disable sonarjs/cognitive-complexity */
-import { Box, Grid, Typography } from "@mui/material";
+import { Box, Button, Stack } from "@mui/material";
 import React from "react";
 import { useLocation } from "react-router-dom";
-import { HelpOutlineOutlined, ShoppingCart } from "@mui/icons-material";
+import { ShoppingCart } from "@mui/icons-material";
 import pagopaLogo from "../../assets/images/pagopa-logo.svg";
 import {
   Cart,
@@ -72,55 +72,37 @@ export default function Header() {
       ];
 
   return (
-    <Box p={3} bgcolor={"white"}>
-      <Grid container spacing={0}>
-        <Grid item xs={2} display="flex" alignItems="center">
+    <>
+      <Box p={3} bgcolor={"white"}>
+        <Stack
+          spacing={0}
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+        >
           <img
             src={pagopaLogo}
             alt="pagoPA"
             style={{ width: "56px", height: "36px" }}
             aria-hidden="true"
           />
-        </Grid>
-        {(!!PaymentInfo.receiver || !!CartInfo?.paymentNotices) &&
-          !ignoreRoutes.includes(currentPath) && (
-            <>
-              <Grid
-                item
-                xs={10}
-                display="flex"
-                alignItems="center"
-                justifyContent="flex-end"
-                sx={{ cursor: "pointer" }}
+          {(!!PaymentInfo.receiver || !!CartInfo?.paymentNotices) &&
+            !ignoreRoutes.includes(currentPath) && (
+              <Button
+                onClick={() => toggleDrawer(true)}
+                endIcon={<ShoppingCart />}
               >
-                <Typography
-                  color="primary.main"
-                  variant="body2"
-                  component="div"
-                  fontWeight={600}
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="flex-end"
-                  onClick={() => toggleDrawer(true)}
-                >
-                  {moneyFormat(amountToShow())}
-                  <ShoppingCart
-                    color="primary"
-                    style={{ width: "15px", height: "auto" }}
-                    sx={{ ml: 1 }}
-                  />
-                  <HelpOutlineOutlined color="primary" sx={{ ml: 2 }} />
-                </Typography>
-              </Grid>
-              <DrawerDetail
-                paymentNotices={paymentNotices}
-                amountToShow={amountToShow}
-                drawstate={drawstate}
-                toggleDrawer={() => toggleDrawer(false)}
-              />
-            </>
-          )}
-      </Grid>
-    </Box>
+                {moneyFormat(amountToShow())}
+              </Button>
+            )}
+        </Stack>
+      </Box>
+      <DrawerDetail
+        paymentNotices={paymentNotices}
+        amountToShow={amountToShow}
+        drawstate={drawstate}
+        toggleDrawer={() => toggleDrawer(false)}
+      />
+    </>
   );
 }
