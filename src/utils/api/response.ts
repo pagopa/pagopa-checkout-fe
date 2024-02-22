@@ -23,14 +23,33 @@ import {
   createClient,
   Client as EcommerceClient,
 } from "../../../generated/definitions/payment-ecommerce/client";
-import { EcommerceFinalStatusCodeEnumType } from "../transactions/TransactionResultUtil";
 import { getSessionItem, SessionItems } from "../storage/sessionStorage";
+import {
+  EcommerceInterruptStatusCodeEnumType,
+  EcommerceMaybeInterruptStatusCodeEnumType,
+} from "../transactions/TransactionResultUtil";
 import {
   NewTransactionResponse,
   SendPaymentResultOutcomeEnum,
 } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { TransactionInfo } from "../../../generated/definitions/payment-ecommerce/TransactionInfo";
 import { TransactionStatusEnum } from "../../../generated/definitions/payment-ecommerce/TransactionStatus";
+
+/** This function return true when polling on GET transaction can be interrupted */
+const interruptTransactionPolling = (
+  transactionStaus: TransactionInfo["status"],
+  gatewayStaus: TransactionInfo["gatewayAuthorizationStatus"]
+) =>
+  pipe(
+    EcommerceInterruptStatusCodeEnumType.decode(transactionStaus),
+    E.isRight
+  ) ||
+  (pipe(
+    EcommerceMaybeInterruptStatusCodeEnumType.decode(transactionStaus),
+    E.isRight
+  ) &&
+    gatewayStaus !== "EXECUTED");
+
 const config = getConfigOrThrow();
 /**
  * Polling configuration params
@@ -57,10 +76,12 @@ const ecommerceClientWithPolling: EcommerceClient = createClient({
     delay,
     timeout,
     async (r: Response): Promise<boolean> => {
-      const myJson = (await r.clone().json()) as TransactionInfo;
-      return (
+      const { status, gatewayAuthorizationStatus } = (await r
+        .clone()
+        .json()) as TransactionInfo;
+      return !(
         r.status === 200 &&
-        !pipe(EcommerceFinalStatusCodeEnumType.decode(myJson.status), E.isRight)
+        interruptTransactionPolling(status, gatewayAuthorizationStatus)
       );
     }
   ),
@@ -168,7 +189,8 @@ export const callServices = async (
                 transactionInfo.status,
                 transactionInfo.sendPaymentResultOutcome,
                 transactionInfo.gateway,
-                transactionInfo.errorCode
+                transactionInfo.errorCode,
+                transactionInfo.gatewayAuthorizationStatus
               );
             }
           )

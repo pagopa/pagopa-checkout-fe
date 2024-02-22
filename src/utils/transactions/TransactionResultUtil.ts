@@ -2,6 +2,7 @@ import * as t from "io-ts";
 import { enumType } from "@pagopa/ts-commons/lib/types";
 import { TransactionStatusEnum } from "../../../generated/definitions/payment-ecommerce/TransactionStatus";
 import { SendPaymentResultOutcomeEnum } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
+import { TransactionInfo } from "../../../generated/definitions/payment-ecommerce/TransactionInfo";
 
 export enum ViewOutcomeEnum {
   SUCCESS = "0",
@@ -30,6 +31,25 @@ export enum EcommerceFinalStatusCodeEnum {
   CANCELED_BY_USER,
   UNAUTHORIZED,
   EXPIRED,
+}
+
+//* ecommerce states which interrupts polling */
+export enum EcommerceInterruptStatusCodeEnum {
+  NOTIFICATION_REQUESTED,
+  NOTIFICATION_ERROR,
+  NOTIFIED_OK,
+  NOTIFIED_KO,
+  EXPIRED,
+  REFUND_REQUESTED,
+  REFUND_ERROR,
+  REFUNDED,
+}
+
+//* ecommerce states which maybe interrupts polling */
+export enum EcommerceMaybeInterruptStatusCodeEnum {
+  AUTHORIZATION_COMPLETED,
+  CLOSURE_REQUESTED,
+  CLOSURE_ERROR,
 }
 
 export type NpgErrorCode =
@@ -136,17 +156,20 @@ export enum NpgAuthorizationStatus {
   FAILED = "FAILED",
 }
 
-export type GatewayAuthorizationStatus = NpgAuthorizationStatus | string;
+export type GatewayAuthorizationStatus =
+  | NpgAuthorizationStatus
+  | TransactionInfo["gatewayAuthorizationStatus"];
 
 export type GetViewOutcomeFromEcommerceResultCode = (
   transactionStatus?: TransactionStatusEnum,
   sendPaymentResultOutcome?: SendPaymentResultOutcomeEnum,
   gateway?: string,
   errorCode?: string,
-  gatewayAuthorizationStatus?: GatewayAuthorizationStatus
+  gatewayAuthorizationStatus?: TransactionInfo["gatewayAuthorizationStatus"]
 ) => ViewOutcomeEnum;
 
 export const getViewOutcomeFromEcommerceResultCode: GetViewOutcomeFromEcommerceResultCode =
+  // eslint-disable-next-line complexity
   (
     transactionStatus,
     sendPaymentResultOutcome,
@@ -166,14 +189,15 @@ export const getViewOutcomeFromEcommerceResultCode: GetViewOutcomeFromEcommerceR
       case TransactionStatusEnum.REFUNDED:
       case TransactionStatusEnum.REFUND_REQUESTED:
       case TransactionStatusEnum.REFUND_ERROR:
-      case TransactionStatusEnum.CLOSURE_ERROR:
-      case TransactionStatusEnum.EXPIRED:
         return ViewOutcomeEnum.GENERIC_ERROR;
       case TransactionStatusEnum.EXPIRED_NOT_AUTHORIZED:
         return ViewOutcomeEnum.TIMEOUT;
       case TransactionStatusEnum.CANCELED:
       case TransactionStatusEnum.CANCELLATION_EXPIRED:
         return ViewOutcomeEnum.CANCELED_BY_USER;
+      case TransactionStatusEnum.CLOSURE_ERROR:
+      case TransactionStatusEnum.CLOSURE_REQUESTED:
+      case TransactionStatusEnum.AUTHORIZATION_COMPLETED:
       case TransactionStatusEnum.UNAUTHORIZED:
         return evaluateUnauthorizedStatus(
           gateway,
@@ -185,6 +209,22 @@ export const getViewOutcomeFromEcommerceResultCode: GetViewOutcomeFromEcommerceR
           SendPaymentResultOutcomeEnum.NOT_RECEIVED
           ? ViewOutcomeEnum.TAKING_CHARGE
           : ViewOutcomeEnum.GENERIC_ERROR;
+      case TransactionStatusEnum.EXPIRED: {
+        if (!gatewayAuthorizationStatus === null) {
+          return ViewOutcomeEnum.GENERIC_ERROR;
+        }
+        if (gatewayAuthorizationStatus !== "EXECUTED") {
+          return evaluateUnauthorizedStatus(
+            gateway,
+            errorCode,
+            gatewayAuthorizationStatus
+          );
+        }
+        if (sendPaymentResultOutcome === SendPaymentResultOutcomeEnum.OK) {
+          return ViewOutcomeEnum.SUCCESS;
+        }
+        return ViewOutcomeEnum.GENERIC_ERROR;
+      }
       default:
         return ViewOutcomeEnum.GENERIC_ERROR;
     }
@@ -203,6 +243,24 @@ export const EcommerceFinalStatusCodeEnumType =
   enumType<EcommerceFinalStatusCodeEnum>(
     EcommerceFinalStatusCodeEnum,
     "EcommerceFinalStatusCodeEnumType"
+  );
+
+export type EcommerceInterruptStatusCodeEnumType = t.TypeOf<
+  typeof EcommerceInterruptStatusCodeEnumType
+>;
+export const EcommerceInterruptStatusCodeEnumType =
+  enumType<EcommerceInterruptStatusCodeEnum>(
+    EcommerceInterruptStatusCodeEnum,
+    "EcommerceInterruptStatusCodeEnumType"
+  );
+
+export type EcommerceMaybeInterruptStatusCodeEnumType = t.TypeOf<
+  typeof EcommerceMaybeInterruptStatusCodeEnumType
+>;
+export const EcommerceMaybeInterruptStatusCodeEnumType =
+  enumType<EcommerceMaybeInterruptStatusCodeEnum>(
+    EcommerceMaybeInterruptStatusCodeEnum,
+    "EcommerceMaybeInterruptStatusCodeEnumType"
   );
 
 function evaluateUnauthorizedStatus(
