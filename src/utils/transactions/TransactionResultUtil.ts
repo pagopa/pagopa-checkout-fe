@@ -199,7 +199,7 @@ export const getViewOutcomeFromEcommerceResultCode: GetViewOutcomeFromEcommerceR
       case TransactionStatusEnum.CLOSURE_REQUESTED:
       case TransactionStatusEnum.AUTHORIZATION_COMPLETED:
       case TransactionStatusEnum.UNAUTHORIZED:
-        return gatewayAuthorizationStatus !== "EXECUTED"
+        return gatewayAuthorizationStatus !== NpgAuthorizationStatus.EXECUTED
           ? evaluateUnauthorizedStatus(
               gateway,
               errorCode,
@@ -212,17 +212,17 @@ export const getViewOutcomeFromEcommerceResultCode: GetViewOutcomeFromEcommerceR
           ? ViewOutcomeEnum.TAKING_CHARGE
           : ViewOutcomeEnum.GENERIC_ERROR;
       case TransactionStatusEnum.EXPIRED: {
-        if (!gatewayAuthorizationStatus === null) {
-          return ViewOutcomeEnum.GENERIC_ERROR;
-        }
-        if (gatewayAuthorizationStatus !== "EXECUTED") {
+        if (gatewayAuthorizationStatus !== NpgAuthorizationStatus.EXECUTED) {
           return evaluateUnauthorizedStatus(
             gateway,
             errorCode,
             gatewayAuthorizationStatus
           );
         }
-        if (sendPaymentResultOutcome === SendPaymentResultOutcomeEnum.OK) {
+        if (
+          sendPaymentResultOutcome === SendPaymentResultOutcomeEnum.OK &&
+          gatewayAuthorizationStatus === NpgAuthorizationStatus.EXECUTED
+        ) {
           return ViewOutcomeEnum.SUCCESS;
         }
         return ViewOutcomeEnum.GENERIC_ERROR;
