@@ -43,6 +43,7 @@ export enum EcommerceInterruptStatusCodeEnum {
   REFUND_REQUESTED,
   REFUND_ERROR,
   REFUNDED,
+  UNAUTHORIZED,
 }
 
 //* ecommerce states which maybe interrupts polling */
@@ -198,11 +199,13 @@ export const getViewOutcomeFromEcommerceResultCode: GetViewOutcomeFromEcommerceR
       case TransactionStatusEnum.CLOSURE_REQUESTED:
       case TransactionStatusEnum.AUTHORIZATION_COMPLETED:
       case TransactionStatusEnum.UNAUTHORIZED:
-        return evaluateUnauthorizedStatus(
-          gateway,
-          errorCode,
-          gatewayAuthorizationStatus
-        );
+        return gatewayAuthorizationStatus !== "EXECUTED"
+          ? evaluateUnauthorizedStatus(
+              gateway,
+              errorCode,
+              gatewayAuthorizationStatus
+            )
+          : ViewOutcomeEnum.GENERIC_ERROR;
       case TransactionStatusEnum.CLOSED:
         return sendPaymentResultOutcome ===
           SendPaymentResultOutcomeEnum.NOT_RECEIVED
