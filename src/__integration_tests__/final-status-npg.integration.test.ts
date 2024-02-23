@@ -1177,7 +1177,7 @@ describe("Unauthorized npg final status mapping tests", () => {
   })
 
 
-  Array.from(mockFlowWithExpectedResultMap.keys()).filter(el => el === "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_AUTHORIZED").forEach(keyFlowId => {
+  Array.from(mockFlowWithExpectedResultMap.keys()).forEach(keyFlowId => {
     it(mockFlowWithExpectedResultMap.get(keyFlowId)?.title || "", async () => {
       await page.evaluate(() => {
 
