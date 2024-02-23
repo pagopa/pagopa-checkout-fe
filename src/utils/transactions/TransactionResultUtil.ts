@@ -272,7 +272,6 @@ function evaluateUnauthorizedStatus(
     case PaymentGateway.NPG:
       switch (gatewayAuthorizationStatus) {
         case NpgAuthorizationStatus.EXECUTED:
-          return ViewOutcomeEnum.SUCCESS;
         case NpgAuthorizationStatus.AUTHORIZED:
         case NpgAuthorizationStatus.PENDING:
         case NpgAuthorizationStatus.VOIDED:
