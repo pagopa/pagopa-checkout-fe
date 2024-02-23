@@ -96,7 +96,6 @@ export type NpgErrorCode =
   | "999";
 
 export const NpgErrorCodeToOutcome = new Map<NpgErrorCode, ViewOutcomeEnum>([
-  ["000", ViewOutcomeEnum.SUCCESS],
   ["100", ViewOutcomeEnum.AUTH_ERROR],
   ["101", ViewOutcomeEnum.INVALID_CARD],
   ["102", ViewOutcomeEnum.AUTH_ERROR],

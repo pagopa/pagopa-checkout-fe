@@ -170,25 +170,22 @@ describe("TransactionResultUtil", () => {
   // NPG
   // SUCCESS(0)
   it("should return correct SUCCESS(0) outcome with NPG gateway", async () => {
-    expect(
-      getViewOutcomeFromEcommerceResultCode(
-        TransactionStatusEnum.UNAUTHORIZED,
-        undefined,
-        PaymentGateway.NPG,
-        undefined,
-        NpgAuthorizationStatus.EXECUTED
-      )
-    ).toEqual(ViewOutcomeEnum.SUCCESS);
-
-    expect(
-      getViewOutcomeFromEcommerceResultCode(
-        TransactionStatusEnum.UNAUTHORIZED,
-        undefined,
-        PaymentGateway.NPG,
-        "000",
-        NpgAuthorizationStatus.DECLINED
-      )
-    ).toEqual(ViewOutcomeEnum.SUCCESS);
+    [
+      TransactionStatusEnum.NOTIFICATION_REQUESTED,
+      TransactionStatusEnum.NOTIFICATION_ERROR,
+      TransactionStatusEnum.NOTIFIED_OK,
+      TransactionStatusEnum.EXPIRED,
+    ].forEach((transactionStatus) => {
+      expect(
+        getViewOutcomeFromEcommerceResultCode(
+          transactionStatus,
+          SendPaymentResultOutcomeEnum.OK,
+          PaymentGateway.NPG,
+          undefined,
+          NpgAuthorizationStatus.EXECUTED
+        )
+      ).toEqual(ViewOutcomeEnum.SUCCESS);
+    });
   });
 
   // GENERIC_ERROR(1)
