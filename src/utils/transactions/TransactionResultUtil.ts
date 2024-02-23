@@ -156,10 +156,6 @@ export enum NpgAuthorizationStatus {
   FAILED = "FAILED",
 }
 
-export type GatewayAuthorizationStatus =
-  | NpgAuthorizationStatus
-  | TransactionInfo["gatewayAuthorizationStatus"];
-
 export type GetViewOutcomeFromEcommerceResultCode = (
   transactionStatus?: TransactionStatusEnum,
   sendPaymentResultOutcome?: SendPaymentResultOutcomeEnum,
