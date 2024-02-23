@@ -35,7 +35,7 @@ import {
 import { TransactionInfo } from "../../../generated/definitions/payment-ecommerce/TransactionInfo";
 import { TransactionStatusEnum } from "../../../generated/definitions/payment-ecommerce/TransactionStatus";
 
-/** This function return true when polling on GET transaction can be interrupted */
+/** This function return true when polling on GET transaction must be interrupted */
 const interruptTransactionPolling = (
   transactionStaus: TransactionInfo["status"],
   gatewayStaus: TransactionInfo["gatewayAuthorizationStatus"]
