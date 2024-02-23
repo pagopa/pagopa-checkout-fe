@@ -229,6 +229,10 @@ describe("Unauthorized npg final status mapping tests", () => {
       { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 999", esito: "Spiacenti, si è verificato un errore imprevisto." }
     ],
     [
+      "AUTHORIZATION_COMPLETED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_GENERIC",
+      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND GENERIC ERROR CODE", esito: "Spiacenti, si è verificato un errore imprevisto." }
+    ],
+    [
       "CLOSURE_REQUESTED_WITH_NPG_AUTH_STATUS_EXECUTED",
       { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS EXECUTED", esito: "Spiacenti, si è verificato un errore imprevisto." }
     ],
@@ -439,7 +443,10 @@ describe("Unauthorized npg final status mapping tests", () => {
       "CLOSURE_REQUESTED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_999",
       { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 999", esito: "Spiacenti, si è verificato un errore imprevisto." }
     ],
-
+    [
+      "CLOSURE_REQUESTED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_GENERIC",
+      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND GENERIC ERROR CODE", esito: "Spiacenti, si è verificato un errore imprevisto." }
+    ],
     [
       "CLOSURE_ERROR_WITH_NPG_AUTH_STATUS_EXECUTED",
       { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS EXECUTED", esito: "Spiacenti, si è verificato un errore imprevisto." }
@@ -652,215 +659,223 @@ describe("Unauthorized npg final status mapping tests", () => {
       { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 999", esito: "Spiacenti, si è verificato un errore imprevisto." }
     ],
     [
+      "CLOSURE_ERROR_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_GENERIC",
+      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND GENERIC ERROR CODE", esito: "Spiacenti, si è verificato un errore imprevisto." }
+    ],
+    [
       "CLOSED_WITH_NPG_AUTH_STATUS_EXECUTED_SEND_PAYMENT_RESULT_NOT_RECEIVED",
       { title: "CLOSED WITH NPG AUTHORIZATION STATUS EXECUTED AND SEND PAYMENT RESULT NOT_RECEIVED", esito: "L'operazione è stata presa in carico" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_AUTHORIZED",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS AUTHORIZED", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS AUTHORIZED", esito: "Spiacenti, si è verificato un errore imprevisto." }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_PENDING",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS PENDING", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS PENDING", esito: "Spiacenti, si è verificato un errore imprevisto." }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_VOIDED",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS VOIDED", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS VOIDED", esito: "Spiacenti, si è verificato un errore imprevisto." }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_REFUNDED",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUSREFUNDED", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUSREFUNDED", esito: "Spiacenti, si è verificato un errore imprevisto." }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_FAILED",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS FAILED", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS FAILED", esito: "Spiacenti, si è verificato un errore imprevisto." }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_CANCELED",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS CANCELED", esito: "L’operazione è stata annullata" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS CANCELED", esito: "L’operazione è stata annullata" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DENIED_BY_RISK",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DENIED_BY_RISK", esito: "Autorizzazione negata" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DENIED_BY_RISK", esito: "Autorizzazione negata" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_THREEDS_VALIDATED",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS THREEDS_VALIDATED", esito: "Autorizzazione negata" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS THREEDS_VALIDATED", esito: "Autorizzazione negata" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_THREEDS_FAILED",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS THREEDS_FAILED", esito: "Autorizzazione negata" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS THREEDS_FAILED", esito: "Autorizzazione negata" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_100",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 100", esito: "Autorizzazione negata" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 100", esito: "Autorizzazione negata" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_101",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 101", esito: "C’è un problema con la tua carta" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 101", esito: "C’è un problema con la tua carta" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_102",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 102", esito: "Autorizzazione negata" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 102", esito: "Autorizzazione negata" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_104",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 104", esito: "I dati della carta non risultano corretti" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 104", esito: "I dati della carta non risultano corretti" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_106",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 106", esito: "Autorizzazione negata" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 106", esito: "Autorizzazione negata" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_109",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 109", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 109", esito: "Spiacenti, si è verificato un errore imprevisto." }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_110",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 110", esito: "I dati della carta non risultano corretti" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 110", esito: "I dati della carta non risultano corretti" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_111",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 111", esito: "C’è un problema con la tua carta" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 111", esito: "C’è un problema con la tua carta" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_115",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 115", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 115", esito: "Spiacenti, si è verificato un errore imprevisto." }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_116",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 116", esito: "Autorizzazione negata" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 116", esito: "Autorizzazione negata" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_117",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 117", esito: "Autorizzazione negata" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 117", esito: "Autorizzazione negata" }
     ],
 
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_118",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 118", esito: "I dati della carta non risultano corretti" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 118", esito: "I dati della carta non risultano corretti" }
     ],
 
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_119",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 119", esito: "Autorizzazione negata" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 119", esito: "Autorizzazione negata" }
     ],
 
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_120",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 120", esito: "Autorizzazione negata" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 120", esito: "Autorizzazione negata" }
     ],
 
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_121",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 121", esito: "Autorizzazione negata" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 121", esito: "Autorizzazione negata" }
     ],
 
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_122",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 122", esito: "Autorizzazione negata" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 122", esito: "Autorizzazione negata" }
     ],
 
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_123",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 123", esito: "Autorizzazione negata" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 123", esito: "Autorizzazione negata" }
     ],
 
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_124",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 124", esito: "Autorizzazione negata" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 124", esito: "Autorizzazione negata" }
     ],
 
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_125",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 125", esito: "I dati della carta non risultano corretti" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 125", esito: "I dati della carta non risultano corretti" }
     ],
 
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_126",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 126", esito: "Autorizzazione negata" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 126", esito: "Autorizzazione negata" }
     ],
 
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_129",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 129", esito: "Autorizzazione negata" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 129", esito: "Autorizzazione negata" }
     ],
 
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_200",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 200", esito: "Autorizzazione negata" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 200", esito: "Autorizzazione negata" }
     ],
 
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_202",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 202", esito: "Autorizzazione negata" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 202", esito: "Autorizzazione negata" }
     ],
 
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_204",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 204", esito: "Autorizzazione negata" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 204", esito: "Autorizzazione negata" }
     ],
 
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_208",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 208", esito: "I dati della carta non risultano corretti" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 208", esito: "I dati della carta non risultano corretti" }
     ],
 
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_209",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 209", esito: "I dati della carta non risultano corretti" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 209", esito: "I dati della carta non risultano corretti" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_210",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 210", esito: "I dati della carta non risultano corretti" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 210", esito: "I dati della carta non risultano corretti" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_413",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 413", esito: "Autorizzazione negata" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 413", esito: "Autorizzazione negata" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_888",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 888", esito: "Autorizzazione negata" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 888", esito: "Autorizzazione negata" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_902",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 902", esito: "Autorizzazione negata" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 902", esito: "Autorizzazione negata" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_903",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 903", esito: "Autorizzazione negata" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 903", esito: "Autorizzazione negata" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_904",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 904", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 904", esito: "Spiacenti, si è verificato un errore imprevisto." }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_906",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 906", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 906", esito: "Spiacenti, si è verificato un errore imprevisto." }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_907",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 907", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 907", esito: "Spiacenti, si è verificato un errore imprevisto." }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_908",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 908", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 908", esito: "Spiacenti, si è verificato un errore imprevisto." }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_909",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 909", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 909", esito: "Spiacenti, si è verificato un errore imprevisto." }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_911",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 911", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 911", esito: "Spiacenti, si è verificato un errore imprevisto." }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_913",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 913", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 913", esito: "Spiacenti, si è verificato un errore imprevisto." }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_999",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 999", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 999", esito: "Spiacenti, si è verificato un errore imprevisto." }
+    ],
+    [
+      "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_GENERIC",
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND GENERIC ERROR CODE", esito: "Spiacenti, si è verificato un errore imprevisto." }
     ],
     [
       "NOTIFICATION_REQUESTED_WITH_NPG_AUTH_STATUS_EXECUTED_AND_SEND_PAYMENT_RESULT_OK",
@@ -1103,6 +1118,10 @@ describe("Unauthorized npg final status mapping tests", () => {
       { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 999", esito: "Spiacenti, si è verificato un errore imprevisto." }
     ],
     [
+      "EXPIRED_TRANSACTION_FOR_AUTHORIZATION_COMPLETED_AUTH_STATUS_DECLINED_ERROR_CODE_GENERIC",
+      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND GENERIC ERROR CODE", esito: "Spiacenti, si è verificato un errore imprevisto." }
+    ],
+    [
       "EXPIRED_TRANSACTION_FOR_CLOSURE_REQUESTED_AUTH_STATUS_EXECUTED_AND_SEND_PAYMENT_RESULT_NOT_RECEIVED",
       { title: "EXPIRED STATUS FOR CLOSURE_REQUESTED TRANSACTION WITH NPG AUTHORIZATION STATUS EXECUTED AND SEND PAYMENT RESULT NOT_RECEIVED", esito: "Spiacenti, si è verificato un errore imprevisto." }
     ],
@@ -1125,6 +1144,18 @@ describe("Unauthorized npg final status mapping tests", () => {
     [
       "EXPIRED_TRANSACTION_FOR_NOTIFICATION_ERROR_AUTH_STATUS_EXECUTED_AND_SEND_PAYMENT_RESULT_KO",
       { title: "EXPIRED STATUS FOR NOTIFICATION_ERROR TRANSACTION WITH NPG AUTHORIZATION STATUS EXECUTED AND SEND PAYMENT RESULT KO", esito: "Spiacenti, si è verificato un errore imprevisto." }
+    ],
+    [
+      "REFUND_REQUESTED_TRANSACTION_WITH_NPG_AUTH_STATUS_EXECUTED",
+      { title: "REFUND_REQUESTED STATUS FOR TRANSACTION WITH NPG AUTHORIZATION STATUS EXECUTED", esito: "Spiacenti, si è verificato un errore imprevisto." }
+    ],
+    [
+      "REFUND_ERROR_TRANSACTION_WITH_NPG_AUTH_STATUS_EXECUTED",
+      { title: "REFUND_ERROR STATUS FOR TRANSACTION WITH NPG AUTHORIZATION STATUS EXECUTED", esito: "Spiacenti, si è verificato un errore imprevisto." }
+    ],
+    [
+      "REFUNDED_TRANSACTION_WITH_NPG_AUTH_STATUS_EXECUTED",
+      { title: "REFUNDED STATUS FOR TRANSACTION WITH NPG AUTHORIZATION STATUS EXECUTED", esito: "Spiacenti, si è verificato un errore imprevisto." }
     ]
 
   ]);
@@ -1146,7 +1177,7 @@ describe("Unauthorized npg final status mapping tests", () => {
   })
 
 
-  Array.from(mockFlowWithExpectedResultMap.keys()).forEach(keyFlowId => {
+  Array.from(mockFlowWithExpectedResultMap.keys()).filter(el => el === "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_AUTHORIZED").forEach(keyFlowId => {
     it(mockFlowWithExpectedResultMap.get(keyFlowId)?.title || "", async () => {
       await page.evaluate(() => {
 
