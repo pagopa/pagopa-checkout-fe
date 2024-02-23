@@ -8,7 +8,7 @@ import * as T from "fp-ts/Task";
 import { pipe } from "fp-ts/function";
 import { DeferredPromise } from "@pagopa/ts-commons//lib/promises";
 import { Millisecond } from "@pagopa/ts-commons//lib/units";
-import nodeFetch from "node-fetch";
+import { createCounter } from "../../utils/counter";
 import {
   THREEDSACSCHALLENGEURL_STEP2_RESP_ERR,
   THREEDSACSCHALLENGEURL_STEP2_SUCCESS,
@@ -68,6 +68,7 @@ const decodeToUUID = (base64: string) => {
   return hexToUuid(bytes.toString("hex")).replace(/-/g, "");
 };
 
+const counter = createCounter();
 const ecommerceClientWithPolling: EcommerceClient = createClient({
   baseUrl: config.CHECKOUT_ECOMMERCE_HOST,
   fetchApi: constantPollingWithPromisePredicateFetch(
@@ -76,6 +77,11 @@ const ecommerceClientWithPolling: EcommerceClient = createClient({
     delay,
     timeout,
     async (r: Response): Promise<boolean> => {
+      counter.increment();
+      if (counter.getValue() === retries) {
+        counter.reset();
+        return false;
+      }
       const { status, gatewayAuthorizationStatus } = (await r
         .clone()
         .json()) as TransactionInfo;
@@ -85,12 +91,6 @@ const ecommerceClientWithPolling: EcommerceClient = createClient({
       );
     }
   ),
-  basePath: config.CHECKOUT_API_ECOMMERCE_BASEPATH,
-});
-
-const ecommerceClientWithoutpolling: EcommerceClient = createClient({
-  baseUrl: config.CHECKOUT_ECOMMERCE_HOST,
-  fetchApi: nodeFetch as any as typeof fetch,
   basePath: config.CHECKOUT_API_ECOMMERCE_BASEPATH,
 });
 
@@ -155,32 +155,7 @@ export const callServices = async (
             ecommerceClientWithPolling
           ),
           TE.fold(
-            // eslint-disable-next-line sonarjs/no-identical-functions
-            () => async () =>
-              await pipe(
-                ecommerceTransaction(
-                  transactionId,
-                  bearerAuth,
-                  ecommerceClientWithoutpolling
-                ),
-                TE.fold(
-                  () => async () => handleFinalStatusResult(),
-                  // eslint-disable-next-line sonarjs/no-identical-functions
-                  (transactionInfo) => async () => {
-                    mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value, {
-                      EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value,
-                    });
-                    handleFinalStatusResult(
-                      transactionInfo.status,
-                      transactionInfo.sendPaymentResultOutcome,
-                      transactionInfo.gateway,
-                      transactionInfo.errorCode,
-                      transactionInfo.gatewayAuthorizationStatus
-                    );
-                  }
-                )
-              )(),
-            // eslint-disable-next-line sonarjs/no-identical-functions
+            () => async () => handleFinalStatusResult(),
             (transactionInfo) => async () => {
               mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value, {
                 EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value,
