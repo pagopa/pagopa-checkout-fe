@@ -25,7 +25,6 @@ import {
   SessionItems,
 } from "../utils/storage/sessionStorage";
 import {
-  GatewayAuthorizationStatus,
   getViewOutcomeFromEcommerceResultCode,
   ViewOutcomeEnum,
 } from "../utils/transactions/TransactionResultUtil";
@@ -37,6 +36,7 @@ import {
 import { resetThreshold } from "../redux/slices/threshold";
 import { Bundle } from "../../generated/definitions/payment-ecommerce/Bundle";
 import { TransactionStatusEnum } from "../../generated/definitions/payment-ecommerce/TransactionStatus";
+import { TransactionInfo } from "../../generated/definitions/payment-ecommerce/TransactionInfo";
 
 type PrintData = {
   useremail: string;
@@ -81,7 +81,7 @@ export default function PaymentResponsePage() {
       sendPaymentResultOutcome?: SendPaymentResultOutcomeEnum,
       gateway?: string,
       errorCode?: string,
-      gatewayAuthorizationStatus?: GatewayAuthorizationStatus
+      gatewayAuthorizationStatus?: TransactionInfo["gatewayAuthorizationStatus"]
     ) => {
       const outcome: ViewOutcomeEnum = getViewOutcomeFromEcommerceResultCode(
         idStatus,
