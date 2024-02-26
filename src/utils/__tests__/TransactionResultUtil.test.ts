@@ -190,6 +190,57 @@ describe("TransactionResultUtil", () => {
 
   // GENERIC_ERROR(1)
   it("should return correctly GENERIC_ERROR(1) outcome with NPG gateway", async () => {
+    [
+      TransactionStatusEnum.EXPIRED,
+      TransactionStatusEnum.AUTHORIZATION_REQUESTED,
+    ].forEach((transactionStatus) => {
+      expect(
+        getViewOutcomeFromEcommerceResultCode(
+          transactionStatus,
+          undefined,
+          PaymentGateway.NPG,
+          undefined,
+          undefined
+        )
+      ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
+    });
+
+    [
+      TransactionStatusEnum.AUTHORIZATION_COMPLETED,
+      TransactionStatusEnum.CLOSURE_REQUESTED,
+      TransactionStatusEnum.CLOSURE_ERROR,
+    ].forEach((transactionStatus) => {
+      expect(
+        getViewOutcomeFromEcommerceResultCode(
+          transactionStatus,
+          undefined,
+          PaymentGateway.NPG,
+          undefined,
+          NpgAuthorizationStatus.EXECUTED
+        )
+      ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
+    });
+
+    expect(
+      getViewOutcomeFromEcommerceResultCode(
+        TransactionStatusEnum.EXPIRED,
+        undefined,
+        PaymentGateway.NPG,
+        undefined,
+        undefined
+      )
+    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
+
+    expect(
+      getViewOutcomeFromEcommerceResultCode(
+        TransactionStatusEnum.CLOSURE_REQUESTED,
+        undefined,
+        PaymentGateway.NPG,
+        undefined,
+        NpgAuthorizationStatus.EXECUTED
+      )
+    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
+
     // Testing dinamically on NpgAuthorizationStatus
     [
       NpgAuthorizationStatus.AUTHORIZED,
@@ -331,5 +382,18 @@ describe("TransactionResultUtil", () => {
         NpgAuthorizationStatus.CANCELED
       )
     ).toEqual(ViewOutcomeEnum.CANCELED_BY_USER);
+  });
+
+  // TAKING_CHARGE(15)
+  it("should return correctly TAKING_CHARGE(15) outcome with NPG gateway", async () => {
+    expect(
+      getViewOutcomeFromEcommerceResultCode(
+        TransactionStatusEnum.CLOSED,
+        SendPaymentResultOutcomeEnum.NOT_RECEIVED,
+        PaymentGateway.NPG,
+        undefined,
+        NpgAuthorizationStatus.EXECUTED
+      )
+    ).toEqual(ViewOutcomeEnum.TAKING_CHARGE);
   });
 });

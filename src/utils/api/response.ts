@@ -27,6 +27,7 @@ import { getSessionItem, SessionItems } from "../storage/sessionStorage";
 import {
   EcommerceInterruptStatusCodeEnumType,
   EcommerceMaybeInterruptStatusCodeEnumType,
+  NpgAuthorizationStatus,
 } from "../transactions/TransactionResultUtil";
 import {
   NewTransactionResponse,
@@ -48,7 +49,7 @@ const interruptTransactionPolling = (
     EcommerceMaybeInterruptStatusCodeEnumType.decode(transactionStaus),
     E.isRight
   ) &&
-    gatewayStaus !== "EXECUTED");
+    gatewayStaus !== NpgAuthorizationStatus.EXECUTED);
 
 const config = getConfigOrThrow();
 /**
