@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable sonarjs/cognitive-complexity */
 import { Box, Button, Link } from "@mui/material";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { CancelPayment } from "../components/modals/CancelPayment";
@@ -20,7 +20,10 @@ import { getTotalFromCart } from "../utils/cart/cart";
 import { getSessionItem, SessionItems } from "../utils/storage/sessionStorage";
 import { CheckoutRoutes } from "./models/routeModel";
 
+
 export default function PaymentChoicePage() {
+  const didInit = useRef(false);
+
   const { t } = useTranslation();
   const navigate = useNavigate();
   const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
@@ -43,7 +46,13 @@ export default function PaymentChoicePage() {
     void getPaymentInstruments({ amount }, onError, onResponse);
   }, []);
 
-  React.useEffect(getPaymentMethods, []);
+
+  useEffect(()=>{
+    if (!didInit.current) {
+      didInit.current = true
+      getPaymentMethods()
+    }
+  },[])
 
   const onResponse = React.useCallback((list: Array<PaymentInstruments>) => {
     setPaymentInstruments(list);
@@ -78,6 +87,7 @@ export default function PaymentChoicePage() {
   );
   const handleRetry = React.useCallback(getPaymentMethods, []);
 
+  
   return (
     <>
       {loading && <CheckoutLoader />}

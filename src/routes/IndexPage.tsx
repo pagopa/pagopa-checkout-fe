@@ -6,11 +6,16 @@ import { PaymentNoticeChoice } from "../features/payment/components/PaymentNotic
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { clearStorage } from "../utils/storage/sessionStorage";
 
+let didInit = false;
+
 export default function IndexPage() {
   const dispatch = useAppDispatch();
 
   React.useEffect(() => {
+      if(!didInit){
     dispatch(resetThreshold());
+        didInit=true;
+      }
   }, []);
   clearStorage();
 

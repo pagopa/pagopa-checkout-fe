@@ -66,6 +66,8 @@ const checkoutTheme = createTheme({
   },
 });
 
+let didInit = false;
+
 export function App() {
   const { t } = useTranslation();
   const fixedFooterPages = [
@@ -77,26 +79,33 @@ export function App() {
     CheckoutRoutes.ERRORE,
     CheckoutRoutes.DONA,
   ];
+
+
   React.useEffect(() => {
-    // OneTrust callback at first time
-    // eslint-disable-next-line functional/immutable-data
-    global.OptanonWrapper = function () {
-      OneTrust.OnConsentChanged(function () {
-        const activeGroups = OnetrustActiveGroups;
-        if (activeGroups.indexOf(targCookiesGroup) > -1) {
-          mixpanelInit();
-        }
-      });
-    };
-    // check mixpanel cookie consent in cookie
-    const OTCookieValue: string =
-      document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("OptanonConsent=")) || "";
-    const checkValue = `${targCookiesGroup}%3A1`;
-    if (OTCookieValue.indexOf(checkValue) > -1) {
-      mixpanelInit();
+    // This makes the app resilient to being remounted, so if it gets remounted the callbacks only happen once. 
+    if (!didInit) {
+      didInit = true;
+      // OneTrust callback at first time
+      // eslint-disable-next-line functional/immutable-data
+      global.OptanonWrapper = function () {
+        OneTrust.OnConsentChanged(function () {
+          const activeGroups = OnetrustActiveGroups;
+          if (activeGroups.indexOf(targCookiesGroup) > -1) {
+            mixpanelInit();
+          }
+        });
+      };
+      // check mixpanel cookie consent in cookie
+      const OTCookieValue: string =
+        document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("OptanonConsent=")) || "";
+      const checkValue = `${targCookiesGroup}%3A1`;
+      if (OTCookieValue.indexOf(checkValue) > -1) {
+        mixpanelInit();
+      }
     }
+
   }, []);
   // eslint-disable-next-line functional/immutable-data
   document.title = t("app.title");
