@@ -25,6 +25,7 @@ import {
   PaymentInfo,
   PaymentInstruments,
   PaymentMethod,
+  PaymentMethodCodeTypes,
 } from "../../features/payment/models/paymentModel";
 import { PaymentMethodRoutes } from "../../routes/models/paymentMethodRoutes";
 import { validateSessionWalletCardFormFields } from "../../utils/regex/validators";
@@ -853,7 +854,7 @@ export const getPaymentInstruments = async (
                 return myRes.value.paymentMethods?.map((method) => {
                   const currentMethod =
                     PaymentMethodRoutes[
-                      method.paymentTypeCode as keyof typeof PaymentMethodRoutes
+                      method.paymentTypeCode as PaymentMethodCodeTypes
                     ];
                   return {
                     ...method,

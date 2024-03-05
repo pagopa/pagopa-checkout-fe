@@ -11,7 +11,10 @@ import * as React from "react";
 import { useTranslation } from "react-i18next";
 import ClickableFieldContainer from "../../../../components/TextFormField/ClickableFieldContainer";
 import { getConfigOrThrow } from "../../../../utils/config/config";
-import { PaymentInstruments } from "../../models/paymentModel";
+import {
+  PaymentInstruments,
+  PaymentMethodCodeTypes,
+} from "../../models/paymentModel";
 
 function ImageComponent(method: PaymentInstruments) {
   const theme = useTheme();
@@ -60,7 +63,7 @@ export const MethodComponentList = ({
   testable,
 }: {
   methods: Array<PaymentInstruments>;
-  onClick?: (typecode: string, paymentMethodId: string) => void;
+  onClick?: (typeCode: PaymentMethodCodeTypes, paymentMethodId: string) => void;
   testable?: boolean;
 }) => (
   <>

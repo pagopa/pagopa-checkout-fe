@@ -72,12 +72,26 @@ export interface PaymentMethod {
   paymentMethodId: string;
 }
 
+export enum PaymentMethodCodeTypes {
+  RBPR = "RBPR", // Conto BancoPosta Retail
+  RBPB = "RBPB", // Conto BancoPosta Impresa
+  RBPP = "RBPP", // Paga con Postepay
+  RPIC = "RPIC", // Pago in Conto Intesa
+  RBPS = "RBPS", // SCRIGNO Internet Banking
+  BPAY = "BPAY", // BancomatPay
+  APPL = "APPL", // ApplePay
+  GOOG = "GOOG", // GooglePay
+  MYBK = "MYBK", // MyBank
+  SATY = "SATY", // Satispay
+  CP = "CP", // Carte
+}
+
 export interface PaymentInstruments {
   id: string;
   name: string;
   description: string;
   status: string;
-  paymentTypeCode: string;
+  paymentTypeCode: PaymentMethodCodeTypes;
   asset: string | ((sx: SxProps<Theme>) => JSX.Element);
   label: string;
   ranges: Array<{

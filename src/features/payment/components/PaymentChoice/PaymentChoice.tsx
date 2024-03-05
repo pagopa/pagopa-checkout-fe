@@ -5,11 +5,16 @@ import {
   SessionItems,
   setSessionItem,
 } from "../../../../utils/storage/sessionStorage";
-import { PaymentInstruments } from "../../models/paymentModel";
+import {
+  PaymentInstruments,
+  PaymentMethodCodeTypes,
+} from "../../models/paymentModel";
 import { DisabledPaymentMethods, MethodComponentList } from "./PaymentMethod";
 
 const sortMethods = (a: PaymentInstruments, b: PaymentInstruments) =>
-  a.paymentTypeCode === "CP" ? -1 : a.label.localeCompare(b.label);
+  a.paymentTypeCode === PaymentMethodCodeTypes.CP
+    ? -1
+    : a.label.localeCompare(b.label);
 
 const getNormalizedMethods = (
   paymentInstruments: Array<PaymentInstruments>
@@ -57,10 +62,8 @@ export function PaymentChoice(props: {
   loading?: boolean;
 }) {
   const handleClickOnMethod = React.useCallback(
-    (paymentType: string, paymentMethodId: string) => {
-      const route: string =
-        PaymentMethodRoutes[paymentType as keyof typeof PaymentMethodRoutes]
-          ?.route;
+    (paymentType: PaymentMethodCodeTypes, paymentMethodId: string) => {
+      const route: string = PaymentMethodRoutes[paymentType]?.route;
       setSessionItem(SessionItems.paymentMethod, {
         paymentMethodId,
         paymentTypeCode: paymentType,
