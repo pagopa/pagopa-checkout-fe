@@ -193,7 +193,7 @@ export default function IframeCardForm(props: Props) {
     }
   };
 
-  useEffect(()=>{if (!form) {
+  useOnMountUnsafe(()=>{if (!form) {
     const onResponse = (body: CreateSessionResponse) => {
       setSessionItem(SessionItems.orderId, body.orderId);
       setSessionItem(SessionItems.correlationId, body.correlationId);
@@ -236,7 +236,7 @@ export default function IframeCardForm(props: Props) {
       const token = ref.current ? await callRecaptcha(ref.current) : "";
       void npgSessionsFields(onError, onResponse, token);
     })();
-  }}, [form?.orderId])
+  }})
 
   const handleSubmit = (e: React.FormEvent) => {
     try {
