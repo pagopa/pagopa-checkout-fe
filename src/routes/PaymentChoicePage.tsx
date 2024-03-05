@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable sonarjs/cognitive-complexity */
 import { Box, Button, Link } from "@mui/material";
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { CancelPayment } from "../components/modals/CancelPayment";
