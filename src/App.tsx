@@ -28,6 +28,7 @@ import GdiCheckPage from "./routes/GdiCheckPage";
 import "./translations/i18n";
 import { mixpanelInit } from "./utils/config/mixpanelHelperInit";
 import { SessionItems } from "./utils/storage/sessionStorage";
+import { useOnMountUnsafe } from "hooks/useOnMountUnsafe";
 
 declare const OneTrust: any;
 declare const OnetrustActiveGroups: string;
@@ -66,7 +67,6 @@ const checkoutTheme = createTheme({
   },
 });
 
-let didInit = false;
 
 export function App() {
   const { t } = useTranslation();
@@ -81,10 +81,8 @@ export function App() {
   ];
 
 
-  React.useEffect(() => {
+  useOnMountUnsafe(() => {
     // This makes the app resilient to being remounted, so if it gets remounted the callbacks only happen once. 
-    if (!didInit) {
-      didInit = true;
       // OneTrust callback at first time
       // eslint-disable-next-line functional/immutable-data
       global.OptanonWrapper = function () {
@@ -104,9 +102,8 @@ export function App() {
       if (OTCookieValue.indexOf(checkValue) > -1) {
         mixpanelInit();
       }
-    }
 
-  }, []);
+  });
   // eslint-disable-next-line functional/immutable-data
   document.title = t("app.title");
   // eslint-disable-next-line functional/immutable-data

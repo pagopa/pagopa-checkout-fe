@@ -5,18 +5,16 @@ import PrivacyInfo from "../components/PrivacyPolicy/PrivacyInfo";
 import { PaymentNoticeChoice } from "../features/payment/components/PaymentNoticeChoice/PaymentNoticeChoice";
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { clearStorage } from "../utils/storage/sessionStorage";
+import { useOnMountUnsafe } from "hooks/useOnMountUnsafe";
 
-let didInit = false;
 
 export default function IndexPage() {
   const dispatch = useAppDispatch();
 
-  React.useEffect(() => {
-      if(!didInit){
+  useOnMountUnsafe(() => {
     dispatch(resetThreshold());
-        didInit=true;
-      }
-  }, []);
+      
+  });
   clearStorage();
 
   return (

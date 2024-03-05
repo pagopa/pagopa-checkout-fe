@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { Box } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import ReCAPTCHA from "react-google-recaptcha";
@@ -33,6 +33,7 @@ import { clearNavigationEvents } from "../../../../utils/eventListeners";
 import { IframeCardField } from "./IframeCardField";
 import type { FieldId, FieldStatus, FormStatus } from "./types";
 import { IdFields } from "./types";
+import { useOnMountUnsafe } from "hooks/useOnMountUnsafe";
 
 interface Props {
   loading?: boolean;
@@ -93,7 +94,6 @@ export default function IframeCardForm(props: Props) {
     ref.current?.reset();
   };
 
-  const didInit = useRef(false);
 
   const navigate = useNavigate();
 
@@ -193,57 +193,50 @@ export default function IframeCardForm(props: Props) {
     }
   };
 
-  React.useEffect(() => {
-    if(!didInit.current)
-    {
-      didInit.current = true;
-      if (!form) {
-        const onResponse = (body: CreateSessionResponse) => {
-          setSessionItem(SessionItems.orderId, body.orderId);
-          setSessionItem(SessionItems.correlationId, body.correlationId);
-          setForm(body);
-          const onReadyForPayment = () =>
-            ref.current && void transaction(ref.current);
-  
-          const onPaymentComplete = () => {
-            clearNavigationEvents();
-            window.location.replace(`/${CheckoutRoutes.ESITO}`);
-          };
-  
-          const onPaymentRedirect = (urlredirect: string) => {
-            clearNavigationEvents();
-            window.location.replace(urlredirect);
-          };
-  
-          const onBuildError = () => {
-            setLoading(false);
-            window.location.replace(`/${CheckoutRoutes.ERRORE}`);
-          };
-  
-          try {
-            const newBuild = new Build(
-              createBuildConfig({
-                onChange,
-                onReadyForPayment,
-                onPaymentComplete,
-                onPaymentRedirect,
-                onBuildError,
-              })
-            );
-            setBuildInstance(newBuild);
-          } catch {
-            onBuildError();
-          }
-        };
-  
-        void (async () => {
-          const token = ref.current ? await callRecaptcha(ref.current) : "";
-          void npgSessionsFields(onError, onResponse, token);
-        })();
+  useEffect(()=>{if (!form) {
+    const onResponse = (body: CreateSessionResponse) => {
+      setSessionItem(SessionItems.orderId, body.orderId);
+      setSessionItem(SessionItems.correlationId, body.correlationId);
+      setForm(body);
+      const onReadyForPayment = () =>
+        ref.current && void transaction(ref.current);
+
+      const onPaymentComplete = () => {
+        clearNavigationEvents();
+        window.location.replace(`/${CheckoutRoutes.ESITO}`);
+      };
+
+      const onPaymentRedirect = (urlredirect: string) => {
+        clearNavigationEvents();
+        window.location.replace(urlredirect);
+      };
+
+      const onBuildError = () => {
+        setLoading(false);
+        window.location.replace(`/${CheckoutRoutes.ERRORE}`);
+      };
+
+      try {
+        const newBuild = new Build(
+          createBuildConfig({
+            onChange,
+            onReadyForPayment,
+            onPaymentComplete,
+            onPaymentRedirect,
+            onBuildError,
+          })
+        );
+        setBuildInstance(newBuild);
+      } catch {
+        onBuildError();
       }
-    }
- 
-  }, [form?.orderId]);
+    };
+
+    void (async () => {
+      const token = ref.current ? await callRecaptcha(ref.current) : "";
+      void npgSessionsFields(onError, onResponse, token);
+    })();
+  }}, [form?.orderId])
 
   const handleSubmit = (e: React.FormEvent) => {
     try {
