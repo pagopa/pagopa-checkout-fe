@@ -1,18 +1,15 @@
-/* eslint-disable functional/immutable-data */
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import MobileFriendlyIcon from "@mui/icons-material/MobileFriendly";
 import {
   Accordion,
   AccordionSummary,
-  Chip,
   Typography,
   useTheme,
 } from "@mui/material";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
 import ClickableFieldContainer from "../../../../components/TextFormField/ClickableFieldContainer";
-import { TransactionMethods } from "../../../../routes/models/paymentMethodRoutes";
 import { getConfigOrThrow } from "../../../../utils/config/config";
 import { PaymentInstruments } from "../../models/paymentModel";
 
@@ -57,13 +54,13 @@ function ImageComponent(method: PaymentInstruments) {
   );
 }
 
-const MethodComponentList = ({
+export const MethodComponentList = ({
   methods,
   onClick,
   testable,
 }: {
   methods: Array<PaymentInstruments>;
-  onClick?: (typecode: TransactionMethods, paymentMethodId: string) => void;
+  onClick?: (typecode: string, paymentMethodId: string) => void;
   testable?: boolean;
 }) => (
   <>
@@ -79,30 +76,6 @@ const MethodComponentList = ({
     ))}
   </>
 );
-
-export const EnabledPaymentMethods = ({
-  methods,
-  onClick,
-}: {
-  methods: Array<PaymentInstruments>;
-  onClick: (typecode: TransactionMethods, paymentTypeId: string) => void;
-}) => {
-  const { t } = useTranslation();
-
-  return (
-    <>
-      <MethodComponentList methods={methods} onClick={onClick} testable />
-      <ClickableFieldContainer
-        title="paymentChoicePage.others"
-        clickable={false}
-        icon={<MobileFriendlyIcon color="primary" fontSize="small" />}
-        endAdornment={
-          <Chip label={t("paymentChoicePage.incoming")} color="secondary" />
-        }
-      />
-    </>
-  );
-};
 
 export const DisabledPaymentMethods = ({
   methods,

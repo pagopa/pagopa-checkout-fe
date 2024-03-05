@@ -5,20 +5,7 @@ import MobileFriendlyIcon from "@mui/icons-material/MobileFriendly";
 import { SxProps } from "@mui/material";
 import * as React from "react";
 
-export enum TransactionMethods {
-  PPAY = "PPAY",
-  CP = "CP",
-  CC = "CC",
-}
-
-interface PaymentMethodAttr {
-  label: string;
-  asset?: (sx: SxProps<Theme>) => JSX.Element;
-  route: string;
-}
-type PaymentTypecode = Record<TransactionMethods, PaymentMethodAttr>;
-
-export const PaymentMethodRoutes: PaymentTypecode = {
+export const PaymentMethodRoutes = {
   PPAY: {
     label: "paymentMethods.ppay",
     asset: (sx: SxProps<Theme>) => (
