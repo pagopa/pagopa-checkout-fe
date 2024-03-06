@@ -195,6 +195,9 @@ export const activatePayment = async ({
     SessionItems.paymentMethod
   ) as PaymentMethod;
   const orderId: string = getSessionItem(SessionItems.orderId) as string;
+  const correlationId: string = getSessionItem(
+    SessionItems.correlationId
+  ) as string;
   pipe(
     PaymentRequestsGetResponse.decode(paymentInfo),
     E.fold(
@@ -207,6 +210,7 @@ export const activatePayment = async ({
             rptId,
             token,
             orderId,
+            correlationId,
             cartInfo
           ),
           TE.fold(
@@ -229,6 +233,7 @@ const activePaymentTask = (
   rptId: RptId,
   recaptchaResponse: string,
   orderId: string,
+  correlationId: string,
   cart?: Cart
 ): TE.TaskEither<string, NewTransactionResponse> =>
   pipe(
@@ -238,6 +243,7 @@ const activePaymentTask = (
           EVENT_ID: PAYMENT_ACTIVATE_INIT.value,
         });
         return apiPaymentEcommerceClientV2.newTransaction({
+          "x-correlation-id": correlationId,
           recaptchaResponse,
           body: {
             paymentNotices: getPaymentNotices(amountSinglePayment, rptId, cart),

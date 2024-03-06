@@ -36,6 +36,7 @@ import {
 import { resetThreshold } from "../redux/slices/threshold";
 import { Bundle } from "../../generated/definitions/payment-ecommerce/Bundle";
 import { TransactionStatusEnum } from "../../generated/definitions/payment-ecommerce/TransactionStatus";
+import { TransactionInfo } from "../../generated/definitions/payment-ecommerce/TransactionInfo";
 
 type PrintData = {
   useremail: string;
@@ -79,13 +80,15 @@ export default function PaymentResponsePage() {
       idStatus?: TransactionStatusEnum,
       sendPaymentResultOutcome?: SendPaymentResultOutcomeEnum,
       gateway?: string,
-      errorCode?: string
+      errorCode?: string,
+      gatewayAuthorizationStatus?: TransactionInfo["gatewayAuthorizationStatus"]
     ) => {
       const outcome: ViewOutcomeEnum = getViewOutcomeFromEcommerceResultCode(
         idStatus,
         sendPaymentResultOutcome,
         gateway,
-        errorCode
+        errorCode,
+        gatewayAuthorizationStatus
       );
       mixpanel.track(PAYMENT_OUTCOME_CODE.value, {
         EVENT_ID: PAYMENT_OUTCOME_CODE.value,

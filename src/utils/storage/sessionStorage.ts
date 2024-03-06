@@ -22,12 +22,14 @@ export enum SessionItems {
   transaction = "transaction",
   sessionPaymentMethod = "sessionPayment",
   orderId = "orderId",
+  correlationId = "correlationId",
 }
 const isParsable = (item: SessionItems) =>
   !(
     item === SessionItems.sessionToken ||
     item === SessionItems.useremail ||
-    item === SessionItems.orderId
+    item === SessionItems.orderId ||
+    item === SessionItems.correlationId
   );
 
 export const getSessionItem = (item: SessionItems) => {
