@@ -1,4 +1,6 @@
 import React from "react";
+import mixpanel from "mixpanel-browser";
+import { PAYMENT_METHODS_CHOICE } from "utils/config/mixpanelDefs";
 import ClickableFieldContainer from "../../../../components/TextFormField/ClickableFieldContainer";
 import { PaymentMethodRoutes } from "../../../../routes/models/paymentMethodRoutes";
 import {
@@ -62,11 +64,15 @@ export function PaymentChoice(props: {
   loading?: boolean;
 }) {
   const handleClickOnMethod = React.useCallback(
-    (paymentType: PaymentMethodCodeTypes, paymentMethodId: string) => {
-      const route: string = PaymentMethodRoutes[paymentType]?.route;
+    (paymentTypeCode: PaymentMethodCodeTypes, paymentMethodId: string) => {
+      const route: string = PaymentMethodRoutes[paymentTypeCode]?.route;
       setSessionItem(SessionItems.paymentMethod, {
         paymentMethodId,
-        paymentTypeCode: paymentType,
+        paymentTypeCode,
+      });
+      mixpanel.track(PAYMENT_METHODS_CHOICE.value, {
+        EVENT_ID: PAYMENT_METHODS_CHOICE.value,
+        paymentTypeCode,
       });
 
       window.location.assign(`/${route}`);
