@@ -1,6 +1,7 @@
 
 .DS_Stores
 src/env-config.js
+
 # dependencies
 /node_modules
 /generated
@@ -34,3 +35,4 @@ yarn-error.log*
 .parcel-cache
 
 test_reports/
+.vscode

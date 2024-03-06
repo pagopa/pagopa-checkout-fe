@@ -19,8 +19,11 @@ import { getPaymentInstruments } from "../utils/api/helper";
 import { getTotalFromCart } from "../utils/cart/cart";
 import { getSessionItem, SessionItems } from "../utils/storage/sessionStorage";
 import { CheckoutRoutes } from "./models/routeModel";
+import { useOnMountUnsafe } from "hooks/useOnMountUnsafe";
+
 
 export default function PaymentChoicePage() {
+
   const { t } = useTranslation();
   const navigate = useNavigate();
   const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
@@ -43,7 +46,10 @@ export default function PaymentChoicePage() {
     void getPaymentInstruments({ amount }, onError, onResponse);
   }, []);
 
-  React.useEffect(getPaymentMethods, []);
+
+  useOnMountUnsafe(()=>{
+      getPaymentMethods()
+  })
 
   const onResponse = React.useCallback((list: Array<PaymentInstruments>) => {
     setPaymentInstruments(list);
@@ -78,6 +84,7 @@ export default function PaymentChoicePage() {
   );
   const handleRetry = React.useCallback(getPaymentMethods, []);
 
+  
   return (
     <>
       {loading && <CheckoutLoader />}

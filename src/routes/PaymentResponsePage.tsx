@@ -66,11 +66,8 @@ export default function PaymentResponsePage() {
         .reduce((sum, current) => sum + current, 0)
     ) + Number(pspSelected?.taxPayerFee);
 
-  const usefulPrintData: PrintData = {
-    useremail: email || "",
-    amount: moneyFormat(totalAmount),
-  };
-
+  const [usefulPrintData, setUsefulPrintData] = useState<PrintData>()
+  
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -113,7 +110,10 @@ export default function PaymentResponsePage() {
       setRedirectUrl(redirectTo || "");
       setLoading(false);
       window.removeEventListener("beforeunload", onBrowserUnload);
+      setUsefulPrintData({  useremail: email || "",
+      amount: moneyFormat(totalAmount)})
       clearStorage();
+
     };
     void callServices(handleFinalStatusResult);
   }, []);
@@ -165,7 +165,7 @@ export default function PaymentResponsePage() {
             <Box px={8} sx={{ width: "100%", height: "100%" }}>
               <Button
                 variant="outlined"
-                onClick={() => {
+                onClick={() => { //Moved the clear storage function because in the previous position it cleared the storage when it was still needed (for the total amount and email  )
                   window.location.replace(redirectUrl);
                 }}
                 sx={{
@@ -178,11 +178,13 @@ export default function PaymentResponsePage() {
                 {t("errorButton.close")}
               </Button>
             </Box>
-            {conf.CHECKOUT_SURVEY_SHOW && outcome === ViewOutcomeEnum.SUCCESS && (
-              <Box sx={{ width: "100%" }} px={{ xs: 8, sm: 0 }}>
-                <SurveyLink />
-              </Box>
-            )}
+
+            {conf.CHECKOUT_SURVEY_SHOW &&
+              outcome === ViewOutcomeEnum.SUCCESS && (
+                <Box sx={{ width: "100%" }} px={{ xs: 8, sm: 0 }}>
+                  <SurveyLink />
+                </Box>
+              )}
           </Box>
         )}
       </Box>

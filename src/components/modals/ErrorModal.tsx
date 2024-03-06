@@ -36,7 +36,7 @@ function ErrorModal(props: {
 }) {
   const { t } = useTranslation();
   const theme = useTheme();
-  const [copy, setCopy] = React.useState(t("clipboard.copy"));
+  const [copy, setCopy] = React.useState<String>(t("clipboard.copy"));
 
   const isCustom = (error: string) =>
     PaymentResponses[error]?.category === PaymentFaultCategory.CUSTOM;

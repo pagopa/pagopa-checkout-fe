@@ -28,6 +28,7 @@ import GdiCheckPage from "./routes/GdiCheckPage";
 import "./translations/i18n";
 import { mixpanelInit } from "./utils/config/mixpanelHelperInit";
 import { SessionItems } from "./utils/storage/sessionStorage";
+import { useOnMountUnsafe } from "hooks/useOnMountUnsafe";
 
 declare const OneTrust: any;
 declare const OnetrustActiveGroups: string;
@@ -66,6 +67,7 @@ const checkoutTheme = createTheme({
   },
 });
 
+
 export function App() {
   const { t } = useTranslation();
   const fixedFooterPages = [
@@ -77,27 +79,31 @@ export function App() {
     CheckoutRoutes.ERRORE,
     CheckoutRoutes.DONA,
   ];
-  React.useEffect(() => {
-    // OneTrust callback at first time
-    // eslint-disable-next-line functional/immutable-data
-    global.OptanonWrapper = function () {
-      OneTrust.OnConsentChanged(function () {
-        const activeGroups = OnetrustActiveGroups;
-        if (activeGroups.indexOf(targCookiesGroup) > -1) {
-          mixpanelInit();
-        }
-      });
-    };
-    // check mixpanel cookie consent in cookie
-    const OTCookieValue: string =
-      document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("OptanonConsent=")) || "";
-    const checkValue = `${targCookiesGroup}%3A1`;
-    if (OTCookieValue.indexOf(checkValue) > -1) {
-      mixpanelInit();
-    }
-  }, []);
+
+
+  useOnMountUnsafe(() => {
+    // This makes the app resilient to being remounted, so if it gets remounted the callbacks only happen once. 
+      // OneTrust callback at first time
+      // eslint-disable-next-line functional/immutable-data
+      global.OptanonWrapper = function () {
+        OneTrust.OnConsentChanged(function () {
+          const activeGroups = OnetrustActiveGroups;
+          if (activeGroups.indexOf(targCookiesGroup) > -1) {
+            mixpanelInit();
+          }
+        });
+      };
+      // check mixpanel cookie consent in cookie
+      const OTCookieValue: string =
+        document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("OptanonConsent=")) || "";
+      const checkValue = `${targCookiesGroup}%3A1`;
+      if (OTCookieValue.indexOf(checkValue) > -1) {
+        mixpanelInit();
+      }
+
+  });
   // eslint-disable-next-line functional/immutable-data
   document.title = t("app.title");
   // eslint-disable-next-line functional/immutable-data
