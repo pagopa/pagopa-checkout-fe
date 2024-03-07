@@ -11,7 +11,6 @@ import RptidGuard from "./components/commons/RptidGuard";
 import CancelledPage from "./routes/CancelledPage";
 import DonationPageDismissed from "./routes/DonationPageDismissed";
 import IndexPage from "./routes/IndexPage";
-// import InputCardPage from "./routes/InputCardPage";
 import IframeCardPage from "./routes/IframeCardPage";
 import KOPage from "./routes/KOPage";
 import { CheckoutRoutes } from "./routes/models/routeModel";
@@ -175,6 +174,14 @@ export function App() {
               />
               <Route
                 path={CheckoutRoutes.ESITO}
+                element={
+                  <Guard item={SessionItems.transaction}>
+                    <PaymentResponsePage />
+                  </Guard>
+                }
+              />
+              <Route
+                path={`v2/${CheckoutRoutes.ESITO}`}
                 element={
                   <Guard item={SessionItems.transaction}>
                     <PaymentResponsePage />

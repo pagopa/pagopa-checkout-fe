@@ -17,4 +17,5 @@ export enum CheckoutRoutes {
 
 export enum ROUTE_FRAGMENT {
   GDI_IFRAME_URL = "gdiIframeUrl",
+  OUTCOME = "outcome",
 }
