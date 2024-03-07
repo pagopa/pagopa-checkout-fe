@@ -859,7 +859,7 @@ export const getPaymentInstruments = async (
                   return {
                     ...method,
                     label: currentMethod?.label || method.name,
-                    asset: currentMethod?.asset, // when asset will be added to the object, add || method.asset
+                    asset: currentMethod?.asset || method.asset,
                   };
                 });
               } else {

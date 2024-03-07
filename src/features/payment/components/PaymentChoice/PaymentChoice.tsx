@@ -1,6 +1,5 @@
 import React from "react";
 import mixpanel from "mixpanel-browser";
-import { PAYMENT_METHODS_CHOICE } from "utils/config/mixpanelDefs";
 import ClickableFieldContainer from "../../../../components/TextFormField/ClickableFieldContainer";
 import { PaymentMethodRoutes } from "../../../../routes/models/paymentMethodRoutes";
 import {
@@ -11,6 +10,7 @@ import {
   PaymentInstruments,
   PaymentMethodCodeTypes,
 } from "../../models/paymentModel";
+import { PAYMENT_METHODS_CHOICE } from "../../../../utils/config/mixpanelDefs";
 import { DisabledPaymentMethods, MethodComponentList } from "./PaymentMethod";
 
 const sortMethods = (a: PaymentInstruments, b: PaymentInstruments) =>
