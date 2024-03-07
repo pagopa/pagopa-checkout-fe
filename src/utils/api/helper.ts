@@ -23,11 +23,9 @@ import {
   Cart,
   PaymentFormFields,
   PaymentInfo,
-  PaymentInstruments,
   PaymentMethod,
-  PaymentMethodCodeTypes,
+  PaymentInstrumentsType,
 } from "../../features/payment/models/paymentModel";
-import { PaymentMethodRoutes } from "../../routes/models/paymentMethodRoutes";
 import { validateSessionWalletCardFormFields } from "../../utils/regex/validators";
 import { getConfigOrThrow } from "../config/config";
 import {
@@ -812,7 +810,7 @@ export const getPaymentInstruments = async (
     amount: number;
   },
   onError: (e: string) => void,
-  onResponse: (data: Array<PaymentInstruments>) => void
+  onResponse: (data: Array<PaymentInstrumentsType>) => void
 ) => {
   mixpanel.track(PAYMENT_METHODS_ACCESS.value, {
     EVENT_ID: PAYMENT_METHODS_ACCESS.value,
@@ -851,17 +849,7 @@ export const getPaymentInstruments = async (
                 mixpanel.track(PAYMENT_METHODS_SUCCESS.value, {
                   EVENT_ID: PAYMENT_METHODS_SUCCESS.value,
                 });
-                return myRes.value.paymentMethods?.map((method) => {
-                  const currentMethod =
-                    PaymentMethodRoutes[
-                      method.paymentTypeCode as PaymentMethodCodeTypes
-                    ];
-                  return {
-                    ...method,
-                    label: currentMethod?.label || method.name,
-                    asset: currentMethod?.asset || method.asset,
-                  };
-                });
+                return myRes.value.paymentMethods;
               } else {
                 mixpanel.track(PAYMENT_METHODS_RESP_ERROR.value, {
                   EVENT_ID: PAYMENT_METHODS_RESP_ERROR.value,
@@ -873,7 +861,7 @@ export const getPaymentInstruments = async (
         )
     )
   )();
-  onResponse(list as any as Array<PaymentInstruments>);
+  onResponse(list as any as Array<PaymentInstrumentsType>);
 };
 
 export const getCarts = async (

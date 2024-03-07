@@ -1,5 +1,6 @@
-import { Theme } from "@emotion/react";
-import { SxProps } from "@mui/material";
+import { enumType } from "@pagopa/ts-commons/lib/types";
+import * as t from "io-ts";
+import { PaymentMethodResponse } from "../../../../generated/definitions/payment-ecommerce/PaymentMethodResponse";
 
 export interface PaymentFormFields {
   billCode: string;
@@ -72,7 +73,7 @@ export interface PaymentMethod {
   paymentMethodId: string;
 }
 
-export enum PaymentMethodCodeTypes {
+export enum PaymentCodeTypeEnum {
   RBPR = "RBPR", // Conto BancoPosta Retail
   RBPB = "RBPB", // Conto BancoPosta Impresa
   RBPP = "RBPP", // Paga con Postepay
@@ -86,19 +87,24 @@ export enum PaymentMethodCodeTypes {
   CP = "CP", // Carte
 }
 
-export interface PaymentInstruments {
-  id: string;
-  name: string;
-  description: string;
-  status: string;
-  paymentTypeCode: PaymentMethodCodeTypes;
-  asset: string | ((sx: SxProps<Theme>) => JSX.Element);
-  label: string;
-  ranges: Array<{
-    min: number;
-    max: number;
-  }>;
-}
+/**
+ * Payment method status
+ */
+
+export type PaymentCodeType = t.TypeOf<typeof PaymentCodeType>;
+export const PaymentCodeType = enumType<PaymentCodeTypeEnum>(
+  PaymentCodeTypeEnum,
+  "PaymentCodeType"
+);
+
+export const PaymentInstruments = t.intersection([
+  t.type({
+    paymentTypeCode: PaymentCodeType,
+  }),
+  PaymentMethodResponse,
+]);
+
+export type PaymentInstrumentsType = t.TypeOf<typeof PaymentInstruments>;
 
 export interface PaymentNotice {
   noticeNumber: any;

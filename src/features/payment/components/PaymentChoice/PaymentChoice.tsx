@@ -7,24 +7,32 @@ import {
   setSessionItem,
 } from "../../../../utils/storage/sessionStorage";
 import {
-  PaymentInstruments,
-  PaymentMethodCodeTypes,
+  PaymentCodeType,
+  PaymentCodeTypeEnum,
+  PaymentInstrumentsType,
 } from "../../models/paymentModel";
 import { PAYMENT_METHODS_CHOICE } from "../../../../utils/config/mixpanelDefs";
 import { DisabledPaymentMethods, MethodComponentList } from "./PaymentMethod";
 
-const sortMethods = (a: PaymentInstruments, b: PaymentInstruments) =>
-  a.paymentTypeCode === PaymentMethodCodeTypes.CP
-    ? -1
-    : a.label.localeCompare(b.label);
+const shouldBeFirst = (method: PaymentInstrumentsType) =>
+  method.paymentTypeCode === PaymentCodeTypeEnum.CP;
+
+const sortMethods = (a: PaymentInstrumentsType, b: PaymentInstrumentsType) => {
+  if (shouldBeFirst(a)) {
+    return -1;
+  } else if (shouldBeFirst(b)) {
+    return 1;
+  }
+  return a.name.localeCompare(b.name);
+};
 
 const getNormalizedMethods = (
-  paymentInstruments: Array<PaymentInstruments>
+  paymentInstruments: Array<PaymentInstrumentsType>
 ) => {
   const { methods, duplicatedMethods } = paymentInstruments.reduce<{
-    foundTypes: Array<string>;
-    methods: Array<PaymentInstruments>;
-    duplicatedMethods: Array<PaymentInstruments>;
+    foundTypes: Array<PaymentCodeType>;
+    methods: Array<PaymentInstrumentsType>;
+    duplicatedMethods: Array<PaymentInstrumentsType>;
   }>(
     (acc, method) =>
       acc.foundTypes.includes(method.paymentTypeCode)
@@ -42,8 +50,8 @@ const getNormalizedMethods = (
   );
 
   const { enabled, disabled } = methods.reduce<{
-    enabled: Array<PaymentInstruments>;
-    disabled: Array<PaymentInstruments>;
+    enabled: Array<PaymentInstrumentsType>;
+    disabled: Array<PaymentInstrumentsType>;
   }>(
     (acc, method) =>
       method.status === "ENABLED"
@@ -60,11 +68,11 @@ const getNormalizedMethods = (
 
 export function PaymentChoice(props: {
   amount: number;
-  paymentInstruments: Array<PaymentInstruments>;
+  paymentInstruments: Array<PaymentInstrumentsType>;
   loading?: boolean;
 }) {
   const handleClickOnMethod = React.useCallback(
-    (paymentTypeCode: PaymentMethodCodeTypes, paymentMethodId: string) => {
+    (paymentTypeCode: PaymentCodeType, paymentMethodId: string) => {
       const route: string = PaymentMethodRoutes[paymentTypeCode]?.route;
       setSessionItem(SessionItems.paymentMethod, {
         paymentMethodId,

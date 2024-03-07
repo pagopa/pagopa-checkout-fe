@@ -9,37 +9,16 @@ import {
 } from "@mui/material";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
+import { PaymentMethodRoutes } from "../../../../routes/models/paymentMethodRoutes";
 import ClickableFieldContainer from "../../../../components/TextFormField/ClickableFieldContainer";
 import {
-  PaymentInstruments,
-  PaymentMethodCodeTypes,
+  PaymentCodeType,
+  PaymentInstrumentsType,
 } from "../../models/paymentModel";
 
-function ImageComponent(method: PaymentInstruments) {
+const DefaultIcon = ({ method }: { method: PaymentInstrumentsType }) => {
   const theme = useTheme();
-  const [image, setImage] = React.useState<"main" | "alt">("main");
-  const onError = React.useCallback(() => setImage("alt"), []);
-  const imgSize = { width: "23px", height: "23px" };
-
-  return method.asset && image === "main" ? (
-    typeof method.asset === "string" ? (
-      <img
-        src={method?.asset}
-        onError={onError}
-        style={
-          method.status === "DISABLED"
-            ? { color: theme.palette.text.disabled, ...imgSize }
-            : { color: theme.palette.text.primary, ...imgSize }
-        }
-      />
-    ) : (
-      method.asset(
-        method.status === "DISABLED"
-          ? { color: theme.palette.text.disabled }
-          : {}
-      )
-    )
-  ) : (
+  return (
     <MobileFriendlyIcon
       color="primary"
       fontSize="small"
@@ -50,6 +29,44 @@ function ImageComponent(method: PaymentInstruments) {
       }
     />
   );
+};
+
+function ImageComponent(method: PaymentInstrumentsType) {
+  const theme = useTheme();
+  const [image, setImage] = React.useState<"main" | "alt">("main");
+  const onError = React.useCallback(() => setImage("alt"), []);
+  const imgSize = { width: "23px", height: "23px" };
+
+  const paymentMethodConfig =
+    PaymentMethodRoutes[method.paymentTypeCode as PaymentCodeType];
+
+  const iconDefault = <DefaultIcon method={method} />;
+
+  if (!paymentMethodConfig?.asset || image !== "main") {
+    return iconDefault;
+  }
+
+  if (typeof paymentMethodConfig?.asset === "string") {
+    return (
+      <img
+        src={paymentMethodConfig?.asset}
+        onError={onError}
+        style={
+          method.status === "DISABLED"
+            ? { color: theme.palette.text.disabled, ...imgSize }
+            : { color: theme.palette.text.primary, ...imgSize }
+        }
+      />
+    );
+  }
+
+  if (typeof paymentMethodConfig?.asset === "function") {
+    return paymentMethodConfig.asset(
+      method.status === "DISABLED" ? { color: theme.palette.text.disabled } : {}
+    );
+  }
+
+  return iconDefault;
 }
 
 export const MethodComponentList = ({
@@ -57,8 +74,8 @@ export const MethodComponentList = ({
   onClick,
   testable,
 }: {
-  methods: Array<PaymentInstruments>;
-  onClick?: (typeCode: PaymentMethodCodeTypes, paymentMethodId: string) => void;
+  methods: Array<PaymentInstrumentsType>;
+  onClick?: (typeCode: PaymentCodeType, paymentMethodId: string) => void;
   testable?: boolean;
 }) => (
   <>
@@ -78,7 +95,7 @@ export const MethodComponentList = ({
 export const DisabledPaymentMethods = ({
   methods,
 }: {
-  methods: Array<PaymentInstruments>;
+  methods: Array<PaymentInstrumentsType>;
 }) => {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -113,14 +130,14 @@ const MethodComponent = ({
   onClick,
   testable,
 }: {
-  method: PaymentInstruments;
+  method: PaymentInstrumentsType;
   onClick?: () => void;
   testable?: boolean;
 }) => (
   <ClickableFieldContainer
     dataTestId={testable ? method.paymentTypeCode : undefined}
     dataTestLabel={testable ? "payment-method" : undefined}
-    title={method.label}
+    title={method.name}
     onClick={onClick}
     icon={<ImageComponent {...method} />}
     endAdornment={

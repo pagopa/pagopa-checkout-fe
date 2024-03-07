@@ -1,15 +1,15 @@
 import { Theme } from "@emotion/react";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import { SxProps } from "@mui/material";
-import { PaymentMethodCodeTypes } from "features/payment/models/paymentModel";
+import { PaymentCodeType } from "features/payment/models/paymentModel";
 import * as React from "react";
 
-interface PaymentMethodAttr {
+export interface PaymentMethodAttr {
   label?: string;
   asset?: (sx: SxProps<Theme>) => JSX.Element;
   route: string;
 }
-type PaymentTypecode = Record<PaymentMethodCodeTypes, PaymentMethodAttr>;
+type PaymentTypecode = Record<PaymentCodeType, PaymentMethodAttr>;
 
 export const PaymentMethodRoutes: PaymentTypecode = {
   RBPP: {
