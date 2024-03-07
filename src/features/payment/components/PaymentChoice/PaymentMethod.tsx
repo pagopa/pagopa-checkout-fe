@@ -10,7 +10,6 @@ import {
 import * as React from "react";
 import { useTranslation } from "react-i18next";
 import ClickableFieldContainer from "../../../../components/TextFormField/ClickableFieldContainer";
-import { getConfigOrThrow } from "../../../../utils/config/config";
 import {
   PaymentInstruments,
   PaymentMethodCodeTypes,
@@ -18,7 +17,6 @@ import {
 
 function ImageComponent(method: PaymentInstruments) {
   const theme = useTheme();
-  const config = getConfigOrThrow();
   const [image, setImage] = React.useState<"main" | "alt">("main");
   const onError = React.useCallback(() => setImage("alt"), []);
   const imgSize = { width: "23px", height: "23px" };
@@ -26,10 +24,7 @@ function ImageComponent(method: PaymentInstruments) {
   return method.asset && image === "main" ? (
     typeof method.asset === "string" ? (
       <img
-        src={
-          config.CHECKOUT_PAGOPA_ASSETS_CDN +
-          `/${method?.asset.toLowerCase()}.png`
-        }
+        src={method?.asset}
         onError={onError}
         style={
           method.status === "DISABLED"
