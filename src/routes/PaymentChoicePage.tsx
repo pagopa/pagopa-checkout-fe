@@ -38,17 +38,21 @@ export default function PaymentChoicePage() {
     Array<PaymentInstruments>
   >([]);
 
-  const getPaymentMethods = React.useCallback(() => {
+  const getPaymentMethods = async () => {
     setInstrumentsLoading(true);
-    void getPaymentInstruments({ amount }, onError, onResponse);
+    await getPaymentInstruments({ amount }, onError, onResponse);
+  };
+
+  React.useEffect(() => {
+    if (!paymentInstruments?.length) {
+      void getPaymentMethods();
+    }
   }, []);
 
-  React.useEffect(getPaymentMethods, []);
-
-  const onResponse = React.useCallback((list: Array<PaymentInstruments>) => {
+  const onResponse = (list: Array<PaymentInstruments>) => {
     setPaymentInstruments(list);
     setInstrumentsLoading(false);
-  }, []);
+  };
 
   const onError = React.useCallback((m: string) => {
     setLoading(false);
