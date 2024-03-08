@@ -15,6 +15,7 @@ import {
   PaymentCodeType,
   PaymentInstrumentsType,
 } from "../../models/paymentModel";
+import { PaymentMethodStatusEnum } from "../../../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
 
 const DefaultIcon = ({ method }: { method: PaymentInstrumentsType }) => {
   const theme = useTheme();
@@ -23,7 +24,7 @@ const DefaultIcon = ({ method }: { method: PaymentInstrumentsType }) => {
       color="primary"
       fontSize="small"
       sx={
-        method.status === "DISABLED"
+        method.status === PaymentMethodStatusEnum.DISABLED
           ? { color: theme.palette.text.disabled }
           : {}
       }
@@ -52,7 +53,7 @@ function ImageComponent(method: PaymentInstrumentsType) {
         src={paymentMethodConfig?.asset}
         onError={onError}
         style={
-          method.status === "DISABLED"
+          method.status === PaymentMethodStatusEnum.DISABLED
             ? { color: theme.palette.text.disabled, ...imgSize }
             : { color: theme.palette.text.primary, ...imgSize }
         }
@@ -62,7 +63,9 @@ function ImageComponent(method: PaymentInstrumentsType) {
 
   if (typeof paymentMethodConfig?.asset === "function") {
     return paymentMethodConfig.asset(
-      method.status === "DISABLED" ? { color: theme.palette.text.disabled } : {}
+      method.status === PaymentMethodStatusEnum.DISABLED
+        ? { color: theme.palette.text.disabled }
+        : {}
     );
   }
 
@@ -141,11 +144,11 @@ const MethodComponent = ({
     onClick={onClick}
     icon={<ImageComponent {...method} />}
     endAdornment={
-      method.status === "ENABLED" && (
+      method.status === PaymentMethodStatusEnum.ENABLED && (
         <ArrowForwardIosIcon sx={{ color: "primary.main" }} fontSize="small" />
       )
     }
-    disabled={method.status === "DISABLED"}
-    clickable={method.status === "ENABLED"}
+    disabled={method.status === PaymentMethodStatusEnum.DISABLED}
+    clickable={method.status === PaymentMethodStatusEnum.ENABLED}
   />
 );
