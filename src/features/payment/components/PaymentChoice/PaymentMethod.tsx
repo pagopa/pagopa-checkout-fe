@@ -36,21 +36,18 @@ function ImageComponent(method: PaymentInstrumentsType) {
   const [image, setImage] = React.useState<"main" | "alt">("main");
   const onError = React.useCallback(() => setImage("alt"), []);
   const imgSize = { width: "23px", height: "23px" };
-
   const paymentMethodConfig =
     PaymentMethodRoutes[method.paymentTypeCode as PaymentCodeType];
 
   const iconDefault = <DefaultIcon method={method} />;
-
-  if (!paymentMethodConfig?.asset || image !== "main") {
-    return iconDefault;
-  }
-
-  if (typeof paymentMethodConfig?.asset === "string") {
+  if (typeof method?.asset === "string") {
+    const altString = `Logo ${method.name}`;
     return (
       <img
-        src={paymentMethodConfig?.asset}
+        src={method?.asset}
         onError={onError}
+        alt={altString}
+        aria-hidden="true"
         style={
           method.status === "DISABLED"
             ? { color: theme.palette.text.disabled, ...imgSize }
@@ -134,18 +131,23 @@ const MethodComponent = ({
   onClick?: () => void;
   testable?: boolean;
 }) => (
-  <ClickableFieldContainer
-    dataTestId={testable ? method.paymentTypeCode : undefined}
-    dataTestLabel={testable ? "payment-method" : undefined}
-    title={method.name}
-    onClick={onClick}
-    icon={<ImageComponent {...method} />}
-    endAdornment={
-      method.status === "ENABLED" && (
-        <ArrowForwardIosIcon sx={{ color: "primary.main" }} fontSize="small" />
-      )
-    }
-    disabled={method.status === "DISABLED"}
-    clickable={method.status === "ENABLED"}
-  />
+  <>
+    <ClickableFieldContainer
+      dataTestId={testable ? method.paymentTypeCode : undefined}
+      dataTestLabel={testable ? "payment-method" : undefined}
+      title={method.name}
+      onClick={onClick}
+      icon={<ImageComponent {...method} />}
+      endAdornment={
+        method.status === "ENABLED" && (
+          <ArrowForwardIosIcon
+            sx={{ color: "primary.main" }}
+            fontSize="small"
+          />
+        )
+      }
+      disabled={method.status === "DISABLED"}
+      clickable={method.status === "ENABLED"}
+    />
+  </>
 );
