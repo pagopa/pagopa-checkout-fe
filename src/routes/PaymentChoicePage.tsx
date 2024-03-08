@@ -13,7 +13,7 @@ import { PaymentChoice } from "../features/payment/components/PaymentChoice/Paym
 import {
   Cart,
   PaymentInfo,
-  PaymentInstruments,
+  PaymentInstrumentsType,
 } from "../features/payment/models/paymentModel";
 import { getPaymentInstruments } from "../utils/api/helper";
 import { getTotalFromCart } from "../utils/cart/cart";
@@ -35,20 +35,24 @@ export default function PaymentChoicePage() {
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
   const [paymentInstruments, setPaymentInstruments] = React.useState<
-    Array<PaymentInstruments>
+    Array<PaymentInstrumentsType>
   >([]);
 
-  const getPaymentMethods = React.useCallback(() => {
+  const getPaymentMethods = async () => {
     setInstrumentsLoading(true);
-    void getPaymentInstruments({ amount }, onError, onResponse);
+    await getPaymentInstruments({ amount }, onError, onResponse);
+  };
+
+  React.useEffect(() => {
+    if (!paymentInstruments?.length) {
+      void getPaymentMethods();
+    }
   }, []);
 
-  React.useEffect(getPaymentMethods, []);
-
-  const onResponse = React.useCallback((list: Array<PaymentInstruments>) => {
+  const onResponse = (list: Array<PaymentInstrumentsType>) => {
     setPaymentInstruments(list);
     setInstrumentsLoading(false);
-  }, []);
+  };
 
   const onError = React.useCallback((m: string) => {
     setLoading(false);
