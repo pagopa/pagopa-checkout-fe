@@ -12,6 +12,7 @@ import {
   PaymentInstrumentsType,
 } from "../../models/paymentModel";
 import { PAYMENT_METHODS_CHOICE } from "../../../../utils/config/mixpanelDefs";
+import { PaymentMethodStatusEnum } from "../../../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
 import { DisabledPaymentMethods, MethodComponentList } from "./PaymentMethod";
 
 const shouldBeFirst = (method: PaymentInstrumentsType) =>
@@ -54,7 +55,7 @@ const getNormalizedMethods = (
     disabled: Array<PaymentInstrumentsType>;
   }>(
     (acc, method) =>
-      method.status === "ENABLED"
+      method.status === PaymentMethodStatusEnum.ENABLED
         ? { ...acc, enabled: acc.enabled.concat(method) }
         : { ...acc, disabled: acc.disabled.concat(method) },
     { disabled: [], enabled: [] }
