@@ -61,7 +61,7 @@ export const PaymentPspDrawer = (props: {
         </Typography>
         <Box sx={styles.defaultStyle}>
           <SortLabel
-            fieldName="bundleName"
+            fieldName="pspBusinessName"
             onClick={setSortingOrd}
             orderingModel={sortingOrd}
           >
@@ -93,7 +93,7 @@ export const PaymentPspDrawer = (props: {
                 titleVariant="sidenav"
                 bodyVariant="body2"
                 image={pspImagePath(psp.abi)}
-                body={psp.bundleName}
+                body={psp.pspBusinessName}
                 sx={{
                   ...styles.pspContainerStyle,
                   cursor: "pointer",
@@ -129,7 +129,7 @@ const sortBy =
     return fieldA && fieldB ? (fieldA > fieldB ? order : -order) : -order;
   };
 
-type PspField = "taxPayerFee" | "bundleName";
+type PspField = "taxPayerFee" | "pspBusinessName";
 
 type PspOrderingModel = {
   fieldName: PspField;

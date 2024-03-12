@@ -318,7 +318,7 @@ export default function PaymentCheckPage() {
         title={(pspSelected && moneyFormat(pspSelected.taxPayerFee || 0)) || ""}
         body={
           (pspSelected &&
-            `${t("paymentCheckPage.psp")} ${pspSelected.bundleName}`) ||
+            `${t("paymentCheckPage.psp")} ${pspSelected.pspBusinessName}`) ||
           ""
         }
         disclaimer={pipe(
