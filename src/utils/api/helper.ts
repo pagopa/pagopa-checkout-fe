@@ -2,28 +2,31 @@
 /* eslint-disable sonarjs/cognitive-complexity */
 /* eslint-disable sonarjs/no-identical-functions */
 import * as E from "fp-ts/Either";
-import { pipe, flow } from "fp-ts/function";
-import { toError } from "fp-ts/lib/Either";
 import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
-import { validateSessionWalletCardFormFields } from "../../utils/regex/validators";
+import { flow, pipe } from "fp-ts/function";
+import { toError } from "fp-ts/lib/Either";
+import { AmountEuroCents } from "../../../generated/definitions/payment-ecommerce/AmountEuroCents";
+import { Bundle } from "../../../generated/definitions/payment-ecommerce/Bundle";
+import { CreateSessionResponse } from "../../../generated/definitions/payment-ecommerce/CreateSessionResponse";
+import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
+import { PaymentNoticeInfo } from "../../../generated/definitions/payment-ecommerce/PaymentNoticeInfo";
+import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-ecommerce/PaymentRequestsGetResponse";
 import {
   LanguageEnum,
   RequestAuthorizationRequest,
 } from "../../../generated/definitions/payment-ecommerce/RequestAuthorizationRequest";
 import { RptId } from "../../../generated/definitions/payment-ecommerce/RptId";
+import { TransferListItem } from "../../../generated/definitions/payment-ecommerce/TransferListItem";
 import { ValidationFaultPaymentProblemJson } from "../../../generated/definitions/payment-ecommerce/ValidationFaultPaymentProblemJson";
 import {
   Cart,
   PaymentFormFields,
   PaymentInfo,
-  PaymentInstruments,
   PaymentMethod,
+  PaymentInstrumentsType,
 } from "../../features/payment/models/paymentModel";
-import {
-  PaymentMethodRoutes,
-  TransactionMethods,
-} from "../../routes/models/paymentMethodRoutes";
+import { validateSessionWalletCardFormFields } from "../../utils/regex/validators";
 import { getConfigOrThrow } from "../config/config";
 import {
   CART_REQUEST_ACCESS,
@@ -71,21 +74,14 @@ import {
 import { mixpanel } from "../config/mixpanelHelperInit";
 import { ErrorsType } from "../errors/checkErrorsModel";
 import {
-  getSessionItem,
   SessionItems,
+  getSessionItem,
   setSessionItem,
 } from "../storage/sessionStorage";
-import { AmountEuroCents } from "../../../generated/definitions/payment-ecommerce/AmountEuroCents";
-import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-ecommerce/PaymentRequestsGetResponse";
-import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
-import { TransferListItem } from "../../../generated/definitions/payment-ecommerce/TransferListItem";
-import { Bundle } from "../../../generated/definitions/payment-ecommerce/Bundle";
-import { PaymentNoticeInfo } from "../../../generated/definitions/payment-ecommerce/PaymentNoticeInfo";
-import { CreateSessionResponse } from "../../../generated/definitions/payment-ecommerce/CreateSessionResponse";
 import {
-  apiPaymentEcommerceClientWithRetry,
   apiPaymentEcommerceClient,
   apiPaymentEcommerceClientV2,
+  apiPaymentEcommerceClientWithRetry,
 } from "./client";
 
 export const getEcommercePaymentInfoTask = (
@@ -814,7 +810,7 @@ export const getPaymentInstruments = async (
     amount: number;
   },
   onError: (e: string) => void,
-  onResponse: (data: Array<PaymentInstruments>) => void
+  onResponse: (data: Array<PaymentInstrumentsType>) => void
 ) => {
   mixpanel.track(PAYMENT_METHODS_ACCESS.value, {
     EVENT_ID: PAYMENT_METHODS_ACCESS.value,
@@ -853,24 +849,7 @@ export const getPaymentInstruments = async (
                 mixpanel.track(PAYMENT_METHODS_SUCCESS.value, {
                   EVENT_ID: PAYMENT_METHODS_SUCCESS.value,
                 });
-                return myRes.value.paymentMethods
-                  ?.filter(
-                    (method) =>
-                      !!PaymentMethodRoutes[
-                        method.paymentTypeCode as TransactionMethods
-                      ]
-                  )
-                  .map((method) => ({
-                    ...method,
-                    label:
-                      PaymentMethodRoutes[
-                        method.paymentTypeCode as TransactionMethods
-                      ]?.label || method.name,
-                    asset:
-                      PaymentMethodRoutes[
-                        method.paymentTypeCode as TransactionMethods
-                      ]?.asset, // when asset will be added to the object, add || method.asset
-                  }));
+                return myRes.value.paymentMethods;
               } else {
                 mixpanel.track(PAYMENT_METHODS_RESP_ERROR.value, {
                   EVENT_ID: PAYMENT_METHODS_RESP_ERROR.value,
@@ -882,7 +861,7 @@ export const getPaymentInstruments = async (
         )
     )
   )();
-  onResponse(list as any as Array<PaymentInstruments>);
+  onResponse(list as any as Array<PaymentInstrumentsType>);
 };
 
 export const getCarts = async (
