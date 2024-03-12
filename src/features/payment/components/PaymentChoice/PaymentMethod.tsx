@@ -140,7 +140,7 @@ const MethodComponent = ({
   <ClickableFieldContainer
     dataTestId={testable ? method.paymentTypeCode : undefined}
     dataTestLabel={testable ? "payment-method" : undefined}
-    title={method.name}
+    title={method.description}
     onClick={onClick}
     icon={<ImageComponent {...method} />}
     endAdornment={
