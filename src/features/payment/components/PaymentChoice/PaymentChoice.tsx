@@ -24,7 +24,7 @@ const sortMethods = (a: PaymentInstrumentsType, b: PaymentInstrumentsType) => {
   } else if (shouldBeFirst(b)) {
     return 1;
   }
-  return a.name.localeCompare(b.name);
+  return a.description.localeCompare(b.description);
 };
 
 const getNormalizedMethods = (
