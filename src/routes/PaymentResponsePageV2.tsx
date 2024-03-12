@@ -29,7 +29,8 @@ type PrintData = {
 export default function PaymentResponsePageV2() {
   const outcome = getFragmentParameter(
     window.location.href,
-    ROUTE_FRAGMENT.OUTCOME
+    ROUTE_FRAGMENT.OUTCOME,
+    false
   ) as ViewOutcomeEnum;
 
   const conf = getConfigOrThrow();
