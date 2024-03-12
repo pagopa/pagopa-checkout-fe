@@ -1,5 +1,5 @@
 import React from "react";
-import mixpanel from "mixpanel-browser";
+import { mixpanel } from "../../../../utils/config/mixpanelHelperInit";
 import ClickableFieldContainer from "../../../../components/TextFormField/ClickableFieldContainer";
 import { PaymentMethodRoutes } from "../../../../routes/models/paymentMethodRoutes";
 import {
@@ -24,7 +24,7 @@ const sortMethods = (a: PaymentInstrumentsType, b: PaymentInstrumentsType) => {
   } else if (shouldBeFirst(b)) {
     return 1;
   }
-  return a.name.localeCompare(b.name);
+  return a.description.localeCompare(b.description);
 };
 
 const getNormalizedMethods = (
@@ -80,8 +80,7 @@ export function PaymentChoice(props: {
         paymentTypeCode,
       });
       mixpanel.track(PAYMENT_METHODS_CHOICE.value, {
-        EVENT_ID: PAYMENT_METHODS_CHOICE.value,
-        paymentTypeCode,
+        EVENT_ID: paymentTypeCode,
       });
 
       window.location.assign(`/${route}`);
