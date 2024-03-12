@@ -1,5 +1,5 @@
 import React from "react";
-import mixpanel from "mixpanel-browser";
+import { mixpanel } from "../../../../utils/config/mixpanelHelperInit";
 import ClickableFieldContainer from "../../../../components/TextFormField/ClickableFieldContainer";
 import { PaymentMethodRoutes } from "../../../../routes/models/paymentMethodRoutes";
 import {
@@ -80,8 +80,7 @@ export function PaymentChoice(props: {
         paymentTypeCode,
       });
       mixpanel.track(PAYMENT_METHODS_CHOICE.value, {
-        EVENT_ID: PAYMENT_METHODS_CHOICE.value,
-        paymentTypeCode,
+        EVENT_ID: paymentTypeCode,
       });
 
       window.location.assign(`/${route}`);
