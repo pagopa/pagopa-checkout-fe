@@ -3,6 +3,7 @@ import CreditCardIcon from "@mui/icons-material/CreditCard";
 import { SxProps } from "@mui/material";
 import { PaymentCodeType } from "features/payment/models/paymentModel";
 import * as React from "react";
+import { CheckoutRoutes } from "./routeModel";
 
 export interface PaymentMethodAttr {
   label?: string;
@@ -20,10 +21,10 @@ export const PaymentMethodRoutes: PaymentTypecode = {
     asset: (sx: SxProps<Theme>) => (
       <CreditCardIcon color="primary" fontSize="small" sx={sx} />
     ),
-    route: "inserisci-carta",
+    route: CheckoutRoutes.INSERISCI_CARTA,
   },
   RBPR: {
-    route: "",
+    route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
   },
   RBPB: {
     route: "",

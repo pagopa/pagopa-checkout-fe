@@ -1,9 +1,19 @@
 import React from "react";
+import Box from "@mui/material/Box/Box";
+import * as O from "fp-ts/Option";
+import { pipe } from "fp-ts/function";
+import ReCAPTCHA from "react-google-recaptcha";
+import { useNavigate } from "react-router-dom";
 import { mixpanel } from "../../../../utils/config/mixpanelHelperInit";
+import { CheckoutRoutes } from "../../../../routes/models/routeModel";
+import { PaymentMethodStatusEnum } from "../../../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
 import ClickableFieldContainer from "../../../../components/TextFormField/ClickableFieldContainer";
 import { PaymentMethodRoutes } from "../../../../routes/models/paymentMethodRoutes";
+import { activatePayment } from "../../../../utils/api/helper";
+import { PAYMENT_METHODS_CHOICE } from "../../../../utils/config/mixpanelDefs";
 import {
   SessionItems,
+  getReCaptchaKey,
   setSessionItem,
 } from "../../../../utils/storage/sessionStorage";
 import {
@@ -11,8 +21,6 @@ import {
   PaymentCodeTypeEnum,
   PaymentInstrumentsType,
 } from "../../models/paymentModel";
-import { PAYMENT_METHODS_CHOICE } from "../../../../utils/config/mixpanelDefs";
-import { PaymentMethodStatusEnum } from "../../../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
 import { DisabledPaymentMethods, MethodComponentList } from "./PaymentMethod";
 
 const shouldBeFirst = (method: PaymentInstrumentsType) =>
@@ -67,26 +75,63 @@ const getNormalizedMethods = (
   };
 };
 
+const callRecaptcha = async (recaptchaInstance: ReCAPTCHA, reset = false) => {
+  if (reset) {
+    void recaptchaInstance.reset();
+  }
+  const recaptchaResponse = await recaptchaInstance.executeAsync();
+  return pipe(
+    recaptchaResponse,
+    O.fromNullable,
+    O.getOrElse(() => "")
+  );
+};
+
 export function PaymentChoice(props: {
   amount: number;
   paymentInstruments: Array<PaymentInstrumentsType>;
   loading?: boolean;
 }) {
-  const handleClickOnMethod = React.useCallback(
-    (paymentTypeCode: PaymentCodeType, paymentMethodId: string) => {
-      const route: string = PaymentMethodRoutes[paymentTypeCode]?.route;
-      setSessionItem(SessionItems.paymentMethod, {
-        paymentMethodId,
-        paymentTypeCode,
-      });
-      mixpanel.track(PAYMENT_METHODS_CHOICE.value, {
-        EVENT_ID: paymentTypeCode,
-      });
+  const ref = React.useRef<ReCAPTCHA>(null);
+  const [loading, setLoading] = React.useState(true);
+  const navigate = useNavigate();
 
+  React.useEffect(() => {
+    if (ref.current) {
+      setLoading(false);
+    }
+  }, [ref.current]);
+
+  const transaction = async (recaptchaRef: ReCAPTCHA) => {
+    const token = await callRecaptcha(recaptchaRef, true);
+    await activatePayment({
+      token,
+      onResponseActivate: () => {
+        navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
+      },
+      onErrorActivate: (e) => console.debug("transaction error", e),
+    });
+  };
+
+  const handleClickOnMethod = async (
+    paymentTypeCode: PaymentCodeType,
+    paymentMethodId: string
+  ) => {
+    mixpanel.track(PAYMENT_METHODS_CHOICE.value, {
+      EVENT_ID: paymentTypeCode,
+    });
+
+    const route: string = PaymentMethodRoutes[paymentTypeCode]?.route;
+    setSessionItem(SessionItems.paymentMethod, {
+      paymentMethodId,
+      paymentTypeCode,
+    });
+    if (paymentTypeCode !== PaymentCodeTypeEnum.CP && ref.current) {
+      await transaction(ref.current);
+    } else {
       window.location.assign(`/${route}`);
-    },
-    []
-  );
+    }
+  };
 
   const paymentMethods = React.useMemo(
     () => getNormalizedMethods(props.paymentInstruments),
@@ -95,7 +140,7 @@ export function PaymentChoice(props: {
 
   return (
     <>
-      {props.loading ? (
+      {props.loading || loading ? (
         Array.from({ length: 5 }, (_, index) => (
           <ClickableFieldContainer key={index} loading />
         ))
@@ -109,6 +154,13 @@ export function PaymentChoice(props: {
           <DisabledPaymentMethods methods={paymentMethods.disabled} />
         </>
       )}
+      <Box display="none">
+        <ReCAPTCHA
+          ref={ref}
+          size="invisible"
+          sitekey={getReCaptchaKey() as string}
+        />
+      </Box>
     </>
   );
 }

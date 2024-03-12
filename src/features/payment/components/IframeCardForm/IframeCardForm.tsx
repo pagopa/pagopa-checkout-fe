@@ -152,28 +152,6 @@ export default function IframeCardForm(props: Props) {
 
   const transaction = async (recaptchaRef: ReCAPTCHA) => {
     const token = await callRecaptcha(recaptchaRef, true);
-    /* temporarily dropped
-    const transactionId = (
-      getSessionItem(SessionItems.transaction) as
-        | NewTransactionResponse
-        | undefined
-    )?.transactionId;
-    if (transactionId) {
-      void retrievePaymentSession(
-        (
-          getSessionItem(SessionItems.paymentMethod) as
-            | PaymentMethod
-            | undefined
-        )?.paymentMethodId || "",
-        getSessionItem(SessionItems.orderId) as string
-      );
-    } else {
-      await activatePayment({
-        token,
-        onResponseActivate: retrievePaymentSession,
-        onErrorActivate: onError,
-      });
-    } */
     await activatePayment({
       token,
       onResponseActivate: retrievePaymentSession,

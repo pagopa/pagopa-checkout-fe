@@ -139,11 +139,11 @@ export default function PaymentCheckPage() {
 
   const missingThreshold = () => threshold?.belowThreshold === undefined;
 
-  React.useEffect(() => {
-    if (missingThreshold()) {
-      onCardEdit();
-    }
-  }, [threshold]);
+  // React.useEffect(() => {
+  //   if (missingThreshold()) {
+  //     onCardEdit();
+  //   }
+  // }, [threshold]);
 
   const onResponse = (authorizationUrl: string) => {
     try {
@@ -176,7 +176,7 @@ export default function PaymentCheckPage() {
 
   const onCancelResponse = () => {
     setCancelLoading(false);
-    navigate(`/${CheckoutRoutes.ANNULLATO}`);
+    // navigate(`/${CheckoutRoutes.ANNULLATO}`);
   };
 
   const onCancelPaymentSubmit = () => {
@@ -254,31 +254,33 @@ export default function PaymentCheckPage() {
         sx={{ borderBottom: "", mt: 2 }}
         itemSx={{ pl: 0, pr: 0, gap: 2 }}
       />
-      <FieldContainer
-        titleVariant="sidenav"
-        bodyVariant="body2"
-        title={`· · · · ${sessionPaymentMethodResponse.lastFourDigits}`}
-        body={sessionPaymentMethodResponse.expiringDate}
-        icon={<WalletIcon brand={sessionPaymentMethodResponse.brand || ""} />}
-        sx={{
-          border: "1px solid",
-          borderColor: "divider",
-          borderRadius: 2,
-          pl: 3,
-          pr: 1,
-        }}
-        endAdornment={
-          <Button
-            variant="text"
-            onClick={onCardEdit}
-            startIcon={<EditIcon />}
-            disabled={isDisabled()}
-            aria-label={t("ariaLabels.editCard")}
-          >
-            {t("clipboard.edit")}
-          </Button>
-        }
-      />
+      {sessionPaymentMethodResponse && (
+        <FieldContainer
+          titleVariant="sidenav"
+          bodyVariant="body2"
+          title={`· · · · ${sessionPaymentMethodResponse.lastFourDigits}`}
+          body={sessionPaymentMethodResponse.expiringDate}
+          icon={<WalletIcon brand={sessionPaymentMethodResponse.brand || ""} />}
+          sx={{
+            border: "1px solid",
+            borderColor: "divider",
+            borderRadius: 2,
+            pl: 3,
+            pr: 1,
+          }}
+          endAdornment={
+            <Button
+              variant="text"
+              onClick={onCardEdit}
+              startIcon={<EditIcon />}
+              disabled={isDisabled()}
+              aria-label={t("ariaLabels.editCard")}
+            >
+              {t("clipboard.edit")}
+            </Button>
+          }
+        />
+      )}
 
       <ClickableFieldContainer
         title="paymentCheckPage.transaction"
@@ -304,47 +306,51 @@ export default function PaymentCheckPage() {
           />
         }
       />
-      <FieldContainer
-        loading={pspUpdateLoading}
-        titleVariant="sidenav"
-        bodyVariant="body2"
-        title={(pspSelected && moneyFormat(pspSelected.taxPayerFee || 0)) || ""}
-        body={
-          (pspSelected &&
-            `${t("paymentCheckPage.psp")} ${pspSelected.bundleName}`) ||
-          ""
-        }
-        disclaimer={pipe(
-          threshold.belowThreshold,
-          O.fromNullable,
-          O.filter(() => showDisclaimer),
-          O.map((threshold) => (
-            <AmountDisclaimer
-              key={1}
-              belowThreshold={threshold}
-            ></AmountDisclaimer>
-          )),
-          O.toNullable
-        )}
-        sx={{
-          border: "1px solid",
-          borderColor: "divider",
-          borderRadius: 2,
-          pl: 3,
-          pr: 1,
-        }}
-        endAdornment={
-          <Button
-            variant="text"
-            onClick={onPspEditClick}
-            startIcon={<EditIcon />}
-            disabled={isDisabled()}
-            aria-label={t("ariaLabels.editPsp")}
-          >
-            {t("clipboard.edit")}
-          </Button>
-        }
-      />
+      {sessionPaymentMethodResponse && (
+        <FieldContainer
+          loading={pspUpdateLoading}
+          titleVariant="sidenav"
+          bodyVariant="body2"
+          title={
+            (pspSelected && moneyFormat(pspSelected.taxPayerFee || 0)) || ""
+          }
+          body={
+            (pspSelected &&
+              `${t("paymentCheckPage.psp")} ${pspSelected.bundleName}`) ||
+            ""
+          }
+          disclaimer={pipe(
+            threshold.belowThreshold,
+            O.fromNullable,
+            O.filter(() => showDisclaimer),
+            O.map((threshold) => (
+              <AmountDisclaimer
+                key={1}
+                belowThreshold={threshold}
+              ></AmountDisclaimer>
+            )),
+            O.toNullable
+          )}
+          sx={{
+            border: "1px solid",
+            borderColor: "divider",
+            borderRadius: 2,
+            pl: 3,
+            pr: 1,
+          }}
+          endAdornment={
+            <Button
+              variant="text"
+              onClick={onPspEditClick}
+              startIcon={<EditIcon />}
+              disabled={isDisabled()}
+              aria-label={t("ariaLabels.editPsp")}
+            >
+              {t("clipboard.edit")}
+            </Button>
+          }
+        />
+      )}
       <ClickableFieldContainer
         title={`${t("paymentCheckPage.email")} ${email}`}
         icon={<MailOutlineIcon sx={{ color: "text.primary" }} />}

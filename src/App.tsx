@@ -159,11 +159,7 @@ export function App() {
               />
               <Route
                 path={CheckoutRoutes.RIEPILOGO_PAGAMENTO}
-                element={
-                  <Guard item={SessionItems.transaction}>
-                    <PaymentCheckPage />
-                  </Guard>
-                }
+                element={<PaymentCheckPage />}
               />
               <Route
                 path={CheckoutRoutes.GDI_CHECK}
