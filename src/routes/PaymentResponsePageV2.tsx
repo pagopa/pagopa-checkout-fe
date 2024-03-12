@@ -1,7 +1,7 @@
 import { Box, Button, Typography } from "@mui/material";
 import { default as React, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { getFragmentParameter } from "utils/regex/urlUtilities";
+import { getFragmentParameter } from "../utils/regex/urlUtilities";
 import { getConfigOrThrow } from "../utils/config/config";
 import SurveyLink from "../components/commons/SurveyLink";
 import PageContainer from "../components/PageContent/PageContainer";
