@@ -8,6 +8,7 @@ import {
   PaymentId,
   PaymentEmailFormFields,
   PaymentMethod,
+  PaymentMethodInfo,
 } from "../../features/payment/models/paymentModel";
 import { getConfigOrThrow } from "../config/config";
 
@@ -21,6 +22,7 @@ export enum SessionItems {
   cart = "cart",
   transaction = "transaction",
   sessionPaymentMethod = "sessionPayment",
+  paymentMethodInfo = "paymentMethodInfo",
   orderId = "orderId",
   correlationId = "correlationId",
 }
@@ -49,7 +51,8 @@ export const getSessionItem = (item: SessionItems) => {
           | NewTransactionResponse
           | Cart
           | Bundle
-          | SessionPaymentMethodResponse)
+          | SessionPaymentMethodResponse
+          | PaymentMethodInfo)
       : serializedState;
   } catch (e) {
     return undefined;
@@ -69,6 +72,7 @@ export function setSessionItem(
     | Cart
     | Bundle
     | SessionPaymentMethodResponse
+    | PaymentMethodInfo
 ) {
   sessionStorage.setItem(
     name,

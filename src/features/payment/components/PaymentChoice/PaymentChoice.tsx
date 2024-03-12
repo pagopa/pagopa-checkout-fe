@@ -1,25 +1,31 @@
-import React from "react";
 import Box from "@mui/material/Box/Box";
 import * as O from "fp-ts/Option";
 import { pipe } from "fp-ts/function";
+import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useNavigate } from "react-router-dom";
-import { mixpanel } from "../../../../utils/config/mixpanelHelperInit";
-import { CheckoutRoutes } from "../../../../routes/models/routeModel";
+import { Bundle } from "../../../../../generated/definitions/payment-ecommerce/Bundle";
+import { CalculateFeeResponse } from "../../../../../generated/definitions/payment-ecommerce/CalculateFeeResponse";
 import { PaymentMethodStatusEnum } from "../../../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
+import CheckoutLoader from "../../../../components/PageContent/CheckoutLoader";
 import ClickableFieldContainer from "../../../../components/TextFormField/ClickableFieldContainer";
+import { useAppDispatch } from "../../../../redux/hooks/hooks";
+import { setThreshold } from "../../../../redux/slices/threshold";
 import { PaymentMethodRoutes } from "../../../../routes/models/paymentMethodRoutes";
-import { activatePayment } from "../../../../utils/api/helper";
+import { activatePayment, calculateFees } from "../../../../utils/api/helper";
 import { PAYMENT_METHODS_CHOICE } from "../../../../utils/config/mixpanelDefs";
+import { mixpanel } from "../../../../utils/config/mixpanelHelperInit";
 import {
   SessionItems,
   getReCaptchaKey,
+  getSessionItem,
   setSessionItem,
 } from "../../../../utils/storage/sessionStorage";
 import {
   PaymentCodeType,
   PaymentCodeTypeEnum,
   PaymentInstrumentsType,
+  PaymentMethod,
 } from "../../models/paymentModel";
 import { DisabledPaymentMethods, MethodComponentList } from "./PaymentMethod";
 
@@ -94,7 +100,9 @@ export function PaymentChoice(props: {
 }) {
   const ref = React.useRef<ReCAPTCHA>(null);
   const [loading, setLoading] = React.useState(true);
+
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   React.useEffect(() => {
     if (ref.current) {
@@ -102,34 +110,92 @@ export function PaymentChoice(props: {
     }
   }, [ref.current]);
 
-  const transaction = async (recaptchaRef: ReCAPTCHA) => {
+  const onError = () => {
+    setLoading(false);
+    ref.current?.reset();
+  };
+
+  const getFees = (onSuccess: () => void) =>
+    calculateFees({
+      paymentId:
+        (
+          getSessionItem(SessionItems.paymentMethod) as
+            | PaymentMethod
+            | undefined
+        )?.paymentMethodId || "",
+      onError,
+      onResponsePsp: (resp) => {
+        pipe(
+          resp,
+          CalculateFeeResponse.decode,
+          O.fromEither,
+          O.chain((resp) => O.fromNullable(resp.belowThreshold)),
+          O.fold(
+            () => onError(),
+            (value) => {
+              dispatch(setThreshold({ belowThreshold: value }));
+              const firstPsp = pipe(
+                resp?.bundles,
+                O.fromNullable,
+                O.chain((sortedArray) => O.fromNullable(sortedArray[0])),
+                O.map((a) => a as Bundle),
+                O.getOrElseW(() => ({}))
+              );
+
+              setSessionItem(SessionItems.pspSelected, firstPsp);
+              onSuccess();
+            }
+          )
+        );
+      },
+    });
+
+  const transaction = async (
+    recaptchaRef: ReCAPTCHA,
+    onSuccess: () => void
+  ) => {
+    setLoading(true);
     const token = await callRecaptcha(recaptchaRef, true);
     await activatePayment({
       token,
-      onResponseActivate: () => {
-        navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
+      onResponseActivate: async () => {
+        await getFees(onSuccess);
       },
-      onErrorActivate: (e) => console.debug("transaction error", e),
+      onErrorActivate: onError,
     });
+  };
+
+  const onSuccess = (paymentTypeCode: PaymentCodeType) => {
+    const route: string = PaymentMethodRoutes[paymentTypeCode]?.route;
+    setLoading(false);
+    navigate(`/${route}`);
   };
 
   const handleClickOnMethod = async (
     paymentTypeCode: PaymentCodeType,
     paymentMethodId: string
   ) => {
-    mixpanel.track(PAYMENT_METHODS_CHOICE.value, {
-      EVENT_ID: paymentTypeCode,
-    });
+    if (!loading) {
+      mixpanel.track(PAYMENT_METHODS_CHOICE.value, {
+        EVENT_ID: paymentTypeCode,
+      });
 
-    const route: string = PaymentMethodRoutes[paymentTypeCode]?.route;
-    setSessionItem(SessionItems.paymentMethod, {
-      paymentMethodId,
-      paymentTypeCode,
-    });
-    if (paymentTypeCode !== PaymentCodeTypeEnum.CP && ref.current) {
-      await transaction(ref.current);
-    } else {
-      window.location.assign(`/${route}`);
+      const paymentInfo = PaymentMethodRoutes[paymentTypeCode];
+      setSessionItem(SessionItems.paymentMethodInfo, {
+        title: paymentInfo?.label || "",
+        body: paymentTypeCode,
+        icon: paymentInfo.asset,
+      });
+
+      setSessionItem(SessionItems.paymentMethod, {
+        paymentMethodId,
+        paymentTypeCode,
+      });
+      if (paymentTypeCode !== PaymentCodeTypeEnum.CP && ref.current) {
+        await transaction(ref.current, () => onSuccess(paymentTypeCode));
+      } else {
+        onSuccess(paymentTypeCode);
+      }
     }
   };
 
@@ -140,7 +206,8 @@ export function PaymentChoice(props: {
 
   return (
     <>
-      {props.loading || loading ? (
+      {loading && <CheckoutLoader />}
+      {props.loading ? (
         Array.from({ length: 5 }, (_, index) => (
           <ClickableFieldContainer key={index} loading />
         ))

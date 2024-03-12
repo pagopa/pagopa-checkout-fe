@@ -438,6 +438,11 @@ export const retrieveCardData = async ({
                   SessionItems.sessionPaymentMethod,
                   sessionPaymentMethodResponse
                 );
+                setSessionItem(SessionItems.paymentMethodInfo, {
+                  description: `· · · · ${sessionPaymentMethodResponse.lastFourDigits}`,
+                  body: sessionPaymentMethodResponse.expiringDate,
+                  icon: sessionPaymentMethodResponse.brand,
+                });
                 return sessionPaymentMethodResponse;
               } else {
                 onError(ErrorsType.GENERIC_ERROR);
@@ -460,7 +465,7 @@ export const calculateFees = async ({
   onResponsePsp,
 }: {
   paymentId: string;
-  bin: string;
+  bin?: string;
   onError: (e: string) => void;
   onResponsePsp: (r: any) => void;
 }) => {
