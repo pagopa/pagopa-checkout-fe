@@ -22,6 +22,7 @@ import PaymentNoticePage from "./routes/PaymentNoticePage";
 import PaymentOutlet from "./routes/PaymentOutlet";
 import PaymentQrPage from "./routes/PaymentQrPage";
 import PaymentResponsePage from "./routes/PaymentResponsePage";
+import PaymentResponsePageV2 from "./routes/PaymentResponsePageV2";
 import PaymentSummaryPage from "./routes/PaymentSummaryPage";
 import GdiCheckPage from "./routes/GdiCheckPage";
 import "./translations/i18n";
@@ -184,7 +185,7 @@ export function App() {
                 path={`v2/${CheckoutRoutes.ESITO}`}
                 element={
                   <Guard item={SessionItems.transaction}>
-                    <PaymentResponsePage />
+                    <PaymentResponsePageV2 />
                   </Guard>
                 }
               />
