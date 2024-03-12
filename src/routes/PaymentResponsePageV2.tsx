@@ -58,7 +58,8 @@ export default function PaymentResponsePageV2() {
     Number(
       transactionData?.payments
         .map((p) => p.amount)
-        .reduce((sum, current): number => sum + (current as number), 0)
+        // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+        .reduce((sum, current) => sum + current, 0)
     ) + Number(pspSelected?.taxPayerFee);
 
   const usefulPrintData: PrintData = {
