@@ -40,7 +40,7 @@ export default function PaymentResponsePageV2() {
   const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
 
   const redirectUrl =
-    outcome === "0"
+    outcome === ViewOutcomeEnum.SUCCESS
       ? cart?.returnUrls.returnOkUrl || "/"
       : cart?.returnUrls.returnErrorUrl || "/";
 
@@ -56,10 +56,8 @@ export default function PaymentResponsePageV2() {
 
   const totalAmount =
     Number(
-      transactionData?.payments
-        .map((p) => p.amount)
-        // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-        .reduce((sum, current) => sum + current, 0)
+      // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+      transactionData?.payments.reduce((sum, { amount }) => sum + amount, 0)
     ) + Number(pspSelected?.taxPayerFee);
 
   const usefulPrintData: PrintData = {
