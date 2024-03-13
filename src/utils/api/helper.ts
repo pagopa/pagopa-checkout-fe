@@ -26,6 +26,7 @@ import {
   PaymentInfo,
   PaymentMethod,
   PaymentInstrumentsType,
+  PaymentMethodInfo,
 } from "../../features/payment/models/paymentModel";
 import { validateSessionWalletCardFormFields } from "../../utils/regex/validators";
 import { getConfigOrThrow } from "../config/config";
@@ -441,10 +442,10 @@ export const retrieveCardData = async ({
                   sessionPaymentMethodResponse
                 );
                 setSessionItem(SessionItems.paymentMethodInfo, {
-                  description: `· · · · ${sessionPaymentMethodResponse.lastFourDigits}`,
+                  title: `· · · · ${sessionPaymentMethodResponse.lastFourDigits}`,
                   body: sessionPaymentMethodResponse.expiringDate,
                   icon: sessionPaymentMethodResponse.brand,
-                });
+                } as PaymentMethodInfo);
                 return sessionPaymentMethodResponse;
               } else {
                 onError(ErrorsType.GENERIC_ERROR);
