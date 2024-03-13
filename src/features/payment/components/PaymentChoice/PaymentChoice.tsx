@@ -6,7 +6,6 @@ import ReCAPTCHA from "react-google-recaptcha";
 import { useNavigate } from "react-router-dom";
 import { Bundle } from "../../../../../generated/definitions/payment-ecommerce/Bundle";
 import { CalculateFeeResponse } from "../../../../../generated/definitions/payment-ecommerce/CalculateFeeResponse";
-import { PaymentMethodStatusEnum } from "../../../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
 import CheckoutLoader from "../../../../components/PageContent/CheckoutLoader";
 import ClickableFieldContainer from "../../../../components/TextFormField/ClickableFieldContainer";
 import { useAppDispatch } from "../../../../redux/hooks/hooks";
@@ -28,58 +27,7 @@ import {
   PaymentMethod,
 } from "../../models/paymentModel";
 import { DisabledPaymentMethods, MethodComponentList } from "./PaymentMethod";
-
-const shouldBeFirst = (method: PaymentInstrumentsType) =>
-  method.paymentTypeCode === PaymentCodeTypeEnum.CP;
-
-const sortMethods = (a: PaymentInstrumentsType, b: PaymentInstrumentsType) => {
-  if (shouldBeFirst(a)) {
-    return -1;
-  } else if (shouldBeFirst(b)) {
-    return 1;
-  }
-  return a.description.localeCompare(b.description);
-};
-
-const getNormalizedMethods = (
-  paymentInstruments: Array<PaymentInstrumentsType>
-) => {
-  const { methods, duplicatedMethods } = paymentInstruments.reduce<{
-    foundTypes: Array<PaymentCodeType>;
-    methods: Array<PaymentInstrumentsType>;
-    duplicatedMethods: Array<PaymentInstrumentsType>;
-  }>(
-    (acc, method) =>
-      acc.foundTypes.includes(method.paymentTypeCode)
-        ? { ...acc, duplicatedMethods: acc.duplicatedMethods.concat(method) }
-        : {
-            ...acc,
-            methods: acc.methods.concat(method),
-            foundTypes: acc.foundTypes.concat(method.paymentTypeCode),
-          },
-    {
-      foundTypes: [],
-      methods: [],
-      duplicatedMethods: [],
-    }
-  );
-
-  const { enabled, disabled } = methods.reduce<{
-    enabled: Array<PaymentInstrumentsType>;
-    disabled: Array<PaymentInstrumentsType>;
-  }>(
-    (acc, method) =>
-      method.status === PaymentMethodStatusEnum.ENABLED
-        ? { ...acc, enabled: acc.enabled.concat(method) }
-        : { ...acc, disabled: acc.disabled.concat(method) },
-    { disabled: [], enabled: [] }
-  );
-  return {
-    enabled: enabled.slice().sort(sortMethods),
-    disabled: disabled.slice().sort(sortMethods),
-    duplicatedMethods,
-  };
-};
+import { getNormalizedMethods } from "./utils";
 
 const callRecaptcha = async (recaptchaInstance: ReCAPTCHA, reset = false) => {
   if (reset) {
