@@ -171,19 +171,16 @@ export function PaymentChoice(props: {
     navigate(`/${route}`);
   };
 
-  const handleClickOnMethod = async (
-    paymentTypeCode: PaymentCodeType,
-    paymentMethodId: string
-  ) => {
+  const handleClickOnMethod = async (method: PaymentInstrumentsType) => {
     if (!loading) {
+      const { paymentTypeCode, id: paymentMethodId } = method;
       mixpanel.track(PAYMENT_METHODS_CHOICE.value, {
         EVENT_ID: paymentTypeCode,
       });
 
-      const paymentInfo = PaymentMethodRoutes[paymentTypeCode];
       setSessionItem(SessionItems.paymentMethodInfo, {
-        title: paymentInfo?.label,
-        body: paymentTypeCode,
+        title: method.name,
+        body: method.description,
       });
 
       setSessionItem(SessionItems.paymentMethod, {
