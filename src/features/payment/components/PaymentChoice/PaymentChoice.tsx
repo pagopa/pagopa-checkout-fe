@@ -1,45 +1,27 @@
 import Box from "@mui/material/Box/Box";
-import * as O from "fp-ts/Option";
-import { pipe } from "fp-ts/function";
 import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useNavigate } from "react-router-dom";
-import { Bundle } from "../../../../../generated/definitions/payment-ecommerce/Bundle";
-import { CalculateFeeResponse } from "../../../../../generated/definitions/payment-ecommerce/CalculateFeeResponse";
 import CheckoutLoader from "../../../../components/PageContent/CheckoutLoader";
 import ClickableFieldContainer from "../../../../components/TextFormField/ClickableFieldContainer";
 import { useAppDispatch } from "../../../../redux/hooks/hooks";
-import { setThreshold } from "../../../../redux/slices/threshold";
 import { PaymentMethodRoutes } from "../../../../routes/models/paymentMethodRoutes";
-import { activatePayment, calculateFees } from "../../../../utils/api/helper";
+import { getFees, recaptchaTransaction } from "../../../../utils/api/helper";
 import { PAYMENT_METHODS_CHOICE } from "../../../../utils/config/mixpanelDefs";
 import { mixpanel } from "../../../../utils/config/mixpanelHelperInit";
 import {
   SessionItems,
   getReCaptchaKey,
-  getSessionItem,
   setSessionItem,
 } from "../../../../utils/storage/sessionStorage";
 import {
   PaymentCodeType,
   PaymentCodeTypeEnum,
   PaymentInstrumentsType,
-  PaymentMethod,
 } from "../../models/paymentModel";
+import { setThreshold } from "../../../../redux/slices/threshold";
 import { DisabledPaymentMethods, MethodComponentList } from "./PaymentMethod";
 import { getNormalizedMethods } from "./utils";
-
-const callRecaptcha = async (recaptchaInstance: ReCAPTCHA, reset = false) => {
-  if (reset) {
-    void recaptchaInstance.reset();
-  }
-  const recaptchaResponse = await recaptchaInstance.executeAsync();
-  return pipe(
-    recaptchaResponse,
-    O.fromNullable,
-    O.getOrElse(() => "")
-  );
-};
 
 export function PaymentChoice(props: {
   amount: number;
@@ -63,69 +45,39 @@ export function PaymentChoice(props: {
     ref.current?.reset();
   };
 
-  const getFees = (onSuccess: () => void) =>
-    calculateFees({
-      paymentId:
-        (
-          getSessionItem(SessionItems.paymentMethod) as
-            | PaymentMethod
-            | undefined
-        )?.paymentMethodId || "",
-      onError,
-      onResponsePsp: (resp) => {
-        pipe(
-          resp,
-          CalculateFeeResponse.decode,
-          O.fromEither,
-          O.chain((resp) => O.fromNullable(resp.belowThreshold)),
-          O.fold(
-            () => onError(),
-            (value) => {
-              dispatch(setThreshold({ belowThreshold: value }));
-              const firstPsp = pipe(
-                resp?.bundles,
-                O.fromNullable,
-                O.chain((sortedArray) => O.fromNullable(sortedArray[0])),
-                O.map((a) => a as Bundle),
-                O.getOrElseW(() => ({}))
-              );
-
-              setSessionItem(SessionItems.pspSelected, firstPsp);
-              onSuccess();
-            }
-          )
-        );
-      },
+  const onSuccess = (
+    paymentTypeCode: PaymentCodeType,
+    belowThreshold?: boolean
+  ) => {
+    const route: string = PaymentMethodRoutes[paymentTypeCode]?.route;
+    mixpanel.track(PAYMENT_METHODS_CHOICE.value, {
+      EVENT_ID: paymentTypeCode,
     });
+
+    if (belowThreshold !== undefined) {
+      dispatch(setThreshold({ belowThreshold }));
+    }
+    setLoading(false);
+    navigate(`/${route}`);
+  };
 
   const transaction = async (
     recaptchaRef: ReCAPTCHA,
-    onSuccess: () => void
+    onSuccess: (belowThreshold: boolean) => void
   ) => {
     setLoading(true);
-    const token = await callRecaptcha(recaptchaRef, true);
-    await activatePayment({
-      token,
-      onResponseActivate: async () => {
-        await getFees(onSuccess);
+    await recaptchaTransaction({
+      recaptchaRef,
+      onSuccess: async () => {
+        await getFees(onSuccess, onError);
       },
-      onErrorActivate: onError,
+      onError,
     });
-  };
-
-  const onSuccess = (paymentTypeCode: PaymentCodeType) => {
-    const route: string = PaymentMethodRoutes[paymentTypeCode]?.route;
-    setLoading(false);
-    navigate(`/${route}`);
   };
 
   const handleClickOnMethod = async (method: PaymentInstrumentsType) => {
     if (!loading) {
       const { paymentTypeCode, id: paymentMethodId } = method;
-      mixpanel.track(PAYMENT_METHODS_CHOICE.value, {
-        EVENT_ID: paymentTypeCode,
-      });
-
       setSessionItem(SessionItems.paymentMethodInfo, {
         title: method.name,
         body: method.description,
@@ -136,7 +88,9 @@ export function PaymentChoice(props: {
         paymentTypeCode,
       });
       if (paymentTypeCode !== PaymentCodeTypeEnum.CP && ref.current) {
-        await transaction(ref.current, () => onSuccess(paymentTypeCode));
+        await transaction(ref.current, (belowThreshold: boolean) =>
+          onSuccess(paymentTypeCode, belowThreshold)
+        );
       } else {
         onSuccess(paymentTypeCode);
       }

@@ -6,6 +6,7 @@ import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
 import { flow, pipe } from "fp-ts/function";
 import { toError } from "fp-ts/lib/Either";
+import ReCAPTCHA from "react-google-recaptcha";
 import { AmountEuroCents } from "../../../generated/definitions/payment-ecommerce/AmountEuroCents";
 import { Bundle } from "../../../generated/definitions/payment-ecommerce/Bundle";
 import { CreateSessionResponse } from "../../../generated/definitions/payment-ecommerce/CreateSessionResponse";
@@ -78,6 +79,7 @@ import {
   getSessionItem,
   setSessionItem,
 } from "../storage/sessionStorage";
+import { CalculateFeeResponse } from "../../../generated/definitions/payment-ecommerce/CalculateFeeResponse";
 import {
   apiPaymentEcommerceClient,
   apiPaymentEcommerceClientV2,
@@ -1032,3 +1034,71 @@ export const npgSessionsFields = async (
         )
     )
   )();
+
+export const getFees = (
+  onSuccess: (value: boolean) => void,
+  onError: (m: string) => void,
+  bin?: string
+) =>
+  calculateFees({
+    paymentId:
+      (getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined)
+        ?.paymentMethodId || "",
+    bin,
+    onError,
+    onResponsePsp: (resp) => {
+      pipe(
+        resp,
+        CalculateFeeResponse.decode,
+        O.fromEither,
+        O.chain((resp) => O.fromNullable(resp.belowThreshold)),
+        O.fold(
+          () => onError(ErrorsType.GENERIC_ERROR),
+          (value) => {
+            const firstPsp = pipe(
+              resp?.bundles,
+              O.fromNullable,
+              O.chain((sortedArray) => O.fromNullable(sortedArray[0])),
+              O.map((a) => a as Bundle),
+              O.getOrElseW(() => ({}))
+            );
+
+            setSessionItem(SessionItems.pspSelected, firstPsp);
+            onSuccess(value);
+          }
+        )
+      );
+    },
+  });
+
+export const callRecaptcha = async (
+  recaptchaInstance: ReCAPTCHA,
+  reset = false
+) => {
+  if (reset) {
+    void recaptchaInstance.reset();
+  }
+  const recaptchaResponse = await recaptchaInstance.executeAsync();
+  return pipe(
+    recaptchaResponse,
+    O.fromNullable,
+    O.getOrElse(() => "")
+  );
+};
+
+export const recaptchaTransaction = async ({
+  recaptchaRef,
+  onSuccess,
+  onError,
+}: {
+  recaptchaRef: ReCAPTCHA;
+  onSuccess: (paymentMethodId: string, orderId: string) => void;
+  onError: (m: string) => void;
+}) => {
+  const token = await callRecaptcha(recaptchaRef, true);
+  await activatePayment({
+    token,
+    onResponseActivate: onSuccess,
+    onErrorActivate: onError,
+  });
+};
