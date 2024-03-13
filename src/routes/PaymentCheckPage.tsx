@@ -267,12 +267,7 @@ export default function PaymentCheckPage() {
         bodyVariant="body2"
         title={paymentMethodInfo?.title || ""}
         body={paymentMethodInfo?.body || ""}
-        icon={(() => {
-          if (typeof paymentMethodInfo?.icon === "function") {
-            return paymentMethodInfo?.icon;
-          }
-          return <WalletIcon brand={paymentMethodInfo?.icon || ""} />;
-        })()}
+        icon={<WalletIcon brand={paymentMethodInfo?.icon || ""} />}
         sx={{
           border: "1px solid",
           borderColor: "divider",

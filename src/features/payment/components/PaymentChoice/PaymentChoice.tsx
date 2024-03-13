@@ -182,9 +182,8 @@ export function PaymentChoice(props: {
 
       const paymentInfo = PaymentMethodRoutes[paymentTypeCode];
       setSessionItem(SessionItems.paymentMethodInfo, {
-        title: paymentInfo?.label || "",
+        title: paymentInfo?.label,
         body: paymentTypeCode,
-        icon: paymentInfo.asset,
       });
 
       setSessionItem(SessionItems.paymentMethod, {

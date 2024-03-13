@@ -23,6 +23,7 @@ export const PaymentMethodRoutes: PaymentTypecode = {
   },
   RBPR: {
     route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
+    label: "paymentMethods.rbpr",
   },
   RBPB: {
     route: "",
