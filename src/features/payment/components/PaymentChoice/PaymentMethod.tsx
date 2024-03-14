@@ -39,13 +39,14 @@ function ImageComponent(method: PaymentInstrumentsType) {
   const imgSize = { width: "23px", height: "23px" };
   const paymentMethodConfig =
     PaymentMethodRoutes[method.paymentTypeCode as PaymentCodeType];
+  const guessAsset = method.asset || undefined;
 
   const iconDefault = <DefaultIcon method={method} />;
-  if (typeof method?.asset === "string" && image === "main") {
+  if (typeof guessAsset === "string" && image === "main") {
     const altString = `Logo ${method.name}`;
     return (
       <img
-        src={method?.asset}
+        src={guessAsset}
         onError={onError}
         alt={altString}
         aria-hidden="true"
