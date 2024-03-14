@@ -4,7 +4,6 @@
 import * as E from "fp-ts/Either";
 import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
-import { v4 as uuidV4 } from "uuid";
 import { flow, pipe } from "fp-ts/function";
 import { toError } from "fp-ts/lib/Either";
 import ReCAPTCHA from "react-google-recaptcha";
@@ -1098,13 +1097,6 @@ export const recaptchaTransaction = async ({
   onError: (m: string) => void;
 }) => {
   const token = await callRecaptcha(recaptchaRef, true);
-  // TODO uuid module dependency and
-  // the orderId and correlationId setSession below
-  // must be removed once the transaction API
-  // is refactored to make orderId and
-  // x-correlation-id optional
-  setSessionItem(SessionItems.orderId, "orderId");
-  setSessionItem(SessionItems.correlationId, uuidV4());
   await activatePayment({
     token,
     onResponseActivate: onSuccess,
