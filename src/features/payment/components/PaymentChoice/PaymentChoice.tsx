@@ -21,6 +21,7 @@ import {
   PaymentInstrumentsType,
 } from "../../models/paymentModel";
 import { setThreshold } from "../../../../redux/slices/threshold";
+import { CheckoutRoutes } from "../../../../routes/models/routeModel";
 import { DisabledPaymentMethods, MethodComponentList } from "./PaymentMethod";
 import { getNormalizedMethods } from "./utils";
 
@@ -58,8 +59,9 @@ export function PaymentChoice(props: {
     if (belowThreshold !== undefined) {
       dispatch(setThreshold({ belowThreshold }));
     }
+
     setLoading(false);
-    navigate(`/${route}`);
+    navigate(`/${route || CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
   };
 
   const onApmChoice = async (

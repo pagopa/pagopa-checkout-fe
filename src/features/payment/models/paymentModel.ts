@@ -39,7 +39,6 @@ export interface InputCardFormErrors {
 }
 
 export interface PaymentMethodAttr {
-  label?: string;
   asset?: (sx: SxProps<Theme>) => JSX.Element;
   route: string;
 }
