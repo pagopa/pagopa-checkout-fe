@@ -9,6 +9,14 @@ describe("getFragmentParameter function utility", () => {
         ROUTE_FRAGMENT.GDI_IFRAME_URL
       )
     ).toEqual("https://google.it/");
+
+    expect(
+      getFragmentParameter(
+        "http://localhost:1234/v2/esito#outcome=0",
+        ROUTE_FRAGMENT.OUTCOME,
+        false
+      )
+    ).toEqual("0");
   });
 
   it("Should return an empty string when the url is not valid or the paramater cant't be found", () => {

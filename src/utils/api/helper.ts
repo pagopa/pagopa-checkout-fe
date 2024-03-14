@@ -6,6 +6,7 @@ import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
 import { flow, pipe } from "fp-ts/function";
 import { toError } from "fp-ts/lib/Either";
+import ReCAPTCHA from "react-google-recaptcha";
 import { AmountEuroCents } from "../../../generated/definitions/payment-ecommerce/AmountEuroCents";
 import { Bundle } from "../../../generated/definitions/payment-ecommerce/Bundle";
 import { CreateSessionResponse } from "../../../generated/definitions/payment-ecommerce/CreateSessionResponse";
@@ -25,6 +26,7 @@ import {
   PaymentInfo,
   PaymentMethod,
   PaymentInstrumentsType,
+  PaymentMethodInfo,
 } from "../../features/payment/models/paymentModel";
 import { validateSessionWalletCardFormFields } from "../../utils/regex/validators";
 import { getConfigOrThrow } from "../config/config";
@@ -78,6 +80,7 @@ import {
   getSessionItem,
   setSessionItem,
 } from "../storage/sessionStorage";
+import { CalculateFeeResponse } from "../../../generated/definitions/payment-ecommerce/CalculateFeeResponse";
 import {
   apiPaymentEcommerceClient,
   apiPaymentEcommerceClientV2,
@@ -223,7 +226,7 @@ export const activatePayment = async ({
   );
 };
 
-const activePaymentTask = (
+export const activePaymentTask = (
   amountSinglePayment: AmountEuroCents,
   userEmail: string,
   rptId: RptId,
@@ -438,6 +441,11 @@ export const retrieveCardData = async ({
                   SessionItems.sessionPaymentMethod,
                   sessionPaymentMethodResponse
                 );
+                setSessionItem(SessionItems.paymentMethodInfo, {
+                  title: `· · · · ${sessionPaymentMethodResponse.lastFourDigits}`,
+                  body: sessionPaymentMethodResponse.expiringDate,
+                  icon: sessionPaymentMethodResponse.brand,
+                } as PaymentMethodInfo);
                 return sessionPaymentMethodResponse;
               } else {
                 onError(ErrorsType.GENERIC_ERROR);
@@ -460,7 +468,7 @@ export const calculateFees = async ({
   onResponsePsp,
 }: {
   paymentId: string;
-  bin: string;
+  bin?: string;
   onError: (e: string) => void;
   onResponsePsp: (r: any) => void;
 }) => {
@@ -955,95 +963,6 @@ const expDateToString = (dateParsed: Date) =>
       })
     );
 
-/*
-  export const getTransactionData = async ({
-    // va fatta la GET transaction
-    idPayment,
-    onError,
-    onResponse,
-    onNavigate,
-  }: {
-    idPayment: string;
-    onError: (e: string) => void;
-    onResponse: () => void;
-    onNavigate: () => void;
-  }) => {
-    mixpanel.track(PAYMENT_CHECK_INIT.value, {
-      EVENT_ID: PAYMENT_CHECK_INIT.value,
-    });
-    void pipe(
-      O.fromNullable(idPayment),
-      O.fold(
-        () => undefined,
-        async () =>
-          await pipe(
-            TE.tryCatch(
-              () =>
-                apiPaymentEcommerceClient.getTransactionInfo({
-                  bearerAuth: pipe(
-                    getSessionItem(SessionItems.transaction),
-                    O.fromNullable,
-                    O.map((transaction) => transaction as Transaction),
-                    O.chain((t) => O.fromNullable(t.authToken)),
-                    O.getOrElse(() => "")
-                  ),
-                  transactionId: pipe(
-                    O.fromNullable(idPayment),
-                    O.getOrElse(() => "")
-                  ),
-                }),
-              // Error on call
-              () => {
-                onError(ErrorsType.CONNECTION);
-                mixpanel.track(PAYMENT_CHECK_NET_ERR.value, {
-                  EVENT_ID: PAYMENT_CHECK_NET_ERR.value,
-                });
-                return toError;
-              }
-            ),
-            TE.fold(
-              () => async () => {
-                onError(ErrorsType.SERVER);
-                mixpanel.track(PAYMENT_CHECK_SVR_ERR.value, {
-                  EVENT_ID: PAYMENT_CHECK_SVR_ERR.value,
-                });
-              },
-              (myResExt) => async () => {
-                pipe(
-                  myResExt,
-                  E.fold(
-                    () => onError(ErrorsType.GENERIC_ERROR),
-                    (response) => {
-                      const maybePayment = TransactionInfo.decode(response.value);
-                      // eslint-disable-next-line no-underscore-dangle
-                      if (response.status === 200) {
-                        pipe(
-                          maybePayment,
-
-                          E.map((payment) => {
-                            setSessionItem(SessionItems.transaction, payment);
-                            onResponse();
-                            mixpanel.track(PAYMENT_CHECK_SUCCESS.value, {
-                              EVENT_ID: PAYMENT_CHECK_SUCCESS.value,
-                            });
-                          })
-                        );
-                      } else {
-                        onNavigate();
-                        mixpanel.track(PAYMENT_CHECK_RESP_ERR.value, {
-                          EVENT_ID: PAYMENT_CHECK_RESP_ERR.value,
-                        });
-                      }
-                    }
-                  )
-                );
-              }
-            )
-          )()
-      )
-    );
-  }; */
-
 export const npgSessionsFields = async (
   onError: (e: string) => void,
   onResponse: (data: CreateSessionResponse) => void,
@@ -1116,3 +1035,71 @@ export const npgSessionsFields = async (
         )
     )
   )();
+
+export const getFees = (
+  onSuccess: (value: boolean) => void,
+  onError: (m: string) => void,
+  bin?: string
+) =>
+  calculateFees({
+    paymentId:
+      (getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined)
+        ?.paymentMethodId || "",
+    bin,
+    onError,
+    onResponsePsp: (resp) => {
+      pipe(
+        resp,
+        CalculateFeeResponse.decode,
+        O.fromEither,
+        O.chain((resp) => O.fromNullable(resp.belowThreshold)),
+        O.fold(
+          () => onError(ErrorsType.GENERIC_ERROR),
+          (value) => {
+            const firstPsp = pipe(
+              resp?.bundles,
+              O.fromNullable,
+              O.chain((sortedArray) => O.fromNullable(sortedArray[0])),
+              O.map((a) => a as Bundle),
+              O.getOrElseW(() => ({}))
+            );
+
+            setSessionItem(SessionItems.pspSelected, firstPsp);
+            onSuccess(value);
+          }
+        )
+      );
+    },
+  });
+
+export const callRecaptcha = async (
+  recaptchaInstance: ReCAPTCHA,
+  reset = false
+) => {
+  if (reset) {
+    void recaptchaInstance.reset();
+  }
+  const recaptchaResponse = await recaptchaInstance.executeAsync();
+  return pipe(
+    recaptchaResponse,
+    O.fromNullable,
+    O.getOrElse(() => "")
+  );
+};
+
+export const recaptchaTransaction = async ({
+  recaptchaRef,
+  onSuccess,
+  onError,
+}: {
+  recaptchaRef: ReCAPTCHA;
+  onSuccess: (paymentMethodId: string, orderId: string) => void;
+  onError: (m: string) => void;
+}) => {
+  const token = await callRecaptcha(recaptchaRef, true);
+  await activatePayment({
+    token,
+    onResponseActivate: onSuccess,
+    onErrorActivate: onError,
+  });
+};

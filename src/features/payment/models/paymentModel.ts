@@ -1,5 +1,7 @@
 import { enumType } from "@pagopa/ts-commons/lib/types";
 import * as t from "io-ts";
+import { SxProps } from "@mui/material";
+import { Theme } from "@emotion/react";
 import { PaymentMethodResponse } from "../../../../generated/definitions/payment-ecommerce/PaymentMethodResponse";
 
 export interface PaymentFormFields {
@@ -35,6 +37,17 @@ export interface InputCardFormErrors {
   expirationDate?: string;
   cvv?: string;
 }
+
+export interface PaymentMethodAttr {
+  asset?: (sx: SxProps<Theme>) => JSX.Element;
+  route: string;
+}
+
+export type PaymentMethodInfo = {
+  title: string;
+  body: string;
+  icon: string;
+};
 
 export enum SecureCodeDigits {
   cvv = 3,

@@ -1,52 +1,50 @@
 import { Theme } from "@emotion/react";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import { SxProps } from "@mui/material";
-import { PaymentCodeType } from "features/payment/models/paymentModel";
+import {
+  PaymentCodeType,
+  PaymentMethodAttr,
+} from "features/payment/models/paymentModel";
 import * as React from "react";
+import { CheckoutRoutes } from "./routeModel";
 
-export interface PaymentMethodAttr {
-  label?: string;
-  asset?: (sx: SxProps<Theme>) => JSX.Element;
-  route: string;
-}
 type PaymentTypecode = Record<PaymentCodeType, PaymentMethodAttr>;
 
 export const PaymentMethodRoutes: PaymentTypecode = {
-  RBPP: {
-    route: "",
-  },
   CP: {
-    label: "paymentMethods.cp",
     asset: (sx: SxProps<Theme>) => (
       <CreditCardIcon color="primary" fontSize="small" sx={sx} />
     ),
-    route: "inserisci-carta",
+    route: CheckoutRoutes.INSERISCI_CARTA,
+  },
+  RBPP: {
+    route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
   },
   RBPR: {
-    route: "",
+    route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
   },
   RBPB: {
-    route: "",
+    route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
   },
   RPIC: {
-    route: "",
+    route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
   },
   RBPS: {
-    route: "",
+    route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
   },
   BPAY: {
-    route: "",
+    route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
   },
   APPL: {
-    route: "",
+    route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
   },
   GOOG: {
-    route: "",
+    route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
   },
   MYBK: {
-    route: "",
+    route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
   },
   SATY: {
-    route: "",
+    route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
   },
 };

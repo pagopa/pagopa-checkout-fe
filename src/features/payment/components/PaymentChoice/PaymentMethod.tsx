@@ -75,7 +75,7 @@ export const MethodComponentList = ({
   testable,
 }: {
   methods: Array<PaymentInstrumentsType>;
-  onClick?: (typeCode: PaymentCodeType, paymentMethodId: string) => void;
+  onClick?: (method: PaymentInstrumentsType) => void;
   testable?: boolean;
 }) => (
   <>
@@ -84,9 +84,7 @@ export const MethodComponentList = ({
         testable={testable}
         method={method}
         key={index}
-        onClick={
-          onClick ? () => onClick(method.paymentTypeCode, method.id) : undefined
-        }
+        onClick={onClick ? () => onClick(method) : undefined}
       />
     ))}
   </>
@@ -137,7 +135,7 @@ const MethodComponent = ({
   <ClickableFieldContainer
     dataTestId={testable ? method.paymentTypeCode : undefined}
     dataTestLabel={testable ? "payment-method" : undefined}
-    title={method.name}
+    title={method.description}
     onClick={onClick}
     icon={<ImageComponent {...method} />}
     endAdornment={
