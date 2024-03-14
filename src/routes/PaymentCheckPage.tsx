@@ -172,9 +172,6 @@ export default function PaymentCheckPage() {
 
   const onCardEdit = () => {
     window.removeEventListener("beforeunload", onBrowserUnload);
-    if (paymentMethod?.paymentTypeCode === PaymentCodeTypeEnum.CP) {
-      window.location.replace(`/${CheckoutRoutes.INSERISCI_CARTA}`);
-    }
     navigate(`/${CheckoutRoutes.SCEGLI_METODO}`, { replace: true });
   };
 
