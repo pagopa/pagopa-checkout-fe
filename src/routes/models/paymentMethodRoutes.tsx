@@ -11,42 +11,40 @@ import { CheckoutRoutes } from "./routeModel";
 type PaymentTypecode = Record<PaymentCodeType, PaymentMethodAttr>;
 
 export const PaymentMethodRoutes: PaymentTypecode = {
-  RBPP: {
-    route: "",
-  },
   CP: {
-    label: "paymentMethods.cp",
     asset: (sx: SxProps<Theme>) => (
       <CreditCardIcon color="primary" fontSize="small" sx={sx} />
     ),
     route: CheckoutRoutes.INSERISCI_CARTA,
   },
+  RBPP: {
+    route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
+  },
   RBPR: {
     route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
-    label: "paymentMethods.rbpr",
   },
   RBPB: {
-    route: "",
+    route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
   },
   RPIC: {
-    route: "",
+    route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
   },
   RBPS: {
-    route: "",
+    route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
   },
   BPAY: {
-    route: "",
+    route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
   },
   APPL: {
-    route: "",
+    route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
   },
   GOOG: {
-    route: "",
+    route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
   },
   MYBK: {
-    route: "",
+    route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
   },
   SATY: {
-    route: "",
+    route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
   },
 };

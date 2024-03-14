@@ -2,6 +2,7 @@ import Box from "@mui/material/Box/Box";
 import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useNavigate } from "react-router-dom";
+import { v4 as uuidV4 } from "uuid";
 import CheckoutLoader from "../../../../components/PageContent/CheckoutLoader";
 import ClickableFieldContainer from "../../../../components/TextFormField/ClickableFieldContainer";
 import { useAppDispatch } from "../../../../redux/hooks/hooks";
@@ -20,6 +21,7 @@ import {
   PaymentInstrumentsType,
 } from "../../models/paymentModel";
 import { setThreshold } from "../../../../redux/slices/threshold";
+import { CheckoutRoutes } from "../../../../routes/models/routeModel";
 import { DisabledPaymentMethods, MethodComponentList } from "./PaymentMethod";
 import { getNormalizedMethods } from "./utils";
 
@@ -57,14 +59,22 @@ export function PaymentChoice(props: {
     if (belowThreshold !== undefined) {
       dispatch(setThreshold({ belowThreshold }));
     }
+
     setLoading(false);
-    navigate(`/${route}`);
+    navigate(`/${route || CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
   };
 
-  const transaction = async (
+  const onApmChoice = async (
     recaptchaRef: ReCAPTCHA,
     onSuccess: (belowThreshold: boolean) => void
   ) => {
+    // TODO uuid module dependency and
+    // the orderId and correlationId setSession below
+    // must be removed once the transaction API
+    // is refactored to make orderId and
+    // x-correlation-id optional
+    setSessionItem(SessionItems.orderId, "orderId");
+    setSessionItem(SessionItems.correlationId, uuidV4());
     setLoading(true);
     await recaptchaTransaction({
       recaptchaRef,
@@ -87,7 +97,7 @@ export function PaymentChoice(props: {
         paymentTypeCode,
       });
       if (paymentTypeCode !== PaymentCodeTypeEnum.CP && ref.current) {
-        await transaction(ref.current, (belowThreshold: boolean) =>
+        await onApmChoice(ref.current, (belowThreshold: boolean) =>
           onSuccess(paymentTypeCode, belowThreshold)
         );
       } else {
