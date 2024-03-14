@@ -30,7 +30,6 @@ import ClickableFieldContainer from "../components/TextFormField/ClickableFieldC
 import FieldContainer from "../components/TextFormField/FieldContainer";
 import {
   Cart,
-  PaymentCodeTypeEnum,
   PaymentInfo,
   PaymentMethod,
   PaymentMethodInfo,
