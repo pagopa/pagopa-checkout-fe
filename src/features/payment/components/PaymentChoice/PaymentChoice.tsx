@@ -90,6 +90,7 @@ export function PaymentChoice(props: {
       const { paymentTypeCode, id: paymentMethodId } = method;
       setSessionItem(SessionItems.paymentMethodInfo, {
         title: method.description,
+        asset: method.asset || "",
       });
 
       setSessionItem(SessionItems.paymentMethod, {
