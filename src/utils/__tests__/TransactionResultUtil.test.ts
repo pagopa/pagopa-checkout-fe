@@ -384,8 +384,8 @@ describe("TransactionResultUtil", () => {
     ).toEqual(ViewOutcomeEnum.CANCELED_BY_USER);
   });
 
-  // TAKING_CHARGE(15)
-  it("should return correctly TAKING_CHARGE(15) outcome with NPG gateway", async () => {
+  // TAKING_CHARGE(17)
+  it("should return correctly TAKING_CHARGE(17) outcome with NPG gateway", async () => {
     expect(
       getViewOutcomeFromEcommerceResultCode(
         TransactionStatusEnum.CLOSED,
