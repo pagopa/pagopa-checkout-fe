@@ -30,7 +30,6 @@ import ClickableFieldContainer from "../components/TextFormField/ClickableFieldC
 import FieldContainer from "../components/TextFormField/FieldContainer";
 import {
   Cart,
-  PaymentCodeTypeEnum,
   PaymentInfo,
   PaymentMethod,
   PaymentMethodInfo,
@@ -172,9 +171,6 @@ export default function PaymentCheckPage() {
 
   const onCardEdit = () => {
     window.removeEventListener("beforeunload", onBrowserUnload);
-    if (paymentMethod?.paymentTypeCode === PaymentCodeTypeEnum.CP) {
-      window.location.replace(`/${CheckoutRoutes.INSERISCI_CARTA}`);
-    }
     navigate(`/${CheckoutRoutes.SCEGLI_METODO}`, { replace: true });
   };
 
