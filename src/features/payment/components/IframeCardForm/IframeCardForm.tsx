@@ -1,35 +1,31 @@
-import React from "react";
 import { Box } from "@mui/material";
-import { useTranslation } from "react-i18next";
-import ReCAPTCHA from "react-google-recaptcha";
 import * as O from "fp-ts/Option";
 import { pipe } from "fp-ts/function";
+import React from "react";
+import ReCAPTCHA from "react-google-recaptcha";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { PaymentMethod } from "../../../../features/payment/models/paymentModel";
+import { CreateSessionResponse } from "../../../../../generated/definitions/payment-ecommerce/CreateSessionResponse";
+import { SessionPaymentMethodResponse } from "../../../../../generated/definitions/payment-ecommerce/SessionPaymentMethodResponse";
 import { FormButtons } from "../../../../components/FormButtons/FormButtons";
+import ErrorModal from "../../../../components/modals/ErrorModal";
+import { useAppDispatch } from "../../../../redux/hooks/hooks";
+import { CheckoutRoutes } from "../../../../routes/models/routeModel";
 import {
-  getSessionItem,
-  SessionItems,
-  setSessionItem,
-  getReCaptchaKey,
-} from "../../../../utils/storage/sessionStorage";
-import {
-  activatePayment,
-  calculateFees,
+  getFees,
   npgSessionsFields,
+  recaptchaTransaction,
   retrieveCardData,
 } from "../../../../utils/api/helper";
-import { SessionPaymentMethodResponse } from "../../../../../generated/definitions/payment-ecommerce/SessionPaymentMethodResponse";
-import { CheckoutRoutes } from "../../../../routes/models/routeModel";
-import { Bundle } from "../../../../../generated/definitions/payment-ecommerce/Bundle";
-import { CalculateFeeResponse } from "../../../../../generated/definitions/payment-ecommerce/CalculateFeeResponse";
-import { ErrorsType } from "../../../../utils/errors/checkErrorsModel";
-import { useAppDispatch } from "../../../../redux/hooks/hooks";
-import { setThreshold } from "../../../../redux/slices/threshold";
-import { CreateSessionResponse } from "../../../../../generated/definitions/payment-ecommerce/CreateSessionResponse";
-import ErrorModal from "../../../../components/modals/ErrorModal";
 import createBuildConfig from "../../../../utils/buildConfig";
+import { ErrorsType } from "../../../../utils/errors/checkErrorsModel";
 import { clearNavigationEvents } from "../../../../utils/eventListeners";
+import {
+  SessionItems,
+  getReCaptchaKey,
+  setSessionItem,
+} from "../../../../utils/storage/sessionStorage";
+import { setThreshold } from "../../../../redux/slices/threshold";
 import { IframeCardField } from "./IframeCardField";
 import type { FieldId, FieldStatus, FormStatus } from "./types";
 import { IdFields } from "./types";
@@ -95,41 +91,10 @@ export default function IframeCardForm(props: Props) {
 
   const navigate = useNavigate();
 
-  const getFees = (bin: string) =>
-    calculateFees({
-      paymentId:
-        (
-          getSessionItem(SessionItems.paymentMethod) as
-            | PaymentMethod
-            | undefined
-        )?.paymentMethodId || "",
-      bin,
-      onError,
-      onResponsePsp: (resp) => {
-        pipe(
-          resp,
-          CalculateFeeResponse.decode,
-          O.fromEither,
-          O.chain((resp) => O.fromNullable(resp.belowThreshold)),
-          O.fold(
-            () => onError(ErrorsType.GENERIC_ERROR),
-            (value) => {
-              dispatch(setThreshold({ belowThreshold: value }));
-              const firstPsp = pipe(
-                resp?.bundles,
-                O.fromNullable,
-                O.chain((sortedArray) => O.fromNullable(sortedArray[0])),
-                O.map((a) => a as Bundle),
-                O.getOrElseW(() => ({}))
-              );
-
-              setSessionItem(SessionItems.pspSelected, firstPsp);
-              navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
-            }
-          )
-        );
-      },
-    });
+  const onSuccess = (belowThreshold: boolean) => {
+    dispatch(setThreshold({ belowThreshold }));
+    navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
+  };
 
   const retrievePaymentSession = (paymentMethodId: string, orderId: string) =>
     retrieveCardData({
@@ -144,42 +109,11 @@ export default function IframeCardForm(props: Props) {
           O.chain((resp) => O.fromNullable(resp.bin)),
           O.fold(
             () => onError(ErrorsType.GENERIC_ERROR),
-            () => getFees(resp.bin)
+            () => getFees(onSuccess, onError, resp.bin)
           )
         );
       },
     });
-
-  const transaction = async (recaptchaRef: ReCAPTCHA) => {
-    const token = await callRecaptcha(recaptchaRef, true);
-    /* temporarily dropped
-    const transactionId = (
-      getSessionItem(SessionItems.transaction) as
-        | NewTransactionResponse
-        | undefined
-    )?.transactionId;
-    if (transactionId) {
-      void retrievePaymentSession(
-        (
-          getSessionItem(SessionItems.paymentMethod) as
-            | PaymentMethod
-            | undefined
-        )?.paymentMethodId || "",
-        getSessionItem(SessionItems.orderId) as string
-      );
-    } else {
-      await activatePayment({
-        token,
-        onResponseActivate: retrievePaymentSession,
-        onErrorActivate: onError,
-      });
-    } */
-    await activatePayment({
-      token,
-      onResponseActivate: retrievePaymentSession,
-      onErrorActivate: onError,
-    });
-  };
 
   const onChange = (id: FieldId, status: FieldStatus) => {
     if (Object.keys(IdFields).includes(id)) {
@@ -197,8 +131,15 @@ export default function IframeCardForm(props: Props) {
         setSessionItem(SessionItems.orderId, body.orderId);
         setSessionItem(SessionItems.correlationId, body.correlationId);
         setForm(body);
-        const onReadyForPayment = () =>
-          ref.current && void transaction(ref.current);
+        const onReadyForPayment = () => {
+          if (ref.current) {
+            void recaptchaTransaction({
+              recaptchaRef: ref.current,
+              onSuccess: retrievePaymentSession,
+              onError,
+            });
+          }
+        };
 
         const onPaymentComplete = () => {
           clearNavigationEvents();

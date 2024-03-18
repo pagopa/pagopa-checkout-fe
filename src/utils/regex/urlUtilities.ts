@@ -17,17 +17,20 @@ export function getUrlParameter(name: string) {
  */
 export function getFragmentParameter(
   uri: string,
-  name: ROUTE_FRAGMENT
+  name: ROUTE_FRAGMENT,
+  useBase64Decoding = true
 ): string {
   try {
     const fragment = new URL(uri).hash.substring(1);
     const urlParams = new URLSearchParams(fragment);
-    const gdiFragmentUrl = urlParams.get(name);
-    if (gdiFragmentUrl === null) {
+    const param = urlParams.get(name);
+    if (param === null) {
       return "";
     }
 
-    return Buffer.from(gdiFragmentUrl, "base64").toString("ascii");
+    return useBase64Decoding
+      ? Buffer.from(param, "base64").toString("ascii")
+      : param;
   } catch (e) {
     return "";
   }

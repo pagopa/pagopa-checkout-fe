@@ -32,6 +32,7 @@ import {
   Cart,
   PaymentInfo,
   PaymentMethod,
+  PaymentMethodInfo,
 } from "../features/payment/models/paymentModel";
 import { useAppSelector } from "../redux/hooks/hooks";
 import {
@@ -52,6 +53,7 @@ import { NewTransactionResponse } from "../../generated/definitions/payment-ecom
 import { Bundle } from "../../generated/definitions/payment-ecommerce/Bundle";
 import { CalculateFeeResponse } from "../../generated/definitions/payment-ecommerce/CalculateFeeResponse";
 import { SessionPaymentMethodResponse } from "../../generated/definitions/payment-ecommerce/SessionPaymentMethodResponse";
+import { ImageComponent } from "../features/payment/components/PaymentChoice/PaymentMethodImage";
 import { CheckoutRoutes } from "./models/routeModel";
 
 const defaultStyle = {
@@ -83,6 +85,9 @@ export default function PaymentCheckPage() {
   const threshold = useAppSelector(selectThreshold);
   const paymentMethod = getSessionItem(SessionItems.paymentMethod) as
     | PaymentMethod
+    | undefined;
+  const paymentMethodInfo = getSessionItem(SessionItems.paymentMethodInfo) as
+    | PaymentMethodInfo
     | undefined;
   const pspSelected = getSessionItem(SessionItems.pspSelected) as
     | Bundle
@@ -167,7 +172,7 @@ export default function PaymentCheckPage() {
 
   const onCardEdit = () => {
     window.removeEventListener("beforeunload", onBrowserUnload);
-    window.location.replace(`/${CheckoutRoutes.INSERISCI_CARTA}`);
+    navigate(`/${CheckoutRoutes.SCEGLI_METODO}`, { replace: true });
   };
 
   const onCancel = React.useCallback(() => {
@@ -257,9 +262,18 @@ export default function PaymentCheckPage() {
       <FieldContainer
         titleVariant="sidenav"
         bodyVariant="body2"
-        title={`· · · · ${sessionPaymentMethodResponse.lastFourDigits}`}
-        body={sessionPaymentMethodResponse.expiringDate}
-        icon={<WalletIcon brand={sessionPaymentMethodResponse.brand || ""} />}
+        title={paymentMethodInfo?.title || ""}
+        body={paymentMethodInfo?.body || ""}
+        icon={
+          paymentMethodInfo?.icon ? (
+            <WalletIcon brand={paymentMethodInfo.icon} />
+          ) : (
+            <ImageComponent
+              asset={paymentMethodInfo?.asset}
+              name={paymentMethodInfo?.title || ""}
+            />
+          )
+        }
         sx={{
           border: "1px solid",
           borderColor: "divider",
@@ -279,7 +293,6 @@ export default function PaymentCheckPage() {
           </Button>
         }
       />
-
       <ClickableFieldContainer
         title="paymentCheckPage.transaction"
         icon={<LocalOfferIcon sx={{ color: "text.primary" }} />}
@@ -311,7 +324,7 @@ export default function PaymentCheckPage() {
         title={(pspSelected && moneyFormat(pspSelected.taxPayerFee || 0)) || ""}
         body={
           (pspSelected &&
-            `${t("paymentCheckPage.psp")} ${pspSelected.bundleName}`) ||
+            `${t("paymentCheckPage.psp")} ${pspSelected.pspBusinessName}`) ||
           ""
         }
         disclaimer={pipe(
@@ -353,7 +366,6 @@ export default function PaymentCheckPage() {
         itemSx={{ pl: 2, pr: 0, gap: 2 }}
         variant="body2"
       />
-
       <FormButtons
         loadingSubmit={payLoading}
         loadingCancel={cancelLoading}
@@ -404,7 +416,6 @@ export default function PaymentCheckPage() {
         onCancel={() => setCancelModalOpen(false)}
         onSubmit={onCancelPaymentSubmit}
       />
-
       <PaymentPspDrawer
         pspList={pspList}
         open={drawerOpen}
@@ -412,7 +423,6 @@ export default function PaymentCheckPage() {
         loading={pspEditLoading}
         onSelect={updatePSP}
       />
-
       {!!error && (
         <ErrorModal
           error={error}
