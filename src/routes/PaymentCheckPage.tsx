@@ -53,6 +53,7 @@ import { NewTransactionResponse } from "../../generated/definitions/payment-ecom
 import { Bundle } from "../../generated/definitions/payment-ecommerce/Bundle";
 import { CalculateFeeResponse } from "../../generated/definitions/payment-ecommerce/CalculateFeeResponse";
 import { SessionPaymentMethodResponse } from "../../generated/definitions/payment-ecommerce/SessionPaymentMethodResponse";
+import { ImageComponent } from "../features/payment/components/PaymentChoice/PaymentMethodImage";
 import { CheckoutRoutes } from "./models/routeModel";
 
 const defaultStyle = {
@@ -263,7 +264,16 @@ export default function PaymentCheckPage() {
         bodyVariant="body2"
         title={paymentMethodInfo?.title || ""}
         body={paymentMethodInfo?.body || ""}
-        icon={<WalletIcon brand={paymentMethodInfo?.icon || ""} />}
+        icon={
+          paymentMethodInfo?.icon ? (
+            <WalletIcon brand={paymentMethodInfo.icon} />
+          ) : (
+            <ImageComponent
+              asset={paymentMethodInfo?.asset}
+              name={paymentMethodInfo?.title || ""}
+            />
+          )
+        }
         sx={{
           border: "1px solid",
           borderColor: "divider",
