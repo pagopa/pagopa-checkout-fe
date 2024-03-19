@@ -46,7 +46,8 @@ export interface PaymentMethodAttr {
 export type PaymentMethodInfo = {
   title: string;
   body: string;
-  icon: string;
+  asset?: string;
+  icon?: string;
 };
 
 export enum SecureCodeDigits {

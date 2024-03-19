@@ -1,6 +1,5 @@
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import MobileFriendlyIcon from "@mui/icons-material/MobileFriendly";
 import {
   Accordion,
   AccordionSummary,
@@ -9,68 +8,14 @@ import {
 } from "@mui/material";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
-import { PaymentMethodRoutes } from "../../../../routes/models/paymentMethodRoutes";
+import CreditCardIcon from "@mui/icons-material/CreditCard";
 import ClickableFieldContainer from "../../../../components/TextFormField/ClickableFieldContainer";
 import {
-  PaymentCodeType,
+  PaymentCodeTypeEnum,
   PaymentInstrumentsType,
 } from "../../models/paymentModel";
 import { PaymentMethodStatusEnum } from "../../../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
-
-const DefaultIcon = ({ method }: { method: PaymentInstrumentsType }) => {
-  const theme = useTheme();
-  return (
-    <MobileFriendlyIcon
-      color="primary"
-      fontSize="small"
-      sx={
-        method.status === PaymentMethodStatusEnum.DISABLED
-          ? { color: theme.palette.text.disabled }
-          : {}
-      }
-    />
-  );
-};
-
-function ImageComponent(method: PaymentInstrumentsType) {
-  const theme = useTheme();
-  const [image, setImage] = React.useState<"main" | "alt">("main");
-  const onError = React.useCallback(() => setImage("alt"), []);
-  const imgSize = { width: "23px", height: "23px" };
-
-  const paymentMethodConfig =
-    PaymentMethodRoutes[method.paymentTypeCode as PaymentCodeType];
-
-  const iconDefault = <DefaultIcon method={method} />;
-
-  if (!paymentMethodConfig?.asset || image !== "main") {
-    return iconDefault;
-  }
-
-  if (typeof paymentMethodConfig?.asset === "string") {
-    return (
-      <img
-        src={paymentMethodConfig?.asset}
-        onError={onError}
-        style={
-          method.status === PaymentMethodStatusEnum.DISABLED
-            ? { color: theme.palette.text.disabled, ...imgSize }
-            : { color: theme.palette.text.primary, ...imgSize }
-        }
-      />
-    );
-  }
-
-  if (typeof paymentMethodConfig?.asset === "function") {
-    return paymentMethodConfig.asset(
-      method.status === PaymentMethodStatusEnum.DISABLED
-        ? { color: theme.palette.text.disabled }
-        : {}
-    );
-  }
-
-  return iconDefault;
-}
+import { ImageComponent } from "./PaymentMethodImage";
 
 export const MethodComponentList = ({
   methods,
@@ -134,19 +79,31 @@ const MethodComponent = ({
   method: PaymentInstrumentsType;
   onClick?: () => void;
   testable?: boolean;
-}) => (
-  <ClickableFieldContainer
-    dataTestId={testable ? method.paymentTypeCode : undefined}
-    dataTestLabel={testable ? "payment-method" : undefined}
-    title={method.description}
-    onClick={onClick}
-    icon={<ImageComponent {...method} />}
-    endAdornment={
-      method.status === PaymentMethodStatusEnum.ENABLED && (
-        <ArrowForwardIosIcon sx={{ color: "primary.main" }} fontSize="small" />
-      )
-    }
-    disabled={method.status === PaymentMethodStatusEnum.DISABLED}
-    clickable={method.status === PaymentMethodStatusEnum.ENABLED}
-  />
-);
+}) => {
+  const iconOrNot =
+    method.paymentTypeCode === PaymentCodeTypeEnum.CP ? (
+      <CreditCardIcon color="primary" fontSize="small" />
+    ) : (
+      <ImageComponent {...method} />
+    );
+
+  return (
+    <ClickableFieldContainer
+      dataTestId={testable ? method.paymentTypeCode : undefined}
+      dataTestLabel={testable ? "payment-method" : undefined}
+      title={method.description}
+      onClick={onClick}
+      icon={iconOrNot}
+      endAdornment={
+        method.status === PaymentMethodStatusEnum.ENABLED && (
+          <ArrowForwardIosIcon
+            sx={{ color: "primary.main" }}
+            fontSize="small"
+          />
+        )
+      }
+      disabled={method.status === PaymentMethodStatusEnum.DISABLED}
+      clickable={method.status === PaymentMethodStatusEnum.ENABLED}
+    />
+  );
+};
