@@ -653,7 +653,7 @@ export const proceedToPayment = async (
               "",
           }
         : {
-            detailType: "redirect"
+            detailType: "redirect",
           },
     language: LanguageEnum.IT,
   };
