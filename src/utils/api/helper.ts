@@ -653,9 +653,7 @@ export const proceedToPayment = async (
               "",
           }
         : {
-            detailType: "postepay",
-            accountEmail:
-              (getSessionItem(SessionItems.useremail) as string) || "",
+            detailType: "redirect"
           },
     language: LanguageEnum.IT,
   };
