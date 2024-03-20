@@ -158,7 +158,7 @@ export default function PaymentCheckPage() {
       if (url.hostname.includes("checkout.pagopa.it")) {
         navigate(`${url.pathname}${url.hash}`);
       } else {
-        navigate(authorizationUrl);
+        window.location.replace(url);
       }
     } catch {
       onError(ErrorsType.GENERIC_ERROR);
