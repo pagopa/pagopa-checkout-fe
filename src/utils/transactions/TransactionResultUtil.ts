@@ -13,7 +13,7 @@ export enum ViewOutcomeEnum {
   INVALID_CARD = "7",
   CANCELED_BY_USER = "8",
   EXCESSIVE_AMOUNT = "10",
-  TAKING_CHARGE = "15",
+  TAKING_CHARGE = "17",
 }
 
 export enum EcommerceFinalStatusCodeEnum {
