@@ -155,7 +155,7 @@ export default function PaymentCheckPage() {
       setPayLoading(false);
       window.removeEventListener("beforeunload", onBrowserUnload);
       const url = new URL(authorizationUrl);
-      if (url.hostname.includes("checkout.pagopa.it")) {
+      if (url.origin === window.location.origin) {
         navigate(`${url.pathname}${url.hash}`);
       } else {
         window.location.replace(url);
