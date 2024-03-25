@@ -155,7 +155,11 @@ export default function PaymentCheckPage() {
       setPayLoading(false);
       window.removeEventListener("beforeunload", onBrowserUnload);
       const url = new URL(authorizationUrl);
-      navigate(`${url.pathname}${url.hash}`);
+      if (url.origin === window.location.origin) {
+        navigate(`${url.pathname}${url.hash}`);
+      } else {
+        window.location.replace(url);
+      }
     } catch {
       onError(ErrorsType.GENERIC_ERROR);
     }
