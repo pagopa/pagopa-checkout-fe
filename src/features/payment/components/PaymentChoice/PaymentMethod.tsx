@@ -79,31 +79,19 @@ const MethodComponent = ({
   method: PaymentInstrumentsType;
   onClick?: () => void;
   testable?: boolean;
-}) => {
-  const iconOrNot =
-    method.paymentTypeCode === PaymentCodeTypeEnum.CP ? (
-      <CreditCardIcon color="primary" fontSize="small" />
-    ) : (
-      <ImageComponent {...method} />
-    );
-
-  return (
-    <ClickableFieldContainer
-      dataTestId={testable ? method.paymentTypeCode : undefined}
-      dataTestLabel={testable ? "payment-method" : undefined}
-      title={method.description}
-      onClick={onClick}
-      icon={<ImageComponent {...method} />}
-      endAdornment={
-        method.status === PaymentMethodStatusEnum.ENABLED && (
-          <ArrowForwardIosIcon
-            sx={{ color: "primary.main" }}
-            fontSize="small"
-          />
-        )
-      }
-      disabled={method.status === PaymentMethodStatusEnum.DISABLED}
-      clickable={method.status === PaymentMethodStatusEnum.ENABLED}
-    />
-  );
-};
+}) => (
+  <ClickableFieldContainer
+    dataTestId={testable ? method.paymentTypeCode : undefined}
+    dataTestLabel={testable ? "payment-method" : undefined}
+    title={method.description}
+    onClick={onClick}
+    icon={<ImageComponent {...method} />}
+    endAdornment={
+      method.status === PaymentMethodStatusEnum.ENABLED && (
+        <ArrowForwardIosIcon sx={{ color: "primary.main" }} fontSize="small" />
+      )
+    }
+    disabled={method.status === PaymentMethodStatusEnum.DISABLED}
+    clickable={method.status === PaymentMethodStatusEnum.ENABLED}
+  />
+);
