@@ -93,7 +93,7 @@ const MethodComponent = ({
       dataTestLabel={testable ? "payment-method" : undefined}
       title={method.description}
       onClick={onClick}
-      icon={iconOrNot}
+      icon={<ImageComponent {...method} />}
       endAdornment={
         method.status === PaymentMethodStatusEnum.ENABLED && (
           <ArrowForwardIosIcon
