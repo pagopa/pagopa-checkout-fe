@@ -63,7 +63,7 @@ export function IframeCardField(props: Props) {
 
   React.useEffect(() => {
     if (src) {
-      setTimeout(() => setSrcOnIframe(src), 2000);
+      setSrcOnIframe(src);
     }
   }, [src]);
 
