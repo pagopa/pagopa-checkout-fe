@@ -8,12 +8,8 @@ import {
 } from "@mui/material";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
-import CreditCardIcon from "@mui/icons-material/CreditCard";
 import ClickableFieldContainer from "../../../../components/TextFormField/ClickableFieldContainer";
-import {
-  PaymentCodeTypeEnum,
-  PaymentInstrumentsType,
-} from "../../models/paymentModel";
+import { PaymentInstrumentsType } from "../../models/paymentModel";
 import { PaymentMethodStatusEnum } from "../../../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
 import { ImageComponent } from "./PaymentMethodImage";
 
