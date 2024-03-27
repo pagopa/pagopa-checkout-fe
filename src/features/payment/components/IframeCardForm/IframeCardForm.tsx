@@ -62,12 +62,12 @@ const callRecaptcha = async (recaptchaInstance: ReCAPTCHA, reset = false) => {
   );
 };
 */
-const form: CreateSessionResponse = JSON.parse(
-  sessionStorage.getItem("npg") || "{}"
-);
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export default function IframeCardForm(props: Props) {
+  const form: CreateSessionResponse = JSON.parse(
+    sessionStorage.getItem("npg") || "{}"
+  );
   // eslint-disable-next-line no-console
   console.log("form", form);
   const { onCancel, hideCancel } = props;
@@ -132,48 +132,50 @@ export default function IframeCardForm(props: Props) {
   };
 
   React.useEffect(() => {
-    setSessionItem(SessionItems.orderId, form.orderId);
-    setSessionItem(SessionItems.correlationId, form.correlationId);
-    const onReadyForPayment = () => {
-      if (ref.current) {
-        void recaptchaTransaction({
-          recaptchaRef: ref.current,
-          onSuccess: retrievePaymentSession,
-          onError,
-        });
+    if (form && form.orderId) {
+      setSessionItem(SessionItems.orderId, form.orderId);
+      setSessionItem(SessionItems.correlationId, form.correlationId);
+      const onReadyForPayment = () => {
+        if (ref.current) {
+          void recaptchaTransaction({
+            recaptchaRef: ref.current,
+            onSuccess: retrievePaymentSession,
+            onError,
+          });
+        }
+      };
+
+      const onPaymentComplete = () => {
+        clearNavigationEvents();
+        window.location.replace(`/${CheckoutRoutes.ESITO}`);
+      };
+
+      const onPaymentRedirect = (urlredirect: string) => {
+        clearNavigationEvents();
+        window.location.replace(urlredirect);
+      };
+
+      const onBuildError = () => {
+        setLoading(false);
+        window.location.replace(`/${CheckoutRoutes.ERRORE}`);
+      };
+
+      try {
+        const newBuild = new Build(
+          createBuildConfig({
+            onChange,
+            onReadyForPayment,
+            onPaymentComplete,
+            onPaymentRedirect,
+            onBuildError,
+          })
+        );
+        setBuildInstance(newBuild);
+      } catch {
+        onBuildError();
       }
-    };
-
-    const onPaymentComplete = () => {
-      clearNavigationEvents();
-      window.location.replace(`/${CheckoutRoutes.ESITO}`);
-    };
-
-    const onPaymentRedirect = (urlredirect: string) => {
-      clearNavigationEvents();
-      window.location.replace(urlredirect);
-    };
-
-    const onBuildError = () => {
-      setLoading(false);
-      window.location.replace(`/${CheckoutRoutes.ERRORE}`);
-    };
-
-    try {
-      const newBuild = new Build(
-        createBuildConfig({
-          onChange,
-          onReadyForPayment,
-          onPaymentComplete,
-          onPaymentRedirect,
-          onBuildError,
-        })
-      );
-      setBuildInstance(newBuild);
-    } catch {
-      onBuildError();
     }
-  }, []);
+  }, [form?.orderId]);
 
   const handleSubmit = (e: React.FormEvent) => {
     try {
@@ -195,7 +197,7 @@ export default function IframeCardForm(props: Props) {
           <Box>
             <IframeCardField
               label={t("inputCardPage.formFields.number")}
-              fields={form?.paymentMethodData.form}
+              fields={form?.paymentMethodData?.form}
               id={"CARD_NUMBER"}
               errorCode={formStatus.CARD_NUMBER?.errorCode}
               errorMessage={formStatus.CARD_NUMBER?.errorMessage}
@@ -211,7 +213,7 @@ export default function IframeCardForm(props: Props) {
             <Box sx={{ flex: "1 1 0" }}>
               <IframeCardField
                 label={t("inputCardPage.formFields.expirationDate")}
-                fields={form?.paymentMethodData.form}
+                fields={form?.paymentMethodData?.form}
                 id={"EXPIRATION_DATE"}
                 errorCode={formStatus.EXPIRATION_DATE?.errorCode}
                 errorMessage={formStatus.EXPIRATION_DATE?.errorMessage}
@@ -222,7 +224,7 @@ export default function IframeCardForm(props: Props) {
             <Box width="50%">
               <IframeCardField
                 label={t("inputCardPage.formFields.cvv")}
-                fields={form?.paymentMethodData.form}
+                fields={form?.paymentMethodData?.form}
                 id={"SECURITY_CODE"}
                 errorCode={formStatus.SECURITY_CODE?.errorCode}
                 errorMessage={formStatus.SECURITY_CODE?.errorMessage}
@@ -234,7 +236,7 @@ export default function IframeCardForm(props: Props) {
           <Box>
             <IframeCardField
               label={t("inputCardPage.formFields.name")}
-              fields={form?.paymentMethodData.form}
+              fields={form?.paymentMethodData?.form}
               id={"CARDHOLDER_NAME"}
               errorCode={formStatus.CARDHOLDER_NAME?.errorCode}
               errorMessage={formStatus.CARDHOLDER_NAME?.errorMessage}
