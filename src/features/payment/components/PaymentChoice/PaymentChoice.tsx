@@ -1,5 +1,5 @@
 import Box from "@mui/material/Box/Box";
-import React from "react";
+import React, { useEffect } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidV4 } from "uuid";
@@ -7,7 +7,11 @@ import CheckoutLoader from "../../../../components/PageContent/CheckoutLoader";
 import ClickableFieldContainer from "../../../../components/TextFormField/ClickableFieldContainer";
 import { useAppDispatch } from "../../../../redux/hooks/hooks";
 import { PaymentMethodRoutes } from "../../../../routes/models/paymentMethodRoutes";
-import { getFees, recaptchaTransaction } from "../../../../utils/api/helper";
+import {
+  getFees,
+  getNpgSessionsFields,
+  recaptchaTransaction,
+} from "../../../../utils/api/helper";
 import { PAYMENT_METHODS_CHOICE } from "../../../../utils/config/mixpanelDefs";
 import { mixpanel } from "../../../../utils/config/mixpanelHelperInit";
 import {
@@ -25,6 +29,7 @@ import { CheckoutRoutes } from "../../../../routes/models/routeModel";
 import { DisabledPaymentMethods, MethodComponentList } from "./PaymentMethod";
 import { getNormalizedMethods } from "./utils";
 
+// eslint-disable-next-line sonarjs/cognitive-complexity
 export function PaymentChoice(props: {
   amount: number;
   paymentInstruments: Array<PaymentInstrumentsType>;
@@ -111,6 +116,13 @@ export function PaymentChoice(props: {
     () => getNormalizedMethods(props.paymentInstruments),
     [props.amount, props.paymentInstruments]
   );
+
+  useEffect(() => {
+    const id = paymentMethods.enabled.find(({ name }) => name === "Carte")?.id;
+    if (id) {
+      void getNpgSessionsFields(id);
+    }
+  }, [paymentMethods.enabled.length]);
 
   return (
     <>

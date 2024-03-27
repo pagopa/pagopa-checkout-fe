@@ -1101,3 +1101,67 @@ export const recaptchaTransaction = async ({
     onErrorActivate: onError,
   });
 };
+
+export const getNpgSessionsFields = async (id: string) =>
+  await pipe(
+    TE.tryCatch(
+      () => {
+        mixpanel.track(NPG_INIT.value, {
+          EVENT_ID: NPG_INIT.value,
+        });
+        return apiPaymentEcommerceClientWithRetry.createSession({
+          id,
+          recaptchaResponse: "test",
+        });
+      },
+      () => {
+        mixpanel.track(NPG_NET_ERR.value, {
+          EVENT_ID: NPG_NET_ERR.value,
+        });
+        // eslint-disable-next-line no-console
+        console.error(NPG_NET_ERR.value);
+        return NPG_NET_ERR.value;
+      }
+    ),
+    TE.fold(
+      (err) => {
+        mixpanel.track(NPG_SVR_ERR.value, {
+          EVENT_ID: NPG_SVR_ERR.value,
+        });
+        return TE.left(err);
+      },
+      (myResExt) => async () =>
+        pipe(
+          myResExt,
+          E.fold(
+            () => {
+              mixpanel.track(NPG_RESP_ERROR.value, {
+                EVENT_ID: NPG_RESP_ERROR.value,
+              });
+              return {};
+            },
+            (myRes) => {
+              if (myRes.status === 200) {
+                mixpanel.track(NPG_SUCCESS.value, {
+                  EVENT_ID: NPG_SUCCESS.value,
+                });
+                pipe(
+                  myRes.value.paymentMethodData.form,
+                  validateSessionWalletCardFormFields,
+                  // eslint-disable-next-line no-console
+                  O.match(console.error, () =>
+                    sessionStorage.setItem("npg", JSON.stringify(myRes.value))
+                  )
+                );
+                return myRes;
+              } else {
+                mixpanel.track(NPG_RESP_ERROR.value, {
+                  EVENT_ID: NPG_RESP_ERROR.value,
+                });
+                return {};
+              }
+            }
+          )
+        )
+    )
+  )();

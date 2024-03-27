@@ -62,13 +62,19 @@ const callRecaptcha = async (recaptchaInstance: ReCAPTCHA, reset = false) => {
   );
 };
 
+const form: CreateSessionResponse = JSON.parse(
+  sessionStorage.getItem("npg") || ""
+);
+
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export default function IframeCardForm(props: Props) {
+  // eslint-disable-next-line no-console
+  console.log("form", form);
   const { onCancel, hideCancel } = props;
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState("");
-  const [form, setForm] = React.useState<CreateSessionResponse>();
+  // const [form, setForm] = React.useState<CreateSessionResponse>();
   const [activeField, setActiveField] = React.useState<FieldId | undefined>(
     undefined
   );
@@ -126,58 +132,48 @@ export default function IframeCardForm(props: Props) {
   };
 
   React.useEffect(() => {
-    if (!form) {
-      const onResponse = (body: CreateSessionResponse) => {
-        setSessionItem(SessionItems.orderId, body.orderId);
-        setSessionItem(SessionItems.correlationId, body.correlationId);
-        setForm(body);
-        const onReadyForPayment = () => {
-          if (ref.current) {
-            void recaptchaTransaction({
-              recaptchaRef: ref.current,
-              onSuccess: retrievePaymentSession,
-              onError,
-            });
-          }
-        };
+    setSessionItem(SessionItems.orderId, form.orderId);
+    setSessionItem(SessionItems.correlationId, form.correlationId);
+    const onReadyForPayment = () => {
+      if (ref.current) {
+        void recaptchaTransaction({
+          recaptchaRef: ref.current,
+          onSuccess: retrievePaymentSession,
+          onError,
+        });
+      }
+    };
 
-        const onPaymentComplete = () => {
-          clearNavigationEvents();
-          window.location.replace(`/${CheckoutRoutes.ESITO}`);
-        };
+    const onPaymentComplete = () => {
+      clearNavigationEvents();
+      window.location.replace(`/${CheckoutRoutes.ESITO}`);
+    };
 
-        const onPaymentRedirect = (urlredirect: string) => {
-          clearNavigationEvents();
-          window.location.replace(urlredirect);
-        };
+    const onPaymentRedirect = (urlredirect: string) => {
+      clearNavigationEvents();
+      window.location.replace(urlredirect);
+    };
 
-        const onBuildError = () => {
-          setLoading(false);
-          window.location.replace(`/${CheckoutRoutes.ERRORE}`);
-        };
+    const onBuildError = () => {
+      setLoading(false);
+      window.location.replace(`/${CheckoutRoutes.ERRORE}`);
+    };
 
-        try {
-          const newBuild = new Build(
-            createBuildConfig({
-              onChange,
-              onReadyForPayment,
-              onPaymentComplete,
-              onPaymentRedirect,
-              onBuildError,
-            })
-          );
-          setBuildInstance(newBuild);
-        } catch {
-          onBuildError();
-        }
-      };
-
-      void (async () => {
-        const token = ref.current ? await callRecaptcha(ref.current) : "";
-        void npgSessionsFields(onError, onResponse, token);
-      })();
+    try {
+      const newBuild = new Build(
+        createBuildConfig({
+          onChange,
+          onReadyForPayment,
+          onPaymentComplete,
+          onPaymentRedirect,
+          onBuildError,
+        })
+      );
+      setBuildInstance(newBuild);
+    } catch {
+      onBuildError();
     }
-  }, [form?.orderId]);
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     try {
