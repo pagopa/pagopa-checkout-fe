@@ -63,7 +63,7 @@ const callRecaptcha = async (recaptchaInstance: ReCAPTCHA, reset = false) => {
 };
 */
 const form: CreateSessionResponse = JSON.parse(
-  sessionStorage.getItem("npg") || ""
+  sessionStorage.getItem("npg") || "{}"
 );
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
