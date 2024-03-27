@@ -13,7 +13,7 @@ import { useAppDispatch } from "../../../../redux/hooks/hooks";
 import { CheckoutRoutes } from "../../../../routes/models/routeModel";
 import {
   getFees,
-  npgSessionsFields,
+  // npgSessionsFields,
   recaptchaTransaction,
   retrieveCardData,
 } from "../../../../utils/api/helper";
@@ -49,7 +49,7 @@ const initialFieldsState: FormStatus = Object.values(
   (acc, idField) => ({ ...acc, [idField]: initialFieldStatus }),
   {} as FormStatus
 );
-
+/*
 const callRecaptcha = async (recaptchaInstance: ReCAPTCHA, reset = false) => {
   if (reset) {
     void recaptchaInstance.reset();
@@ -61,7 +61,7 @@ const callRecaptcha = async (recaptchaInstance: ReCAPTCHA, reset = false) => {
     O.getOrElse(() => "")
   );
 };
-
+*/
 const form: CreateSessionResponse = JSON.parse(
   sessionStorage.getItem("npg") || ""
 );
