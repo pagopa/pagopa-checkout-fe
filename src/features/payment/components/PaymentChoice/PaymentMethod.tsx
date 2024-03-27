@@ -8,12 +8,8 @@ import {
 } from "@mui/material";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
-import CreditCardIcon from "@mui/icons-material/CreditCard";
 import ClickableFieldContainer from "../../../../components/TextFormField/ClickableFieldContainer";
-import {
-  PaymentCodeTypeEnum,
-  PaymentInstrumentsType,
-} from "../../models/paymentModel";
+import { PaymentInstrumentsType } from "../../models/paymentModel";
 import { PaymentMethodStatusEnum } from "../../../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
 import { ImageComponent } from "./PaymentMethodImage";
 
@@ -79,31 +75,19 @@ const MethodComponent = ({
   method: PaymentInstrumentsType;
   onClick?: () => void;
   testable?: boolean;
-}) => {
-  const iconOrNot =
-    method.paymentTypeCode === PaymentCodeTypeEnum.CP ? (
-      <CreditCardIcon color="primary" fontSize="small" />
-    ) : (
-      <ImageComponent {...method} />
-    );
-
-  return (
-    <ClickableFieldContainer
-      dataTestId={testable ? method.paymentTypeCode : undefined}
-      dataTestLabel={testable ? "payment-method" : undefined}
-      title={method.description}
-      onClick={onClick}
-      icon={iconOrNot}
-      endAdornment={
-        method.status === PaymentMethodStatusEnum.ENABLED && (
-          <ArrowForwardIosIcon
-            sx={{ color: "primary.main" }}
-            fontSize="small"
-          />
-        )
-      }
-      disabled={method.status === PaymentMethodStatusEnum.DISABLED}
-      clickable={method.status === PaymentMethodStatusEnum.ENABLED}
-    />
-  );
-};
+}) => (
+  <ClickableFieldContainer
+    dataTestId={testable ? method.paymentTypeCode : undefined}
+    dataTestLabel={testable ? "payment-method" : undefined}
+    title={method.description}
+    onClick={onClick}
+    icon={<ImageComponent {...method} />}
+    endAdornment={
+      method.status === PaymentMethodStatusEnum.ENABLED && (
+        <ArrowForwardIosIcon sx={{ color: "primary.main" }} fontSize="small" />
+      )
+    }
+    disabled={method.status === PaymentMethodStatusEnum.DISABLED}
+    clickable={method.status === PaymentMethodStatusEnum.ENABLED}
+  />
+);
