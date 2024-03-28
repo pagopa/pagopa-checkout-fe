@@ -5,11 +5,10 @@ import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { CreateSessionResponse } from "../../../../../generated/definitions/payment-ecommerce/CreateSessionResponse";
 import { SessionPaymentMethodResponse } from "../../../../../generated/definitions/payment-ecommerce/SessionPaymentMethodResponse";
 import { FormButtons } from "../../../../components/FormButtons/FormButtons";
 import ErrorModal from "../../../../components/modals/ErrorModal";
-import { useAppDispatch } from "../../../../redux/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "../../../../redux/hooks/hooks";
 import { CheckoutRoutes } from "../../../../routes/models/routeModel";
 import {
   getFees,
@@ -26,6 +25,7 @@ import {
   setSessionItem,
 } from "../../../../utils/storage/sessionStorage";
 import { setThreshold } from "../../../../redux/slices/threshold";
+import { selectFormData } from "../../../../redux/slices/formData";
 import { IframeCardField } from "./IframeCardField";
 import type { FieldId, FieldStatus, FormStatus } from "./types";
 import { IdFields } from "./types";
@@ -65,11 +65,7 @@ const callRecaptcha = async (recaptchaInstance: ReCAPTCHA, reset = false) => {
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export default function IframeCardForm(props: Props) {
-  const form: CreateSessionResponse = JSON.parse(
-    sessionStorage.getItem("npg") || "{}"
-  );
-  // eslint-disable-next-line no-console
-  console.log("form", form);
+  const form = useAppSelector(selectFormData);
   const { onCancel, hideCancel } = props;
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
@@ -132,9 +128,10 @@ export default function IframeCardForm(props: Props) {
   };
 
   React.useEffect(() => {
-    if (form && form.orderId) {
-      setSessionItem(SessionItems.orderId, form.orderId);
-      setSessionItem(SessionItems.correlationId, form.correlationId);
+    if (form.data?.orderId) {
+      const { orderId, correlationId } = form.data;
+      setSessionItem(SessionItems.orderId, orderId);
+      setSessionItem(SessionItems.correlationId, correlationId);
       const onReadyForPayment = () => {
         if (ref.current) {
           void recaptchaTransaction({
@@ -175,7 +172,7 @@ export default function IframeCardForm(props: Props) {
         onBuildError();
       }
     }
-  }, [form?.orderId]);
+  }, [form.data?.orderId]);
 
   const handleSubmit = (e: React.FormEvent) => {
     try {
@@ -197,7 +194,7 @@ export default function IframeCardForm(props: Props) {
           <Box>
             <IframeCardField
               label={t("inputCardPage.formFields.number")}
-              fields={form?.paymentMethodData?.form}
+              fields={form.data?.paymentMethodData?.form}
               id={"CARD_NUMBER"}
               errorCode={formStatus.CARD_NUMBER?.errorCode}
               errorMessage={formStatus.CARD_NUMBER?.errorMessage}
@@ -213,7 +210,7 @@ export default function IframeCardForm(props: Props) {
             <Box sx={{ flex: "1 1 0" }}>
               <IframeCardField
                 label={t("inputCardPage.formFields.expirationDate")}
-                fields={form?.paymentMethodData?.form}
+                fields={form.data?.paymentMethodData?.form}
                 id={"EXPIRATION_DATE"}
                 errorCode={formStatus.EXPIRATION_DATE?.errorCode}
                 errorMessage={formStatus.EXPIRATION_DATE?.errorMessage}
@@ -224,7 +221,7 @@ export default function IframeCardForm(props: Props) {
             <Box width="50%">
               <IframeCardField
                 label={t("inputCardPage.formFields.cvv")}
-                fields={form?.paymentMethodData?.form}
+                fields={form.data?.paymentMethodData?.form}
                 id={"SECURITY_CODE"}
                 errorCode={formStatus.SECURITY_CODE?.errorCode}
                 errorMessage={formStatus.SECURITY_CODE?.errorMessage}
@@ -236,7 +233,7 @@ export default function IframeCardForm(props: Props) {
           <Box>
             <IframeCardField
               label={t("inputCardPage.formFields.name")}
-              fields={form?.paymentMethodData?.form}
+              fields={form.data?.paymentMethodData?.form}
               id={"CARDHOLDER_NAME"}
               errorCode={formStatus.CARDHOLDER_NAME?.errorCode}
               errorMessage={formStatus.CARDHOLDER_NAME?.errorMessage}

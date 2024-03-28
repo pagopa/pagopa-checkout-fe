@@ -7,6 +7,7 @@ import * as TE from "fp-ts/TaskEither";
 import { flow, pipe } from "fp-ts/function";
 import { toError } from "fp-ts/lib/Either";
 import ReCAPTCHA from "react-google-recaptcha";
+import { setFormData } from "../../redux/slices/formData";
 import { AmountEuroCents } from "../../../generated/definitions/payment-ecommerce/AmountEuroCents";
 import { Bundle } from "../../../generated/definitions/payment-ecommerce/Bundle";
 import { CreateSessionResponse } from "../../../generated/definitions/payment-ecommerce/CreateSessionResponse";
@@ -81,6 +82,7 @@ import {
   setSessionItem,
 } from "../storage/sessionStorage";
 import { CalculateFeeResponse } from "../../../generated/definitions/payment-ecommerce/CalculateFeeResponse";
+import store from "../../redux/store";
 import {
   apiPaymentEcommerceClient,
   apiPaymentEcommerceClientV2,
@@ -1145,15 +1147,14 @@ export const getNpgSessionsFields = async (id: string) =>
                 mixpanel.track(NPG_SUCCESS.value, {
                   EVENT_ID: NPG_SUCCESS.value,
                 });
-                pipe(
-                  myRes.value.paymentMethodData.form,
-                  validateSessionWalletCardFormFields,
-                  // eslint-disable-next-line no-console
-                  O.match(console.error, () =>
-                    sessionStorage.setItem("npg", JSON.stringify(myRes.value))
+                pipe(myRes.value, (value) =>
+                  store.dispatch(
+                    setFormData({
+                      formData: value,
+                    })
                   )
                 );
-                return myRes;
+                return myRes.value;
               } else {
                 mixpanel.track(NPG_RESP_ERROR.value, {
                   EVENT_ID: NPG_RESP_ERROR.value,
