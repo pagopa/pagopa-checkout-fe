@@ -26,6 +26,7 @@ import {
 } from "../../models/paymentModel";
 import { setThreshold } from "../../../../redux/slices/threshold";
 import { CheckoutRoutes } from "../../../../routes/models/routeModel";
+import { resetFormData } from "../../../../redux/slices/formData";
 import { DisabledPaymentMethods, MethodComponentList } from "./PaymentMethod";
 import { getNormalizedMethods } from "./utils";
 
@@ -120,6 +121,7 @@ export function PaymentChoice(props: {
   useEffect(() => {
     const id = paymentMethods.enabled.find(({ name }) => name === "Carte")?.id;
     if (id) {
+      dispatch(resetFormData());
       void getNpgSessionsFields(id);
     }
   }, [paymentMethods.enabled.length]);
