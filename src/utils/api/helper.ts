@@ -1104,16 +1104,20 @@ export const recaptchaTransaction = async ({
   });
 };
 
-export const getNpgSessionsFields = async (id: string) =>
+export const getNpgSessionsFields = async (
+  id: string,
+  recaptchaRef: ReCAPTCHA
+) =>
   await pipe(
     TE.tryCatch(
-      () => {
+      async () => {
+        const recaptchaResponse = await callRecaptcha(recaptchaRef, true);
         mixpanel.track(NPG_INIT.value, {
           EVENT_ID: NPG_INIT.value,
         });
         return apiPaymentEcommerceClientWithRetry.createSession({
           id,
-          recaptchaResponse: "test",
+          recaptchaResponse,
         });
       },
       () => {

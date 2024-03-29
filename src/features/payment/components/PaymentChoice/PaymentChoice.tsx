@@ -119,10 +119,14 @@ export function PaymentChoice(props: {
   );
 
   useEffect(() => {
-    const id = paymentMethods.enabled.find(({ name }) => name === "Carte")?.id;
-    if (id) {
+    const id = paymentMethods.enabled.find(
+      ({ paymentTypeCode }) => paymentTypeCode === PaymentCodeTypeEnum.CP
+    )?.id;
+    /* start Sessions call only if a Credit card payment it's possible */
+    if (id && ref.current) {
+      const recaptchaRef = ref.current;
       dispatch(resetFormData());
-      void getNpgSessionsFields(id);
+      void getNpgSessionsFields(id, recaptchaRef);
     }
   }, [paymentMethods.enabled.length]);
 
