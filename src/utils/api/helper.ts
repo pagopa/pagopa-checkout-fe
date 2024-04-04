@@ -649,6 +649,10 @@ export const proceedToPayment = async (
               (getSessionItem(SessionItems.orderId) as string | undefined) ||
               "",
           };
+        case "PPAY":
+          return {
+            detailType: "apm",
+          };
         default:
           return {
             detailType: "redirect",
