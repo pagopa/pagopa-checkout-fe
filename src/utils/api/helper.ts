@@ -629,6 +629,34 @@ export const proceedToPayment = async (
     O.getOrElseW(() => undefined)
   );
 
+  const details = pipe(
+    getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined,
+    O.fromNullable,
+    O.map((method) => method.paymentTypeCode),
+    O.getOrElse(() => {
+      // eslint-disable-next-line no-console
+      console.error(
+        "Missing expected `paymentMethod.paymentTypeCode` in session storage!"
+      );
+      return "";
+    }),
+    (paymentTypeCode) => {
+      switch (paymentTypeCode) {
+        case "CP":
+          return {
+            detailType: "cards",
+            orderId:
+              (getSessionItem(SessionItems.orderId) as string | undefined) ||
+              "",
+          };
+        default:
+          return {
+            detailType: "redirect",
+          };
+      }
+    }
+  );
+
   const authParam = {
     amount: transaction.payments
       .map((p) => p.amount)
@@ -643,18 +671,7 @@ export const proceedToPayment = async (
       (getSessionItem(SessionItems.pspSelected) as Bundle | undefined)?.idPsp ||
       "",
     isAllCCP,
-    details:
-      (getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined)
-        ?.paymentTypeCode === "CP"
-        ? {
-            detailType: "cards",
-            orderId:
-              (getSessionItem(SessionItems.orderId) as string | undefined) ||
-              "",
-          }
-        : {
-            detailType: "redirect",
-          },
+    details,
     language: LanguageEnum.IT,
   };
 
