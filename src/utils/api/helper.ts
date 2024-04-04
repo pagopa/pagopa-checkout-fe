@@ -649,7 +649,7 @@ export const proceedToPayment = async (
               (getSessionItem(SessionItems.orderId) as string | undefined) ||
               "",
           };
-        case "PPAY":
+        case "PPAL":
           return {
             detailType: "apm",
           };
