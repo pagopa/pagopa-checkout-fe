@@ -76,6 +76,10 @@ parameters:
     type: number
     default: 12000
 
+  - name: 'checkout_version'
+    type: string
+    default: ''
+
 steps:
 - bash: |
     chmod +x env.sh
@@ -99,6 +103,7 @@ steps:
       CHECKOUT_SURVEY_SHOW=${{ parameters.survey_show }} \
       CHECKOUT_NPG_SDK_URL=${{ parameters.checkout_npg_sdk_url }} \
       CHECKOUT_GDI_CHECK_TIMEOUT=${{ parameters.checkout_gdi_check_timeout }} \
+      CHECKOUT_VERSION=${{ parameters.checkout_version }} \
       bash env.sh
 
   displayName: 'Populate environment file'
