@@ -78,7 +78,6 @@ parameters:
 
   - name: 'checkout_version'
     type: string
-    default: ''
 
 steps:
 - bash: |
