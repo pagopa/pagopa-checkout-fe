@@ -649,6 +649,7 @@ export const proceedToPayment = async (
               (getSessionItem(SessionItems.orderId) as string | undefined) ||
               "",
           };
+        case "BPAY":
         case "PPAL":
           return {
             detailType: "apm",
