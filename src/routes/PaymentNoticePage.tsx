@@ -45,14 +45,7 @@ export default function PaymentNoticePage() {
     setLoading(false);
 
     setError(
-      pipe(
-        E.of(nodeFaultCode.faultCodeDetail),
-        E.map(
-          (_) =>
-            `${nodeFaultCode.faultCodeCategory}-${nodeFaultCode.faultCodeDetail}`
-        ),
-        E.getOrElse(() => nodeFaultCode.faultCodeCategory)
-      )
+      `${nodeFaultCode.faultCodeCategory}-${nodeFaultCode.faultCodeDetail}`
     );
     setErrorModalOpen(true);
     ref.current?.reset();
