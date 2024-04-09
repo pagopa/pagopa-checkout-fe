@@ -17,12 +17,9 @@ import {
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { ErrorsType } from "../../utils/errors/checkErrorsModel";
-import {
-  PaymentCategoryResponses,
-  PaymentFaultCategory,
-  PaymentResponses,
-} from "../../utils/errors/errorsModel";
+import { PaymentCategoryResponses } from "../../utils/errors/errorsModel";
 import { ErrorButtons } from "../FormButtons/ErrorButtons";
+import { FaultCategoryEnum } from "../../../generated/definitions/payment-ecommerce/FaultCategory";
 
 function ErrorModal(props: {
   error: string;
@@ -38,48 +35,39 @@ function ErrorModal(props: {
   const theme = useTheme();
   const [copy, setCopy] = React.useState(t("clipboard.copy"));
 
-  const isCustom = (error: string) =>
-    PaymentResponses[error]?.category === PaymentFaultCategory.CUSTOM;
-  const notListed = (error: string) => PaymentResponses[error] === undefined;
-  const hasDetail = (error: string) =>
-    !!PaymentCategoryResponses[PaymentResponses[error]?.category]?.detail;
+  const notListed = (faultCategory: string) =>
+    PaymentCategoryResponses[
+      faultCategory as keyof typeof FaultCategoryEnum
+    ] === undefined;
+  const hasDetail = (faultCategory: string) =>
+    !!PaymentCategoryResponses[faultCategory as keyof typeof FaultCategoryEnum]
+      ?.detail;
   const showDetail = (text: string) => text === "ErrorCodeDescription";
 
-  const getErrorTitle = () => {
-    if (isCustom(props.error)) {
-      return PaymentResponses[props.error]?.title;
-    }
-    if (notListed(props.error)) {
-      return PaymentCategoryResponses[PaymentFaultCategory.NOTLISTED]?.title;
-    }
-    return PaymentCategoryResponses[PaymentResponses[props.error]?.category]
-      ?.title;
-  };
+  // error for Node verify & activation
+  const nodeFaultCode: Array<string> = props.error.split("-");
+  const nodeFaultCodeCategory =
+    nodeFaultCode[0] as keyof typeof FaultCategoryEnum;
+  const nodeFaultCodeDetails =
+    nodeFaultCode.length === 2 ? nodeFaultCode[1] : "";
+
+  const getErrorTitle = () =>
+    PaymentCategoryResponses[nodeFaultCodeCategory]?.title;
   const getErrorBody = () => {
-    if (isCustom(props.error)) {
-      return PaymentResponses[props.error]?.body;
+    if (notListed(nodeFaultCodeCategory)) {
+      return PaymentCategoryResponses[FaultCategoryEnum.GENERIC_ERROR]?.body;
     }
-    if (notListed(props.error)) {
-      return PaymentCategoryResponses[PaymentFaultCategory.NOTLISTED]?.body;
-    }
-    if (hasDetail(props.error)) {
+    if (hasDetail(nodeFaultCodeCategory)) {
       return "ErrorCodeDescription";
     }
-    return PaymentCategoryResponses[PaymentResponses[props.error]?.category]
-      ?.body;
+    return PaymentCategoryResponses[nodeFaultCodeCategory]?.body;
   };
 
   const getErrorButtons = () => {
-    if (isCustom(props.error)) {
-      return PaymentResponses[props.error]?.buttons
-        ? PaymentResponses[props.error]?.buttons
-        : PaymentCategoryResponses[PaymentFaultCategory.CUSTOM]?.buttons;
-    }
     if (notListed(props.error)) {
-      return PaymentCategoryResponses[PaymentFaultCategory.NOTLISTED]?.buttons;
+      return PaymentCategoryResponses[FaultCategoryEnum.GENERIC_ERROR]?.buttons;
     }
-    return PaymentCategoryResponses[PaymentResponses[props.error]?.category]
-      ?.buttons;
+    return PaymentCategoryResponses[nodeFaultCodeCategory]?.buttons;
   };
 
   const title = getErrorTitle() || "GenericError.title";
@@ -142,7 +130,7 @@ function ErrorModal(props: {
                 <Button
                   variant="text"
                   onClick={() => {
-                    void navigator.clipboard.writeText(props.error);
+                    void navigator.clipboard.writeText(nodeFaultCodeDetails);
                     setCopy(t("clipboard.copied"));
                   }}
                   onMouseLeave={() => setCopy(t("clipboard.copy"))}
@@ -163,7 +151,7 @@ function ErrorModal(props: {
                 mb: 0,
               }}
             >
-              {props.error}
+              {nodeFaultCodeDetails}
             </AlertTitle>
           </Alert>
         )}

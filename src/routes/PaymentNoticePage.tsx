@@ -1,5 +1,6 @@
 import { Box, Button } from "@mui/material";
 import { pipe } from "fp-ts/function";
+import * as E from "fp-ts/Either";
 import * as TE from "fp-ts/TaskEither";
 import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
@@ -14,7 +15,10 @@ import PageContainer from "../components/PageContent/PageContainer";
 import { PaymentNoticeForm } from "../features/payment/components/PaymentNoticeForm/PaymentNoticeForm";
 import { PaymentFormFields } from "../features/payment/models/paymentModel";
 import { useSmallDevice } from "../hooks/useSmallDevice";
-import { getEcommercePaymentInfoTask } from "../utils/api/helper";
+import {
+  NodeFaultCode,
+  getEcommercePaymentInfoTask,
+} from "../utils/api/helper";
 import {
   getReCaptchaKey,
   getSessionItem,
@@ -37,9 +41,19 @@ export default function PaymentNoticePage() {
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
 
-  const onError = (m: string) => {
+  const onError = (nodeFaultCode: NodeFaultCode) => {
     setLoading(false);
-    setError(m);
+
+    setError(
+      pipe(
+        E.of(nodeFaultCode.faultCodeDetail),
+        E.map(
+          (_) =>
+            `${nodeFaultCode.faultCodeCategory}-${nodeFaultCode.faultCodeDetail}`
+        ),
+        E.getOrElse(() => nodeFaultCode.faultCodeCategory)
+      )
+    );
     setErrorModalOpen(true);
     ref.current?.reset();
   };
