@@ -95,6 +95,7 @@ stages:
               survey_show: 0
               checkout_npg_sdk_url: 'https://stg-ta.nexigroup.com/monetaweb/resources/hfsdk.js'
               checkout_gdi_check_timeout: 60000
+              checkout_version: "$(Build.SourceBranchName):$(Build.SourceVersion)"
 
           - script: |
               yarn build
@@ -221,6 +222,7 @@ stages:
               pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi/'
               survey_show: 0
               checkout_npg_sdk_url: 'https://stg-ta.nexigroup.com/monetaweb/resources/hfsdk.js'
+              checkout_version: "$(Build.SourceBranchName):$(Build.SourceVersion)"
 
           - script: |
               yarn build
@@ -321,6 +323,7 @@ stages:
               pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi/'
               survey_show: 0
               checkout_npg_sdk_url: 'https://xpay.nexigroup.com/monetaweb/resources/hfsdk.js'
+              checkout_version: "$(Build.SourceBranchName):$(Build.SourceVersion)"
 
           - script: |
               yarn build
