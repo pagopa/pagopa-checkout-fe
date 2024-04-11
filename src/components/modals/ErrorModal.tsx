@@ -64,7 +64,7 @@ function ErrorModal(props: {
   };
 
   const getErrorButtons = () => {
-    if (notListed(props.error)) {
+    if (notListed(nodeFaultCodeCategory)) {
       return PaymentCategoryResponses[FaultCategoryEnum.GENERIC_ERROR]?.buttons;
     }
     return PaymentCategoryResponses[nodeFaultCodeCategory]?.buttons;

@@ -1,6 +1,5 @@
 import { Box, Button } from "@mui/material";
 import { pipe } from "fp-ts/function";
-import * as E from "fp-ts/Either";
 import * as TE from "fp-ts/TaskEither";
 import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
@@ -15,10 +14,7 @@ import PageContainer from "../components/PageContent/PageContainer";
 import { PaymentNoticeForm } from "../features/payment/components/PaymentNoticeForm/PaymentNoticeForm";
 import { PaymentFormFields } from "../features/payment/models/paymentModel";
 import { useSmallDevice } from "../hooks/useSmallDevice";
-import {
-  NodeFaultCode,
-  getEcommercePaymentInfoTask,
-} from "../utils/api/helper";
+import { getEcommercePaymentInfoTask } from "../utils/api/helper";
 import {
   getReCaptchaKey,
   getSessionItem,
@@ -41,12 +37,10 @@ export default function PaymentNoticePage() {
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
 
-  const onError = (nodeFaultCode: NodeFaultCode) => {
+  const onError = (error: string) => {
     setLoading(false);
 
-    setError(
-      `${nodeFaultCode.faultCodeCategory}-${nodeFaultCode.faultCodeDetail}`
-    );
+    setError(error);
     setErrorModalOpen(true);
     ref.current?.reset();
   };
@@ -59,7 +53,9 @@ export default function PaymentNoticePage() {
 
       await pipe(
         getEcommercePaymentInfoTask(rptId, token || ""),
-        TE.mapLeft((err) => onError(err)),
+        TE.mapLeft((err) =>
+          onError(`${err.faultCodeCategory}-${err.faultCodeDetail}`)
+        ),
         TE.map((paymentInfo) => {
           setSessionItem(SessionItems.paymentInfo, paymentInfo);
           setSessionItem(SessionItems.noticeInfo, notice);

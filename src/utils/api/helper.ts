@@ -214,8 +214,8 @@ export const activatePayment = async ({
             cartInfo
           ),
           TE.fold(
-            (e: string) => async () => {
-              onErrorActivate(e);
+            (e: NodeFaultCode) => async () => {
+              onErrorActivate(`${e.faultCodeCategory}-${e.faultCodeDetail}`);
             },
             (res) => async () => {
               setSessionItem(SessionItems.transaction, res);
@@ -235,7 +235,7 @@ export const activePaymentTask = (
   orderId: string,
   correlationId: string,
   cart?: Cart
-): TE.TaskEither<string, NewTransactionResponse> =>
+): TE.TaskEither<NodeFaultCode, NewTransactionResponse> =>
   pipe(
     TE.tryCatch(
       () => {
@@ -261,17 +261,18 @@ export const activePaymentTask = (
       }
     ),
     TE.fold(
-      (err) => {
+      () => {
         mixpanel.track(PAYMENT_ACTIVATE_SVR_ERR.value, {
           EVENT_ID: PAYMENT_ACTIVATE_SVR_ERR.value,
         });
-        return TE.left(err);
+        return TE.left({ faultCodeCategory: FaultCategoryEnum.GENERIC_ERROR });
       },
       (errorOrResponse) =>
         pipe(
           errorOrResponse,
           E.fold(
-            () => TE.left("Errore attivazione pagamento"),
+            () =>
+              TE.left({ faultCodeCategory: FaultCategoryEnum.GENERIC_ERROR }),
             (responseType) => {
               let reason;
               if (responseType.status === 200) {
@@ -318,20 +319,15 @@ export const activePaymentTask = (
               mixpanel.track(EVENT_ID, { EVENT_ID, reason });
 
               if (responseType.status === 400) {
-                return TE.left(
-                  pipe(
-                    O.fromNullable(responseType.value?.title),
-                    O.getOrElse(() => ErrorsType.STATUS_ERROR as string)
-                  )
-                );
+                return TE.left({
+                  faultCodeCategory: FaultCategoryEnum.GENERIC_ERROR as string,
+                });
               }
               return responseType.status !== 200
-                ? TE.left(
-                    pipe(
-                      O.fromNullable(responseType.value?.faultCodeDetail),
-                      O.getOrElse(() => ErrorsType.STATUS_ERROR as string)
-                    )
-                  )
+                ? TE.left({
+                    faultCodeCategory: responseType.value.faultCodeCategory,
+                    faultCodeDetail: responseType.value.faultCodeDetail,
+                  })
                 : TE.of(responseType.value);
             }
           )
