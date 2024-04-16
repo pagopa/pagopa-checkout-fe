@@ -72,7 +72,7 @@ export default function PaymentChoicePage() {
   }, []);
 
   const handleBackNavigate = React.useCallback(
-    () => navigate(`/${CheckoutRoutes.INSERISCI_EMAIL}`),
+    () => navigate(-1),
     []
   );
 
