@@ -59,6 +59,7 @@ stages:
             api_payment_activations_basepath: '/checkout/payments/v1'
             pm_host: 'https://acardste.vaservices.eu'
             pm_api_basepath: '/pp-restapi/v4'
+            checkout_version: "$(Build.SourceBranchName):$(Build.SourceVersion)"
 
         - script: |
             yarn build
