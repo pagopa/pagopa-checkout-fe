@@ -150,18 +150,13 @@ export default function PaymentCheckPage() {
     }
   }, [threshold]);
 
-  React.useEffect(() => {
-    const onRedirect = () => setPayLoading(false);
-    window.addEventListener("beforeunload", onRedirect);
-    return () => window.removeEventListener("beforeunload", onRedirect);
-  });
-
   const onResponse = (authorizationUrl: string) => {
     try {
       window.removeEventListener("beforeunload", onBrowserUnload);
       const url = new URL(authorizationUrl);
       if (url.origin === window.location.origin) {
         navigate(`${url.pathname}${url.hash}`);
+        setPayLoading(false);
       } else {
         window.location.replace(url);
       }
