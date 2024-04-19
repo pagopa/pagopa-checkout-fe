@@ -728,7 +728,7 @@ export const proceedToPayment = async (
     })
   );
 
-  void pipe(
+  await pipe(
     authParam,
     O.map((p) =>
       pipe(

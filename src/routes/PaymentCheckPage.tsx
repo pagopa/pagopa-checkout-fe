@@ -152,11 +152,11 @@ export default function PaymentCheckPage() {
 
   const onResponse = (authorizationUrl: string) => {
     try {
-      setPayLoading(false);
       window.removeEventListener("beforeunload", onBrowserUnload);
       const url = new URL(authorizationUrl);
       if (url.origin === window.location.origin) {
         navigate(`${url.pathname}${url.hash}`);
+        setPayLoading(false);
       } else {
         window.location.replace(url);
       }
@@ -165,10 +165,10 @@ export default function PaymentCheckPage() {
     }
   };
 
-  const onSubmit = React.useCallback(() => {
+  const onSubmit = React.useCallback(async () => {
     setPayLoading(true);
     if (transaction) {
-      void proceedToPayment(transaction, onError, onResponse);
+      await proceedToPayment(transaction, onError, onResponse);
     } else {
       onError(ErrorsType.GENERIC_ERROR);
     }
