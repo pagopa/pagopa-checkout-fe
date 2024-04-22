@@ -6,8 +6,6 @@ import { Box, Button, Typography, useTheme } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
-import CheckoutLoader from "components/PageContent/CheckoutLoader";
-import ErrorModal from "components/modals/ErrorModal";
 import { FormButtons } from "../components/FormButtons/FormButtons";
 import InformationModal from "../components/modals/InformationModal";
 import PageContainer from "../components/PageContent/PageContainer";
@@ -30,10 +28,7 @@ export default function PaymentSummaryPage() {
   const noticeInfo = getSessionItem(SessionItems.noticeInfo) as
     | PaymentFormFields
     | undefined;
-  const [loading, setLoading] = React.useState(false);
   const [modalOpen, setModalOpen] = React.useState(false);
-  const [errorModalOpen, setErrorModalOpen] = React.useState(false);
-  const [error, setError] = React.useState("");
 
   const iconStyle = { ml: 3, color: theme.palette.text.secondary };
 
@@ -49,111 +44,87 @@ export default function PaymentSummaryPage() {
   };
   const handleClose = () => setModalOpen(false);
 
-  const onError = React.useCallback((m: string) => {
-    setLoading(false);
-    setError(m);
-    setErrorModalOpen(true);
-  }, []);
-
-  const handleCloseErrorModal = React.useCallback(
-    () => setErrorModalOpen(false),
-    []
-  );
-
-  const handleRetry = React.useCallback(onSubmit, []);
-
   return (
-    <>
-      {loading && <CheckoutLoader />}
-      <PageContainer title="paymentSummaryPage.title" childrenSx={{ pt: 2 }}>
-        {!!paymentInfo?.paName && (
-          <FieldContainer
-            title="paymentSummaryPage.creditor"
-            body={paymentInfo.paName}
-            icon={<AccountBalanceIcon sx={iconStyle} />}
-          />
-        )}
-        {!!paymentInfo?.description && (
-          <FieldContainer
-            title="paymentSummaryPage.causal"
-            body={paymentInfo.description}
-            icon={<ReceiptLongIcon sx={iconStyle} />}
-          />
-        )}
+    <PageContainer title="paymentSummaryPage.title" childrenSx={{ pt: 2 }}>
+      {!!paymentInfo?.paName && (
         <FieldContainer
-          title="paymentSummaryPage.amount"
-          body={paymentInfo && moneyFormat(paymentInfo.amount)}
-          icon={<EuroIcon sx={iconStyle} />}
-          endAdornment={
-            <InfoOutlinedIcon
-              color="primary"
-              sx={{ mr: 2, cursor: "pointer" }}
-              onClick={handleInfoClick}
-              onKeyDown={handleKeyDown}
-              aria-label={t("ariaLabels.informationDialog")}
-              role="dialog"
-              tabIndex={0}
-            />
-          }
+          title="paymentSummaryPage.creditor"
+          body={paymentInfo.paName}
+          icon={<AccountBalanceIcon sx={iconStyle} />}
         />
-        {!!noticeInfo?.billCode && (
-          <FieldContainer
-            title="paymentSummaryPage.billCode"
-            body={noticeInfo.billCode}
-            flexDirection="row"
-            overflowWrapBody={false}
-            sx={{ px: 2 }}
+      )}
+      {!!paymentInfo?.description && (
+        <FieldContainer
+          title="paymentSummaryPage.causal"
+          body={paymentInfo.description}
+          icon={<ReceiptLongIcon sx={iconStyle} />}
+        />
+      )}
+      <FieldContainer
+        title="paymentSummaryPage.amount"
+        body={paymentInfo && moneyFormat(paymentInfo.amount)}
+        icon={<EuroIcon sx={iconStyle} />}
+        endAdornment={
+          <InfoOutlinedIcon
+            color="primary"
+            sx={{ mr: 2, cursor: "pointer" }}
+            onClick={handleInfoClick}
+            onKeyDown={handleKeyDown}
+            aria-label={t("ariaLabels.informationDialog")}
+            role="dialog"
+            tabIndex={0}
           />
-        )}
-        {!!paymentInfo?.paFiscalCode && (
-          <FieldContainer
-            title="paymentSummaryPage.cf"
-            body={paymentInfo.paFiscalCode}
-            flexDirection="row"
-            overflowWrapBody={false}
-            sx={{ px: 2 }}
-          />
-        )}
+        }
+      />
+      {!!noticeInfo?.billCode && (
+        <FieldContainer
+          title="paymentSummaryPage.billCode"
+          body={noticeInfo.billCode}
+          flexDirection="row"
+          overflowWrapBody={false}
+          sx={{ px: 2 }}
+        />
+      )}
+      {!!paymentInfo?.paFiscalCode && (
+        <FieldContainer
+          title="paymentSummaryPage.cf"
+          body={paymentInfo.paFiscalCode}
+          flexDirection="row"
+          overflowWrapBody={false}
+          sx={{ px: 2 }}
+        />
+      )}
 
-        <FormButtons
-          submitTitle="paymentSummaryPage.buttons.submit"
-          cancelTitle="paymentSummaryPage.buttons.cancel"
-          idSubmit="paymentSummaryButtonPay"
-          disabledSubmit={false}
-          handleSubmit={onSubmit}
-          handleCancel={() => navigate(-1)}
-        />
-        <InformationModal
-          open={modalOpen}
-          onClose={handleClose}
-          maxWidth="sm"
-          hideIcon={true}
+      <FormButtons
+        submitTitle="paymentSummaryPage.buttons.submit"
+        cancelTitle="paymentSummaryPage.buttons.cancel"
+        idSubmit="paymentSummaryButtonPay"
+        disabledSubmit={false}
+        handleSubmit={onSubmit}
+        handleCancel={() => navigate(-1)}
+      />
+      <InformationModal
+        open={modalOpen}
+        onClose={handleClose}
+        maxWidth="sm"
+        hideIcon={true}
+      >
+        <Typography variant="h6" component={"div"} sx={{ pb: 2 }}>
+          {t("paymentSummaryPage.dialog.title")}
+        </Typography>
+        <Typography
+          variant="body1"
+          component={"div"}
+          sx={{ whiteSpace: "pre-line" }}
         >
-          <Typography variant="h6" component={"div"} sx={{ pb: 2 }}>
-            {t("paymentSummaryPage.dialog.title")}
-          </Typography>
-          <Typography
-            variant="body1"
-            component={"div"}
-            sx={{ whiteSpace: "pre-line" }}
-          >
-            {t("paymentSummaryPage.dialog.description")}
-          </Typography>
-          <Box display="flex" justifyContent="flex-end" sx={{ mt: 3 }}>
-            <Button variant="contained" onClick={handleClose}>
-              {t("paymentSummaryPage.buttons.ok")}
-            </Button>
-          </Box>
-        </InformationModal>
-        {!!error && (
-          <ErrorModal
-            error={error}
-            open={errorModalOpen}
-            onClose={handleCloseErrorModal}
-            onRetry={handleRetry}
-          />
-        )}
-      </PageContainer>
-    </>
+          {t("paymentSummaryPage.dialog.description")}
+        </Typography>
+        <Box display="flex" justifyContent="flex-end" sx={{ mt: 3 }}>
+          <Button variant="contained" onClick={handleClose}>
+            {t("paymentSummaryPage.buttons.ok")}
+          </Button>
+        </Box>
+      </InformationModal>
+    </PageContainer>
   );
 }
