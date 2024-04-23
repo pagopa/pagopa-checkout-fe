@@ -732,7 +732,7 @@ export const proceedToPayment = async (
     authParam,
     O.map((p) =>
       pipe(
-        requestAuth(p),
+        TE.tryCatch(requestAuth(p), (_e) => TE.left(_e)),
         TE.mapLeft((_e) => {
           onError(ErrorsType.GENERIC_ERROR);
           return ErrorsType.GENERIC_ERROR;
