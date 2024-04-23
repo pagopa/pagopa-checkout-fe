@@ -629,34 +629,77 @@ export const proceedToPayment = async (
     O.getOrElseW(() => undefined)
   );
 
-  const authParam = {
-    amount: transaction.payments
-      .map((p) => p.amount)
-      .reduce((sum, current) => Number(sum) + Number(current), 0),
-    fee:
-      (getSessionItem(SessionItems.pspSelected) as Bundle | undefined)
-        ?.taxPayerFee || 0,
-    paymentInstrumentId:
-      (getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined)
-        ?.paymentMethodId || "",
-    pspId:
-      (getSessionItem(SessionItems.pspSelected) as Bundle | undefined)?.idPsp ||
-      "",
-    isAllCCP,
-    details:
-      (getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined)
-        ?.paymentTypeCode === "CP"
-        ? {
+  const details = pipe(
+    getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined,
+    O.fromNullable,
+    O.map((method) => method.paymentTypeCode),
+    O.fold(
+      () => {
+        // eslint-disable-next-line no-console
+        console.error(
+          "Missing expected `paymentMethod.paymentTypeCode` in session storage!"
+        );
+
+        onError(ErrorsType.GENERIC_ERROR);
+        return O.none;
+      },
+      (x) => O.some(x)
+    ),
+    O.chain((paymentTypeCode) => {
+      switch (paymentTypeCode) {
+        case "CP":
+          return O.some({
             detailType: "cards",
             orderId:
               (getSessionItem(SessionItems.orderId) as string | undefined) ||
               "",
-          }
-        : {
+          });
+        case "MYBK":
+        case "BPAY":
+        case "PPAL":
+          return O.some({
+            detailType: "apm",
+          });
+        case "RBPR":
+        case "RBPB":
+        case "RBPP":
+        case "RPIC":
+        case "RBPS":
+          return O.some({
             detailType: "redirect",
-          },
-    language: LanguageEnum.IT,
-  };
+          });
+        default:
+          // eslint-disable-next-line no-console
+          console.error("Unhandled payment type code: " + paymentTypeCode);
+          onError(ErrorsType.GENERIC_ERROR);
+          return O.none;
+      }
+    })
+  );
+
+  const authParam = pipe(
+    details,
+    O.map((d) => ({
+      amount: transaction.payments
+        .map((p) => p.amount)
+        .reduce((sum, current) => Number(sum) + Number(current), 0),
+      fee:
+        (getSessionItem(SessionItems.pspSelected) as Bundle | undefined)
+          ?.taxPayerFee || 0,
+      paymentInstrumentId:
+        (
+          getSessionItem(SessionItems.paymentMethod) as
+            | PaymentMethod
+            | undefined
+        )?.paymentMethodId || "",
+      pspId:
+        (getSessionItem(SessionItems.pspSelected) as Bundle | undefined)
+          ?.idPsp || "",
+      isAllCCP,
+      details: d,
+      language: LanguageEnum.IT,
+    }))
+  );
 
   const requestAuth = flow(
     RequestAuthorizationRequest.decode,
@@ -685,9 +728,24 @@ export const proceedToPayment = async (
     })
   );
 
-  void TE.tryCatch(
-    () => requestAuth(authParam)(),
-    () => onError(ErrorsType.GENERIC_ERROR)
+  await pipe(
+    authParam,
+    O.map((p) =>
+      pipe(
+        requestAuth(p),
+        TE.mapLeft((_e) => {
+          onError(ErrorsType.GENERIC_ERROR);
+          return ErrorsType.GENERIC_ERROR;
+        })
+      )
+    ),
+    O.fold(
+      () => {
+        onError(ErrorsType.GENERIC_ERROR);
+        return TE.left(ErrorsType.GENERIC_ERROR);
+      },
+      (task) => task
+    )
   )();
 };
 
