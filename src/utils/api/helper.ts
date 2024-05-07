@@ -18,7 +18,6 @@ import {
   RequestAuthorizationRequest,
 } from "../../../generated/definitions/payment-ecommerce/RequestAuthorizationRequest";
 import { RptId } from "../../../generated/definitions/payment-ecommerce/RptId";
-import { TransferListItem } from "../../../generated/definitions/payment-ecommerce/TransferListItem";
 import { ValidationFaultPaymentProblemJson } from "../../../generated/definitions/payment-ecommerce/ValidationFaultPaymentProblemJson";
 import {
   Cart,
@@ -81,10 +80,12 @@ import {
   setSessionItem,
 } from "../storage/sessionStorage";
 import { CalculateFeeResponse } from "../../../generated/definitions/payment-ecommerce/CalculateFeeResponse";
+import { CalculateFeeRequest } from "../../../generated/definitions/payment-ecommerce-v2/CalculateFeeRequest";
 import {
   apiPaymentEcommerceClient,
   apiPaymentEcommerceClientV2,
   apiPaymentEcommerceClientWithRetry,
+  apiPaymentEcommerceClientWithRetryV2,
 } from "./client";
 
 export const getEcommercePaymentInfoTask = (
@@ -472,43 +473,23 @@ export const calculateFees = async ({
   onError: (e: string) => void;
   onResponsePsp: (r: any) => void;
 }) => {
-  const amount: number | undefined = pipe(
-    O.fromNullable(getSessionItem(SessionItems.cart) as Cart | undefined),
-    O.map((cart) =>
-      cart.paymentNotices.reduce(
-        (totalAmount, notice) => totalAmount + notice.amount,
-        0
-      )
-    ),
-    O.alt(() =>
-      pipe(
-        O.fromNullable(
-          getSessionItem(SessionItems.paymentInfo) as PaymentInfo | undefined
-        ),
-        O.map((paymentInfo) => paymentInfo.amount)
-      )
-    ),
-    O.getOrElseW(() => undefined)
-  );
-
-  const allCCP: O.Option<boolean> = pipe(
+  const calculateFeeRequest: O.Option<CalculateFeeRequest> = pipe(
     getSessionItem(SessionItems.transaction) as NewTransactionResponse,
     O.fromNullable,
-    O.map((transaction) => transaction.payments[0].isAllCCP)
-  );
-
-  const transferList: Array<TransferListItem> = pipe(
-    getSessionItem(SessionItems.transaction) as NewTransactionResponse,
-    O.fromNullable,
-    O.map((transaction) => transaction.payments[0].transferList), // TODO By now we can handle only single rptId notice, since GEC is not compliant with multiple rptIds notice (cart)
-    O.map((transferList) =>
-      transferList.map((transfer) => ({
-        creditorInstitution: transfer.paFiscalCode,
-        digitalStamp: transfer.digitalStamp,
-        transferCategory: transfer.transferCategory,
-      }))
-    ),
-    O.getOrElse(() => [] as Array<TransferListItem>)
+    O.map((transaction) => ({
+      bin,
+      touchpoint: "CHECKOUT",
+      paymentNotices: transaction.payments.map((payment) => ({
+        paymentAmount: payment.amount,
+        primaryCreditorInstitution: payment.rptId.substring(0, 11),
+        transferList: payment.transferList.map((transfer) => ({
+          creditorInstitution: transfer.paFiscalCode,
+          digitalStamp: transfer.digitalStamp,
+          transferCategory: transfer.transferCategory,
+        })),
+      })),
+      isAllCCP: transaction.payments[0].isAllCCP,
+    }))
   );
 
   const transactionId = pipe(
@@ -525,35 +506,25 @@ export const calculateFees = async ({
     O.getOrElse(() => "")
   );
 
-  const primaryCreditorInstitution =
-    transferList.at(0)?.creditorInstitution || ""; // TODO replace with primaryCreditorInstitution from transaction response when available (activate V2)
-
   mixpanel.track(PAYMENT_PSPLIST_INIT.value, {
     EVENT_ID: PAYMENT_PSPLIST_INIT.value,
   });
   const MAX_OCCURENCES_AFM = 2147483647;
   const bundleOption = await pipe(
-    allCCP,
+    calculateFeeRequest,
     TE.fromOption(() => {
       onError(ErrorsType.GENERIC_ERROR);
       return toError;
     }),
-    TE.chain((isAllCCP) =>
+    TE.chain((calculateFeeRequest) =>
       TE.tryCatch(
         () =>
-          apiPaymentEcommerceClientWithRetry.calculateFees({
+          apiPaymentEcommerceClientWithRetryV2.calculateFees({
             bearerAuth,
             "x-transaction-id-from-client": transactionId,
             id: paymentId,
             maxOccurrences: MAX_OCCURENCES_AFM,
-            body: {
-              bin,
-              touchpoint: "CHECKOUT",
-              paymentAmount: amount ? amount : 0,
-              primaryCreditorInstitution,
-              transferList,
-              isAllCCP,
-            },
+            body: calculateFeeRequest,
           }),
         (_e) => {
           onError(ErrorsType.CONNECTION);
