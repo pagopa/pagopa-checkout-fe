@@ -51,6 +51,6 @@ export const apiPaymentEcommerceClientWithRetry = createEcommerceClient({
     retries,
     delay,
     conf.CHECKOUT_API_TIMEOUT as Millisecond,
-    async (r: Response): Promise<boolean> => r.status !== 200
+    async (r: Response): Promise<boolean> => r.status > 499
   ),
 });
