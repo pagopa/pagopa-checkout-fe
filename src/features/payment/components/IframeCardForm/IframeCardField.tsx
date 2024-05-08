@@ -22,6 +22,7 @@ interface Props {
   errorMessage?: string | null;
   isValid?: boolean;
   activeField: FieldId | undefined;
+  isAllFieldsLoaded?: boolean;
 }
 
 interface State {
@@ -43,7 +44,15 @@ interface Styles {
 }
 
 export function IframeCardField(props: Props) {
-  const { fields, id, errorCode, errorMessage, label, isValid } = props;
+  const {
+    fields,
+    id,
+    errorCode,
+    errorMessage,
+    label,
+    isValid,
+    isAllFieldsLoaded,
+  } = props;
   const { t } = useTranslation();
 
   const [loaded, setLoaded] = React.useState<State["loaded"]>(false);
@@ -55,7 +64,7 @@ export function IframeCardField(props: Props) {
       `frame_${id}`
     ) as HTMLIFrameElement;
     iframeEl?.contentWindow?.location.replace(src);
-    setLoaded(true);
+    setLoaded(true); // TODELETE
   };
 
   // Find src based on ID
@@ -66,6 +75,12 @@ export function IframeCardField(props: Props) {
       setSrcOnIframe(src);
     }
   }, [src]);
+
+  React.useEffect(() => {
+    if (isAllFieldsLoaded) {
+      setLoaded(true);
+    }
+  }, [isAllFieldsLoaded]);
 
   const InnerComponent = (
     <FormControl sx={styles.formControl}>
