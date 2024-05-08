@@ -37,9 +37,10 @@ export default function PaymentNoticePage() {
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
 
-  const onError = (m: string) => {
+  const onError = (error: string) => {
     setLoading(false);
-    setError(m);
+
+    setError(error);
     setErrorModalOpen(true);
     ref.current?.reset();
   };
@@ -52,7 +53,9 @@ export default function PaymentNoticePage() {
 
       await pipe(
         getEcommercePaymentInfoTask(rptId, token || ""),
-        TE.mapLeft((err) => onError(err)),
+        TE.mapLeft((err) =>
+          onError(`${err.faultCodeCategory}-${err.faultCodeDetail}`)
+        ),
         TE.map((paymentInfo) => {
           setSessionItem(SessionItems.paymentInfo, paymentInfo);
           setSessionItem(SessionItems.noticeInfo, notice);

@@ -7,6 +7,7 @@ import * as TE from "fp-ts/TaskEither";
 import { flow, pipe } from "fp-ts/function";
 import { toError } from "fp-ts/lib/Either";
 import ReCAPTCHA from "react-google-recaptcha";
+import * as t from "io-ts";
 import { AmountEuroCents } from "../../../generated/definitions/payment-ecommerce/AmountEuroCents";
 import { Bundle } from "../../../generated/definitions/payment-ecommerce/Bundle";
 import { CreateSessionResponse } from "../../../generated/definitions/payment-ecommerce/CreateSessionResponse";
@@ -18,7 +19,6 @@ import {
   RequestAuthorizationRequest,
 } from "../../../generated/definitions/payment-ecommerce/RequestAuthorizationRequest";
 import { RptId } from "../../../generated/definitions/payment-ecommerce/RptId";
-import { ValidationFaultPaymentProblemJson } from "../../../generated/definitions/payment-ecommerce/ValidationFaultPaymentProblemJson";
 import {
   Cart,
   PaymentFormFields,
@@ -80,6 +80,7 @@ import {
   setSessionItem,
 } from "../storage/sessionStorage";
 import { CalculateFeeResponse } from "../../../generated/definitions/payment-ecommerce/CalculateFeeResponse";
+import { FaultCategoryEnum } from "../../../generated/definitions/payment-ecommerce/FaultCategory";
 import { CalculateFeeRequest } from "../../../generated/definitions/payment-ecommerce-v2/CalculateFeeRequest";
 import {
   apiPaymentEcommerceClient,
@@ -88,10 +89,25 @@ import {
   apiPaymentEcommerceClientWithRetryV2,
 } from "./client";
 
+export const NodeFaultCodeR = t.interface({
+  faultCodeCategory: t.string,
+});
+
+const NodeFaultCodeO = t.partial({
+  faultCodeDetail: t.string,
+});
+
+export const NodeFaultCode = t.intersection(
+  [NodeFaultCodeO, NodeFaultCodeR],
+  "NodeFaultCode"
+);
+
+export type NodeFaultCode = t.TypeOf<typeof NodeFaultCode>;
+
 export const getEcommercePaymentInfoTask = (
   rptId: RptId,
   recaptchaResponse: string
-): TE.TaskEither<string, PaymentRequestsGetResponse> =>
+): TE.TaskEither<NodeFaultCode, PaymentRequestsGetResponse> =>
   pipe(
     TE.tryCatch(
       () => {
@@ -111,31 +127,28 @@ export const getEcommercePaymentInfoTask = (
       }
     ),
     TE.fold(
-      (err) => {
+      (_) => {
         mixpanel.track(PAYMENT_VERIFY_SVR_ERR.value, {
           EVENT_ID: PAYMENT_VERIFY_SVR_ERR.value,
         });
-        return TE.left(err);
+        return TE.left({ faultCodeCategory: FaultCategoryEnum.GENERIC_ERROR });
       },
       (errorOrResponse) =>
         pipe(
           errorOrResponse,
           E.fold(
-            () => TE.left(ErrorsType.GENERIC_ERROR),
+            () =>
+              TE.left({ faultCodeCategory: FaultCategoryEnum.GENERIC_ERROR }),
             (responseType) => {
               let reason;
               if (responseType.status === 200) {
                 reason = "";
-              }
-              if (responseType.status === 400) {
-                reason = (
-                  responseType.value as ValidationFaultPaymentProblemJson
-                )?.faultCodeCategory;
+              } else if (responseType.status === 400) {
+                reason = responseType.value.title;
               } else {
-                reason = (
-                  responseType.value as ValidationFaultPaymentProblemJson
-                )?.faultCodeDetail;
+                reason = responseType.value?.faultCodeDetail;
               }
+
               const EVENT_ID: string =
                 responseType.status === 200
                   ? PAYMENT_VERIFY_SUCCESS.value
@@ -143,27 +156,15 @@ export const getEcommercePaymentInfoTask = (
               mixpanel.track(EVENT_ID, { EVENT_ID, reason });
 
               if (responseType.status === 400) {
-                return TE.left(
-                  pipe(
-                    O.fromNullable(
-                      (responseType.value as ValidationFaultPaymentProblemJson)
-                        ?.faultCodeCategory
-                    ),
-                    O.getOrElse(() => ErrorsType.STATUS_ERROR as string)
-                  )
-                );
+                return TE.left({
+                  faultCodeCategory: FaultCategoryEnum.GENERIC_ERROR as string,
+                });
               }
               return responseType.status !== 200
-                ? TE.left(
-                    pipe(
-                      O.fromNullable(
-                        (
-                          responseType.value as ValidationFaultPaymentProblemJson
-                        )?.faultCodeDetail
-                      ),
-                      O.getOrElse(() => ErrorsType.STATUS_ERROR as string)
-                    )
-                  )
+                ? TE.left({
+                    faultCodeCategory: responseType.value.faultCodeCategory,
+                    faultCodeDetail: responseType.value.faultCodeDetail,
+                  })
                 : TE.of(responseType.value);
             }
           )
@@ -214,8 +215,8 @@ export const activatePayment = async ({
             cartInfo
           ),
           TE.fold(
-            (e: string) => async () => {
-              onErrorActivate(e);
+            (e: NodeFaultCode) => async () => {
+              onErrorActivate(`${e.faultCodeCategory}-${e.faultCodeDetail}`);
             },
             (res) => async () => {
               setSessionItem(SessionItems.transaction, res);
@@ -235,7 +236,7 @@ export const activePaymentTask = (
   orderId: string,
   correlationId: string,
   cart?: Cart
-): TE.TaskEither<string, NewTransactionResponse> =>
+): TE.TaskEither<NodeFaultCode, NewTransactionResponse> =>
   pipe(
     TE.tryCatch(
       () => {
@@ -261,17 +262,18 @@ export const activePaymentTask = (
       }
     ),
     TE.fold(
-      (err) => {
+      () => {
         mixpanel.track(PAYMENT_ACTIVATE_SVR_ERR.value, {
           EVENT_ID: PAYMENT_ACTIVATE_SVR_ERR.value,
         });
-        return TE.left(err);
+        return TE.left({ faultCodeCategory: FaultCategoryEnum.GENERIC_ERROR });
       },
       (errorOrResponse) =>
         pipe(
           errorOrResponse,
           E.fold(
-            () => TE.left("Errore attivazione pagamento"),
+            () =>
+              TE.left({ faultCodeCategory: FaultCategoryEnum.GENERIC_ERROR }),
             (responseType) => {
               let reason;
               if (responseType.status === 200) {
@@ -304,14 +306,12 @@ export const activePaymentTask = (
                   });
                 }
               }
-              if (responseType.status === 400) {
-                reason = (
-                  responseType.value as ValidationFaultPaymentProblemJson
-                )?.faultCodeCategory;
+              if (responseType.status === 200) {
+                reason = "";
+              } else if (responseType.status === 400) {
+                reason = responseType.value?.title;
               } else {
-                reason = (
-                  responseType.value as ValidationFaultPaymentProblemJson
-                )?.faultCodeDetail;
+                reason = responseType.value?.faultCodeDetail;
               }
               const EVENT_ID: string =
                 responseType.status === 200
@@ -320,27 +320,15 @@ export const activePaymentTask = (
               mixpanel.track(EVENT_ID, { EVENT_ID, reason });
 
               if (responseType.status === 400) {
-                return TE.left(
-                  pipe(
-                    O.fromNullable(
-                      (responseType.value as ValidationFaultPaymentProblemJson)
-                        ?.faultCodeCategory
-                    ),
-                    O.getOrElse(() => ErrorsType.STATUS_ERROR as string)
-                  )
-                );
+                return TE.left({
+                  faultCodeCategory: FaultCategoryEnum.GENERIC_ERROR as string,
+                });
               }
               return responseType.status !== 200
-                ? TE.left(
-                    pipe(
-                      O.fromNullable(
-                        (
-                          responseType.value as ValidationFaultPaymentProblemJson
-                        )?.faultCodeDetail
-                      ),
-                      O.getOrElse(() => ErrorsType.STATUS_ERROR as string)
-                    )
-                  )
+                ? TE.left({
+                    faultCodeCategory: responseType.value.faultCodeCategory,
+                    faultCodeDetail: responseType.value.faultCodeDetail,
+                  })
                 : TE.of(responseType.value);
             }
           )
