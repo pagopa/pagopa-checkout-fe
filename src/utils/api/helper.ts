@@ -19,7 +19,6 @@ import {
   RequestAuthorizationRequest,
 } from "../../../generated/definitions/payment-ecommerce/RequestAuthorizationRequest";
 import { RptId } from "../../../generated/definitions/payment-ecommerce/RptId";
-import { ValidationFaultPaymentProblemJson } from "../../../generated/definitions/payment-ecommerce/ValidationFaultPaymentProblemJson";
 import {
   Cart,
   PaymentFormFields,
