@@ -95,9 +95,9 @@ export default (buildConfig: BuildConfig) => {
           onBuildError();
       }
     },
-    // onAllFieldsLoaded() {
-    //   onAllFieldsLoaded();
-    // },
+    onAllFieldsLoaded() {
+      onAllFieldsLoaded();
+    },
     cssLink: cssPath,
     defaultComponentCssClassName: "npg-component",
     defaultContainerCssClassName: "npg-container",

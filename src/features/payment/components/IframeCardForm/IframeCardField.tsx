@@ -63,8 +63,8 @@ export function IframeCardField(props: Props) {
     const iframeEl: HTMLIFrameElement | null = document.getElementById(
       `frame_${id}`
     ) as HTMLIFrameElement;
-    iframeEl?.contentWindow?.location.replace(src);
-    setLoaded(true); // TODELETE
+    // iframeEl?.contentWindow?.location.replace(src);
+    iframeEl.setAttribute("src", src);
   };
 
   // Find src based on ID
