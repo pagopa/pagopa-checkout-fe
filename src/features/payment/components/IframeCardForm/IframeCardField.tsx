@@ -22,10 +22,7 @@ interface Props {
   errorMessage?: string | null;
   isValid?: boolean;
   activeField: FieldId | undefined;
-}
-
-interface State {
-  loaded: boolean;
+  isAllFieldsLoaded?: boolean;
 }
 
 const getSrcFromFieldsByID = (
@@ -43,19 +40,26 @@ interface Styles {
 }
 
 export function IframeCardField(props: Props) {
-  const { fields, id, errorCode, errorMessage, label, isValid } = props;
+  const {
+    fields,
+    id,
+    errorCode,
+    errorMessage,
+    label,
+    isValid,
+    isAllFieldsLoaded,
+  } = props;
   const { t } = useTranslation();
 
-  const [loaded, setLoaded] = React.useState<State["loaded"]>(false);
   const styles = useStyles(props);
 
-  // function to set SRC to the iframe el avoind firefox back button bug
+  // function to set SRC to the iframe el avoids firefox back button bug
   const setSrcOnIframe = (src: string) => {
     const iframeEl: HTMLIFrameElement | null = document.getElementById(
       `frame_${id}`
     ) as HTMLIFrameElement;
     iframeEl?.contentWindow?.location.replace(src);
-    setLoaded(true);
+    iframeEl.setAttribute("src", src);
   };
 
   // Find src based on ID
@@ -78,7 +82,7 @@ export function IframeCardField(props: Props) {
       >
         {label}
       </InputLabel>
-      <Box sx={styles.box} aria-busy={!loaded}>
+      <Box sx={styles.box} aria-busy={!isAllFieldsLoaded}>
         <iframe
           aria-labelledby={label}
           id={`frame_${id}`}
@@ -111,7 +115,7 @@ export function IframeCardField(props: Props) {
 
   return (
     <>
-      {loaded || (
+      {isAllFieldsLoaded || (
         <Skeleton
           variant="text"
           sx={styles.skeleton}
@@ -119,7 +123,7 @@ export function IframeCardField(props: Props) {
           animation="wave"
         />
       )}
-      <Box display={loaded ? "flex" : "none"}>{InnerComponent}</Box>
+      <Box display={isAllFieldsLoaded ? "flex" : "none"}>{InnerComponent}</Box>
     </>
   );
 }
