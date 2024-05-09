@@ -25,10 +25,6 @@ interface Props {
   isAllFieldsLoaded?: boolean;
 }
 
-interface State {
-  loaded: boolean;
-}
-
 const getSrcFromFieldsByID = (
   fields: ReadonlyArray<Field>,
   id: keyof typeof IdFields
@@ -55,10 +51,9 @@ export function IframeCardField(props: Props) {
   } = props;
   const { t } = useTranslation();
 
-  const [loaded, setLoaded] = React.useState<State["loaded"]>(false);
   const styles = useStyles(props);
 
-  // function to set SRC to the iframe el avoind firefox back button bug
+  // function to set SRC to the iframe el avoids firefox back button bug
   const setSrcOnIframe = (src: string) => {
     const iframeEl: HTMLIFrameElement | null = document.getElementById(
       `frame_${id}`
@@ -76,12 +71,6 @@ export function IframeCardField(props: Props) {
     }
   }, [src]);
 
-  React.useEffect(() => {
-    if (isAllFieldsLoaded) {
-      setLoaded(true);
-    }
-  }, [isAllFieldsLoaded]);
-
   const InnerComponent = (
     <FormControl sx={styles.formControl}>
       <InputLabel
@@ -93,7 +82,7 @@ export function IframeCardField(props: Props) {
       >
         {label}
       </InputLabel>
-      <Box sx={styles.box} aria-busy={!loaded}>
+      <Box sx={styles.box} aria-busy={!isAllFieldsLoaded}>
         <iframe
           aria-labelledby={label}
           id={`frame_${id}`}
@@ -126,7 +115,7 @@ export function IframeCardField(props: Props) {
 
   return (
     <>
-      {loaded || (
+      {isAllFieldsLoaded || (
         <Skeleton
           variant="text"
           sx={styles.skeleton}
@@ -134,7 +123,7 @@ export function IframeCardField(props: Props) {
           animation="wave"
         />
       )}
-      <Box display={loaded ? "flex" : "none"}>{InnerComponent}</Box>
+      <Box display={isAllFieldsLoaded ? "flex" : "none"}>{InnerComponent}</Box>
     </>
   );
 }
