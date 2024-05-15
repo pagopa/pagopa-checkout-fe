@@ -135,46 +135,46 @@
       "title": "Spiacenti, l’Ente sta impiegando più tempo del previsto...",
       "body": "Ti preghiamo di attendere un paio di minuti al massimo senza ricaricare la pagina nel frattempo."
     },
-    "ERRORE_EC": {
+    "DOMAIN_UNKNOWN": {
       "title": "Spiacenti, l’Ente Creditore sta avendo problemi nella risposta",
       "buttons": {
         "help": "Contatta l'assistenza",
         "close": "Chiudi"
       }
     },
-    "ERRORE_TECNICO": {
+    "PAYMENT_UNAVAILABLE": {
       "title": "Spiacenti, c’è un problema tecnico con questo avviso"
     },
-    "ERRORE_DATI": {
+    "PAYMENT_DATA_ERROR": {
       "title": "Spiacenti, i dati dell'avviso non sono corretti"
     },
     "NOTLISTED": {
       "title": "Spiacenti, si è verificato un errore imprevisto",
       "body": "Prova di nuovo o contattaci per ricevere assistenza."
     },
-    "PAA_PAGAMENTO_DUPLICATO": {
+    "PAYMENT_DUPLICATED": {
       "title": "Questo avviso è stato già pagato!",
       "body": "La ricevuta è stata inviata all'indirizzo email che hai indicato durante il pagamento."
     },
-    "PAA_PAGAMENTO_IN_CORSO": {
+    "PAYMENT_ONGOING": {
       "title": "Il pagamento è già in corso, riprova tra qualche minuto",
       "body": "Se è passato troppo tempo, segnalacelo!"
     },
-    "PPT_PAGAMENTO_DUPLICATO": {
-      "title": "Questo avviso è stato già pagato!",
-      "body": "La ricevuta è stata inviata all'indirizzo email che hai indicato durante il pagamento."
-    },
-    "PPT_PAGAMENTO_IN_CORSO": {
-      "title": "Il pagamento è già in corso, riprova tra qualche minuto",
-      "body": "Se è passato troppo tempo, segnalacelo!"
-    },
-    "PAA_PAGAMENTO_ANNULLATO": {
+    "PAYMENT_CANCELED": {
       "title": "Spiacenti, l’Ente Creditore ha revocato questo avviso",
       "body": "Contatta l’Ente per maggiori informazioni."
     },
-    "PAA_PAGAMENTO_SCADUTO": {
+    "PAYMENT_EXPIRED": {
       "title": "Spiacenti, l’avviso è scaduto e non è più possibile pagarlo",
       "body": "Contatta l’Ente per maggiori informazioni."
+    },
+    "PAYMENT_UNKNOWN": {
+      "title": "Non riusciamo a trovare l'avviso",
+      "body": "L'avviso potrebbe essere stato già pagato. Per ricevere assistenza, contatta l'Ente Creditore che lo ha emesso."
+    },
+    "GENERIC_ERROR": {
+      "title": "Spiacenti, si è verificato un errore imprevisto",
+      "body": "Prova di nuovo o contattaci per ricevere assistenza."
     },
     "ErrorCodeDescription": "Codice di errore per l'assistenza",
     "clipboard": {
@@ -291,7 +291,7 @@
         "title": "Autorizzazione negata",
         "body": "Probabilmente hai superato il massimale della tua carta. Verifica con la tua banca prima di riprovare."
       },
-      "15": {
+      "17": {
         "title": "L'operazione è stata presa in carico",
         "body": "Riceverai l’esito del pagamento all'indirizzo {{useremail}}"
       },
