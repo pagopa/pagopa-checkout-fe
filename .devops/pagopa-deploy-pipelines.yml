@@ -94,7 +94,7 @@ stages:
               pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi'
               survey_show: 0
               checkout_npg_sdk_url: 'https://stg-ta.nexigroup.com/monetaweb/resources/hfsdk.js'
-              checkout_gdi_check_timeout: 300000
+              checkout_gdi_check_timeout: 60000
               checkout_version: "$(Build.SourceBranchName):$(Build.SourceVersion)"
 
           - script: |
