@@ -10,7 +10,7 @@ const GdiCheckPage = () => {
   const navigate = useNavigate();
 
   const gdiCheckTimeout =
-    Number(process.env.CHECKOUT_GDI_CHECK_TIMEOUT) || 300000;
+    Number(process.env.CHECKOUT_GDI_CHECK_TIMEOUT) || 12000;
 
   const gdiIframeUrl = getFragmentParameter(
     window.location.href,
