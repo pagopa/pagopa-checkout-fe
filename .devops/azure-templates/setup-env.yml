@@ -78,6 +78,7 @@ parameters:
 
   - name: 'checkout_ecommerce_fe_regex'
     type: string
+    default: "^\\/ecommerce-fe"
 
   - name: 'checkout_version'
     type: string
