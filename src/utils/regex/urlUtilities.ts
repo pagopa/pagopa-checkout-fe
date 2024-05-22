@@ -36,6 +36,8 @@ export function getFragmentParameter(
   }
 }
 
-const eCommerceFrontendPathNameRegex = new RegExp(process.env.CHECKOUT_ECOMMERCE_FRONTEND_REDIRECT_REGEX || "^\/ecommerce-fe");
+const eCommerceFrontendPathNameRegex = new RegExp(
+  process.env.CHECKOUT_ECOMMERCE_FRONTEND_REDIRECT_REGEX || "^/ecommerce-fe"
+);
 export const isEcommerceFrontendRedirection = (url: URL) =>
   eCommerceFrontendPathNameRegex.test(url.pathname);

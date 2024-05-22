@@ -45,7 +45,9 @@ describe("getFragmentParameter function utility", () => {
   it("Should return true if the URL require ecommerce-fe redirection", () => {
     expect(
       isEcommerceFrontendRedirection(
-        new URL("https://dev.checkout.it/ecommerce-fe/gdi-check#gdiIframeUrl=https://google.it/")
+        new URL(
+          "https://dev.checkout.it/ecommerce-fe/gdi-check#gdiIframeUrl=https://google.it/"
+        )
       )
     ).toEqual(true);
 
