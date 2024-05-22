@@ -76,6 +76,10 @@ parameters:
     type: number
     default: 12000
 
+  - name: 'checkout_ecommerce_fe_regex'
+    type: string
+    default: "^\/ecommerce-fe"
+
   - name: 'checkout_version'
     type: string
 
@@ -102,6 +106,7 @@ steps:
       CHECKOUT_SURVEY_SHOW=${{ parameters.survey_show }} \
       CHECKOUT_NPG_SDK_URL=${{ parameters.checkout_npg_sdk_url }} \
       CHECKOUT_GDI_CHECK_TIMEOUT=${{ parameters.checkout_gdi_check_timeout }} \
+      CHECKOUT_ECOMMERCE_FRONTEND_REDIRECT_REGEX=${{ parameters.checkout_ecommerce_fe_regex }} \
       CHECKOUT_VERSION=${{ parameters.checkout_version }} \
       bash env.sh
 

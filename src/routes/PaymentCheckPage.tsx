@@ -155,6 +155,9 @@ export default function PaymentCheckPage() {
     try {
       window.removeEventListener("beforeunload", onBrowserUnload);
       const url = new URL(authorizationUrl);
+
+      // Handle gdi-check, esito page redirection to ecommerce-fe component.
+      // Also perform redirection for redirect payment methods
       if (
         url.origin === window.location.origin &&
         !isEcommerceFrontendRedirection(url)
