@@ -54,6 +54,7 @@ import { Bundle } from "../../generated/definitions/payment-ecommerce/Bundle";
 import { CalculateFeeResponse } from "../../generated/definitions/payment-ecommerce/CalculateFeeResponse";
 import { SessionPaymentMethodResponse } from "../../generated/definitions/payment-ecommerce/SessionPaymentMethodResponse";
 import { ImageComponent } from "../features/payment/components/PaymentChoice/PaymentMethodImage";
+import { isEcommerceFrontendRedirection } from "../utils/regex/urlUtilities";
 import { CheckoutRoutes } from "./models/routeModel";
 
 const defaultStyle = {
@@ -154,7 +155,10 @@ export default function PaymentCheckPage() {
     try {
       window.removeEventListener("beforeunload", onBrowserUnload);
       const url = new URL(authorizationUrl);
-      if (url.origin === window.location.origin) {
+      if (
+        url.origin === window.location.origin &&
+        !isEcommerceFrontendRedirection(url)
+      ) {
         navigate(`${url.pathname}${url.hash}`);
         setPayLoading(false);
       } else {
