@@ -1,6 +1,6 @@
 {
   "name": "io-pay-portal-frontend",
-  "version": "3.2.1",
+  "version": "3.2.2",
   "scripts": {
     "type-check": "tsc",
     "generate": "npm-run-all generate:*",
