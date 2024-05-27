@@ -121,7 +121,7 @@ stages:
               azureSubscription: 'DEV-PAGOPA-SERVICE-CONN'
               scriptLocation: inlineScript
               inlineScript: |
-                call az storage blob sync --container $web --account-name pagopadcheckoutsa -s "$(Pipeline.Workspace)\Bundle_DEV" --exclude-path payment-transactions-gateway --exclude-path ecommerce-fe
+                call az storage blob sync --container $web --account-name pagopadcheckoutsa -s "$(Pipeline.Workspace)\Bundle_DEV" --exclude-path payment-transactions-gateway;ecommerce-fe
 
           - task: AzureCLI@1
             displayName: 'Purge CDN endpoint on DEV'
@@ -210,7 +210,7 @@ stages:
               env: 'UAT'
               recaptcha_site_key: $(CHECKOUT_CAPTCHA_ID_UAT)
               api_payment_transactions_basepath: '/api/checkout/payment-transactions/v1'
-              api_timeout: 10000
+              api_timeout: 30000
               api_payment_activations_basepath: '/checkout/payments/v1'
               pm_host: 'https://api.uat.platform.pagopa.it/payment-manager'
               pm_api_basepath: '/pp-restapi/v4'
@@ -262,7 +262,7 @@ stages:
               azureSubscription: 'UAT-PAGOPA-SERVICE-CONN'
               scriptLocation: inlineScript
               inlineScript: |
-                call az storage blob sync --container $web --account-name pagopaucheckoutsa -s "$(Pipeline.Workspace)\Bundle_UAT" --exclude-path payment-transactions-gateway  --exclude-path ecommerce-fe
+                call az storage blob sync --container $web --account-name pagopaucheckoutsa -s "$(Pipeline.Workspace)\Bundle_UAT" --exclude-path payment-transactions-gateway;ecommerce-fe
 
           - task: AzureCLI@1
             displayName: 'Purge CDN endpoint on UAT'
@@ -363,7 +363,7 @@ stages:
               azureSubscription: 'PROD-PAGOPA-SERVICE-CONN'
               scriptLocation: inlineScript
               inlineScript: |
-                call az storage blob sync --container $web --account-name pagopapcheckoutsa -s "$(Pipeline.Workspace)\Bundle" --exclude-path payment-transactions-gateway  --exclude-path ecommerce-fe
+                call az storage blob sync --container $web --account-name pagopapcheckoutsa -s "$(Pipeline.Workspace)\Bundle" --exclude-path payment-transactions-gateway;ecommerce-fe
 
           - task: AzureCLI@1
             displayName: 'Purge CDN endpoint on PROD'
