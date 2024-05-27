@@ -35,7 +35,6 @@ export default function CheckoutLoader() {
             height: "calc(100% - 148px)",
             bgcolor: "#fff",
             top: "100px",
-            border: "2px solid red",
           })}
       aria-live="assertive"
       aria-label={t("ariaLabels.loading")}
