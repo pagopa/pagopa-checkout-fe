@@ -9,33 +9,17 @@ export default function CheckoutLoader() {
 
   return (
     <Box
-      {...(isMobileDevice
-        ? {
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "start",
-            zIndex: 9000,
-            position: "fixed",
-            width: "100vw",
-            height: "calc(100vh - 80px)",
-            bgcolor: "#fff",
-            left: 0,
-            top: "80px",
-            pt: "15vh",
-          }
-        : {
-            position: "fixed",
-            left: "0",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "start",
-            pt: "15vh",
-            zIndex: 1000,
-            width: "100vw",
-            height: "calc(100% - 148px)",
-            bgcolor: "#fff",
-            top: "100px",
-          })}
+      alignItems="center"
+      bgcolor="#fff"
+      display="flex"
+      height="100vh"
+      justifyContent="center"
+      left="0"
+      position="fixed"
+      right="0"
+      top="0"
+      width="100vw"
+      zIndex="999"
       aria-live="assertive"
       aria-label={t("ariaLabels.loading")}
     >
