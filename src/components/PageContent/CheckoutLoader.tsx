@@ -1,12 +1,9 @@
-import { Box, CircularProgress, useMediaQuery, useTheme } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
 export default function CheckoutLoader() {
   const { t } = useTranslation();
-  const theme = useTheme();
-  const isMobileDevice = useMediaQuery(theme.breakpoints.down("sm"));
-
   return (
     <Box
       alignItems="center"
