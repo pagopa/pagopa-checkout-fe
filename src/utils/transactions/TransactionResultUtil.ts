@@ -223,6 +223,8 @@ export const getViewOutcomeFromEcommerceResultCode: GetViewOutcomeFromEcommerceR
         }
         return ViewOutcomeEnum.GENERIC_ERROR;
       }
+      case TransactionStatusEnum.AUTHORIZATION_REQUESTED:
+        return ViewOutcomeEnum.TAKING_CHARGE;
       default:
         return ViewOutcomeEnum.GENERIC_ERROR;
     }

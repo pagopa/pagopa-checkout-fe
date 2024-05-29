@@ -119,6 +119,12 @@ describe("TransactionResultUtil", () => {
 
     expect(
       getViewOutcomeFromEcommerceResultCode(
+        TransactionStatusEnum.AUTHORIZATION_REQUESTED
+      )
+    ).toEqual(ViewOutcomeEnum.TAKING_CHARGE);
+
+    expect(
+      getViewOutcomeFromEcommerceResultCode(
         TransactionStatusEnum.CLOSED,
         SendPaymentResultOutcomeEnum.OK
       )
