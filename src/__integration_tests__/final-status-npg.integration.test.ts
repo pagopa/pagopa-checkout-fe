@@ -15,7 +15,7 @@ describe("Unauthorized npg final status mapping tests", () => {
   const mockFlowWithExpectedResultMap = new Map([
     [
       "AUTHORIZATION_REQUESTED_NO_NPG_OUTCOME",
-      { title: "AUTHORIZATION REQUESTED WITH NO NPG OUTCOME", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "AUTHORIZATION REQUESTED WITH NO NPG OUTCOME", esito: "L'operazione è stata presa in carico" }
     ],
     [
       "AUTHORIZATION_COMPLETED_WITH_NPG_AUTH_STATUS_EXECUTED",

@@ -100,12 +100,6 @@ describe("TransactionResultUtil", () => {
 
     expect(
       getViewOutcomeFromEcommerceResultCode(
-        TransactionStatusEnum.AUTHORIZATION_REQUESTED
-      )
-    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
-
-    expect(
-      getViewOutcomeFromEcommerceResultCode(
         TransactionStatusEnum.AUTHORIZATION_COMPLETED
       )
     ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
@@ -114,6 +108,12 @@ describe("TransactionResultUtil", () => {
       getViewOutcomeFromEcommerceResultCode(
         TransactionStatusEnum.CLOSED,
         SendPaymentResultOutcomeEnum.NOT_RECEIVED
+      )
+    ).toEqual(ViewOutcomeEnum.TAKING_CHARGE);
+
+    expect(
+      getViewOutcomeFromEcommerceResultCode(
+        TransactionStatusEnum.AUTHORIZATION_REQUESTED
       )
     ).toEqual(ViewOutcomeEnum.TAKING_CHARGE);
 
@@ -190,10 +190,7 @@ describe("TransactionResultUtil", () => {
 
   // GENERIC_ERROR(1)
   it("should return correctly GENERIC_ERROR(1) outcome with NPG gateway", async () => {
-    [
-      TransactionStatusEnum.EXPIRED,
-      TransactionStatusEnum.AUTHORIZATION_REQUESTED,
-    ].forEach((transactionStatus) => {
+    [TransactionStatusEnum.EXPIRED].forEach((transactionStatus) => {
       expect(
         getViewOutcomeFromEcommerceResultCode(
           transactionStatus,
