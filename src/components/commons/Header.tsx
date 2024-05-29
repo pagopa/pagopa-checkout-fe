@@ -79,6 +79,8 @@ export default function Header() {
           direction="row"
           justifyContent="space-between"
           alignItems="center"
+          position="relative"
+          zIndex="1000"
         >
           <img
             src={pagopaLogo}
