@@ -32,7 +32,7 @@ export default function CheckoutLoader() {
             pt: "15vh",
             zIndex: 1000,
             width: "100vw",
-            height: "80vh",
+            height: "calc(100% - 148px)",
             bgcolor: "#fff",
             top: "100px",
           })}

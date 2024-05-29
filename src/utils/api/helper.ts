@@ -7,6 +7,7 @@ import * as TE from "fp-ts/TaskEither";
 import { flow, pipe } from "fp-ts/function";
 import { toError } from "fp-ts/lib/Either";
 import ReCAPTCHA from "react-google-recaptcha";
+import * as t from "io-ts";
 import { AmountEuroCents } from "../../../generated/definitions/payment-ecommerce/AmountEuroCents";
 import { Bundle } from "../../../generated/definitions/payment-ecommerce/Bundle";
 import { CreateSessionResponse } from "../../../generated/definitions/payment-ecommerce/CreateSessionResponse";
@@ -18,8 +19,6 @@ import {
   RequestAuthorizationRequest,
 } from "../../../generated/definitions/payment-ecommerce/RequestAuthorizationRequest";
 import { RptId } from "../../../generated/definitions/payment-ecommerce/RptId";
-import { TransferListItem } from "../../../generated/definitions/payment-ecommerce/TransferListItem";
-import { ValidationFaultPaymentProblemJson } from "../../../generated/definitions/payment-ecommerce/ValidationFaultPaymentProblemJson";
 import {
   Cart,
   PaymentFormFields,
@@ -81,16 +80,34 @@ import {
   setSessionItem,
 } from "../storage/sessionStorage";
 import { CalculateFeeResponse } from "../../../generated/definitions/payment-ecommerce/CalculateFeeResponse";
+import { FaultCategoryEnum } from "../../../generated/definitions/payment-ecommerce/FaultCategory";
+import { CalculateFeeRequest } from "../../../generated/definitions/payment-ecommerce-v2/CalculateFeeRequest";
 import {
   apiPaymentEcommerceClient,
   apiPaymentEcommerceClientV2,
   apiPaymentEcommerceClientWithRetry,
+  apiPaymentEcommerceClientWithRetryV2,
 } from "./client";
+
+export const NodeFaultCodeR = t.interface({
+  faultCodeCategory: t.string,
+});
+
+const NodeFaultCodeO = t.partial({
+  faultCodeDetail: t.string,
+});
+
+export const NodeFaultCode = t.intersection(
+  [NodeFaultCodeO, NodeFaultCodeR],
+  "NodeFaultCode"
+);
+
+export type NodeFaultCode = t.TypeOf<typeof NodeFaultCode>;
 
 export const getEcommercePaymentInfoTask = (
   rptId: RptId,
   recaptchaResponse: string
-): TE.TaskEither<string, PaymentRequestsGetResponse> =>
+): TE.TaskEither<NodeFaultCode, PaymentRequestsGetResponse> =>
   pipe(
     TE.tryCatch(
       () => {
@@ -110,31 +127,28 @@ export const getEcommercePaymentInfoTask = (
       }
     ),
     TE.fold(
-      (err) => {
+      (_) => {
         mixpanel.track(PAYMENT_VERIFY_SVR_ERR.value, {
           EVENT_ID: PAYMENT_VERIFY_SVR_ERR.value,
         });
-        return TE.left(err);
+        return TE.left({ faultCodeCategory: FaultCategoryEnum.GENERIC_ERROR });
       },
       (errorOrResponse) =>
         pipe(
           errorOrResponse,
           E.fold(
-            () => TE.left(ErrorsType.GENERIC_ERROR),
+            () =>
+              TE.left({ faultCodeCategory: FaultCategoryEnum.GENERIC_ERROR }),
             (responseType) => {
               let reason;
               if (responseType.status === 200) {
                 reason = "";
-              }
-              if (responseType.status === 400) {
-                reason = (
-                  responseType.value as ValidationFaultPaymentProblemJson
-                )?.faultCodeCategory;
+              } else if (responseType.status === 400) {
+                reason = responseType.value.title;
               } else {
-                reason = (
-                  responseType.value as ValidationFaultPaymentProblemJson
-                )?.faultCodeDetail;
+                reason = responseType.value?.faultCodeDetail;
               }
+
               const EVENT_ID: string =
                 responseType.status === 200
                   ? PAYMENT_VERIFY_SUCCESS.value
@@ -142,27 +156,15 @@ export const getEcommercePaymentInfoTask = (
               mixpanel.track(EVENT_ID, { EVENT_ID, reason });
 
               if (responseType.status === 400) {
-                return TE.left(
-                  pipe(
-                    O.fromNullable(
-                      (responseType.value as ValidationFaultPaymentProblemJson)
-                        ?.faultCodeCategory
-                    ),
-                    O.getOrElse(() => ErrorsType.STATUS_ERROR as string)
-                  )
-                );
+                return TE.left({
+                  faultCodeCategory: FaultCategoryEnum.GENERIC_ERROR as string,
+                });
               }
               return responseType.status !== 200
-                ? TE.left(
-                    pipe(
-                      O.fromNullable(
-                        (
-                          responseType.value as ValidationFaultPaymentProblemJson
-                        )?.faultCodeDetail
-                      ),
-                      O.getOrElse(() => ErrorsType.STATUS_ERROR as string)
-                    )
-                  )
+                ? TE.left({
+                    faultCodeCategory: responseType.value.faultCodeCategory,
+                    faultCodeDetail: responseType.value.faultCodeDetail,
+                  })
                 : TE.of(responseType.value);
             }
           )
@@ -213,8 +215,8 @@ export const activatePayment = async ({
             cartInfo
           ),
           TE.fold(
-            (e: string) => async () => {
-              onErrorActivate(e);
+            (e: NodeFaultCode) => async () => {
+              onErrorActivate(`${e.faultCodeCategory}-${e.faultCodeDetail}`);
             },
             (res) => async () => {
               setSessionItem(SessionItems.transaction, res);
@@ -234,7 +236,7 @@ export const activePaymentTask = (
   orderId: string,
   correlationId: string,
   cart?: Cart
-): TE.TaskEither<string, NewTransactionResponse> =>
+): TE.TaskEither<NodeFaultCode, NewTransactionResponse> =>
   pipe(
     TE.tryCatch(
       () => {
@@ -260,17 +262,18 @@ export const activePaymentTask = (
       }
     ),
     TE.fold(
-      (err) => {
+      () => {
         mixpanel.track(PAYMENT_ACTIVATE_SVR_ERR.value, {
           EVENT_ID: PAYMENT_ACTIVATE_SVR_ERR.value,
         });
-        return TE.left(err);
+        return TE.left({ faultCodeCategory: FaultCategoryEnum.GENERIC_ERROR });
       },
       (errorOrResponse) =>
         pipe(
           errorOrResponse,
           E.fold(
-            () => TE.left("Errore attivazione pagamento"),
+            () =>
+              TE.left({ faultCodeCategory: FaultCategoryEnum.GENERIC_ERROR }),
             (responseType) => {
               let reason;
               if (responseType.status === 200) {
@@ -303,14 +306,12 @@ export const activePaymentTask = (
                   });
                 }
               }
-              if (responseType.status === 400) {
-                reason = (
-                  responseType.value as ValidationFaultPaymentProblemJson
-                )?.faultCodeCategory;
+              if (responseType.status === 200) {
+                reason = "";
+              } else if (responseType.status === 400) {
+                reason = responseType.value?.title;
               } else {
-                reason = (
-                  responseType.value as ValidationFaultPaymentProblemJson
-                )?.faultCodeDetail;
+                reason = responseType.value?.faultCodeDetail;
               }
               const EVENT_ID: string =
                 responseType.status === 200
@@ -319,27 +320,15 @@ export const activePaymentTask = (
               mixpanel.track(EVENT_ID, { EVENT_ID, reason });
 
               if (responseType.status === 400) {
-                return TE.left(
-                  pipe(
-                    O.fromNullable(
-                      (responseType.value as ValidationFaultPaymentProblemJson)
-                        ?.faultCodeCategory
-                    ),
-                    O.getOrElse(() => ErrorsType.STATUS_ERROR as string)
-                  )
-                );
+                return TE.left({
+                  faultCodeCategory: FaultCategoryEnum.GENERIC_ERROR as string,
+                });
               }
               return responseType.status !== 200
-                ? TE.left(
-                    pipe(
-                      O.fromNullable(
-                        (
-                          responseType.value as ValidationFaultPaymentProblemJson
-                        )?.faultCodeDetail
-                      ),
-                      O.getOrElse(() => ErrorsType.STATUS_ERROR as string)
-                    )
-                  )
+                ? TE.left({
+                    faultCodeCategory: responseType.value.faultCodeCategory,
+                    faultCodeDetail: responseType.value.faultCodeDetail,
+                  })
                 : TE.of(responseType.value);
             }
           )
@@ -472,43 +461,23 @@ export const calculateFees = async ({
   onError: (e: string) => void;
   onResponsePsp: (r: any) => void;
 }) => {
-  const amount: number | undefined = pipe(
-    O.fromNullable(getSessionItem(SessionItems.cart) as Cart | undefined),
-    O.map((cart) =>
-      cart.paymentNotices.reduce(
-        (totalAmount, notice) => totalAmount + notice.amount,
-        0
-      )
-    ),
-    O.alt(() =>
-      pipe(
-        O.fromNullable(
-          getSessionItem(SessionItems.paymentInfo) as PaymentInfo | undefined
-        ),
-        O.map((paymentInfo) => paymentInfo.amount)
-      )
-    ),
-    O.getOrElseW(() => undefined)
-  );
-
-  const allCCP: O.Option<boolean> = pipe(
+  const calculateFeeRequest: O.Option<CalculateFeeRequest> = pipe(
     getSessionItem(SessionItems.transaction) as NewTransactionResponse,
     O.fromNullable,
-    O.map((transaction) => transaction.payments[0].isAllCCP)
-  );
-
-  const transferList: Array<TransferListItem> = pipe(
-    getSessionItem(SessionItems.transaction) as NewTransactionResponse,
-    O.fromNullable,
-    O.map((transaction) => transaction.payments[0].transferList), // TODO By now we can handle only single rptId notice, since GEC is not compliant with multiple rptIds notice (cart)
-    O.map((transferList) =>
-      transferList.map((transfer) => ({
-        creditorInstitution: transfer.paFiscalCode,
-        digitalStamp: transfer.digitalStamp,
-        transferCategory: transfer.transferCategory,
-      }))
-    ),
-    O.getOrElse(() => [] as Array<TransferListItem>)
+    O.map((transaction) => ({
+      bin,
+      touchpoint: "CHECKOUT",
+      paymentNotices: transaction.payments.map((payment) => ({
+        paymentAmount: payment.amount,
+        primaryCreditorInstitution: payment.rptId.substring(0, 11),
+        transferList: payment.transferList.map((transfer) => ({
+          creditorInstitution: transfer.paFiscalCode,
+          digitalStamp: transfer.digitalStamp,
+          transferCategory: transfer.transferCategory,
+        })),
+      })),
+      isAllCCP: transaction.payments[0].isAllCCP,
+    }))
   );
 
   const transactionId = pipe(
@@ -525,35 +494,25 @@ export const calculateFees = async ({
     O.getOrElse(() => "")
   );
 
-  const primaryCreditorInstitution =
-    transferList.at(0)?.creditorInstitution || ""; // TODO replace with primaryCreditorInstitution from transaction response when available (activate V2)
-
   mixpanel.track(PAYMENT_PSPLIST_INIT.value, {
     EVENT_ID: PAYMENT_PSPLIST_INIT.value,
   });
   const MAX_OCCURENCES_AFM = 2147483647;
   const bundleOption = await pipe(
-    allCCP,
+    calculateFeeRequest,
     TE.fromOption(() => {
       onError(ErrorsType.GENERIC_ERROR);
       return toError;
     }),
-    TE.chain((isAllCCP) =>
+    TE.chain((calculateFeeRequest) =>
       TE.tryCatch(
         () =>
-          apiPaymentEcommerceClientWithRetry.calculateFees({
+          apiPaymentEcommerceClientWithRetryV2.calculateFees({
             bearerAuth,
             "x-transaction-id-from-client": transactionId,
             id: paymentId,
             maxOccurrences: MAX_OCCURENCES_AFM,
-            body: {
-              bin,
-              touchpoint: "CHECKOUT",
-              paymentAmount: amount ? amount : 0,
-              primaryCreditorInstitution,
-              transferList,
-              isAllCCP,
-            },
+            body: calculateFeeRequest,
           }),
         (_e) => {
           onError(ErrorsType.CONNECTION);
@@ -728,11 +687,11 @@ export const proceedToPayment = async (
     })
   );
 
-  void pipe(
+  await pipe(
     authParam,
     O.map((p) =>
       pipe(
-        requestAuth(p),
+        TE.tryCatch(requestAuth(p), (_e) => TE.left(_e)),
         TE.mapLeft((_e) => {
           onError(ErrorsType.GENERIC_ERROR);
           return ErrorsType.GENERIC_ERROR;

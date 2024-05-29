@@ -14,6 +14,7 @@ interface BuildConfig {
   onPaymentComplete: () => void;
   onPaymentRedirect: (urlRedirect: string) => void;
   onBuildError: () => void;
+  onAllFieldsLoaded: () => void;
 }
 
 export default (buildConfig: BuildConfig) => {
@@ -29,6 +30,7 @@ export default (buildConfig: BuildConfig) => {
     onReadyForPayment,
     onPaymentComplete,
     onPaymentRedirect,
+    onAllFieldsLoaded,
   } = buildConfig;
   return {
     onBuildSuccess({ id }: NpgEvtData) {
@@ -92,6 +94,9 @@ export default (buildConfig: BuildConfig) => {
         default:
           onBuildError();
       }
+    },
+    onAllFieldsLoaded() {
+      onAllFieldsLoaded();
     },
     cssLink: cssPath,
     defaultComponentCssClassName: "npg-component",

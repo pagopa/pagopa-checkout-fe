@@ -55,8 +55,8 @@ const config = getConfigOrThrow();
 /**
  * Polling configuration params
  */
-const retries: number = 20;
-const delay: number = 3000;
+const retries: number = config.CHECKOUT_API_RETRY_NUMBERS;
+const delay: number = config.CHECKOUT_API_RETRY_DELAY;
 const timeout: Millisecond = config.CHECKOUT_API_TIMEOUT as Millisecond;
 
 const hexToUuid = require("hex-to-uuid");

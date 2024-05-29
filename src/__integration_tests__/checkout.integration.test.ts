@@ -18,16 +18,18 @@ const VALID_CARD_DATA = {
 
 /* VALID_NOTICE_CODE */
 const VALID_NOTICE_CODE = "302016723749670000"
-/* FAIL_VERIFY_PPT_STAZIONE_INT_PA_SCONOSCIUTA end with 03 */
-const FAIL_VERIFY_PPT_STAZIONE_INT_PA_SCONOSCIUTA = "302016723749670003";
-/* FAIL_VERIFY_PPT_DOMINIO_SCONOSCIUTO end with 04 */
-const FAIL_VERIFY_PPT_DOMINIO_SCONOSCIUTO = "302016723749670004";
+/* FAIL_VERIFY_404_PPT_STAZIONE_INT_PA_SCONOSCIUTA end with 04 */
+const FAIL_VERIFY_404_PPT_STAZIONE_INT_PA_SCONOSCIUTA = "302016723749670004";
+/* FAIL_VERIFY_503_PPT_STAZIONE_INT_PA_TIMEOUT end with 08 */
+const FAIL_VERIFY_503_PPT_STAZIONE_INT_PA_TIMEOUT = "302016723749670008";
+/* FAIL_VERIFY_502_PPT_PSP_SCONOSCIUTO end with 06 */
+const FAIL_VERIFY_502_PPT_PSP_SCONOSCIUTO = "302016723749670006";
 /* FAIL_ACTIVATE_PPT_PAGAMENTO_IN_CORSO end with 12 */
 const FAIL_ACTIVATE_PPT_PAGAMENTO_IN_CORSO = "302016723749670012";
 /* FAIL_ACTIVATE_PPT_STAZIONE_INT_PA_TIMEOUT end with 15 */
 const FAIL_ACTIVATE_PPT_STAZIONE_INT_PA_TIMEOUT = "302016723749670015";
-/* FAIL_ACTIVATE_PPT_DOMINIO_SCONOSCIUTO end with 11 */
-const FAIL_ACTIVATE_PPT_DOMINIO_SCONOSCIUTO = "302016723749670011";
+/* FAIL_ACTIVATE_502_PPT_PSP_SCONOSCIUTO end with 11 */
+const FAIL_ACTIVATE_502_PPT_PSP_SCONOSCIUTO = "302016723749670013";
 /* FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND end with 41 */
 const FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND = "302016723749670041";
 /* PSP_UPTHRESHOLD end with 55 */
@@ -75,22 +77,31 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
     expect(resultMessage).toContain("Grazie, hai pagato");
   });
 
-  it("Should fail a payment VERIFY and get PPT_STAZIONE_INT_PA_SCONOSCIUTA", async () => {
+  it("Should fail a payment VERIFY and get FAIL_VERIFY_404_PPT_STAZIONE_INT_PA_SCONOSCIUTA", async () => {
     /*
-     * 2. Payment with notice code that fails on verify and get PA_IRRAGGIUNGIBILE
+     * 2. Payment with notice code that fails on verify and get PPT_STAZIONE_INT_PA_SCONOSCIUTA
      */
-    const resultMessage = await verifyPaymentAndGetError(FAIL_VERIFY_PPT_STAZIONE_INT_PA_SCONOSCIUTA, VALID_FISCAL_CODE);
+    const resultMessage = await verifyPaymentAndGetError(FAIL_VERIFY_404_PPT_STAZIONE_INT_PA_SCONOSCIUTA, VALID_FISCAL_CODE);
 
     expect(resultMessage).toContain("PPT_STAZIONE_INT_PA_SCONOSCIUTA");
   });
 
-  it("Should fail a payment VERIFY and get PPT_DOMINIO_SCONOSCIUTO", async () => {
+  it("Should fail a payment VERIFY and get FAIL_VERIFY_503_PPT_STAZIONE_INT_PA_TIMEOUT", async () => {
     /*
-     * 2. Payment with notice code that fails on verify and get PPT_DOMINIO_SCONOSCIUTO
+     * 2. Payment with notice code that fails on verify and get FAIL_VERIFY_503_PPT_STAZIONE_INT_PA_TIMEOUT
      */
-    const resultMessage = await verifyPaymentAndGetError(FAIL_VERIFY_PPT_DOMINIO_SCONOSCIUTO, VALID_FISCAL_CODE);
+    const resultMessage = await verifyPaymentAndGetError(FAIL_VERIFY_503_PPT_STAZIONE_INT_PA_TIMEOUT, VALID_FISCAL_CODE);
 
-    expect(resultMessage).toContain("PPT_DOMINIO_SCONOSCIUTO");
+    expect(resultMessage).toContain("PPT_STAZIONE_INT_PA_TIMEOUT");
+  });
+
+  it("Should fail a payment VERIFY and get FAIL_VERIFY_502_PPT_PSP_SCONOSCIUTO", async () => {
+    /*
+     * 2. Payment with notice code that fails on verify and get FAIL_VERIFY_502_PPT_PSP_SCONOSCIUTO
+     */
+    const resultMessage = await verifyPaymentAndGetError(FAIL_VERIFY_502_PPT_PSP_SCONOSCIUTO, VALID_FISCAL_CODE);
+
+    expect(resultMessage).toContain("PPT_PSP_SCONOSCIUTO");
   });
 
   it("Should fail a payment ACTIVATION and get PPT_PAGAMENTO_IN_CORSO", async () => {
@@ -125,20 +136,20 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
     expect(resultMessage).toContain("PPT_STAZIONE_INT_PA_TIMEOUT");
   });
 
-  it("Should fail a payment ACTIVATION and get PPT_DOMINIO_SCONOSCIUTO", async () => {
+  it("Should fail a payment ACTIVATION and get PPT_PSP_SCONOSCIUTO", async () => {
     /*
-     * 2. Payment with notice code that fails on activation and get PPT_DOMINIO_SCONOSCIUTO
+     * 2. Payment with notice code that fails on activation and get PPT_PSP_SCONOSCIUTO
      */
     const errorID = '#iframeCardFormErrorId'
     const resultMessage = await activatePaymentAndGetError(
-      FAIL_ACTIVATE_PPT_DOMINIO_SCONOSCIUTO,
+      FAIL_ACTIVATE_502_PPT_PSP_SCONOSCIUTO,
       VALID_FISCAL_CODE,
       EMAIL,
       VALID_CARD_DATA,
       errorID
     );
 
-    expect(resultMessage).toContain("PPT_DOMINIO_SCONOSCIUTO");
+    expect(resultMessage).toContain("PPT_PSP_SCONOSCIUTO");
   });
 
   xit("Should fail a payment AUTHORIZATION REQUEST and get FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND", async () => {

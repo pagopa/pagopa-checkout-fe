@@ -82,6 +82,8 @@ export default function IframeCardForm(props: Props) {
   const formIsValid = (fieldFormStatus: FormStatus) =>
     Object.values(fieldFormStatus).every((el) => el.isValid);
 
+  const [isAllFieldsLoaded, setIsAllFieldsLoaded] = React.useState(false);
+
   const onError = (m: string) => {
     setLoading(false);
     setError(m);
@@ -156,6 +158,11 @@ export default function IframeCardForm(props: Props) {
           window.location.replace(`/${CheckoutRoutes.ERRORE}`);
         };
 
+        const onAllFieldsLoaded = () => {
+          setLoading(false);
+          setIsAllFieldsLoaded(true);
+        };
+
         try {
           const newBuild = new Build(
             createBuildConfig({
@@ -164,6 +171,7 @@ export default function IframeCardForm(props: Props) {
               onPaymentComplete,
               onPaymentRedirect,
               onBuildError,
+              onAllFieldsLoaded,
             })
           );
           setBuildInstance(newBuild);
@@ -205,6 +213,7 @@ export default function IframeCardForm(props: Props) {
               errorMessage={formStatus.CARD_NUMBER?.errorMessage}
               isValid={formStatus.CARD_NUMBER?.isValid}
               activeField={activeField}
+              isAllFieldsLoaded={isAllFieldsLoaded}
             />
           </Box>
           <Box
@@ -221,6 +230,7 @@ export default function IframeCardForm(props: Props) {
                 errorMessage={formStatus.EXPIRATION_DATE?.errorMessage}
                 isValid={formStatus.EXPIRATION_DATE?.isValid}
                 activeField={activeField}
+                isAllFieldsLoaded={isAllFieldsLoaded}
               />
             </Box>
             <Box width="50%">
@@ -232,6 +242,7 @@ export default function IframeCardForm(props: Props) {
                 errorMessage={formStatus.SECURITY_CODE?.errorMessage}
                 isValid={formStatus.SECURITY_CODE?.isValid}
                 activeField={activeField}
+                isAllFieldsLoaded={isAllFieldsLoaded}
               />
             </Box>
           </Box>
@@ -244,6 +255,7 @@ export default function IframeCardForm(props: Props) {
               errorMessage={formStatus.CARDHOLDER_NAME?.errorMessage}
               isValid={formStatus.CARDHOLDER_NAME?.isValid}
               activeField={activeField}
+              isAllFieldsLoaded={isAllFieldsLoaded}
             />
           </Box>
         </Box>
