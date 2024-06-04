@@ -31,9 +31,6 @@ import { SessionItems } from "./utils/storage/sessionStorage";
 
 declare const OneTrust: any;
 declare const OnetrustActiveGroups: string;
-const global = window as any;
-// target cookies (Mixpanel)
-const targCookiesGroup = "C0004";
 
 const checkoutTheme = createTheme({
   ...theme,
@@ -78,25 +75,7 @@ export function App() {
     CheckoutRoutes.DONA,
   ];
   React.useEffect(() => {
-    // OneTrust callback at first time
-    // eslint-disable-next-line functional/immutable-data
-    global.OptanonWrapper = function () {
-      OneTrust.OnConsentChanged(function () {
-        const activeGroups = OnetrustActiveGroups;
-        if (activeGroups.indexOf(targCookiesGroup) > -1) {
-          mixpanelInit();
-        }
-      });
-    };
-    // check mixpanel cookie consent in cookie
-    const OTCookieValue: string =
-      document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("OptanonConsent=")) || "";
-    const checkValue = `${targCookiesGroup}%3A1`;
-    if (OTCookieValue.indexOf(checkValue) > -1) {
-      mixpanelInit();
-    }
+    mixpanelInit();
   }, []);
   // eslint-disable-next-line functional/immutable-data
   document.title = t("app.title");
