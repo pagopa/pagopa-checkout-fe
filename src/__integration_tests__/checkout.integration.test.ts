@@ -1,4 +1,4 @@
-import { payNotice, acceptCookiePolicy, verifyPaymentAndGetError, activatePaymentAndGetError, authorizePaymentAndGetError, checkPspDisclaimerBeforeAuthorizePayment, checkErrorOnCardDataFormSubmit, cancelPaymentOK, cancelPaymentAction, cancelPaymentKO } from "./utils/helpers";
+import { payNotice, verifyPaymentAndGetError, activatePaymentAndGetError, authorizePaymentAndGetError, checkPspDisclaimerBeforeAuthorizePayment, checkErrorOnCardDataFormSubmit, cancelPaymentOK, cancelPaymentAction, cancelPaymentKO } from "./utils/helpers";
 
 describe("Checkout payment activation tests", () => {
 /**
@@ -55,7 +55,6 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
   beforeAll(async () => {
     await page.goto(CHECKOUT_URL);
     await page.setViewport({ width: 1200, height: 907 });
-    await acceptCookiePolicy();
   })
 
   beforeEach(async () => {
