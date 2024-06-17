@@ -3,8 +3,8 @@ import { IconButton, Menu, MenuItem, Typography } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { fallbackLang } from "../../translations/i18n";
-import { getSortedLang } from "../../translations/translationsHelper";
-import supportedLang from "../../translations/translationsHelper";
+import { getSortedLang } from "../../translations/lang";
+import supportedLang from "../../translations/lang";
 
 export default function LanguageMenu() {
   const { i18n, t } = useTranslation();

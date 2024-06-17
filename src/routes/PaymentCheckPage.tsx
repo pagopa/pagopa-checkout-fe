@@ -18,7 +18,6 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
-import { normalizeKey } from "../translations/translationsHelper";
 import { selectThreshold } from "../redux/slices/threshold";
 import { ErrorsType } from "../utils/errors/checkErrorsModel";
 import sprite from "../assets/images/app.svg";
@@ -465,7 +464,7 @@ const AmountDisclaimer = ({ belowThreshold }: { belowThreshold: boolean }) => {
           overflowWrap: "anywhere",
         }}
       >
-        {t(normalizeKey(disclaimer))}
+        {t(disclaimer)}
       </Typography>
     </Box>
   );

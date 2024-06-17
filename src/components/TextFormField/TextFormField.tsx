@@ -3,7 +3,6 @@ import { TextField } from "@mui/material";
 import { SxProps } from "@mui/system";
 import React, { FocusEventHandler, FormEventHandler } from "react";
 import { useTranslation } from "react-i18next";
-import { normalizeKey } from "../../translations/translationsHelper";
 
 interface TextFormFieldProps {
   fullWidth: boolean;
@@ -43,9 +42,9 @@ function TextFormField(props: TextFormFieldProps) {
       fullWidth={props.fullWidth}
       margin="dense"
       disabled={props.disabled}
-      helperText={t(normalizeKey(props.errorText))}
+      helperText={props.errorText ? t(props.errorText) : ""}
       error={props.error}
-      label={t(normalizeKey(props.label))}
+      label={t(props.label)}
       id={props.id}
       name={props.id}
       variant={props.variant}

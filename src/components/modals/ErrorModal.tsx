@@ -16,7 +16,6 @@ import {
 } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { normalizeKey } from "../../translations/translationsHelper";
 import { ErrorsType } from "../../utils/errors/checkErrorsModel";
 import { PaymentCategoryResponses } from "../../utils/errors/errorsModel";
 import { ErrorButtons } from "../FormButtons/ErrorButtons";
@@ -108,12 +107,12 @@ function ErrorModal(props: {
           component={"div"}
           sx={{ mb: 2 }}
         >
-          {t(normalizeKey(title))}
+          {t(title)}
         </Typography>
       </DialogTitle>
       <DialogContent sx={{ p: 0 }}>
         <Typography id={props.bodyId} variant="body1" component={"div"}>
-          {t(normalizeKey(body))}
+          {t(body)}
         </Typography>
         {showDetail(body) && (
           <Alert

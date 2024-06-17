@@ -5,7 +5,6 @@ import { Box, Skeleton, Typography, useTheme } from "@mui/material";
 import { SxProps } from "@mui/system";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { normalizeKey } from "../../translations/translationsHelper";
 
 function ClickableFieldContainer(props: {
   title?: string;
@@ -75,7 +74,7 @@ function ClickableFieldContainer(props: {
               component="div"
               sx={props.disabled ? { color: theme.palette.text.disabled } : {}}
             >
-              {t(normalizeKey(props.title))}
+              {t(props.title || "")}
             </Typography>
           </>
         )}

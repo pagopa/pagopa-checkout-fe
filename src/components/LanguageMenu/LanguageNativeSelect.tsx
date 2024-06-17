@@ -3,9 +3,7 @@ import { visuallyHidden } from "@mui/utils";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { fallbackLang } from "../../translations/i18n";
-import supportedLang, {
-  getSortedLang,
-} from "../../translations/translationsHelper";
+import supportedLang, { getSortedLang } from "../../translations/lang";
 
 export default function LanguageNativeSelect() {
   const { i18n, t } = useTranslation();

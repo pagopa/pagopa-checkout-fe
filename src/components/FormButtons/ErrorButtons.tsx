@@ -1,7 +1,6 @@
 import { Button, Grid } from "@mui/material";
 import { default as React } from "react";
 import { useTranslation } from "react-i18next";
-import { normalizeKey } from "../../translations/translationsHelper";
 import { useSmallDevice } from "../../hooks/useSmallDevice";
 import { ErrorModalBtn } from "../../utils/errors/errorsModel";
 
@@ -41,7 +40,7 @@ export function ErrorButtons(props: {
                 minHeight: 45,
               }}
             >
-              {t(normalizeKey(button.title))}
+              {t(button.title)}
             </Button>
           </Grid>
         ))}

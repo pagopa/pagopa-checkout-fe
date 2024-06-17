@@ -46,16 +46,4 @@ export function getSortedLang(): Array<{
     }, []);
 }
 
-/**
- * return a `TemplateStringsArray` value from a key string value.
- * This function is used to handle the case of calling `useTranslation` when the key to be searched is variable and not known in advance."
- * @param key contain the key used to search the text related to the translation structure
- * @returns a Normalize translation, needed by i18n-react module for the search of the key.
- */
-export function normalizeKey(key: string | undefined): TemplateStringsArray {
-  return key
-    ? (key as unknown as TemplateStringsArray)
-    : ("" as unknown as TemplateStringsArray);
-}
-
 export default lang;

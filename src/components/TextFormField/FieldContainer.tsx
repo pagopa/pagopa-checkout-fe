@@ -3,7 +3,6 @@
 import { Box, Skeleton, SxProps, Typography } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { normalizeKey } from "../../translations/translationsHelper";
 
 interface FieldContainerProps {
   title: string;
@@ -86,7 +85,7 @@ function FieldContainer(props: FieldContainerProps) {
             {loading ? (
               <Skeleton variant="text" width="125px" height="30px" />
             ) : (
-              t(normalizeKey(title))
+              t(title)
             )}
           </Typography>
           <Typography
