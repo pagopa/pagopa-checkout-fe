@@ -5,6 +5,7 @@
 import { Box, Button, Typography } from "@mui/material";
 import { default as React, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { normalizeKey } from "../translations/translationsHelper";
 import { getConfigOrThrow } from "../utils/config/config";
 import SurveyLink from "../components/commons/SurveyLink";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
@@ -151,7 +152,9 @@ export default function PaymentResponsePage() {
               textAlign="center"
               id="responsePageMessageTitle"
             >
-              {outcomeMessage ? t(outcomeMessage.title, usefulPrintData) : ""}
+              {outcomeMessage
+                ? t(normalizeKey(outcomeMessage.title), usefulPrintData)
+                : ""}
             </Typography>
             <Typography
               variant="body1"
@@ -159,7 +162,7 @@ export default function PaymentResponsePage() {
               id="responsePageMessageBody"
             >
               {outcomeMessage && outcomeMessage.body
-                ? t(outcomeMessage.body, usefulPrintData)
+                ? t(normalizeKey(outcomeMessage.body), usefulPrintData)
                 : ""}
             </Typography>
             <Box px={8} sx={{ width: "100%", height: "100%" }}>

@@ -3,6 +3,7 @@ import { LoadingButton } from "@mui/lab";
 import { Grid } from "@mui/material";
 import { default as React } from "react";
 import { useTranslation } from "react-i18next";
+import { normalizeKey } from "../../translations/translationsHelper";
 import { useSmallDevice } from "../../hooks/useSmallDevice";
 
 export function FormButtons(props: {
@@ -62,11 +63,11 @@ export function FormButtons(props: {
             aria-label={
               props.loadingSubmit
                 ? t("ariaLabels.loading")
-                : t(props.submitTitle)
+                : t(normalizeKey(props.submitTitle))
             }
             aria-hidden={props.loadingCancel}
           >
-            {props.loadingSubmit ? "" : t(props.submitTitle)}
+            {props.loadingSubmit ? "" : t(normalizeKey(props.submitTitle))}
           </LoadingButton>
         </Grid>
         <Grid xs={4} style={useSmallDevice() ? { paddingTop: 0 } : {}} item>
@@ -85,12 +86,12 @@ export function FormButtons(props: {
             aria-label={
               props.loadingCancel
                 ? t("ariaLabels.loading")
-                : t(props.cancelTitle)
+                : t(normalizeKey(props.cancelTitle))
             }
             id={props.idCancel}
             aria-hidden={props.loadingSubmit}
           >
-            {props.loadingCancel ? "" : t(props.cancelTitle)}
+            {props.loadingCancel ? "" : t(normalizeKey(props.cancelTitle))}
           </LoadingButton>
         </Grid>
       </Grid>

@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { normalizeKey } from "../../translations/translationsHelper";
 import { ErrorsType } from "../../utils/errors/checkErrorsModel";
 import { PaymentCategoryResponses } from "../../utils/errors/errorsModel";
 import { ErrorButtons } from "../FormButtons/ErrorButtons";
@@ -70,8 +71,8 @@ function ErrorModal(props: {
     return PaymentCategoryResponses[nodeFaultCodeCategory]?.buttons;
   };
 
-  const title = getErrorTitle() || "GenericError.title";
-  const body = getErrorBody() || "GenericError.body";
+  const title = getErrorTitle() || "GENERIC_ERROR.title";
+  const body = getErrorBody() || "GENERIC_ERROR.body";
   const buttons = getErrorButtons();
   const buttonsDetail =
     props.error === ErrorsType.STATUS_ERROR ||
@@ -107,12 +108,12 @@ function ErrorModal(props: {
           component={"div"}
           sx={{ mb: 2 }}
         >
-          {t(title)}
+          {t(normalizeKey(title))}
         </Typography>
       </DialogTitle>
       <DialogContent sx={{ p: 0 }}>
         <Typography id={props.bodyId} variant="body1" component={"div"}>
-          {t(body)}
+          {t(normalizeKey(body))}
         </Typography>
         {showDetail(body) && (
           <Alert

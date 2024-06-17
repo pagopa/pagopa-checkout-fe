@@ -23,6 +23,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import QRCode from "react-qr-code";
 import { useNavigate } from "react-router-dom";
+import { normalizeKey } from "../translations/translationsHelper";
 import { resetThreshold } from "../redux/slices/threshold";
 import sprite from "../assets/images/app.svg";
 import InformationModal from "../components/modals/InformationModal";
@@ -412,7 +413,7 @@ export default function DonationPage() {
               </Button>
             }
           >
-            {t(error)}
+            {t(normalizeKey(error))}
           </Alert>
         </Snackbar>
       )}

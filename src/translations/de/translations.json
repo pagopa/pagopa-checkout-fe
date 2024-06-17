@@ -1,0 +1,381 @@
+{
+  "acsSlow": {
+    "body": "Zur Autorisierung der Transaktion verbinden wir dich mit dem Anbieter deiner Zahlungsmethode.",
+    "title": "Warten auf Antwort deiner Bank..."
+  },
+  "app": {
+    "title": "Zahlungsaufforderungen begleichen – pagoPA"
+  },
+  "ariaLabels": {
+    "appLanguage": "Sprache einstellen",
+    "close": "Schließen",
+    "editCard": "Karteninformationen ändern",
+    "editDonation": "Spendenorganisation ändern",
+    "editPsp": "Zahlungsdienstleister ändern",
+    "informationDialog": "Informationen",
+    "informationLink": "Weitere Informationen zum Programm",
+    "languageMenu": "Eingestellte Sprache",
+    "loading": "Laden..."
+  },
+  "cancelledPage": {
+    "body": "Der Vorgang wurde abgebrochen",
+    "button": "Schließen"
+  },
+  "cartDetail": {
+    "amount": "Zwischensumme",
+    "companyName": "Zahlungsempfänger",
+    "description": "Verwendungszweck",
+    "fiscalCode": "Steuernummer des Empfängers",
+    "noticeNumber": "Zahlungsaufforderungsnr."
+  },
+  "clipboard": {
+    "copied": "Kopiert",
+    "copy": "Kopieren",
+    "edit": "Ändern"
+  },
+  "DOMAIN_UNKNOWN": {
+    "title": "Die empfangende Behörde hat Probleme mit der Antwort",
+    "buttons": {
+      "close": "Schließen",
+      "help": "Kontakt mit Kundendienst"
+    }
+  },
+  "DONATIONLIST_ERROR": "Wir konnten die Liste der Organisationen nicht laden.",
+  "donationPage": {
+    "click": "drücke",
+    "code": "und scanne den Code: ",
+    "description": "Du hast Zeit bis zum 23. Dezember. Du kannst gebührenfrei mit der Karte spenden. Der Betrag wird direkt an das Konto der gewählten Spendenorganisation überwiesen.",
+    "dismissCTA": "Siehe Organisationen",
+    "dismissDescription": "Wenn du möchtest, kannst du an eine der Hilfsorganisationen spenden, die am Programm teilnehmen.",
+    "dismissTitle": "Der Service ist nicht mehr verfügbar",
+    "entity": "Wem möchtest du spenden?",
+    "ioDescription": "Bei Spenden über die IO-App erhältst du eine E-Mail mit den für Steuerzwecke benötigten Angaben.",
+    "modalBody2": "Mit deinen Karten kannst du gebührenfrei spenden.",
+    "modalTitle": "Weiter mit IO-App",
+    "openSection": "Bereich öffnen",
+    "payNotice": "Zahlungsaufforderung begleichen",
+    "portfolio": "Wallet",
+    "submitCard": "Mit Karte spenden",
+    "submitIO": "Mit IO spenden",
+    "title": "Für Ukraine-Krisenhilfe spenden",
+    "volunteer": "Wie viel möchtest du spenden?"
+  },
+  "errorButton": {
+    "close": "Schließen",
+    "help": "Kontakt mit Kundendienst",
+    "retry": "Erneut versuchen"
+  },
+  "ErrorCodeDescription": "Fehlercode für den Kundendienst",
+  "GENERIC_ERROR": {
+    "body": "Versuche es noch einmal oder wende dich an den Kundendienst.",
+    "title": "Ein unvorhergesehener Fehler ist aufgetreten"
+  },
+  "general": {
+    "and": "und"
+  },
+  "indexPage": {
+    "description": "Du kannst deine Debit- oder Kreditkarte verwenden, ohne dich anmelden zu müssen. Du erhältst eine E-Mail über den Ausgang der Zahlung.",
+    "title": "Zahlungsaufforderung begleichen"
+  },
+  "inputCardPage": {
+    "formErrors": {
+      "cid": "Vier Ziffern eingeben",
+      "cvv": "3 Ziffern eingeben",
+      "expirationDate": "MM/JJ eingeben",
+      "name": "Genau wie auf der Karte eingeben",
+      "number": "Gültige Nummer eingeben",
+      "required": "Pflichtfeld"
+    },
+    "formFields": {
+      "cid": "CID (vier Ziffern)",
+      "cvv": "CVV",
+      "expirationDate": "Gültig bis",
+      "name": "Karteninhaber",
+      "number": "Kartennummer"
+    },
+    "helpLink": "Wo finde ich den Sicherheitscode?",
+    "modal": {
+      "description": "Den dreistelligen Code CVV oder CVS findest du auf der Kartenrückseite.",
+      "descriptionAE": "Bei American Express besteht der Code (CID) aus vier Ziffern und befindet sich auf der Vorderseite.",
+      "title": "Sicherheitscode"
+    },
+    "title": "Gib die Karteninformationen ein"
+  },
+  "INVALID_CARD": {
+    "body": "Versuche es mit einer gültigen Karte oder wende dich an uns, wenn du Hilfe brauchst.",
+    "title": "Leider ist die Karte nicht gültig"
+  },
+  "INVALID_DECODE": {
+    "body": "Versuche es noch einmal oder wende dich an uns, wenn du Hilfe brauchst.",
+    "title": "Fehler beim Lesen der Daten"
+  },
+  "INVALID_QRCODE": {
+    "body": "Wenn das Problem bestehen bleibt, gib die Daten manuell ein.",
+    "title": "Der gescannte Code ist keine Zahlungsaufforderung für pagoPA"
+  },
+  "koPage": {
+    "body": "Es ist keine Belastung erfolgt.",
+    "button": "Schließen",
+    "helpButton": "Brauchst du Hilfe?",
+    "title": "Ein unvorhergesehener Fehler ist aufgetreten"
+  },
+  "mainPage": {
+    "footer": {
+      "accessibility": "Barrierefreiheit",
+      "help": "Hilfe",
+      "pagoPA": "Website von pagoPA aufrufen",
+      "privacy": "Datenrichtlinie",
+      "terms": "Nutzungsbedingungen"
+    },
+    "header": {
+      "detail": {
+        "detailAmount": "Betrag",
+        "detailFC": "Steuernummer des Empfängers",
+        "detailIUV": "IUV-Code",
+        "detailReceiver": "Zahlungsempfänger",
+        "detailSubject": "Verwendungszweck",
+        "detailTitle": "Daten der Zahlungsaufforderung"
+      },
+      "disclaimer": "Der Betrag wird automatisch aktualisiert, damit du stets den zu zahlenden Betrag begleichst und Verzugsgebühren oder Zinsen vermeidest."
+    }
+  },
+  "NOTLISTED": {
+    "body": "Versuche es noch einmal oder wende dich an uns, wenn du Hilfe brauchst.",
+    "title": "Ein unvorhergesehener Fehler ist aufgetreten"
+  },
+  "PAYMENT_CANCELED": {
+    "body": "Bitte die Behörde um weitere Informationen.",
+    "title": "Der Zahlungsempfänger hat diese Zahlungsaufforderung aufgehoben"
+  },
+  "PAYMENT_DATA_ERROR": {
+    "title": "Die Daten der Zahlungsaufforderung sind falsch"
+  },
+  "PAYMENT_DUPLICATED": {
+    "body": "Wenn du über diese Website bezahlt hast, wurde der Beleg an die E-Mail-Adresse gesendet, die du bei der Zahlung angegeben hast.",
+    "title": "Diese Zahlungsaufforderung wurde bereits beglichen!"
+  },
+  "PAYMENT_EXPIRED": {
+    "body": "Bitte die Behörde um weitere Informationen.",
+    "title": "Die Zahlungsaufforderung ist abgelaufen und kann nicht mehr beglichen werden"
+  },
+  "PAYMENT_ONGOING": {
+    "body": "Wenn das Problem bestehen bleibt, melde es uns bitte!",
+    "title": "Es ist bereits eine Zahlung in Bearbeitung. Versuche es später noch einmal"
+  },
+  "PAYMENT_UNAVAILABLE": {
+    "title": "Technisches Problem mit dieser Zahlungsaufforderung"
+  },
+  "PAYMENT_UNKNOWN": {
+    "body": "Die Zahlungsaufforderung könnte bereits bezahlt worden sein. Für Unterstützung kontaktieren Sie bitte die Zahlungsempfänger.",
+    "title": "Der Zahlungsaufforderung konnte nicht gefunden werden"
+  },
+  "paymentEmailPage": {
+    "description": "Du erhältst die Zahlungsbestätigung an diese E-Mail-Adresse",
+    "formButtons": {
+      "back": "Zurück",
+      "submit": "Weiter"
+    },
+    "formErrors": {
+      "invalid": "Gib eine gültige E-Mail-Adresse ein",
+      "notEqual": "Die E-Mail-Adressen müssen übereinstimmen",
+      "required": "Pflichtfeld"
+    },
+    "formFields": {
+      "confirmEmail": "Wiederholen",
+      "email": "E-Mail-Adresse"
+    },
+    "title": "Gib deine E-Mail-Adresse ein"
+  },
+  "paymentResponsePage": {
+    "0": {
+      "body": "Wir haben den Zahlungsbeleg an {{useremail}} gesendet",
+      "title": "Du hast {{amount}} bezahlt"
+    },
+    "1": {
+      "body": "Es ist keine Belastung erfolgt.",
+      "title": "Ein unvorhergesehener Fehler ist aufgetreten."
+    },
+    "2": {
+      "body": "Es ist keine Belastung erfolgt. Vergewissere dich, dass du die Anweisungen deiner Bank richtig befolgt hast.",
+      "title": "Autorisierung nicht erfolgt"
+    },
+    "3": {
+      "body": "Wenn du mit einer Debit- oder Kreditkarte bezahlst, achte darauf, die Daten genau wie auf der Kartenvorderseite einzugeben.",
+      "title": "Die Daten der Zahlungsmethode sind falsch"
+    },
+    "4": {
+      "body": "Es ist keine Belastung erfolgt. Zu deiner Sicherheit ist die Zeit für diesen Vorgang begrenzt.",
+      "title": "Die Sitzung ist abgelaufen"
+    },
+    "5": {
+      "title": "Dieser Kreditkartenanbieter wird nicht unterstützt"
+    },
+    "6": {
+      "title": "Für die Zahlung fehlen noch einige Angaben"
+    },
+    "7": {
+      "body": "Bitte deine Bank um weitere Informationen.",
+      "title": "Die Zahlungsmethode ist abgelaufen oder nicht mehr gültig"
+    },
+    "8": {
+      "body": "Es ist keine Belastung erfolgt.",
+      "title": "Der Vorgang wurde abgebrochen"
+    },
+    "10": {
+      "body": "Es ist keine Belastung erfolgt. Möglicherweise hast du das von deiner Bank vorgegebene Limit überschritten.",
+      "title": "Autorisierung nicht erfolgt"
+    },
+    "12": {
+      "title": "Die Zahlungsmethode wird nicht unterstützt"
+    },
+    "17": {
+      "body": "Du erhältst eine Zahlungsbestätigung an die E-Mail-Adresse {{useremail}}.",
+      "title": "Warte auf die Bestätigung per E-Mail"
+    },
+    "3dsNotInitiated": {
+      "body": "Es ist keine Belastung erfolgt.\nWenn das Problem bestehen bleibt, wende dich an den Anbieter deiner Zahlungsmethode, z. B. deine Bank.",
+      "title": "Es ist ein Problem mit dem Anbieter deiner Zahlungsmethode aufgetreten"
+    },
+    "survey": {
+      "body": "Teile uns deine Benutzererfahrung mit der Zahlung mit und hilf uns, besser zu werden.",
+      "link": {
+        "href": "https://pagopa.gov.it/diccilatua/ces-pagamento/",
+        "text": "Weiter zur Umfrage"
+      },
+      "title": "Sagst du uns bitte, wie es gelaufen ist?"
+    }
+  },
+  "paymentCheckPage": {
+    "buttons": {
+      "cancel": "Abbrechen",
+      "submit": "Bezahlen",
+      "wait": "Bitte warten..."
+    },
+    "creditCard": "Bezahlen mit",
+    "disclaimer": {
+      "cheaper": "Vorgeschlagen, weil kostengünstigste Möglichkeit",
+      "yourCard": "Vorgeschlagen, weil du bereits Kunde bist"
+    },
+    "drawer": {
+      "body": "Hier sind alle mit deiner Methode kompatiblen Anbieter aufgelistet, auch wenn du nicht Kunde bei ihnen bist.",
+      "header": {
+        "amount": "Gebühr",
+        "name": "Anbieter"
+      },
+      "title": "Über welchen Anbieter möchtest du zahlen?"
+    },
+    "email": "Bestätigung schicken an:",
+    "modal": {
+      "body": "Für jede Überweisung von Geldmitteln (Bargeld oder elektronische Zahlungsmittel) fallen Kosten an, um die Sicherheit und das Gelingen der Zahlung zu gewährleisten.\nJeder Anbieter (oder Zahlungsdienstleister) gibt eine Gebühr gemäß den eigenen Geschäftspraktiken und Vertragsbedingungen vor.\nMit pagoPA sind diese Kosten transparent und die Bürger können die bequemste und günstigste Option frei wählen. Weitere Informationen findest du auf der Seite ",
+      "cancelBody": "Alle Eingaben gehen verloren.",
+      "cancelButton": "Nein, ich habe es mir anders überlegt",
+      "cancelTitle": "Aktuelle Zahlung beenden?",
+      "link": "Kostentransparenz",
+      "submitButton": "Beenden",
+      "title": "Weshalb fallen Gebühren an?"
+    },
+    "psp": "Erhoben von",
+    "total": "Gesamt",
+    "transaction": "Gebühr"
+  },
+  "paymentChoicePage": {
+    "bank": "Bankkonto",
+    "button": "Zurück",
+    "costs": "Kostentransparenz.",
+    "creditCard": "Debit- oder Kreditkarte",
+    "description": "Mehr über die Methoden und Gebühren der teilnehmenden Anbieter erfährst du auf der Seite ",
+    "incoming": "Eingang",
+    "others": "Sonstige Methoden",
+    "showMore": "Alle zeigen",
+    "title": "Wie möchtest du zahlen?"
+  },
+  "paymentMethods": {
+    "bpay": "BANCOMAT Pay",
+    "cc": "Bankkonto",
+    "cp": "Debit- oder Kreditkarte",
+    "ppay": "Mit Postepay zahlen"
+  },
+  "paymentNoticeChoice": {
+    "form": {
+      "description": "Zahlungsaufforderungsnr. und Steuernr. Behörde",
+      "title": "Du gibts die Daten ein"
+    },
+    "qr": {
+      "description": "Webcam oder Kamera verwenden",
+      "title": "QR-Code scannen"
+    }
+  },
+  "paymentNoticePage": {
+    "description": "Übernimm die Angaben aus der Zahlungsaufforderung.",
+    "formButtons": {
+      "cancel": "Zurück",
+      "submit": "Weiter"
+    },
+    "formErrors": {
+      "minCf": "11 Ziffern eingeben",
+      "minCode": "18 Ziffern eingeben",
+      "required": "Pflichtfeld"
+    },
+    "formFields": {
+      "billCode": "Zahlungsaufforderungsnr.",
+      "cf": "Steuernummer des Empfängers"
+    },
+    "helpLink": "Beispiel anzeigen",
+    "title": "Was musst du bezahlen?"
+  },
+  "paymentQrPage": {
+    "camBlocked": "Wir benötigen deine Erlaubnis zum Zugriff auf die Kamera. In den Datenschutzeinstellungen deines Internetbrowsers kannst du die Auswahl ändern",
+    "description": "Achte auf gute Beleuchtung. Wenn der Code unscharf ist, halte ihn etwas weiter vom Bildschirm weg.",
+    "navigate": "Funktioniert es nicht? Von Hand eingeben",
+    "reloadPage": "Seite neu laden",
+    "title": "QR-Code scannen"
+  },
+  "paymentSummaryPage": {
+    "amount": "Aktualisierter Betrag",
+    "billCode": "Zahlungsaufforderungsnr.",
+    "buttons": {
+      "cancel": "Zurück",
+      "ok": "Okay, geht in Ordnung",
+      "submit": "Weiter zur Zahlung"
+    },
+    "causal": "Verwendungszweck",
+    "cf": "Steuernummer des Empfängers",
+    "creditor": "Zahlungsempfänger",
+    "description": "pagoPA aktualisiert automatisch den Betrag, damit du sicher den zu zahlenden Betrag begleichst und Verzugsgebühren oder Zinsen vermeidest",
+    "dialog": {
+      "description": "pagoPA aktualisiert automatisch den Betrag, damit du sicher den zu zahlenden Betrag begleichst und Verzugsgebühren oder Zinsen vermeidest.",
+      "title": "Siehst du einen anderen Betrag?"
+    },
+    "iuv": "IUV-Code",
+    "title": "Zahlungsdaten"
+  },
+  "POLLING_SLOW": {
+    "body": "Bitte warte, ohne die Seite neu zu laden. Es dauert höchstens ein paar Minuten.",
+    "title": "Die Behörde braucht länger als erwartet..."
+  },
+  "privacyInfo": {
+    "googleDesc": "Durch reCAPTCHA und Google (<privacy>Datenschutzrichtlinie</privacy> und <terms>Nutzungsbedingungen</terms>) geschütztes Formular.",
+    "privacyDesc": "Durch weitere Nutzung des Dienstes erklärst du dich mit dessen <terms>Nutzungsbedingungen</terms> einverstanden und bestätigst, die <privacy>Hinweise zum Datenschutz</privacy>",
+    "privacyDonation": "zusätzlichen Nutzungsbedingungen des Spendendienstes zugunsten der Krisenhilfe für die Ukraine gelesen zu haben "
+  },
+  "STATUS_ERROR": {
+    "body": "Wenn das Problem bestehen bleibt, melde es uns bitte!",
+    "title": "Ein unvorhergesehener Fehler ist aufgetreten"
+  },
+  "TIMEOUT": {
+    "body": "Wenn das Problem bestehen bleibt, melde es uns bitte!",
+    "title": "Die empfangende Behörde hat Probleme mit der Antwort"
+  },
+  "errorMessageNPG": {
+    "HF0002": "Dienst vorübergehend nicht verfügbar",
+    "HF0003": "Die Sitzung ist abgelaufen, geh zurück und versuch es noch einmal",
+    "HF0004": "Gültige Nummer eingeben",
+    "HF0005": "Das Netzwerk dieser Karte wird nicht unterstützt",
+    "HF0006": "MM/JJ eingeben",
+    "HF0007": "Genau wie auf der Karte eingeben",
+    "HF0009": "3DS-Überprüfung fehlgeschlagen",
+    "HF0001": "3 oder 4 Ziffern eingeben"
+  },
+  "__variant-name": "Tedesco",
+  "__variant-description": ""
+}

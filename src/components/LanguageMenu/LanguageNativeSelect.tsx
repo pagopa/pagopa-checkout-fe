@@ -3,7 +3,9 @@ import { visuallyHidden } from "@mui/utils";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { fallbackLang } from "../../translations/i18n";
-import supportedLang, { getSortedLang } from "../../translations/lang";
+import supportedLang, {
+  getSortedLang,
+} from "../../translations/translationsHelper";
 
 export default function LanguageNativeSelect() {
   const { i18n, t } = useTranslation();
@@ -25,6 +27,8 @@ export default function LanguageNativeSelect() {
     "& .MuiInputBase-input": {
       padding: 0,
       fontSize: theme.typography.caption.fontSize,
+      color: "black",
+      height: "auto",
     },
   }));
 
@@ -35,6 +39,11 @@ export default function LanguageNativeSelect() {
         defaultValue={lang in supportedLang ? lang : fallbackLang}
         input={<StyledInput />}
         onChange={(e) => changeLanguageHandler(e.target.value)}
+        sx={{
+          "& .MuiNativeSelect-icon": {
+            color: "black",
+          },
+        }}
         aria-label={t("ariaLabels.appLanguage")}
       >
         {languages}

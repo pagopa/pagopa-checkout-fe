@@ -10,6 +10,7 @@ import {
 import { SxProps } from "@mui/system";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { normalizeKey } from "../../../../translations/translationsHelper";
 import { Field } from "../../../../../generated/definitions/payment-ecommerce/Field";
 import { FieldId, IdFields } from "./types";
 
@@ -105,7 +106,7 @@ export function IframeCardField(props: Props) {
           aria-hidden={isValid}
           aria-live="assertive"
         >
-          {t(`errorMessageNPG.${errorCode}`, {
+          {t(normalizeKey(`errorMessageNPG.${errorCode}`), {
             defaultValue: errorMessage,
           })}
         </FormHelperText>
