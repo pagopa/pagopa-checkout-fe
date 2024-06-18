@@ -34,6 +34,7 @@ export default function LanguageNativeSelect() {
     <>
       <Box sx={visuallyHidden}>{t("ariaLabels.languageMenu")}</Box>
       <NativeSelect
+        id="languageMenu"
         defaultValue={lang in supportedLang ? lang : fallbackLang}
         input={<StyledInput />}
         onChange={(e) => changeLanguageHandler(e.target.value)}
