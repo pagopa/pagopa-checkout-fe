@@ -1,5 +1,8 @@
 import { ROUTE_FRAGMENT } from "../../routes/models/routeModel";
-import { getFragmentParameter } from "../../utils/regex/urlUtilities";
+import {
+  getFragmentParameter,
+  isEcommerceFrontendRedirection,
+} from "../../utils/regex/urlUtilities";
 
 describe("getFragmentParameter function utility", () => {
   it("Should return the param value correctly", () => {
@@ -37,5 +40,21 @@ describe("getFragmentParameter function utility", () => {
     expect(
       getFragmentParameter("invalidUrl", ROUTE_FRAGMENT.GDI_IFRAME_URL)
     ).toEqual("");
+  });
+
+  it("Should return true if the URL require ecommerce-fe redirection", () => {
+    expect(
+      isEcommerceFrontendRedirection(
+        new URL(
+          "https://dev.checkout.it/ecommerce-fe/gdi-check#gdiIframeUrl=https://google.it/"
+        )
+      )
+    ).toEqual(true);
+
+    expect(
+      isEcommerceFrontendRedirection(
+        new URL("http://localhost:1234/v2/esito#outcome=0")
+      )
+    ).toEqual(false);
   });
 });
