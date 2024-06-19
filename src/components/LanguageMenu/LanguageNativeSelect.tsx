@@ -25,7 +25,7 @@ export default function LanguageNativeSelect() {
     "& .MuiInputBase-input": {
       padding: 0,
       fontSize: theme.typography.caption.fontSize,
-      color: "black",
+      color: theme.palette.text.primary,
       height: "auto",
     },
   }));
@@ -40,7 +40,7 @@ export default function LanguageNativeSelect() {
         onChange={(e) => changeLanguageHandler(e.target.value)}
         sx={{
           "& .MuiNativeSelect-icon": {
-            color: "black",
+            color: theme.palette.text.primary,
           },
         }}
         aria-label={t("ariaLabels.appLanguage")}
