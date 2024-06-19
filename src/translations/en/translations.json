@@ -44,13 +44,13 @@
   "donationPage": {
     "click": "awards",
     "code": "and scan the code:",
-    "description": "You have until 23 December. You can donate with your card without commissions. The amount will be paid directly to the account of the organization to which you chose to donate.",
+    "description": "You have until 23 December. You can donate with your card without fees. The amount will be paid directly to the account of the organization to which you chose to donate.",
     "dismissCTA": "See the organizations",
     "dismissDescription": "If you want, you can donate to one of the humanitarian organizations that joined the initiative.",
     "dismissTitle": "The service is no longer active",
     "entity": "Who do you want to donate to?",
     "ioDescription": "Donate with the IO app to receive an email with information concerning tax benefits.",
-    "modalBody2": "You can donate with your cards without commissions.",
+    "modalBody2": "You can donate with your cards without fees.",
     "modalTitle": "Continue to the IO app",
     "openSection": "Open the section",
     "payNotice": "Pay a notice",
@@ -259,7 +259,7 @@
     "drawer": {
       "body": "This list contains all the operators compatible with your method, even if you are not their customer.",
       "header": {
-        "amount": "Commission",
+        "amount": "Fee",
         "name": "Operator"
       },
       "title": "Which operator do you want to use for payment?"
@@ -272,11 +272,11 @@
       "cancelTitle": "Do you want to exit the payment in progress?",
       "link": "Cost transparency",
       "submitButton": "Exit",
-      "title": "Why is there a commission?"
+      "title": "Why is there a fee?"
     },
     "psp": "Applied by",
     "total": "Total",
-    "transaction": "Commission"
+    "transaction": "Fee"
   },
   "paymentChoicePage": {
     "bank": "Bank account",
