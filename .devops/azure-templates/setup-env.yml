@@ -72,10 +72,6 @@ parameters:
     type: string
     default: ''
 
-  - name: 'checkout_gdi_check_timeout'
-    type: number
-    default: 12000
-
   - name: 'checkout_version'
     type: string
 
@@ -101,7 +97,6 @@ steps:
       CHECKOUT_PAGOPA_LOGOS_CDN=${{ parameters.pagopa_logos_cdn }} \
       CHECKOUT_SURVEY_SHOW=${{ parameters.survey_show }} \
       CHECKOUT_NPG_SDK_URL=${{ parameters.checkout_npg_sdk_url }} \
-      CHECKOUT_GDI_CHECK_TIMEOUT=${{ parameters.checkout_gdi_check_timeout }} \
       CHECKOUT_VERSION=${{ parameters.checkout_version }} \
       bash env.sh
 

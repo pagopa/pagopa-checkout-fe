@@ -5,13 +5,6 @@ describe("getFragmentParameter function utility", () => {
   it("Should return the param value correctly", () => {
     expect(
       getFragmentParameter(
-        "https://dev.checkout.it/gdi-check#gdiIframeUrl=aHR0cHM6Ly9nb29nbGUuaXQv",
-        ROUTE_FRAGMENT.GDI_IFRAME_URL
-      )
-    ).toEqual("https://google.it/");
-
-    expect(
-      getFragmentParameter(
         "http://localhost:1234/v2/esito#outcome=0",
         ROUTE_FRAGMENT.OUTCOME,
         false
@@ -22,20 +15,20 @@ describe("getFragmentParameter function utility", () => {
   it("Should return an empty string when the url is not valid or the paramater cant't be found", () => {
     expect(
       getFragmentParameter(
-        "https://dev.checkout.it/gdi-check#gdiIframeUrl=https://google.it/",
+        "http://localhost:1234/v2/esito#outcome=0",
         "invalidParamName" as ROUTE_FRAGMENT
       )
     ).toEqual("");
 
     expect(
       getFragmentParameter(
-        "https://dev.checkout.it/gdi-check",
-        ROUTE_FRAGMENT.GDI_IFRAME_URL
+        "http://localhost:1234/v2/esito",
+        ROUTE_FRAGMENT.OUTCOME
       )
     ).toEqual("");
 
-    expect(
-      getFragmentParameter("invalidUrl", ROUTE_FRAGMENT.GDI_IFRAME_URL)
-    ).toEqual("");
+    expect(getFragmentParameter("invalidUrl", ROUTE_FRAGMENT.OUTCOME)).toEqual(
+      ""
+    );
   });
 });
