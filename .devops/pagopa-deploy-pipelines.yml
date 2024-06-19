@@ -53,7 +53,7 @@ resources:
     - repository: checkoutTests
       type: github
       name: pagopa/pagopa-checkout-tests
-      ref: main
+      ref: CHK-2844-adds-translations-dev
       endpoint: 'io-azure-devops-github-ro'
 
 stages:
