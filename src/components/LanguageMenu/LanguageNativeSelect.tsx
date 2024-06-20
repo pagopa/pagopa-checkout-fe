@@ -18,6 +18,7 @@ export default function LanguageNativeSelect() {
 
   const changeLanguageHandler = React.useCallback(async (lang: string) => {
     setLang(lang);
+    localStorage.setItem('i18nextLng', lang);
     await i18n.changeLanguage(lang);
   }, []);
 
