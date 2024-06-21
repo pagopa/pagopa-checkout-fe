@@ -6,7 +6,7 @@ import lang from "./lang";
 export const fallbackLang = "it";
 
 const DETECTION_OPTIONS = {
-  order: ["localStorage","querystring", "navigator"],
+  order: ["localStorage", "querystring", "navigator"],
   caches: [],
 };
 
