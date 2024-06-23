@@ -44,13 +44,13 @@
   "donationPage": {
     "click": "Appuyer",
     "code": "et scanner le code :",
-    "description": "Vous avez jusqu’au 23 décembre. Vous pouvez faire un don avec votre carte sans payer de commission. Le montant du don est versé directement sur le compte de l’organisation de votre choix.",
+    "description": "Vous avez jusqu’au 23 décembre. Vous pouvez faire un don avec votre carte sans payer des frais. Le montant du don est versé directement sur le compte de l’organisation de votre choix.",
     "dismissCTA": "Voir les organisations",
     "dismissDescription": "Si vous le voulez, vous pouvez faire un don à une des organisations humanitaires qui ont adhéré à cette initiative.",
     "dismissTitle": "Le service a été désactivé",
     "entity": "À qui voulez-vous faire un don ?",
     "ioDescription": "Faites un don avec l’appli IO et recevez un e-mail avec toutes les informations nécessaires pour bénéficier des exonérations fiscales.",
-    "modalBody2": "Vous pouvez faire un don sans payer de commission avec votre carte.",
+    "modalBody2": "Vous pouvez faire un don sans payer des frais avec votre carte.",
     "modalTitle": "Continuer sur l’appli IO",
     "openSection": "Ouvrir la session",
     "payNotice": "Payer un avis",
@@ -259,7 +259,7 @@
     "drawer": {
       "body": "Cette liste vous indique tous les gestionnaires compatibles avec votre moyen de paiement, même si vous ne faites pas partie de leurs clients.",
       "header": {
-        "amount": "Commission",
+        "amount": "Frais",
         "name": "Gestionnaire"
       },
       "title": "Avec quel gestionnaire voulez-vous payer ?"
@@ -272,11 +272,11 @@
       "cancelTitle": "Sortir du paiement en cours ?",
       "link": "Transparence des frais facturés",
       "submitButton": "Sortir",
-      "title": "Pourquoi y-a-t-il une commission ?"
+      "title": "Pourquoi y-a-t-il des frais?"
     },
     "psp": "Appliquée depuis",
     "total": "Total",
-    "transaction": "Commission"
+    "transaction": "Frais"
   },
   "paymentChoicePage": {
     "bank": "Compte courant",
