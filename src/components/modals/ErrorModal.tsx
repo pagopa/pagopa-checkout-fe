@@ -70,8 +70,8 @@ function ErrorModal(props: {
     return PaymentCategoryResponses[nodeFaultCodeCategory]?.buttons;
   };
 
-  const title = getErrorTitle() || "GenericError.title";
-  const body = getErrorBody() || "GenericError.body";
+  const title = getErrorTitle() || "GENERIC_ERROR.title";
+  const body = getErrorBody() || "GENERIC_ERROR.body";
   const buttons = getErrorButtons();
   const buttonsDetail =
     props.error === ErrorsType.STATUS_ERROR ||

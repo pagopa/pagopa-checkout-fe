@@ -1,4 +1,4 @@
-import React from "react";
+/* import React from "react";
 import { Box, Link } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import InformationModal from "../modals/InformationModal";
@@ -29,4 +29,4 @@ export default function PrivacyTerms() {
       ></InformationModal>
     </>
   );
-}
+} */
