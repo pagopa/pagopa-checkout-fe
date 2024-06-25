@@ -59,6 +59,32 @@ export default function Footer(props: { fixedPages: Array<string> }) {
           >
             {t("mainPage.footer.help")}
           </Link>
+          <p aria-hidden="true">·</p>
+          <Link
+            href="https://checkout.pagopa.it/privacypolicy/it.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: theme.palette.text.primary,
+              textDecoration: "none",
+            }}
+            title={t("mainPage.footer.privacy")}
+          >
+            {t("mainPage.footer.privacy")}
+          </Link>
+          <p aria-hidden="true">·</p>
+          <Link
+            href="https://checkout.pagopa.it/privacypolicy/it.html#termini-e-condizioni-di-uso"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: theme.palette.text.primary,
+              textDecoration: "none",
+            }}
+            title={t("mainPage.footer.terms")}
+          >
+            {t("mainPage.footer.terms")}
+          </Link>
           {Object.keys(lang).length > 1 && (
             <>
               <p aria-hidden="true">·</p>
