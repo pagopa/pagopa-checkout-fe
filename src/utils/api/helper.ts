@@ -616,6 +616,8 @@ export const proceedToPayment = async (
         case "MYBK":
         case "BPAY":
         case "PPAL":
+        case "APPL":
+        case "SATY":
           return O.some({
             detailType: "apm",
           });
