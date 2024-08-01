@@ -1,8 +1,10 @@
+/* eslint-disable sonarjs/cognitive-complexity */
 import Box from "@mui/material/Box/Box";
 import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidV4 } from "uuid";
+import ErrorModal from "../../../../components/modals/ErrorModal";
 import CheckoutLoader from "../../../../components/PageContent/CheckoutLoader";
 import ClickableFieldContainer from "../../../../components/TextFormField/ClickableFieldContainer";
 import { useAppDispatch } from "../../../../redux/hooks/hooks";
@@ -24,7 +26,6 @@ import { setThreshold } from "../../../../redux/slices/threshold";
 import { CheckoutRoutes } from "../../../../routes/models/routeModel";
 import { DisabledPaymentMethods, MethodComponentList } from "./PaymentMethod";
 import { getNormalizedMethods } from "./utils";
-import ErrorModal from "components/modals/ErrorModal";
 
 export function PaymentChoice(props: {
   amount: number;
@@ -33,8 +34,8 @@ export function PaymentChoice(props: {
 }) {
   const ref = React.useRef<ReCAPTCHA>(null);
   const [loading, setLoading] = React.useState(true);
-  const [error, setError] = React.useState("");
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
+  const [error, setError] = React.useState("");
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -44,12 +45,7 @@ export function PaymentChoice(props: {
       setLoading(false);
     }
   }, [ref.current]);
-/*
-  const onError = () => {
-    setLoading(false);
-    ref.current?.reset();
-  };
-*/
+
   const onError = (m: string) => {
     setLoading(false);
     setError(m);
@@ -154,9 +150,9 @@ export function PaymentChoice(props: {
             setErrorModalOpen(false);
             window.location.replace(`/${CheckoutRoutes.ERRORE}`);
           }}
-          titleId="paymentMethodChoiceErrorTitleId"
-          errorId="paymentMethodChoiceErrorId"
-          bodyId="paymentMethodChoiceFormErrorBodyId"
+          titleId="iframeCardFormErrorTitleId"
+          errorId="iframeCardFormErrorId"
+          bodyId="iframeCardFormErrorBodyId"
         />
       )}
     </>
