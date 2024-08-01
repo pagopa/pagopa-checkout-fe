@@ -24,6 +24,7 @@ import { setThreshold } from "../../../../redux/slices/threshold";
 import { CheckoutRoutes } from "../../../../routes/models/routeModel";
 import { DisabledPaymentMethods, MethodComponentList } from "./PaymentMethod";
 import { getNormalizedMethods } from "./utils";
+import ErrorModal from "components/modals/ErrorModal";
 
 export function PaymentChoice(props: {
   amount: number;
@@ -32,6 +33,8 @@ export function PaymentChoice(props: {
 }) {
   const ref = React.useRef<ReCAPTCHA>(null);
   const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState("");
+  const [errorModalOpen, setErrorModalOpen] = React.useState(false);
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -41,9 +44,16 @@ export function PaymentChoice(props: {
       setLoading(false);
     }
   }, [ref.current]);
-
+/*
   const onError = () => {
     setLoading(false);
+    ref.current?.reset();
+  };
+*/
+  const onError = (m: string) => {
+    setLoading(false);
+    setError(m);
+    setErrorModalOpen(true);
     ref.current?.reset();
   };
 
@@ -136,6 +146,19 @@ export function PaymentChoice(props: {
           sitekey={getReCaptchaKey() as string}
         />
       </Box>
+      {!!errorModalOpen && (
+        <ErrorModal
+          error={error}
+          open={errorModalOpen}
+          onClose={() => {
+            setErrorModalOpen(false);
+            window.location.replace(`/${CheckoutRoutes.ERRORE}`);
+          }}
+          titleId="paymentMethodChoiceErrorTitleId"
+          errorId="paymentMethodChoiceErrorId"
+          bodyId="paymentMethodChoiceFormErrorBodyId"
+        />
+      )}
     </>
   );
 }
