@@ -31,7 +31,8 @@ export default function PaymentCartPage() {
   const onResponse = (cart: Cart) => {
     setSessionItem(SessionItems.cart, cart);
     setSessionItem(SessionItems.useremail, cart.emailNotice || "");
-    setSessionItem(SessionItems.cartClientId, cartClientId || "");
+    // if b.e. does not communicate cart client id it is defaulted to CHECKOUT (the same value used without cart discrimination)
+    setSessionItem(SessionItems.cartClientId, cartClientId || "CHECKOUT");
     adaptCartAsPaymentInfo(cart);
     adaptCartAsRptId(cart);
     navigate(`/${CheckoutRoutes.INSERISCI_EMAIL}`, {
