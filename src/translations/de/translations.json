@@ -62,7 +62,7 @@
   },
   "errorButton": {
     "close": "Schließen",
-    "help": "Kontakt mit Kundendienst",
+    "help": "Kontaktiere den Kundendienst",
     "retry": "Erneut versuchen"
   },
   "ErrorCodeDescription": "Fehlercode für den Kundendienst",
@@ -74,7 +74,7 @@
     "and": "und"
   },
   "indexPage": {
-    "description": "Du kannst deine Debit- oder Kreditkarte verwenden, ohne dich anmelden zu müssen. Du erhältst eine E-Mail über den Ausgang der Zahlung.",
+    "description": "Du kannst deine Karte, dein Konto oder eine Zahlungs-App verwenden. Du erhältst eine E-Mail über den Ausgang der Zahlung.",
     "title": "Zahlungsaufforderung begleichen"
   },
   "inputCardPage": {
@@ -123,9 +123,7 @@
     "footer": {
       "accessibility": "Barrierefreiheit",
       "help": "Hilfe",
-      "pagoPA": "Website von pagoPA aufrufen",
-      "privacy": "Datenrichtlinie",
-      "terms": "Nutzungsbedingungen"
+      "pagoPA": "Website von pagoPA aufrufen"
     },
     "header": {
       "detail": {
@@ -137,6 +135,12 @@
         "detailTitle": "Daten der Zahlungsaufforderung"
       },
       "disclaimer": "Der Betrag wird automatisch aktualisiert, damit du stets den zu zahlenden Betrag begleichst und Verzugsgebühren oder Zinsen vermeidest."
+    }
+  },
+  "mainpage": {
+    "footer": {
+      "privacy": "Datenrichtlinie",
+      "terms": "Nutzungsbedingungen"
     }
   },
   "NOTLISTED": {
@@ -233,7 +237,7 @@
       "title": "Warte auf die Bestätigung per E-Mail"
     },
     "3dsNotInitiated": {
-      "body": "Es ist keine Belastung erfolgt.\nWenn das Problem bestehen bleibt, wende dich an den Anbieter deiner Zahlungsmethode, z. B. deine Bank.",
+      "body": "Es ist keine Belastung erfolgt.\nWenn das Problem bestehen bleibt, wende dich an den Anbieter deiner Zahlungsmethode, z. B. deine Bank.",
       "title": "Es ist ein Problem mit dem Anbieter deiner Zahlungsmethode aufgetreten"
     },
     "survey": {
@@ -264,9 +268,9 @@
       },
       "title": "Über welchen Anbieter möchtest du zahlen?"
     },
-    "email": "Bestätigung schicken an:",
+    "email": "Sende Bestätigung an:",
     "modal": {
-      "body": "Für jede Überweisung von Geldmitteln (Bargeld oder elektronische Zahlungsmittel) fallen Kosten an, um die Sicherheit und das Gelingen der Zahlung zu gewährleisten.\nJeder Anbieter (oder Zahlungsdienstleister) gibt eine Gebühr gemäß den eigenen Geschäftspraktiken und Vertragsbedingungen vor.\nMit pagoPA sind diese Kosten transparent und die Bürger können die bequemste und günstigste Option frei wählen. Weitere Informationen findest du auf der Seite ",
+      "body": "Jeder Geldtransfer (Bargeld oder elektronisches Geld) ist mit Kosten verbunden, die gewährleisten, dass die Zahlung sicher und erfolgreich ist.\nJeder Anbieter (oder PSP, Payment Service Provider) erhebt Kosten, die von seiner eigenen Geschäftspolitik und seinen Vertragsbedingungen abhängen.\nMit pagoPA sind diese Kosten transparent und der Bürger kann die bequemste und günstigste Option frei wählen. Weitere Informationen findest du auf der Seite ",
       "cancelBody": "Alle Eingaben gehen verloren.",
       "cancelButton": "Nein, ich habe es mir anders überlegt",
       "cancelTitle": "Aktuelle Zahlung beenden?",
@@ -282,7 +286,7 @@
     "bank": "Bankkonto",
     "button": "Zurück",
     "costs": "Kostentransparenz.",
-    "creditCard": "Debit- oder Kreditkarte",
+    "creditCard": "Kredit- und Debitkarten",
     "description": "Mehr über die Methoden und Gebühren der teilnehmenden Anbieter erfährst du auf der Seite ",
     "incoming": "Eingang",
     "others": "Sonstige Methoden",
@@ -292,12 +296,12 @@
   "paymentMethods": {
     "bpay": "BANCOMAT Pay",
     "cc": "Bankkonto",
-    "cp": "Debit- oder Kreditkarte",
-    "ppay": "Mit Postepay zahlen"
+    "cp": "Kredit- und Debitkarten",
+    "ppay": "Zahle mit Postepay"
   },
   "paymentNoticeChoice": {
     "form": {
-      "description": "Zahlungsaufforderungsnr. und Steuernr. Behörde",
+      "description": "Zahlungsaufforderungsnr. und Steuernr. Körperschaft",
       "title": "Du gibts die Daten ein"
     },
     "qr": {
@@ -355,7 +359,7 @@
   },
   "privacyInfo": {
     "googleDesc": "Durch reCAPTCHA und Google (<privacy>Datenschutzrichtlinie</privacy> und <terms>Nutzungsbedingungen</terms>) geschütztes Formular.",
-    "privacyDesc": "Durch weitere Nutzung des Dienstes erklärst du dich mit dessen <terms>Nutzungsbedingungen</terms> einverstanden und bestätigst, die <privacy>Hinweise zum Datenschutz</privacy>",
+    "privacyDesc": "Durch die weitere Nutzung des Dienstes erklärst du dich mit den <terms>Nutzungsbedingungen</terms> einverstanden und bestätigst, die <privacy>Hinweise zum Datenschutz</privacy> gelesen zu haben.",
     "privacyDonation": "zusätzlichen Nutzungsbedingungen des Spendendienstes zugunsten der Krisenhilfe für die Ukraine gelesen zu haben "
   },
   "STATUS_ERROR": {
@@ -366,6 +370,9 @@
     "body": "Wenn das Problem bestehen bleibt, melde es uns bitte!",
     "title": "Die empfangende Behörde hat Probleme mit der Antwort"
   },
+  "errorMessageNpg": {
+    "hf0001": "3 oder 4 Ziffern eingeben"
+  },
   "errorMessageNPG": {
     "HF0002": "Dienst vorübergehend nicht verfügbar",
     "HF0003": "Die Sitzung ist abgelaufen, geh zurück und versuch es noch einmal",
@@ -373,8 +380,7 @@
     "HF0005": "Das Netzwerk dieser Karte wird nicht unterstützt",
     "HF0006": "MM/JJ eingeben",
     "HF0007": "Genau wie auf der Karte eingeben",
-    "HF0009": "3DS-Überprüfung fehlgeschlagen",
-    "HF0001": "3 oder 4 Ziffern eingeben"
+    "HF0009": "3DS-Überprüfung fehlgeschlagen"
   },
   "__variant-name": "Tedesco",
   "__variant-description": ""

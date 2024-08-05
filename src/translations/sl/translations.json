@@ -74,7 +74,7 @@
     "and": "in"
   },
   "indexPage": {
-    "description": "Svojo debetno ali kreditno kartico lahko uporabljate brez prijave. Rezultat plačila boste prejeli po elektronski pošti.",
+    "description": "Svojo kartico, račun ali plačilno aplikacijo lahko uporabite. Rezultat plačila boste prejeli po elektronski pošti.",
     "title": "Plačajte obvestilo"
   },
   "inputCardPage": {
@@ -123,9 +123,7 @@
     "footer": {
       "accessibility": "Dostopnost",
       "help": "Pomoč",
-      "pagoPA": "Obiščite spletno stran pagoPA",
-      "privacy": "Zasebnost",
-      "terms": "Pogoji"
+      "pagoPA": "Obiščite spletno stran pagoPA"
     },
     "header": {
       "detail": {
@@ -137,6 +135,12 @@
         "detailTitle": "Podrobnosti o obvestilu"
       },
       "disclaimer": "Znesek se samodejno posodobi, zato vedno plačate le kar dolgujete in se izognete zamudnim ali drugim obrestim."
+    }
+  },
+  "mainpage": {
+    "footer": {
+      "privacy": "Zasebnost",
+      "terms": "Pogoji"
     }
   },
   "NOTLISTED": {
@@ -366,6 +370,9 @@
     "body": "Če težave ne morete odpraviti, nam to sporočite!",
     "title": "Upnik ima težave z odzivom"
   },
+  "errorMessageNpg": {
+    "hf0001": "Vnesite 3 ali 4 mestna"
+  },
   "errorMessageNPG": {
     "HF0002": "Storitev začasno ni na voljo",
     "HF0003": "Seja je potekla, pojdite nazaj in poskusite znova",
@@ -373,8 +380,7 @@
     "HF0005": "Omrežje te kartice ni podprto",
     "HF0006": "Vnesite mm/ll",
     "HF0007": "Vnesite, kot je navedeno na kartici",
-    "HF0009": "Preverjanje 3DS ni uspelo",
-    "HF0001": "Vnesite 3 ali 4 mestna"
+    "HF0009": "Preverjanje 3DS ni uspelo"
   },
   "__variant-name": "Sloveno",
   "__variant-description": ""

@@ -1,6 +1,6 @@
 {
   "acsSlow": {
-    "body": "Nous vous mettons en contact avec le gestionnaire de votre moyen de paiement pour autoriser la transaction.",
+    "body": "Nous vous mettons en contact avec l’opérateur de votre méthode de paiement pour autoriser la transaction.",
     "title": "En attente de la réponse de votre banque…"
   },
   "app": {
@@ -15,7 +15,7 @@
     "informationDialog": "Informations",
     "informationLink": "Pour en savoir plus sur la campagne de",
     "languageMenu": "Langue sélectionnée",
-    "loading": "Téléchargement"
+    "loading": "Chargement en cours"
   },
   "cancelledPage": {
     "body": "L'opération a été annulée",
@@ -42,7 +42,7 @@
   },
   "DONATIONLIST_ERROR": "Nous n’avons pas réussi à télécharger la liste des organisations.",
   "donationPage": {
-    "click": "Appuyer",
+    "click": "appuyer",
     "code": "et scanner le code :",
     "description": "Vous avez jusqu’au 23 décembre. Vous pouvez faire un don avec votre carte sans payer des frais. Le montant du don est versé directement sur le compte de l’organisation de votre choix.",
     "dismissCTA": "Voir les organisations",
@@ -52,7 +52,7 @@
     "ioDescription": "Faites un don avec l’appli IO et recevez un e-mail avec toutes les informations nécessaires pour bénéficier des exonérations fiscales.",
     "modalBody2": "Vous pouvez faire un don sans payer des frais avec votre carte.",
     "modalTitle": "Continuer sur l’appli IO",
-    "openSection": "Ouvrir la session",
+    "openSection": "Ouvrir la section",
     "payNotice": "Payer un avis",
     "portfolio": "Portefeuille",
     "submitCard": "Faire un don avec une carte",
@@ -74,7 +74,7 @@
     "and": "et"
   },
   "indexPage": {
-    "description": "Vous pouvez utiliser votre carte de débit ou de crédit sans saisir de login. Vous recevrez le résultat du paiement par e-mail.",
+    "description": "Vous pouvez payer par carte, compte ou appli de paiement. Vous recevrez le résultat du paiement par e-mail.",
     "title": "Payer un avis"
   },
   "inputCardPage": {
@@ -123,9 +123,7 @@
     "footer": {
       "accessibility": "Accessibilité",
       "help": "Aide",
-      "pagoPA": "Visiter le site pagoPA",
-      "privacy": "Confidentialité",
-      "terms": "Conditions"
+      "pagoPA": "Visiter le site pagoPA"
     },
     "header": {
       "detail": {
@@ -137,6 +135,12 @@
         "detailTitle": "Détail avis"
       },
       "disclaimer": "Le montant est mis à jour automatiquement : vous payez toujours à temps, sans pénalités ni intérêts de retard."
+    }
+  },
+  "mainpage": {
+    "footer": {
+      "privacy": "Confidentialité",
+      "terms": "Conditions"
     }
   },
   "NOTLISTED": {
@@ -215,7 +219,7 @@
     },
     "7": {
       "body": "Pour toute information complémentaire, contactez votre banque.",
-      "title": "Le moyen de paiement a expiré, il n’est plus valide"
+      "title": "Le moyen de paiement a expiré ou n'est plus valable"
     },
     "8": {
       "body": "Aucun débit n’a été effectué.",
@@ -233,8 +237,8 @@
       "title": "Attendez de recevoir la validation par e-mail"
     },
     "3dsNotInitiated": {
-      "body": "Aucun débit n’a été effectué.\nSi le problème persiste, contactez le gestionnaire de votre moyen de paiement, votre banque par exemple.",
-      "title": "Nous avons rencontré un problème avec le gestionnaire de votre moyen de paiement"
+      "body": "Aucun débit n’a été effectué.\nSi le problème persiste, contactez l’opérateur de votre moyen de paiement, votre banque par exemple.",
+      "title": "Nous avons rencontré un problème avec l’opérateur de votre moyen de paiement"
     },
     "survey": {
       "body": "Faites-nous part de votre expérience et aidez-nous à l’améliorer.",
@@ -257,41 +261,41 @@
       "yourCard": "Conseillé aux clients déjà inscrits"
     },
     "drawer": {
-      "body": "Cette liste vous indique tous les gestionnaires compatibles avec votre moyen de paiement, même si vous ne faites pas partie de leurs clients.",
+      "body": "Cette liste vous indique tous les opérateur compatibles avec votre moyen de paiement, même si vous ne faites pas partie de leurs clients.",
       "header": {
         "amount": "Frais",
-        "name": "Gestionnaire"
+        "name": "Opérateur"
       },
-      "title": "Avec quel gestionnaire voulez-vous payer ?"
+      "title": "Avec quel opérateur voulez-vous payer ?"
     },
-    "email": "Envoyer la validation à:",
+    "email": "Envoyer le résultat à:",
     "modal": {
-      "body": "Les opérations de transfert d’argent (en comptant ou en monnaie électronique) ont un coût qui permet de garantir un paiement sûr et vérifié.\nChaque gestionnaire (ou PSP, Prestataire de service de paiement) chiffre ses frais en fonction de ses stratégies commerciales et de ses conditions contractuelles.\nAvec pagoPA, ces frais sont transparents et le client peut choisir librement l’option qui lui convient. Pour en savoir plus, consulter la page  ",
-      "cancelBody": "Toutes les données saisies seront perdues.",
+      "body": "Les opérations de transfert d’argent (en comptant ou en monnaie électronique) ont un coût qui permet de garantir un paiement sûr et vérifié.\nChaque opérateur (ou PSP, Prestataire de service de paiement) chiffre ses frais en fonction de ses stratégies commerciales et de ses conditions contractuelles.\nAvec pagoPA, ces frais sont transparents et le client peut choisir librement l’option qui lui convient. Pour en savoir plus, consulter la page  ",
+      "cancelBody": "Toutes les données saisies seront effacées.",
       "cancelButton": "J’ai changé d’avis",
       "cancelTitle": "Sortir du paiement en cours ?",
       "link": "Transparence des frais facturés",
       "submitButton": "Sortir",
-      "title": "Pourquoi y-a-t-il des frais?"
+      "title": "Pourquoi y-a-t-il de frais?"
     },
     "psp": "Appliquée depuis",
     "total": "Total",
     "transaction": "Frais"
   },
   "paymentChoicePage": {
-    "bank": "Compte courant",
+    "bank": "Compte bancaire",
     "button": "Retour",
     "costs": "Transparence des frais facturés",
     "creditCard": "Carte de débit ou de crédit",
-    "description": "Pour en savoir plus sur les méthodes et les frais appliqués par les gestionnaires adhérents, voir la page  ",
-    "incoming": "Envoi en cours",
+    "description": "Pour en savoir plus sur les méthodes et les frais appliqués par les opérateurs adhérents, voir la page  ",
+    "incoming": "Bientôt disponible",
     "others": "Autres moyens de paiement",
-    "showMore": "Afficher tout",
+    "showMore": "Tout afficher",
     "title": "Comment voulez-vous payer ?"
   },
   "paymentMethods": {
     "bpay": "BANCOMAT Pay",
-    "cc": "Compte courant",
+    "cc": "Compte bancaire",
     "cp": "Carte de débit ou de crédit",
     "ppay": "Payer avec Postepay"
   },
@@ -321,14 +325,14 @@
       "cf": "Code fiscal organisme créancier"
     },
     "helpLink": "Voir un exemple",
-    "title": "Total à payer"
+    "title": "Que devez-vous payer?"
   },
   "paymentQrPage": {
-    "camBlocked": "Nous avons besoin de votre autorisation pour utiliser l’appareil photo. Pour modifier votre choix, voir les paramètre Confidentialité de votre navigateur",
-    "description": "Vérifier votre éclairage. Si le code n’est pas actif, éloignez-vous légèrement de l’écran.",
+    "camBlocked": "Nous avons besoin de votre autorisation pour utiliser l’appareil photo. Pour modifier votre choix, visitez les paramètre Confidentialité de votre navigateur",
+    "description": "Vérifier votre éclairage. Si le code n’est pas mis au point, éloignez-vous légèrement de l’écran.",
     "navigate": "L’opération a échoué ? Saisir les données manuellement",
     "reloadPage": "Recharger la page",
-    "title": "Scanner le QR code"
+    "title": "Scanner le code QR"
   },
   "paymentSummaryPage": {
     "amount": "Montant mis à jour",
@@ -366,15 +370,17 @@
     "body": "Si le problème persiste, veuillez nous le signaler !",
     "title": "Le réponse de l’organisme créancier a rencontré un problème"
   },
+  "errorMessageNpg": {
+    "hf0001": "Saisir 3 ou 4 chiffres"
+  },
   "errorMessageNPG": {
     "HF0002": "Service temporairement indisponible",
     "HF0003": "La session a expiré, retournez en arrière et réessayez",
     "HF0004": "Saisir un numéro valide",
-    "HF0005": "Le réseau de cette carte n'est pas pris en charge",
+    "HF0005": "Le circuit de cette carte n'est pas pris en charge",
     "HF0006": "Saisir mm/aa",
     "HF0007": "Saisir les informations inscrites sur la carte",
-    "HF0009": "Vérification 3DS échouée",
-    "HF0001": "Saisir 3 ou 4 chiffres"
+    "HF0009": "Vérification 3DS échouée"
   },
   "__variant-name": "Francese",
   "__variant-description": ""

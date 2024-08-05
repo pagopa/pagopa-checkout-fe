@@ -74,7 +74,7 @@
     "and": "e"
   },
   "indexPage": {
-    "description": "Puoi usare la tua carta di debito o credito, senza fare alcun login. Riceverai l'esito del pagamento via email.",
+    "description": "Puoi pagare con carta, conto e app di pagamento. Riceverai l'esito via email.",
     "title": "Paga un avviso"
   },
   "inputCardPage": {
@@ -123,9 +123,7 @@
     "footer": {
       "accessibility": "Accessibilità",
       "help": "Aiuto",
-      "pagoPA": "Visita il sito pagoPA",
-      "privacy": "Privacy",
-      "terms": "Condizioni"
+      "pagoPA": "Visita il sito pagoPA"
     },
     "header": {
       "detail": {
@@ -137,6 +135,12 @@
         "detailTitle": "Dettaglio avviso"
       },
       "disclaimer": "L’importo è aggiornato in automatico, così paghi sempre quanto dovuto ed eviti more o altri interessi."
+    }
+  },
+  "mainpage": {
+    "footer": {
+      "privacy": "Privacy",
+      "terms": "Condizioni"
     }
   },
   "NOTLISTED": {
@@ -222,7 +226,7 @@
       "title": "L’operazione è stata annullata"
     },
     "10": {
-      "body": "Non è stato addebitato alcun importo. Probabilmente hai sforato i limiti di spesa previsti dalla tua banca.",
+      "body": "Non è stato addebitato alcun importo. Probabilmente hai superato i limiti di spesa previsti dalla tua banca.",
       "title": "Autorizzazione negata"
     },
     "12": {
@@ -366,6 +370,9 @@
     "body": "Se il problema persiste, segnalacelo!",
     "title": "L'Ente Creditore sta avendo problemi nella risposta"
   },
+  "errorMessageNpg": {
+    "hf0001": "Inserisci 3 o 4 cifre"
+  },
   "errorMessageNPG": {
     "HF0002": "Servizio temporaneamente non disponibile",
     "HF0003": "La sessione è scaduta, torna indietro e riprova",
@@ -373,7 +380,6 @@
     "HF0005": "Il circuito di questa carta non è supportato",
     "HF0006": "Inserisci mm/aa",
     "HF0007": "Inserisci come riportato sulla carta",
-    "HF0009": "Verifica 3DS fallita",
-    "HF0001": "Inserisci 3 o 4 cifre"
+    "HF0009": "Verifica 3DS fallita"
   }
 }
