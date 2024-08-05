@@ -281,21 +281,35 @@ export const activePaymentTask = (
                 const cartInfo = getSessionItem(SessionItems.cart) as
                   | Cart
                   | undefined;
+                const paymentInfo = getSessionItem(SessionItems.paymentInfo) as
+                  | PaymentInfo
+                  | undefined;
                 if (cartInfo !== undefined) {
                   const rptIdAmountMap = new Map(
                     responseType.value.payments.map(
                       (p) => [p.rptId, p.amount] as [RptId, AmountEuroCents]
                     )
                   );
+                  const creditorReferenceMap = new Map(
+                    responseType.value.payments.map(
+                      (p) =>
+                        [p.rptId, p.creditorReferenceId] as [
+                          RptId,
+                          string | undefined
+                        ]
+                    )
+                  );
 
                   const updatedPaymentNotices = cartInfo.paymentNotices.map(
                     (paymentNotice) => {
-                      const updatedAmount = rptIdAmountMap.get(
-                        `${paymentNotice.fiscalCode}${paymentNotice.noticeNumber}` as RptId
-                      );
+                      const rptId =
+                        `${paymentNotice.fiscalCode}${paymentNotice.noticeNumber}` as RptId;
+                      const updatedAmount = rptIdAmountMap.get(rptId);
+                      const creditorId = creditorReferenceMap.get(rptId);
 
                       return {
                         ...paymentNotice,
+                        creditorReferenceId: creditorId,
                         amount: updatedAmount ?? paymentNotice.amount,
                       };
                     }
@@ -303,6 +317,12 @@ export const activePaymentTask = (
                   setSessionItem(SessionItems.cart, {
                     ...cart,
                     paymentNotices: updatedPaymentNotices,
+                  });
+                } else if (paymentInfo !== undefined) {
+                  setSessionItem(SessionItems.paymentInfo, {
+                    ...paymentInfo,
+                    creditorReferenceId:
+                      responseType.value.payments[0].creditorReferenceId,
                   });
                 }
               }
