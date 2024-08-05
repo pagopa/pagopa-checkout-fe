@@ -1,8 +1,10 @@
+/* eslint-disable sonarjs/cognitive-complexity */
 import Box from "@mui/material/Box/Box";
 import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidV4 } from "uuid";
+import ErrorModal from "../../../../components/modals/ErrorModal";
 import CheckoutLoader from "../../../../components/PageContent/CheckoutLoader";
 import ClickableFieldContainer from "../../../../components/TextFormField/ClickableFieldContainer";
 import { useAppDispatch } from "../../../../redux/hooks/hooks";
@@ -32,6 +34,8 @@ export function PaymentChoice(props: {
 }) {
   const ref = React.useRef<ReCAPTCHA>(null);
   const [loading, setLoading] = React.useState(true);
+  const [errorModalOpen, setErrorModalOpen] = React.useState(false);
+  const [error, setError] = React.useState("");
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -42,8 +46,10 @@ export function PaymentChoice(props: {
     }
   }, [ref.current]);
 
-  const onError = () => {
+  const onError = (m: string) => {
     setLoading(false);
+    setError(m);
+    setErrorModalOpen(true);
     ref.current?.reset();
   };
 
@@ -136,6 +142,19 @@ export function PaymentChoice(props: {
           sitekey={getReCaptchaKey() as string}
         />
       </Box>
+      {!!errorModalOpen && (
+        <ErrorModal
+          error={error}
+          open={errorModalOpen}
+          onClose={() => {
+            setErrorModalOpen(false);
+            window.location.replace(`/${CheckoutRoutes.ERRORE}`);
+          }}
+          titleId="iframeCardFormErrorTitleId"
+          errorId="iframeCardFormErrorId"
+          bodyId="iframeCardFormErrorBodyId"
+        />
+      )}
     </>
   );
 }

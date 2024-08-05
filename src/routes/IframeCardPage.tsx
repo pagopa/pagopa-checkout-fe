@@ -11,12 +11,7 @@ import { NewTransactionResponse } from "../../generated/definitions/payment-ecom
 export default function IFrameCardPage() {
   const navigate = useNavigate();
   const [loading] = React.useState(false);
-  // const [errorModalOpen, setErrorModalOpen] = React.useState(false);
-  // const [error, setError] = React.useState("");
-  // Is It allowed to store the bin temporary?
-  // const [bin, setBin] = React.useState("");
   const [hideCancelButton, setHideCancelButton] = React.useState(false);
-  // const dispatch = useAppDispatch();
 
   React.useEffect(() => {
     setHideCancelButton(
