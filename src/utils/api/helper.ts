@@ -472,7 +472,7 @@ export const calculateFees = async ({
     O.fromNullable,
     O.map((transaction) => ({
       bin,
-      touchpoint: "CHECKOUT",
+      touchpoint: transaction.clientId || "CHECKOUT",
       paymentNotices: transaction.payments.map((payment) => ({
         paymentAmount: payment.amount,
         primaryCreditorInstitution: payment.rptId.substring(0, 11),
