@@ -199,9 +199,10 @@ export const activatePayment = async ({
   const correlationId: string = getSessionItem(
     SessionItems.correlationId
   ) as string;
-  const cartClientId: string = getSessionItem(
-    SessionItems.cartClientId
-  ) as string;
+  // fallback to CHECKOUT client id in case of missing session item
+  const cartClientId: string =
+    (getSessionItem(SessionItems.cartClientId) as string | undefined) ||
+    "CHECKOUT";
   pipe(
     PaymentRequestsGetResponse.decode(paymentInfo),
     E.fold(
