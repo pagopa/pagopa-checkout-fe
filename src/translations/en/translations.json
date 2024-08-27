@@ -234,7 +234,7 @@
     },
     "17": {
       "body": "You will receive the payment result at the address {{useremail}}.",
-      "title": "Wait for confirmation via email"
+      "title": "Wait for payment confirmation"
     },
     "3dsNotInitiated": {
       "body": "No amount was charged.\nIf the problem continues, contact the operator of the payment method, your bank for example.",

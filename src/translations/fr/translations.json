@@ -234,7 +234,7 @@
     },
     "17": {
       "body": "Vous recevrez le résultat du paiement à l’adresse {{useremail}}.",
-      "title": "Attendez de recevoir la validation par e-mail"
+      "title": "Attendez de recevoir la validation du paiement"
     },
     "3dsNotInitiated": {
       "body": "Aucun débit n’a été effectué.\nSi le problème persiste, contactez l’opérateur de votre moyen de paiement, votre banque par exemple.",

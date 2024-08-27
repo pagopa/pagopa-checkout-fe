@@ -234,7 +234,7 @@
     },
     "17": {
       "body": "Rezultat plačila boste prejeli na naslov {{useremail}}.",
-      "title": "Počakajte na potrditev po elektronski pošti"
+      "title": "Počakajte na potrditev plačila"
     },
     "3dsNotInitiated": {
       "body": "Noben znesek ni bil zaračunan.\nČe težave ne morete odpraviti, se obrnite na ponudnika plačilnega sredstva, na primer na banko.",

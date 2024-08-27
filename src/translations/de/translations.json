@@ -234,7 +234,7 @@
     },
     "17": {
       "body": "Du erhältst eine Zahlungsbestätigung an die E-Mail-Adresse {{useremail}}.",
-      "title": "Warte auf die Bestätigung per E-Mail"
+      "title": "Warte auf die Zahlungsbestätigung"
     },
     "3dsNotInitiated": {
       "body": "Es ist keine Belastung erfolgt.\nWenn das Problem bestehen bleibt, wende dich an den Anbieter deiner Zahlungsmethode, z. B. deine Bank.",

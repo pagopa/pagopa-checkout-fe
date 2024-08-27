@@ -233,8 +233,8 @@
       "title": "Il metodo di pagamento non è supportato"
     },
     "17": {
-      "body": "Riceverai l'esito del pagamento all'indirizzo {{useremail}}.",
-      "title": "Attendi la conferma via email"
+      "body": "Il pagamento non si è ancora concluso: riceverai a breve l’esito all'indirizzo {{useremail}}. L’operazione può richiedere fino a 15 minuti.",
+      "title": "Attendi la conferma del pagamento"
     },
     "3dsNotInitiated": {
       "body": "Non è stato addebitato alcun importo.\nSe il problema persiste, contatta il gestore del metodo di pagamento, per esempio la tua banca.",
