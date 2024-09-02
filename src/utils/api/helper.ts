@@ -199,6 +199,10 @@ export const activatePayment = async ({
   const correlationId: string = getSessionItem(
     SessionItems.correlationId
   ) as string;
+  // fallback to CHECKOUT client id in case of missing session item
+  const cartClientId: string =
+    (getSessionItem(SessionItems.cartClientId) as string | undefined) ||
+    "CHECKOUT";
   pipe(
     PaymentRequestsGetResponse.decode(paymentInfo),
     E.fold(
@@ -212,6 +216,7 @@ export const activatePayment = async ({
             token,
             orderId,
             correlationId,
+            cartClientId,
             cartInfo
           ),
           TE.fold(
@@ -235,6 +240,7 @@ export const activePaymentTask = (
   recaptchaResponse: string,
   orderId: string,
   correlationId: string,
+  cartClientId: string,
   cart?: Cart
 ): TE.TaskEither<NodeFaultCode, NewTransactionResponse> =>
   pipe(
@@ -245,6 +251,7 @@ export const activePaymentTask = (
         });
         return apiPaymentEcommerceClientV2.newTransaction({
           "x-correlation-id": correlationId,
+          "x-client-id-from-client": cartClientId,
           recaptchaResponse,
           body: {
             paymentNotices: getPaymentNotices(amountSinglePayment, rptId, cart),
@@ -466,7 +473,7 @@ export const calculateFees = async ({
     O.fromNullable,
     O.map((transaction) => ({
       bin,
-      touchpoint: "CHECKOUT",
+      touchpoint: transaction.clientId || "CHECKOUT",
       paymentNotices: transaction.payments.map((payment) => ({
         paymentAmount: payment.amount,
         primaryCreditorInstitution: payment.rptId.substring(0, 11),
