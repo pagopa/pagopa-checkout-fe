@@ -64,6 +64,7 @@ export default function Header() {
           noticeNumber: paymentInfoData?.rptId
             ? paymentInfoData?.rptId.slice(11)
             : "",
+          creditorReferenceId: paymentInfoData?.creditorReferenceId,
           fiscalCode: paymentInfoData?.paFiscalCode || "",
           amount: paymentInfoData?.amount || 0,
           companyName: paymentInfoData?.paName || "",

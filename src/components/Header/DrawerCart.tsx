@@ -116,7 +116,7 @@ export default function DrawerCart(props: Props) {
               {t("cartDetail.noticeNumber")}
             </Typography>
             <Typography component="div" typography="sidenav" display="block">
-              {el.noticeNumber}
+              {el.creditorReferenceId ?? el.noticeNumber}
             </Typography>
             <Typography
               component="div"

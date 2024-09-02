@@ -76,6 +76,7 @@ export interface PaymentInfo {
   paName?: string;
   description?: string;
   dueDate?: string;
+  creditorReferenceId?: string;
 }
 
 export interface PaymentId {
@@ -126,6 +127,7 @@ export interface PaymentNotice {
   amount: number;
   companyName?: string;
   description?: string;
+  creditorReferenceId?: string;
 }
 
 interface ReturnUrls {
