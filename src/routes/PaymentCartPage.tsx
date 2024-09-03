@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import ErrorModal from "../components/modals/ErrorModal";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
 import { Cart } from "../features/payment/models/paymentModel";
@@ -11,11 +11,12 @@ import { CheckoutRoutes } from "./models/routeModel";
 export default function PaymentCartPage() {
   const navigate = useNavigate();
   const { cartid } = useParams();
+  const [searchParams, _] = useSearchParams();
 
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
-
+  const cartClientId = searchParams.get("clientId");
   const onError = (m: string) => {
     setLoading(false);
     setError(m);
@@ -30,6 +31,8 @@ export default function PaymentCartPage() {
   const onResponse = (cart: Cart) => {
     setSessionItem(SessionItems.cart, cart);
     setSessionItem(SessionItems.useremail, cart.emailNotice || "");
+    // if b.e. does not communicate cart client id it is defaulted to CHECKOUT (the same value used without cart discrimination)
+    setSessionItem(SessionItems.cartClientId, cartClientId || "CHECKOUT");
     adaptCartAsPaymentInfo(cart);
     adaptCartAsRptId(cart);
     navigate(`/${CheckoutRoutes.INSERISCI_EMAIL}`, {
