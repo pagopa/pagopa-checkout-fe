@@ -1,12 +1,12 @@
 {
   "name": "io-pay-portal-frontend",
-  "version": "2.8.1",
+  "version": "2.11.0",
   "scripts": {
     "type-check": "tsc",
     "generate": "npm-run-all generate:*",
     "generate:payment-transactions-api": "rimraf generated/definitions/payment-transactions-api && shx mkdir -p generated/definitions/payment-transactions-api && gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/pagopa-functions-checkout/v1.1.2/openapi/index.yaml --no-strict --out-dir ./generated/definitions/payment-transactions-api --request-types --response-decoders --client",
-    "generate:payment-ecommerce-v1": "rimraf generated/definitions/payment-ecommerce && shx mkdir -p generated/definitions/payment-ecommerce && gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/pagopa-infra/v1.27.0/src/domains/ecommerce-app/api/ecommerce-checkout/v1/_openapi.json.tpl --no-strict --out-dir ./generated/definitions/payment-ecommerce --request-types --response-decoders --client",
-    "generate:payment-ecommerce-v2": "rimraf generated/definitions/payment-ecommerce-v2 && shx mkdir -p generated/definitions/payment-ecommerce-v2 && gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/pagopa-infra/v1.27.0/src/domains/ecommerce-app/api/ecommerce-checkout/v2/_openapi.json.tpl --no-strict --out-dir ./generated/definitions/payment-ecommerce-v2 --request-types --response-decoders --client",
+    "generate:payment-ecommerce-v1": "rimraf generated/definitions/payment-ecommerce && shx mkdir -p generated/definitions/payment-ecommerce && gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/pagopa-infra/v1.176.0/src/domains/ecommerce-app/api/ecommerce-checkout/v1/_openapi.json.tpl --no-strict --out-dir ./generated/definitions/payment-ecommerce --request-types --response-decoders --client",
+    "generate:payment-ecommerce-v2": "rimraf generated/definitions/payment-ecommerce-v2 && shx mkdir -p generated/definitions/payment-ecommerce-v2 && gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/pagopa-infra/v1.179.0/src/domains/ecommerce-app/api/ecommerce-checkout/v2/_openapi.json.tpl --no-strict --out-dir ./generated/definitions/payment-ecommerce-v2 --request-types --response-decoders --client",
     "lint": "eslint . -c .eslintrc.js --ext .ts,.tsx",
     "lint-autofix": "eslint . -c .eslintrc.js --ext .ts,.tsx --fix",
     "prebuild": "npm-run-all generate type-check lint",
