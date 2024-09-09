@@ -4,7 +4,7 @@ The repository contains the code implementing IO Pay Portal frontend.
 
 ## About The Project
 
-This project is a simple frontend that interacts with the services implemented in _io-functions-pay-portal_, and the goal is to verify and start a payment given a "Codice Avviso Pagamento". If the verification is successful, the app redirects to [io-pay](https://github.com/pagopa/io-pay).
+This project is the frontend for [checkout](https://pagopa.atlassian.net/wiki/spaces/I/pages/759432562/Checkout+-+NPG+-+Design+Review) payment flow that interacts with the [ecommerce api](https://pagopa.atlassian.net/wiki/spaces/I/pages/529171235/eCommerce).
 
 ### Built With
 
@@ -25,7 +25,7 @@ To get a local copy up and running follow these simple example steps.
 In order to build and run this project are required:
 
 - [yarn](https://yarnpkg.com/)
-- [node (>=10.18.0)](https://nodejs.org/it/)
+- [node (18.17.1)](https://nodejs.org/it/)
 
 ### Configuration
 
@@ -38,27 +38,23 @@ The table below describes all the Environment variables needed by the applicatio
 
 ### Installation
 
-1. Clone the repo
-   ```sh
-   git clone https://github.com/pagopa/io-pay-portal
-   ```
-2. Install node packages
+1. Install node packages
    ```sh
    yarn install
    ```
-4. Generate api client
+2. Generate api client
    ```sh
    yarn generate
    ```
-5. Build
+3. Build
    ```sh
    yarn build
    ```
-6. tests
+4. tests
    ```sh
    yarn test
    ```
-7. Linter
+5. Linter
    ```sh
    yarn lint
    ```
