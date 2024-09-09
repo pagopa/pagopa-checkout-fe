@@ -10,7 +10,7 @@ import {
   setSessionItem,
 } from "../utils/storage/sessionStorage";
 import { CheckoutRoutes } from "./models/routeModel";
-import PrivacyInfo from "components/PrivacyPolicy/PrivacyInfo";
+import PrivacyInfo from "../components/PrivacyPolicy/PrivacyInfo";
 
 type LocationProps = {
   state: {
