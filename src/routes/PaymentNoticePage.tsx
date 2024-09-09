@@ -125,6 +125,8 @@ export default function PaymentNoticePage() {
           onClose={() => {
             setErrorModalOpen(false);
           }}
+          titleId="verifyPaymentTitleError"
+          bodyId="verifyPaymentBodyError"
         />
       </PageContainer>
       <Box display="none">
