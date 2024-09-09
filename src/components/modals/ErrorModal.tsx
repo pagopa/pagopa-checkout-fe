@@ -128,7 +128,6 @@ function ErrorModal(props: {
             action={
               <Tooltip title={copy} onMouseOver={(e) => e.stopPropagation()}>
                 <Button
-                  id="errorCodeText"
                   variant="text"
                   onClick={() => {
                     void navigator.clipboard.writeText(nodeFaultCodeDetails);
