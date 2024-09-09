@@ -302,6 +302,9 @@
           "text": "Vai al sondaggio",
           "href": "https://pagopa.gov.it/diccilatua/ces-pagamento/"
         }
+      },
+      "buttons": {
+        "continue": "Continua"
       }
     },
     "cancelledPage": {
