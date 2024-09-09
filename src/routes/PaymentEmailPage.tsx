@@ -3,14 +3,17 @@ import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import PageContainer from "../components/PageContent/PageContainer";
 import { PaymentEmailForm } from "../features/payment/components/PaymentEmailForm/PaymentEmailForm";
-import { Cart, PaymentEmailFormFields } from "../features/payment/models/paymentModel";
+import {
+  Cart,
+  PaymentEmailFormFields,
+} from "../features/payment/models/paymentModel";
 import {
   getSessionItem,
   SessionItems,
   setSessionItem,
 } from "../utils/storage/sessionStorage";
-import { CheckoutRoutes } from "./models/routeModel";
 import PrivacyInfo from "../components/PrivacyPolicy/PrivacyInfo";
+import { CheckoutRoutes } from "./models/routeModel";
 
 type LocationProps = {
   state: {
