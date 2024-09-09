@@ -3,13 +3,14 @@ import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import PageContainer from "../components/PageContent/PageContainer";
 import { PaymentEmailForm } from "../features/payment/components/PaymentEmailForm/PaymentEmailForm";
-import { PaymentEmailFormFields } from "../features/payment/models/paymentModel";
+import { Cart, PaymentEmailFormFields } from "../features/payment/models/paymentModel";
 import {
   getSessionItem,
   SessionItems,
   setSessionItem,
 } from "../utils/storage/sessionStorage";
 import { CheckoutRoutes } from "./models/routeModel";
+import PrivacyInfo from "components/PrivacyPolicy/PrivacyInfo";
 
 type LocationProps = {
   state: {
@@ -22,6 +23,8 @@ export default function PaymentEmailPage() {
   const noConfirmEmail: boolean = (state && state.noConfirmEmail) || false;
   const navigate = useNavigate();
   const email = getSessionItem(SessionItems.useremail) as string | undefined;
+  const cartInfo = getSessionItem(SessionItems.cart) as Cart | undefined;
+
   const emailForm = noConfirmEmail
     ? { email: email || "", confirmEmail: "" }
     : { email: email || "", confirmEmail: email || "" };
@@ -45,6 +48,7 @@ export default function PaymentEmailPage() {
             onSubmit={onSubmit}
             defaultValues={emailForm}
           />
+          {cartInfo && <PrivacyInfo />}
         </Box>
       </PageContainer>
     </>
