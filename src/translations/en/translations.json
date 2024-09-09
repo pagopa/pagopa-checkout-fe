@@ -74,6 +74,11 @@
         "cancel": "Cancel"
       }
     },
+    "paymentResponsePage": {
+      "buttons": {
+        "continue": "Continua"
+      }
+    },
     "general": {
       "and": "&"
     },
