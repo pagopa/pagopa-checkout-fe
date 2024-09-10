@@ -162,7 +162,7 @@ export default function PaymentResponsePage() {
                 ? t(outcomeMessage.body, usefulPrintData)
                 : ""}
             </Typography>
-            <Box display="block" px={8} sx={{ width: "100%" }}>
+            <Box px={8} sx={{ width: "100%", height: "100%" }}>
               <Button
                 variant="outlined"
                 onClick={() => {
@@ -170,6 +170,7 @@ export default function PaymentResponsePage() {
                 }}
                 sx={{
                   width: "100%",
+                  height: "100%",
                   minHeight: 45,
                   my: 4,
                 }}
