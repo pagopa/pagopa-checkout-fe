@@ -33,7 +33,12 @@ export default function Footer(props: { fixedPages: Array<string> }) {
       }}
     >
       <Typography variant="caption" component={"div"}>
-        <Box display={"flex"} alignItems={"center"} gap={1}>
+        <Box
+          display={"flex"}
+          alignItems={"center"}
+          columnGap={1}
+          flexWrap={"wrap"}
+        >
           <Link
             href="https://form.agid.gov.it/view/7628e161-33c0-420f-8c80-4fe362d2c7c5/"
             target="_blank"
@@ -88,7 +93,9 @@ export default function Footer(props: { fixedPages: Array<string> }) {
           {Object.keys(lang).length > 1 && (
             <>
               <p aria-hidden="true">·</p>
-              <LanguageFooterMenu />
+              <Box my={1}>
+                <LanguageFooterMenu />
+              </Box>
             </>
           )}
         </Box>
