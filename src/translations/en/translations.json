@@ -123,7 +123,9 @@
     "footer": {
       "accessibility": "Accessibility",
       "help": "Help",
-      "pagoPA": "Visit the pagoPA website"
+      "pagoPA": "Visit the pagoPA website",
+      "privacy": "Privacy",
+      "terms": "Terms"
     },
     "header": {
       "detail": {
