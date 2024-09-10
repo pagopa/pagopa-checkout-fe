@@ -4,7 +4,10 @@ The repository contains the code implementing IO Pay Portal frontend.
 
 ## About The Project
 
-This project is the frontend for [checkout](https://pagopa.atlassian.net/wiki/spaces/I/pages/759432562/Checkout+-+NPG+-+Design+Review) payment flow that interacts with the [ecommerce api](https://pagopa.atlassian.net/wiki/spaces/I/pages/529171235/eCommerce).
+This project is the frontend for [Checkout](https://checkout.pagopa.it)[1] payment flow that interacts with the [eCommerce API](https://github.com/topics/pagopa-ecommerce)[2].
+
+[1]: https://pagopa.atlassian.net/wiki/spaces/I/pages/759432562/Checkout+-+NPG+-+Design+Review
+[2]: https://pagopa.atlassian.net/wiki/spaces/I/pages/529171235/eCommerce
 
 ### Built With
 
