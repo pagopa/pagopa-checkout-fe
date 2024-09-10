@@ -372,10 +372,8 @@
     "body": "Se il problema persiste, segnalacelo!",
     "title": "L'Ente Creditore sta avendo problemi nella risposta"
   },
-  "errorMessageNpg": {
-    "hf0001": "Inserisci 3 o 4 cifre"
-  },
   "errorMessageNPG": {
+    "HF0001": "Inserisci 3 o 4 cifre",
     "HF0002": "Servizio temporaneamente non disponibile",
     "HF0003": "La sessione è scaduta, torna indietro e riprova",
     "HF0004": "Inserisci un numero valido",

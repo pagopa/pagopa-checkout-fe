@@ -123,7 +123,9 @@
     "footer": {
       "accessibility": "Dostopnost",
       "help": "Pomoč",
-      "pagoPA": "Obiščite spletno stran pagoPA"
+      "pagoPA": "Obiščite spletno stran pagoPA",
+      "privacy": "Zasebnost",
+      "terms": "Pogoji"
     },
     "header": {
       "detail": {
@@ -135,12 +137,6 @@
         "detailTitle": "Podrobnosti o obvestilu"
       },
       "disclaimer": "Znesek se samodejno posodobi, zato vedno plačate le kar dolgujete in se izognete zamudnim ali drugim obrestim."
-    }
-  },
-  "mainpage": {
-    "footer": {
-      "privacy": "Zasebnost",
-      "terms": "Pogoji"
     }
   },
   "NOTLISTED": {
@@ -370,10 +366,8 @@
     "body": "Če težave ne morete odpraviti, nam to sporočite!",
     "title": "Upnik ima težave z odzivom"
   },
-  "errorMessageNpg": {
-    "hf0001": "Vnesite 3 ali 4 mestna"
-  },
   "errorMessageNPG": {
+    "HF0001": "Vnesite 3 ali 4 mestna",
     "HF0002": "Storitev začasno ni na voljo",
     "HF0003": "Seja je potekla, pojdite nazaj in poskusite znova",
     "HF0004": "Vnesite veljavno številko",

@@ -372,10 +372,8 @@
     "body": "If the problem continues, report it to us!",
     "title": "The payee is having problems with the response"
   },
-  "errorMessageNpg": {
-    "hf0001": "Enter 3 or 4 digits"
-  },
   "errorMessageNPG": {
+    "HF0001": "Enter 3 or 4 digits",
     "HF0002": "Service temporarily unavailable",
     "HF0003": "The session has expired, go back and try again",
     "HF0004": "Enter a valid number",

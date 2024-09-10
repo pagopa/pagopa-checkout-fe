@@ -123,7 +123,9 @@
     "footer": {
       "accessibility": "Barrierefreiheit",
       "help": "Hilfe",
-      "pagoPA": "Website von pagoPA aufrufen"
+      "pagoPA": "Website von pagoPA aufrufen",
+      "privacy": "Datenrichtlinie",
+      "terms": "Nutzungsbedingungen"
     },
     "header": {
       "detail": {
@@ -135,12 +137,6 @@
         "detailTitle": "Daten der Zahlungsaufforderung"
       },
       "disclaimer": "Der Betrag wird automatisch aktualisiert, damit du stets den zu zahlenden Betrag begleichst und Verzugsgebühren oder Zinsen vermeidest."
-    }
-  },
-  "mainpage": {
-    "footer": {
-      "privacy": "Datenrichtlinie",
-      "terms": "Nutzungsbedingungen"
     }
   },
   "NOTLISTED": {
@@ -370,10 +366,8 @@
     "body": "Wenn das Problem bestehen bleibt, melde es uns bitte!",
     "title": "Die empfangende Behörde hat Probleme mit der Antwort"
   },
-  "errorMessageNpg": {
-    "hf0001": "3 oder 4 Ziffern eingeben"
-  },
   "errorMessageNPG": {
+    "HF0001": "3 oder 4 Ziffern eingeben",
     "HF0002": "Dienst vorübergehend nicht verfügbar",
     "HF0003": "Die Sitzung ist abgelaufen, geh zurück und versuch es noch einmal",
     "HF0004": "Gültige Nummer eingeben",

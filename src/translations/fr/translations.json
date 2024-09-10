@@ -123,7 +123,9 @@
     "footer": {
       "accessibility": "Accessibilité",
       "help": "Aide",
-      "pagoPA": "Visiter le site pagoPA"
+      "pagoPA": "Visiter le site pagoPA",
+      "privacy": "Confidentialité",
+      "terms": "Conditions"
     },
     "header": {
       "detail": {
@@ -135,12 +137,6 @@
         "detailTitle": "Détail avis"
       },
       "disclaimer": "Le montant est mis à jour automatiquement : vous payez toujours à temps, sans pénalités ni intérêts de retard."
-    }
-  },
-  "mainpage": {
-    "footer": {
-      "privacy": "Confidentialité",
-      "terms": "Conditions"
     }
   },
   "NOTLISTED": {
@@ -370,10 +366,8 @@
     "body": "Si le problème persiste, veuillez nous le signaler !",
     "title": "Le réponse de l’organisme créancier a rencontré un problème"
   },
-  "errorMessageNpg": {
-    "hf0001": "Saisir 3 ou 4 chiffres"
-  },
   "errorMessageNPG": {
+    "HF0001": "Saisir 3 ou 4 chiffres",
     "HF0002": "Service temporairement indisponible",
     "HF0003": "La session a expiré, retournez en arrière et réessayez",
     "HF0004": "Saisir un numéro valide",
