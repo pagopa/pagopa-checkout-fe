@@ -116,7 +116,7 @@ export default function PaymentResponsePageV2() {
               ? t(outcomeMessage.body, usefulPrintData)
               : ""}
           </Typography>
-          <Box display="block" px={8} sx={{ width: "100%", height: "100%" }}>
+          <Box px={8} sx={{ width: "100%", height: "100%" }}>
             <Button
               variant="outlined"
               onClick={() => {
