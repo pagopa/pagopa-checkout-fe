@@ -1,14 +1,14 @@
-import { Box, Link, Typography } from "@mui/material";
+import { Box, Link, Typography, useTheme } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
-import { theme } from "@pagopa/mui-italia";
 import pagopaLogo from "../../assets/images/logo-pagopa-spa.svg";
 import LanguageFooterMenu from "../LanguageMenu/LanguageNativeSelect";
 import lang from "../../translations/lang";
 
 export default function Footer(props: { fixedPages: Array<string> }) {
   const { t } = useTranslation();
+  const theme = useTheme();
   const location = useLocation();
   const isFixed = () =>
     props.fixedPages.includes(location.pathname.split("/").slice(-1)[0]);
@@ -33,7 +33,12 @@ export default function Footer(props: { fixedPages: Array<string> }) {
       }}
     >
       <Typography variant="caption" component={"div"}>
-        <Box display={"flex"} alignItems={"center"} gap={1}>
+        <Box
+          display={"flex"}
+          alignItems={"center"}
+          columnGap={1}
+          flexWrap={"wrap"}
+        >
           <Link
             href="https://form.agid.gov.it/view/7628e161-33c0-420f-8c80-4fe362d2c7c5/"
             target="_blank"
@@ -88,7 +93,9 @@ export default function Footer(props: { fixedPages: Array<string> }) {
           {Object.keys(lang).length > 1 && (
             <>
               <p aria-hidden="true">·</p>
-              <LanguageFooterMenu />
+              <Box my={1}>
+                <LanguageFooterMenu />
+              </Box>
             </>
           )}
         </Box>
