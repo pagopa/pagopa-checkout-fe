@@ -3,7 +3,9 @@
       "footer": {
         "accessibility": "Accessibilità",
         "help": "Aiuto",
-        "pagoPA": "Visita il sito pagoPA"
+        "pagoPA": "Visita il sito pagoPA",
+        "privacy": "Privacy",
+        "terms": "Condizioni"
       },
       "header": {
         "disclaimer": "L’importo è aggiornato in automatico, così paghi sempre quanto dovuto ed eviti more o altri interessi.",

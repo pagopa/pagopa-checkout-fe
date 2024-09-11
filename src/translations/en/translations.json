@@ -3,7 +3,9 @@
       "footer": {
         "accessibility": "Accessibility",
         "help": "Help",
-        "pagoPA": "visit pagoPA site"
+        "pagoPA": "visit pagoPA site",
+        "privacy": "Privacy",
+        "terms": "Terms"
       },
       "header": {
         "disclaimer": "",
