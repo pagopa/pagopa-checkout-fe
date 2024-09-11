@@ -243,6 +243,9 @@
         "text": "Weiter zur Umfrage"
       },
       "title": "Sagst du uns bitte, wie es gelaufen ist?"
+    },
+    "buttons": {
+      "continue": "Weiter"
     }
   },
   "paymentCheckPage": {

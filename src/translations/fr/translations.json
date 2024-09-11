@@ -243,6 +243,9 @@
         "text": "Aller au sondage"
       },
       "title": "Racontez-nous votre expérience"
+    },
+    "buttons": {
+      "continue": "Continuer"
     }
   },
   "paymentCheckPage": {

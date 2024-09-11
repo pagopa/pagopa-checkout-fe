@@ -249,6 +249,9 @@
         "text": "Go to the survey"
       },
       "title": "Could you share your experience with us?"
+    },
+    "buttons": {
+      "continue": "Continue"
     }
   },
   "paymentCheckPage": {
@@ -269,11 +272,6 @@
         "name": "Operator"
       },
       "title": "Which operator do you want to use for payment?"
-    },
-    "paymentResponsePage": {
-      "buttons": {
-        "continue": "Continue"
-      }
     },
     "email": "Send the result to:",
     "modal": {

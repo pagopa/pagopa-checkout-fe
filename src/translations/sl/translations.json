@@ -243,6 +243,9 @@
         "text": "Pojdite na anketo"
       },
       "title": "Nam lahko poveste, kako je bilo?"
+    },
+    "buttons": {
+      "continue": "Nadaljuj"
     }
   },
   "paymentCheckPage": {
