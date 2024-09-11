@@ -249,6 +249,9 @@
         "text": "Go to the survey"
       },
       "title": "Could you share your experience with us?"
+    },
+    "buttons": {
+      "continue": "Continue"
     }
   },
   "paymentCheckPage": {

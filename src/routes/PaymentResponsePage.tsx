@@ -174,7 +174,9 @@ export default function PaymentResponsePage() {
                   my: 4,
                 }}
               >
-                {t("errorButton.close")}
+                {cart != null
+                  ? t("paymentResponsePage.buttons.continue")
+                  : t("errorButton.close")}
               </Button>
             </Box>
             {conf.CHECKOUT_SURVEY_SHOW && outcome === ViewOutcomeEnum.SUCCESS && (

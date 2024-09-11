@@ -249,6 +249,9 @@
         "text": "Vai al sondaggio"
       },
       "title": "Puoi dirci com’è andata?"
+    },
+    "buttons": {
+      "continue": "Continua"
     }
   },
   "paymentCheckPage": {
