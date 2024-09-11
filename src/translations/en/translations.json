@@ -1,94 +1,387 @@
 {
-    "mainPage": {
-      "footer": {
-        "accessibility": "Accessibility",
-        "help": "Help",
-        "pagoPA": "visit pagoPA site",
-        "privacy": "Privacy",
-        "terms": "Terms"
-      },
-      "header": {
-        "disclaimer": "",
-        "detail": {
-          "detail": {
-            "detailTitle": "",
-            "detailAmount": "",
-            "detailSubject": "",
-            "detailReceiver": "",
-            "detailFC": "",
-            "detailIUV": ""
-          }
-        }
-      }
-    },
-    "privacyInfo": {
-      "privacyDesc": "On Continue you declare that you have read and understood the ",
-      "googleDesc": " Form protected by reCAPTCHA and Google",
-      "privacy": "Privacy Policy and Terms and conditions of use of the service.",
-      "privacyPolicy": "Privacy Policy",
-      "serviceTerms": "Terms of Service"
-    },
-    "paymentNoticePage": {
-      "title": "What do you have to pay?",
-      "description": "Enter the data as shown on the payment notification.",
-      "helpLink": "See an example",
-      "formFields": {
-        "billCode": "Notification Code",
-        "cf": "Creditor Institution Tax Identification Number"
-      },
-      "formErrors": {
-        "required": "Required field",
-        "minCode": "Enter 18 digits",
-        "minCf": "Enter 11 digits"
-      },
-      "formButtons": {
-        "cancel": "Back",
-        "submit": "Continue"
-      }
-    },
-    "paymentSummaryPage": {
-      "title": "Payment Notice",
-      "description": "pagoPA automatically updates the amount to ensure that you have paid exactly what is due and thus avoid overdrafts or other interests.",
-      "amount": "Updated amount",
-      "creditor": "Creditor Institution",
-      "causal": "Causal",
-      "cf": "Creditor Institution tax code",
-      "iuv": "IUV Code",
-      "buttons": {
-        "cancel": "Back",
-        "submit": "Pay this notice"
-      }
-    },
-    "paymentEmailPage": {
-      "title": "Enter your email",
-      "description": "You will receive the payment result at this address",
-      "formFields": {
-        "email": "Email address",
-        "confirmEmail": "Confirm your email address"
-      },
-      "formErrors": {
-        "required": "Required field",
-        "invalid": "Enter a valid email address",
-        "notEqual": "Email address should be the same"
-      },
-      "formButtons": {
-        "submit": "Continue",
-        "cancel": "Cancel"
-      }
-    },
-    "general": {
-      "and": "&"
-    },
-    "app": {
-      "title": "Pay a notice - pagoPA"
-    },
-    "ariaLabels": {
-      "languageMenu": "Current language",
-      "appLanguage": "Select language",
+  "acsSlow": {
+    "body": "We are putting you in contact with the operator of your payment method for transaction authorization.",
+    "title": "Waiting for a response from your bank…"
+  },
+  "app": {
+    "title": "Pay a notice - pagoPA"
+  },
+  "ariaLabels": {
+    "appLanguage": "Set language",
+    "close": "Close",
+    "editCard": "Change card details",
+    "editDonation": "Change donation institution",
+    "editPsp": "Change payment service provider (PSP)",
+    "informationDialog": "Information",
+    "informationLink": "To learn more about the campaign",
+    "languageMenu": "Selected language",
+    "loading": "Loading"
+  },
+  "cancelledPage": {
+    "body": "The operation was canceled",
+    "button": "Close"
+  },
+  "cartDetail": {
+    "amount": "Subtotal",
+    "companyName": "Payee",
+    "description": "Payment description",
+    "fiscalCode": "Payee fiscal code",
+    "noticeNumber": "Notice code"
+  },
+  "clipboard": {
+    "copied": "Copied",
+    "copy": "Copy",
+    "edit": "Change"
+  },
+  "DOMAIN_UNKNOWN": {
+    "title": "The payee is having problems with the response",
+    "buttons": {
       "close": "Close",
-      "editPsp": "Change PSP",
-      "editCard": "Edit credit card",
-      "informationDialog": "Informations",
-      "loading": "Loading"
+      "help": "Contact support"
     }
-  }
+  },
+  "DONATIONLIST_ERROR": "We were not able to load the list of organizations.",
+  "donationPage": {
+    "click": "press",
+    "code": "and scan the code:",
+    "description": "You have until 23 December to donate. You can donate with your card without fees. The amount will be paid directly to the account of the organization to which you choose to donate.",
+    "dismissCTA": "Show organizations",
+    "dismissDescription": "If you want, you can donate to one of the humanitarian organizations that joined the initiative.",
+    "dismissTitle": "The service is no longer active",
+    "entity": "Who do you want to donate to?",
+    "ioDescription": "Donate with the IO app to receive an email with information concerning tax benefits.",
+    "modalBody2": "You can donate with your cards without fees.",
+    "modalTitle": "Continue to the IO app",
+    "openSection": "Open the section",
+    "payNotice": "Pay a notice",
+    "portfolio": "Wallet",
+    "submitCard": "Donate with your card",
+    "submitIO": "Donate with IO",
+    "title": "Donate for the crisis in Ukraine",
+    "volunteer": "How much do you want to donate?"
+  },
+  "errorButton": {
+    "close": "Close",
+    "help": "Contact support",
+    "retry": "Try again"
+  },
+  "ErrorCodeDescription": "Error code for support",
+  "GENERIC_ERROR": {
+    "body": "Try again or contact support.",
+    "title": "An unexpected error occurred"
+  },
+  "general": {
+    "and": "and"
+  },
+  "indexPage": {
+    "description": "You can pay by card, bank account or payment app. You will receive the payment result via email.",
+    "title": "Pay a notice"
+  },
+  "inputCardPage": {
+    "formErrors": {
+      "cid": "Enter 4 digits",
+      "cvv": "Enter 3 digits",
+      "expirationDate": "Enter mm/yy",
+      "name": "Enter name as shown on the card",
+      "number": "Enter a valid number",
+      "required": "Required"
+    },
+    "formFields": {
+      "cid": "CID (4 digits)",
+      "cvv": "CVV",
+      "expirationDate": "Expiration date",
+      "name": "Card holder",
+      "number": "Card number"
+    },
+    "helpLink": "Where can I find the security code?",
+    "modal": {
+      "description": "It is a three-digit code, called CVV or CVS, which you can find on the back of your card.",
+      "descriptionAE": "On American Express cards, the code (CID) has four digits and is located on the front.",
+      "title": "Security code"
+    },
+    "title": "Enter card information"
+  },
+  "INVALID_CARD": {
+    "body": "Try to enter valid card information or contact us for help if necessary.",
+    "title": "We are sorry, the card is not valid"
+  },
+  "INVALID_DECODE": {
+    "body": "Try again or contact us for help.",
+    "title": "There was an error reading the data"
+  },
+  "INVALID_QRCODE": {
+    "body": "If the problem continues, try entering the information manually.",
+    "title": "The scanned code is not a pagoPA notice"
+  },
+  "koPage": {
+    "body": "No amount was charged.",
+    "button": "Close",
+    "helpButton": "Do you need help?",
+    "title": "An unexpected error occurred"
+  },
+  "mainPage": {
+    "footer": {
+      "accessibility": "Accessibility",
+      "help": "Help",
+      "pagoPA": "Visit the pagoPA website",
+      "privacy": "Privacy",
+      "terms": "Terms"
+    },
+    "header": {
+      "detail": {
+        "detailAmount": "Amount",
+        "detailFC": "Payee tax code",
+        "detailIUV": "Payment Identification Code (IUV)",
+        "detailReceiver": "Payee",
+        "detailSubject": "Payment description",
+        "detailTitle": "Notice detail"
+      },
+      "disclaimer": "The amount is updated automatically, therefore you will always pay what is due and avoid arrears or other interest."
+    }
+  },
+  "mainpage": {
+    "footer": {
+      "privacy": "Privacy",
+      "terms": "Terms"
+    }
+  },
+  "NOTLISTED": {
+    "body": "Try again or contact us for help.",
+    "title": "An unexpected error occurred"
+  },
+  "PAYMENT_CANCELED": {
+    "body": "Contact the payee for more information.",
+    "title": "The payee revoked this notice"
+  },
+  "PAYMENT_DATA_ERROR": {
+    "title": "The notice information is not correct"
+  },
+  "PAYMENT_DUPLICATED": {
+    "body": "If you paid on this website, the receipt was sent to the email address you indicated during payment.",
+    "title": "This notice was already paid!"
+  },
+  "PAYMENT_EXPIRED": {
+    "body": "Contact the payee for more information.",
+    "title": "The notice has expired and it can no longer be paid"
+  },
+  "PAYMENT_ONGOING": {
+    "body": "If the problem continues, report it to us!",
+    "title": "A payment is already in progress, try again later"
+  },
+  "PAYMENT_UNAVAILABLE": {
+    "title": "There is a technical problem with this notice"
+  },
+  "PAYMENT_UNKNOWN": {
+    "body": "The notice may have already been paid. To get support, contact the Payee.",
+    "title": "We can’t find the notice"
+  },
+  "paymentEmailPage": {
+    "description": "You will receive the payment result at this address",
+    "formButtons": {
+      "back": "Go back",
+      "submit": "Continue"
+    },
+    "formErrors": {
+      "invalid": "Enter a valid email address",
+      "notEqual": "The email addresses must match",
+      "required": "Required field"
+    },
+    "formFields": {
+      "confirmEmail": "Repeat again",
+      "email": "Email address"
+    },
+    "title": "Enter your email"
+  },
+  "paymentResponsePage": {
+    "0": {
+      "body": "We have sent the payment receipt to {{useremail}}",
+      "title": "You have paid {{amount}}"
+    },
+    "1": {
+      "body": "No amount was charged.",
+      "title": "An unexpected error occurred."
+    },
+    "2": {
+      "body": "No amount was charged. Check you have correctly followed the instructions from your bank.",
+      "title": "Authorization denied"
+    },
+    "3": {
+      "body": "If you paid using a debit or credit card, make sure to enter the data as shown on the front of the card.",
+      "title": "The payment method information are not correct"
+    },
+    "4": {
+      "body": "No amount was charged. For your security, you have a limited amount of time to complete the operation.",
+      "title": "The session has expired"
+    },
+    "5": {
+      "title": "The card circuit is not supported"
+    },
+    "6": {
+      "title": "Some data is missing in order to proceed with the payment"
+    },
+    "7": {
+      "body": "Contact your bank for more information.",
+      "title": "The payment method has expired or is no longer valid"
+    },
+    "8": {
+      "body": "No amount was charged.",
+      "title": "The operation was canceled"
+    },
+    "10": {
+      "body": "No amount was charged. You have probably exceeded the limits set by your bank.",
+      "title": "Authorization denied"
+    },
+    "12": {
+      "title": "The payment method is not supported"
+    },
+    "17": {
+      "body": "You will receive the payment result at the address {{useremail}}.",
+      "title": "Wait for payment confirmation"
+    },
+    "3dsNotInitiated": {
+      "body": "No amount was charged.\nIf the problem continues, contact the operator of the payment method, your bank for example.",
+      "title": "There was a problem with the operator of your payment method"
+    },
+    "survey": {
+      "body": "Tell us about your experience with the payment and help us improve.",
+      "link": {
+        "href": "https://pagopa.gov.it/diccilatua/ces-pagamento/",
+        "text": "Go to the survey"
+      },
+      "title": "Could you share your experience with us?"
+    }
+  },
+  "paymentCheckPage": {
+    "buttons": {
+      "cancel": "Cancel",
+      "submit": "Pay",
+      "wait": "Wait…"
+    },
+    "creditCard": "Pay with",
+    "disclaimer": {
+      "cheaper": "Suggested because least expensive",
+      "yourCard": "Suggested because you are already a customer"
+    },
+    "drawer": {
+      "body": "This list contains all the operators compatible with your method, even if you are not their customer.",
+      "header": {
+        "amount": "Fee",
+        "name": "Operator"
+      },
+      "title": "Which operator do you want to use for payment?"
+    },
+    "email": "Send the result to:",
+    "modal": {
+      "body": "All money transfer operations (cash or electronic currency) have a cost that is used to guarantee that the payment is safe and successful.\nEvery operator (or PSP, Payment Service Provider) indicates a cost, according to their commercial policies and contractual conditions.\nWith pagoPA, these costs are transparent and the citizen can freely select the most convenient and affordable option. To learn more, consult the page ",
+      "cancelBody": "All the data will be lost.",
+      "cancelButton": "No, I’ve changed my mind",
+      "cancelTitle": "Do you want to cancel the payment in progress?",
+      "link": "Cost transparency",
+      "submitButton": "Exit",
+      "title": "Why is there a fee?"
+    },
+    "psp": "Applied by",
+    "total": "Total",
+    "transaction": "Fee"
+  },
+  "paymentChoicePage": {
+    "bank": "Bank account",
+    "button": "Back",
+    "costs": "Cost transparency.",
+    "creditCard": "Debit or credit card",
+    "description": "To learn more about the methods and costs applied by the participating operators, visit the page ",
+    "incoming": "Coming soon",
+    "others": "Other methods",
+    "showMore": "Show all",
+    "title": "How do you want to pay?"
+  },
+  "paymentMethods": {
+    "bpay": "BANCOMAT Pay",
+    "cc": "Bank account",
+    "cp": "Debit or credit card",
+    "ppay": "Pay with Postepay"
+  },
+  "paymentNoticeChoice": {
+    "form": {
+      "description": "Notice code and payee tax code",
+      "title": "Enter your data"
+    },
+    "qr": {
+      "description": "Use your webcam or camera",
+      "title": "Scan the QR code"
+    }
+  },
+  "paymentNoticePage": {
+    "description": "Enter the data as show on the payment notice.",
+    "formButtons": {
+      "cancel": "Back",
+      "submit": "Continue"
+    },
+    "formErrors": {
+      "minCf": "Enter 11 numbers",
+      "minCode": "Enter 18 numbers",
+      "required": "Required field"
+    },
+    "formFields": {
+      "billCode": "Notice code",
+      "cf": "Payee tax code"
+    },
+    "helpLink": "View an example",
+    "title": "What do you have to pay?"
+  },
+  "paymentQrPage": {
+    "camBlocked": "We need your consent to use the camera. To change your selection, go to your browser’s privacy settings",
+    "description": "Make sure to have good lighting. If the code is not in focus, try to move it away slightly from the screen.",
+    "navigate": "Not working? Enter it manually",
+    "reloadPage": "Reload the page",
+    "title": "Scan the QR code"
+  },
+  "paymentSummaryPage": {
+    "amount": "Amount updated",
+    "billCode": "Notice code",
+    "buttons": {
+      "cancel": "Back",
+      "ok": "OK",
+      "submit": "Go to the payment"
+    },
+    "causal": "Payment description",
+    "cf": "Payee tax code",
+    "creditor": "Payee",
+    "description": "pagoPA updates the amount automatically to make sure you have paid exactly what is due and avoid arrears or other interest",
+    "dialog": {
+      "description": "pagoPA updates the amount automatically to make sure you have paid exactly what is due and avoid arrears or other interest.",
+      "title": "Do you see a different amount?"
+    },
+    "iuv": "Public Administration Index (IUV) code",
+    "title": "Payment data"
+  },
+  "POLLING_SLOW": {
+    "body": "Please wait a few minutes without reloading the page.",
+    "title": "The payee is taking more time than usual..."
+  },
+  "privacyInfo": {
+    "googleDesc": "Form protected by reCAPTCHA and Google (<privacy>Privacy Policy</privacy> and <terms>Terms of Service</terms>).",
+    "privacyDesc": "By continuing you accept the service <terms>terms and conditions of use</terms> and confirm to have read the <privacy>Privacy Policy</privacy>",
+    "privacyDonation": "Additional terms of the Donation service in favor of the emergency in Ukraine"
+  },
+  "STATUS_ERROR": {
+    "body": "If the problem continues, report it to us!",
+    "title": "An unexpected error occurred"
+  },
+  "TIMEOUT": {
+    "body": "If the problem continues, report it to us!",
+    "title": "The payee is having problems with the response"
+  },
+  "errorMessageNPG": {
+    "HF0001": "Enter 3 or 4 digits",
+    "HF0002": "Service temporarily unavailable",
+    "HF0003": "The session has expired, go back and try again",
+    "HF0004": "Enter a valid number",
+    "HF0005": "The network of this card is not supported",
+    "HF0006": "Enter mm/yy",
+    "HF0007": "Enter name as shown on the card",
+    "HF0009": "3DS verification failed"
+  },
+  "__variant-name": "Inglese",
+  "__variant-description": ""
+}

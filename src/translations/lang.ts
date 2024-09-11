@@ -1,4 +1,8 @@
 import translationIT from "./it/translations.json";
+import translationEN from "./en/translations.json";
+import translationFR from "./fr/translations.json";
+import translationDE from "./de/translations.json";
+import translationSL from "./sl/translations.json";
 
 const lang: Languages = {
   it: {
@@ -6,22 +10,27 @@ const lang: Languages = {
     lang: "it-IT",
     translation: translationIT,
   },
-  /*
   en: {
     label: "English",
     lang: "en-EN",
-    translation: TRANSLATIONS_EN,
+    translation: translationEN,
   },
-  */
+  fr: {
+    label: "Français",
+    lang: "fr-FR",
+    translation: translationFR,
+  },
+  de: {
+    label: "Deutsch",
+    lang: "de-DE",
+    translation: translationDE,
+  },
+  sl: {
+    label: "Slovenščina",
+    lang: "sl-SI",
+    translation: translationSL,
+  },
 };
-
-export interface Languages {
-  [key: string]: {
-    label: string;
-    lang: string;
-    translation: any;
-  };
-}
 
 export function getSortedLang(): Array<{
   label: string;
