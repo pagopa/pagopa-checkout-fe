@@ -1,4 +1,4 @@
-import { Box, Link, Typography } from "@mui/material";
+import { Box, Link, Typography, useTheme } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
@@ -8,6 +8,7 @@ import lang from "../../translations/lang";
 
 export default function Footer(props: { fixedPages: Array<string> }) {
   const { t } = useTranslation();
+  const theme = useTheme();
   const location = useLocation();
   const isFixed = () =>
     props.fixedPages.includes(location.pathname.split("/").slice(-1)[0]);
@@ -32,12 +33,20 @@ export default function Footer(props: { fixedPages: Array<string> }) {
       }}
     >
       <Typography variant="caption" component={"div"}>
-        <Box display={"flex"} alignItems={"center"} gap={1}>
+        <Box
+          display={"flex"}
+          alignItems={"center"}
+          columnGap={1}
+          flexWrap={"wrap"}
+        >
           <Link
             href="https://form.agid.gov.it/view/7628e161-33c0-420f-8c80-4fe362d2c7c5/"
             target="_blank"
             rel="noopener noreferrer"
-            style={{ color: "black", textDecoration: "none" }}
+            style={{
+              color: theme.palette.text.primary,
+              textDecoration: "none",
+            }}
             title={t("mainPage.footer.accessibility")}
           >
             {t("mainPage.footer.accessibility")}
@@ -47,15 +56,46 @@ export default function Footer(props: { fixedPages: Array<string> }) {
             href="https://www.pagopa.gov.it/it/helpdesk/"
             target="_blank"
             rel="noopener noreferrer"
-            style={{ color: "black", textDecoration: "none" }}
+            style={{
+              color: theme.palette.text.primary,
+              textDecoration: "none",
+            }}
             title={t("mainPage.footer.help")}
           >
             {t("mainPage.footer.help")}
           </Link>
+          <p aria-hidden="true">·</p>
+          <Link
+            href="https://checkout.pagopa.it/privacypolicy/it.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: theme.palette.text.primary,
+              textDecoration: "none",
+            }}
+            title={t("mainPage.footer.privacy")}
+          >
+            {t("mainPage.footer.privacy")}
+          </Link>
+          <p aria-hidden="true">·</p>
+          <Link
+            href="https://checkout.pagopa.it/privacypolicy/it.html#termini-e-condizioni-di-uso"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: theme.palette.text.primary,
+              textDecoration: "none",
+            }}
+            title={t("mainPage.footer.terms")}
+          >
+            {t("mainPage.footer.terms")}
+          </Link>
           {Object.keys(lang).length > 1 && (
             <>
               <p aria-hidden="true">·</p>
-              <LanguageFooterMenu />
+              <Box my={1}>
+                <LanguageFooterMenu />
+              </Box>
             </>
           )}
         </Box>
