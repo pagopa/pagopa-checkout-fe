@@ -55,7 +55,7 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
   beforeAll(async () => {
     await page.goto(CHECKOUT_URL);
     await page.setViewport({ width: 1200, height: 907 });
-    await acceptCookiePolicy();
+    //await acceptCookiePolicy();
   })
 
   beforeEach(async () => {
@@ -74,7 +74,7 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
       CHECKOUT_URL_AFTER_AUTHORIZATION
     );
 
-    expect(resultMessage).toContain("Grazie, hai pagato");
+    expect(resultMessage).toContain("Hai pagato");
   });
 
   it("Should fail a payment VERIFY and get FAIL_VERIFY_404_PPT_STAZIONE_INT_PA_SCONOSCIUTA", async () => {
@@ -117,7 +117,7 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
       ErrorTitleID
     );
 
-    expect(resultMessage).toContain("Il pagamento è già in corso");
+    expect(resultMessage).toContain("C’è già un pagamento in corso, riprova più tardi");
   });
 
   it("Should fail a payment ACTIVATION and get PPT_STAZIONE_INT_PA_TIMEOUT", async () => {
@@ -179,7 +179,7 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
       VALID_CARD_DATA
     );
 
-    expect(resultMessage).toContain("Perché gestisce la tua carta");
+    expect(resultMessage).toContain("Suggerito perché sei già cliente");
 
     await cancelPaymentAction();
   });
@@ -195,6 +195,7 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
       VALID_CARD_DATA
     );
 
+    console.log(resultMessage);
     expect(resultMessage).toContain("Suggerito perché il più economico");
 
     await cancelPaymentAction();
@@ -210,14 +211,14 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
       EMAIL,
       VALID_CARD_DATA
     );
-    expect(resultMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
+    expect(resultMessage).toContain("Si è verificato un errore imprevisto");
     const closeErrorModalButton = "#closeError";
     await page.waitForSelector(closeErrorModalButton);
     await page.click(closeErrorModalButton);
-    const errorDescriptionXpath = "/html/body/div[1]/div/div[2]/div/div/div/div[1]/div[1]";
+    const errorDescriptionXpath = "//*[@id=\"root\"]/div/div[2]/div/div/div/div[1]/div[1]";
     const errorMessageElem = await page.waitForXPath(errorDescriptionXpath);
     const errorMessage = await errorMessageElem.evaluate((el) => el.textContent)
-    expect(errorMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
+    expect(errorMessage).toContain("Si è verificato un errore imprevisto");
 
   });
 
@@ -244,7 +245,7 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
       EMAIL,
       VALID_CARD_DATA
     );
-    expect(resultMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
+    expect(resultMessage).toContain("Si è verificato un errore imprevisto");
   });
 
 });
