@@ -22,7 +22,7 @@
     "button": "Close"
   },
   "cartDetail": {
-    "amount": "Subtotal",
+    "amount": "Amount",
     "companyName": "Payee",
     "description": "Payment description",
     "fiscalCode": "Payee fiscal code",
@@ -129,7 +129,7 @@
     },
     "header": {
       "detail": {
-        "detailAmount": "Amount",
+        "detailAmount": "Subtotal",
         "detailFC": "Payee tax code",
         "detailIUV": "Payment Identification Code (IUV)",
         "detailReceiver": "Payee",

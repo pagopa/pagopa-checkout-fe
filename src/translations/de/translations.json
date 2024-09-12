@@ -22,7 +22,7 @@
     "button": "Schließen"
   },
   "cartDetail": {
-    "amount": "Zwischensumme",
+    "amount": "Betrag",
     "companyName": "Zahlungsempfänger",
     "description": "Verwendungszweck",
     "fiscalCode": "Steuernummer des Empfängers",
@@ -129,7 +129,7 @@
     },
     "header": {
       "detail": {
-        "detailAmount": "Betrag",
+        "detailAmount": "Zwischensumme",
         "detailFC": "Steuernummer des Empfängers",
         "detailIUV": "IUV-Code",
         "detailReceiver": "Zahlungsempfänger",

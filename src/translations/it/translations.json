@@ -22,7 +22,7 @@
     "button": "Chiudi"
   },
   "cartDetail": {
-    "amount": "Totale parziale",
+    "amount": "Importo",
     "companyName": "Ente Creditore",
     "description": "Oggetto del pagamento",
     "fiscalCode": "Codice Fiscale Ente Creditore",
@@ -129,7 +129,7 @@
     },
     "header": {
       "detail": {
-        "detailAmount": "Importo",
+        "detailAmount": "Importo parziale",
         "detailFC": "Codice Fiscale Ente Creditore",
         "detailIUV": "Codice IUV",
         "detailReceiver": "Ente Creditore",

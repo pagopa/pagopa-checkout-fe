@@ -22,7 +22,7 @@
     "button": "Fermer"
   },
   "cartDetail": {
-    "amount": "Total partiel",
+    "amount": "Montant",
     "companyName": "Organisme créancier",
     "description": "Objet du paiement",
     "fiscalCode": "Code fiscal organisme créancier",
@@ -129,7 +129,7 @@
     },
     "header": {
       "detail": {
-        "detailAmount": "Montant",
+        "detailAmount": "Total partiel",
         "detailFC": "Code fiscal organisme créancier",
         "detailIUV": "Code IUV",
         "detailReceiver": "Organisme créancier",

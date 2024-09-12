@@ -26,7 +26,7 @@
     "companyName": "Upnik",
     "description": "Namen plačila",
     "fiscalCode": "Davčna številka upnika",
-    "noticeNumber": "Št. obvestila"
+    "noticeNumber": "Znesek"
   },
   "clipboard": {
     "copied": "Kopirano",
@@ -129,7 +129,7 @@
     },
     "header": {
       "detail": {
-        "detailAmount": "Znesek",
+        "detailAmount": "Vmesni seštevek",
         "detailFC": "Davčna številka upnika",
         "detailIUV": "Številka edinstvene oznake nakazila",
         "detailReceiver": "Upnik",
