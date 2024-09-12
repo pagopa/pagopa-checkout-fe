@@ -19,27 +19,27 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "AUTHORIZATION_COMPLETED_WITH_NPG_AUTH_STATUS_EXECUTED",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS EXECUTED", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS EXECUTED", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "AUTHORIZATION_COMPLETED_WITH_NPG_AUTH_STATUS_AUTHORIZED",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS AUTHORIZED", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS AUTHORIZED", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "AUTHORIZATION_COMPLETED_WITH_NPG_AUTH_STATUS_PENDING",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS PENDING", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS PENDING", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "AUTHORIZATION_COMPLETED_WITH_NPG_AUTH_STATUS_VOIDED",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS VOIDED", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS VOIDED", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "AUTHORIZATION_COMPLETED_WITH_NPG_AUTH_STATUS_REFUNDED",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUSREFUNDED", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUSREFUNDED", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "AUTHORIZATION_COMPLETED_WITH_NPG_AUTH_STATUS_FAILED",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS FAILED", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS FAILED", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "AUTHORIZATION_COMPLETED_WITH_NPG_AUTH_STATUS_CANCELED",
@@ -79,7 +79,7 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "AUTHORIZATION_COMPLETED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_109",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 109", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 109", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "AUTHORIZATION_COMPLETED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_110",
@@ -91,7 +91,7 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "AUTHORIZATION_COMPLETED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_115",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 115", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 115", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "AUTHORIZATION_COMPLETED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_116",
@@ -198,63 +198,63 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "AUTHORIZATION_COMPLETED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_904",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 904", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 904", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "AUTHORIZATION_COMPLETED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_906",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 906", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 906", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "AUTHORIZATION_COMPLETED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_907",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 907", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 907", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "AUTHORIZATION_COMPLETED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_908",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 908", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 908", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "AUTHORIZATION_COMPLETED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_909",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 909", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 909", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "AUTHORIZATION_COMPLETED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_911",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 911", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 911", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "AUTHORIZATION_COMPLETED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_913",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 913", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 913", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "AUTHORIZATION_COMPLETED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_999",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 999", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 999", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "AUTHORIZATION_COMPLETED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_GENERIC",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND GENERIC ERROR CODE", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND GENERIC ERROR CODE", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "CLOSURE_REQUESTED_WITH_NPG_AUTH_STATUS_EXECUTED",
-      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS EXECUTED", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS EXECUTED", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "CLOSURE_REQUESTED_WITH_NPG_AUTH_STATUS_AUTHORIZED",
-      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS AUTHORIZED", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS AUTHORIZED", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "CLOSURE_REQUESTED_WITH_NPG_AUTH_STATUS_PENDING",
-      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS PENDING", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS PENDING", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "CLOSURE_REQUESTED_WITH_NPG_AUTH_STATUS_VOIDED",
-      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS VOIDED", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS VOIDED", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "CLOSURE_REQUESTED_WITH_NPG_AUTH_STATUS_REFUNDED",
-      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUSREFUNDED", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUSREFUNDED", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "CLOSURE_REQUESTED_WITH_NPG_AUTH_STATUS_FAILED",
-      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS FAILED", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS FAILED", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "CLOSURE_REQUESTED_WITH_NPG_AUTH_STATUS_CANCELED",
@@ -294,7 +294,7 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "CLOSURE_REQUESTED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_109",
-      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 109", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 109", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "CLOSURE_REQUESTED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_110",
@@ -306,7 +306,7 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "CLOSURE_REQUESTED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_115",
-      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 115", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 115", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "CLOSURE_REQUESTED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_116",
@@ -413,63 +413,63 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "CLOSURE_REQUESTED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_904",
-      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 904", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 904", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "CLOSURE_REQUESTED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_906",
-      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 906", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 906", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "CLOSURE_REQUESTED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_907",
-      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 907", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 907", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "CLOSURE_REQUESTED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_908",
-      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 908", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 908", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "CLOSURE_REQUESTED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_909",
-      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 909", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 909", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "CLOSURE_REQUESTED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_911",
-      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 911", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 911", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "CLOSURE_REQUESTED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_913",
-      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 913", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 913", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "CLOSURE_REQUESTED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_999",
-      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 999", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 999", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "CLOSURE_REQUESTED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_GENERIC",
-      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND GENERIC ERROR CODE", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND GENERIC ERROR CODE", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "CLOSURE_ERROR_WITH_NPG_AUTH_STATUS_EXECUTED",
-      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS EXECUTED", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS EXECUTED", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "CLOSURE_ERROR_WITH_NPG_AUTH_STATUS_AUTHORIZED",
-      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS AUTHORIZED", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS AUTHORIZED", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "CLOSURE_ERROR_WITH_NPG_AUTH_STATUS_PENDING",
-      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS PENDING", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS PENDING", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "CLOSURE_ERROR_WITH_NPG_AUTH_STATUS_VOIDED",
-      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS VOIDED", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS VOIDED", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "CLOSURE_ERROR_WITH_NPG_AUTH_STATUS_REFUNDED",
-      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUSREFUNDED", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUSREFUNDED", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "CLOSURE_ERROR_WITH_NPG_AUTH_STATUS_FAILED",
-      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS FAILED", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS FAILED", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "CLOSURE_ERROR_WITH_NPG_AUTH_STATUS_CANCELED",
@@ -509,7 +509,7 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "CLOSURE_ERROR_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_109",
-      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 109", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 109", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "CLOSURE_ERROR_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_110",
@@ -521,7 +521,7 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "CLOSURE_ERROR_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_115",
-      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 115", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 115", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "CLOSURE_ERROR_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_116",
@@ -628,39 +628,39 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "CLOSURE_ERROR_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_904",
-      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 904", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 904", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "CLOSURE_ERROR_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_906",
-      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 906", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 906", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "CLOSURE_ERROR_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_907",
-      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 907", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 907", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "CLOSURE_ERROR_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_908",
-      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 908", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 908", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "CLOSURE_ERROR_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_909",
-      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 909", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 909", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "CLOSURE_ERROR_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_911",
-      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 911", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 911", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "CLOSURE_ERROR_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_913",
-      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 913", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 913", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "CLOSURE_ERROR_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_999",
-      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 999", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 999", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "CLOSURE_ERROR_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_GENERIC",
-      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND GENERIC ERROR CODE", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND GENERIC ERROR CODE", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "CLOSED_WITH_NPG_AUTH_STATUS_EXECUTED_SEND_PAYMENT_RESULT_NOT_RECEIVED",
@@ -668,23 +668,23 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_AUTHORIZED",
-      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS AUTHORIZED", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS AUTHORIZED", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_PENDING",
-      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS PENDING", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS PENDING", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_VOIDED",
-      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS VOIDED", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS VOIDED", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_REFUNDED",
-      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUSREFUNDED", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUSREFUNDED", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_FAILED",
-      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS FAILED", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS FAILED", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_CANCELED",
@@ -724,7 +724,7 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_109",
-      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 109", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 109", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_110",
@@ -736,7 +736,7 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_115",
-      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 115", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 115", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_116",
@@ -843,39 +843,39 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_904",
-      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 904", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 904", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_906",
-      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 906", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 906", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_907",
-      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 907", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 907", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_908",
-      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 908", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 908", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_909",
-      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 909", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 909", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_911",
-      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 911", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 911", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_913",
-      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 913", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 913", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_999",
-      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 999", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 999", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_GENERIC",
-      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND GENERIC ERROR CODE", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND GENERIC ERROR CODE", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "NOTIFICATION_REQUESTED_WITH_NPG_AUTH_STATUS_EXECUTED_AND_SEND_PAYMENT_RESULT_OK",
@@ -883,7 +883,7 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "NOTIFICATION_REQUESTED_WITH_NPG_AUTH_STATUS_EXECUTED_AND_SEND_PAYMENT_RESULT_KO",
-      { title: "NOTIFICATION REQUESTED WITH NPG AUTHORIZATION STATUS EXECUTED AND SEND PAYMENT RESULT KO", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "NOTIFICATION REQUESTED WITH NPG AUTHORIZATION STATUS EXECUTED AND SEND PAYMENT RESULT KO", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "NOTIFICATION_ERROR_WITH_NPG_AUTH_STATUS_EXECUTED_AND_SEND_PAYMENT_RESULT_OK",
@@ -891,7 +891,7 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "NOTIFICATION_ERROR_WITH_NPG_AUTH_STATUS_EXECUTED_AND_SEND_PAYMENT_RESULT_KO",
-      { title: "NOTIFICATION ERROR WITH NPG AUTHORIZATION STATUS EXECUTED AND SEND PAYMENT RESULT KO", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "NOTIFICATION ERROR WITH NPG AUTHORIZATION STATUS EXECUTED AND SEND PAYMENT RESULT KO", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "NOTIFIED_OK_WITH_NPG_AUTH_STATUS_EXECUTED_AND_SEND_PAYMENT_RESULT_OK",
@@ -899,36 +899,36 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "NOTIFIED_KO_WITH_NPG_AUTH_STATUS_EXECUTED_AND_SEND_PAYMENT_RESULT_KO",
-      { title: "NOTIFIED KO ERROR WITH NPG AUTHORIZATION STATUS EXECUTED AND SEND PAYMENT RESULT KO", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "NOTIFIED KO ERROR WITH NPG AUTHORIZATION STATUS EXECUTED AND SEND PAYMENT RESULT KO", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "EXPIRED_TRANSACTION_FOR_AUTHORIZATION_REQUESTED",
-      { title: "EXPIRED STATUS FOR AUTHORIZATION_REQUESTED TRANSACTION", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "EXPIRED STATUS FOR AUTHORIZATION_REQUESTED TRANSACTION", esito: "Si è verificato un errore imprevisto" }
     ],
 
     [
       "EXPIRED_TRANSACTION_FOR_AUTHORIZATION_COMPLETED_AUTH_STATUS_EXECUTED",
-      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS EXECUTED", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS EXECUTED", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "EXPIRED_TRANSACTION_FOR_AUTHORIZATION_COMPLETED_AUTH_STATUS_AUTHORIZED",
-      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS AUTHORIZED", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS AUTHORIZED", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "EXPIRED_TRANSACTION_FOR_AUTHORIZATION_COMPLETED_AUTH_STATUS_PENDING",
-      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS PENDING", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS PENDING", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "EXPIRED_TRANSACTION_FOR_AUTHORIZATION_COMPLETED_AUTH_STATUS_VOIDED",
-      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS VOIDED", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS VOIDED", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "EXPIRED_TRANSACTION_FOR_AUTHORIZATION_COMPLETED_AUTH_STATUS_REFUNDED",
-      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUSREFUNDED", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUSREFUNDED", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "EXPIRED_TRANSACTION_FOR_AUTHORIZATION_COMPLETED_AUTH_STATUS_FAILED",
-      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS FAILED", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS FAILED", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "EXPIRED_TRANSACTION_FOR_AUTHORIZATION_COMPLETED_AUTH_STATUS_CANCELED",
@@ -968,7 +968,7 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "EXPIRED_TRANSACTION_FOR_AUTHORIZATION_COMPLETED_AUTH_STATUS_DECLINED_ERROR_CODE_109",
-      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 109", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 109", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "EXPIRED_TRANSACTION_FOR_AUTHORIZATION_COMPLETED_AUTH_STATUS_DECLINED_ERROR_CODE_110",
@@ -980,7 +980,7 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "EXPIRED_TRANSACTION_FOR_AUTHORIZATION_COMPLETED_AUTH_STATUS_DECLINED_ERROR_CODE_115",
-      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 115", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 115", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "EXPIRED_TRANSACTION_FOR_AUTHORIZATION_COMPLETED_AUTH_STATUS_DECLINED_ERROR_CODE_116",
@@ -1087,47 +1087,47 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "EXPIRED_TRANSACTION_FOR_AUTHORIZATION_COMPLETED_AUTH_STATUS_DECLINED_ERROR_CODE_904",
-      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 904", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 904", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "EXPIRED_TRANSACTION_FOR_AUTHORIZATION_COMPLETED_AUTH_STATUS_DECLINED_ERROR_CODE_906",
-      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 906", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 906", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "EXPIRED_TRANSACTION_FOR_AUTHORIZATION_COMPLETED_AUTH_STATUS_DECLINED_ERROR_CODE_907",
-      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 907", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 907", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "EXPIRED_TRANSACTION_FOR_AUTHORIZATION_COMPLETED_AUTH_STATUS_DECLINED_ERROR_CODE_908",
-      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 908", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 908", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "EXPIRED_TRANSACTION_FOR_AUTHORIZATION_COMPLETED_AUTH_STATUS_DECLINED_ERROR_CODE_909",
-      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 909", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 909", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "EXPIRED_TRANSACTION_FOR_AUTHORIZATION_COMPLETED_AUTH_STATUS_DECLINED_ERROR_CODE_911",
-      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 911", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 911", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "EXPIRED_TRANSACTION_FOR_AUTHORIZATION_COMPLETED_AUTH_STATUS_DECLINED_ERROR_CODE_913",
-      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 913", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 913", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "EXPIRED_TRANSACTION_FOR_AUTHORIZATION_COMPLETED_AUTH_STATUS_DECLINED_ERROR_CODE_999",
-      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 999", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 999", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "EXPIRED_TRANSACTION_FOR_AUTHORIZATION_COMPLETED_AUTH_STATUS_DECLINED_ERROR_CODE_GENERIC",
-      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND GENERIC ERROR CODE", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND GENERIC ERROR CODE", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "EXPIRED_TRANSACTION_FOR_CLOSURE_REQUESTED_AUTH_STATUS_EXECUTED_AND_SEND_PAYMENT_RESULT_NOT_RECEIVED",
-      { title: "EXPIRED STATUS FOR CLOSURE_REQUESTED TRANSACTION WITH NPG AUTHORIZATION STATUS EXECUTED AND SEND PAYMENT RESULT NOT_RECEIVED", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "EXPIRED STATUS FOR CLOSURE_REQUESTED TRANSACTION WITH NPG AUTHORIZATION STATUS EXECUTED AND SEND PAYMENT RESULT NOT_RECEIVED", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "EXPIRED_TRANSACTION_FOR_CLOSURE_ERROR_AUTH_STATUS_EXECUTED_AND_SEND_PAYMENT_RESULT_NOT_RECEIVED",
-      { title: "EXPIRED STATUS FOR CLOSURE_ERROR TRANSACTION WITH NPG AUTHORIZATION STATUS EXECUTED AND SEND PAYMENT RESULT NOT_RECEIVED", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "EXPIRED STATUS FOR CLOSURE_ERROR TRANSACTION WITH NPG AUTHORIZATION STATUS EXECUTED AND SEND PAYMENT RESULT NOT_RECEIVED", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "EXPIRED_TRANSACTION_FOR_NOTIFICATION_REQUESTED_AUTH_STATUS_EXECUTED_AND_SEND_PAYMENT_RESULT_OK",
@@ -1139,23 +1139,23 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "EXPIRED_TRANSACTION_FOR_NOTIFICATION_REQUESTED_AUTH_STATUS_EXECUTED_AND_SEND_PAYMENT_RESULT_KO",
-      { title: "EXPIRED STATUS FOR NOTIFICATION_REQUESTED TRANSACTION WITH NPG AUTHORIZATION STATUS EXECUTED AND SEND PAYMENT RESULT KO", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "EXPIRED STATUS FOR NOTIFICATION_REQUESTED TRANSACTION WITH NPG AUTHORIZATION STATUS EXECUTED AND SEND PAYMENT RESULT KO", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "EXPIRED_TRANSACTION_FOR_NOTIFICATION_ERROR_AUTH_STATUS_EXECUTED_AND_SEND_PAYMENT_RESULT_KO",
-      { title: "EXPIRED STATUS FOR NOTIFICATION_ERROR TRANSACTION WITH NPG AUTHORIZATION STATUS EXECUTED AND SEND PAYMENT RESULT KO", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "EXPIRED STATUS FOR NOTIFICATION_ERROR TRANSACTION WITH NPG AUTHORIZATION STATUS EXECUTED AND SEND PAYMENT RESULT KO", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "REFUND_REQUESTED_TRANSACTION_WITH_NPG_AUTH_STATUS_EXECUTED",
-      { title: "REFUND_REQUESTED STATUS FOR TRANSACTION WITH NPG AUTHORIZATION STATUS EXECUTED", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "REFUND_REQUESTED STATUS FOR TRANSACTION WITH NPG AUTHORIZATION STATUS EXECUTED", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "REFUND_ERROR_TRANSACTION_WITH_NPG_AUTH_STATUS_EXECUTED",
-      { title: "REFUND_ERROR STATUS FOR TRANSACTION WITH NPG AUTHORIZATION STATUS EXECUTED", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "REFUND_ERROR STATUS FOR TRANSACTION WITH NPG AUTHORIZATION STATUS EXECUTED", esito: "Si è verificato un errore imprevisto" }
     ],
     [
       "REFUNDED_TRANSACTION_WITH_NPG_AUTH_STATUS_EXECUTED",
-      { title: "REFUNDED STATUS FOR TRANSACTION WITH NPG AUTHORIZATION STATUS EXECUTED", esito: "Spiacenti, si è verificato un errore imprevisto." }
+      { title: "REFUNDED STATUS FOR TRANSACTION WITH NPG AUTHORIZATION STATUS EXECUTED", esito: "Si è verificato un errore imprevisto" }
     ]
 
   ]);
