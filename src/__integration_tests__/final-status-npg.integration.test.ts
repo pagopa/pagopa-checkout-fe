@@ -1176,20 +1176,19 @@ describe("Unauthorized npg final status mapping tests", () => {
     await page.goto(CHECKOUT_OUTCOME_URL);
     await page.setViewport({ width: 1200, height: 907 });
     //await acceptCookiePolicy();
-    selectLanguage("it");
   })
 
 
   Array.from(mockFlowWithExpectedResultMap.keys()).forEach(keyFlowId => {
     it(mockFlowWithExpectedResultMap.get(keyFlowId)?.title || "", async () => {
       await page.evaluate(() => {
-
         //set item into sessionStorage and localStorage for pass the route Guard
         let sessionData = '{"authToken":"token","clientId":"CHECKOUT","payments":[{"amount":12000,"isAllCCP":false,"paymentToken":"paymentToken1","reason":"reason1","rptId":"77777777777302001751670642100","transferList":[{"digitalStamp":true,"paFiscalCode":"66666666666","transferAmount":100,"transferCategory":"transferCategory1"},{"digitalStamp":false,"paFiscalCode":"77777777777","transferAmount":900,"transferCategory":"transferCategory2"}]}],"status":"ACTIVATED","transactionId":"f4f1b6a82b7d473583b506fcd5edf308"}';
         sessionStorage.setItem('transaction', sessionData);
         localStorage.setItem('transaction', sessionData);
-
+        localStorage.setItem("i18nextLng", "it");
       });
+      
       await page.setCookie({ name: "mockFlow", value: keyFlowId });
       await page.goto(CHECKOUT_OUTCOME_URL);
       const resultTitleSelector = "#responsePageMessageTitle";
