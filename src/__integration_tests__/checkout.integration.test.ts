@@ -1,4 +1,4 @@
-import { payNotice, acceptCookiePolicy, verifyPaymentAndGetError, activatePaymentAndGetError, authorizePaymentAndGetError, checkPspDisclaimerBeforeAuthorizePayment, checkErrorOnCardDataFormSubmit, cancelPaymentOK, cancelPaymentAction, cancelPaymentKO } from "./utils/helpers";
+import { payNotice, acceptCookiePolicy, verifyPaymentAndGetError, activatePaymentAndGetError, authorizePaymentAndGetError, checkPspDisclaimerBeforeAuthorizePayment, checkErrorOnCardDataFormSubmit, cancelPaymentOK, cancelPaymentAction, cancelPaymentKO, selectLanguage } from "./utils/helpers";
 
 const language = "it";
 
@@ -62,6 +62,7 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
 
   beforeEach(async () => {
     await page.goto(CHECKOUT_URL);
+    selectLanguage("it");
   });
 
   it("Should correctly execute a payment", async () => {
