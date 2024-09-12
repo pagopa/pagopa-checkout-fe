@@ -1,12 +1,14 @@
 import { payNotice, acceptCookiePolicy, verifyPaymentAndGetError, activatePaymentAndGetError, authorizePaymentAndGetError, checkPspDisclaimerBeforeAuthorizePayment, checkErrorOnCardDataFormSubmit, cancelPaymentOK, cancelPaymentAction, cancelPaymentKO } from "./utils/helpers";
 
+const language = "it";
+
 describe("Checkout payment activation tests", () => {
 /**
    * Test input and configuration
 */
   
-const CHECKOUT_URL = "http://localhost:1234/";
-const CHECKOUT_URL_AFTER_AUTHORIZATION = "http://localhost:1234/esito";
+const CHECKOUT_URL = `http://localhost:1234/?lng=${language}`;
+const CHECKOUT_URL_AFTER_AUTHORIZATION = `http://localhost:1234/esito?lng=${language}`;
 const VALID_FISCAL_CODE = "77777777777";
 const EMAIL = "mario.rossi@email.com";
 const VALID_CARD_DATA = {

@@ -1,12 +1,14 @@
 import { acceptCookiePolicy } from "./utils/helpers";
 
+const language = "it";
+
 describe("Unauthorized npg final status mapping tests", () => {
 
   /**
      * Test input and configuration
   */
 
-  const CHECKOUT_OUTCOME_URL = "http://localhost:1234/esito";
+  const CHECKOUT_OUTCOME_URL = `http://localhost:1234/esito?lng=${language}`;
 
   /**
    * Add all mock flow. Reference to the flow defined into the checkout be mock
