@@ -1,4 +1,4 @@
-import { acceptCookiePolicy } from "./utils/helpers";
+import { acceptCookiePolicy, selectLanguage } from "./utils/helpers";
 
 describe("Unauthorized npg final status mapping tests", () => {
 
@@ -1174,6 +1174,7 @@ describe("Unauthorized npg final status mapping tests", () => {
     await page.goto(CHECKOUT_OUTCOME_URL);
     await page.setViewport({ width: 1200, height: 907 });
     //await acceptCookiePolicy();
+    selectLanguage("it");
   })
 
 
