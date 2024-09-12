@@ -15,7 +15,7 @@ describe("Unauthorized npg final status mapping tests", () => {
   const mockFlowWithExpectedResultMap = new Map([
     [
       "AUTHORIZATION_REQUESTED_NO_NPG_OUTCOME",
-      { title: "AUTHORIZATION REQUESTED WITH NO NPG OUTCOME", esito: "L'operazione è stata presa in carico" }
+      { title: "AUTHORIZATION REQUESTED WITH NO NPG OUTCOME", esito: "Attendi la conferma del pagamento" }
     ],
     [
       "AUTHORIZATION_COMPLETED_WITH_NPG_AUTH_STATUS_EXECUTED",
@@ -63,7 +63,7 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "AUTHORIZATION_COMPLETED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_101",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 101", esito: "C’è un problema con la tua carta" }
+      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 101", esito: "Il metodo di pagamento è scaduto o non più valido" }
     ],
     [
       "AUTHORIZATION_COMPLETED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_102",
@@ -71,7 +71,7 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "AUTHORIZATION_COMPLETED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_104",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 104", esito: "I dati della carta non risultano corretti" }
+      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 104", esito: "I dati del metodo di pagamento non sono corretti" }
     ],
     [
       "AUTHORIZATION_COMPLETED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_106",
@@ -83,11 +83,11 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "AUTHORIZATION_COMPLETED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_110",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 110", esito: "I dati della carta non risultano corretti" }
+      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 110", esito: "I dati del metodo di pagamento non sono corretti" }
     ],
     [
       "AUTHORIZATION_COMPLETED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_111",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 111", esito: "C’è un problema con la tua carta" }
+      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 111", esito: "Il metodo di pagamento è scaduto o non più valido" }
     ],
     [
       "AUTHORIZATION_COMPLETED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_115",
@@ -104,7 +104,7 @@ describe("Unauthorized npg final status mapping tests", () => {
 
     [
       "AUTHORIZATION_COMPLETED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_118",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 118", esito: "I dati della carta non risultano corretti" }
+      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 118", esito: "I dati del metodo di pagamento non sono corretti" }
     ],
 
     [
@@ -139,7 +139,7 @@ describe("Unauthorized npg final status mapping tests", () => {
 
     [
       "AUTHORIZATION_COMPLETED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_125",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 125", esito: "I dati della carta non risultano corretti" }
+      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 125", esito: "I dati del metodo di pagamento non sono corretti" }
     ],
 
     [
@@ -169,16 +169,16 @@ describe("Unauthorized npg final status mapping tests", () => {
 
     [
       "AUTHORIZATION_COMPLETED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_208",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 208", esito: "I dati della carta non risultano corretti" }
+      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 208", esito: "I dati del metodo di pagamento non sono corretti" }
     ],
 
     [
       "AUTHORIZATION_COMPLETED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_209",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 209", esito: "I dati della carta non risultano corretti" }
+      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 209", esito: "I dati del metodo di pagamento non sono corretti" }
     ],
     [
       "AUTHORIZATION_COMPLETED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_210",
-      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 210", esito: "I dati della carta non risultano corretti" }
+      { title: "AUTHORIZATION COMPLETED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 210", esito: "I dati del metodo di pagamento non sono corretti" }
     ],
     [
       "AUTHORIZATION_COMPLETED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_413",
@@ -278,7 +278,7 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "CLOSURE_REQUESTED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_101",
-      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 101", esito: "C’è un problema con la tua carta" }
+      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 101", esito: "Il metodo di pagamento è scaduto o non più valido" }
     ],
     [
       "CLOSURE_REQUESTED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_102",
@@ -286,7 +286,7 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "CLOSURE_REQUESTED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_104",
-      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 104", esito: "I dati della carta non risultano corretti" }
+      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 104", esito: "I dati del metodo di pagamento non sono corretti" }
     ],
     [
       "CLOSURE_REQUESTED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_106",
@@ -298,11 +298,11 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "CLOSURE_REQUESTED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_110",
-      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 110", esito: "I dati della carta non risultano corretti" }
+      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 110", esito: "I dati del metodo di pagamento non sono corretti" }
     ],
     [
       "CLOSURE_REQUESTED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_111",
-      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 111", esito: "C’è un problema con la tua carta" }
+      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 111", esito: "Il metodo di pagamento è scaduto o non più valido" }
     ],
     [
       "CLOSURE_REQUESTED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_115",
@@ -319,7 +319,7 @@ describe("Unauthorized npg final status mapping tests", () => {
 
     [
       "CLOSURE_REQUESTED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_118",
-      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 118", esito: "I dati della carta non risultano corretti" }
+      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 118", esito: "I dati del metodo di pagamento non sono corretti" }
     ],
 
     [
@@ -354,7 +354,7 @@ describe("Unauthorized npg final status mapping tests", () => {
 
     [
       "CLOSURE_REQUESTED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_125",
-      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 125", esito: "I dati della carta non risultano corretti" }
+      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 125", esito: "I dati del metodo di pagamento non sono corretti" }
     ],
 
     [
@@ -384,16 +384,16 @@ describe("Unauthorized npg final status mapping tests", () => {
 
     [
       "CLOSURE_REQUESTED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_208",
-      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 208", esito: "I dati della carta non risultano corretti" }
+      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 208", esito: "I dati del metodo di pagamento non sono corretti" }
     ],
 
     [
       "CLOSURE_REQUESTED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_209",
-      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 209", esito: "I dati della carta non risultano corretti" }
+      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 209", esito: "I dati del metodo di pagamento non sono corretti" }
     ],
     [
       "CLOSURE_REQUESTED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_210",
-      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 210", esito: "I dati della carta non risultano corretti" }
+      { title: "CLOSURE REQUESTED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 210", esito: "I dati del metodo di pagamento non sono corretti" }
     ],
     [
       "CLOSURE_REQUESTED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_413",
@@ -493,7 +493,7 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "CLOSURE_ERROR_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_101",
-      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 101", esito: "C’è un problema con la tua carta" }
+      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 101", esito: "Il metodo di pagamento è scaduto o non più valido" }
     ],
     [
       "CLOSURE_ERROR_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_102",
@@ -501,7 +501,7 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "CLOSURE_ERROR_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_104",
-      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 104", esito: "I dati della carta non risultano corretti" }
+      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 104", esito: "I dati del metodo di pagamento non sono corretti" }
     ],
     [
       "CLOSURE_ERROR_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_106",
@@ -513,11 +513,11 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "CLOSURE_ERROR_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_110",
-      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 110", esito: "I dati della carta non risultano corretti" }
+      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 110", esito: "I dati del metodo di pagamento non sono corretti" }
     ],
     [
       "CLOSURE_ERROR_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_111",
-      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 111", esito: "C’è un problema con la tua carta" }
+      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 111", esito: "Il metodo di pagamento è scaduto o non più valido" }
     ],
     [
       "CLOSURE_ERROR_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_115",
@@ -534,7 +534,7 @@ describe("Unauthorized npg final status mapping tests", () => {
 
     [
       "CLOSURE_ERROR_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_118",
-      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 118", esito: "I dati della carta non risultano corretti" }
+      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 118", esito: "I dati del metodo di pagamento non sono corretti" }
     ],
 
     [
@@ -569,7 +569,7 @@ describe("Unauthorized npg final status mapping tests", () => {
 
     [
       "CLOSURE_ERROR_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_125",
-      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 125", esito: "I dati della carta non risultano corretti" }
+      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 125", esito: "I dati del metodo di pagamento non sono corretti" }
     ],
 
     [
@@ -599,16 +599,16 @@ describe("Unauthorized npg final status mapping tests", () => {
 
     [
       "CLOSURE_ERROR_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_208",
-      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 208", esito: "I dati della carta non risultano corretti" }
+      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 208", esito: "I dati del metodo di pagamento non sono corretti" }
     ],
 
     [
       "CLOSURE_ERROR_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_209",
-      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 209", esito: "I dati della carta non risultano corretti" }
+      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 209", esito: "I dati del metodo di pagamento non sono corretti" }
     ],
     [
       "CLOSURE_ERROR_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_210",
-      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 210", esito: "I dati della carta non risultano corretti" }
+      { title: "CLOSURE ERROR WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 210", esito: "I dati del metodo di pagamento non sono corretti" }
     ],
     [
       "CLOSURE_ERROR_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_413",
@@ -664,7 +664,7 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "CLOSED_WITH_NPG_AUTH_STATUS_EXECUTED_SEND_PAYMENT_RESULT_NOT_RECEIVED",
-      { title: "CLOSED WITH NPG AUTHORIZATION STATUS EXECUTED AND SEND PAYMENT RESULT NOT_RECEIVED", esito: "L'operazione è stata presa in carico" }
+      { title: "CLOSED WITH NPG AUTHORIZATION STATUS EXECUTED AND SEND PAYMENT RESULT NOT_RECEIVED", esito: "Attendi la conferma del pagamento" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_AUTHORIZED",
@@ -708,7 +708,7 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_101",
-      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 101", esito: "C’è un problema con la tua carta" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 101", esito: "Il metodo di pagamento è scaduto o non più valido" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_102",
@@ -716,7 +716,7 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_104",
-      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 104", esito: "I dati della carta non risultano corretti" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 104", esito: "I dati del metodo di pagamento non sono corretti" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_106",
@@ -728,11 +728,11 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_110",
-      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 110", esito: "I dati della carta non risultano corretti" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 110", esito: "I dati del metodo di pagamento non sono corretti" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_111",
-      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 111", esito: "C’è un problema con la tua carta" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 111", esito: "Il metodo di pagamento è scaduto o non più valido" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_115",
@@ -749,7 +749,7 @@ describe("Unauthorized npg final status mapping tests", () => {
 
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_118",
-      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 118", esito: "I dati della carta non risultano corretti" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 118", esito: "I dati del metodo di pagamento non sono corretti" }
     ],
 
     [
@@ -784,7 +784,7 @@ describe("Unauthorized npg final status mapping tests", () => {
 
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_125",
-      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 125", esito: "I dati della carta non risultano corretti" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 125", esito: "I dati del metodo di pagamento non sono corretti" }
     ],
 
     [
@@ -814,16 +814,16 @@ describe("Unauthorized npg final status mapping tests", () => {
 
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_208",
-      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 208", esito: "I dati della carta non risultano corretti" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 208", esito: "I dati del metodo di pagamento non sono corretti" }
     ],
 
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_209",
-      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 209", esito: "I dati della carta non risultano corretti" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 209", esito: "I dati del metodo di pagamento non sono corretti" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_210",
-      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 210", esito: "I dati della carta non risultano corretti" }
+      { title: "UNAUTHORIZED WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 210", esito: "I dati del metodo di pagamento non sono corretti" }
     ],
     [
       "UNAUTHORIZED_WITH_NPG_AUTH_STATUS_DECLINED_ERROR_CODE_413",
@@ -952,7 +952,7 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "EXPIRED_TRANSACTION_FOR_AUTHORIZATION_COMPLETED_AUTH_STATUS_DECLINED_ERROR_CODE_101",
-      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 101", esito: "C’è un problema con la tua carta" }
+      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 101", esito: "Il metodo di pagamento è scaduto o non più valido" }
     ],
     [
       "EXPIRED_TRANSACTION_FOR_AUTHORIZATION_COMPLETED_AUTH_STATUS_DECLINED_ERROR_CODE_102",
@@ -960,7 +960,7 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "EXPIRED_TRANSACTION_FOR_AUTHORIZATION_COMPLETED_AUTH_STATUS_DECLINED_ERROR_CODE_104",
-      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 104", esito: "I dati della carta non risultano corretti" }
+      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 104", esito: "I dati del metodo di pagamento non sono corretti" }
     ],
     [
       "EXPIRED_TRANSACTION_FOR_AUTHORIZATION_COMPLETED_AUTH_STATUS_DECLINED_ERROR_CODE_106",
@@ -972,11 +972,11 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "EXPIRED_TRANSACTION_FOR_AUTHORIZATION_COMPLETED_AUTH_STATUS_DECLINED_ERROR_CODE_110",
-      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 110", esito: "I dati della carta non risultano corretti" }
+      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 110", esito: "I dati del metodo di pagamento non sono corretti" }
     ],
     [
       "EXPIRED_TRANSACTION_FOR_AUTHORIZATION_COMPLETED_AUTH_STATUS_DECLINED_ERROR_CODE_111",
-      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 111", esito: "C’è un problema con la tua carta" }
+      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 111", esito: "Il metodo di pagamento è scaduto o non più valido" }
     ],
     [
       "EXPIRED_TRANSACTION_FOR_AUTHORIZATION_COMPLETED_AUTH_STATUS_DECLINED_ERROR_CODE_115",
@@ -993,7 +993,7 @@ describe("Unauthorized npg final status mapping tests", () => {
 
     [
       "EXPIRED_TRANSACTION_FOR_AUTHORIZATION_COMPLETED_AUTH_STATUS_DECLINED_ERROR_CODE_118",
-      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 118", esito: "I dati della carta non risultano corretti" }
+      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 118", esito: "I dati del metodo di pagamento non sono corretti" }
     ],
 
     [
@@ -1028,7 +1028,7 @@ describe("Unauthorized npg final status mapping tests", () => {
 
     [
       "EXPIRED_TRANSACTION_FOR_AUTHORIZATION_COMPLETED_AUTH_STATUS_DECLINED_ERROR_CODE_125",
-      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 125", esito: "I dati della carta non risultano corretti" }
+      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 125", esito: "I dati del metodo di pagamento non sono corretti" }
     ],
 
     [
@@ -1058,16 +1058,16 @@ describe("Unauthorized npg final status mapping tests", () => {
 
     [
       "EXPIRED_TRANSACTION_FOR_AUTHORIZATION_COMPLETED_AUTH_STATUS_DECLINED_ERROR_CODE_208",
-      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 208", esito: "I dati della carta non risultano corretti" }
+      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 208", esito: "I dati del metodo di pagamento non sono corretti" }
     ],
 
     [
       "EXPIRED_TRANSACTION_FOR_AUTHORIZATION_COMPLETED_AUTH_STATUS_DECLINED_ERROR_CODE_209",
-      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 209", esito: "I dati della carta non risultano corretti" }
+      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 209", esito: "I dati del metodo di pagamento non sono corretti" }
     ],
     [
       "EXPIRED_TRANSACTION_FOR_AUTHORIZATION_COMPLETED_AUTH_STATUS_DECLINED_ERROR_CODE_210",
-      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 210", esito: "I dati della carta non risultano corretti" }
+      { title: "EXPIRED STATUS FOR AUTHORIZATION COMPLETED TRANSACTION WITH NPG AUTHORIZATION STATUS DECLINED AND ERROR CODE 210", esito: "I dati del metodo di pagamento non sono corretti" }
     ],
     [
       "EXPIRED_TRANSACTION_FOR_AUTHORIZATION_COMPLETED_AUTH_STATUS_DECLINED_ERROR_CODE_413",
@@ -1173,7 +1173,7 @@ describe("Unauthorized npg final status mapping tests", () => {
   beforeAll(async () => {
     await page.goto(CHECKOUT_OUTCOME_URL);
     await page.setViewport({ width: 1200, height: 907 });
-    await acceptCookiePolicy();
+    //await acceptCookiePolicy();
   })
 
 
