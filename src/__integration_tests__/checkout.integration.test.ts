@@ -1,6 +1,5 @@
-import { payNotice, acceptCookiePolicy, verifyPaymentAndGetError, activatePaymentAndGetError, authorizePaymentAndGetError, checkPspDisclaimerBeforeAuthorizePayment, checkErrorOnCardDataFormSubmit, cancelPaymentOK, cancelPaymentAction, cancelPaymentKO, selectLanguage } from "./utils/helpers";
-
-const language = "it";
+import { payNotice, verifyPaymentAndGetError, activatePaymentAndGetError, authorizePaymentAndGetError, checkPspDisclaimerBeforeAuthorizePayment, checkErrorOnCardDataFormSubmit, cancelPaymentOK, cancelPaymentAction, cancelPaymentKO, selectLanguage } from "./utils/helpers";
+import translation from "../translations/it/translations.json";
 
 describe("Checkout payment activation tests", () => {
 /**
@@ -57,7 +56,6 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
   beforeAll(async () => {
     await page.goto(CHECKOUT_URL);
     await page.setViewport({ width: 1200, height: 907 });
-    //await acceptCookiePolicy();
   })
 
   beforeEach(async () => {
@@ -77,7 +75,7 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
       CHECKOUT_URL_AFTER_AUTHORIZATION
     );
 
-    expect(resultMessage).toContain("Hai pagato");
+    expect(resultMessage).toContain(translation.paymentResponsePage[0].title.replace("{{amount}}", ""));
   });
 
   it("Should fail a payment VERIFY and get FAIL_VERIFY_404_PPT_STAZIONE_INT_PA_SCONOSCIUTA", async () => {
@@ -120,7 +118,7 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
       ErrorTitleID
     );
 
-    expect(resultMessage).toContain("C’è già un pagamento in corso, riprova più tardi");
+    expect(resultMessage).toContain(translation.PAYMENT_ONGOING.title);
   });
 
   it("Should fail a payment ACTIVATION and get PPT_STAZIONE_INT_PA_TIMEOUT", async () => {
@@ -182,7 +180,7 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
       VALID_CARD_DATA
     );
 
-    expect(resultMessage).toContain("Suggerito perché sei già cliente");
+    expect(resultMessage).toContain(translation.paymentCheckPage.disclaimer.yourCard);
 
     await cancelPaymentAction();
   });
@@ -199,7 +197,7 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
     );
 
     console.log(resultMessage);
-    expect(resultMessage).toContain("Suggerito perché il più economico");
+    expect(resultMessage).toContain(translation.paymentCheckPage.disclaimer.cheaper);
 
     await cancelPaymentAction();
   });
@@ -214,14 +212,14 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
       EMAIL,
       VALID_CARD_DATA
     );
-    expect(resultMessage).toContain("Si è verificato un errore imprevisto");
+    expect(resultMessage).toContain(translation.GENERIC_ERROR.title);
     const closeErrorModalButton = "#closeError";
     await page.waitForSelector(closeErrorModalButton);
     await page.click(closeErrorModalButton);
     const errorDescriptionXpath = "//*[@id=\"root\"]/div/div[2]/div/div/div/div[1]/div[1]";
     const errorMessageElem = await page.waitForXPath(errorDescriptionXpath);
     const errorMessage = await errorMessageElem.evaluate((el) => el.textContent)
-    expect(errorMessage).toContain("Si è verificato un errore imprevisto");
+    expect(errorMessage).toContain(translation.koPage.title);
 
   });
 
@@ -235,7 +233,7 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
       EMAIL,
       VALID_CARD_DATA
     );
-    expect(resultMessage).toContain("L'operazione è stata annullata");
+    expect(resultMessage).toContain(translation.cancelledPage.body);
   });
 
   it("Should fail a CANCEL PAYMENT by user", async () => {
@@ -248,7 +246,7 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
       EMAIL,
       VALID_CARD_DATA
     );
-    expect(resultMessage).toContain("Si è verificato un errore imprevisto");
+    expect(resultMessage).toContain(translation.paymentResponsePage[1].title);
   });
 
 });
