@@ -1,7 +1,17 @@
 import { payNotice, verifyPaymentAndGetError, activatePaymentAndGetError, authorizePaymentAndGetError, checkPspDisclaimerBeforeAuthorizePayment, checkErrorOnCardDataFormSubmit, cancelPaymentOK, cancelPaymentAction, cancelPaymentKO, selectLanguage } from "./utils/helpers";
-import translation from "../translations/it/translations.json";
+import itTranslation from "../translations/it/translations.json";
+import deTranslation from "../translations/de/translations.json";
+import enTranslation from "../translations/en/translations.json";
+import frTranslation from "../translations/fr/translations.json";
+import slTranslation from "../translations/sl/translations.json";
 
-describe("Checkout payment activation tests", () => {
+describe.each([
+  ["it", itTranslation],
+  ["en", enTranslation],
+  ["fr", frTranslation],
+  ["de", deTranslation],
+  ["sl", slTranslation]
+])("Checkout payment activation tests for %s language", (lang, translation) => {
 /**
    * Test input and configuration
 */
@@ -60,7 +70,7 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
 
   beforeEach(async () => {
     await page.goto(CHECKOUT_URL);
-    selectLanguage("it");
+    selectLanguage(lang);
   });
 
   it("Should correctly execute a payment", async () => {
@@ -75,7 +85,7 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
       CHECKOUT_URL_AFTER_AUTHORIZATION
     );
 
-    expect(resultMessage).toContain(translation.paymentResponsePage[0].title.replace("{{amount}}", ""));
+    expect(resultMessage).toContain(translation.paymentResponsePage[0].title.replace("{{amount}}", "120,10\xa0€"));
   });
 
   it("Should fail a payment VERIFY and get FAIL_VERIFY_404_PPT_STAZIONE_INT_PA_SCONOSCIUTA", async () => {
