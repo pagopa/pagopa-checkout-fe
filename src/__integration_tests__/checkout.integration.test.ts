@@ -5,8 +5,6 @@ import enTranslation from "../translations/en/translations.json";
 import frTranslation from "../translations/fr/translations.json";
 import slTranslation from "../translations/sl/translations.json";
 
-jest.setTimeout(120000);
-
 describe.each([
   ["it", itTranslation],
   ["en", enTranslation],
@@ -72,7 +70,7 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
 
   beforeEach(async () => {
     await page.goto(CHECKOUT_URL);
-    //selectLanguage(lang);
+    selectLanguage(lang);
   });
 
   it("Should correctly execute a payment", async () => {
