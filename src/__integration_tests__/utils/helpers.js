@@ -18,7 +18,7 @@ export const payNotice = async (
 
 export const verifyPaymentAndGetError = async (noticeCode, fiscalCode) => {
   const errorMessageXPath =
-    "/html/body/div[3]/div[3]/div/div/div[2]/div[2]/div";
+    "/html/body/div[2]/div[3]/div/div/div[2]/div[2]/div";
   await fillPaymentNotificationForm(noticeCode, fiscalCode);
   const errorMessageElem = await page.waitForXPath(errorMessageXPath);
   return await errorMessageElem.evaluate((el) => el.textContent);
@@ -260,3 +260,7 @@ export const closeErrorModal = async () => {
   );
   await closeErrorBtn.click();
 };
+
+export const selectLanguage = async (language) => {
+  await page.select('#languageMenu', language);
+}

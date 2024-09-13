@@ -1,12 +1,15 @@
-import { payNotice, acceptCookiePolicy, verifyPaymentAndGetError, activatePaymentAndGetError, authorizePaymentAndGetError, checkPspDisclaimerBeforeAuthorizePayment, checkErrorOnCardDataFormSubmit, cancelPaymentOK, cancelPaymentAction, cancelPaymentKO } from "./utils/helpers";
+import { payNotice, verifyPaymentAndGetError, activatePaymentAndGetError, authorizePaymentAndGetError, checkPspDisclaimerBeforeAuthorizePayment, checkErrorOnCardDataFormSubmit, cancelPaymentOK, cancelPaymentAction, cancelPaymentKO, selectLanguage } from "./utils/helpers";
+import itTranslation from "../translations/it/translations.json";
 
-describe("Checkout payment activation tests", () => {
+describe.each([
+  ["it", itTranslation]
+])("Checkout payment activation tests for [%s] language", (lang, translation) => {
 /**
    * Test input and configuration
 */
   
-const CHECKOUT_URL = "http://localhost:1234/";
-const CHECKOUT_URL_AFTER_AUTHORIZATION = "http://localhost:1234/esito";
+const CHECKOUT_URL = `http://localhost:1234`;
+const CHECKOUT_URL_AFTER_AUTHORIZATION = `http://localhost:1234/esito`;
 const VALID_FISCAL_CODE = "77777777777";
 const EMAIL = "mario.rossi@email.com";
 const VALID_CARD_DATA = {
@@ -55,11 +58,11 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
   beforeAll(async () => {
     await page.goto(CHECKOUT_URL);
     await page.setViewport({ width: 1200, height: 907 });
-    await acceptCookiePolicy();
-  })
+  });
 
   beforeEach(async () => {
     await page.goto(CHECKOUT_URL);
+    selectLanguage(lang);
   });
 
   it("Should correctly execute a payment", async () => {
@@ -74,7 +77,7 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
       CHECKOUT_URL_AFTER_AUTHORIZATION
     );
 
-    expect(resultMessage).toContain("Grazie, hai pagato");
+    expect(resultMessage).toContain(translation.paymentResponsePage[0].title.replace("{{amount}}", "120,10\xa0€"));
   });
 
   it("Should fail a payment VERIFY and get FAIL_VERIFY_404_PPT_STAZIONE_INT_PA_SCONOSCIUTA", async () => {
@@ -117,7 +120,7 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
       ErrorTitleID
     );
 
-    expect(resultMessage).toContain("Il pagamento è già in corso");
+    expect(resultMessage).toContain(translation.PAYMENT_ONGOING.title);
   });
 
   it("Should fail a payment ACTIVATION and get PPT_STAZIONE_INT_PA_TIMEOUT", async () => {
@@ -179,7 +182,7 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
       VALID_CARD_DATA
     );
 
-    expect(resultMessage).toContain("Perché gestisce la tua carta");
+    expect(resultMessage).toContain(translation.paymentCheckPage.disclaimer.yourCard);
 
     await cancelPaymentAction();
   });
@@ -195,7 +198,8 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
       VALID_CARD_DATA
     );
 
-    expect(resultMessage).toContain("Suggerito perché il più economico");
+    console.log(resultMessage);
+    expect(resultMessage).toContain(translation.paymentCheckPage.disclaimer.cheaper);
 
     await cancelPaymentAction();
   });
@@ -210,14 +214,14 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
       EMAIL,
       VALID_CARD_DATA
     );
-    expect(resultMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
+    expect(resultMessage).toContain(translation.GENERIC_ERROR.title);
     const closeErrorModalButton = "#closeError";
     await page.waitForSelector(closeErrorModalButton);
     await page.click(closeErrorModalButton);
-    const errorDescriptionXpath = "/html/body/div[1]/div/div[2]/div/div/div/div[1]/div[1]";
+    const errorDescriptionXpath = "//*[@id=\"root\"]/div/div[2]/div/div/div/div[1]/div[1]";
     const errorMessageElem = await page.waitForXPath(errorDescriptionXpath);
     const errorMessage = await errorMessageElem.evaluate((el) => el.textContent)
-    expect(errorMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
+    expect(errorMessage).toContain(translation.koPage.title);
 
   });
 
@@ -231,7 +235,7 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
       EMAIL,
       VALID_CARD_DATA
     );
-    expect(resultMessage).toContain("L'operazione è stata annullata");
+    expect(resultMessage).toContain(translation.cancelledPage.body);
   });
 
   it("Should fail a CANCEL PAYMENT by user", async () => {
@@ -244,7 +248,7 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
       EMAIL,
       VALID_CARD_DATA
     );
-    expect(resultMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
+    expect(resultMessage).toContain(translation.GENERIC_ERROR.title);
   });
 
 });
