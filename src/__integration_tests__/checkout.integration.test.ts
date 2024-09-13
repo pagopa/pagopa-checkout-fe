@@ -246,7 +246,7 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
       EMAIL,
       VALID_CARD_DATA
     );
-    expect(resultMessage).toContain(translation.paymentResponsePage[1].title);
+    expect(resultMessage).toContain(translation.GENERIC_ERROR.title);
   });
 
 });
