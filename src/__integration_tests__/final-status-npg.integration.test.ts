@@ -1,7 +1,16 @@
-import translation from "../translations/it/translations.json";
+import itTranslation from "../translations/it/translations.json";
+import deTranslation from "../translations/de/translations.json";
+import enTranslation from "../translations/en/translations.json";
+import frTranslation from "../translations/fr/translations.json";
+import slTranslation from "../translations/sl/translations.json";
 
-
-describe("Unauthorized npg final status mapping tests", () => {
+describe.each([
+  ["it", itTranslation],
+  ["en", enTranslation],
+  ["fr", frTranslation],
+  ["de", deTranslation],
+  ["sl", slTranslation]
+])("Unauthorized npg final status mapping tests for %s language", (lang, translation) => {
 
   /**
      * Test input and configuration
@@ -880,7 +889,7 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "NOTIFICATION_REQUESTED_WITH_NPG_AUTH_STATUS_EXECUTED_AND_SEND_PAYMENT_RESULT_OK",
-      { title: "NOTIFICATION REQUESTED WITH NPG AUTHORIZATION STATUS EXECUTED AND SEND PAYMENT RESULT OK", esito: translation.paymentResponsePage[0].title.replace("{{amount}}", "") }
+      { title: "NOTIFICATION REQUESTED WITH NPG AUTHORIZATION STATUS EXECUTED AND SEND PAYMENT RESULT OK", esito: translation.paymentResponsePage[0].title.replace("{{amount}}", "0,00\xa0€") }
     ],
     [
       "NOTIFICATION_REQUESTED_WITH_NPG_AUTH_STATUS_EXECUTED_AND_SEND_PAYMENT_RESULT_KO",
@@ -888,7 +897,7 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "NOTIFICATION_ERROR_WITH_NPG_AUTH_STATUS_EXECUTED_AND_SEND_PAYMENT_RESULT_OK",
-      { title: "NOTIFICATION ERROR WITH NPG AUTHORIZATION STATUS EXECUTED AND SEND PAYMENT RESULT OK", esito: translation.paymentResponsePage[0].title.replace("{{amount}}", "") }
+      { title: "NOTIFICATION ERROR WITH NPG AUTHORIZATION STATUS EXECUTED AND SEND PAYMENT RESULT OK", esito: translation.paymentResponsePage[0].title.replace("{{amount}}", "0,00\xa0€") }
     ],
     [
       "NOTIFICATION_ERROR_WITH_NPG_AUTH_STATUS_EXECUTED_AND_SEND_PAYMENT_RESULT_KO",
@@ -896,7 +905,7 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "NOTIFIED_OK_WITH_NPG_AUTH_STATUS_EXECUTED_AND_SEND_PAYMENT_RESULT_OK",
-      { title: "NOTIFIED OK WITH NPG AUTHORIZATION STATUS EXECUTED AND SEND PAYMENT RESULT OK", esito: translation.paymentResponsePage[0].title.replace("{{amount}}", "") }
+      { title: "NOTIFIED OK WITH NPG AUTHORIZATION STATUS EXECUTED AND SEND PAYMENT RESULT OK", esito: translation.paymentResponsePage[0].title.replace("{{amount}}", "0,00\xa0€") }
     ],
     [
       "NOTIFIED_KO_WITH_NPG_AUTH_STATUS_EXECUTED_AND_SEND_PAYMENT_RESULT_KO",
@@ -1132,11 +1141,11 @@ describe("Unauthorized npg final status mapping tests", () => {
     ],
     [
       "EXPIRED_TRANSACTION_FOR_NOTIFICATION_REQUESTED_AUTH_STATUS_EXECUTED_AND_SEND_PAYMENT_RESULT_OK",
-      { title: "EXPIRED STATUS FOR NOTIFICATION_REQUESTED TRANSACTION WITH NPG AUTHORIZATION STATUS EXECUTED AND SEND PAYMENT RESULT OK", esito: translation.paymentResponsePage[0].title.replace("{{amount}}", "") }
+      { title: "EXPIRED STATUS FOR NOTIFICATION_REQUESTED TRANSACTION WITH NPG AUTHORIZATION STATUS EXECUTED AND SEND PAYMENT RESULT OK", esito: translation.paymentResponsePage[0].title.replace("{{amount}}", "0,00\xa0€") }
     ],
     [
       "EXPIRED_TRANSACTION_FOR_NOTIFICATION_ERROR_AUTH_STATUS_EXECUTED_AND_SEND_PAYMENT_RESULT_OK",
-      { title: "EXPIRED STATUS FOR NOTIFICATION_ERROR TRANSACTION WITH NPG AUTHORIZATION STATUS EXECUTED AND SEND PAYMENT RESULT OK", esito: translation.paymentResponsePage[0].title.replace("{{amount}}", "") }
+      { title: "EXPIRED STATUS FOR NOTIFICATION_ERROR TRANSACTION WITH NPG AUTHORIZATION STATUS EXECUTED AND SEND PAYMENT RESULT OK", esito: translation.paymentResponsePage[0].title.replace("{{amount}}", "0,00\xa0€") }
     ],
     [
       "EXPIRED_TRANSACTION_FOR_NOTIFICATION_REQUESTED_AUTH_STATUS_EXECUTED_AND_SEND_PAYMENT_RESULT_KO",
@@ -1180,13 +1189,13 @@ describe("Unauthorized npg final status mapping tests", () => {
 
   Array.from(mockFlowWithExpectedResultMap.keys()).forEach(keyFlowId => {
     it(mockFlowWithExpectedResultMap.get(keyFlowId)?.title || "", async () => {
-      await page.evaluate(() => {
+      await page.evaluate((language) => {
         //set item into sessionStorage and localStorage for pass the route Guard
         let sessionData = '{"authToken":"token","clientId":"CHECKOUT","payments":[{"amount":12000,"isAllCCP":false,"paymentToken":"paymentToken1","reason":"reason1","rptId":"77777777777302001751670642100","transferList":[{"digitalStamp":true,"paFiscalCode":"66666666666","transferAmount":100,"transferCategory":"transferCategory1"},{"digitalStamp":false,"paFiscalCode":"77777777777","transferAmount":900,"transferCategory":"transferCategory2"}]}],"status":"ACTIVATED","transactionId":"f4f1b6a82b7d473583b506fcd5edf308"}';
         sessionStorage.setItem('transaction', sessionData);
         localStorage.setItem('transaction', sessionData);
-        localStorage.setItem("i18nextLng", "it");
-      });
+        localStorage.setItem("i18nextLng", language);
+      }, lang);
       
       await page.setCookie({ name: "mockFlow", value: keyFlowId });
       await page.goto(CHECKOUT_OUTCOME_URL);
