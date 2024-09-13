@@ -63,7 +63,6 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
 
   beforeEach(async () => {
     await page.goto(CHECKOUT_URL);
-    selectLanguage(lang);
   });
 
   describe("Checkout payment tests", () => {
