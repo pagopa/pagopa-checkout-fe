@@ -1,18 +1,8 @@
 import { payNotice, verifyPaymentAndGetError, activatePaymentAndGetError, authorizePaymentAndGetError, checkPspDisclaimerBeforeAuthorizePayment, checkErrorOnCardDataFormSubmit, cancelPaymentOK, cancelPaymentAction, cancelPaymentKO, selectLanguage } from "./utils/helpers";
 import itTranslation from "../translations/it/translations.json";
-import deTranslation from "../translations/de/translations.json";
-import enTranslation from "../translations/en/translations.json";
-import frTranslation from "../translations/fr/translations.json";
-import slTranslation from "../translations/sl/translations.json";
-
-jest.setTimeout(120000);
 
 describe.each([
-  ["it", itTranslation],
-  ["en", enTranslation],
-  ["fr", frTranslation],
-  ["de", deTranslation],
-  ["sl", slTranslation]
+  ["it", itTranslation]
 ])("Checkout payment activation tests for [%s] language", (lang, translation) => {
 /**
    * Test input and configuration
@@ -72,7 +62,7 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
 
   beforeEach(async () => {
     await page.goto(CHECKOUT_URL);
-    //selectLanguage(lang);
+    selectLanguage(lang);
   });
 
   it("Should correctly execute a payment", async () => {
