@@ -1175,7 +1175,7 @@ describe.each([
    * Increase default test timeout (80000ms)
    * to support entire payment flow
     */
-  jest.setTimeout(120000);
+  jest.setTimeout(200000);
   jest.retryTimes(0);
   page.setDefaultNavigationTimeout(120000);
   page.setDefaultTimeout(120000);

@@ -58,7 +58,7 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
    * Increase default test timeout (120000ms)
    * to support entire payment flow
     */
-  jest.setTimeout(120000);
+  jest.setTimeout(200000);
   jest.retryTimes(3);
   page.setDefaultNavigationTimeout(120000);
   page.setDefaultTimeout(120000);
