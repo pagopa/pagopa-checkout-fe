@@ -262,5 +262,6 @@ export const closeErrorModal = async () => {
 };
 
 export const selectLanguage = async (language) => {
-  await page.select('#languageMenu', language)
+  await page.waitForSelector('#languageMenu');
+  await page.select('#languageMenu', language);
 }

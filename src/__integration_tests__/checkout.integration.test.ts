@@ -68,11 +68,11 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
   beforeAll(async () => {
     await page.goto(CHECKOUT_URL);
     await page.setViewport({ width: 1200, height: 907 });
-  })
+  });
 
   beforeEach(async () => {
     await page.goto(CHECKOUT_URL);
-    selectLanguage(lang);
+    //selectLanguage(lang);
   });
 
   it("Should correctly execute a payment", async () => {
