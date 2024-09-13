@@ -11,7 +11,7 @@ describe.each([
   ["fr", frTranslation],
   ["de", deTranslation],
   ["sl", slTranslation]
-])("Checkout payment activation tests for %s language", (lang, translation) => {
+])("Checkout payment activation tests for [%s] language", (lang, translation) => {
 /**
    * Test input and configuration
 */
@@ -58,7 +58,7 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
    * Increase default test timeout (120000ms)
    * to support entire payment flow
     */
-  jest.setTimeout(200000);
+  jest.setTimeout(120000);
   jest.retryTimes(3);
   page.setDefaultNavigationTimeout(120000);
   page.setDefaultTimeout(120000);
