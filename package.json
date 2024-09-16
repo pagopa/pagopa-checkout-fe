@@ -17,7 +17,7 @@
     "dev:server": "parcel src/index.html &",
     "dev:proxy": "parcel src/index.html",
     "test": "jest --config=jest.config.js",
-    "test:final-status-integration": "jest --config=jest.npg-final-status.integration.config.js",
+    "test:final-status-integration": "jest --config=jest.final-status.integration.config.js",
     "test:payment-flow-integration": "jest --config=jest.payment-flow.integration.config.js",
     "test:coverage": "jest --coverage --passWithNoTests --config=package.json",
     "preversion": "auto-changelog  --config .auto-changelog.json --unreleased --commit-limit false --stdout --template preview.hbs",

@@ -118,7 +118,7 @@ stages:
             summaryFileLocation: 'coverage/clover.xml'
 
 # B) Run integration tests if there is a push or pull request on any branch.
-  - stage: Integration_Tests_FinalStatusNPG
+  - stage: Integration_Tests_FinalStatus
     pool:
       vmImage: 'ubuntu-latest'
     dependsOn: []
