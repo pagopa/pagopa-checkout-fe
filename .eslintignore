@@ -9,6 +9,7 @@ generated
 .eslintrc.js
 cssnano.config.js
 jest.config.js
-jest.integration.config.js
+jest.npg-final-status.integration.config.js
+jest.payment-flow.integration.config.js
 jest-puppeteer.config.js
 src/__inegration_tests__/*
