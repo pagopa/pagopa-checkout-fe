@@ -1175,10 +1175,10 @@ describe.each([
    * Increase default test timeout (80000ms)
    * to support entire payment flow
     */
-  jest.setTimeout(200000);
+  jest.setTimeout(30000);
   jest.retryTimes(0);
-  page.setDefaultNavigationTimeout(120000);
-  page.setDefaultTimeout(120000);
+  page.setDefaultNavigationTimeout(10000);
+  page.setDefaultTimeout(10000);
 
   beforeAll(async () => {
     await page.goto(CHECKOUT_OUTCOME_URL);

@@ -178,23 +178,18 @@ export const fillCardDataForm = async (cardData) => {
   let completed = false;
   while (!completed) {
     iteration++;
-    console.log(`Compiling fields...${iteration}`);
     await page.waitForSelector(cardNumberInput, { visible: true });
     await page.click(cardNumberInput, { clickCount: 3 });
     await page.keyboard.type(cardData.number);
-    console.log("card number performed");
     await page.waitForSelector(expirationDateInput, { visible: true });
     await page.click(expirationDateInput, { clickCount: 3 });
     await page.keyboard.type(cardData.expirationDate);
-    console.log("expiration performed");
     await page.waitForSelector(ccvInput, { visible: true });
     await page.click(ccvInput, { clickCount: 3 });
     await page.keyboard.type(cardData.ccv);
-    console.log("cvv performed");
     await page.waitForSelector(holderNameInput, { visible: true });
     await page.click(holderNameInput, { clickCount: 3 });
     await page.keyboard.type(cardData.holderName);
-    console.log("holder performed");
     completed = !!!(await page.$(disabledContinueBtnXPath));
     await page.waitForTimeout(1_000);
   }

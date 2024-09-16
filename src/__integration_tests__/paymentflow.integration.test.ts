@@ -51,10 +51,10 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
    * Increase default test timeout (120000ms)
    * to support entire payment flow
     */
-  jest.setTimeout(300000);
+  jest.setTimeout(80000);
   jest.retryTimes(3);
-  page.setDefaultNavigationTimeout(120000);
-  page.setDefaultTimeout(120000);
+  page.setDefaultNavigationTimeout(80000);
+  page.setDefaultTimeout(80000);
 
   beforeAll(async () => {
     await page.goto(CHECKOUT_URL);
@@ -247,7 +247,6 @@ describe("PSP disclaimer tests", () => {
       VALID_CARD_DATA
     );
 
-    console.log(resultMessage);
     expect(resultMessage).toContain(translation.paymentCheckPage.disclaimer.cheaper);
 
     await cancelPaymentAction();
