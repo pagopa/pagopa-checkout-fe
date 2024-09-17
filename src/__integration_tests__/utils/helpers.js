@@ -128,6 +128,21 @@ export const fillAndSubmitCardDataForm = async (
   await fillCardDataForm(cardData);
 };
 
+export const fillAndSubmitSatispayPayment = async (
+  noticeCode,
+  fiscalCode,
+  email
+) => {
+  const payNoticeBtnSelector = "#paymentSummaryButtonPay";
+  await fillPaymentNotificationForm(noticeCode, fiscalCode);
+  const payNoticeBtn = await page.waitForSelector(payNoticeBtnSelector, {
+    visible: true,
+  });
+  await payNoticeBtn.click();
+  await fillEmailForm(email);
+  await choosePaymentMethod("SATY");
+};
+
 export const fillEmailForm = async (email) => {
   const emailInput = "#email";
   const confirmEmailInput = "#confirmEmail";
@@ -232,11 +247,10 @@ export const cancelPaymentOK = async (
 export const cancelPaymentKO = async (
   noticeCode,
   fiscalCode,
-  email,
-  cardData
+  email
 ) => {
   const resultMessageXPath = "/html/body/div[7]/div[3]/div/h2/div";
-  await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
+  await fillAndSubmitSatispayPayment(noticeCode, fiscalCode, email);
   const paymentCheckPageButtonCancel = await page.waitForSelector(
     "#paymentCheckPageButtonCancel"
   );

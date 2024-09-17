@@ -309,7 +309,7 @@ describe("Cancel payment tests", () => {
   });
 });
 
-describe.only("Cancel payment failure tests", () => {
+describe("Cancel payment failure tests (satispay)", () => {
 
   it.each([
     ["it", itTranslation],
@@ -325,13 +325,11 @@ describe.only("Cancel payment failure tests", () => {
     const resultMessage = await cancelPaymentKO(
       CANCEL_PAYMENT_KO,
       VALID_FISCAL_CODE,
-      EMAIL,
-      VALID_CARD_DATA
+      EMAIL
     );
     expect(resultMessage).toContain(translation.GENERIC_ERROR.title);
     const closeErrorButton = await page.waitForSelector("#closeError");
     await closeErrorButton.click();
-    console.log("close clicked");
   });
 
 });

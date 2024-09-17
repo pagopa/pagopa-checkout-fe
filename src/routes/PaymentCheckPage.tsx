@@ -434,6 +434,7 @@ export default function PaymentCheckPage() {
           titleId="idTitleErrorModalPaymentCheckPage"
           onClose={() => {
             setErrorModalOpen(false);
+            window.removeEventListener("beforeunload", onBrowserUnload);
             if (userCancelRedirect) {
               navigate(errorKOPage);
             }
