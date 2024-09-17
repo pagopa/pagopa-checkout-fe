@@ -1,6 +1,13 @@
 import { sanitizeSearchParams } from "../../quirks/query";
 
 describe("Querystring quirks", () => {
+  it("should leave empty search params intact", () => {
+    const validSearchParams = new URLSearchParams();
+    expect(sanitizeSearchParams("?" + validSearchParams.toString())).toEqual(
+      validSearchParams
+    );
+  });
+
   it("should leave valid search params intact", () => {
     const validSearchParams = new URLSearchParams({ a: "b", c: "d" });
     expect(sanitizeSearchParams("?" + validSearchParams.toString())).toEqual(
