@@ -309,7 +309,8 @@ describe("Cancel payment tests", () => {
   });
 });
 
-describe.skip("Cancel payment failure tests", () => {
+describe.only("Cancel payment failure tests", () => {
+
   it.each([
     ["it", itTranslation],
     ["en", enTranslation],
@@ -328,6 +329,9 @@ describe.skip("Cancel payment failure tests", () => {
       VALID_CARD_DATA
     );
     expect(resultMessage).toContain(translation.GENERIC_ERROR.title);
+    const closeErrorButton = await page.waitForSelector("#closeError");
+    await closeErrorButton.click();
+    console.log("close clicked");
   });
 
 });
