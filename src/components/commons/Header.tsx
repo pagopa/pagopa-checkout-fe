@@ -1,7 +1,9 @@
 /* eslint-disable sonarjs/cognitive-complexity */
 import { Box, Button, Stack } from "@mui/material";
+import { Box, Button, Stack } from "@mui/material";
 import React from "react";
 import { useLocation } from "react-router-dom";
+import { ShoppingCart } from "@mui/icons-material";
 import { ShoppingCart } from "@mui/icons-material";
 import pagopaLogo from "../../assets/images/pagopa-logo.svg";
 import {
