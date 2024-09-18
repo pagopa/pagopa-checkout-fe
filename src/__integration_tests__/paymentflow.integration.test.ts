@@ -185,21 +185,38 @@ describe("Checkout payment activation failure tests", () => {
     expect(resultMessage).toContain("PPT_PSP_SCONOSCIUTO");
   });
 
-  xit("Should fail a payment AUTHORIZATION REQUEST and get FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND", async () => {
-    /*
-     * 2. Payment with notice code that fails on activation and get FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND
-     */                        
-    const errorMessageTitleSelector = '#idTitleErrorModalPaymentCheckPage' 
-    const resultMessage = await authorizePaymentAndGetError(
-      FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND,
-      VALID_FISCAL_CODE,
-      EMAIL,
-      VALID_CARD_DATA,
-      errorMessageTitleSelector
-    );
+  describe("Auth request failure tests", () => {
+    it.only.each([
+        ["it", itTranslation],
+        ["en", enTranslation],
+        ["fr", frTranslation],
+        ["de", deTranslation],
+        ["sl", slTranslation]
+      ])("Should fail a payment AUTHORIZATION REQUEST and get FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND for language [%s]", async (lang, translation) => {
+        /*
+        * 2. Payment with notice code that fails on activation and get FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND
+        */  
+        selectLanguage(lang);
+        page.on('dialog', async dialog => {
+          await dialog.accept();
+        });
+        
+        const errorMessageTitleSelector = '#idTitleErrorModalPaymentCheckPage' 
+        const resultMessage = await authorizePaymentAndGetError(
+          FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND,
+          VALID_FISCAL_CODE,
+          EMAIL,
+          VALID_CARD_DATA,
+          errorMessageTitleSelector
+        );
 
-    expect(resultMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
-  });
+        expect(resultMessage).toContain(translation.GENERIC_ERROR.title);
+
+        const closeErrorButton = await page.waitForSelector("#closeError");
+        await closeErrorButton.click();
+      });
+    });
+
 });
 
 describe("PSP disclaimer tests", () => {
