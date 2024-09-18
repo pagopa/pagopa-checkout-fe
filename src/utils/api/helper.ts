@@ -252,6 +252,7 @@ export const activePaymentTask = (
         return apiPaymentEcommerceClientV2.newTransaction({
           "x-correlation-id": correlationId,
           "x-client-id-from-client": cartClientId,
+          lang: localStorage.getItem("i18nextLng") ?? window.navigator.language,
           recaptchaResponse,
           body: {
             paymentNotices: getPaymentNotices(amountSinglePayment, rptId, cart),
