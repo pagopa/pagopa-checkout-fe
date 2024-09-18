@@ -186,7 +186,7 @@ describe("Checkout payment activation failure tests", () => {
   });
 
   describe("Auth request failure tests", () => {
-    it.only.each([
+    it.each([
         ["it", itTranslation],
         ["en", enTranslation],
         ["fr", frTranslation],
