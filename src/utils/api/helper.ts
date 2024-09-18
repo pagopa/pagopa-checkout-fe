@@ -1025,9 +1025,10 @@ export const npgSessionsFields = async (
               | PaymentMethod
               | undefined
           )?.paymentMethodId || "";
-        return apiPaymentEcommerceClientWithRetry.createSession({
+        return apiPaymentEcommerceClientWithRetryV2.createSession({
           id: paymentMethodId,
           recaptchaResponse,
+          lang: localStorage.getItem("i18nextLng") ?? window.navigator.language,
         });
       },
       () => {
