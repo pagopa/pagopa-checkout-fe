@@ -1,9 +1,10 @@
 import { payNotice, verifyPaymentAndGetError, activatePaymentAndGetError, authorizePaymentAndGetError, checkPspDisclaimerBeforeAuthorizePayment, checkErrorOnCardDataFormSubmit, cancelPaymentOK, cancelPaymentAction, cancelPaymentKO, selectLanguage } from "./utils/helpers";
 import itTranslation from "../translations/it/translations.json";
+import deTranslation from "../translations/de/translations.json";
+import enTranslation from "../translations/en/translations.json";
+import frTranslation from "../translations/fr/translations.json";
+import slTranslation from "../translations/sl/translations.json";
 
-describe.each([
-  ["it", itTranslation]
-])("Checkout payment activation tests for [%s] language", (lang, translation) => {
 /**
    * Test input and configuration
 */
@@ -50,10 +51,10 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
    * Increase default test timeout (120000ms)
    * to support entire payment flow
     */
-  jest.setTimeout(120000);
+  jest.setTimeout(80000);
   jest.retryTimes(3);
-  page.setDefaultNavigationTimeout(120000);
-  page.setDefaultTimeout(120000);
+  page.setDefaultNavigationTimeout(80000);
+  page.setDefaultTimeout(80000);
 
   beforeAll(async () => {
     await page.goto(CHECKOUT_URL);
@@ -62,13 +63,21 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
 
   beforeEach(async () => {
     await page.goto(CHECKOUT_URL);
-    selectLanguage(lang);
   });
 
-  it("Should correctly execute a payment", async () => {
+  describe("Checkout payment tests", () => {
+
+  it.each([
+    ["it", itTranslation],
+    ["en", enTranslation],
+    ["fr", frTranslation],
+    ["de", deTranslation],
+    ["sl", slTranslation]
+  ])("Should correctly execute a payment for language [%s]", async (lang, translation) => {
     /*
      * 1. Payment with valid notice code
     */
+    selectLanguage(lang);
     const resultMessage = await payNotice(
       VALID_NOTICE_CODE,
       VALID_FISCAL_CODE,
@@ -79,10 +88,14 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
 
     expect(resultMessage).toContain(translation.paymentResponsePage[0].title.replace("{{amount}}", "120,10\xa0€"));
   });
+});
+
+describe("Checkout payment verify failure tests", () => {
 
   it("Should fail a payment VERIFY and get FAIL_VERIFY_404_PPT_STAZIONE_INT_PA_SCONOSCIUTA", async () => {
     /*
      * 2. Payment with notice code that fails on verify and get PPT_STAZIONE_INT_PA_SCONOSCIUTA
+     * No need for testing other languages
      */
     const resultMessage = await verifyPaymentAndGetError(FAIL_VERIFY_404_PPT_STAZIONE_INT_PA_SCONOSCIUTA, VALID_FISCAL_CODE);
 
@@ -92,6 +105,7 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
   it("Should fail a payment VERIFY and get FAIL_VERIFY_503_PPT_STAZIONE_INT_PA_TIMEOUT", async () => {
     /*
      * 2. Payment with notice code that fails on verify and get FAIL_VERIFY_503_PPT_STAZIONE_INT_PA_TIMEOUT
+     * No need for testing other languages
      */
     const resultMessage = await verifyPaymentAndGetError(FAIL_VERIFY_503_PPT_STAZIONE_INT_PA_TIMEOUT, VALID_FISCAL_CODE);
 
@@ -101,16 +115,28 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
   it("Should fail a payment VERIFY and get FAIL_VERIFY_502_PPT_PSP_SCONOSCIUTO", async () => {
     /*
      * 2. Payment with notice code that fails on verify and get FAIL_VERIFY_502_PPT_PSP_SCONOSCIUTO
+     * No need for testing other languages 
      */
     const resultMessage = await verifyPaymentAndGetError(FAIL_VERIFY_502_PPT_PSP_SCONOSCIUTO, VALID_FISCAL_CODE);
 
     expect(resultMessage).toContain("PPT_PSP_SCONOSCIUTO");
   });
 
-  it("Should fail a payment ACTIVATION and get PPT_PAGAMENTO_IN_CORSO", async () => {
+});
+
+describe("Checkout payment ongoing failure tests", () => {
+
+  it.each([
+    ["it", itTranslation],
+    ["en", enTranslation],
+    ["fr", frTranslation],
+    ["de", deTranslation],
+    ["sl", slTranslation]
+  ])("Should fail a payment ACTIVATION and get PPT_PAGAMENTO_IN_CORSO for language [%s]", async (lang, translation) => {
     /*
      * 2. Payment with notice code that fails on activation and get PPT_PAGAMENTO_IN_CORSO
      */
+    selectLanguage(lang);
     const ErrorTitleID = '#iframeCardFormErrorTitleId'
     const resultMessage = await activatePaymentAndGetError(
       FAIL_ACTIVATE_PPT_PAGAMENTO_IN_CORSO,
@@ -122,6 +148,10 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
 
     expect(resultMessage).toContain(translation.PAYMENT_ONGOING.title);
   });
+
+});
+
+describe("Checkout payment activation failure tests", () => {
 
   it("Should fail a payment ACTIVATION and get PPT_STAZIONE_INT_PA_TIMEOUT", async () => {
     /*
@@ -155,26 +185,54 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
     expect(resultMessage).toContain("PPT_PSP_SCONOSCIUTO");
   });
 
-  xit("Should fail a payment AUTHORIZATION REQUEST and get FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND", async () => {
-    /*
-     * 2. Payment with notice code that fails on activation and get FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND
-     */                        
-    const errorMessageTitleSelector = '#idTitleErrorModalPaymentCheckPage' 
-    const resultMessage = await authorizePaymentAndGetError(
-      FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND,
-      VALID_FISCAL_CODE,
-      EMAIL,
-      VALID_CARD_DATA,
-      errorMessageTitleSelector
-    );
+  describe("Auth request failure tests", () => {
+    it.each([
+        ["it", itTranslation],
+        ["en", enTranslation],
+        ["fr", frTranslation],
+        ["de", deTranslation],
+        ["sl", slTranslation]
+      ])("Should fail a payment AUTHORIZATION REQUEST and get FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND for language [%s]", async (lang, translation) => {
+        /*
+        * 2. Payment with notice code that fails on activation and get FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND
+        */  
+        selectLanguage(lang);
+        page.on('dialog', async dialog => {
+          await dialog.accept();
+        });
+        
+        const errorMessageTitleSelector = '#idTitleErrorModalPaymentCheckPage' 
+        const resultMessage = await authorizePaymentAndGetError(
+          FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND,
+          VALID_FISCAL_CODE,
+          EMAIL,
+          VALID_CARD_DATA,
+          errorMessageTitleSelector
+        );
 
-    expect(resultMessage).toContain("Spiacenti, si è verificato un errore imprevisto");
-  });
+        expect(resultMessage).toContain(translation.GENERIC_ERROR.title);
 
-  it("Should show up threshold disclaimer (why manage creditcard)", async () => {
+        const closeErrorButton = await page.waitForSelector("#closeError");
+        await closeErrorButton.click();
+      });
+    });
+
+});
+
+describe("PSP disclaimer tests", () => {
+
+
+  it.each([
+    ["it", itTranslation],
+    ["en", enTranslation],
+    ["fr", frTranslation],
+    ["de", deTranslation],
+    ["sl", slTranslation]
+  ])("Should show up threshold disclaimer (why manage creditcard) for language [%s]", async (lang, translation) => {
     /*
      * Credit card manage psp
     */
+    selectLanguage(lang);
     const resultMessage = await checkPspDisclaimerBeforeAuthorizePayment(
       PSP_ABOVETHRESHOLD,
       VALID_FISCAL_CODE,
@@ -187,10 +245,18 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
     await cancelPaymentAction();
   });
 
-  it("Should show below threshold disclaimer (why is cheaper)", async () => {
+
+  it.each([
+    ["it", itTranslation],
+    ["en", enTranslation],
+    ["fr", frTranslation],
+    ["de", deTranslation],
+    ["sl", slTranslation]
+  ])("Should show below threshold disclaimer (why is cheaper) for language [%s]", async (lang, translation) => {
     /*
      * Cheaper psp
     */
+    selectLanguage(lang);
     const resultMessage = await checkPspDisclaimerBeforeAuthorizePayment(
       PSP_BELOWTHRESHOLD,
       VALID_FISCAL_CODE,
@@ -198,16 +264,26 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
       VALID_CARD_DATA
     );
 
-    console.log(resultMessage);
     expect(resultMessage).toContain(translation.paymentCheckPage.disclaimer.cheaper);
 
     await cancelPaymentAction();
   });
 
-  it("Should fails calculate fee", async () => {
+});
+
+describe("Checkout fails to calculate fee", () => {
+
+  it.each([
+    ["it", itTranslation],
+    ["en", enTranslation],
+    ["fr", frTranslation],
+    ["de", deTranslation],
+    ["sl", slTranslation]
+  ])("Should fails calculate fee for language [%s]", async (lang, translation) => {
     /*
      * Calculate fee fails
     */
+    selectLanguage(lang);
     const resultMessage = await checkErrorOnCardDataFormSubmit(
       PSP_FAIL,
       VALID_FISCAL_CODE,
@@ -225,10 +301,21 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
 
   });
 
-  it("Should correctly execute CANCEL PAYMENT by user", async () => {
+});
+
+describe("Cancel payment tests", () => {
+
+  it.each([
+    ["it", itTranslation],
+    ["en", enTranslation],
+    ["fr", frTranslation],
+    ["de", deTranslation],
+    ["sl", slTranslation]
+  ])("Should correctly execute CANCEL PAYMENT by user for language [%s]", async (lang, translation) => {
     /*
      * Cancel payment OK
     */
+    selectLanguage(lang);
     const resultMessage = await cancelPaymentOK(
       CANCEL_PAYMENT_OK,
       VALID_FISCAL_CODE,
@@ -237,18 +324,29 @@ const CANCEL_PAYMENT_KO = "302016723749670059";
     );
     expect(resultMessage).toContain(translation.cancelledPage.body);
   });
+});
 
-  it("Should fail a CANCEL PAYMENT by user", async () => {
+describe("Cancel payment failure tests (satispay)", () => {
+
+  it.each([
+    ["it", itTranslation],
+    ["en", enTranslation],
+    ["fr", frTranslation],
+    ["de", deTranslation],
+    ["sl", slTranslation]
+  ])("Should fail a CANCEL PAYMENT by user for language [%s]", async (lang, translation) => {
     /*
      * Cancel payment KO
     */
+    selectLanguage(lang);
     const resultMessage = await cancelPaymentKO(
       CANCEL_PAYMENT_KO,
       VALID_FISCAL_CODE,
-      EMAIL,
-      VALID_CARD_DATA
+      EMAIL
     );
     expect(resultMessage).toContain(translation.GENERIC_ERROR.title);
+    const closeErrorButton = await page.waitForSelector("#closeError");
+    await closeErrorButton.click();
   });
 
 });

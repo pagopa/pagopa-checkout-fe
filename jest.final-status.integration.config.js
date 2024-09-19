@@ -1,11 +1,11 @@
 module.exports = {
   preset: "jest-puppeteer",
-  testRegex: "./*integration.test\\.ts$",
+  testRegex: "./finalstatus.integration.test\\.ts$",
   reporters: [
       'default',
       [ 'jest-junit', {
         outputDirectory: './test_reports',
-        outputName: 'checkout-integration-TEST.xml',
+        outputName: 'checkout-final-status-integration-TEST.xml',
       } ]
     ]
   };

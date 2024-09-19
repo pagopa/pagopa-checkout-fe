@@ -128,6 +128,21 @@ export const fillAndSubmitCardDataForm = async (
   await fillCardDataForm(cardData);
 };
 
+export const fillAndSubmitSatispayPayment = async (
+  noticeCode,
+  fiscalCode,
+  email
+) => {
+  const payNoticeBtnSelector = "#paymentSummaryButtonPay";
+  await fillPaymentNotificationForm(noticeCode, fiscalCode);
+  const payNoticeBtn = await page.waitForSelector(payNoticeBtnSelector, {
+    visible: true,
+  });
+  await payNoticeBtn.click();
+  await fillEmailForm(email);
+  await choosePaymentMethod("SATY");
+};
+
 export const fillEmailForm = async (email) => {
   const emailInput = "#email";
   const confirmEmailInput = "#confirmEmail";
@@ -178,23 +193,18 @@ export const fillCardDataForm = async (cardData) => {
   let completed = false;
   while (!completed) {
     iteration++;
-    console.log(`Compiling fields...${iteration}`);
     await page.waitForSelector(cardNumberInput, { visible: true });
     await page.click(cardNumberInput, { clickCount: 3 });
     await page.keyboard.type(cardData.number);
-    console.log("card number performed");
     await page.waitForSelector(expirationDateInput, { visible: true });
     await page.click(expirationDateInput, { clickCount: 3 });
     await page.keyboard.type(cardData.expirationDate);
-    console.log("expiration performed");
     await page.waitForSelector(ccvInput, { visible: true });
     await page.click(ccvInput, { clickCount: 3 });
     await page.keyboard.type(cardData.ccv);
-    console.log("cvv performed");
     await page.waitForSelector(holderNameInput, { visible: true });
     await page.click(holderNameInput, { clickCount: 3 });
     await page.keyboard.type(cardData.holderName);
-    console.log("holder performed");
     completed = !!!(await page.$(disabledContinueBtnXPath));
     await page.waitForTimeout(1_000);
   }
@@ -237,11 +247,10 @@ export const cancelPaymentOK = async (
 export const cancelPaymentKO = async (
   noticeCode,
   fiscalCode,
-  email,
-  cardData
+  email
 ) => {
   const resultMessageXPath = "/html/body/div[7]/div[3]/div/h2/div";
-  await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
+  await fillAndSubmitSatispayPayment(noticeCode, fiscalCode, email);
   const paymentCheckPageButtonCancel = await page.waitForSelector(
     "#paymentCheckPageButtonCancel"
   );
