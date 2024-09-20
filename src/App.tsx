@@ -4,7 +4,6 @@ import { theme } from "@pagopa/mui-italia";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import CvvGuard from "./components/commons/CvvGuard";
 import Guard from "./components/commons/Guard";
 import { Layout } from "./components/commons/Layout";
 import NoticeGuard from "./components/commons/NoticeGuard";
@@ -12,7 +11,7 @@ import RptidGuard from "./components/commons/RptidGuard";
 import CancelledPage from "./routes/CancelledPage";
 import DonationPageDismissed from "./routes/DonationPageDismissed";
 import IndexPage from "./routes/IndexPage";
-import InputCardPage from "./routes/InputCardPage";
+import IframeCardPage from "./routes/IframeCardPage";
 import KOPage from "./routes/KOPage";
 import { CheckoutRoutes } from "./routes/models/routeModel";
 import PaymentCartPage from "./routes/PaymentCartPage";
@@ -23,16 +22,15 @@ import PaymentNoticePage from "./routes/PaymentNoticePage";
 import PaymentOutlet from "./routes/PaymentOutlet";
 import PaymentQrPage from "./routes/PaymentQrPage";
 import PaymentResponsePage from "./routes/PaymentResponsePage";
+import PaymentResponsePageV2 from "./routes/PaymentResponsePageV2";
 import PaymentSummaryPage from "./routes/PaymentSummaryPage";
+import GdiCheckPage from "./routes/GdiCheckPage";
 import "./translations/i18n";
 import { mixpanelInit } from "./utils/config/mixpanelHelperInit";
 import { SessionItems } from "./utils/storage/sessionStorage";
 
 declare const OneTrust: any;
 declare const OnetrustActiveGroups: string;
-const global = window as any;
-// target cookies (Mixpanel)
-const targCookiesGroup = "C0004";
 
 const checkoutTheme = createTheme({
   ...theme,
@@ -77,25 +75,7 @@ export function App() {
     CheckoutRoutes.DONA,
   ];
   React.useEffect(() => {
-    // OneTrust callback at first time
-    // eslint-disable-next-line functional/immutable-data
-    global.OptanonWrapper = function () {
-      OneTrust.OnConsentChanged(function () {
-        const activeGroups = OnetrustActiveGroups;
-        if (activeGroups.indexOf(targCookiesGroup) > -1) {
-          mixpanelInit();
-        }
-      });
-    };
-    // check mixpanel cookie consent in cookie
-    const OTCookieValue: string =
-      document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("OptanonConsent=")) || "";
-    const checkValue = `${targCookiesGroup}%3A1`;
-    if (OTCookieValue.indexOf(checkValue) > -1) {
-      mixpanelInit();
-    }
+    mixpanelInit();
   }, []);
   // eslint-disable-next-line functional/immutable-data
   document.title = t("app.title");
@@ -144,7 +124,7 @@ export function App() {
                 path={CheckoutRoutes.INSERISCI_CARTA}
                 element={
                   <Guard item={SessionItems.useremail}>
-                    <InputCardPage />
+                    <IframeCardPage />
                   </Guard>
                 }
               />
@@ -160,9 +140,15 @@ export function App() {
                 path={CheckoutRoutes.RIEPILOGO_PAGAMENTO}
                 element={
                   <Guard item={SessionItems.transaction}>
-                    <CvvGuard>
-                      <PaymentCheckPage />
-                    </CvvGuard>
+                    <PaymentCheckPage />
+                  </Guard>
+                }
+              />
+              <Route
+                path={CheckoutRoutes.GDI_CHECK}
+                element={
+                  <Guard item={SessionItems.orderId}>
+                    <GdiCheckPage />
                   </Guard>
                 }
               />
@@ -171,6 +157,14 @@ export function App() {
                 element={
                   <Guard item={SessionItems.transaction}>
                     <PaymentResponsePage />
+                  </Guard>
+                }
+              />
+              <Route
+                path={`v2/${CheckoutRoutes.ESITO}`}
+                element={
+                  <Guard item={SessionItems.transaction}>
+                    <PaymentResponsePageV2 />
                   </Guard>
                 }
               />

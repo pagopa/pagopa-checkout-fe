@@ -17,6 +17,7 @@ export const IConfig = t.interface({
   CHECKOUT_ECOMMERCE_HOST: NonEmptyString,
   CHECKOUT_PM_API_BASEPATH: NonEmptyString,
   CHECKOUT_API_ECOMMERCE_BASEPATH: NonEmptyString,
+  CHECKOUT_API_ECOMMERCE_BASEPATH_V2: NonEmptyString,
   CHECKOUT_API_TIMEOUT: t.number,
   CHECKOUT_ENV: NonEmptyString,
   CHECKOUT_PAGOPA_APIM_HOST: NonEmptyString,
@@ -29,6 +30,9 @@ export const IConfig = t.interface({
   CHECKOUT_RECAPTCHA_SITE_KEY: NonEmptyString,
   CHECKOUT_DONATIONS_URL: NonEmptyString,
   CHECKOUT_SURVEY_SHOW: t.boolean,
+  CHECKOUT_NPG_SDK_URL: NonEmptyString,
+  CHECKOUT_API_RETRY_NUMBERS: t.number,
+  CHECKOUT_API_RETRY_DELAY: t.number,
 });
 
 // No need to re-evaluate this object for each call
@@ -55,6 +59,22 @@ const errorOrConfig: t.Validation<IConfig> = IConfig.decode({
     (window as any)._env_.CHECKOUT_SURVEY_SHOW,
     2
   ),
+  // eslint-disable-next-line no-underscore-dangle
+  CHECKOUT_API_RETRY_NUMBERS: (window as any)._env_.CHECKOUT_API_RETRY_NUMBERS
+    ? parseInt(
+        // eslint-disable-next-line no-underscore-dangle
+        (window as any)._env_.CHECKOUT_API_RETRY_NUMBERS,
+        10
+      )
+    : 20,
+  // eslint-disable-next-line no-underscore-dangle
+  CHECKOUT_API_RETRY_DELAY: (window as any)._env_.CHECKOUT_API_RETRY_DELAY
+    ? parseInt(
+        // eslint-disable-next-line no-underscore-dangle
+        (window as any)._env_.CHECKOUT_API_RETRY_DELAY,
+        10
+      )
+    : 3000,
 });
 
 /**

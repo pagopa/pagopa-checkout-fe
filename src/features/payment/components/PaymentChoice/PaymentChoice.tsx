@@ -1,113 +1,159 @@
 /* eslint-disable sonarjs/cognitive-complexity */
-/* eslint-disable @typescript-eslint/no-unused-expressions */
-/* eslint-disable functional/immutable-data */
+import Box from "@mui/material/Box/Box";
 import React from "react";
-import { useNavigate } from "react-router";
+import ReCAPTCHA from "react-google-recaptcha";
+import { useNavigate } from "react-router-dom";
+import { v4 as uuidV4 } from "uuid";
+import ErrorModal from "../../../../components/modals/ErrorModal";
+import CheckoutLoader from "../../../../components/PageContent/CheckoutLoader";
 import ClickableFieldContainer from "../../../../components/TextFormField/ClickableFieldContainer";
-import {
-  PaymentMethodRoutes,
-  TransactionMethods,
-} from "../../../../routes/models/paymentMethodRoutes";
+import { useAppDispatch } from "../../../../redux/hooks/hooks";
+import { PaymentMethodRoutes } from "../../../../routes/models/paymentMethodRoutes";
+import { getFees, recaptchaTransaction } from "../../../../utils/api/helper";
+import { PAYMENT_METHODS_CHOICE } from "../../../../utils/config/mixpanelDefs";
+import { mixpanel } from "../../../../utils/config/mixpanelHelperInit";
 import {
   SessionItems,
+  getReCaptchaKey,
   setSessionItem,
 } from "../../../../utils/storage/sessionStorage";
-import { PaymentInstruments } from "../../models/paymentModel";
-import { DisabledPaymentMethods, EnabledPaymentMethods } from "./PaymentMethod";
-
-function groupByTypeCode(array: Array<PaymentInstruments>) {
-  return array.reduce((acc, current) => {
-    if (!acc[current.paymentTypeCode]) {
-      acc[current.paymentTypeCode] = [];
-    }
-
-    acc[current.paymentTypeCode].push(current);
-    return acc;
-  }, {} as Record<TransactionMethods, Array<PaymentInstruments>>);
-}
-
-function getSortedPaymentMethods(
-  groupedMethods: Record<TransactionMethods, Array<PaymentInstruments>>
-) {
-  const paymentMethods: Array<PaymentInstruments> = [];
-  const methodCP = groupedMethods[TransactionMethods.CP]?.[0];
-  const methodCC = groupedMethods[TransactionMethods.CC]?.[0];
-
-  for (const key in groupedMethods) {
-    if (
-      key !== TransactionMethods.CP &&
-      key !== TransactionMethods.CC &&
-      PaymentMethodRoutes[key as TransactionMethods]
-    ) {
-      paymentMethods.push(groupedMethods[key as TransactionMethods][0]);
-    }
-  }
-
-  const sortedMethods = paymentMethods.sort((a, b) =>
-    a.label.localeCompare(b.label)
-  );
-
-  methodCC && sortedMethods.unshift(methodCC);
-  methodCP && sortedMethods.unshift(methodCP);
-
-  return sortedMethods;
-}
+import {
+  PaymentCodeType,
+  PaymentCodeTypeEnum,
+  PaymentInstrumentsType,
+} from "../../models/paymentModel";
+import { setThreshold } from "../../../../redux/slices/threshold";
+import { CheckoutRoutes } from "../../../../routes/models/routeModel";
+import { DisabledPaymentMethods, MethodComponentList } from "./PaymentMethod";
+import { getNormalizedMethods } from "./utils";
 
 export function PaymentChoice(props: {
   amount: number;
-  paymentInstruments: Array<PaymentInstruments>;
+  paymentInstruments: Array<PaymentInstrumentsType>;
   loading?: boolean;
 }) {
-  const navigate = useNavigate();
+  const ref = React.useRef<ReCAPTCHA>(null);
+  const [loading, setLoading] = React.useState(true);
+  const [errorModalOpen, setErrorModalOpen] = React.useState(false);
+  const [error, setError] = React.useState("");
 
-  const handleClickOnMethod = React.useCallback(
-    (paymentType: TransactionMethods, paymentMethodId: string) => {
-      const route: string = PaymentMethodRoutes[paymentType]?.route;
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
+  React.useEffect(() => {
+    if (ref.current) {
+      setLoading(false);
+    }
+  }, [ref.current]);
+
+  const onError = (m: string) => {
+    setLoading(false);
+    setError(m);
+    setErrorModalOpen(true);
+    ref.current?.reset();
+  };
+
+  const onSuccess = (
+    paymentTypeCode: PaymentCodeType,
+    belowThreshold?: boolean
+  ) => {
+    const route: string = PaymentMethodRoutes[paymentTypeCode]?.route;
+    mixpanel.track(PAYMENT_METHODS_CHOICE.value, {
+      EVENT_ID: paymentTypeCode,
+    });
+
+    if (belowThreshold !== undefined) {
+      dispatch(setThreshold({ belowThreshold }));
+    }
+
+    setLoading(false);
+    navigate(`/${route || CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
+  };
+
+  const onApmChoice = async (
+    recaptchaRef: ReCAPTCHA,
+    onSuccess: (belowThreshold: boolean) => void
+  ) => {
+    // TODO uuid module dependency and
+    // the orderId and correlationId setSession below
+    // must be removed once the transaction API
+    // is refactored to make orderId and
+    // x-correlation-id optional
+    setSessionItem(SessionItems.orderId, "orderId");
+    setSessionItem(SessionItems.correlationId, uuidV4());
+    setLoading(true);
+    await recaptchaTransaction({
+      recaptchaRef,
+      onSuccess: async () => {
+        await getFees(onSuccess, onError);
+      },
+      onError,
+    });
+  };
+
+  const handleClickOnMethod = async (method: PaymentInstrumentsType) => {
+    if (!loading) {
+      const { paymentTypeCode, id: paymentMethodId } = method;
+      setSessionItem(SessionItems.paymentMethodInfo, {
+        title: method.description,
+        asset: method.asset || "",
+      });
+
       setSessionItem(SessionItems.paymentMethod, {
         paymentMethodId,
-        paymentTypeCode: paymentType,
+        paymentTypeCode,
       });
-      /* void getPaymentPSPList({
-        paymentMethodId,
-        onError: onErrorGetPSP,
-        onResponse: (resp) => {
-          const firstPsp = sortPsp(resp);
-          setPspSelected({
-            pspCode: firstPsp[0].idPsp || "",
-            fee: firstPsp[0].commission,
-            businessName: firstPsp[0].name || "",
-          });
-        },
-      }); */
-      navigate(`/${route}`);
-    },
-    []
-  );
+      if (paymentTypeCode !== PaymentCodeTypeEnum.CP && ref.current) {
+        await onApmChoice(ref.current, (belowThreshold: boolean) =>
+          onSuccess(paymentTypeCode, belowThreshold)
+        );
+      } else {
+        onSuccess(paymentTypeCode);
+      }
+    }
+  };
 
-  const getPaymentMethods = React.useCallback(
-    (status: "ENABLED" | "DISABLED" = "ENABLED") =>
-      getSortedPaymentMethods(
-        groupByTypeCode(
-          props.paymentInstruments.filter((method) => method.status === status)
-        )
-      ),
+  const paymentMethods = React.useMemo(
+    () => getNormalizedMethods(props.paymentInstruments),
     [props.amount, props.paymentInstruments]
   );
 
   return (
     <>
+      {loading && <CheckoutLoader />}
       {props.loading ? (
-        Array(3)
-          .fill(1)
-          .map((_, index) => <ClickableFieldContainer key={index} loading />)
+        Array.from({ length: 5 }, (_, index) => (
+          <ClickableFieldContainer key={index} loading />
+        ))
       ) : (
         <>
-          <EnabledPaymentMethods
-            methods={getPaymentMethods()}
+          <MethodComponentList
+            methods={paymentMethods.enabled}
             onClick={handleClickOnMethod}
+            testable
           />
-          <DisabledPaymentMethods methods={getPaymentMethods("DISABLED")} />
+          <DisabledPaymentMethods methods={paymentMethods.disabled} />
         </>
+      )}
+      <Box display="none">
+        <ReCAPTCHA
+          ref={ref}
+          size="invisible"
+          sitekey={getReCaptchaKey() as string}
+        />
+      </Box>
+      {!!errorModalOpen && (
+        <ErrorModal
+          error={error}
+          open={errorModalOpen}
+          onClose={() => {
+            setErrorModalOpen(false);
+            window.location.replace(`/${CheckoutRoutes.ERRORE}`);
+          }}
+          titleId="iframeCardFormErrorTitleId"
+          errorId="iframeCardFormErrorId"
+          bodyId="iframeCardFormErrorBodyId"
+        />
       )}
     </>
   );

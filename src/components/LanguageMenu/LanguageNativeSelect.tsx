@@ -18,6 +18,7 @@ export default function LanguageNativeSelect() {
 
   const changeLanguageHandler = React.useCallback(async (lang: string) => {
     setLang(lang);
+    localStorage.setItem("i18nextLng", lang);
     await i18n.changeLanguage(lang);
   }, []);
 
@@ -25,6 +26,8 @@ export default function LanguageNativeSelect() {
     "& .MuiInputBase-input": {
       padding: 0,
       fontSize: theme.typography.caption.fontSize,
+      color: theme.palette.text.primary,
+      height: "auto",
     },
   }));
 
@@ -32,9 +35,15 @@ export default function LanguageNativeSelect() {
     <>
       <Box sx={visuallyHidden}>{t("ariaLabels.languageMenu")}</Box>
       <NativeSelect
+        id="languageMenu"
         defaultValue={lang in supportedLang ? lang : fallbackLang}
         input={<StyledInput />}
         onChange={(e) => changeLanguageHandler(e.target.value)}
+        sx={{
+          "& .MuiNativeSelect-icon": {
+            color: theme.palette.text.primary,
+          },
+        }}
         aria-label={t("ariaLabels.appLanguage")}
       >
         {languages}

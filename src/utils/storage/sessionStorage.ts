@@ -1,5 +1,6 @@
 import { Bundle } from "../../../generated/definitions/payment-ecommerce/Bundle";
 import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
+import { SessionPaymentMethodResponse } from "../../../generated/definitions/payment-ecommerce/SessionPaymentMethodResponse";
 import {
   Cart,
   PaymentFormFields,
@@ -7,6 +8,7 @@ import {
   PaymentId,
   PaymentEmailFormFields,
   PaymentMethod,
+  PaymentMethodInfo,
 } from "../../features/payment/models/paymentModel";
 import { getConfigOrThrow } from "../config/config";
 
@@ -19,9 +21,20 @@ export enum SessionItems {
   sessionToken = "sessionToken",
   cart = "cart",
   transaction = "transaction",
+  sessionPaymentMethod = "sessionPayment",
+  paymentMethodInfo = "paymentMethodInfo",
+  orderId = "orderId",
+  correlationId = "correlationId",
+  cartClientId = "cartClientId",
 }
 const isParsable = (item: SessionItems) =>
-  !(item === SessionItems.sessionToken || item === SessionItems.useremail);
+  !(
+    item === SessionItems.sessionToken ||
+    item === SessionItems.useremail ||
+    item === SessionItems.orderId ||
+    item === SessionItems.correlationId ||
+    item === SessionItems.cartClientId
+  );
 
 export const getSessionItem = (item: SessionItems) => {
   try {
@@ -39,7 +52,9 @@ export const getSessionItem = (item: SessionItems) => {
           | PaymentId
           | NewTransactionResponse
           | Cart
-          | Bundle)
+          | Bundle
+          | SessionPaymentMethodResponse
+          | PaymentMethodInfo)
       : serializedState;
   } catch (e) {
     return undefined;
@@ -58,6 +73,8 @@ export function setSessionItem(
     | NewTransactionResponse
     | Cart
     | Bundle
+    | SessionPaymentMethodResponse
+    | PaymentMethodInfo
 ) {
   sessionStorage.setItem(
     name,

@@ -14,7 +14,6 @@ import {
   responseOutcome,
 } from "../features/payment/models/responseOutcome";
 import { useAppDispatch } from "../redux/hooks/hooks";
-import { resetCardData } from "../redux/slices/cardData";
 import { callServices } from "../utils/api/response";
 import { PAYMENT_OUTCOME_CODE } from "../utils/config/mixpanelDefs";
 import { mixpanel } from "../utils/config/mixpanelHelperInit";
@@ -37,8 +36,9 @@ import {
 import { resetThreshold } from "../redux/slices/threshold";
 import { Bundle } from "../../generated/definitions/payment-ecommerce/Bundle";
 import { TransactionStatusEnum } from "../../generated/definitions/payment-ecommerce/TransactionStatus";
+import { TransactionInfo } from "../../generated/definitions/payment-ecommerce/TransactionInfo";
 
-type printData = {
+type PrintData = {
   useremail: string;
   amount: string;
 };
@@ -66,7 +66,7 @@ export default function PaymentResponsePage() {
         .reduce((sum, current) => sum + current, 0)
     ) + Number(pspSelected?.taxPayerFee);
 
-  const usefulPrintData: printData = {
+  const usefulPrintData: PrintData = {
     useremail: email || "",
     amount: moneyFormat(totalAmount),
   };
@@ -74,20 +74,21 @@ export default function PaymentResponsePage() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(resetCardData());
     dispatch(resetThreshold());
 
     const handleFinalStatusResult = (
       idStatus?: TransactionStatusEnum,
       sendPaymentResultOutcome?: SendPaymentResultOutcomeEnum,
       gateway?: string,
-      errorCode?: string
+      errorCode?: string,
+      gatewayAuthorizationStatus?: TransactionInfo["gatewayAuthorizationStatus"]
     ) => {
       const outcome: ViewOutcomeEnum = getViewOutcomeFromEcommerceResultCode(
         idStatus,
         sendPaymentResultOutcome,
         gateway,
-        errorCode
+        errorCode,
+        gatewayAuthorizationStatus
       );
       mixpanel.track(PAYMENT_OUTCOME_CODE.value, {
         EVENT_ID: PAYMENT_OUTCOME_CODE.value,
@@ -169,12 +170,13 @@ export default function PaymentResponsePage() {
                 }}
                 sx={{
                   width: "100%",
-                  height: "100%",
                   minHeight: 45,
                   my: 4,
                 }}
               >
-                {t("errorButton.close")}
+                {cart != null
+                  ? t("paymentResponsePage.buttons.continue")
+                  : t("errorButton.close")}
               </Button>
             </Box>
             {conf.CHECKOUT_SURVEY_SHOW && outcome === ViewOutcomeEnum.SUCCESS && (

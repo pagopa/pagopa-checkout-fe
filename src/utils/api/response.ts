@@ -8,7 +8,7 @@ import * as T from "fp-ts/Task";
 import { pipe } from "fp-ts/function";
 import { DeferredPromise } from "@pagopa/ts-commons//lib/promises";
 import { Millisecond } from "@pagopa/ts-commons//lib/units";
-import nodeFetch from "node-fetch";
+import { createCounter } from "../../utils/counter";
 import {
   THREEDSACSCHALLENGEURL_STEP2_RESP_ERR,
   THREEDSACSCHALLENGEURL_STEP2_SUCCESS,
@@ -23,20 +23,40 @@ import {
   createClient,
   Client as EcommerceClient,
 } from "../../../generated/definitions/payment-ecommerce/client";
-import { EcommerceFinalStatusCodeEnumType } from "../transactions/TransactionResultUtil";
 import { getSessionItem, SessionItems } from "../storage/sessionStorage";
+import {
+  EcommerceInterruptStatusCodeEnumType,
+  EcommerceMaybeInterruptStatusCodeEnumType,
+  NpgAuthorizationStatus,
+} from "../transactions/TransactionResultUtil";
 import {
   NewTransactionResponse,
   SendPaymentResultOutcomeEnum,
 } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { TransactionInfo } from "../../../generated/definitions/payment-ecommerce/TransactionInfo";
 import { TransactionStatusEnum } from "../../../generated/definitions/payment-ecommerce/TransactionStatus";
+
+/** This function return true when polling on GET transaction must be interrupted */
+const interruptTransactionPolling = (
+  transactionStaus: TransactionInfo["status"],
+  gatewayStaus: TransactionInfo["gatewayAuthorizationStatus"]
+) =>
+  pipe(
+    EcommerceInterruptStatusCodeEnumType.decode(transactionStaus),
+    E.isRight
+  ) ||
+  (pipe(
+    EcommerceMaybeInterruptStatusCodeEnumType.decode(transactionStaus),
+    E.isRight
+  ) &&
+    gatewayStaus !== NpgAuthorizationStatus.EXECUTED);
+
 const config = getConfigOrThrow();
 /**
  * Polling configuration params
  */
-const retries: number = 20;
-const delay: number = 3000;
+const retries: number = config.CHECKOUT_API_RETRY_NUMBERS;
+const delay: number = config.CHECKOUT_API_RETRY_DELAY;
 const timeout: Millisecond = config.CHECKOUT_API_TIMEOUT as Millisecond;
 
 const hexToUuid = require("hex-to-uuid");
@@ -49,6 +69,7 @@ const decodeToUUID = (base64: string) => {
   return hexToUuid(bytes.toString("hex")).replace(/-/g, "");
 };
 
+const counter = createCounter();
 const ecommerceClientWithPolling: EcommerceClient = createClient({
   baseUrl: config.CHECKOUT_ECOMMERCE_HOST,
   fetchApi: constantPollingWithPromisePredicateFetch(
@@ -57,19 +78,20 @@ const ecommerceClientWithPolling: EcommerceClient = createClient({
     delay,
     timeout,
     async (r: Response): Promise<boolean> => {
-      const myJson = (await r.clone().json()) as TransactionInfo;
-      return (
+      counter.increment();
+      if (counter.getValue() === retries) {
+        counter.reset();
+        return false;
+      }
+      const { status, gatewayAuthorizationStatus } = (await r
+        .clone()
+        .json()) as TransactionInfo;
+      return !(
         r.status === 200 &&
-        !pipe(EcommerceFinalStatusCodeEnumType.decode(myJson.status), E.isRight)
+        interruptTransactionPolling(status, gatewayAuthorizationStatus)
       );
     }
   ),
-  basePath: config.CHECKOUT_API_ECOMMERCE_BASEPATH,
-});
-
-const ecommerceClientWithoutpolling: EcommerceClient = createClient({
-  baseUrl: config.CHECKOUT_ECOMMERCE_HOST,
-  fetchApi: nodeFetch as any as typeof fetch,
   basePath: config.CHECKOUT_API_ECOMMERCE_BASEPATH,
 });
 
@@ -78,7 +100,8 @@ export const callServices = async (
     status?: TransactionStatusEnum,
     sendPaymentResultOutcome?: SendPaymentResultOutcomeEnum,
     gateway?: string,
-    errorCode?: string
+    errorCode?: string,
+    gatewayAuthorizationStatus?: string
   ) => void
 ) => {
   const transaction = pipe(
@@ -133,31 +156,7 @@ export const callServices = async (
             ecommerceClientWithPolling
           ),
           TE.fold(
-            // eslint-disable-next-line sonarjs/no-identical-functions
-            () => async () =>
-              await pipe(
-                ecommerceTransaction(
-                  transactionId,
-                  bearerAuth,
-                  ecommerceClientWithoutpolling
-                ),
-                TE.fold(
-                  () => async () => handleFinalStatusResult(),
-                  // eslint-disable-next-line sonarjs/no-identical-functions
-                  (transactionInfo) => async () => {
-                    mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value, {
-                      EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value,
-                    });
-                    handleFinalStatusResult(
-                      transactionInfo.status,
-                      transactionInfo.sendPaymentResultOutcome,
-                      transactionInfo.gateway,
-                      transactionInfo.errorCode
-                    );
-                  }
-                )
-              )(),
-            // eslint-disable-next-line sonarjs/no-identical-functions
+            () => async () => handleFinalStatusResult(),
             (transactionInfo) => async () => {
               mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value, {
                 EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value,
@@ -166,7 +165,8 @@ export const callServices = async (
                 transactionInfo.status,
                 transactionInfo.sendPaymentResultOutcome,
                 transactionInfo.gateway,
-                transactionInfo.errorCode
+                transactionInfo.errorCode,
+                transactionInfo.gatewayAuthorizationStatus
               );
             }
           )

@@ -64,6 +64,7 @@ export default function Header() {
           noticeNumber: paymentInfoData?.rptId
             ? paymentInfoData?.rptId.slice(11)
             : "",
+          creditorReferenceId: paymentInfoData?.creditorReferenceId,
           fiscalCode: paymentInfoData?.paFiscalCode || "",
           amount: paymentInfoData?.amount || 0,
           companyName: paymentInfoData?.paName || "",
@@ -73,29 +74,21 @@ export default function Header() {
 
   return (
     <>
-      <Box bgcolor={"white"}>
+      <Box p={3} bgcolor={"white"}>
         <Stack
           spacing={0}
           direction="row"
           justifyContent="space-between"
           alignItems="center"
-          sx={{
-            py: 3,
-            px: {
-              xs: 1,
-              md: 2,
-            },
-          }}
+          position="relative"
+          zIndex="1000"
         >
-          <Box px={2}>
-            <img
-              src={pagopaLogo}
-              alt="pagoPA"
-              width="56"
-              height="36"
-              aria-hidden="true"
-            />
-          </Box>
+          <img
+            src={pagopaLogo}
+            alt="pagoPA"
+            style={{ width: "56px", height: "36px" }}
+            aria-hidden="true"
+          />
           {(!!PaymentInfo.receiver || !!CartInfo?.paymentNotices) &&
             !ignoreRoutes.includes(currentPath) && (
               <Button

@@ -1,0 +1,384 @@
+{
+  "acsSlow": {
+    "body": "Povezujemo vas s ponudnikom vašega plačilnega sredstva za odobritev transakcije.",
+    "title": "Čakanje na odgovor vaše banke ..."
+  },
+  "app": {
+    "title": "Plačajte obvestilo – pagoPA"
+  },
+  "ariaLabels": {
+    "appLanguage": "Nastavite jezik",
+    "close": "Zapri",
+    "editCard": "Spremenite podatke kartice",
+    "editDonation": "Spremenite prejemnika donacije",
+    "editPsp": "Spremenite ponudnika plačilnih storitev",
+    "informationDialog": "Informacije",
+    "informationLink": "Izvedite več o kampanji",
+    "languageMenu": "Nastavljen jezik",
+    "loading": "Nalaganje"
+  },
+  "cancelledPage": {
+    "body": "Postopek je bil preklican",
+    "button": "Zapri"
+  },
+  "cartDetail": {
+    "amount": "Vmesni seštevek",
+    "companyName": "Upnik",
+    "description": "Namen plačila",
+    "fiscalCode": "Davčna številka upnika",
+    "noticeNumber": "Znesek"
+  },
+  "clipboard": {
+    "copied": "Kopirano",
+    "copy": "Kopiraj",
+    "edit": "Spremeni"
+  },
+  "DOMAIN_UNKNOWN": {
+    "title": "Upnik ima težave z odzivom",
+    "buttons": {
+      "close": "Zapri",
+      "help": "Obrnite se na podporo"
+    }
+  },
+  "DONATIONLIST_ERROR": "Seznama organizacij ni bilo mogoče naložiti.",
+  "donationPage": {
+    "click": "pritisnite",
+    "code": "in uokvirite kodo:",
+    "description": "Časa imate do 23. decembra. Donacijo lahko nakažete s kartico brez stroškov provizije. Znesek bo nakazan neposredno na račun organizacije, ki ji ste jo izbrali za nakazilo donacije.",
+    "dismissCTA": "Oglejte si organizacije",
+    "dismissDescription": "Če želite, lahko donirate eni od humanitarnih organizacij, ki so se pridružile pobudi.",
+    "dismissTitle": "Storitev ni več aktivna",
+    "entity": "Komu želite nakazati donacijo?",
+    "ioDescription": "Donacijo nakažite z aplikacijo IO, da prejmete elektronsko pošto s podatki za namene davčnih olajšav.",
+    "modalBody2": "S svojimi karticami lahko donirate brez stroškov provizije.",
+    "modalTitle": "Nadaljujte do aplikacije IO",
+    "openSection": "Odprite razdelek",
+    "payNotice": "Plačajte obvestilo",
+    "portfolio": "Denarnica",
+    "submitCard": "Donirajte s kartico",
+    "submitIO": "Donirajte z IO",
+    "title": "Donirajte za krizo v Ukrajini",
+    "volunteer": "Koliko želite donirati?"
+  },
+  "errorButton": {
+    "close": "Zapri",
+    "help": "Obrnite se na podporo",
+    "retry": "Poskusite znova"
+  },
+  "ErrorCodeDescription": "Koda napake za podporo",
+  "GENERIC_ERROR": {
+    "body": "Poskusite znova ali se obrnite na podporo.",
+    "title": "Prišlo je do nepričakovane napake"
+  },
+  "general": {
+    "and": "in"
+  },
+  "indexPage": {
+    "description": "Svojo kartico, račun ali plačilno aplikacijo lahko uporabite. Rezultat plačila boste prejeli po elektronski pošti.",
+    "title": "Plačajte obvestilo"
+  },
+  "inputCardPage": {
+    "formErrors": {
+      "cid": "Vnesite 4-mestna številka",
+      "cvv": "Vnesite 3-mestna številka",
+      "expirationDate": "Vnesite mm/ll",
+      "name": "Vnesite, kot je navedeno na kartici",
+      "number": "Vnesite veljavno številko",
+      "required": "Zahtevano polje"
+    },
+    "formFields": {
+      "cid": "CID (4-mestna številka)",
+      "cvv": "CVV",
+      "expirationDate": "Velja do",
+      "name": "Imetnik kartice",
+      "number": "Številka kartice"
+    },
+    "helpLink": "Kje najdem varnostno kodo?",
+    "modal": {
+      "description": "To je trimestna številka, imenovana CVV ali CVS, ki je navedena na zadnji strani kartice.",
+      "descriptionAE": "Na karticah American Express je številka (CID) štirimestna in je navedena na sprednji strani.",
+      "title": "Varnostna številka"
+    },
+    "title": "Vnesite podatke o kartici"
+  },
+  "INVALID_CARD": {
+    "body": "Poskusite vnesti veljavno kartico ali se obrnite na našo podporo.",
+    "title": "Vaša kartica je neveljavna"
+  },
+  "INVALID_DECODE": {
+    "body": "Poskusite znova ali se obrnite na našo podporo.",
+    "title": "Med branjem podatkov je prišlo do napake"
+  },
+  "INVALID_QRCODE": {
+    "body": "Če težave ne morete odpraviti, poskusite podatke vnesti ročno.",
+    "title": "Uokvirjena koda ni obvestilo pagoPA"
+  },
+  "koPage": {
+    "body": "Noben znesek ni bil zaračunan.",
+    "button": "Zapri",
+    "helpButton": "Potrebujete pomoč?",
+    "title": "Prišlo je do nepričakovane napake"
+  },
+  "mainPage": {
+    "footer": {
+      "accessibility": "Dostopnost",
+      "help": "Pomoč",
+      "pagoPA": "Obiščite spletno stran pagoPA",
+      "privacy": "Zasebnost",
+      "terms": "Pogoji"
+    },
+    "header": {
+      "detail": {
+        "detailAmount": "Vmesni seštevek",
+        "detailFC": "Davčna številka upnika",
+        "detailIUV": "Številka edinstvene oznake nakazila",
+        "detailReceiver": "Upnik",
+        "detailSubject": "Namen plačila",
+        "detailTitle": "Podrobnosti o obvestilu"
+      },
+      "disclaimer": "Znesek se samodejno posodobi, zato vedno plačate le kar dolgujete in se izognete zamudnim ali drugim obrestim."
+    }
+  },
+  "NOTLISTED": {
+    "body": "Poskusite znova ali se obrnite na našo podporo.",
+    "title": "Prišlo je do nepričakovane napake"
+  },
+  "PAYMENT_CANCELED": {
+    "body": "Za več informacij se obrnite na upnika.",
+    "title": "Upnik je to obvestilo preklical"
+  },
+  "PAYMENT_DATA_ERROR": {
+    "title": "Podatki obvestila niso pravilni"
+  },
+  "PAYMENT_DUPLICATED": {
+    "body": "Če ste plačali na tem spletnem mestu, je bilo potrdilo poslano na elektronski naslov, ki ste ga navedli ob zaključku nakupa.",
+    "title": "To obvestilo je že plačano!"
+  },
+  "PAYMENT_EXPIRED": {
+    "body": "Za več informacij se obrnite na upnika.",
+    "title": "Obvestilo je poteklo in ga ni več mogoče plačati"
+  },
+  "PAYMENT_ONGOING": {
+    "body": "Če težave ne morete odpraviti, nam to sporočite!",
+    "title": "Plačilo že poteka, poskusite znova kasneje"
+  },
+  "PAYMENT_UNAVAILABLE": {
+    "title": "To obvestilo vsebuje tehnično težavo"
+  },
+  "PAYMENT_UNKNOWN": {
+    "body": "Obvestilo bi lahko bilo že plačano. Za pomoč se obrnite na Upnika.",
+    "title": "Obvestila ni bilo mogoče najti"
+  },
+  "paymentEmailPage": {
+    "description": "Na ta naslov boste prejeli rezultat plačila",
+    "formButtons": {
+      "back": "Nazaj",
+      "submit": "Nadaljuj"
+    },
+    "formErrors": {
+      "invalid": "Vnesite veljaven elektronski naslov",
+      "notEqual": "Elektronska naslova se morata ujemati",
+      "required": "Zahtevano polje"
+    },
+    "formFields": {
+      "confirmEmail": "Ponovite še enkrat",
+      "email": "Elektronski naslov"
+    },
+    "title": "Vnesite svoj elektronki naslov"
+  },
+  "paymentResponsePage": {
+    "0": {
+      "body": "Potrdilo o plačilu smo poslali na {{useremail}}",
+      "title": "Plačali ste {{amount}}"
+    },
+    "1": {
+      "body": "Noben znesek ni bil zaračunan.",
+      "title": "Prišlo je do nepričakovane napake."
+    },
+    "2": {
+      "body": "Noben znesek ni bil zaračunan. Preverite, ali ste pravilno upoštevali navodila svoje banke.",
+      "title": "Avtorizacija zavrnjena"
+    },
+    "3": {
+      "body": "Če ste plačali z debetno ali kreditno kartico, se prepričajte, da ste vnesli svoje podatke, ki so navedeni na sprednji strani.",
+      "title": "Podatki o načinu plačila niso pravilni"
+    },
+    "4": {
+      "body": "Noben znesek ni bil zaračunan. Zaradi vaše varnosti imate omejen čas za dokončanje postopka.",
+      "title": "Seja je potekla"
+    },
+    "5": {
+      "title": "Mreža plačilnih kartic ni podprta"
+    },
+    "6": {
+      "title": "Za nadaljevanje s plačilom manjka nekaj podatkov"
+    },
+    "7": {
+      "body": "Za več informacij se obrnite na svojo banko.",
+      "title": "Način plačila je potekel ali ni več veljaven"
+    },
+    "8": {
+      "body": "Noben znesek ni bil zaračunan.",
+      "title": "Postopek je bil preklican"
+    },
+    "10": {
+      "body": "Noben znesek ni bil zaračunan. Verjetno ste presegli limit porabe, ki ga je določila vaša banka.",
+      "title": "Avtorizacija zavrnjena"
+    },
+    "12": {
+      "title": "Način plačila ni podprt"
+    },
+    "17": {
+      "body": "Rezultat plačila boste prejeli na naslov {{useremail}}.",
+      "title": "Počakajte na potrditev plačila"
+    },
+    "3dsNotInitiated": {
+      "body": "Noben znesek ni bil zaračunan.\nČe težave ne morete odpraviti, se obrnite na ponudnika plačilnega sredstva, na primer na banko.",
+      "title": "Pri vašem ponudniku plačilnega sredstva je prišlo do težave"
+    },
+    "survey": {
+      "body": "Zaupajte nam svoje izkušnje s plačevanjem in nam pomagajte izboljšati se.",
+      "link": {
+        "href": "https://pagopa.gov.it/diccilatua/ces-pagamento/",
+        "text": "Pojdite na anketo"
+      },
+      "title": "Nam lahko poveste, kako je bilo?"
+    },
+    "buttons": {
+      "continue": "Nadaljuj"
+    }
+  },
+  "paymentCheckPage": {
+    "buttons": {
+      "cancel": "Prekliči",
+      "submit": "Plačaj",
+      "wait": "Počakaj ..."
+    },
+    "creditCard": "Plačajte z",
+    "disclaimer": {
+      "cheaper": "Priporočeno, ker je najcenejše",
+      "yourCard": "Priporočeno, ker ste že stranka"
+    },
+    "drawer": {
+      "body": "Na tem seznamu boste našli vse ponudnike, ki so združljivi z vašim načinom, tudi če niste njihova stranka.",
+      "header": {
+        "amount": "Provizija",
+        "name": "Ponudnik"
+      },
+      "title": "Pri katerem ponudniku želite plačevati?"
+    },
+    "email": "Rezultat pošlji na:",
+    "modal": {
+      "body": "Vsako denarno nakazilo (v gotovini ali elektronskem denarju) vključuje stroške, ki zagotavljajo, da je to plačilo varno in uspešno izvedeno.\nVsak ponudnik (ali ponudnik plačilnih storitev) predvideva stroške skladno s svojo poslovno politiko in pogodbenimi pogoji.\nPri pagoPA so ti stroški pregledni in državljan/-ka lahko prosto izbere najudobnejšo in najpriročnejšo možnost. Če želite izvedeti več, obiščite spletno stran ",
+      "cancelBody": "Vsi vneseni podatki bodo izgubljeni.",
+      "cancelButton": "Ne, premislil/-a sem si",
+      "cancelTitle": "Želite zapustiti trenutno plačilo?",
+      "link": "Preglednost stroškov",
+      "submitButton": "Izhod",
+      "title": "Zakaj obstaja provizija?"
+    },
+    "psp": "Uporablja jo",
+    "total": "Skupno",
+    "transaction": "Provizija"
+  },
+  "paymentChoicePage": {
+    "bank": "Bančni račun",
+    "button": "Nazaj",
+    "costs": "Preglednost stroškov.",
+    "creditCard": "Debetna ali kreditna kartica",
+    "description": "Če želite izvedeti več o načinih in stroških, ki jih uporabljajo sodelujoči upravljavci, obiščite spletno stran ",
+    "incoming": "Prihajajo",
+    "others": "Drugi načini",
+    "showMore": "Pokaži vse",
+    "title": "Kako želite plačati?"
+  },
+  "paymentMethods": {
+    "bpay": "BANCOMAT Pay",
+    "cc": "Bančni račun",
+    "cp": "Debetna ali kreditna kartica",
+    "ppay": "Plačajte s Postepay"
+  },
+  "paymentNoticeChoice": {
+    "form": {
+      "description": "Št. obvestila in davčna številka upnika",
+      "title": "Podatke vnesite sami"
+    },
+    "qr": {
+      "description": "Uporabite svojo spletno kamero ali kamero",
+      "title": "Uokvirite kodo QR"
+    }
+  },
+  "paymentNoticePage": {
+    "description": "Vnesite podatke, kot so navedeni na obvestilu o plačilu.",
+    "formButtons": {
+      "cancel": "Nazaj",
+      "submit": "Nadaljuj"
+    },
+    "formErrors": {
+      "minCf": "Vnesite 11-mestno številko",
+      "minCode": "Vnesite 18-mestno številko",
+      "required": "Zahtevano polje"
+    },
+    "formFields": {
+      "billCode": "Št. obvestila",
+      "cf": "Davčna številka upnika"
+    },
+    "helpLink": "Oglejte si primer",
+    "title": "Kaj morate plačati?"
+  },
+  "paymentQrPage": {
+    "camBlocked": "Za uporabo kamere potrebujemo vaše soglasje. Če želite spremeniti svojo izbiro, pojdite na nastavitve zasebnosti v svojem brskalniku",
+    "description": "Poskrbite za dobro osvetlitev. Če koda ni izostrena, poskusite telefon rahlo odmakniti od zaslona.",
+    "navigate": "Ne deluje? Vnesite ročno",
+    "reloadPage": "Ponovno naloži stran",
+    "title": "Uokvirite kodo QR"
+  },
+  "paymentSummaryPage": {
+    "amount": "Posodobljeni znesek",
+    "billCode": "Št. obvestila",
+    "buttons": {
+      "cancel": "Nazaj",
+      "ok": "V redu",
+      "submit": "Pojdite na plačilo"
+    },
+    "causal": "Namen plačila",
+    "cf": "Davčna številka upnika",
+    "creditor": "Upnik",
+    "description": "pagoPA samodejno posodobi znesek, zato vedno plačate točno toliko, kolikor je dolga in se izognete zamudnim ali drugim obrestim",
+    "dialog": {
+      "description": "pagoPA samodejno posodobi znesek, zato vedno plačate točno toliko, kolikor dolgujete in se izognete zamudnim ali drugim obrestim.",
+      "title": "Ali vidite drugačen znesek?"
+    },
+    "iuv": "Številka edinstvene oznake nakazila",
+    "title": "Podatki o plačilu"
+  },
+  "POLLING_SLOW": {
+    "body": "Počakajte največ nekaj minut, ne da bi medtem ponovno naložili stran.",
+    "title": "Upnik potrebuje več časa od pričakovanega ..."
+  },
+  "privacyInfo": {
+    "googleDesc": "Obrazec zaščiten z reCAPTCHA in Googlom (<privacy>Politika varovanja zasebnosti</privacy> in <terms>Pogoji storitve</terms>).",
+    "privacyDesc": "Z nadaljevanjem sprejemate <terms>Pogoje in določila uporabe</terms> storitve in potrjujete, da ste prebrali <privacy>Politiko varovanja zasebnosti</privacy>",
+    "privacyDonation": "Dodatne pogoje storitve Donacije za krizo v Ukrajini"
+  },
+  "STATUS_ERROR": {
+    "body": "Če težave ne morete odpraviti, nam to sporočite!",
+    "title": "Prišlo je do nepričakovane napake"
+  },
+  "TIMEOUT": {
+    "body": "Če težave ne morete odpraviti, nam to sporočite!",
+    "title": "Upnik ima težave z odzivom"
+  },
+  "errorMessageNPG": {
+    "HF0001": "Vnesite 3 ali 4 mestna",
+    "HF0002": "Storitev začasno ni na voljo",
+    "HF0003": "Seja je potekla, pojdite nazaj in poskusite znova",
+    "HF0004": "Vnesite veljavno številko",
+    "HF0005": "Omrežje te kartice ni podprto",
+    "HF0006": "Vnesite mm/ll",
+    "HF0007": "Vnesite, kot je navedeno na kartici",
+    "HF0009": "Preverjanje 3DS ni uspelo"
+  },
+  "__variant-name": "Sloveno",
+  "__variant-description": ""
+}

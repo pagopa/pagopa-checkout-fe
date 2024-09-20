@@ -3,6 +3,8 @@
   <head>
     <link rel="preconnect" href="https://recaptcha.net" crossorigin>
     <link rel="preconnect" href="https://cdn.cookielaw.org" crossorigin>
+    <link rel="preconnect" href="https://stg-ta.nexigroup.com" crossorigin>
+    <link rel="preconnect" href="https://xpay.nexigroup.com" crossorigin>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex, nofollow" />
@@ -15,7 +17,7 @@
     <link rel="icon" href="/src/assets/icons/favicon-16x16.png" sizes="16x16" type="image/png">
     <meta
       name="description"
-      content="Paga un avviso pagoPA con la tua carta di credito o debito, senza alcuna registrazione. Potrai scegliere il gestore della transazione (PSP) a te più conveniente."
+      content="Puoi pagare con carta, conto e app di pagamento. Potrai scegliere il gestore della transazione (PSP) a te più conveniente."
     />
     <meta name="author" content="PagoPA S.p.A." />
     <meta name="twitter:card" content="summary_large_image" />
@@ -24,7 +26,7 @@
     <meta name="twitter:title" content="Paga un avviso - pagoPA" />
     <meta
       name="twitter:description"
-      content="Paga un avviso pagoPA con la tua carta di credito o debito, senza alcuna registrazione. Potrai scegliere il gestore della transazione (PSP) a te più conveniente."
+      content="Puoi pagare con carta, conto e app di pagamento. Potrai scegliere il gestore della transazione (PSP) a te più conveniente."
     />
     <meta
       name="twitter:image"
@@ -33,7 +35,7 @@
     <meta property="og:title" content="Paga un avviso - pagoPA" />
     <meta
       property="og:description"
-      content="Paga un avviso pagoPA con la tua carta di credito o debito, senza alcuna registrazione. Potrai scegliere il gestore della transazione (PSP) a te più conveniente."
+      content="Puoi pagare con carta, conto e app di pagamento. Potrai scegliere il gestore della transazione (PSP) a te più conveniente."
     />
     <meta property="og:url" content="https://checkout.pagopa.it" />
     <meta property="og:type" content="website" />
@@ -55,6 +57,7 @@
     />
     <script src="env-config.js"></script>
     <script src="onetrust.js" async></script>
+    <script src="npgsdk.js" async></script>
   </head>
   <body>
     <div id="root"></div>

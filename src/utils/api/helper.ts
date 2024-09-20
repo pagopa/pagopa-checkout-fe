@@ -2,12 +2,18 @@
 /* eslint-disable sonarjs/cognitive-complexity */
 /* eslint-disable sonarjs/no-identical-functions */
 import * as E from "fp-ts/Either";
-import { pipe } from "fp-ts/function";
-import { toError } from "fp-ts/lib/Either";
 import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
-import * as T from "fp-ts/Task";
+import { flow, pipe } from "fp-ts/function";
+import { toError } from "fp-ts/lib/Either";
+import ReCAPTCHA from "react-google-recaptcha";
 import * as t from "io-ts";
+import { AmountEuroCents } from "../../../generated/definitions/payment-ecommerce/AmountEuroCents";
+import { Bundle } from "../../../generated/definitions/payment-ecommerce/Bundle";
+import { CreateSessionResponse } from "../../../generated/definitions/payment-ecommerce/CreateSessionResponse";
+import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
+import { PaymentNoticeInfo } from "../../../generated/definitions/payment-ecommerce/PaymentNoticeInfo";
+import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-ecommerce/PaymentRequestsGetResponse";
 import {
   LanguageEnum,
   RequestAuthorizationRequest,
@@ -17,13 +23,11 @@ import {
   Cart,
   PaymentFormFields,
   PaymentInfo,
-  PaymentInstruments,
   PaymentMethod,
+  PaymentInstrumentsType,
+  PaymentMethodInfo,
 } from "../../features/payment/models/paymentModel";
-import {
-  PaymentMethodRoutes,
-  TransactionMethods,
-} from "../../routes/models/paymentMethodRoutes";
+import { validateSessionWalletCardFormFields } from "../../utils/regex/validators";
 import { getConfigOrThrow } from "../config/config";
 import {
   CART_REQUEST_ACCESS,
@@ -34,6 +38,11 @@ import {
   DONATION_INIT_SESSION,
   DONATION_LIST_ERROR,
   DONATION_LIST_SUCCESS,
+  NPG_INIT,
+  NPG_NET_ERR,
+  NPG_RESP_ERROR,
+  NPG_SUCCESS,
+  NPG_SVR_ERR,
   PAYMENT_ACTION_DELETE_INIT,
   PAYMENT_ACTION_DELETE_NET_ERR,
   PAYMENT_ACTION_DELETE_RESP_ERR,
@@ -60,30 +69,24 @@ import {
   PAYMENT_VERIFY_SUCCESS,
   PAYMENT_VERIFY_SVR_ERR,
   TRANSACTION_AUTH_INIT,
-  TRANSACTION_AUTH_NET_ERROR,
   TRANSACTION_AUTH_RESP_ERROR,
   TRANSACTION_AUTH_SUCCES,
 } from "../config/mixpanelDefs";
 import { mixpanel } from "../config/mixpanelHelperInit";
 import { ErrorsType } from "../errors/checkErrorsModel";
 import {
-  getSessionItem,
   SessionItems,
+  getSessionItem,
   setSessionItem,
 } from "../storage/sessionStorage";
-import { AmountEuroCents } from "../../../generated/definitions/payment-ecommerce/AmountEuroCents";
-import { BrandEnum } from "../../../generated/definitions/payment-ecommerce/PaymentInstrumentDetail";
-import { PaymentRequestsGetResponse } from "../../../generated/definitions/payment-ecommerce/PaymentRequestsGetResponse";
-import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
-import { TransferListItem } from "../../../generated/definitions/payment-ecommerce/TransferListItem";
-import { Bundle } from "../../../generated/definitions/payment-ecommerce/Bundle";
-import { PaymentNoticeInfo } from "../../../generated/definitions/payment-ecommerce/PaymentNoticeInfo";
+import { CalculateFeeResponse } from "../../../generated/definitions/payment-ecommerce/CalculateFeeResponse";
 import { FaultCategoryEnum } from "../../../generated/definitions/payment-ecommerce/FaultCategory";
-import { getBrowserInfoTask, getEMVCompliantColorDepth } from "./checkHelper";
+import { CalculateFeeRequest } from "../../../generated/definitions/payment-ecommerce-v2/CalculateFeeRequest";
 import {
-  apiPaymentEcommerceCalculateFeesClientWithRetry,
   apiPaymentEcommerceClient,
-  apiPaymentTransactionsClient,
+  apiPaymentEcommerceClientV2,
+  apiPaymentEcommerceClientWithRetry,
+  apiPaymentEcommerceClientWithRetryV2,
 } from "./client";
 
 export const NodeFaultCodeR = t.interface({
@@ -170,14 +173,12 @@ export const getEcommercePaymentInfoTask = (
   );
 
 export const activatePayment = async ({
-  bin,
   token,
   onResponseActivate,
   onErrorActivate,
 }: {
-  bin: string;
   token: string;
-  onResponseActivate: (bin: string) => void;
+  onResponseActivate: (paymentMethodId: string, orderId: string) => void;
   onErrorActivate: (e: string) => void;
 }) => {
   const noticeInfo = getSessionItem(SessionItems.noticeInfo) as
@@ -191,6 +192,17 @@ export const activatePayment = async ({
     | undefined;
   const cartInfo = getSessionItem(SessionItems.cart) as Cart | undefined;
   const rptId: RptId = `${noticeInfo?.cf}${noticeInfo?.billCode}` as RptId;
+  const paymentMethod: PaymentMethod = getSessionItem(
+    SessionItems.paymentMethod
+  ) as PaymentMethod;
+  const orderId: string = getSessionItem(SessionItems.orderId) as string;
+  const correlationId: string = getSessionItem(
+    SessionItems.correlationId
+  ) as string;
+  // fallback to CHECKOUT client id in case of missing session item
+  const cartClientId: string =
+    (getSessionItem(SessionItems.cartClientId) as string | undefined) ||
+    "CHECKOUT";
   pipe(
     PaymentRequestsGetResponse.decode(paymentInfo),
     E.fold(
@@ -202,6 +214,9 @@ export const activatePayment = async ({
             userEmail || "",
             rptId,
             token,
+            orderId,
+            correlationId,
+            cartClientId,
             cartInfo
           ),
           TE.fold(
@@ -210,7 +225,7 @@ export const activatePayment = async ({
             },
             (res) => async () => {
               setSessionItem(SessionItems.transaction, res);
-              onResponseActivate(bin);
+              onResponseActivate(paymentMethod.paymentMethodId, orderId);
             }
           )
         )()
@@ -218,11 +233,14 @@ export const activatePayment = async ({
   );
 };
 
-const activePaymentTask = (
+export const activePaymentTask = (
   amountSinglePayment: AmountEuroCents,
   userEmail: string,
   rptId: RptId,
   recaptchaResponse: string,
+  orderId: string,
+  correlationId: string,
+  cartClientId: string,
   cart?: Cart
 ): TE.TaskEither<NodeFaultCode, NewTransactionResponse> =>
   pipe(
@@ -231,12 +249,15 @@ const activePaymentTask = (
         mixpanel.track(PAYMENT_ACTIVATE_INIT.value, {
           EVENT_ID: PAYMENT_ACTIVATE_INIT.value,
         });
-        return apiPaymentEcommerceClient.newTransaction({
+        return apiPaymentEcommerceClientV2.newTransaction({
+          "x-correlation-id": correlationId,
+          "x-client-id-from-client": cartClientId,
           recaptchaResponse,
           body: {
             paymentNotices: getPaymentNotices(amountSinglePayment, rptId, cart),
             idCart: cart?.idCart,
             email: userEmail,
+            orderId,
           },
         });
       },
@@ -248,7 +269,7 @@ const activePaymentTask = (
       }
     ),
     TE.fold(
-      (_) => {
+      () => {
         mixpanel.track(PAYMENT_ACTIVATE_SVR_ERR.value, {
           EVENT_ID: PAYMENT_ACTIVATE_SVR_ERR.value,
         });
@@ -267,21 +288,35 @@ const activePaymentTask = (
                 const cartInfo = getSessionItem(SessionItems.cart) as
                   | Cart
                   | undefined;
+                const paymentInfo = getSessionItem(SessionItems.paymentInfo) as
+                  | PaymentInfo
+                  | undefined;
                 if (cartInfo !== undefined) {
                   const rptIdAmountMap = new Map(
                     responseType.value.payments.map(
                       (p) => [p.rptId, p.amount] as [RptId, AmountEuroCents]
                     )
                   );
+                  const creditorReferenceMap = new Map(
+                    responseType.value.payments.map(
+                      (p) =>
+                        [p.rptId, p.creditorReferenceId] as [
+                          RptId,
+                          string | undefined
+                        ]
+                    )
+                  );
 
                   const updatedPaymentNotices = cartInfo.paymentNotices.map(
                     (paymentNotice) => {
-                      const updatedAmount = rptIdAmountMap.get(
-                        `${paymentNotice.fiscalCode}${paymentNotice.noticeNumber}` as RptId
-                      );
+                      const rptId =
+                        `${paymentNotice.fiscalCode}${paymentNotice.noticeNumber}` as RptId;
+                      const updatedAmount = rptIdAmountMap.get(rptId);
+                      const creditorId = creditorReferenceMap.get(rptId);
 
                       return {
                         ...paymentNotice,
+                        creditorReferenceId: creditorId,
                         amount: updatedAmount ?? paymentNotice.amount,
                       };
                     }
@@ -289,6 +324,12 @@ const activePaymentTask = (
                   setSessionItem(SessionItems.cart, {
                     ...cart,
                     paymentNotices: updatedPaymentNotices,
+                  });
+                } else if (paymentInfo !== undefined) {
+                  setSessionItem(SessionItems.paymentInfo, {
+                    ...paymentInfo,
+                    creditorReferenceId:
+                      responseType.value.payments[0].creditorReferenceId,
                   });
                 }
               }
@@ -348,6 +389,93 @@ const getPaymentNotices = (
     ])
   );
 
+// ->Promise<Either<string,SessionPaymentMethodResponse>>
+export const retrieveCardData = async ({
+  paymentId,
+  orderId,
+  onError,
+  onResponseSessionPaymentMethod,
+}: {
+  paymentId: string;
+  orderId: string;
+  onError: (e: string) => void;
+  onResponseSessionPaymentMethod: (r: any) => void;
+}) => {
+  const transactionId = pipe(
+    getSessionItem(SessionItems.transaction) as NewTransactionResponse,
+    O.fromNullable,
+    O.map((transaction) => transaction.transactionId),
+    O.getOrElse(() => "")
+  );
+
+  const bearerAuth = pipe(
+    getSessionItem(SessionItems.transaction) as NewTransactionResponse,
+    O.fromNullable,
+    O.chain((transaction) => O.fromNullable(transaction.authToken)),
+    O.getOrElse(() => "")
+  );
+
+  /*
+    mixpanel.track(PAYMENT_PSPLIST_INIT.value, {
+    EVENT_ID: PAYMENT_PSPLIST_INIT.value,
+   }); */
+
+  const sessionPaymentMethod = await pipe(
+    TE.tryCatch(
+      () =>
+        apiPaymentEcommerceClient.getSessionPaymentMethod({
+          bearerAuth,
+          id: paymentId,
+          orderId,
+          "x-transaction-id-from-client": transactionId,
+        }),
+      (_e) => {
+        onError(ErrorsType.CONNECTION);
+        mixpanel.track(PAYMENT_PSPLIST_NET_ERR.value, {
+          EVENT_ID: PAYMENT_PSPLIST_NET_ERR.value,
+        });
+        return toError;
+      }
+    ),
+    TE.fold(
+      (_r) => async () => {
+        onError(ErrorsType.SERVER);
+        mixpanel.track(PAYMENT_PSPLIST_SVR_ERR.value, {
+          EVENT_ID: PAYMENT_PSPLIST_SVR_ERR.value,
+        });
+        return {};
+      },
+      (myResExt) => async () =>
+        pipe(
+          myResExt,
+          E.fold(
+            () => [],
+            (myRes) => {
+              if (myRes?.status === 200) {
+                const sessionPaymentMethodResponse = myRes?.value;
+                setSessionItem(
+                  SessionItems.sessionPaymentMethod,
+                  sessionPaymentMethodResponse
+                );
+                setSessionItem(SessionItems.paymentMethodInfo, {
+                  title: `· · · · ${sessionPaymentMethodResponse.lastFourDigits}`,
+                  body: sessionPaymentMethodResponse.expiringDate,
+                  icon: sessionPaymentMethodResponse.brand,
+                } as PaymentMethodInfo);
+                return sessionPaymentMethodResponse;
+              } else {
+                onError(ErrorsType.GENERIC_ERROR);
+                return {};
+              }
+            }
+          )
+        )
+    )
+  )();
+
+  onResponseSessionPaymentMethod(sessionPaymentMethod);
+};
+
 // -> Promise<Either<string, BundleOptions>>
 export const calculateFees = async ({
   paymentId,
@@ -356,47 +484,27 @@ export const calculateFees = async ({
   onResponsePsp,
 }: {
   paymentId: string;
-  bin: string;
+  bin?: string;
   onError: (e: string) => void;
   onResponsePsp: (r: any) => void;
 }) => {
-  const amount: number | undefined = pipe(
-    O.fromNullable(getSessionItem(SessionItems.cart) as Cart | undefined),
-    O.map((cart) =>
-      cart.paymentNotices.reduce(
-        (totalAmount, notice) => totalAmount + notice.amount,
-        0
-      )
-    ),
-    O.alt(() =>
-      pipe(
-        O.fromNullable(
-          getSessionItem(SessionItems.paymentInfo) as PaymentInfo | undefined
-        ),
-        O.map((paymentInfo) => paymentInfo.amount)
-      )
-    ),
-    O.getOrElseW(() => undefined)
-  );
-
-  const allCCP: O.Option<boolean> = pipe(
+  const calculateFeeRequest: O.Option<CalculateFeeRequest> = pipe(
     getSessionItem(SessionItems.transaction) as NewTransactionResponse,
     O.fromNullable,
-    O.map((transaction) => transaction.payments[0].isAllCCP)
-  );
-
-  const transferList: Array<TransferListItem> = pipe(
-    getSessionItem(SessionItems.transaction) as NewTransactionResponse,
-    O.fromNullable,
-    O.map((transaction) => transaction.payments[0].transferList), // TODO By now we can handle only single rptId notice, since GEC is not compliant with multiple rptIds notice (cart)
-    O.map((transferList) =>
-      transferList.map((transfer) => ({
-        creditorInstitution: transfer.paFiscalCode,
-        digitalStamp: transfer.digitalStamp,
-        transferCategory: transfer.transferCategory,
-      }))
-    ),
-    O.getOrElse(() => [] as Array<TransferListItem>)
+    O.map((transaction) => ({
+      bin,
+      touchpoint: transaction.clientId || "CHECKOUT",
+      paymentNotices: transaction.payments.map((payment) => ({
+        paymentAmount: payment.amount,
+        primaryCreditorInstitution: payment.rptId.substring(0, 11),
+        transferList: payment.transferList.map((transfer) => ({
+          creditorInstitution: transfer.paFiscalCode,
+          digitalStamp: transfer.digitalStamp,
+          transferCategory: transfer.transferCategory,
+        })),
+      })),
+      isAllCCP: transaction.payments[0].isAllCCP,
+    }))
   );
 
   const transactionId = pipe(
@@ -413,35 +521,25 @@ export const calculateFees = async ({
     O.getOrElse(() => "")
   );
 
-  const primaryCreditorInstitution =
-    transferList.at(0)?.creditorInstitution || ""; // TODO replace with primaryCreditorInstitution from transaction response when available (activate V2)
-
   mixpanel.track(PAYMENT_PSPLIST_INIT.value, {
     EVENT_ID: PAYMENT_PSPLIST_INIT.value,
   });
   const MAX_OCCURENCES_AFM = 2147483647;
   const bundleOption = await pipe(
-    allCCP,
+    calculateFeeRequest,
     TE.fromOption(() => {
       onError(ErrorsType.GENERIC_ERROR);
       return toError;
     }),
-    TE.chain((isAllCCP) =>
+    TE.chain((calculateFeeRequest) =>
       TE.tryCatch(
         () =>
-          apiPaymentEcommerceCalculateFeesClientWithRetry.calculateFees({
+          apiPaymentEcommerceClientWithRetryV2.calculateFees({
             bearerAuth,
             "x-transaction-id-from-client": transactionId,
             id: paymentId,
             maxOccurrences: MAX_OCCURENCES_AFM,
-            body: {
-              bin,
-              touchpoint: "CHECKOUT",
-              paymentAmount: amount ? amount : 0,
-              primaryCreditorInstitution,
-              transferList,
-              isAllCCP,
-            },
+            body: calculateFeeRequest,
           }),
         (_e) => {
           onError(ErrorsType.CONNECTION);
@@ -488,19 +586,7 @@ export const calculateFees = async ({
 };
 
 export const proceedToPayment = async (
-  {
-    transaction,
-    cardData,
-  }: {
-    transaction: NewTransactionResponse;
-    cardData: {
-      brand: string;
-      cvv: string;
-      pan: string;
-      expiryDate: string;
-      holderName: string;
-    };
-  },
+  transaction: NewTransactionResponse,
   onError: (e: string) => void,
   onResponse: (authUrl: string) => void
 ) => {
@@ -529,102 +615,125 @@ export const proceedToPayment = async (
     O.getOrElseW(() => undefined)
   );
 
-  const browserInfo = await pipe(
-    getBrowserInfoTask(apiPaymentTransactionsClient),
-    TE.mapLeft(() => ({
-      ip: "",
-      useragent: "",
-      accept: "",
-    })),
-    TE.toUnion
-  )();
-  const threeDSData = {
-    browserJavaEnabled: navigator.javaEnabled().toString(),
-    browserLanguage: navigator.language,
-    browserColorDepth: getEMVCompliantColorDepth(screen.colorDepth).toString(),
-    browserScreenHeight: screen.height.toString(),
-    browserScreenWidth: screen.width.toString(),
-    browserTZ: new Date().getTimezoneOffset().toString(),
-    browserAcceptHeader: browserInfo.accept,
-    browserIP: browserInfo.ip,
-    browserUserAgent: navigator.userAgent,
-    acctID: `ACCT_${transactionId}`,
-    deliveryEmailAddress:
-      (getSessionItem(SessionItems.useremail) as string) || "",
-    mobilePhone: null,
-  };
+  const details = pipe(
+    getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined,
+    O.fromNullable,
+    O.map((method) => method.paymentTypeCode),
+    O.fold(
+      () => {
+        // eslint-disable-next-line no-console
+        console.error(
+          "Missing expected `paymentMethod.paymentTypeCode` in session storage!"
+        );
 
-  const authParam = {
-    amount: transaction.payments
-      .map((p) => p.amount)
-      .reduce((sum, current) => Number(sum) + Number(current), 0),
-    fee:
-      (getSessionItem(SessionItems.pspSelected) as Bundle | undefined)
-        ?.taxPayerFee || 0,
-    paymentInstrumentId:
-      (getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined)
-        ?.paymentMethodId || "",
-    pspId:
-      (getSessionItem(SessionItems.pspSelected) as Bundle | undefined)?.idPsp ||
-      "",
-    isAllCCP,
-    details:
-      (getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined)
-        ?.paymentTypeCode === "CP"
-        ? {
-            detailType: "card",
-            brand: getBrandByBrandCardValidator(cardData.brand),
-            cvv: cardData.cvv,
-            pan: cardData.pan,
-            expiryDate: cardData.expiryDate,
-            holderName: cardData.holderName,
-            threeDsData: JSON.stringify(threeDSData),
-          }
-        : {
-            detailType: "postepay",
-            accountEmail:
-              (getSessionItem(SessionItems.useremail) as string) || "",
-          },
-    language: LanguageEnum.IT,
-  };
+        onError(ErrorsType.GENERIC_ERROR);
+        return O.none;
+      },
+      (x) => O.some(x)
+    ),
+    O.chain((paymentTypeCode) => {
+      switch (paymentTypeCode) {
+        case "CP":
+          return O.some({
+            detailType: "cards",
+            orderId:
+              (getSessionItem(SessionItems.orderId) as string | undefined) ||
+              "",
+          });
+        case "MYBK":
+        case "BPAY":
+        case "PPAL":
+        case "APPL":
+        case "SATY":
+          return O.some({
+            detailType: "apm",
+          });
+        case "RBPR":
+        case "RBPB":
+        case "RBPP":
+        case "RPIC":
+        case "RBPS":
+        case "RICO":
+          return O.some({
+            detailType: "redirect",
+          });
+        default:
+          // eslint-disable-next-line no-console
+          console.error("Unhandled payment type code: " + paymentTypeCode);
+          onError(ErrorsType.GENERIC_ERROR);
+          return O.none;
+      }
+    })
+  );
 
-  await pipe(
-    authParam,
+  const authParam = pipe(
+    details,
+    O.map((d) => ({
+      amount: transaction.payments
+        .map((p) => p.amount)
+        .reduce((sum, current) => Number(sum) + Number(current), 0),
+      fee:
+        (getSessionItem(SessionItems.pspSelected) as Bundle | undefined)
+          ?.taxPayerFee || 0,
+      paymentInstrumentId:
+        (
+          getSessionItem(SessionItems.paymentMethod) as
+            | PaymentMethod
+            | undefined
+        )?.paymentMethodId || "",
+      pspId:
+        (getSessionItem(SessionItems.pspSelected) as Bundle | undefined)
+          ?.idPsp || "",
+      isAllCCP,
+      details: d,
+      language: LanguageEnum.IT,
+    }))
+  );
+
+  const requestAuth = flow(
     RequestAuthorizationRequest.decode,
     TE.fromEither,
     TE.chain(
-      (request) => () =>
-        apiPaymentEcommerceClient.requestTransactionAuthorization({
+      (request: RequestAuthorizationRequest) => () =>
+        apiPaymentEcommerceClientWithRetry.requestTransactionAuthorization({
           bearerAuth,
           transactionId,
           body: request,
         })
     ),
-    TE.fold(
-      (_r) => async () => {
-        onError(ErrorsType.SERVER);
-        mixpanel.track(TRANSACTION_AUTH_NET_ERROR.value, {
-          EVENT_ID: TRANSACTION_AUTH_NET_ERROR.value,
+    TE.map((response) => {
+      if (response.status === 200) {
+        mixpanel.track(TRANSACTION_AUTH_SUCCES.value, {
+          EVENT_ID: TRANSACTION_AUTH_SUCCES.value,
         });
-      }, // to be replaced with logic to handle failures
-      (response) => {
-        if (response.status === 200) {
-          mixpanel.track(TRANSACTION_AUTH_SUCCES.value, {
-            EVENT_ID: TRANSACTION_AUTH_SUCCES.value,
-          });
-          const authorizationUrl = response.value.authorizationUrl;
-          onResponse(authorizationUrl);
-          // eslint-disable-next-line @typescript-eslint/no-empty-function
-          return T.fromIO(() => {});
-        } else {
-          onError(ErrorsType.GENERIC_ERROR);
-          mixpanel.track(TRANSACTION_AUTH_RESP_ERROR.value, {
-            EVENT_ID: TRANSACTION_AUTH_RESP_ERROR.value,
-          });
-          // eslint-disable-next-line @typescript-eslint/no-empty-function
-          return T.fromIO(() => {});
-        }
+        const { authorizationUrl } = response.value;
+        onResponse(authorizationUrl);
+      } else {
+        mixpanel.track(TRANSACTION_AUTH_RESP_ERROR.value, {
+          EVENT_ID: TRANSACTION_AUTH_RESP_ERROR.value,
+        });
+        onError(ErrorsType.CONNECTION);
       }
+    })
+  );
+
+  await pipe(
+    authParam,
+    O.map((p) =>
+      pipe(
+        TE.tryCatch(requestAuth(p), (_e) => TE.left(_e)),
+        TE.mapLeft((_e) => {
+          onError(ErrorsType.GENERIC_ERROR);
+          return ErrorsType.GENERIC_ERROR;
+        })
+      )
+    ),
+    O.fold(
+      () => {
+        onError(ErrorsType.GENERIC_ERROR);
+        return TE.left(ErrorsType.GENERIC_ERROR);
+      },
+      (task) => task
     )
   )();
 };
@@ -754,7 +863,7 @@ export const getPaymentInstruments = async (
     amount: number;
   },
   onError: (e: string) => void,
-  onResponse: (data: Array<PaymentInstruments>) => void
+  onResponse: (data: Array<PaymentInstrumentsType>) => void
 ) => {
   mixpanel.track(PAYMENT_METHODS_ACCESS.value, {
     EVENT_ID: PAYMENT_METHODS_ACCESS.value,
@@ -793,24 +902,7 @@ export const getPaymentInstruments = async (
                 mixpanel.track(PAYMENT_METHODS_SUCCESS.value, {
                   EVENT_ID: PAYMENT_METHODS_SUCCESS.value,
                 });
-                return myRes.value.paymentMethods
-                  ?.filter(
-                    (method) =>
-                      !!PaymentMethodRoutes[
-                        method.paymentTypeCode as TransactionMethods
-                      ]
-                  )
-                  .map((method) => ({
-                    ...method,
-                    label:
-                      PaymentMethodRoutes[
-                        method.paymentTypeCode as TransactionMethods
-                      ]?.label || method.name,
-                    asset:
-                      PaymentMethodRoutes[
-                        method.paymentTypeCode as TransactionMethods
-                      ]?.asset, // when asset will be added to the object, add || method.asset
-                  }));
+                return myRes.value.paymentMethods;
               } else {
                 mixpanel.track(PAYMENT_METHODS_RESP_ERROR.value, {
                   EVENT_ID: PAYMENT_METHODS_RESP_ERROR.value,
@@ -822,7 +914,7 @@ export const getPaymentInstruments = async (
         )
     )
   )();
-  onResponse(list as any as Array<PaymentInstruments>);
+  onResponse(list as any as Array<PaymentInstrumentsType>);
 };
 
 export const getCarts = async (
@@ -916,110 +1008,143 @@ const expDateToString = (dateParsed: Date) =>
       })
     );
 
-/*
-  export const getTransactionData = async ({
-    // va fatta la GET transaction
-    idPayment,
-    onError,
-    onResponse,
-    onNavigate,
-  }: {
-    idPayment: string;
-    onError: (e: string) => void;
-    onResponse: () => void;
-    onNavigate: () => void;
-  }) => {
-    mixpanel.track(PAYMENT_CHECK_INIT.value, {
-      EVENT_ID: PAYMENT_CHECK_INIT.value,
-    });
-    void pipe(
-      O.fromNullable(idPayment),
-      O.fold(
-        () => undefined,
-        async () =>
-          await pipe(
-            TE.tryCatch(
-              () =>
-                apiPaymentEcommerceClient.getTransactionInfo({
-                  bearerAuth: pipe(
-                    getSessionItem(SessionItems.transaction),
-                    O.fromNullable,
-                    O.map((transaction) => transaction as Transaction),
-                    O.chain((t) => O.fromNullable(t.authToken)),
-                    O.getOrElse(() => "")
-                  ),
-                  transactionId: pipe(
-                    O.fromNullable(idPayment),
-                    O.getOrElse(() => "")
-                  ),
-                }),
-              // Error on call
-              () => {
-                onError(ErrorsType.CONNECTION);
-                mixpanel.track(PAYMENT_CHECK_NET_ERR.value, {
-                  EVENT_ID: PAYMENT_CHECK_NET_ERR.value,
+export const npgSessionsFields = async (
+  onError: (e: string) => void,
+  onResponse: (data: CreateSessionResponse) => void,
+  recaptchaResponse: string
+) =>
+  await pipe(
+    TE.tryCatch(
+      () => {
+        mixpanel.track(NPG_INIT.value, {
+          EVENT_ID: NPG_INIT.value,
+        });
+        const paymentMethodId =
+          (
+            getSessionItem(SessionItems.paymentMethod) as
+              | PaymentMethod
+              | undefined
+          )?.paymentMethodId || "";
+        return apiPaymentEcommerceClientWithRetry.createSession({
+          id: paymentMethodId,
+          recaptchaResponse,
+        });
+      },
+      () => {
+        mixpanel.track(NPG_NET_ERR.value, {
+          EVENT_ID: NPG_NET_ERR.value,
+        });
+        onError(NPG_NET_ERR.value);
+        return NPG_NET_ERR.value;
+      }
+    ),
+    TE.fold(
+      (err) => {
+        mixpanel.track(NPG_SVR_ERR.value, {
+          EVENT_ID: NPG_SVR_ERR.value,
+        });
+        return TE.left(err);
+      },
+      (myResExt) => async () =>
+        pipe(
+          myResExt,
+          E.fold(
+            () => {
+              mixpanel.track(NPG_RESP_ERROR.value, {
+                EVENT_ID: NPG_RESP_ERROR.value,
+              });
+              return {};
+            },
+            (myRes) => {
+              if (myRes.status === 200) {
+                mixpanel.track(NPG_SUCCESS.value, {
+                  EVENT_ID: NPG_SUCCESS.value,
                 });
-                return toError;
-              }
-            ),
-            TE.fold(
-              () => async () => {
-                onError(ErrorsType.SERVER);
-                mixpanel.track(PAYMENT_CHECK_SVR_ERR.value, {
-                  EVENT_ID: PAYMENT_CHECK_SVR_ERR.value,
-                });
-              },
-              (myResExt) => async () => {
                 pipe(
-                  myResExt,
-                  E.fold(
-                    () => onError(ErrorsType.GENERIC_ERROR),
-                    (response) => {
-                      const maybePayment = TransactionInfo.decode(response.value);
-                      // eslint-disable-next-line no-underscore-dangle
-                      if (response.status === 200) {
-                        pipe(
-                          maybePayment,
-  
-                          E.map((payment) => {
-                            setSessionItem(SessionItems.transaction, payment);
-                            onResponse();
-                            mixpanel.track(PAYMENT_CHECK_SUCCESS.value, {
-                              EVENT_ID: PAYMENT_CHECK_SUCCESS.value,
-                            });
-                          })
-                        );
-                      } else {
-                        onNavigate();
-                        mixpanel.track(PAYMENT_CHECK_RESP_ERR.value, {
-                          EVENT_ID: PAYMENT_CHECK_RESP_ERR.value,
-                        });
-                      }
-                    }
+                  myRes.value.paymentMethodData.form,
+                  validateSessionWalletCardFormFields,
+                  O.match(
+                    () => onError(NPG_RESP_ERROR.value),
+                    () => onResponse(myRes.value)
                   )
                 );
+                return myRes;
+              } else {
+                mixpanel.track(NPG_RESP_ERROR.value, {
+                  EVENT_ID: NPG_RESP_ERROR.value,
+                });
+                return {};
               }
-            )
-          )()
-      )
-    );
-  }; */
+            }
+          )
+        )
+    )
+  )();
 
-const getBrandByBrandCardValidator = (
-  brandCardValidator: string
-): BrandEnum => {
-  switch (brandCardValidator) {
-    case "visa":
-      return BrandEnum.VISA;
-    case "american-express":
-      return BrandEnum.AMEX;
-    case "maestro":
-      return BrandEnum.MAESTRO;
-    case "mastercard":
-      return BrandEnum.MASTERCARD;
-    case "diners-club":
-      return BrandEnum.DINERS;
-    default:
-      return BrandEnum.UNKNOWN;
+export const getFees = (
+  onSuccess: (value: boolean) => void,
+  onError: (m: string) => void,
+  bin?: string
+) =>
+  calculateFees({
+    paymentId:
+      (getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined)
+        ?.paymentMethodId || "",
+    bin,
+    onError,
+    onResponsePsp: (resp) => {
+      pipe(
+        resp,
+        CalculateFeeResponse.decode,
+        O.fromEither,
+        O.chain((resp) => O.fromNullable(resp.belowThreshold)),
+        O.fold(
+          () => onError(ErrorsType.GENERIC_ERROR),
+          (value) => {
+            const firstPsp = pipe(
+              resp?.bundles,
+              O.fromNullable,
+              O.chain((sortedArray) => O.fromNullable(sortedArray[0])),
+              O.map((a) => a as Bundle),
+              O.getOrElseW(() => ({}))
+            );
+
+            setSessionItem(SessionItems.pspSelected, firstPsp);
+            onSuccess(value);
+          }
+        )
+      );
+    },
+  });
+
+export const callRecaptcha = async (
+  recaptchaInstance: ReCAPTCHA,
+  reset = false
+) => {
+  if (reset) {
+    void recaptchaInstance.reset();
   }
+  const recaptchaResponse = await recaptchaInstance.executeAsync();
+  return pipe(
+    recaptchaResponse,
+    O.fromNullable,
+    O.getOrElse(() => "")
+  );
+};
+
+export const recaptchaTransaction = async ({
+  recaptchaRef,
+  onSuccess,
+  onError,
+}: {
+  recaptchaRef: ReCAPTCHA;
+  onSuccess: (paymentMethodId: string, orderId: string) => void;
+  onError: (m: string) => void;
+}) => {
+  const token = await callRecaptcha(recaptchaRef, true);
+  await activatePayment({
+    token,
+    onResponseActivate: onSuccess,
+    onErrorActivate: onError,
+  });
 };

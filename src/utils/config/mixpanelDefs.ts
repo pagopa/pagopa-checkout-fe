@@ -429,6 +429,8 @@ export const PAYMENT_METHODS_SVR_ERROR = t.literal("PAYMENT_METHODS_SVR_ERROR");
 export type PAYMENT_METHODS_SVR_ERROR = t.TypeOf<
   typeof PAYMENT_METHODS_SVR_ERROR
 >;
+export const PAYMENT_METHODS_CHOICE = t.literal("PAYMENT_METHODS_CHOICE");
+export type PAYMENT_METHODS_CHOICE = t.TypeOf<typeof PAYMENT_METHODS_CHOICE>;
 
 export const CART_REQUEST_ACCESS = t.literal("CART_REQUEST_ACCESS");
 export type CART_REQUEST_ACCESS = t.TypeOf<typeof CART_REQUEST_ACCESS>;
@@ -466,3 +468,14 @@ export type TRANSACTION_AUTH_RESP_ERROR = t.TypeOf<
 
 export const VOC_USER_EXIT = t.literal("VOC_USER_EXIT");
 export type VOC_USER_EXIT = t.TypeOf<typeof VOC_USER_EXIT>;
+
+export const NPG_INIT = t.literal("NPG_INIT");
+export type NPG_INIT = t.TypeOf<typeof NPG_INIT>;
+export const NPG_NET_ERR = t.literal("NPG_NET_ERR");
+export type NPG_NET_ERR = t.TypeOf<typeof NPG_NET_ERR>;
+export const NPG_SVR_ERR = t.literal("NPG_SVR_ERR");
+export type NPG_SVR_ERR = t.TypeOf<typeof NPG_SVR_ERR>;
+export const NPG_RESP_ERROR = t.literal("NPG_RESP_ERROR");
+export type NPG_RESP_ERROR = t.TypeOf<typeof NPG_RESP_ERROR>;
+export const NPG_SUCCESS = t.literal("NPG_SUCCESS");
+export type NPG_SUCCESS = t.TypeOf<typeof NPG_SUCCESS>;

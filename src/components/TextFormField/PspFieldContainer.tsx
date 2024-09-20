@@ -51,12 +51,14 @@ function PspFieldContainer(props: {
             flexDirection: props.flexDirection,
           }}
         >
-          <img
-            alt="Logo gestore"
-            aria-hidden="true"
-            src={props.image}
-            style={{ maxWidth: "80%", maxHeight: "32px", width: "auto" }}
-          />
+          <Box sx={{ width: "80%" }}>
+            <img
+              alt={`Logo ${props.body}`}
+              aria-hidden="true"
+              src={props.image}
+              style={{ maxHeight: "32px", width: "auto" }}
+            />
+          </Box>
           <Typography
             variant={props.bodyVariant}
             component={"div"}

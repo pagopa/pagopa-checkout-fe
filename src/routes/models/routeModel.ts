@@ -8,8 +8,14 @@ export enum CheckoutRoutes {
   INSERISCI_CARTA = "inserisci-carta",
   SCEGLI_METODO = "scegli-metodo",
   RIEPILOGO_PAGAMENTO = "riepilogo-pagamento",
+  GDI_CHECK = "gdi-check",
   CARRELLO = "c",
   ESITO = "esito",
   ANNULLATO = "annullato",
   ERRORE = "errore",
+}
+
+export enum ROUTE_FRAGMENT {
+  GDI_IFRAME_URL = "gdiIframeUrl",
+  OUTCOME = "outcome",
 }

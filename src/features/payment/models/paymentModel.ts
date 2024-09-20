@@ -1,6 +1,8 @@
-import { Theme } from "@emotion/react";
+import { enumType } from "@pagopa/ts-commons/lib/types";
+import * as t from "io-ts";
 import { SxProps } from "@mui/material";
-import { TransactionMethods } from "../../../routes/models/paymentMethodRoutes";
+import { Theme } from "@emotion/react";
+import { PaymentMethodResponse } from "../../../../generated/definitions/payment-ecommerce/PaymentMethodResponse";
 
 export interface PaymentFormFields {
   billCode: string;
@@ -36,6 +38,18 @@ export interface InputCardFormErrors {
   cvv?: string;
 }
 
+export interface PaymentMethodAttr {
+  asset?: (sx: SxProps<Theme>) => JSX.Element;
+  route: string;
+}
+
+export type PaymentMethodInfo = {
+  title: string;
+  body: string;
+  asset?: string;
+  icon?: string;
+};
+
 export enum SecureCodeDigits {
   cvv = 3,
   cid = 4,
@@ -62,6 +76,7 @@ export interface PaymentInfo {
   paName?: string;
   description?: string;
   dueDate?: string;
+  creditorReferenceId?: string;
 }
 
 export interface PaymentId {
@@ -73,19 +88,38 @@ export interface PaymentMethod {
   paymentMethodId: string;
 }
 
-export interface PaymentInstruments {
-  id: string;
-  name: string;
-  description: string;
-  status: string;
-  paymentTypeCode: TransactionMethods;
-  asset: string | ((sx: SxProps<Theme>) => JSX.Element);
-  label: string;
-  ranges: Array<{
-    min: number;
-    max: number;
-  }>;
+export enum PaymentCodeTypeEnum {
+  RBPR = "RBPR", // Conto BancoPosta Retail
+  RBPB = "RBPB", // Conto BancoPosta Impresa
+  RBPP = "RBPP", // Paga con Postepay
+  RPIC = "RPIC", // Pago in Conto Intesa
+  RBPS = "RBPS", // SCRIGNO Internet Banking
+  BPAY = "BPAY", // BancomatPay
+  APPL = "APPL", // ApplePay
+  GOOG = "GOOG", // GooglePay
+  MYBK = "MYBK", // MyBank
+  SATY = "SATY", // Satispay
+  CP = "CP", // Carte
 }
+
+/**
+ * Payment method status
+ */
+
+export type PaymentCodeType = t.TypeOf<typeof PaymentCodeType>;
+export const PaymentCodeType = enumType<PaymentCodeTypeEnum>(
+  PaymentCodeTypeEnum,
+  "PaymentCodeType"
+);
+
+export const PaymentInstruments = t.intersection([
+  t.type({
+    paymentTypeCode: PaymentCodeType,
+  }),
+  PaymentMethodResponse,
+]);
+
+export type PaymentInstrumentsType = t.TypeOf<typeof PaymentInstruments>;
 
 export interface PaymentNotice {
   noticeNumber: any;
@@ -93,6 +127,7 @@ export interface PaymentNotice {
   amount: number;
   companyName?: string;
   description?: string;
+  creditorReferenceId?: string;
 }
 
 interface ReturnUrls {
