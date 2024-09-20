@@ -1,5 +1,6 @@
 import React from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { sanitizeSearchParams } from "../utils/quirks/query";
 import ErrorModal from "../components/modals/ErrorModal";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
 import { Cart } from "../features/payment/models/paymentModel";
@@ -11,7 +12,7 @@ import { CheckoutRoutes } from "./models/routeModel";
 export default function PaymentCartPage() {
   const navigate = useNavigate();
   const { cartid } = useParams();
-  const [searchParams, _] = useSearchParams();
+  const searchParams = sanitizeSearchParams(window.location.search);
 
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
