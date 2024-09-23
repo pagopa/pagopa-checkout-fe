@@ -251,7 +251,6 @@ export const activePaymentTask = (
         return apiPaymentEcommerceClient.newTransaction({
           "x-correlation-id": correlationId,
           "x-client-id-from-client": cartClientId,
-          lang: localStorage.getItem("i18nextLng") ?? window.navigator.language,
           recaptchaResponse,
           body: {
             paymentNotices: getPaymentNotices(amountSinglePayment, rptId, cart),
@@ -1028,7 +1027,6 @@ export const npgSessionsFields = async (
         return apiPaymentEcommerceClientWithRetry.createSession({
           id: paymentMethodId,
           recaptchaResponse,
-          lang: localStorage.getItem("i18nextLng") ?? window.navigator.language,
         });
       },
       () => {
