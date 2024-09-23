@@ -84,7 +84,6 @@ import { FaultCategoryEnum } from "../../../generated/definitions/payment-ecomme
 import { CalculateFeeRequest } from "../../../generated/definitions/payment-ecommerce-v2/CalculateFeeRequest";
 import {
   apiPaymentEcommerceClient,
-  apiPaymentEcommerceClientV2,
   apiPaymentEcommerceClientWithRetry,
   apiPaymentEcommerceClientWithRetryV2,
 } from "./client";
@@ -249,7 +248,7 @@ export const activePaymentTask = (
         mixpanel.track(PAYMENT_ACTIVATE_INIT.value, {
           EVENT_ID: PAYMENT_ACTIVATE_INIT.value,
         });
-        return apiPaymentEcommerceClientV2.newTransaction({
+        return apiPaymentEcommerceClient.newTransaction({
           "x-correlation-id": correlationId,
           "x-client-id-from-client": cartClientId,
           lang: localStorage.getItem("i18nextLng") ?? window.navigator.language,
@@ -1026,7 +1025,7 @@ export const npgSessionsFields = async (
               | PaymentMethod
               | undefined
           )?.paymentMethodId || "";
-        return apiPaymentEcommerceClientWithRetryV2.createSession({
+        return apiPaymentEcommerceClientWithRetry.createSession({
           id: paymentMethodId,
           recaptchaResponse,
           lang: localStorage.getItem("i18nextLng") ?? window.navigator.language,
