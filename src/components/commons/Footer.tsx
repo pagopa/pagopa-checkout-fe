@@ -4,14 +4,19 @@ import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 import pagopaLogo from "../../assets/images/logo-pagopa-spa.svg";
 import LanguageFooterMenu from "../LanguageMenu/LanguageNativeSelect";
-import lang from "../../translations/lang";
+import lang, { langSelectVisibleOnPages } from "../../translations/lang";
 
 export default function Footer(props: { fixedPages: Array<string> }) {
   const { t } = useTranslation();
   const theme = useTheme();
   const location = useLocation();
+  const path = location.pathname.split("/").slice(-1)[0];
   const isFixed = () =>
-    props.fixedPages.includes(location.pathname.split("/").slice(-1)[0]);
+    props.fixedPages.includes(path);
+
+  const showLanguageSelect = () => {
+    return Object.keys(lang).length > 1 && langSelectVisibleOnPages.some(page => page.toString() == path);
+  }
 
   return (
     <Box
@@ -90,7 +95,7 @@ export default function Footer(props: { fixedPages: Array<string> }) {
           >
             {t("mainPage.footer.terms")}
           </Link>
-          {Object.keys(lang).length > 1 && (
+          {showLanguageSelect() && (
             <>
               <p aria-hidden="true">·</p>
               <Box my={1}>

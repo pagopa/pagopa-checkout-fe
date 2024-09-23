@@ -3,6 +3,7 @@ import translationEN from "./en/translations.json";
 import translationFR from "./fr/translations.json";
 import translationDE from "./de/translations.json";
 import translationSL from "./sl/translations.json";
+import { CheckoutRoutes } from "../routes/models/routeModel";
 
 const lang: Languages = {
   it: {
@@ -45,5 +46,14 @@ export function getSortedLang(): Array<{
       return obj;
     }, []);
 }
+
+export const langSelectVisibleOnPages = [
+  CheckoutRoutes.ROOT,
+  CheckoutRoutes.INSERISCI_DATI_AVVISO,
+  CheckoutRoutes.DATI_PAGAMENTO,
+  CheckoutRoutes.LEGGI_CODICE_QR,
+  CheckoutRoutes.INSERISCI_EMAIL,
+  CheckoutRoutes.SCEGLI_METODO
+];
 
 export default lang;
