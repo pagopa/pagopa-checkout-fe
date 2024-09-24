@@ -1,9 +1,9 @@
+import { CheckoutRoutes } from "../routes/models/routeModel";
 import translationIT from "./it/translations.json";
 import translationEN from "./en/translations.json";
 import translationFR from "./fr/translations.json";
 import translationDE from "./de/translations.json";
 import translationSL from "./sl/translations.json";
-import { CheckoutRoutes } from "../routes/models/routeModel";
 
 const lang: Languages = {
   it: {
@@ -53,7 +53,7 @@ export const langSelectVisibleOnPages = [
   CheckoutRoutes.DATI_PAGAMENTO,
   CheckoutRoutes.LEGGI_CODICE_QR,
   CheckoutRoutes.INSERISCI_EMAIL,
-  CheckoutRoutes.SCEGLI_METODO
+  CheckoutRoutes.SCEGLI_METODO,
 ];
 
 export default lang;

@@ -11,12 +11,11 @@ export default function Footer(props: { fixedPages: Array<string> }) {
   const theme = useTheme();
   const location = useLocation();
   const path = location.pathname.split("/").slice(-1)[0];
-  const isFixed = () =>
-    props.fixedPages.includes(path);
+  const isFixed = () => props.fixedPages.includes(path);
 
-  const showLanguageSelect = () => {
-    return Object.keys(lang).length > 1 && langSelectVisibleOnPages.some(page => page.toString() == path);
-  }
+  const showLanguageSelect = () =>
+    Object.keys(lang).length > 1 &&
+    langSelectVisibleOnPages.some((page) => page.toString() === path);
 
   return (
     <Box
