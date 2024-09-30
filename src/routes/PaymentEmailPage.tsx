@@ -38,7 +38,8 @@ export default function PaymentEmailPage() {
     navigate(`/${CheckoutRoutes.SCEGLI_METODO}`);
   }, []);
 
-  const onCancel = () => cancelUrl ? window.location.replace(cancelUrl) : navigate(-1);
+  const onCancel = () =>
+    cancelUrl ? window.location.replace(cancelUrl) : navigate(-1);
 
   return (
     <>
