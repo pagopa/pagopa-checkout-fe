@@ -698,6 +698,7 @@ export const proceedToPayment = async (
         apiPaymentEcommerceClientWithRetry.requestTransactionAuthorization({
           bearerAuth,
           transactionId,
+          lang: localStorage.getItem("i18nextLng") ?? "it",
           body: request,
         })
     ),
@@ -1027,6 +1028,7 @@ export const npgSessionsFields = async (
           )?.paymentMethodId || "";
         return apiPaymentEcommerceClientWithRetry.createSession({
           id: paymentMethodId,
+          lang: localStorage.getItem("i18nextLng") ?? "it",
           recaptchaResponse,
         });
       },
