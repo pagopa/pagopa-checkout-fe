@@ -3,6 +3,8 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { AccordionDetails, Box, Typography, useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import React from "react";
+import { CheckoutRoutes } from "routes/models/routeModel";
+import { getSessionItem, SessionItems } from "utils/storage/sessionStorage";
 import { PaymentNotice } from "../../features/payment/models/paymentModel";
 import { moneyFormat } from "../../utils/form/formatters";
 import { truncateText } from "../../utils/transformers/text";
@@ -23,6 +25,19 @@ export default function DrawerCart(props: Props) {
     (panel: string) => (_event: React.SyntheticEvent, newExpanded: boolean) => {
       setExpanded(newExpanded ? panel : false);
     };
+
+  const ignoreRoutesforNoticeNumber: Array<string> = [
+    CheckoutRoutes.INSERISCI_EMAIL,
+    CheckoutRoutes.SCEGLI_METODO,
+  ];
+
+  const currentPath = location.pathname.split("/").slice(-1)[0];
+
+  const cartClientId: string =
+    (getSessionItem(SessionItems.cartClientId) as string | undefined) ||
+    "CHECKOUT";
+
+  const isWispRedirecClient = cartClientId === "WISP_REDIRECT";
 
   return (
     <>
@@ -106,30 +121,44 @@ export default function DrawerCart(props: Props) {
             <Typography component="div" typography="sidenav" display="block">
               {el.companyName}
             </Typography>
-            <Typography
-              component="div"
-              typography="body2"
-              display="block"
-              mt={2}
-              color="action.active"
-            >
-              {t("cartDetail.noticeNumber")}
-            </Typography>
-            <Typography component="div" typography="sidenav" display="block">
-              {el.creditorReferenceId ?? el.noticeNumber}
-            </Typography>
-            <Typography
-              component="div"
-              typography="body2"
-              display="block"
-              mt={2}
-              color="action.active"
-            >
-              {t("cartDetail.fiscalCode")}
-            </Typography>
-            <Typography component="div" typography="sidenav" display="block">
-              {el.fiscalCode}
-            </Typography>
+            {(!!isWispRedirecClient ||
+              (isWispRedirecClient &&
+                !ignoreRoutesforNoticeNumber.includes(currentPath))) && (
+              <>
+                <Typography
+                  component="div"
+                  typography="body2"
+                  display="block"
+                  mt={2}
+                  color="action.active"
+                >
+                  {t("cartDetail.noticeNumber")}
+                </Typography>
+                <Typography
+                  component="div"
+                  typography="sidenav"
+                  display="block"
+                >
+                  {el.creditorReferenceId ?? el.noticeNumber}
+                </Typography>
+                <Typography
+                  component="div"
+                  typography="body2"
+                  display="block"
+                  mt={2}
+                  color="action.active"
+                >
+                  {t("cartDetail.fiscalCode")}
+                </Typography>
+                <Typography
+                  component="div"
+                  typography="sidenav"
+                  display="block"
+                >
+                  {el.fiscalCode}
+                </Typography>
+              </>
+            )}
           </AccordionDetails>
         </Accordion>
       ))}
