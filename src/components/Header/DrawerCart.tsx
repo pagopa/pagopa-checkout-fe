@@ -124,7 +124,7 @@ export default function DrawerCart(props: Props) {
             <Typography component="div" typography="sidenav" display="block">
               {el.companyName}
             </Typography>
-            {(!!isWispRedirecClient ||
+            {(!isWispRedirecClient ||
               (isWispRedirecClient &&
                 !ignoreRoutesforNoticeNumber.includes(currentPath))) && (
               <>
