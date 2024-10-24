@@ -40,8 +40,9 @@ export default function DrawerCart(props: Props) {
     "CHECKOUT";
   const isWispRedirectClient = cartClientId === "WISP_REDIRECT";
   const showPaymentNoticeAndFiscalCode =
-    !isWispRedirecClient ||
-    (isWispRedirecClient && !ignoreRoutesforNoticeNumber.includes(currentPath));
+    !isWispRedirectClient ||
+    (isWispRedirectClient &&
+      !ignoreRoutesforNoticeNumber.includes(currentPath));
 
   return (
     <>
@@ -125,7 +126,7 @@ export default function DrawerCart(props: Props) {
             <Typography component="div" typography="sidenav" display="block">
               {el.companyName}
             </Typography>
-            {isVisiblePaymentNoticeAndFiscaCode && (
+            {showPaymentNoticeAndFiscalCode && (
               <>
                 <Typography
                   component="div"
