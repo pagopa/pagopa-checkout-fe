@@ -39,7 +39,7 @@ export default function DrawerCart(props: Props) {
     (getSessionItem(SessionItems.cartClientId) as string | undefined) ||
     "CHECKOUT";
   const isWispRedirectClient = cartClientId === "WISP_REDIRECT";
-  const isVisiblePaymentNoticeAndFiscaCode =
+  const showPaymentNoticeAndFiscalCode =
     !isWispRedirecClient ||
     (isWispRedirecClient && !ignoreRoutesforNoticeNumber.includes(currentPath));
 
