@@ -32,15 +32,16 @@ export default function DrawerCart(props: Props) {
   const ignoreRoutesforNoticeNumber: Array<string> = [
     CheckoutRoutes.INSERISCI_EMAIL,
     CheckoutRoutes.SCEGLI_METODO,
+    CheckoutRoutes.INSERISCI_CARTA,
   ];
-
   const currentPath = location.pathname.split("/").slice(-1)[0];
-
   const cartClientId: string =
     (getSessionItem(SessionItems.cartClientId) as string | undefined) ||
     "CHECKOUT";
-
   const isWispRedirecClient = cartClientId === "WISP_REDIRECT";
+  const isVisiblePaymentNoticeAndFiscaCode =
+    !isWispRedirecClient ||
+    (isWispRedirecClient && !ignoreRoutesforNoticeNumber.includes(currentPath));
 
   return (
     <>
@@ -124,9 +125,7 @@ export default function DrawerCart(props: Props) {
             <Typography component="div" typography="sidenav" display="block">
               {el.companyName}
             </Typography>
-            {(!isWispRedirecClient ||
-              (isWispRedirecClient &&
-                !ignoreRoutesforNoticeNumber.includes(currentPath))) && (
+            {isVisiblePaymentNoticeAndFiscaCode && (
               <>
                 <Typography
                   component="div"
