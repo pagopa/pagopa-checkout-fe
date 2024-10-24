@@ -3,8 +3,11 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { AccordionDetails, Box, Typography, useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import React from "react";
-import { CheckoutRoutes } from "routes/models/routeModel";
-import { getSessionItem, SessionItems } from "utils/storage/sessionStorage";
+import {
+  getSessionItem,
+  SessionItems,
+} from "../../utils/storage/sessionStorage";
+import { CheckoutRoutes } from "../../routes/models/routeModel";
 import { PaymentNotice } from "../../features/payment/models/paymentModel";
 import { moneyFormat } from "../../utils/form/formatters";
 import { truncateText } from "../../utils/transformers/text";
