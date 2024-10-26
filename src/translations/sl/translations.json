@@ -22,11 +22,12 @@
     "button": "Zapri"
   },
   "cartDetail": {
-    "amount": "Vmesni seštevek",
+    "amount": "Znesek",
     "companyName": "Upnik",
     "description": "Namen plačila",
     "fiscalCode": "Davčna številka upnika",
-    "noticeNumber": "Znesek"
+    "iuv": "IUV koda",
+    "noticeNumber": "Št. obvestila"
   },
   "clipboard": {
     "copied": "Kopirano",
@@ -123,15 +124,15 @@
     "footer": {
       "accessibility": "Dostopnost",
       "help": "Pomoč",
-      "pagoPA": "Obiščite spletno stran pagoPA",
       "privacy": "Zasebnost",
-      "terms": "Pogoji"
+      "terms": "Pogoji",
+      "pagoPA": "Obiščite spletno stran pagoPA"
     },
     "header": {
       "detail": {
-        "detailAmount": "Vmesni seštevek",
         "detailFC": "Davčna številka upnika",
-        "detailIUV": "Številka edinstvene oznake nakazila",
+        "detailIUV": "IUV Koda",
+        "detailAmount": "Vmesni seštevek",
         "detailReceiver": "Upnik",
         "detailSubject": "Namen plačila",
         "detailTitle": "Podrobnosti o obvestilu"
@@ -168,6 +169,13 @@
   "PAYMENT_UNKNOWN": {
     "body": "Obvestilo bi lahko bilo že plačano. Za pomoč se obrnite na Upnika.",
     "title": "Obvestila ni bilo mogoče najti"
+  },
+  "pspUnavailable": {
+    "body": "Do te napake lahko pride, če je znesek za plačilo posebej visok ali če poskušate plačati digitalni davčni žig.",
+    "cta": {
+      "primary": "Izberite drug način plačila"
+    },
+    "title": "Izbrani način plačila ni na voljo"
   },
   "paymentEmailPage": {
     "description": "Na ta naslov boste prejeli rezultat plačila",
@@ -236,6 +244,9 @@
       "body": "Noben znesek ni bil zaračunan.\nČe težave ne morete odpraviti, se obrnite na ponudnika plačilnega sredstva, na primer na banko.",
       "title": "Pri vašem ponudniku plačilnega sredstva je prišlo do težave"
     },
+    "buttons": {
+      "continue": "Nadaljuj"
+    },
     "survey": {
       "body": "Zaupajte nam svoje izkušnje s plačevanjem in nam pomagajte izboljšati se.",
       "link": {
@@ -243,9 +254,6 @@
         "text": "Pojdite na anketo"
       },
       "title": "Nam lahko poveste, kako je bilo?"
-    },
-    "buttons": {
-      "continue": "Nadaljuj"
     }
   },
   "paymentCheckPage": {
@@ -349,7 +357,7 @@
       "description": "pagoPA samodejno posodobi znesek, zato vedno plačate točno toliko, kolikor dolgujete in se izognete zamudnim ali drugim obrestim.",
       "title": "Ali vidite drugačen znesek?"
     },
-    "iuv": "Številka edinstvene oznake nakazila",
+    "iuv": "IUV koda",
     "title": "Podatki o plačilu"
   },
   "POLLING_SLOW": {

@@ -26,6 +26,7 @@
     "companyName": "Organisme créancier",
     "description": "Objet du paiement",
     "fiscalCode": "Code fiscal organisme créancier",
+    "iuv": "Code IUV",
     "noticeNumber": "Code avis"
   },
   "clipboard": {
@@ -123,15 +124,15 @@
     "footer": {
       "accessibility": "Accessibilité",
       "help": "Aide",
-      "pagoPA": "Visiter le site pagoPA",
       "privacy": "Confidentialité",
-      "terms": "Conditions"
+      "terms": "Conditions",
+      "pagoPA": "Visiter le site pagoPA"
     },
     "header": {
       "detail": {
-        "detailAmount": "Total partiel",
         "detailFC": "Code fiscal organisme créancier",
         "detailIUV": "Code IUV",
+        "detailAmount": "Total partiel",
         "detailReceiver": "Organisme créancier",
         "detailSubject": "Objet du paiement",
         "detailTitle": "Détail avis"
@@ -168,6 +169,13 @@
   "PAYMENT_UNKNOWN": {
     "body": "L'avis pourrait déjà avoir été payé. Pour obtenir de l’assistance, contactez l’organisme créancier.",
     "title": "L'avis est introuvable"
+  },
+  "pspUnavailable": {
+    "body": "Cette erreur peut se produire lorsque le montant à payer est particulièrement élevé ou si vous essayez de payer un timbre fiscal numérique.",
+    "cta": {
+      "primary": "Choisissez une autre méthode"
+    },
+    "title": "La méthode sélectionnée n'est pas disponible"
   },
   "paymentEmailPage": {
     "description": "Vous recevrez le résultat du paiement à cette adresse",
@@ -236,6 +244,9 @@
       "body": "Aucun débit n’a été effectué.\nSi le problème persiste, contactez l’opérateur de votre moyen de paiement, votre banque par exemple.",
       "title": "Nous avons rencontré un problème avec l’opérateur de votre moyen de paiement"
     },
+    "buttons": {
+      "continue": "Continuer"
+    },
     "survey": {
       "body": "Faites-nous part de votre expérience et aidez-nous à l’améliorer.",
       "link": {
@@ -243,9 +254,6 @@
         "text": "Aller au sondage"
       },
       "title": "Racontez-nous votre expérience"
-    },
-    "buttons": {
-      "continue": "Continuer"
     }
   },
   "paymentCheckPage": {

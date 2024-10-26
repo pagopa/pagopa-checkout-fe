@@ -26,6 +26,7 @@
     "companyName": "Ente Creditore",
     "description": "Oggetto del pagamento",
     "fiscalCode": "Codice Fiscale Ente Creditore",
+    "iuv": "IUV",
     "noticeNumber": "Codice Avviso"
   },
   "clipboard": {
@@ -117,32 +118,27 @@
     "body": "Non è stato addebitato alcun importo.",
     "button": "Chiudi",
     "helpButton": "Serve aiuto?",
+    "learnMoreButton": "Scopri di più",
     "title": "Si è verificato un errore imprevisto"
   },
   "mainPage": {
     "footer": {
       "accessibility": "Accessibilità",
       "help": "Aiuto",
-      "pagoPA": "Visita il sito pagoPA",
       "privacy": "Privacy",
-      "terms": "Condizioni"
+      "terms": "Condizioni",
+      "pagoPA": "Visita il sito pagoPA"
     },
     "header": {
       "detail": {
-        "detailAmount": "Importo parziale",
         "detailFC": "Codice Fiscale Ente Creditore",
         "detailIUV": "Codice IUV",
+        "detailAmount": "Totale parziale",
         "detailReceiver": "Ente Creditore",
         "detailSubject": "Oggetto del pagamento",
         "detailTitle": "Dettaglio avviso"
       },
       "disclaimer": "L’importo è aggiornato in automatico, così paghi sempre quanto dovuto ed eviti more o altri interessi."
-    }
-  },
-  "mainpage": {
-    "footer": {
-      "privacy": "Privacy",
-      "terms": "Condizioni"
     }
   },
   "NOTLISTED": {
@@ -174,6 +170,13 @@
   "PAYMENT_UNKNOWN": {
     "body": "L'avviso potrebbe essere stato già pagato. Per ricevere assistenza, contatta l’Ente Creditore.",
     "title": "Non riusciamo a trovare l’avviso"
+  },
+  "pspUnavailable": {
+    "body": "Può succedere quando l’importo da pagare è particolarmente elevato, o se stai cercando di pagare una marca da bollo digitale.",
+    "cta": {
+      "primary": "Scegli un altro metodo"
+    },
+    "title": "Il metodo di pagamento selezionato non è disponibile"
   },
   "paymentEmailPage": {
     "description": "Riceverai l’esito del pagamento a questo indirizzo",
@@ -242,6 +245,21 @@
       "body": "Non è stato addebitato alcun importo.\nSe il problema persiste, contatta il gestore del metodo di pagamento, per esempio la tua banca.",
       "title": "C’è stato un problema con il gestore del tuo metodo di pagamento"
     },
+    "buttons": {
+      "continue": "Continua"
+    },
+    "cvvError": {
+      "body": "Non è stato addebitato alcun importo. Il codice (CVV o CVC) ha 3 cifre ed è riportato sul retro della carta. Se usi American Express, il codice (CID) ha 4 cifre ed è sul fronte.",
+      "title": "Il codice di sicurezza inserito è errato"
+    },
+    "exceededLimit": {
+      "body": "Non è stato addebitato alcun importo. Prima di riprovare, modifica il limite di spesa o usa un altro metodo di pagamento.",
+      "title": "Hai superato il limite di spesa"
+    },
+    "notSufficientFunds": {
+      "body": "Non è stato addebitato alcun importo. Prima di riprovare, aggiungi fondi alla o usa un altro metodo di pagamento.",
+      "title": "Il saldo è insufficiente"
+    },
     "survey": {
       "body": "Raccontaci la tua esperienza con il pagamento e aiutaci a migliorare.",
       "link": {
@@ -249,9 +267,6 @@
         "text": "Vai al sondaggio"
       },
       "title": "Puoi dirci com’è andata?"
-    },
-    "buttons": {
-      "continue": "Continua"
     }
   },
   "paymentCheckPage": {

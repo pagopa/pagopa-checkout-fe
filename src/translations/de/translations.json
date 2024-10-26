@@ -26,6 +26,7 @@
     "companyName": "Zahlungsempfänger",
     "description": "Verwendungszweck",
     "fiscalCode": "Steuernummer des Empfängers",
+    "iuv": "IUV-Code",
     "noticeNumber": "Zahlungsaufforderungsnr."
   },
   "clipboard": {
@@ -123,15 +124,15 @@
     "footer": {
       "accessibility": "Barrierefreiheit",
       "help": "Hilfe",
-      "pagoPA": "Website von pagoPA aufrufen",
       "privacy": "Datenrichtlinie",
-      "terms": "Nutzungsbedingungen"
+      "terms": "Nutzungsbedingungen",
+      "pagoPA": "Website von pagoPA aufrufen"
     },
     "header": {
       "detail": {
-        "detailAmount": "Zwischensumme",
         "detailFC": "Steuernummer des Empfängers",
         "detailIUV": "IUV-Code",
+        "detailAmount": "Zwischensumme",
         "detailReceiver": "Zahlungsempfänger",
         "detailSubject": "Verwendungszweck",
         "detailTitle": "Daten der Zahlungsaufforderung"
@@ -168,6 +169,13 @@
   "PAYMENT_UNKNOWN": {
     "body": "Die Zahlungsaufforderung könnte bereits bezahlt worden sein. Für Unterstützung kontaktieren Sie bitte die Zahlungsempfänger.",
     "title": "Der Zahlungsaufforderung konnte nicht gefunden werden"
+  },
+  "pspUnavailable": {
+    "body": "Dieser Fehler kann auftreten, wenn der zu zahlende Betrag besonders hoch ist, oder wenn versucht wird, eine digitale Steuermarke zu bezahlen.",
+    "cta": {
+      "primary": "Wählen eine andere Zahlungsmethode"
+    },
+    "title": "Die gewählte Zahlungsmethode ist nicht verfügbar"
   },
   "paymentEmailPage": {
     "description": "Du erhältst die Zahlungsbestätigung an diese E-Mail-Adresse",
@@ -236,6 +244,9 @@
       "body": "Es ist keine Belastung erfolgt.\nWenn das Problem bestehen bleibt, wende dich an den Anbieter deiner Zahlungsmethode, z. B. deine Bank.",
       "title": "Es ist ein Problem mit dem Anbieter deiner Zahlungsmethode aufgetreten"
     },
+    "buttons": {
+      "continue": "Weiter"
+    },
     "survey": {
       "body": "Teile uns deine Benutzererfahrung mit der Zahlung mit und hilf uns, besser zu werden.",
       "link": {
@@ -243,9 +254,6 @@
         "text": "Weiter zur Umfrage"
       },
       "title": "Sagst du uns bitte, wie es gelaufen ist?"
-    },
-    "buttons": {
-      "continue": "Weiter"
     }
   },
   "paymentCheckPage": {
