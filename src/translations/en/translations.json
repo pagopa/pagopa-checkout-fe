@@ -25,7 +25,8 @@
     "amount": "Amount",
     "companyName": "Payee",
     "description": "Payment description",
-    "fiscalCode": "Payee fiscal code",
+    "fiscalCode": "Payee tax code",
+    "iuv": "IUV code",
     "noticeNumber": "Notice code"
   },
   "clipboard": {
@@ -123,26 +124,20 @@
     "footer": {
       "accessibility": "Accessibility",
       "help": "Help",
-      "pagoPA": "Visit the pagoPA website",
       "privacy": "Privacy",
-      "terms": "Terms"
+      "terms": "Terms",
+      "pagoPA": "Visit the pagoPA website"
     },
     "header": {
       "detail": {
-        "detailAmount": "Subtotal",
         "detailFC": "Payee tax code",
-        "detailIUV": "Payment Identification Code (IUV)",
+        "detailIUV": "IUV code",
+        "detailAmount": "Subtotal",
         "detailReceiver": "Payee",
         "detailSubject": "Payment description",
         "detailTitle": "Notice detail"
       },
       "disclaimer": "The amount is updated automatically, therefore you will always pay what is due and avoid arrears or other interest."
-    }
-  },
-  "mainpage": {
-    "footer": {
-      "privacy": "Privacy",
-      "terms": "Terms"
     }
   },
   "NOTLISTED": {
@@ -154,7 +149,7 @@
     "title": "The payee revoked this notice"
   },
   "PAYMENT_DATA_ERROR": {
-    "title": "The notice information is not correct"
+    "title": "The data entered are incorrect"
   },
   "PAYMENT_DUPLICATED": {
     "body": "If you paid on this website, the receipt was sent to the email address you indicated during payment.",
@@ -174,6 +169,13 @@
   "PAYMENT_UNKNOWN": {
     "body": "The notice may have already been paid. To get support, contact the Payee.",
     "title": "We can’t find the notice"
+  },
+  "pspUnavailable": {
+    "body": "This error might occur when the amount to be paid is particularly high, or if you’re trying to pay for a digital tax stamp.",
+    "cta": {
+      "primary": "Choose another method"
+    },
+    "title": "The selected method is not available"
   },
   "paymentEmailPage": {
     "description": "You will receive the payment result at this address",
@@ -207,7 +209,7 @@
     },
     "3": {
       "body": "If you paid using a debit or credit card, make sure to enter the data as shown on the front of the card.",
-      "title": "The payment method information are not correct"
+      "title": "The payment method information is not correct"
     },
     "4": {
       "body": "No amount was charged. For your security, you have a limited amount of time to complete the operation.",
@@ -242,6 +244,9 @@
       "body": "No amount was charged.\nIf the problem continues, contact the operator of the payment method, your bank for example.",
       "title": "There was a problem with the operator of your payment method"
     },
+    "buttons": {
+      "continue": "Continue"
+    },
     "survey": {
       "body": "Tell us about your experience with the payment and help us improve.",
       "link": {
@@ -249,9 +254,6 @@
         "text": "Go to the survey"
       },
       "title": "Could you share your experience with us?"
-    },
-    "buttons": {
-      "continue": "Continue"
     }
   },
   "paymentCheckPage": {
@@ -355,7 +357,7 @@
       "description": "pagoPA updates the amount automatically to make sure you have paid exactly what is due and avoid arrears or other interest.",
       "title": "Do you see a different amount?"
     },
-    "iuv": "Public Administration Index (IUV) code",
+    "iuv": "IUV code",
     "title": "Payment data"
   },
   "POLLING_SLOW": {
