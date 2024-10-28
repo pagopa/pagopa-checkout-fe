@@ -53,6 +53,12 @@ export function PaymentChoice(props: {
     ref.current?.reset();
   };
 
+  const setLocationReplace = () => {
+    if (error !== "NOT_FOUND") {
+      window.location.replace(`/${CheckoutRoutes.ERRORE}`);
+    }
+  };
+
   const onSuccess = (
     paymentTypeCode: PaymentCodeType,
     belowThreshold?: boolean
@@ -148,7 +154,7 @@ export function PaymentChoice(props: {
           open={errorModalOpen}
           onClose={() => {
             setErrorModalOpen(false);
-            window.location.replace(`/${CheckoutRoutes.ERRORE}`);
+            setLocationReplace();
           }}
           titleId="iframeCardFormErrorTitleId"
           errorId="iframeCardFormErrorId"

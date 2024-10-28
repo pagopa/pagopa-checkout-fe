@@ -569,6 +569,12 @@ export const calculateFees = async ({
                   EVENT_ID: PAYMENT_PSPLIST_SUCCESS.value,
                 });
                 return myRes?.value;
+              } else if (myRes?.status === 404) {
+                onError(ErrorsType.NOT_FOUND);
+                mixpanel.track(PAYMENT_PSPLIST_RESP_ERR.value, {
+                  EVENT_ID: PAYMENT_PSPLIST_RESP_ERR.value,
+                });
+                return {};
               } else {
                 onError(ErrorsType.GENERIC_ERROR);
                 mixpanel.track(PAYMENT_PSPLIST_RESP_ERR.value, {
@@ -581,7 +587,6 @@ export const calculateFees = async ({
         )
     )
   )();
-
   onResponsePsp(bundleOption);
 };
 
@@ -1101,7 +1106,10 @@ export const getFees = (
         O.fromEither,
         O.chain((resp) => O.fromNullable(resp.belowThreshold)),
         O.fold(
-          () => onError(ErrorsType.GENERIC_ERROR),
+          () => {
+            // eslint-disable-next-line no-console
+            console.log("Decoding error");
+          },
           (value) => {
             const firstPsp = pipe(
               resp?.bundles,

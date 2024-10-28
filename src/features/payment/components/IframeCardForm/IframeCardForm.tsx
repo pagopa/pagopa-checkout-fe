@@ -200,6 +200,14 @@ export default function IframeCardForm(props: Props) {
 
   const { t } = useTranslation();
 
+  const setLocationReplace = () => {
+    if (error === "NOT_FOUND") {
+      window.location.replace(`/${CheckoutRoutes.SCEGLI_METODO}`);
+    } else {
+      window.location.replace(`/${CheckoutRoutes.ERRORE}`);
+    }
+  };
+
   return (
     <>
       <form id="iframe-card-form" onSubmit={handleSubmit}>
@@ -283,7 +291,7 @@ export default function IframeCardForm(props: Props) {
           open={errorModalOpen}
           onClose={() => {
             setErrorModalOpen(false);
-            window.location.replace(`/${CheckoutRoutes.ERRORE}`);
+            setLocationReplace();
           }}
           titleId="iframeCardFormErrorTitleId"
           errorId="iframeCardFormErrorId"
