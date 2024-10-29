@@ -309,13 +309,19 @@ export default function IframeCardForm(props: Props) {
           maxWidth="sm"
           hideIcon={true}
         >
-          <Typography variant="h6" component={"div"} sx={{ pb: 2 }}>
+          <Typography
+            variant="h6"
+            component={"div"}
+            sx={{ pb: 2 }}
+            id="pspNotFoundTitleId"
+          >
             {t("pspUnavailable.title")}
           </Typography>
           <Typography
             variant="body1"
             component={"div"}
             sx={{ whiteSpace: "pre-line" }}
+            id="pspNotFoundBodyId"
           >
             {t("pspUnavailable.body")}
           </Typography>
@@ -326,6 +332,7 @@ export default function IframeCardForm(props: Props) {
                 setPspNotFoundModalOpen(false);
                 window.location.replace(`/${CheckoutRoutes.SCEGLI_METODO}`);
               }}
+              id="pspNotFoundCtaId"
             >
               {t("pspUnavailable.cta.primary")}
             </Button>

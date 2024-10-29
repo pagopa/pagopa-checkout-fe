@@ -174,13 +174,19 @@ export function PaymentChoice(props: {
           maxWidth="sm"
           hideIcon={true}
         >
-          <Typography variant="h6" component={"div"} sx={{ pb: 2 }}>
+          <Typography
+            variant="h6"
+            component={"div"}
+            sx={{ pb: 2 }}
+            id="pspNotFoundTitleId"
+          >
             {t("pspUnavailable.title")}
           </Typography>
           <Typography
             variant="body1"
             component={"div"}
             sx={{ whiteSpace: "pre-line" }}
+            id="pspNotFoundBodyId"
           >
             {t("pspUnavailable.body")}
           </Typography>
@@ -190,6 +196,7 @@ export function PaymentChoice(props: {
               onClick={() => {
                 setPspNotFoundModalOpen(false);
               }}
+              id="pspNotFoundCtaId"
             >
               {t("pspUnavailable.cta.primary")}
             </Button>
