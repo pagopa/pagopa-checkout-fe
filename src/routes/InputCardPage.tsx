@@ -6,6 +6,9 @@ import { useNavigate } from "react-router-dom";
 import * as O from "fp-ts/Option";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
+import { Typography, Button } from "@mui/material";
+import { t } from "i18next";
+import InformationModal from "../components/modals/InformationModal";
 import { setThreshold } from "../redux/slices/threshold";
 import ErrorModal from "../components/modals/ErrorModal";
 import PageContainer from "../components/PageContent/PageContainer";
@@ -33,6 +36,7 @@ export default function InputCardPage() {
   const [error, setError] = React.useState("");
   const [wallet] = React.useState<InputCardFormFields>();
   const [hideCancelButton, setHideCancelButton] = React.useState(false);
+  const [pspNotFoundModal, setPspNotFoundModalOpen] = React.useState(false);
   const ref = React.useRef<ReCAPTCHA>(null);
   const dispatch = useAppDispatch();
 
@@ -56,6 +60,12 @@ export default function InputCardPage() {
     ref.current?.reset();
   };
 
+  const onPspNotFound = () => {
+    setLoading(false);
+    setPspNotFoundModalOpen(true);
+    ref.current?.reset();
+  };
+
   const onResponseActivate = (bin: string) =>
     calculateFees({
       paymentId:
@@ -66,6 +76,7 @@ export default function InputCardPage() {
         )?.paymentMethodId || "",
       bin,
       onError,
+      onPspNotFound,
       onResponsePsp: (resp) => {
         pipe(
           resp,
@@ -158,6 +169,38 @@ export default function InputCardPage() {
           errorId="inputCardPageErrorId"
           bodyId="inputCardPageErrorBodyId"
         />
+      )}
+      {!!pspNotFoundModal && (
+        <InformationModal
+          open={pspNotFoundModal}
+          onClose={() => {
+            setPspNotFoundModalOpen(false);
+          }}
+          maxWidth="sm"
+          hideIcon={true}
+        >
+          <Typography variant="h6" component={"div"} sx={{ pb: 2 }}>
+            {t("paymentSummaryPage.dialog.title")}
+          </Typography>
+          <Typography
+            variant="body1"
+            component={"div"}
+            sx={{ whiteSpace: "pre-line" }}
+          >
+            {t("paymentSummaryPage.dialog.description")}
+          </Typography>
+          <Box display="flex" justifyContent="flex-end" sx={{ mt: 3 }}>
+            <Button
+              variant="contained"
+              onClick={() => {
+                setPspNotFoundModalOpen(false);
+                window.location.replace(`/${CheckoutRoutes.SCEGLI_METODO}`);
+              }}
+            >
+              {t("paymentSummaryPage.buttons.ok")}
+            </Button>
+          </Box>
+        </InformationModal>
       )}
       <Box display="none">
         <ReCAPTCHA

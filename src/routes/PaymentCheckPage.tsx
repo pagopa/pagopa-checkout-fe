@@ -82,6 +82,7 @@ export default function PaymentCheckPage() {
   const [userCancelRedirect, setUserCancelRedirect] = React.useState(false);
   const [errorKOPage, setErrorKOPage] = React.useState("/");
   const [error, setError] = React.useState("");
+  const [pspNotFoundModal, setPspNotFoundModalOpen] = React.useState(false);
   const threshold = useAppSelector(selectThreshold);
   const paymentMethod = getSessionItem(SessionItems.paymentMethod) as
     | PaymentMethod
@@ -218,9 +219,19 @@ export default function PaymentCheckPage() {
         paymentId: paymentMethod?.paymentMethodId,
         bin: sessionPaymentMethodResponse?.bin,
         onError,
+        onPspNotFound,
         onResponsePsp: onPspEditResponse,
       });
     }
+  };
+
+  const onPspNotFound = () => {
+    setPayLoading(false);
+    setCancelLoading(false);
+    setPspEditLoading(false);
+    setPspUpdateLoading(false);
+    // setError(m);
+    setPspNotFoundModalOpen(true);
   };
 
   const updatePSP = (psp: Bundle) => {
@@ -439,6 +450,39 @@ export default function PaymentCheckPage() {
             }
           }}
         />
+      )}
+      {!!pspNotFoundModal && (
+        <InformationModal
+          open={pspNotFoundModal}
+          onClose={() => {
+            setPspNotFoundModalOpen(false);
+            window.location.replace(`/${CheckoutRoutes.SCEGLI_METODO}`);
+          }}
+          maxWidth="sm"
+          hideIcon={true}
+        >
+          <Typography variant="h6" component={"div"} sx={{ pb: 2 }}>
+            {t("paymentSummaryPage.dialog.title")}
+          </Typography>
+          <Typography
+            variant="body1"
+            component={"div"}
+            sx={{ whiteSpace: "pre-line" }}
+          >
+            {t("paymentSummaryPage.dialog.description")}
+          </Typography>
+          <Box display="flex" justifyContent="flex-end" sx={{ mt: 3 }}>
+            <Button
+              variant="contained"
+              onClick={() => {
+                setPspNotFoundModalOpen(false);
+                window.location.replace(`/${CheckoutRoutes.SCEGLI_METODO}`);
+              }}
+            >
+              {t("paymentSummaryPage.buttons.ok")}
+            </Button>
+          </Box>
+        </InformationModal>
       )}
     </PageContainer>
   );
