@@ -5,6 +5,7 @@ import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { Typography, Button } from "@mui/material";
 import { CreateSessionResponse } from "../../../../../generated/definitions/payment-ecommerce/CreateSessionResponse";
 import { SessionPaymentMethodResponse } from "../../../../../generated/definitions/payment-ecommerce/SessionPaymentMethodResponse";
 import { FormButtons } from "../../../../components/FormButtons/FormButtons";
@@ -26,6 +27,7 @@ import {
   setSessionItem,
 } from "../../../../utils/storage/sessionStorage";
 import { setThreshold } from "../../../../redux/slices/threshold";
+import InformationModal from "../../../../components/modals/InformationModal";
 import { IframeCardField } from "./IframeCardField";
 import type { FieldId, FieldStatus, FormStatus } from "./types";
 import { IdFields } from "./types";
@@ -66,6 +68,7 @@ const callRecaptcha = async (recaptchaInstance: ReCAPTCHA, reset = false) => {
 export default function IframeCardForm(props: Props) {
   const { onCancel, hideCancel } = props;
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
+  const [pspNotFoundModal, setPspNotFoundModalOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState("");
   const [form, setForm] = React.useState<CreateSessionResponse>();
@@ -98,6 +101,12 @@ export default function IframeCardForm(props: Props) {
     navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
   };
 
+  const onPspNotFound = () => {
+    setLoading(false);
+    setPspNotFoundModalOpen(true);
+    ref.current?.reset();
+  };
+
   const retrievePaymentSession = (paymentMethodId: string, orderId: string) =>
     retrieveCardData({
       paymentId: paymentMethodId,
@@ -111,7 +120,7 @@ export default function IframeCardForm(props: Props) {
           O.chain((resp) => O.fromNullable(resp.bin)),
           O.fold(
             () => onError(ErrorsType.GENERIC_ERROR),
-            () => getFees(onSuccess, onError, resp.bin)
+            () => getFees(onSuccess, onPspNotFound, onError, resp.bin)
           )
         );
       },
@@ -289,6 +298,46 @@ export default function IframeCardForm(props: Props) {
           errorId="iframeCardFormErrorId"
           bodyId="iframeCardFormErrorBodyId"
         />
+      )}
+      {!!pspNotFoundModal && (
+        <InformationModal
+          open={pspNotFoundModal}
+          onClose={() => {
+            setPspNotFoundModalOpen(false);
+            window.location.replace(`/${CheckoutRoutes.SCEGLI_METODO}`);
+          }}
+          maxWidth="sm"
+          hideIcon={true}
+        >
+          <Typography
+            variant="h6"
+            component={"div"}
+            sx={{ pb: 2 }}
+            id="pspNotFoundTitleId"
+          >
+            {t("pspUnavailable.title")}
+          </Typography>
+          <Typography
+            variant="body1"
+            component={"div"}
+            sx={{ whiteSpace: "pre-line" }}
+            id="pspNotFoundBodyId"
+          >
+            {t("pspUnavailable.body")}
+          </Typography>
+          <Box display="flex" justifyContent="flex-end" sx={{ mt: 3 }}>
+            <Button
+              variant="contained"
+              onClick={() => {
+                setPspNotFoundModalOpen(false);
+                window.location.replace(`/${CheckoutRoutes.SCEGLI_METODO}`);
+              }}
+              id="pspNotFoundCtaId"
+            >
+              {t("pspUnavailable.cta.primary")}
+            </Button>
+          </Box>
+        </InformationModal>
       )}
     </>
   );

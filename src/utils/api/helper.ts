@@ -481,11 +481,13 @@ export const calculateFees = async ({
   paymentId,
   bin,
   onError,
+  onPspNotFound,
   onResponsePsp,
 }: {
   paymentId: string;
   bin?: string;
   onError: (e: string) => void;
+  onPspNotFound: () => void;
   onResponsePsp: (r: any) => void;
 }) => {
   const calculateFeeRequest: O.Option<CalculateFeeRequest> = pipe(
@@ -525,7 +527,7 @@ export const calculateFees = async ({
     EVENT_ID: PAYMENT_PSPLIST_INIT.value,
   });
   const MAX_OCCURENCES_AFM = 2147483647;
-  const bundleOption = await pipe(
+  await pipe(
     calculateFeeRequest,
     TE.fromOption(() => {
       onError(ErrorsType.GENERIC_ERROR);
@@ -568,21 +570,24 @@ export const calculateFees = async ({
                 mixpanel.track(PAYMENT_PSPLIST_SUCCESS.value, {
                   EVENT_ID: PAYMENT_PSPLIST_SUCCESS.value,
                 });
-                return myRes?.value;
+                onResponsePsp(myRes?.value);
+              } else if (myRes?.status === 404) {
+                onPspNotFound();
+                mixpanel.track(PAYMENT_PSPLIST_RESP_ERR.value, {
+                  EVENT_ID: PAYMENT_PSPLIST_RESP_ERR.value,
+                });
               } else {
                 onError(ErrorsType.GENERIC_ERROR);
                 mixpanel.track(PAYMENT_PSPLIST_RESP_ERR.value, {
                   EVENT_ID: PAYMENT_PSPLIST_RESP_ERR.value,
                 });
-                return {};
               }
+              return {};
             }
           )
         )
     )
   )();
-
-  onResponsePsp(bundleOption);
 };
 
 export const proceedToPayment = async (
@@ -1085,6 +1090,7 @@ export const npgSessionsFields = async (
 
 export const getFees = (
   onSuccess: (value: boolean) => void,
+  onPspNotFound: () => void,
   onError: (m: string) => void,
   bin?: string
 ) =>
@@ -1094,6 +1100,7 @@ export const getFees = (
         ?.paymentMethodId || "",
     bin,
     onError,
+    onPspNotFound,
     onResponsePsp: (resp) => {
       pipe(
         resp,

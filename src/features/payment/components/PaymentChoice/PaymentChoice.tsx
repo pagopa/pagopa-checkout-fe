@@ -4,6 +4,9 @@ import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidV4 } from "uuid";
+import { Typography, Button } from "@mui/material";
+import { t } from "i18next";
+import InformationModal from "../../../../components/modals/InformationModal";
 import ErrorModal from "../../../../components/modals/ErrorModal";
 import CheckoutLoader from "../../../../components/PageContent/CheckoutLoader";
 import ClickableFieldContainer from "../../../../components/TextFormField/ClickableFieldContainer";
@@ -36,6 +39,7 @@ export function PaymentChoice(props: {
   const [loading, setLoading] = React.useState(true);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
+  const [pspNotFoundModal, setPspNotFoundModalOpen] = React.useState(false);
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -50,6 +54,12 @@ export function PaymentChoice(props: {
     setLoading(false);
     setError(m);
     setErrorModalOpen(true);
+    ref.current?.reset();
+  };
+
+  const onPspNotFound = () => {
+    setLoading(false);
+    setPspNotFoundModalOpen(true);
     ref.current?.reset();
   };
 
@@ -85,7 +95,7 @@ export function PaymentChoice(props: {
     await recaptchaTransaction({
       recaptchaRef,
       onSuccess: async () => {
-        await getFees(onSuccess, onError);
+        await getFees(onSuccess, onPspNotFound, onError);
       },
       onError,
     });
@@ -154,6 +164,44 @@ export function PaymentChoice(props: {
           errorId="iframeCardFormErrorId"
           bodyId="iframeCardFormErrorBodyId"
         />
+      )}
+      {!!pspNotFoundModal && (
+        <InformationModal
+          open={pspNotFoundModal}
+          onClose={() => {
+            setPspNotFoundModalOpen(false);
+          }}
+          maxWidth="sm"
+          hideIcon={true}
+        >
+          <Typography
+            variant="h6"
+            component={"div"}
+            sx={{ pb: 2 }}
+            id="pspNotFoundTitleId"
+          >
+            {t("pspUnavailable.title")}
+          </Typography>
+          <Typography
+            variant="body1"
+            component={"div"}
+            sx={{ whiteSpace: "pre-line" }}
+            id="pspNotFoundBodyId"
+          >
+            {t("pspUnavailable.body")}
+          </Typography>
+          <Box display="flex" justifyContent="flex-end" sx={{ mt: 3 }}>
+            <Button
+              variant="contained"
+              onClick={() => {
+                setPspNotFoundModalOpen(false);
+              }}
+              id="pspNotFoundCtaId"
+            >
+              {t("pspUnavailable.cta.primary")}
+            </Button>
+          </Box>
+        </InformationModal>
       )}
     </>
   );

@@ -13,6 +13,9 @@ function InformationModal(props: {
   children?: React.ReactNode;
   style?: React.CSSProperties;
   maxWidth?: "xs" | "sm" | "lg";
+  titleId?: string;
+  ctaId?: string;
+  bodyId?: string;
 }) {
   const theme = useTheme();
   const { t } = useTranslation();
