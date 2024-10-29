@@ -175,6 +175,7 @@ export default function InputCardPage() {
           open={pspNotFoundModal}
           onClose={() => {
             setPspNotFoundModalOpen(false);
+            window.location.replace(`/${CheckoutRoutes.SCEGLI_METODO}`);
           }}
           maxWidth="sm"
           hideIcon={true}
