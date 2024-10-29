@@ -175,14 +175,14 @@ export function PaymentChoice(props: {
           hideIcon={true}
         >
           <Typography variant="h6" component={"div"} sx={{ pb: 2 }}>
-            {t("paymentSummaryPage.dialog.title")}
+            {t("pspUnavailable.title")}
           </Typography>
           <Typography
             variant="body1"
             component={"div"}
             sx={{ whiteSpace: "pre-line" }}
           >
-            {t("paymentSummaryPage.dialog.description")}
+            {t("pspUnavailable.body")}
           </Typography>
           <Box display="flex" justifyContent="flex-end" sx={{ mt: 3 }}>
             <Button
@@ -191,7 +191,7 @@ export function PaymentChoice(props: {
                 setPspNotFoundModalOpen(false);
               }}
             >
-              {t("paymentSummaryPage.buttons.ok")}
+              {t("pspUnavailable.cta.primary")}
             </Button>
           </Box>
         </InformationModal>

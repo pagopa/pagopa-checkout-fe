@@ -462,14 +462,14 @@ export default function PaymentCheckPage() {
           hideIcon={true}
         >
           <Typography variant="h6" component={"div"} sx={{ pb: 2 }}>
-            {t("paymentSummaryPage.dialog.title")}
+            {t("pspUnavailable.title")}
           </Typography>
           <Typography
             variant="body1"
             component={"div"}
             sx={{ whiteSpace: "pre-line" }}
           >
-            {t("paymentSummaryPage.dialog.description")}
+            {t("pspUnavailable.body")}
           </Typography>
           <Box display="flex" justifyContent="flex-end" sx={{ mt: 3 }}>
             <Button
@@ -479,7 +479,7 @@ export default function PaymentCheckPage() {
                 window.location.replace(`/${CheckoutRoutes.SCEGLI_METODO}`);
               }}
             >
-              {t("paymentSummaryPage.buttons.ok")}
+              {t("pspUnavailable.cta.primary")}
             </Button>
           </Box>
         </InformationModal>
