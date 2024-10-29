@@ -1,4 +1,16 @@
-import { payNotice, verifyPaymentAndGetError, activatePaymentAndGetError, authorizePaymentAndGetError, checkPspDisclaimerBeforeAuthorizePayment, checkErrorOnCardDataFormSubmit, cancelPaymentOK, cancelPaymentAction, cancelPaymentKO, selectLanguage } from "./utils/helpers";
+import { payNotice,
+  verifyPaymentAndGetError,
+  activatePaymentAndGetError,
+  authorizePaymentAndGetError,
+  checkPspDisclaimerBeforeAuthorizePayment,
+  checkErrorOnCardDataFormSubmit,
+  cancelPaymentOK,
+  cancelPaymentAction,
+  cancelPaymentKO,
+  selectLanguage,
+  fillAndSubmitCardDataForm,
+  fillAndSubmitSatispayPayment 
+} from "./utils/helpers";
 import itTranslation from "../translations/it/translations.json";
 import deTranslation from "../translations/de/translations.json";
 import enTranslation from "../translations/en/translations.json";
@@ -46,7 +58,8 @@ const PSP_FAIL = "302016723749670057";
 const CANCEL_PAYMENT_OK = "302016723749670058";
 /* CANCEL_PAYMENT_FAIL end with 59 */
 const CANCEL_PAYMENT_KO = "302016723749670059";
-
+/* PSP_FAIL end with 76 */
+const PSP_NOT_FOUND_FAIL = "302016723749670076";
   /**
    * Increase default test timeout (120000ms)
    * to support entire payment flow
@@ -298,6 +311,72 @@ describe("Checkout fails to calculate fee", () => {
     const errorMessageElem = await page.waitForXPath(errorDescriptionXpath);
     const errorMessage = await errorMessageElem.evaluate((el) => el.textContent)
     expect(errorMessage).toContain(translation.koPage.title);
+
+  });
+
+  it.each([
+    ["it", itTranslation],
+    ["en", enTranslation],
+    ["fr", frTranslation],
+    ["de", deTranslation],
+    ["sl", slTranslation]
+  ])("Should fails calculate fee with 404 for CARDS and language [%s]", async (lang, translation) => {
+    /*
+     * Calculate fee fails
+    */
+    selectLanguage(lang);
+
+    await fillAndSubmitCardDataForm(PSP_NOT_FOUND_FAIL, VALID_FISCAL_CODE, EMAIL, VALID_CARD_DATA);
+    
+    const pspNotFoundTitleId = "#pspNotFoundTitleId";
+    const pspNotFoundTitleElem = await page.waitForSelector(
+      pspNotFoundTitleId
+    );
+    const pspNotFoundTitleText = await pspNotFoundTitleElem.evaluate((el) => el.textContent);
+    expect(pspNotFoundTitleText).toContain(translation.pspUnavailable.title);
+
+    const pspNotFoundCtaId = "#pspNotFoundCtaId";
+    const pspNotFoundCtaElem = await page.waitForSelector(pspNotFoundCtaId);
+    const pspNotFoundCtaText = await pspNotFoundCtaElem.evaluate((el) => el.textContent);
+    expect(pspNotFoundCtaText).toContain(translation.pspUnavailable.cta.primary);
+
+    const errorDescriptionId = "#pspNotFoundBodyId";
+    const errorDescriptionElem = await page.waitForSelector(errorDescriptionId);
+    const errorDescriptionText = await errorDescriptionElem.evaluate((el) => el.textContent);
+    expect(errorDescriptionText).toContain(translation.pspUnavailable.body);
+
+  });
+
+  it.each([
+    ["it", itTranslation],
+    ["en", enTranslation],
+    ["fr", frTranslation],
+    ["de", deTranslation],
+    ["sl", slTranslation]
+  ])("Should fails calculate fee with 404 for SATISPAY and language [%s]", async (lang, translation) => {
+    /*
+     * Calculate fee fails
+    */
+    selectLanguage(lang);
+
+    await fillAndSubmitSatispayPayment(PSP_NOT_FOUND_FAIL, VALID_FISCAL_CODE, EMAIL);
+
+    const pspNotFoundTitleId = "#pspNotFoundTitleId";
+    const pspNotFoundTitleElem = await page.waitForSelector(
+      pspNotFoundTitleId
+    );
+    const pspNotFoundTitleText = await pspNotFoundTitleElem.evaluate((el) => el.textContent);
+    expect(pspNotFoundTitleText).toContain(translation.pspUnavailable.title);
+
+    const pspNotFoundCtaId = "#pspNotFoundCtaId";
+    const pspNotFoundCtaElem = await page.waitForSelector(pspNotFoundCtaId);
+    const pspNotFoundCtaText = await pspNotFoundCtaElem.evaluate((el) => el.textContent);
+    expect(pspNotFoundCtaText).toContain(translation.pspUnavailable.cta.primary);
+
+    const errorDescriptionId = "#pspNotFoundBodyId";
+    const errorDescriptionElem = await page.waitForSelector(errorDescriptionId);
+    const errorDescriptionText = await errorDescriptionElem.evaluate((el) => el.textContent);
+    expect(errorDescriptionText).toContain(translation.pspUnavailable.body);
 
   });
 
