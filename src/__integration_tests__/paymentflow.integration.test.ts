@@ -385,7 +385,6 @@ describe("Checkout fails to calculate fee", () => {
 
     await pspNotFoundCtaElem.click();
     
-    await page.waitForNavigation();
     const currentUrl = await page.evaluate(() => location.href);
     expect(currentUrl).toContain("/scegli-metodo");
   });
