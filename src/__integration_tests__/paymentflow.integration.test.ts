@@ -346,7 +346,8 @@ describe("Checkout fails to calculate fee", () => {
     expect(errorDescriptionText).toContain(translation.pspUnavailable.body);
 
     await pspNotFoundCtaElem.click();
- 
+    await page.waitForNavigation();
+
     const currentUrl = await page.evaluate(() => location.href);
     expect(currentUrl).toContain("/scegli-metodo");
   });
@@ -381,9 +382,10 @@ describe("Checkout fails to calculate fee", () => {
     const errorDescriptionElem = await page.waitForSelector(errorDescriptionId);
     const errorDescriptionText = await errorDescriptionElem.evaluate((el) => el.textContent);
     expect(errorDescriptionText).toContain(translation.pspUnavailable.body);
-    
+
     await pspNotFoundCtaElem.click();
- 
+    
+    await page.waitForNavigation();
     const currentUrl = await page.evaluate(() => location.href);
     expect(currentUrl).toContain("/scegli-metodo");
   });
