@@ -1,9 +1,7 @@
-// Assuming the function is defined in a module named 'sortUtils'
-
 import { sortBy } from "features/payment/components/PaymentPspDrawer/PaymentPspDrawer";
 
 describe("sortBy function", () => {
-  let bundles = [
+  const bundles = [
     { taxPayerFee: 100 },
     { taxPayerFee: 200 },
     { taxPayerFee: 150 },
@@ -12,7 +10,9 @@ describe("sortBy function", () => {
 
   describe("when sorting in ascending order", () => {
     test("sorts bundles correctly", () => {
-      let sorted = bundles.sort(sortBy("taxPayerFee", "asc"));
+      const sorted = JSON.parse(JSON.stringify(bundles)).sort(
+        sortBy("taxPayerFee", "asc")
+      ); // Deep copy
       expect(sorted).toEqual([
         { taxPayerFee: 100 },
         { taxPayerFee: 150 },
@@ -22,14 +22,18 @@ describe("sortBy function", () => {
     });
 
     test("places undefined values at the end", () => {
-      let sorted = bundles.sort(sortBy("taxPayerFee", "asc"));
+      const sorted = JSON.parse(JSON.stringify(bundles)).sort(
+        sortBy("taxPayerFee", "asc")
+      ); // Deep copy
       expect(sorted[sorted.length - 1].taxPayerFee).toBeUndefined();
     });
   });
 
   describe("when sorting in descending order", () => {
     test("sorts bundles correctly", () => {
-      let sorted = bundles.sort(sortBy("taxPayerFee", "desc"));
+      const sorted = JSON.parse(JSON.stringify(bundles)).sort(
+        sortBy("taxPayerFee", "desc")
+      ); // Deep copy
       expect(sorted).toEqual([
         { taxPayerFee: 200 },
         { taxPayerFee: 150 },
@@ -39,14 +43,16 @@ describe("sortBy function", () => {
     });
 
     test("places undefined values at the end", () => {
-      let sorted = bundles.sort(sortBy("taxPayerFee", "desc"));
+      const sorted = JSON.parse(JSON.stringify(bundles)).sort(
+        sortBy("taxPayerFee", "desc")
+      ); // Deep copy
       expect(sorted[sorted.length - 1].taxPayerFee).toBeUndefined();
     });
   });
 
   describe("when comparing undefined fields", () => {
     test("returns -1 for undefined field in ascending order", () => {
-      let result = sortBy("taxPayerFee", "asc")(
+      const result = sortBy("taxPayerFee", "asc")(
         { taxPayerFee: undefined },
         { taxPayerFee: 100 }
       );
@@ -54,7 +60,7 @@ describe("sortBy function", () => {
     });
 
     test("returns 1 for undefined field in descending order", () => {
-      let result = sortBy("taxPayerFee", "desc")(
+      const result = sortBy("taxPayerFee", "desc")(
         { taxPayerFee: undefined },
         { taxPayerFee: 100 }
       );
