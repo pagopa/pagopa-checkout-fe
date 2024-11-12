@@ -10,13 +10,13 @@ import { default as React } from "react";
 import { useTranslation } from "react-i18next";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
-import { sortBy } from "./../../../../utils/SortUtil";
 import { getConfigOrThrow } from "../../../../utils/config/config";
 import { CustomDrawer } from "../../../../components/modals/CustomDrawer";
 import SkeletonFieldContainer from "../../../../components/Skeletons/SkeletonFieldContainer";
 import PspFieldContainer from "../../../../components/TextFormField/PspFieldContainer";
 import { moneyFormat } from "../../../../utils/form/formatters";
 import { Bundle } from "../../../../../generated/definitions/payment-ecommerce/Bundle";
+import { sortBy } from "./../../../../utils/SortUtil";
 
 const pspImagePath = (abi: string | undefined): string =>
   pipe(
