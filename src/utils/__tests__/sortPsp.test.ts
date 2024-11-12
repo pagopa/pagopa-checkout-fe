@@ -1,4 +1,4 @@
-import { sortBy } from "../../features/payment/components/PaymentPspDrawer/PaymentPspDrawer";
+import { sortBy } from "utils/SortUtil";
 
 describe("sortBy function", () => {
   const bundles = [
