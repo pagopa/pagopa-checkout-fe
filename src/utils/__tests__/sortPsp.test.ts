@@ -3,7 +3,7 @@
 import { sortBy } from "features/payment/components/PaymentPspDrawer/PaymentPspDrawer";
 
 describe("sortBy function", () => {
-  const bundles = [
+  let bundles = [
     { taxPayerFee: 100 },
     { taxPayerFee: 200 },
     { taxPayerFee: 150 },
@@ -12,7 +12,7 @@ describe("sortBy function", () => {
 
   describe("when sorting in ascending order", () => {
     test("sorts bundles correctly", () => {
-      const sorted = bundles.sort(sortBy("taxPayerFee", "asc"));
+      let sorted = bundles.sort(sortBy("taxPayerFee", "asc"));
       expect(sorted).toEqual([
         { taxPayerFee: 100 },
         { taxPayerFee: 150 },
@@ -22,14 +22,14 @@ describe("sortBy function", () => {
     });
 
     test("places undefined values at the end", () => {
-      const sorted = bundles.sort(sortBy("taxPayerFee", "asc"));
+      let sorted = bundles.sort(sortBy("taxPayerFee", "asc"));
       expect(sorted[sorted.length - 1].taxPayerFee).toBeUndefined();
     });
   });
 
   describe("when sorting in descending order", () => {
     test("sorts bundles correctly", () => {
-      const sorted = bundles.sort(sortBy("taxPayerFee", "desc"));
+      let sorted = bundles.sort(sortBy("taxPayerFee", "desc"));
       expect(sorted).toEqual([
         { taxPayerFee: 200 },
         { taxPayerFee: 150 },
@@ -39,14 +39,14 @@ describe("sortBy function", () => {
     });
 
     test("places undefined values at the end", () => {
-      const sorted = bundles.sort(sortBy("taxPayerFee", "desc"));
+      let sorted = bundles.sort(sortBy("taxPayerFee", "desc"));
       expect(sorted[sorted.length - 1].taxPayerFee).toBeUndefined();
     });
   });
 
   describe("when comparing undefined fields", () => {
     test("returns -1 for undefined field in ascending order", () => {
-      const result = sortBy("taxPayerFee", "asc")(
+      let result = sortBy("taxPayerFee", "asc")(
         { taxPayerFee: undefined },
         { taxPayerFee: 100 }
       );
@@ -54,7 +54,7 @@ describe("sortBy function", () => {
     });
 
     test("returns 1 for undefined field in descending order", () => {
-      const result = sortBy("taxPayerFee", "desc")(
+      let result = sortBy("taxPayerFee", "desc")(
         { taxPayerFee: undefined },
         { taxPayerFee: 100 }
       );
