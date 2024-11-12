@@ -125,8 +125,11 @@ const sortBy =
     const fieldA = a[field];
     const fieldB = b[field];
     const order = direction === "asc" ? 1 : -1;
-
-    return fieldA && fieldB ? (fieldA > fieldB ? order : -order) : -order;
+    return fieldA !== undefined && fieldB !== undefined
+      ? fieldA > fieldB
+        ? order
+        : -order
+      : -order;
   };
 
 type PspField = "taxPayerFee" | "pspBusinessName";
