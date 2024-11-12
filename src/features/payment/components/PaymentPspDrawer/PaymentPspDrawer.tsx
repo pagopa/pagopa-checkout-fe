@@ -10,7 +10,7 @@ import { default as React } from "react";
 import { useTranslation } from "react-i18next";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
-import { sortBy } from "utils/SortUtil";
+import { sortBy } from "./../../../../utils/SortUtil";
 import { getConfigOrThrow } from "../../../../utils/config/config";
 import { CustomDrawer } from "../../../../components/modals/CustomDrawer";
 import SkeletonFieldContainer from "../../../../components/Skeletons/SkeletonFieldContainer";
