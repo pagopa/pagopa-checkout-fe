@@ -1,4 +1,4 @@
-import { sortBy } from "utils/SortUtil";
+import { sortBy } from "./../../utils/SortUtil";
 
 const bundles = [
   { taxPayerFee: 100 },
