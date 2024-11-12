@@ -120,7 +120,7 @@ export const PaymentPspDrawer = (props: {
   );
 };
 
-const sortBy =
+export const sortBy =
   (field: PspField, direction: "asc" | "desc") => (a: Bundle, b: Bundle) => {
     const fieldA = a[field];
     const fieldB = b[field];
