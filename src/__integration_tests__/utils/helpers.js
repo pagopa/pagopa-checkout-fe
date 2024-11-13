@@ -56,18 +56,21 @@ export const authorizePaymentAndGetError = async (
 export const checkPspList = async (noticeCode, fiscalCode, email, cardData) => {
   const pspEditButtonSelector = "#pspEdit";
   const pspFeeSortButtonId = "#sortByFee";
+
   await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
+
   const pspEditButton = await page.waitForSelector(pspEditButtonSelector);
-  pspEditButton.click();
+  await pspEditButton.click();
+
   const pspFeeSortButton = await page.waitForSelector(pspFeeSortButtonId);
-  pspFeeSortButton.click();
+  await pspFeeSortButton.click();
 
   // Wait for the elements and get the list of divs
-  const pspElements = await page.$$(".pspFeeValue");
+  const pspElements = await page.querySelectorAll(".pspFeeValue");
 
   // Extract numeric content from each div and return as an array
   const numericContents = await Promise.all(
-    pspElements.map(async (element) => {
+    Array.from(pspElements).map(async (element) => {
       const text = await element.evaluate((el) => el.textContent);
       return parseFloat(text) || 0; // Convert to number, default to 0 if NaN
     })
