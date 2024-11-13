@@ -26,9 +26,12 @@ import {
   PaymentInstrumentsType,
 } from "../../models/paymentModel";
 import { setThreshold } from "../../../../redux/slices/threshold";
-import { CheckoutRoutes } from "../../../../routes/models/routeModel";
+import {
+CheckoutRoutes,
+} from "../../../../routes/models/routeModel";
 import { DisabledPaymentMethods, MethodComponentList } from "./PaymentMethod";
 import { getNormalizedMethods } from "./utils";
+import { onErrorActivate } from "../../../../utils/api/transactionsErrorHelper";
 
 export function PaymentChoice(props: {
   amount: number;
@@ -97,7 +100,8 @@ export function PaymentChoice(props: {
       onSuccess: async () => {
         await getFees(onSuccess, onPspNotFound, onError);
       },
-      onError,
+      onError: (faultCodeCategory, faultCodeDetail) => 
+        onErrorActivate(faultCodeCategory, faultCodeDetail, onError, navigate),
     });
   };
 

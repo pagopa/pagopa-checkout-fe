@@ -31,6 +31,7 @@ import InformationModal from "../../../../components/modals/InformationModal";
 import { IframeCardField } from "./IframeCardField";
 import type { FieldId, FieldStatus, FormStatus } from "./types";
 import { IdFields } from "./types";
+import { onErrorActivate } from "../../../../utils/api/transactionsErrorHelper";
 
 interface Props {
   loading?: boolean;
@@ -147,7 +148,8 @@ export default function IframeCardForm(props: Props) {
             void recaptchaTransaction({
               recaptchaRef: ref.current,
               onSuccess: retrievePaymentSession,
-              onError,
+              onError: (faultCodeCategory, faultCodeDetail) => 
+                onErrorActivate(faultCodeCategory, faultCodeDetail, onError, navigate)
             });
           }
         };

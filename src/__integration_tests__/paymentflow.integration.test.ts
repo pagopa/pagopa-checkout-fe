@@ -44,8 +44,10 @@ const FAIL_VERIFY_502_PPT_PSP_SCONOSCIUTO = "302016723749670006";
 const FAIL_ACTIVATE_PPT_PAGAMENTO_IN_CORSO = "302016723749670012";
 /* FAIL_ACTIVATE_PPT_STAZIONE_INT_PA_TIMEOUT end with 15 */
 const FAIL_ACTIVATE_PPT_STAZIONE_INT_PA_TIMEOUT = "302016723749670015";
-/* FAIL_ACTIVATE_502_PPT_PSP_SCONOSCIUTO end with 11 */
+/* FAIL_ACTIVATE_502_PPT_PSP_SCONOSCIUTO end with 13 */
 const FAIL_ACTIVATE_502_PPT_PSP_SCONOSCIUTO = "302016723749670013";
+/* FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA end with 76 */
+const FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA = "302016723749670076";
 /* FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND end with 41 */
 const FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND = "302016723749670041";
 /* PSP_UPTHRESHOLD end with 55 */
@@ -196,6 +198,30 @@ describe("Checkout payment activation failure tests", () => {
     );
 
     expect(resultMessage).toContain("PPT_PSP_SCONOSCIUTO");
+  });
+
+  it("Should fail a satispay payment ACTIVATION and get PPT_WISP_SESSIONE_SCONOSCIUTA", async () => {
+    /*
+     * Satispay payment with notice code that fails on activation and get PPT_WISP_SESSIONE_SCONOSCIUTA
+     * and redirect to expired session page
+     */
+
+    await fillAndSubmitSatispayPayment(FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA, VALID_FISCAL_CODE, EMAIL);
+    await page.waitForSelector("#sessionExpiredMessageTitle")
+
+    expect(page.url()).toContain("/sessione-scaduta");
+  });
+
+  it("Should fail a card payment ACTIVATION and get PPT_WISP_SESSIONE_SCONOSCIUTA", async () => {
+    /*
+     * Card payment with notice code that fails on activation and get PPT_WISP_SESSIONE_SCONOSCIUTA 
+     * and redirect to expired session page
+     */
+
+    await fillAndSubmitCardDataForm(FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA, VALID_FISCAL_CODE, EMAIL);
+    await page.waitForSelector("#sessionExpiredMessageTitle")
+
+    expect(page.url()).toContain("/sessione-scaduta");
   });
 
   describe("Auth request failure tests", () => {

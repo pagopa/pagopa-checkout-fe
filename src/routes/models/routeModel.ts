@@ -12,6 +12,7 @@ export enum CheckoutRoutes {
   CARRELLO = "c",
   ESITO = "esito",
   ANNULLATO = "annullato",
+  SESSIONE_SCADUTA = "sessione-scaduta",
   ERRORE = "errore",
 }
 
