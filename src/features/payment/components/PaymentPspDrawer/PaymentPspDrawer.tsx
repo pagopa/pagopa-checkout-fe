@@ -16,7 +16,7 @@ import SkeletonFieldContainer from "../../../../components/Skeletons/SkeletonFie
 import PspFieldContainer from "../../../../components/TextFormField/PspFieldContainer";
 import { moneyFormat } from "../../../../utils/form/formatters";
 import { Bundle } from "../../../../../generated/definitions/payment-ecommerce/Bundle";
-import { sortBy } from "./../../../../utils/SortUtil";
+import { PspField, sortBy } from "./../../../../utils/SortUtil";
 
 const pspImagePath = (abi: string | undefined): string =>
   pipe(
@@ -124,8 +124,6 @@ export const PaymentPspDrawer = (props: {
     </CustomDrawer>
   );
 };
-
-type PspField = "taxPayerFee" | "pspBusinessName";
 
 type PspOrderingModel = {
   fieldName: PspField;
