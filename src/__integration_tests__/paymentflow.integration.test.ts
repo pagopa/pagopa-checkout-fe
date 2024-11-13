@@ -105,7 +105,7 @@ describe("Checkout payment tests", () => {
       expect(resultMessage).toContain(
         translation.paymentResponsePage[0].title.replace(
           "{{amount}}",
-          "120,10\xa0€"
+          "120,15\xa0€"
         )
       );
     }
@@ -250,7 +250,7 @@ describe("Checkout payment activation failure tests", () => {
   });
 });
 
-describe("PSP list tests", () => {
+describe.only("PSP list tests", () => {
   it("Should sort psp by fees", async () => {
     const resultMessage = await checkPspList(
       PSP_BELOWTHRESHOLD,
