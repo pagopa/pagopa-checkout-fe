@@ -261,7 +261,7 @@ describe("PSP list tests", () => {
 
     expect(Array.isArray(resultMessage)).toBe(true);
     expect(resultMessage.length > 0).toBe(true);
-    for (let i = 0; i < resultMessage.length - 2; i++) {
+    for (let i = 0; i < resultMessage.length - 1; i++) {
       expect(resultMessage[i]).toBeGreaterThanOrEqual(resultMessage[i + 1]);
     }
 
