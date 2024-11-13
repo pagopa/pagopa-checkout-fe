@@ -9,7 +9,8 @@ import { payNotice,
   cancelPaymentKO,
   selectLanguage,
   fillAndSubmitCardDataForm,
-  fillAndSubmitSatispayPayment 
+  fillAndSubmitSatispayPayment, 
+  checkPspList
 } from "./utils/helpers";
 import itTranslation from "../translations/it/translations.json";
 import deTranslation from "../translations/de/translations.json";
@@ -231,6 +232,25 @@ describe("Checkout payment activation failure tests", () => {
     });
 
 });
+
+describe("PSP list tests", () => {
+
+  it("Should sort psp by fees", async () => {
+    /*
+     * 2. Payment with notice code that fails on activation and get PPT_PSP_SCONOSCIUTO
+     */
+    const errorID = '#iframeCardFormErrorId'
+    const resultMessage = await checkPspList(
+      PSP_BELOWTHRESHOLD,
+      VALID_FISCAL_CODE,
+      EMAIL,
+      VALID_CARD_DATA
+    );
+
+    await cancelPaymentAction();
+  });
+
+})
 
 describe("PSP disclaimer tests", () => {
 

@@ -53,6 +53,29 @@ export const authorizePaymentAndGetError = async (
   return await errorMessageElem.evaluate((el) => el.textContent);
 };
 
+export const checkPspList = async (
+  noticeCode,
+  fiscalCode,
+  email,
+  cardData
+) => {
+  const pspEditButtonSelector = "#pspEdit";
+  const pspFeeSortButtonId = "#sortByFee";
+  await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
+  const pspEditButton = await page.waitForSelector(
+    pspEditButtonSelector
+  );
+  pspEditButton.click();
+  const pspFeeSortButton = await page.waitForSelector(
+    pspFeeSortButtonId
+  );
+  pspFeeSortButton.click();
+  const pspO = await page.waitForSelector(
+    "#psp_0"
+  );
+  return await pspO.textContent("0");
+};
+
 export const checkPspDisclaimerBeforeAuthorizePayment = async (
   noticeCode,
   fiscalCode,
