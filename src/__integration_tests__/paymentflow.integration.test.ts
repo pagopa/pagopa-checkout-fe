@@ -264,6 +264,7 @@ describe("PSP list tests", () => {
     for (let i = 0; i < resultMessage.length - 2; i++) {
       expect(resultMessage[i]).toBeGreaterThanOrEqual(resultMessage[i + 1]);
     }
+
     await cancelPaymentAction();
   });
 });
