@@ -184,7 +184,6 @@ stages:
         timeoutInMinutes: 30
         steps:
           - checkout: checkout-be-mock
-            ref: CHK-3498-update-psp-list-result # REMOVE AFTER TESTS
 
           - script: |
               cp env.example .env
