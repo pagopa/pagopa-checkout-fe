@@ -66,13 +66,18 @@ export const checkPspList = async (noticeCode, fiscalCode, email, cardData) => {
   await pspFeeSortButton.click();
 
   // Wait for the elements and get the list of divs
-  const pspElements = await page.querySelectorAll(".pspFeeValue");
+  const pspElements = await page.$$(".pspFeeValue");
 
   // Extract numeric content from each div and return as an array
   const numericContents = await Promise.all(
     Array.from(pspElements).map(async (element) => {
       const text = await element.evaluate((el) => el.textContent);
-      return parseFloat(text) || 0; // Convert to number, default to 0 if NaN
+
+      // We want to skip the Dollar, Euro, or any currency placeholder
+      let numbers = text.match(/[\d,]+/g); // This will match sequences of digits and commas
+      let result = numbers ? numbers.join("") : ""; // Join the matched numbers if any
+
+      return parseFloat(result) || 0; // Convert to number, default to 0 if NaN
     })
   );
 
