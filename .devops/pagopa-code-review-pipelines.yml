@@ -7,7 +7,7 @@
 #
 
 variables:
-  NODE_VERSION: '14.16.0'
+  NODE_VERSION: "14.16.0"
   YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
 
 # Automatically triggered on PR
@@ -15,13 +15,13 @@ variables:
 trigger:
   branches:
     include:
-    - main
-    - develop
+      - main
+      - develop
 
 # Execute agents (jobs) on latest Ubuntu version.
 # To change OS for a specific, ovverride "pool" attribute inside the job definition
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: "ubuntu-latest"
 
 resources:
   repositories:
@@ -29,13 +29,13 @@ resources:
       type: github
       name: pagopa/azure-pipeline-templates
       ref: refs/tags/v19
-      endpoint: 'io-azure-devops-github-ro'
+      endpoint: "io-azure-devops-github-ro"
 
     - repository: checkout-be-mock
       type: github
       name: pagopa/pagopa-checkout-be-mock
       ref: master
-      endpoint: 'io-azure-devops-github-ro'
+      endpoint: "io-azure-devops-github-ro"
 
 stages:
   - stage: Build
@@ -43,196 +43,193 @@ stages:
     jobs:
       - job: make_build
         pool:
-          vmImage: 'ubuntu-latest'
+          vmImage: "ubuntu-latest"
         steps:
-        - template: templates/node-job-setup/template.yaml@pagopaCommons
+          - template: templates/node-job-setup/template.yaml@pagopaCommons
 
-        - template: azure-templates/setup-env.yml
-          parameters:
-            pagopa_apim_host: $CHECKOUT_API_HOST_DEV
-            polling_activation_interval: 6000
-            polling_activation_attempts: 16
-            env: 'DEV'
-            recaptcha_site_key: $CHECKOUT_CAPTCHA_ID_DEV
-            api_payment_transactions_basepath: '/api/checkout/payment-transactions/v1'
-            api_timeout: 10000
-            api_payment_activations_basepath: '/checkout/payments/v1'
-            pm_host: 'https://acardste.vaservices.eu'
-            pm_api_basepath: '/pp-restapi/v4'
-            checkout_version: "$(Build.SourceBranchName):$(Build.SourceVersion)"
+          - template: azure-templates/setup-env.yml
+            parameters:
+              pagopa_apim_host: $CHECKOUT_API_HOST_DEV
+              polling_activation_interval: 6000
+              polling_activation_attempts: 16
+              env: "DEV"
+              recaptcha_site_key: $CHECKOUT_CAPTCHA_ID_DEV
+              api_payment_transactions_basepath: "/api/checkout/payment-transactions/v1"
+              api_timeout: 10000
+              api_payment_activations_basepath: "/checkout/payments/v1"
+              pm_host: "https://acardste.vaservices.eu"
+              pm_api_basepath: "/pp-restapi/v4"
+              checkout_version: "$(Build.SourceBranchName):$(Build.SourceVersion)"
 
-        - script: |
-            yarn build
-          displayName: 'Build'
+          - script: |
+              yarn build
+            displayName: "Build"
 
   - stage: Static_Analysis
     dependsOn: []
     jobs:
       - job: lint
         steps:
-        - template: templates/node-job-setup/template.yaml@pagopaCommons
-        - script: yarn lint
-          displayName: 'Lint'
+          - template: templates/node-job-setup/template.yaml@pagopaCommons
+          - script: yarn lint
+            displayName: "Lint"
       - job: danger
-        condition:
-          and(
-            succeeded(),
-            ne(variables['DANGER_GITHUB_API_TOKEN'], 'skip')
+        condition: and(
+          succeeded(),
+          ne(variables['DANGER_GITHUB_API_TOKEN'], 'skip')
           )
         steps:
           - template: templates/node-job-setup/template.yaml@pagopaCommons
 
           - bash: yarn danger ci
             env:
-              DANGER_GITHUB_API_TOKEN: '$(DANGER_GITHUB_API_TOKEN)'
-            displayName: 'Danger CI'
+              DANGER_GITHUB_API_TOKEN: "$(DANGER_GITHUB_API_TOKEN)"
+            displayName: "Danger CI"
 
   # B) Run unit tests if there is a push or pull request on any branch.
   - stage: Unit_Tests
     pool:
-      vmImage: 'ubuntu-latest'
+      vmImage: "ubuntu-latest"
     dependsOn: []
     jobs:
       - job: run_unit_tests
         steps:
-        - template: templates/node-job-setup/template.yaml@pagopaCommons
+          - template: templates/node-job-setup/template.yaml@pagopaCommons
 
-        - script: yarn generate
-          displayName: 'Generate definitions'
+          - script: yarn generate
+            displayName: "Generate definitions"
 
-        - script: yarn test:coverage
-          displayName: 'Unit tests exec'
+          - script: yarn test:coverage
+            displayName: "Unit tests exec"
 
-        - task: PublishTestResults@2
-          displayName: 'Publish test results from Jest tests'
-          inputs:
-            testResultsFormat: 'JUnit'
-            testResultsFiles: '**/*TEST.xml'
-            searchFolder: '$(System.DefaultWorkingDirectory)'
-            failTaskOnFailedTests: true
+          - task: PublishTestResults@2
+            displayName: "Publish test results from Jest tests"
+            inputs:
+              testResultsFormat: "JUnit"
+              testResultsFiles: "**/*TEST.xml"
+              searchFolder: "$(System.DefaultWorkingDirectory)"
+              failTaskOnFailedTests: true
 
-        - task: PublishCodeCoverageResults@1
-          displayName: 'Publish code coverage from Jest tests'
-          inputs:
-            codeCoverageTool: Cobertura
-            summaryFileLocation: 'coverage/clover.xml'
+          - task: PublishCodeCoverageResults@1
+            displayName: "Publish code coverage from Jest tests"
+            inputs:
+              codeCoverageTool: Cobertura
+              summaryFileLocation: "coverage/clover.xml"
 
-# B) Run integration tests if there is a push or pull request on any branch.
+  # B) Run integration tests if there is a push or pull request on any branch.
   - stage: Integration_Tests_FinalStatus
     pool:
-      vmImage: 'ubuntu-latest'
+      vmImage: "ubuntu-latest"
     dependsOn: []
     jobs:
       - job: run_integration_tests
         timeoutInMinutes: 30
         steps:
+          - checkout: checkout-be-mock
 
-        - checkout: checkout-be-mock
+          - script: |
+              cp env.example .env
+              sed -i "s/^NPG_API_KEY=.*$/NPG_API_KEY=$(CHECKOUT-TEST-NPG-API-KEY)/" .env
+              sed -i "s/^PSP_API_KEY=.*$/PSP_API_KEY=$(CHECKOUT-TEST-NPG-API-KEY)/" .env
+            workingDirectory: pagopa-checkout-be-mock
+            displayName: "Setup env for mock"
 
-        - script: |
-            cp env.example .env
-            sed -i "s/^NPG_API_KEY=.*$/NPG_API_KEY=$(CHECKOUT-TEST-NPG-API-KEY)/" .env
-            sed -i "s/^PSP_API_KEY=.*$/PSP_API_KEY=$(CHECKOUT-TEST-NPG-API-KEY)/" .env
-          workingDirectory: pagopa-checkout-be-mock
-          displayName: 'Setup env for mock'
+          - script: yarn global add node-gyp && yarn install && yarn build
+            workingDirectory: pagopa-checkout-be-mock
+            displayName: "Setup deps for mock"
 
-        - script: yarn global add node-gyp && yarn install && yarn build
-          workingDirectory: pagopa-checkout-be-mock
-          displayName: 'Setup deps for mock'
+          - script: |
+              nohup yarn start &
+            displayName: "Start backend mock"
+            workingDirectory: pagopa-checkout-be-mock
 
-        - script: |
-            nohup yarn start &
-          displayName: 'Start backend mock'
-          workingDirectory: pagopa-checkout-be-mock
+          - checkout: self
 
-        - checkout: self
+          - template: templates/node-job-setup/template.yaml@pagopaCommons
+            parameters:
+              projectDir: pagopa-checkout-fe
 
-        - template: templates/node-job-setup/template.yaml@pagopaCommons
-          parameters:
-           projectDir: pagopa-checkout-fe
+          - script: |
+              export $(grep -v '^#' .env.development | xargs)
+            displayName: "export envs from .env.development"
+            workingDirectory: pagopa-checkout-fe
 
-        - script: |
-            export $(grep -v '^#' .env.development | xargs)
-          displayName: 'export envs from .env.development'
-          workingDirectory: pagopa-checkout-fe
+          - script: |
+              yarn dev &
+            displayName: "Start checkout FE"
+            workingDirectory: pagopa-checkout-fe
 
-        - script: |
-            yarn dev &
-          displayName: 'Start checkout FE'
-          workingDirectory: pagopa-checkout-fe
+          - script: while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:1234)" != "200" ]]; do sleep 5; done
+            displayName: "Wait for backend to be up and running"
+            workingDirectory: pagopa-checkout-fe
 
-        - script: while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:1234)" != "200" ]]; do sleep 5; done
-          displayName: 'Wait for backend to be up and running'
-          workingDirectory: pagopa-checkout-fe
+          - script: yarn test:final-status-integration
+            displayName: "Final status NPG integration tests exec"
+            workingDirectory: pagopa-checkout-fe
 
-        - script: yarn test:final-status-integration
-          displayName: 'Final status NPG integration tests exec'
-          workingDirectory: pagopa-checkout-fe
-
-        - task: PublishTestResults@2
-          displayName: 'Publish integration tests results from Jest tests'
-          inputs:
-            testResultsFormat: 'JUnit'
-            testResultsFiles: '**/*TEST.xml'
-            searchFolder: '$(System.DefaultWorkingDirectory)'
-            failTaskOnFailedTests: true
-
+          - task: PublishTestResults@2
+            displayName: "Publish integration tests results from Jest tests"
+            inputs:
+              testResultsFormat: "JUnit"
+              testResultsFiles: "**/*TEST.xml"
+              searchFolder: "$(System.DefaultWorkingDirectory)"
+              failTaskOnFailedTests: true
 
   - stage: Integration_Tests_Payment_Flow
     pool:
-      vmImage: 'ubuntu-latest'
+      vmImage: "ubuntu-latest"
     dependsOn: []
     jobs:
       - job: run_integration_tests
         timeoutInMinutes: 30
         steps:
+          - checkout: checkout-be-mock
+            ref: CHK-3498-update-psp-list-result # REMOVE AFTER TESTS
 
-        - checkout: checkout-be-mock
+          - script: |
+              cp env.example .env
+              sed -i "s/^NPG_API_KEY=.*$/NPG_API_KEY=$(CHECKOUT-TEST-NPG-API-KEY)/" .env
+              sed -i "s/^PSP_API_KEY=.*$/PSP_API_KEY=$(CHECKOUT-TEST-NPG-API-KEY)/" .env
+            workingDirectory: pagopa-checkout-be-mock
+            displayName: "Setup env for mock"
 
-        - script: |
-            cp env.example .env
-            sed -i "s/^NPG_API_KEY=.*$/NPG_API_KEY=$(CHECKOUT-TEST-NPG-API-KEY)/" .env
-            sed -i "s/^PSP_API_KEY=.*$/PSP_API_KEY=$(CHECKOUT-TEST-NPG-API-KEY)/" .env
-          workingDirectory: pagopa-checkout-be-mock
-          displayName: 'Setup env for mock'
+          - script: yarn global add node-gyp && yarn install && yarn build
+            workingDirectory: pagopa-checkout-be-mock
+            displayName: "Setup deps for mock"
 
-        - script: yarn global add node-gyp && yarn install && yarn build
-          workingDirectory: pagopa-checkout-be-mock
-          displayName: 'Setup deps for mock'
+          - script: |
+              nohup yarn start &
+            displayName: "Start backend mock"
+            workingDirectory: pagopa-checkout-be-mock
 
-        - script: |
-            nohup yarn start &
-          displayName: 'Start backend mock'
-          workingDirectory: pagopa-checkout-be-mock
+          - checkout: self
 
-        - checkout: self
+          - template: templates/node-job-setup/template.yaml@pagopaCommons
+            parameters:
+              projectDir: pagopa-checkout-fe
 
-        - template: templates/node-job-setup/template.yaml@pagopaCommons
-          parameters:
-           projectDir: pagopa-checkout-fe
+          - script: |
+              export $(grep -v '^#' .env.development | xargs)
+            displayName: "export envs from .env.development"
+            workingDirectory: pagopa-checkout-fe
 
-        - script: |
-            export $(grep -v '^#' .env.development | xargs)
-          displayName: 'export envs from .env.development'
-          workingDirectory: pagopa-checkout-fe
+          - script: |
+              yarn dev &
+            displayName: "Start checkout FE"
+            workingDirectory: pagopa-checkout-fe
 
-        - script: |
-            yarn dev &
-          displayName: 'Start checkout FE'
-          workingDirectory: pagopa-checkout-fe
+          - script: while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:1234)" != "200" ]]; do sleep 5; done
+            displayName: "Wait for backend to be up and running"
+            workingDirectory: pagopa-checkout-fe
 
-        - script: while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:1234)" != "200" ]]; do sleep 5; done
-          displayName: 'Wait for backend to be up and running'
-          workingDirectory: pagopa-checkout-fe
+          - script: yarn test:payment-flow-integration
+            displayName: "Payment flow integration tests exec"
+            workingDirectory: pagopa-checkout-fe
 
-        - script: yarn test:payment-flow-integration
-          displayName: 'Payment flow integration tests exec'
-          workingDirectory: pagopa-checkout-fe
-
-        - task: PublishTestResults@2
-          displayName: 'Publish integration tests results from Jest tests'
-          inputs:
-            testResultsFormat: 'JUnit'
-            testResultsFiles: '**/*TEST.xml'
-            searchFolder: '$(System.DefaultWorkingDirectory)'
-            failTaskOnFailedTests: true
+          - task: PublishTestResults@2
+            displayName: "Publish integration tests results from Jest tests"
+            inputs:
+              testResultsFormat: "JUnit"
+              testResultsFiles: "**/*TEST.xml"
+              searchFolder: "$(System.DefaultWorkingDirectory)"
+              failTaskOnFailedTests: true
