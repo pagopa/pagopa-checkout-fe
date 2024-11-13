@@ -259,7 +259,6 @@ describe("PSP list tests", () => {
       VALID_CARD_DATA
     );
 
-    // Ensure the result is a sorted array of numbers
     expect(Array.isArray(resultMessage)).toBe(true); // Check if result is an array
     const sortedResult = [...resultMessage].sort((a, b) => b - a); // Sort the result (inverse as we clicked on sort button once)
     expect(resultMessage).toEqual(sortedResult); // Check if the original result is sorted
