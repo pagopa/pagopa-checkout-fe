@@ -16,7 +16,7 @@ import { resetThreshold } from "../redux/slices/threshold";
 export default function SessionExpiredPage() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  
+
   const outcomeMessage = responseOutcome[4];
   const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
   const redirectUrl = cart?.returnUrls.returnErrorUrl || "/";
@@ -26,7 +26,6 @@ export default function SessionExpiredPage() {
     window.removeEventListener("beforeunload", onBrowserUnload);
     clearStorage();
   }, []);
-
 
   return (
     <PageContainer>

@@ -1,17 +1,20 @@
 import { NavigateFunction } from "react-router-dom";
 import { CheckoutRoutes } from "../../routes/models/routeModel";
 
-const POST_TRANSACTION_ERROR_EXPIRED = ["PPT_WISP_SESSIONE_SCONOSCIUTA"]
+const POST_TRANSACTION_ERROR_EXPIRED = ["PPT_WISP_SESSIONE_SCONOSCIUTA"];
 
 export const onErrorActivate = (
-    faultCodeCategory: string,
-    faultCodeDetail: string | undefined,
-    onError: Function,
-    navigate: NavigateFunction
+  faultCodeCategory: string,
+  faultCodeDetail: string | undefined,
+  onError: (m: string) => void,
+  navigate: NavigateFunction
 ) => {
-if (faultCodeDetail && POST_TRANSACTION_ERROR_EXPIRED.includes(faultCodeDetail)) {
+  if (
+    faultCodeDetail &&
+    POST_TRANSACTION_ERROR_EXPIRED.includes(faultCodeDetail)
+  ) {
     navigate(`/${CheckoutRoutes.SESSIONE_SCADUTA}`);
-} else {
+  } else {
     onError(`${faultCodeCategory}-${faultCodeDetail}`);
-}
+  }
 };

@@ -27,8 +27,8 @@ import {
 import { NewTransactionResponse } from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { CalculateFeeResponse } from "../../generated/definitions/payment-ecommerce/CalculateFeeResponse";
 import { Bundle } from "../../generated/definitions/payment-ecommerce/Bundle";
-import { CheckoutRoutes } from "./models/routeModel";
 import { onErrorActivate } from "../utils/api/transactionsErrorHelper";
+import { CheckoutRoutes } from "./models/routeModel";
 
 export default function InputCardPage() {
   const navigate = useNavigate();
@@ -134,8 +134,13 @@ export default function InputCardPage() {
         await activatePayment({
           token,
           onResponseActivate,
-          onErrorActivate: (faultCodeCategory, faultCodeDetail) => 
-            onErrorActivate(faultCodeCategory, faultCodeDetail, onError, navigate)
+          onErrorActivate: (faultCodeCategory, faultCodeDetail) =>
+            onErrorActivate(
+              faultCodeCategory,
+              faultCodeDetail,
+              onError,
+              navigate
+            ),
         });
       }
     },
