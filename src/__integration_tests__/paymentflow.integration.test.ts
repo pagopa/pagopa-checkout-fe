@@ -61,7 +61,7 @@ const CANCEL_PAYMENT_OK = "302016723749670058";
 /* CANCEL_PAYMENT_FAIL end with 59 */
 const CANCEL_PAYMENT_KO = "302016723749670059";
 /* PSP_FAIL end with 76 */
-const PSP_NOT_FOUND_FAIL = "302016723749670077";
+const PSP_NOT_FOUND_FAIL = "302016723749670090";
   /**
    * Increase default test timeout (120000ms)
    * to support entire payment flow
