@@ -190,8 +190,7 @@ export default function IframeCardForm(props: Props) {
       };
 
       void (async () => {
-        const token = ref.current ? await callRecaptcha(ref.current) : "";
-        void npgSessionsFields(onError, onResponse, token);
+        void npgSessionsFields(onError, onResponse);
       })();
     }
   }, [form?.orderId]);
