@@ -52,18 +52,6 @@ const initialFieldsState: FormStatus = Object.values(
   {} as FormStatus
 );
 
-const callRecaptcha = async (recaptchaInstance: ReCAPTCHA, reset = false) => {
-  if (reset) {
-    void recaptchaInstance.reset();
-  }
-  const recaptchaResponse = await recaptchaInstance.executeAsync();
-  return pipe(
-    recaptchaResponse,
-    O.fromNullable,
-    O.getOrElse(() => "")
-  );
-};
-
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export default function IframeCardForm(props: Props) {
   const { onCancel, hideCancel } = props;
