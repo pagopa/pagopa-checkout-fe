@@ -66,10 +66,10 @@ const PSP_NOT_FOUND_FAIL = "302016723749670076";
    * Increase default test timeout (120000ms)
    * to support entire payment flow
     */
-  jest.setTimeout(80000);
+  jest.setTimeout(120000);
   jest.retryTimes(3);
-  page.setDefaultNavigationTimeout(80000);
-  page.setDefaultTimeout(80000);
+  page.setDefaultNavigationTimeout(120000);
+  page.setDefaultTimeout(120000);
 
   beforeAll(async () => {
     await page.goto(CHECKOUT_URL);
@@ -200,28 +200,46 @@ describe("Checkout payment activation failure tests", () => {
     expect(resultMessage).toContain("PPT_PSP_SCONOSCIUTO");
   });
 
-  it("Should fail a satispay payment ACTIVATION and get PPT_WISP_SESSIONE_SCONOSCIUTA", async () => {
+  it.each([
+    ["it", itTranslation],
+    ["en", enTranslation],
+    ["fr", frTranslation],
+    ["de", deTranslation],
+    ["sl", slTranslation]
+  ])("Should fail a satispay payment ACTIVATION and get PPT_WISP_SESSIONE_SCONOSCIUTA", async (lang, translation) => {
     /*
      * Satispay payment with notice code that fails on activation and get PPT_WISP_SESSIONE_SCONOSCIUTA
      * and redirect to expired session page
      */
-
+    selectLanguage(lang);
     await fillAndSubmitSatispayPayment(FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA, VALID_FISCAL_CODE, EMAIL);
-    await page.waitForSelector("#sessionExpiredMessageTitle")
+    const title = await page.waitForSelector("#sessionExpiredMessageTitle")
+    const body = await page.waitForSelector("#sessionExpiredMessageBody")
 
     expect(page.url()).toContain("/sessione-scaduta");
+    expect(title).toContain(translation.paymentResponsePage[4].title);
+    expect(body).toContain(translation.paymentResponsePage[4].body);
   });
 
-  it("Should fail a card payment ACTIVATION and get PPT_WISP_SESSIONE_SCONOSCIUTA", async () => {
+  it.each([
+    ["it", itTranslation],
+    ["en", enTranslation],
+    ["fr", frTranslation],
+    ["de", deTranslation],
+    ["sl", slTranslation]
+  ])("Should fail a card payment ACTIVATION and get PPT_WISP_SESSIONE_SCONOSCIUTA", async (lang, translation) => {
     /*
      * Card payment with notice code that fails on activation and get PPT_WISP_SESSIONE_SCONOSCIUTA 
      * and redirect to expired session page
      */
-
+    selectLanguage(lang);
     await fillAndSubmitCardDataForm(FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA, VALID_FISCAL_CODE, EMAIL);
-    await page.waitForSelector("#sessionExpiredMessageTitle")
+    const title = await page.waitForSelector("#sessionExpiredMessageTitle")
+    const body = await page.waitForSelector("#sessionExpiredMessageBody")
 
     expect(page.url()).toContain("/sessione-scaduta");
+    expect(title).toContain(translation.paymentResponsePage[4].title);
+    expect(body).toContain(translation.paymentResponsePage[4].body);
   });
 
   describe("Auth request failure tests", () => {
