@@ -66,10 +66,10 @@ const PSP_NOT_FOUND_FAIL = "302016723749670076";
    * Increase default test timeout (120000ms)
    * to support entire payment flow
     */
-  jest.setTimeout(120000);
+  jest.setTimeout(80000);
   jest.retryTimes(3);
-  page.setDefaultNavigationTimeout(120000);
-  page.setDefaultTimeout(120000);
+  page.setDefaultNavigationTimeout(80000);
+  page.setDefaultTimeout(80000);
 
   beforeAll(async () => {
     await page.goto(CHECKOUT_URL);
@@ -213,8 +213,10 @@ describe("Checkout payment activation failure tests", () => {
      */
     selectLanguage(lang);
     await fillAndSubmitSatispayPayment(FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA, VALID_FISCAL_CODE, EMAIL);
-    const title = await page.waitForSelector("#sessionExpiredMessageTitle")
-    const body = await page.waitForSelector("#sessionExpiredMessageBody")
+    const titleElem = await page.waitForSelector("#sessionExpiredMessageTitle")
+    const bodyElem = await page.waitForSelector("#sessionExpiredMessageBody")
+    const title = await titleElem.evaluate((el) => el.textContent)
+    const body = await bodyElem.evaluate((el) => el.textContent)
 
     expect(page.url()).toContain("/sessione-scaduta");
     expect(title).toContain(translation.paymentResponsePage[4].title);
@@ -233,9 +235,11 @@ describe("Checkout payment activation failure tests", () => {
      * and redirect to expired session page
      */
     selectLanguage(lang);
-    await fillAndSubmitCardDataForm(FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA, VALID_FISCAL_CODE, EMAIL);
-    const title = await page.waitForSelector("#sessionExpiredMessageTitle")
-    const body = await page.waitForSelector("#sessionExpiredMessageBody")
+    await fillAndSubmitCardDataForm(FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA, VALID_FISCAL_CODE, EMAIL, VALID_CARD_DATA);
+    const titleElem = await page.waitForSelector("#sessionExpiredMessageTitle")
+    const bodyElem = await page.waitForSelector("#sessionExpiredMessageBody")
+    const title = await titleElem.evaluate((el) => el.textContent)
+    const body = await bodyElem.evaluate((el) => el.textContent)
 
     expect(page.url()).toContain("/sessione-scaduta");
     expect(title).toContain(translation.paymentResponsePage[4].title);
