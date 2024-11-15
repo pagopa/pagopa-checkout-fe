@@ -9,8 +9,9 @@ import { payNotice,
   cancelPaymentKO,
   selectLanguage,
   fillAndSubmitCardDataForm,
-  fillAndSubmitSatispayPayment, 
-  checkPspList
+  fillAndSubmitSatispayPayment,
+  checkPspListNames,
+  checkPspListFees
 } from "./utils/helpers";
 import itTranslation from "../translations/it/translations.json";
 import deTranslation from "../translations/de/translations.json";
@@ -442,7 +443,24 @@ describe("Cancel payment failure tests (satispay)", () => {
 
 describe.only("PSP list tests", () => {
   it("Should sort psp by fees", async () => {
-    const resultMessage = await checkPspList(
+    const resultMessage = await checkPspListFees(
+      PSP_BELOWTHRESHOLD,
+      VALID_FISCAL_CODE,
+      EMAIL,
+      VALID_CARD_DATA
+    );
+
+    expect(Array.isArray(resultMessage)).toBe(true);
+    expect(resultMessage.length > 0).toBe(true);
+    for (let i = 0; i < resultMessage.length - 1; i++) {
+      expect(resultMessage[i]).toBeGreaterThanOrEqual(resultMessage[i + 1]);
+    }
+
+    await cancelPaymentAction();
+  });
+
+  it("Should sort psp by name", async () => {
+    const resultMessage = await checkPspListNames(
       PSP_BELOWTHRESHOLD,
       VALID_FISCAL_CODE,
       EMAIL,
