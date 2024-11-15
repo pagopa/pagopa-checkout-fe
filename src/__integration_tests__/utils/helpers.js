@@ -286,10 +286,12 @@ export const checkPspList = async (noticeCode, fiscalCode, email, cardData) => {
 
   const pspEditButton = await page.waitForSelector(pspEditButtonSelector);
   await pspEditButton.click();
-  await page.waitForTimeout(1000);
+  await new Promise(r => setTimeout(r,1000));
   const pspFeeSortButton = await page.waitForSelector(pspFeeSortButtonId);
   await pspFeeSortButton.click();
-  await page.waitForTimeout(1000);
+  
+  await new Promise(r => setTimeout(r,1000));
+
   // Wait for the elements and get the list of divs
   const pspElements = await page.$$(".pspFeeValue");
   // Extract numeric content from each div and return as an array
@@ -302,9 +304,9 @@ export const checkPspList = async (noticeCode, fiscalCode, email, cardData) => {
       return parseFloat(result) || 0; // Convert to number, default to 0 if NaN
     })
   );
-  await page.waitForTimeout(1000);
+  await new Promise(r => setTimeout(r,1000));
   const closePspListButton = await page.waitForSelector("#closePspList");
   await closePspListButton.click();
-  await page.waitForTimeout(1000);
+  await new Promise(r => setTimeout(r,1000));
   return numericContents;
 };
