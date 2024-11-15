@@ -250,7 +250,7 @@ describe("Checkout payment activation failure tests", () => {
   });
 });
 
-describe.only("PSP list tests", () => {
+describe("PSP list tests", () => {
   it("Should sort psp by fees", async () => {
     const resultMessage = await checkPspList(
       PSP_BELOWTHRESHOLD,
