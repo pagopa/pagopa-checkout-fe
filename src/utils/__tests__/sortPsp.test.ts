@@ -89,10 +89,10 @@ test("sortBy function sorts bundles by pspBusinessName correctly in descending o
     sortBy("pspBusinessName", "desc")
   ); // Deep copy
   expect(sorted).toEqual([
+    { pspBusinessName: "Business D" },
     { pspBusinessName: "Business C" },
     { pspBusinessName: "Business B" },
     { pspBusinessName: "Business A" },
-    { pspBusinessName: "Business D" },
     { pspBusinessName: undefined },
   ]);
 });
