@@ -281,15 +281,15 @@ export const checkPspList = async (
   sortBy
 ) => {
   const pspEditButtonSelector = "#pspEdit";
-  const pspFeeSortButtonId = "#"+sortBy;
+  const pspSortButtonId = "#"+sortBy;
 
   await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
 
   const pspEditButton = await page.waitForSelector(pspEditButtonSelector);
   await pspEditButton.click();
   await new Promise((r) => setTimeout(r, 1000));
-  const pspFeeSortButton = await page.waitForSelector(pspFeeSortButtonId);
-  await pspFeeSortButton.click();
+  const pspSortButton = await page.waitForSelector(pspSortButtonId);
+  await pspSortButton.click();
 
   await new Promise((r) => setTimeout(r, 1000));
 
