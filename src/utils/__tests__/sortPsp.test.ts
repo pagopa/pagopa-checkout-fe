@@ -56,8 +56,6 @@ test("sortBy function returns 1 for undefined field in descending order", () => 
   expect(result).toBe(1);
 });
 
-
-
 const bundlesNames = [
   { pspBusinessName: "Business A" },
   { pspBusinessName: "Business C" },
