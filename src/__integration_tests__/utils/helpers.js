@@ -53,40 +53,6 @@ export const authorizePaymentAndGetError = async (
   return await errorMessageElem.evaluate((el) => el.textContent);
 };
 
-/*
-* utility function to emulate edit psp list and sort. This function has many timeout to allow view transitions to end before try to click CTA buttons
-*/
-export const checkPspList = async (noticeCode, fiscalCode, email, cardData) => {
-  const pspEditButtonSelector = "#pspEdit";
-  const pspFeeSortButtonId = "#sortByFee";
-
-  await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
-
-  const pspEditButton = await page.waitForSelector(pspEditButtonSelector);
-  await pspEditButton.click();
-  await page.waitForTimeout(1000);
-  const pspFeeSortButton = await page.waitForSelector(pspFeeSortButtonId);
-  await pspFeeSortButton.click();
-  await page.waitForTimeout(1000);
-  // Wait for the elements and get the list of divs
-  const pspElements = await page.$$(".pspFeeValue");
-  // Extract numeric content from each div and return as an array
- const numericContents = await Promise.all(
-    Array.from(pspElements).map(async (element) => {
-      const text = await element.evaluate((el) => el.textContent);
-      // We want to skip the Dollar, Euro, or any currency placeholder
-      let numbers = text.match(/[\d,]+/g); // This will match sequences of digits and commas
-      let result = numbers ? numbers.join("").replace(",",".") : ""; // Join the matched numbers if any and replace , as separator with .
-      return parseFloat(result) || 0; // Convert to number, default to 0 if NaN
-    })
-  );
-  await page.waitForTimeout(1000);
-  const closePspListButton = await page.waitForSelector("#closePspList");
-  await closePspListButton.click();
-  await page.waitForTimeout(1000);
-  return numericContents;
-};
-
 export const checkPspDisclaimerBeforeAuthorizePayment = async (
   noticeCode,
   fiscalCode,
@@ -278,7 +244,11 @@ export const cancelPaymentOK = async (
   return await message.evaluate((el) => el.textContent);
 };
 
-export const cancelPaymentKO = async (noticeCode, fiscalCode, email) => {
+export const cancelPaymentKO = async (
+  noticeCode,
+  fiscalCode,
+  email
+) => {
   const resultMessageXPath = "/html/body/div[7]/div[3]/div/h2/div";
   await fillAndSubmitSatispayPayment(noticeCode, fiscalCode, email);
   const paymentCheckPageButtonCancel = await page.waitForSelector(
@@ -301,5 +271,40 @@ export const closeErrorModal = async () => {
 };
 
 export const selectLanguage = async (language) => {
-  await page.select("#languageMenu", language);
+  await page.select('#languageMenu', language);
+}
+
+
+/*
+* utility function to emulate edit psp list and sort. This function has many timeout to allow view transitions to end before try to click CTA buttons
+*/
+export const checkPspList = async (noticeCode, fiscalCode, email, cardData) => {
+  const pspEditButtonSelector = "#pspEdit";
+  const pspFeeSortButtonId = "#sortByFee";
+
+  await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
+
+  const pspEditButton = await page.waitForSelector(pspEditButtonSelector);
+  await pspEditButton.click();
+  await page.waitForTimeout(1000);
+  const pspFeeSortButton = await page.waitForSelector(pspFeeSortButtonId);
+  await pspFeeSortButton.click();
+  await page.waitForTimeout(1000);
+  // Wait for the elements and get the list of divs
+  const pspElements = await page.$$(".pspFeeValue");
+  // Extract numeric content from each div and return as an array
+ const numericContents = await Promise.all(
+    Array.from(pspElements).map(async (element) => {
+      const text = await element.evaluate((el) => el.textContent);
+      // We want to skip the Dollar, Euro, or any currency placeholder
+      let numbers = text.match(/[\d,]+/g); // This will match sequences of digits and commas
+      let result = numbers ? numbers.join("").replace(",",".") : ""; // Join the matched numbers if any and replace , as separator with .
+      return parseFloat(result) || 0; // Convert to number, default to 0 if NaN
+    })
+  );
+  await page.waitForTimeout(1000);
+  const closePspListButton = await page.waitForSelector("#closePspList");
+  await closePspListButton.click();
+  await page.waitForTimeout(1000);
+  return numericContents;
 };
