@@ -16,9 +16,8 @@ import {
 export default function CancelledPage() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const redirectUrl =
-    (getSessionItem(SessionItems.cart) as Cart | undefined)?.returnUrls
-      .returnCancelUrl || "/";
+  const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
+  const redirectUrl = cart?.returnUrls.returnErrorUrl || "/";
 
   React.useEffect(() => {
     dispatch(resetThreshold());
@@ -57,7 +56,9 @@ export default function CancelledPage() {
               minHeight: 45,
             }}
           >
-            {t("cancelledPage.button")}
+            {cart != null
+              ? t("paymentResponsePage.buttons.continue")
+              : t("cancelledPage.close")}
           </Button>
         </Box>
       </Box>
