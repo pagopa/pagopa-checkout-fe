@@ -17,7 +17,7 @@ export default function CancelledPage() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
-  const redirectUrl = cart?.returnUrls.returnErrorUrl || "/";
+  const redirectUrl = cart?.returnUrls.returnCancelUrl || "/";
 
   React.useEffect(() => {
     dispatch(resetThreshold());
