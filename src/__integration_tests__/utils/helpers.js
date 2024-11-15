@@ -244,11 +244,7 @@ export const cancelPaymentOK = async (
   return await message.evaluate((el) => el.textContent);
 };
 
-export const cancelPaymentKO = async (
-  noticeCode,
-  fiscalCode,
-  email
-) => {
+export const cancelPaymentKO = async (noticeCode, fiscalCode, email) => {
   const resultMessageXPath = "/html/body/div[7]/div[3]/div/h2/div";
   await fillAndSubmitSatispayPayment(noticeCode, fiscalCode, email);
   const paymentCheckPageButtonCancel = await page.waitForSelector(
@@ -271,14 +267,18 @@ export const closeErrorModal = async () => {
 };
 
 export const selectLanguage = async (language) => {
-  await page.select('#languageMenu', language);
-}
-
+  await page.select("#languageMenu", language);
+};
 
 /*
-* utility function to emulate edit psp list and sort. This function has many timeout to allow view transitions to end before try to click CTA buttons
-*/
-export const checkPspListFees = async (noticeCode, fiscalCode, email, cardData) => {
+ * utility function to emulate edit psp list and sort. This function has many timeout to allow view transitions to end before try to click CTA buttons
+ */
+export const checkPspListFees = async (
+  noticeCode,
+  fiscalCode,
+  email,
+  cardData
+) => {
   const pspEditButtonSelector = "#pspEdit";
   const pspFeeSortButtonId = "#sortByFee";
 
@@ -286,38 +286,40 @@ export const checkPspListFees = async (noticeCode, fiscalCode, email, cardData) 
 
   const pspEditButton = await page.waitForSelector(pspEditButtonSelector);
   await pspEditButton.click();
-  await new Promise(r => setTimeout(r,1000));
+  await new Promise((r) => setTimeout(r, 1000));
   const pspFeeSortButton = await page.waitForSelector(pspFeeSortButtonId);
   await pspFeeSortButton.click();
-  
-  await new Promise(r => setTimeout(r,1000));
+
+  await new Promise((r) => setTimeout(r, 1000));
 
   // Wait for the elements and get the list of divs
   const pspElements = await page.$$(".pspFeeValue");
   // Extract numeric content from each div and return as an array
- const numericContents = await Promise.all(
+  const numericContents = await Promise.all(
     Array.from(pspElements).map(async (element) => {
       const text = await element.evaluate((el) => el.textContent);
       // We want to skip the Dollar, Euro, or any currency placeholder
       let numbers = text.match(/[\d,]+/g); // This will match sequences of digits and commas
-      let result = numbers ? numbers.join("").replace(",",".") : ""; // Join the matched numbers if any and replace , as separator with .
+      let result = numbers ? numbers.join("").replace(",", ".") : ""; // Join the matched numbers if any and replace , as separator with .
       return parseFloat(result) || 0; // Convert to number, default to 0 if NaN
     })
   );
-  await new Promise(r => setTimeout(r,1000));
+  await new Promise((r) => setTimeout(r, 1000));
   const closePspListButton = await page.waitForSelector("#closePspList");
   await closePspListButton.click();
-  await new Promise(r => setTimeout(r,1000));
+  await new Promise((r) => setTimeout(r, 1000));
   return numericContents;
 };
 
-
-
-
 /*
-* utility function to emulate edit psp list and sort. This function has many timeout to allow view transitions to end before try to click CTA buttons
-*/
-export const checkPspListNames = async (noticeCode, fiscalCode, email, cardData) => {
+ * utility function to emulate edit psp list and sort. This function has many timeout to allow view transitions to end before try to click CTA buttons
+ */
+export const checkPspListNames = async (
+  noticeCode,
+  fiscalCode,
+  email,
+  cardData
+) => {
   const pspEditButtonSelector = "#pspEdit";
   const pspFeeSortButtonId = "#sortByName";
 
@@ -325,27 +327,27 @@ export const checkPspListNames = async (noticeCode, fiscalCode, email, cardData)
 
   const pspEditButton = await page.waitForSelector(pspEditButtonSelector);
   await pspEditButton.click();
-  await new Promise(r => setTimeout(r,1000));
+  await new Promise((r) => setTimeout(r, 1000));
   const pspFeeSortButton = await page.waitForSelector(pspFeeSortButtonId);
   await pspFeeSortButton.click();
-  
-  await new Promise(r => setTimeout(r,1000));
+
+  await new Promise((r) => setTimeout(r, 1000));
 
   // Wait for the elements and get the list of divs
   const pspElements = await page.$$(".pspFeeValue");
   // Extract numeric content from each div and return as an array
- const numericContents = await Promise.all(
+  const numericContents = await Promise.all(
     Array.from(pspElements).map(async (element) => {
       const text = await element.evaluate((el) => el.textContent);
       // We want to skip the Dollar, Euro, or any currency placeholder
       let numbers = text.match(/[\d,]+/g); // This will match sequences of digits and commas
-      let result = numbers ? numbers.join("").replace(",",".") : ""; // Join the matched numbers if any and replace , as separator with .
+      let result = numbers ? numbers.join("").replace(",", ".") : ""; // Join the matched numbers if any and replace , as separator with .
       return parseFloat(result) || 0; // Convert to number, default to 0 if NaN
     })
   );
-  await new Promise(r => setTimeout(r,1000));
+  await new Promise((r) => setTimeout(r, 1000));
   const closePspListButton = await page.waitForSelector("#closePspList");
   await closePspListButton.click();
-  await new Promise(r => setTimeout(r,1000));
+  await new Promise((r) => setTimeout(r, 1000));
   return numericContents;
 };
