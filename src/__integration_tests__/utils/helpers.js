@@ -347,5 +347,5 @@ export const checkPspListNames = async (
   const closePspListButton = await page.waitForSelector("#closePspList");
   await closePspListButton.click();
   await new Promise((r) => setTimeout(r, 1000));
-  return numericContents;
+  return feeNameContents;
 };
