@@ -505,31 +505,16 @@ describe("Cancel payment failure tests (satispay)", () => {
 });
 
 describe("PSP list tests", () => {
-  it("Should sort psp by fees", async () => {
+  it.each([
+    "sortByFee",
+    "sortByName",
+  ])("Should sort psp", async (targetSort) => {
     const resultMessage = await checkPspList(
       PSP_BELOWTHRESHOLD,
       VALID_FISCAL_CODE,
       EMAIL,
       VALID_CARD_DATA,
-      "sortByFee"
-    );
-
-    expect(Array.isArray(resultMessage)).toBe(true);
-    expect(resultMessage.length > 0).toBe(true);
-    for (let i = 0; i < resultMessage.length - 1; i++) {
-      expect(resultMessage[i]).toBeGreaterThanOrEqual(resultMessage[i + 1]);
-    }
-
-    await cancelPaymentAction();
-  });
-
-  it("Should sort psp by name", async () => {
-    const resultMessage = await checkPspList(
-      PSP_BELOWTHRESHOLD,
-      VALID_FISCAL_CODE,
-      EMAIL,
-      VALID_CARD_DATA,
-      "sortByName"
+      targetSort
     );
 
     expect(Array.isArray(resultMessage)).toBe(true);
