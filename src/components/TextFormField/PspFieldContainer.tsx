@@ -60,6 +60,7 @@ function PspFieldContainer(props: {
             />
           </Box>
           <Typography
+            className="pspFeeName"
             variant={props.bodyVariant}
             component={"div"}
             sx={{ mt: 1 }}

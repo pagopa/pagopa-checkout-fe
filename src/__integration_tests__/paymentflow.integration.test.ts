@@ -12,6 +12,8 @@ import {
   fillAndSubmitCardDataForm,
   fillAndSubmitSatispayPayment,
   checkPspList,
+  checkPspListNames,
+  checkPspListFees,
 } from "./utils/helpers";
 import itTranslation from "../translations/it/translations.json";
 import deTranslation from "../translations/de/translations.json";
@@ -496,23 +498,38 @@ describe("Cancel payment failure tests (satispay)", () => {
   );
 });
 
+
+
 describe("PSP list tests", () => {
-  it.each([
-    "sortByFee",
-    "sortByName",
-  ])("Should sort psp", async (targetSort) => {
-    const resultMessage = await checkPspList(
+  it("Should sort psp by fees", async () => {
+    const resultMessage = await checkPspListFees(
       PSP_BELOWTHRESHOLD,
       VALID_FISCAL_CODE,
       EMAIL,
-      VALID_CARD_DATA,
-      targetSort
+      VALID_CARD_DATA
     );
 
     expect(Array.isArray(resultMessage)).toBe(true);
     expect(resultMessage.length > 0).toBe(true);
     for (let i = 0; i < resultMessage.length - 1; i++) {
       expect(resultMessage[i]).toBeGreaterThanOrEqual(resultMessage[i + 1]);
+    }
+
+    await cancelPaymentAction();
+  });
+
+  it("Should sort psp by name", async () => {
+    const resultMessage = await checkPspListNames(
+      PSP_BELOWTHRESHOLD,
+      VALID_FISCAL_CODE,
+      EMAIL,
+      VALID_CARD_DATA
+    );
+
+    expect(Array.isArray(resultMessage)).toBe(true);
+    expect(resultMessage.length > 0).toBe(true);
+    for (let i = 0; i < resultMessage.length - 1; i++) {
+      expect(resultMessage[i].localeCompare(resultMessage[i + 1])).toBeGreaterThanOrEqual(0);
     }
 
     await cancelPaymentAction();

@@ -270,26 +270,26 @@ export const selectLanguage = async (language) => {
   await page.select("#languageMenu", language);
 };
 
+
 /*
  * utility function to emulate edit psp list and sort. This function has many timeout to allow view transitions to end before try to click CTA buttons
  */
-export const checkPspList = async (
+export const checkPspListFees = async (
   noticeCode,
   fiscalCode,
   email,
-  cardData,
-  sortBy
+  cardData
 ) => {
   const pspEditButtonSelector = "#pspEdit";
-  const pspSortButtonId = "#"+sortBy;
+  const pspFeeSortButtonId = "#sortByFee";
 
   await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
 
   const pspEditButton = await page.waitForSelector(pspEditButtonSelector);
   await pspEditButton.click();
   await new Promise((r) => setTimeout(r, 1000));
-  const pspSortButton = await page.waitForSelector(pspSortButtonId);
-  await pspSortButton.click();
+  const pspFeeSortButton = await page.waitForSelector(pspFeeSortButtonId);
+  await pspFeeSortButton.click();
 
   await new Promise((r) => setTimeout(r, 1000));
 
@@ -310,4 +310,41 @@ export const checkPspList = async (
   await closePspListButton.click();
   await new Promise((r) => setTimeout(r, 1000));
   return numericContents;
+};
+
+/*
+ * utility function to emulate edit psp list and sort. This function has many timeout to allow view transitions to end before try to click CTA buttons
+ */
+export const checkPspListNames = async (
+  noticeCode,
+  fiscalCode,
+  email,
+  cardData
+) => {
+  const pspEditButtonSelector = "#pspEdit";
+  const pspFeeSortButtonId = "#sortByName";
+
+  await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
+
+  const pspEditButton = await page.waitForSelector(pspEditButtonSelector);
+  await pspEditButton.click();
+  await new Promise((r) => setTimeout(r, 1000));
+  const pspFeeSortButton = await page.waitForSelector(pspFeeSortButtonId);
+  await pspFeeSortButton.click();
+
+  await new Promise((r) => setTimeout(r, 1000));
+
+  // Wait for the elements and get the list of divs
+  const pspElements = await page.$$(".pspFeeName");
+  // Extract numeric content from each div and return as an array
+  const feeNameContents = await Promise.all(
+    Array.from(pspElements).map(async (element) => {
+        return (result) || ""; 
+    })
+  );
+  await new Promise((r) => setTimeout(r, 1000));
+  const closePspListButton = await page.waitForSelector("#closePspList");
+  await closePspListButton.click();
+  await new Promise((r) => setTimeout(r, 1000));
+  return feeNameContents;
 };
