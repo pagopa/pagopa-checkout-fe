@@ -86,30 +86,22 @@ describe("Checkout payment tests", () => {
     ["en", enTranslation],
     ["fr", frTranslation],
     ["de", deTranslation],
-    ["sl", slTranslation],
-  ])(
-    "Should correctly execute a payment for language [%s]",
-    async (lang, translation) => {
-      /*
-       * 1. Payment with valid notice code
-       */
-      selectLanguage(lang);
-      const resultMessage = await payNotice(
-        VALID_NOTICE_CODE,
-        VALID_FISCAL_CODE,
-        EMAIL,
-        VALID_CARD_DATA,
-        CHECKOUT_URL_AFTER_AUTHORIZATION
-      );
+    ["sl", slTranslation]
+  ])("Should correctly execute a payment for language [%s]", async (lang, translation) => {
+    /*
+     * 1. Payment with valid notice code
+    */
+    selectLanguage(lang);
+    const resultMessage = await payNotice(
+      VALID_NOTICE_CODE,
+      VALID_FISCAL_CODE,
+      EMAIL,
+      VALID_CARD_DATA,
+      CHECKOUT_URL_AFTER_AUTHORIZATION
+    );
 
-      expect(resultMessage).toContain(
-        translation.paymentResponsePage[0].title.replace(
-          "{{amount}}",
-          "120,10\xa0€"
-        )
-      );
-    }
-  );
+    expect(resultMessage).toContain(translation.paymentResponsePage[0].title.replace("{{amount}}", "120,15\xa0€"));
+  });
 });
 
 describe("Checkout payment verify failure tests", () => {

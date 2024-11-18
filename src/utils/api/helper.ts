@@ -1016,8 +1016,7 @@ const expDateToString = (dateParsed: Date) =>
 
 export const npgSessionsFields = async (
   onError: (e: string) => void,
-  onResponse: (data: CreateSessionResponse) => void,
-  recaptchaResponse: string
+  onResponse: (data: CreateSessionResponse) => void
 ) =>
   await pipe(
     TE.tryCatch(
@@ -1034,7 +1033,6 @@ export const npgSessionsFields = async (
         return apiPaymentEcommerceClientWithRetry.createSession({
           id: paymentMethodId,
           lang: localStorage.getItem("i18nextLng") ?? "it",
-          recaptchaResponse,
         });
       },
       () => {
