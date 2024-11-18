@@ -339,12 +339,13 @@ export const checkPspListNames = async (
   // Extract numeric content from each div and return as an array
   const feeNameContents = await Promise.all(
     Array.from(pspElements).map(async (element) => {
-        return (result) || ""; 
+      const text = await element.evaluate((el) => el.textContent);
+        return (text) || ""; 
     })
   );
   await new Promise((r) => setTimeout(r, 1000));
   const closePspListButton = await page.waitForSelector("#closePspList");
   await closePspListButton.click();
   await new Promise((r) => setTimeout(r, 1000));
-  return feeNameContents;
+  return numericContents;
 };
