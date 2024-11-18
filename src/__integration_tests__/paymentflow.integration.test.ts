@@ -101,7 +101,7 @@ const PSP_NOT_FOUND_FAIL = "302016723749670076";
       CHECKOUT_URL_AFTER_AUTHORIZATION
     );
 
-    expect(resultMessage).toContain(translation.paymentResponsePage[0].title.replace("{{amount}}", "120,10\xa0€"));
+    expect(resultMessage).toContain(translation.paymentResponsePage[0].title.replace("{{amount}}", "120,15\xa0€"));
   });
 });
 
