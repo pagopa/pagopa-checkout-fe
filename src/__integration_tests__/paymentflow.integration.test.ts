@@ -500,7 +500,7 @@ describe("Cancel payment failure tests (satispay)", () => {
 
 
 
-describe("PSP list tests", () => {
+describe.only("PSP list tests", () => {
   it("Should sort psp by fees", async () => {
     const resultMessage = await checkPspListFees(
       PSP_BELOWTHRESHOLD,
