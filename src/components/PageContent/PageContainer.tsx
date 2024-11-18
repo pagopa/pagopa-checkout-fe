@@ -12,11 +12,11 @@ export default function PageContainer(props: {
 }) {
   const { t } = useTranslation();
 
-  useEffect(()=>{
-    if(props.title){
-      document.title = props.title + " - pagoPA";
+  useEffect(() => {
+    if (props.title) {
+      (document.title as any) = t(props.title) + " - pagoPA";
     }
-  },[props.title])
+  }, [props.title]);
 
   return (
     <Box mt={3} mb={6} aria-live="polite">
