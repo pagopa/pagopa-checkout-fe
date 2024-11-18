@@ -287,14 +287,11 @@ export const checkPspListFees = async (
 
   const pspEditButton = await page.waitForSelector(pspEditButtonSelector);
   await pspEditButton.click();
-  await new Promise((r) => setTimeout(r, 1000));
   const pspFeeSortButton = await page.waitForSelector(pspFeeSortButtonId);
   await pspFeeSortButton.click();
 
-  await new Promise((r) => setTimeout(r, 1000));
-
   // Wait for the elements and get the list of divs
-  const pspElements = await page.$$(".pspFeeValue");
+  const pspElements = await page.waitForSelector(".pspFeeValue");
   // Extract numeric content from each div and return as an array
   const numericContents = await Promise.all(
     Array.from(pspElements).map(async (element) => {
@@ -305,10 +302,8 @@ export const checkPspListFees = async (
       return parseFloat(result) || 0; // Convert to number, default to 0 if NaN
     })
   );
-  await new Promise((r) => setTimeout(r, 1000));
   const closePspListButton = await page.waitForSelector("#closePspList");
   await closePspListButton.click();
-  await new Promise((r) => setTimeout(r, 1000));
   return numericContents;
 };
 
