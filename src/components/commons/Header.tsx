@@ -74,7 +74,11 @@ export default function Header() {
 
   return (
     <>
-      <Box p={3} bgcolor={"white"}>
+      <Box
+        p={3}
+        bgcolor={"white"}
+        sx={{ borderBottom: "1px solid", borderColor: "#EEEEEE" }}
+      >
         <Stack
           spacing={0}
           direction="row"
