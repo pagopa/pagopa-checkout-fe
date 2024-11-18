@@ -1,3 +1,5 @@
+import { visitEachChild } from "typescript";
+
 export const payNotice = async (
   noticeCode,
   fiscalCode,
@@ -216,10 +218,10 @@ export const fillCardDataForm = async (cardData) => {
 
 export const cancelPaymentAction = async () => {
   const paymentCheckPageButtonCancel = await page.waitForSelector(
-    "#paymentCheckPageButtonCancel"
+    "#paymentCheckPageButtonCancel", {clickable: true}
   );
   await paymentCheckPageButtonCancel.click();
-  const cancPayment = await page.waitForSelector("#confirm");
+  const cancPayment = await page.waitForSelector("#confirm", {visible: true});
   await cancPayment.click();
   await page.waitForNavigation();
 };
@@ -285,13 +287,16 @@ export const checkPspListFees = async (
 
   await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
 
-  const pspEditButton = await page.waitForSelector(pspEditButtonSelector);
+  const pspEditButton = await page.waitForSelector(pspEditButtonSelector, {clickable: true});
   await pspEditButton.click();
-  const pspFeeSortButton = await page.waitForSelector(pspFeeSortButtonId);
+  await new Promise((r) => setTimeout(r, 500));
+  const pspFeeSortButton = await page.waitForSelector(pspFeeSortButtonId, {clickable: true});
   await pspFeeSortButton.click();
+  await new Promise((r) => setTimeout(r, 500));
 
   // Wait for the elements and get the list of divs
-  const pspElements = await page.waitForSelector(".pspFeeValue");
+  const pspElements = await page.$$('.pspFeeValue');
+
   // Extract numeric content from each div and return as an array
   const numericContents = await Promise.all(
     Array.from(pspElements).map(async (element) => {
@@ -302,7 +307,7 @@ export const checkPspListFees = async (
       return parseFloat(result) || 0; // Convert to number, default to 0 if NaN
     })
   );
-  const closePspListButton = await page.waitForSelector("#closePspList");
+  const closePspListButton = await page.waitForSelector("#closePspList", { clickable: true});
   await closePspListButton.click();
   return numericContents;
 };
@@ -321,13 +326,12 @@ export const checkPspListNames = async (
 
   await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
 
-  const pspEditButton = await page.waitForSelector(pspEditButtonSelector);
+  const pspEditButton = await page.waitForSelector(pspEditButtonSelector, {visible: true, clickable: true});
   await pspEditButton.click();
-  await new Promise((r) => setTimeout(r, 1000));
-  const pspFeeSortButton = await page.waitForSelector(pspFeeSortButtonId);
+  await new Promise((r) => setTimeout(r, 500));
+  const pspFeeSortButton = await page.waitForSelector(pspFeeSortButtonId, {visible: true, clickable: true});
   await pspFeeSortButton.click();
-
-  await new Promise((r) => setTimeout(r, 1000));
+  await new Promise((r) => setTimeout(r, 500));
 
   // Wait for the elements and get the list of divs
   const pspElements = await page.$$(".pspFeeName");
@@ -338,9 +342,7 @@ export const checkPspListNames = async (
         return (text) || ""; 
     })
   );
-  await new Promise((r) => setTimeout(r, 1000));
-  const closePspListButton = await page.waitForSelector("#closePspList");
+  const closePspListButton = await page.waitForSelector("#closePspList", {visible: true, clickable: true});
   await closePspListButton.click();
-  await new Promise((r) => setTimeout(r, 1000));
   return feeNameContents;
 };

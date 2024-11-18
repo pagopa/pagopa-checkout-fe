@@ -514,7 +514,7 @@ describe("PSP list tests", () => {
     for (let i = 0; i < resultMessage.length - 1; i++) {
       expect(resultMessage[i]).toBeGreaterThanOrEqual(resultMessage[i + 1]);
     }
-
+    await new Promise((r) => setTimeout(r, 500));
     await cancelPaymentAction();
   });
 
@@ -531,7 +531,7 @@ describe("PSP list tests", () => {
     for (let i = 0; i < resultMessage.length - 1; i++) {
       expect(resultMessage[i].localeCompare(resultMessage[i + 1])).toBeGreaterThanOrEqual(0);
     }
-
+    await new Promise((r) => setTimeout(r, 500));
     await cancelPaymentAction();
   });
 });
