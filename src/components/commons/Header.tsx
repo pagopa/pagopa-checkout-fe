@@ -73,12 +73,8 @@ export default function Header() {
       ];
 
   return (
-    <>
-      <Box
-        p={3}
-        bgcolor={"white"}
-        sx={{ borderBottom: "1px solid", borderColor: "#EEEEEE" }}
-      >
+    <header>
+      <Box p={3} bgcolor={"white"}>
         <Stack
           spacing={0}
           direction="row"
@@ -110,6 +106,6 @@ export default function Header() {
         drawstate={drawstate}
         toggleDrawer={() => toggleDrawer(false)}
       />
-    </>
+    </header>
   );
 }
