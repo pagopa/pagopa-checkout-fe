@@ -11,7 +11,6 @@ import {
   selectLanguage,
   fillAndSubmitCardDataForm,
   fillAndSubmitSatispayPayment,
-  checkPspList,
   checkPspListNames,
   checkPspListFees,
 } from "./utils/helpers";
