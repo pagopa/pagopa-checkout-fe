@@ -28,6 +28,7 @@ export function CustomDrawer(props: {
       <Container sx={{ p: 3 }} maxWidth="xs">
         <Box display="flex" justifyContent="end" alignItems="center">
           <IconButton
+            id="closePspList"
             aria-label={t("ariaLabels.close")}
             onClick={() => props.onClose()}
             sx={{
