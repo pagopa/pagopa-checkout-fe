@@ -58,7 +58,7 @@ export default function CancelledPage() {
           >
             {cart != null
               ? t("paymentResponsePage.buttons.continue")
-              : t("cancelledPage.close")}
+              : t("cancelledPage.button")}
           </Button>
         </Box>
       </Box>
