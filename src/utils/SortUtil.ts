@@ -17,5 +17,11 @@ export const sortBy =
       return -1; // Place undefined at the end
     }
 
-    return fieldA > fieldB ? order : -order;
+    // Check if both values are strings
+    if (typeof fieldA === 'string' && typeof fieldB === 'string') {
+      return fieldA.localeCompare(fieldB) * order;
+    }
+
+    // Default comparison for numbers or other types
+    return (fieldA > fieldB ? 1 : -1) * order;
   };
