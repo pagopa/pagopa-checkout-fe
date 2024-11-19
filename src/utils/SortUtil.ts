@@ -18,7 +18,7 @@ export const sortBy =
     }
 
     // Check if both values are strings
-    if (typeof fieldA === 'string' && typeof fieldB === 'string') {
+    if (typeof fieldA === "string" && typeof fieldB === "string") {
       return fieldA.localeCompare(fieldB) * order;
     }
 
