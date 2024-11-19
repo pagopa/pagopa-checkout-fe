@@ -16,6 +16,7 @@ import SkeletonFieldContainer from "../../../../components/Skeletons/SkeletonFie
 import PspFieldContainer from "../../../../components/TextFormField/PspFieldContainer";
 import { moneyFormat } from "../../../../utils/form/formatters";
 import { Bundle } from "../../../../../generated/definitions/payment-ecommerce/Bundle";
+import { PspField, sortBy } from "./../../../../utils/SortUtil";
 
 const pspImagePath = (abi: string | undefined): string =>
   pipe(
@@ -61,6 +62,7 @@ export const PaymentPspDrawer = (props: {
         </Typography>
         <Box sx={styles.defaultStyle}>
           <SortLabel
+            id="sortByName"
             fieldName="pspBusinessName"
             onClick={setSortingOrd}
             orderingModel={sortingOrd}
@@ -68,6 +70,7 @@ export const PaymentPspDrawer = (props: {
             {t("paymentCheckPage.drawer.header.name")}
           </SortLabel>
           <SortLabel
+            id="sortByFee"
             fieldName="taxPayerFee"
             onClick={setSortingOrd}
             orderingModel={sortingOrd}
@@ -104,6 +107,8 @@ export const PaymentPspDrawer = (props: {
                 }}
                 endAdornment={
                   <Typography
+                    id={"psp_" + index.toString()}
+                    className="pspFeeValue"
                     variant={"button"}
                     color="primary"
                     component={"div"}
@@ -120,23 +125,13 @@ export const PaymentPspDrawer = (props: {
   );
 };
 
-const sortBy =
-  (field: PspField, direction: "asc" | "desc") => (a: Bundle, b: Bundle) => {
-    const fieldA = a[field];
-    const fieldB = b[field];
-    const order = direction === "asc" ? 1 : -1;
-
-    return fieldA && fieldB ? (fieldA > fieldB ? order : -order) : -order;
-  };
-
-type PspField = "taxPayerFee" | "pspBusinessName";
-
 type PspOrderingModel = {
   fieldName: PspField;
   direction: "asc" | "desc";
 };
 
 type SortLabelProps = {
+  id?: string;
   fieldName: PspField;
   onClick: (sortingOrd: PspOrderingModel) => void;
   orderingModel: PspOrderingModel;
@@ -144,6 +139,7 @@ type SortLabelProps = {
 };
 
 const SortLabel = ({
+  id,
   fieldName,
   onClick,
   orderingModel,
@@ -153,6 +149,7 @@ const SortLabel = ({
 
   return (
     <TableCell
+      id={id}
       sortDirection={orderingModel.direction}
       sx={{ cursor: "pointer" }}
       component="div"
