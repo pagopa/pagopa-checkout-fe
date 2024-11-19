@@ -363,6 +363,7 @@ export default function PaymentCheckPage() {
         }}
         endAdornment={
           <Button
+            id="pspEdit"
             variant="text"
             onClick={onPspEditClick}
             startIcon={<EditIcon />}
