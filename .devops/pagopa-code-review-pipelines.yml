@@ -45,7 +45,6 @@ stages:
         pool:
           vmImage: 'ubuntu-latest'
         steps:
-
         - template: templates/node-job-setup/template.yaml@pagopaCommons
 
         - template: azure-templates/setup-env.yml
@@ -96,7 +95,6 @@ stages:
     jobs:
       - job: run_unit_tests
         steps:
-
         - template: templates/node-job-setup/template.yaml@pagopaCommons
 
         - script: yarn generate
