@@ -137,14 +137,6 @@ stages:
           workingDirectory: pagopa-checkout-be-mock
           displayName: 'Setup env for mock'
 
-        - task: Cache@2
-          inputs:
-            key: 'yarn | "$(Agent.OS)2" | pagopa-checkout-be-mock/yarn.lock'
-            restoreKeys: |
-              yarn | "$(Agent.OS)2"
-            path: $(YARN_CACHE_FOLDER)
-          displayName: Cache Yarn packages
-
         - script: yarn global add node-gyp && yarn install --frozen-lockfile && yarn build
           workingDirectory: pagopa-checkout-be-mock
           displayName: 'Setup deps for mock'
@@ -207,11 +199,12 @@ stages:
 
         - task: Cache@2
           inputs:
-            key: 'yarn | "$(Agent.OS)2" | pagopa-checkout-be-mock/yarn.lock'
+            key: 'yarn | "$(Agent.OS)" | pagopa-checkout-be-mock/yarn.lock'
             restoreKeys: |
-              yarn | "$(Agent.OS)2"
+              yarn | "$(Agent.OS)"
+              yarn
             path: $(YARN_CACHE_FOLDER)
-          displayName: Cache Yarn packages
+          displayName: Cache Mock Yarn packages
 
         - script: yarn global add node-gyp && yarn install --frozen-lockfile && yarn build
           workingDirectory: pagopa-checkout-be-mock
@@ -227,6 +220,15 @@ stages:
         - template: templates/node-job-setup/template.yaml@pagopaCommons
           parameters:
            projectDir: pagopa-checkout-fe
+
+        - task: Cache@2
+          inputs:
+            key: 'yarn | "$(Agent.OS)" | yarn.lock'
+            restoreKeys: |
+              yarn | "$(Agent.OS)"
+              yarn
+            path: $(YARN_CACHE_FOLDER)
+          displayName: Cache Yarn packages
 
         - script: |
             export $(grep -v '^#' .env.development | xargs)
