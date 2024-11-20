@@ -46,15 +46,6 @@ stages:
           vmImage: 'ubuntu-latest'
         steps:
 
-        - task: Cache@2
-          inputs:
-            key: 'yarn | "$(Agent.OS)" | yarn.lock'
-            restoreKeys: |
-              yarn | "$(Agent.OS)"
-              yarn
-            path: $(YARN_CACHE_FOLDER)
-          displayName: Cache Yarn packages
-
         - template: templates/node-job-setup/template.yaml@pagopaCommons
 
         - template: azure-templates/setup-env.yml
@@ -80,14 +71,6 @@ stages:
     jobs:
       - job: lint
         steps:
-        - task: Cache@2
-          inputs:
-            key: 'yarn | "$(Agent.OS)" | yarn.lock'
-            restoreKeys: |
-              yarn | "$(Agent.OS)"
-              yarn
-            path: $(YARN_CACHE_FOLDER)
-          displayName: Cache Yarn packages
         - template: templates/node-job-setup/template.yaml@pagopaCommons
         - script: yarn lint
           displayName: 'Lint'
@@ -98,14 +81,6 @@ stages:
             ne(variables['DANGER_GITHUB_API_TOKEN'], 'skip')
           )
         steps:
-          - task: Cache@2
-            inputs:
-              key: 'yarn | "$(Agent.OS)" | yarn.lock'
-              restoreKeys: |
-                yarn | "$(Agent.OS)"
-                yarn
-              path: $(YARN_CACHE_FOLDER)
-            displayName: Cache Yarn packages
           - template: templates/node-job-setup/template.yaml@pagopaCommons
 
           - bash: yarn danger ci
@@ -121,15 +96,6 @@ stages:
     jobs:
       - job: run_unit_tests
         steps:
-
-        - task: Cache@2
-          inputs:
-            key: 'yarn | "$(Agent.OS)" | yarn.lock'
-            restoreKeys: |
-              yarn | "$(Agent.OS)"
-              yarn
-            path: $(YARN_CACHE_FOLDER)
-          displayName: Cache Yarn packages
 
         - template: templates/node-job-setup/template.yaml@pagopaCommons
 
@@ -163,15 +129,6 @@ stages:
         timeoutInMinutes: 30
         steps:
 
-        - task: Cache@2
-          inputs:
-            key: 'yarn | "$(Agent.OS)" | yarn.lock'
-            restoreKeys: |
-              yarn | "$(Agent.OS)"
-              yarn
-            path: $(YARN_CACHE_FOLDER)
-          displayName: Cache Yarn packages
-
         - checkout: checkout-be-mock
 
         - script: |
@@ -180,6 +137,16 @@ stages:
             sed -i "s/^PSP_API_KEY=.*$/PSP_API_KEY=$(CHECKOUT-TEST-NPG-API-KEY)/" .env
           workingDirectory: pagopa-checkout-be-mock
           displayName: 'Setup env for mock'
+
+        - task: Cache@2
+          inputs:
+            key: 'yarn | "$(Agent.OS)" | yarn.lock'
+            restoreKeys: |
+              yarn | "$(Agent.OS)"
+              yarn
+            path: $(YARN_CACHE_FOLDER)
+          workingDirectory: pagopa-checkout-be-mock
+          displayName: Cache Yarn packages
 
         - script: yarn global add node-gyp && yarn install --frozen-lockfile && yarn build
           workingDirectory: pagopa-checkout-be-mock
@@ -232,15 +199,6 @@ stages:
         timeoutInMinutes: 30
         steps:
 
-        - task: Cache@2
-          inputs:
-            key: 'yarn | "$(Agent.OS)" | yarn.lock'
-            restoreKeys: |
-              yarn | "$(Agent.OS)"
-              yarn
-            path: $(YARN_CACHE_FOLDER)
-          displayName: Cache Yarn packages
-
         - checkout: checkout-be-mock
 
         - script: |
@@ -249,6 +207,16 @@ stages:
             sed -i "s/^PSP_API_KEY=.*$/PSP_API_KEY=$(CHECKOUT-TEST-NPG-API-KEY)/" .env
           workingDirectory: pagopa-checkout-be-mock
           displayName: 'Setup env for mock'
+
+        - task: Cache@2
+          inputs:
+            key: 'yarn | "$(Agent.OS)" | yarn.lock'
+            restoreKeys: |
+              yarn | "$(Agent.OS)"
+              yarn
+            path: $(YARN_CACHE_FOLDER)
+          workingDirectory: pagopa-checkout-be-mock
+          displayName: Cache Yarn packages
 
         - script: yarn global add node-gyp && yarn install --frozen-lockfile && yarn build
           workingDirectory: pagopa-checkout-be-mock
