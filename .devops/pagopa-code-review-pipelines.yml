@@ -139,10 +139,9 @@ stages:
 
         - task: Cache@2
           inputs:
-            key: 'yarn | "$(Agent.OS)" | pagopa-checkout-be-mock/yarn.lock'
+            key: 'yarn | "$(Agent.OS)2" | pagopa-checkout-be-mock/yarn.lock'
             restoreKeys: |
-              yarn | "$(Agent.OS)"
-              yarn
+              yarn | "$(Agent.OS)2"
             path: $(YARN_CACHE_FOLDER)
           displayName: Cache Yarn packages
 
@@ -208,10 +207,9 @@ stages:
 
         - task: Cache@2
           inputs:
-            key: 'yarn | "$(Agent.OS)" | pagopa-checkout-be-mock/yarn.lock'
+            key: 'yarn | "$(Agent.OS)2" | pagopa-checkout-be-mock/yarn.lock'
             restoreKeys: |
-              yarn | "$(Agent.OS)"
-              yarn
+              yarn | "$(Agent.OS)2"
             path: $(YARN_CACHE_FOLDER)
           displayName: Cache Yarn packages
 
