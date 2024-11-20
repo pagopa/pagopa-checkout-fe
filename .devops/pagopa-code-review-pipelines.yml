@@ -145,7 +145,7 @@ stages:
             path: $(YARN_CACHE_FOLDER)
           displayName: Cache Yarn packages
 
-        - script: yarn global add node-gyp && yarn install --frozen-lockfile && yarn build
+        - script: yarn cache list && yarn cache dir && yarn global add node-gyp && yarn install --frozen-lockfile && yarn build
           workingDirectory: pagopa-checkout-be-mock
           displayName: 'Setup deps for mock'
 
@@ -213,7 +213,7 @@ stages:
             path: $(YARN_CACHE_FOLDER)
           displayName: Cache Yarn packages
 
-        - script: yarn global add node-gyp && yarn install --frozen-lockfile && yarn build
+        - script: yarn cache list && yarn cache dir && yarn global add node-gyp && yarn install --frozen-lockfile && yarn build
           workingDirectory: pagopa-checkout-be-mock
           displayName: 'Setup deps for mock'
 
