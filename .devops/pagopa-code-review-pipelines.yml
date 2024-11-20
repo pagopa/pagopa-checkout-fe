@@ -143,7 +143,7 @@ stages:
             restoreKeys: |
               yarn | "$(Agent.OS)"
               yarn
-            path: $(YARN_CACHE_FOLDER)
+            path: pagopa-checkout-be-mock/node_modules
           displayName: Cache Yarn packages
 
         - script: yarn global add node-gyp && yarn install --frozen-lockfile && yarn build
@@ -212,7 +212,7 @@ stages:
             restoreKeys: |
               yarn | "$(Agent.OS)"
               yarn
-            path: $(YARN_CACHE_FOLDER)
+            path: pagopa-checkout-be-mock/node_modules
           displayName: Cache Yarn packages
 
         - script: yarn global add node-gyp && yarn install --frozen-lockfile && yarn build
