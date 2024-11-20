@@ -139,8 +139,11 @@ stages:
 
         - task: Cache@2
           inputs:
-            key: 'version2 yarn | "$(Agent.OS)" | pagopa-checkout-be-mock/yarn.lock'
-            path: pagopa-checkout-be-mock/node_modules
+            key: 'yarn | "$(Agent.OS)" | pagopa-checkout-be-mock/yarn.lock'
+            restoreKeys: |
+              yarn | "$(Agent.OS)"
+              yarn
+            path: $(YARN_CACHE_FOLDER)
           displayName: Cache Yarn packages
 
         - script: yarn global add node-gyp && yarn install --frozen-lockfile && yarn build
@@ -205,8 +208,11 @@ stages:
 
         - task: Cache@2
           inputs:
-            key: 'version2 yarn | "$(Agent.OS)" | pagopa-checkout-be-mock/yarn.lock'
-            path: pagopa-checkout-be-mock/node_modules
+            key: 'yarn | "$(Agent.OS)" | pagopa-checkout-be-mock/yarn.lock'
+            restoreKeys: |
+              yarn | "$(Agent.OS)"
+              yarn
+            path: $(YARN_CACHE_FOLDER)
           displayName: Cache Yarn packages
 
         - script: yarn global add node-gyp && yarn install --frozen-lockfile && yarn build
