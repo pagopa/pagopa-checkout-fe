@@ -69,7 +69,7 @@ export default function KOPage() {
           >
             {cart != null
               ? t("paymentResponsePage.buttons.continue")
-              : t("koPage.close")}
+              : t("koPage.button")}
           </Button>
         </Box>
       </Box>
