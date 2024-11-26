@@ -60,8 +60,8 @@ export const responseOutcome: Record<ViewOutcomeEnum, responseMessage> = {
     icon: wait,
   },
   25: {
-    title: "paymentResponsePage.3dsNotInitiated.title",
-    body: "paymentResponsePage.3dsNotInitiated.body",
+    title: "paymentResponsePage.25.title",
+    body: "paymentResponsePage.25.body",
     icon: ko,
   },
   116: {

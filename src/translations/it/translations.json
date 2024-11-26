@@ -241,6 +241,10 @@
       "body": "Il pagamento non si è ancora concluso: riceverai a breve l’esito all'indirizzo {{useremail}}. L’operazione può richiedere fino a 15 minuti.",
       "title": "Attendi la conferma del pagamento"
     },
+    "25": {
+      "body": "Non è stato addebitato alcun importo.\n Se il problema persiste, prova a usare un altro metodo o gestore del pagamento.",
+      "title": "Il pagamento non è andato a buon fine"
+    },
     "3dsNotInitiated": {
       "body": "Non è stato addebitato alcun importo.\nSe il problema persiste, contatta il gestore del metodo di pagamento, per esempio la tua banca.",
       "title": "C’è stato un problema con il gestore del tuo metodo di pagamento"
