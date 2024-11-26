@@ -205,7 +205,7 @@ export const getViewOutcomeFromEcommerceResultCode: GetViewOutcomeFromEcommerceR
               errorCode,
               gatewayAuthorizationStatus
             )
-          : ViewOutcomeEnum.GENERIC_ERROR;
+          : ViewOutcomeEnum.PSP_ERROR;
       case TransactionStatusEnum.CLOSED:
         return sendPaymentResultOutcome ===
           SendPaymentResultOutcomeEnum.NOT_RECEIVED
@@ -290,7 +290,7 @@ function evaluateUnauthorizedStatus(
         case NpgAuthorizationStatus.DECLINED:
           return (
             NpgErrorCodeToOutcome.get(errorCode as NpgErrorCode) ||
-            ViewOutcomeEnum.GENERIC_ERROR
+            ViewOutcomeEnum.PSP_ERROR
           );
         default:
           return ViewOutcomeEnum.PSP_ERROR;
