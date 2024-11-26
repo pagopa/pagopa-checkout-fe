@@ -59,4 +59,24 @@ export const responseOutcome: Record<ViewOutcomeEnum, responseMessage> = {
     body: "paymentResponsePage.17.body",
     icon: wait,
   },
+  25: {
+    title: "paymentResponsePage.3dsNotInitiated.title",
+    body: "paymentResponsePage.3dsNotInitiated.body",
+    icon: ko,
+  },
+  116: {
+    title: "paymentResponsePage.notSufficientFunds.title",
+    body: "paymentResponsePage.notSufficientFunds.body",
+    icon: question,
+  },
+  117: {
+    title: "paymentResponsePage.cvvError.title",
+    body: "paymentResponsePage.cvvError.body",
+    icon: question,
+  },
+  121: {
+    title: "paymentResponsePage.exceededLimit.title",
+    body: "paymentResponsePage.exceededLimit.body",
+    icon: question,
+  }
 };

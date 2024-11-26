@@ -14,6 +14,10 @@ export enum ViewOutcomeEnum {
   CANCELED_BY_USER = "8",
   EXCESSIVE_AMOUNT = "10",
   TAKING_CHARGE = "17",
+  PSP_ERROR = "25",
+  INSUFFICIENT_BALANCE = "116",
+  CVV_ERROR = "117",
+  EXCEEDED_LIMIT = "121"
 }
 
 export enum EcommerceFinalStatusCodeEnum {
@@ -102,16 +106,16 @@ export const NpgErrorCodeToOutcome = new Map<NpgErrorCode, ViewOutcomeEnum>([
   ["102", ViewOutcomeEnum.AUTH_ERROR],
   ["104", ViewOutcomeEnum.INVALID_DATA],
   ["106", ViewOutcomeEnum.AUTH_ERROR],
-  ["109", ViewOutcomeEnum.GENERIC_ERROR],
+  ["109", ViewOutcomeEnum.PSP_ERROR],
   ["110", ViewOutcomeEnum.INVALID_DATA],
   ["111", ViewOutcomeEnum.INVALID_CARD],
-  ["115", ViewOutcomeEnum.GENERIC_ERROR],
-  ["116", ViewOutcomeEnum.AUTH_ERROR],
-  ["117", ViewOutcomeEnum.AUTH_ERROR],
+  ["115", ViewOutcomeEnum.PSP_ERROR],
+  ["116", ViewOutcomeEnum.INSUFFICIENT_BALANCE],
+  ["117", ViewOutcomeEnum.CVV_ERROR],
   ["118", ViewOutcomeEnum.INVALID_DATA],
   ["119", ViewOutcomeEnum.AUTH_ERROR],
   ["120", ViewOutcomeEnum.AUTH_ERROR],
-  ["121", ViewOutcomeEnum.AUTH_ERROR],
+  ["121", ViewOutcomeEnum.EXCEEDED_LIMIT],
   ["122", ViewOutcomeEnum.AUTH_ERROR],
   ["123", ViewOutcomeEnum.AUTH_ERROR],
   ["124", ViewOutcomeEnum.AUTH_ERROR],
@@ -128,14 +132,14 @@ export const NpgErrorCodeToOutcome = new Map<NpgErrorCode, ViewOutcomeEnum>([
   ["888", ViewOutcomeEnum.AUTH_ERROR],
   ["902", ViewOutcomeEnum.AUTH_ERROR],
   ["903", ViewOutcomeEnum.AUTH_ERROR],
-  ["904", ViewOutcomeEnum.GENERIC_ERROR],
-  ["906", ViewOutcomeEnum.GENERIC_ERROR],
-  ["907", ViewOutcomeEnum.GENERIC_ERROR],
-  ["908", ViewOutcomeEnum.GENERIC_ERROR],
-  ["909", ViewOutcomeEnum.GENERIC_ERROR],
-  ["911", ViewOutcomeEnum.GENERIC_ERROR],
-  ["913", ViewOutcomeEnum.GENERIC_ERROR],
-  ["999", ViewOutcomeEnum.GENERIC_ERROR],
+  ["904", ViewOutcomeEnum.PSP_ERROR],
+  ["906", ViewOutcomeEnum.PSP_ERROR],
+  ["907", ViewOutcomeEnum.PSP_ERROR],
+  ["908", ViewOutcomeEnum.PSP_ERROR],
+  ["909", ViewOutcomeEnum.PSP_ERROR],
+  ["911", ViewOutcomeEnum.PSP_ERROR],
+  ["913", ViewOutcomeEnum.PSP_ERROR],
+  ["999", ViewOutcomeEnum.PSP_ERROR],
 ]);
 
 export enum PaymentGateway {
@@ -271,13 +275,12 @@ function evaluateUnauthorizedStatus(
   switch (gateway) {
     case PaymentGateway.NPG:
       switch (gatewayAuthorizationStatus) {
-        case NpgAuthorizationStatus.EXECUTED:
         case NpgAuthorizationStatus.AUTHORIZED:
         case NpgAuthorizationStatus.PENDING:
         case NpgAuthorizationStatus.VOIDED:
         case NpgAuthorizationStatus.REFUNDED:
         case NpgAuthorizationStatus.FAILED:
-          return ViewOutcomeEnum.GENERIC_ERROR;
+          return ViewOutcomeEnum.PSP_ERROR;
         case NpgAuthorizationStatus.CANCELED:
           return ViewOutcomeEnum.CANCELED_BY_USER;
         case NpgAuthorizationStatus.DENIED_BY_RISK:
@@ -290,7 +293,7 @@ function evaluateUnauthorizedStatus(
             ViewOutcomeEnum.GENERIC_ERROR
           );
         default:
-          return ViewOutcomeEnum.GENERIC_ERROR;
+          return ViewOutcomeEnum.PSP_ERROR;
       }
     default:
       return ViewOutcomeEnum.GENERIC_ERROR;
