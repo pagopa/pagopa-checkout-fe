@@ -184,48 +184,66 @@ export const getViewOutcomeFromEcommerceResultCode: GetViewOutcomeFromEcommerceR
       case TransactionStatusEnum.NOTIFICATION_ERROR:
         return sendPaymentResultOutcome === SendPaymentResultOutcomeEnum.OK
           ? ViewOutcomeEnum.SUCCESS
-          : ViewOutcomeEnum.GENERIC_ERROR;
+          : ViewOutcomeEnum.PSP_ERROR;
       case TransactionStatusEnum.NOTIFIED_KO:
       case TransactionStatusEnum.REFUNDED:
-      case TransactionStatusEnum.REFUND_REQUESTED:
+        return ViewOutcomeEnum.PSP_ERROR;
       case TransactionStatusEnum.REFUND_ERROR:
-        return ViewOutcomeEnum.GENERIC_ERROR;
+      case TransactionStatusEnum.REFUND_REQUESTED:
+        return ViewOutcomeEnum.GENERIC_ERROR; //BE_KO(99)
       case TransactionStatusEnum.EXPIRED_NOT_AUTHORIZED:
         return ViewOutcomeEnum.TIMEOUT;
       case TransactionStatusEnum.CANCELED:
       case TransactionStatusEnum.CANCELLATION_EXPIRED:
         return ViewOutcomeEnum.CANCELED_BY_USER;
       case TransactionStatusEnum.CLOSURE_ERROR:
-      case TransactionStatusEnum.CLOSURE_REQUESTED:
       case TransactionStatusEnum.AUTHORIZATION_COMPLETED:
+        return evaluateOutcomeStatus(
+          gateway,
+          errorCode,
+          gatewayAuthorizationStatus,
+          ViewOutcomeEnum.GENERIC_ERROR //BE_KO(99)
+        );
+      case TransactionStatusEnum.CLOSURE_REQUESTED:
+        return evaluateOutcomeStatus(
+          gateway,
+          errorCode,
+          gatewayAuthorizationStatus,
+          ViewOutcomeEnum.TAKING_CHARGE
+        );
       case TransactionStatusEnum.UNAUTHORIZED:
-        return gatewayAuthorizationStatus !== NpgAuthorizationStatus.EXECUTED
-          ? evaluateUnauthorizedStatus(
-              gateway,
-              errorCode,
-              gatewayAuthorizationStatus
-            )
-          : ViewOutcomeEnum.PSP_ERROR;
+        return evaluateOutcomeStatus(
+          gateway,
+          errorCode,
+          gatewayAuthorizationStatus,
+          ViewOutcomeEnum.PSP_ERROR
+        );
       case TransactionStatusEnum.CLOSED:
         return sendPaymentResultOutcome ===
           SendPaymentResultOutcomeEnum.NOT_RECEIVED
           ? ViewOutcomeEnum.TAKING_CHARGE
           : ViewOutcomeEnum.GENERIC_ERROR;
       case TransactionStatusEnum.EXPIRED: {
-        if (gatewayAuthorizationStatus !== NpgAuthorizationStatus.EXECUTED) {
-          return evaluateUnauthorizedStatus(
-            gateway,
-            errorCode,
-            gatewayAuthorizationStatus
-          );
+        if(gatewayAuthorizationStatus == null)
+          return ViewOutcomeEnum.TAKING_CHARGE;
+        if(gatewayAuthorizationStatus === NpgAuthorizationStatus.EXECUTED) {
+          switch(sendPaymentResultOutcome) {
+            case SendPaymentResultOutcomeEnum.OK: 
+              return ViewOutcomeEnum.SUCCESS;
+            case SendPaymentResultOutcomeEnum.KO: 
+              return ViewOutcomeEnum.PSP_ERROR;
+            case SendPaymentResultOutcomeEnum.NOT_RECEIVED: 
+              return ViewOutcomeEnum.TAKING_CHARGE;
+            default:
+              return ViewOutcomeEnum.GENERIC_ERROR; //BE_KO(99)
+          }
         }
-        if (
-          sendPaymentResultOutcome === SendPaymentResultOutcomeEnum.OK &&
-          gatewayAuthorizationStatus === NpgAuthorizationStatus.EXECUTED
-        ) {
-          return ViewOutcomeEnum.SUCCESS;
-        }
-        return ViewOutcomeEnum.PSP_ERROR;
+        return evaluateOutcomeStatus(
+          gateway,
+          errorCode,
+          gatewayAuthorizationStatus,
+          ViewOutcomeEnum.GENERIC_ERROR
+        );
       }
       case TransactionStatusEnum.AUTHORIZATION_REQUESTED:
         return ViewOutcomeEnum.TAKING_CHARGE;
@@ -267,14 +285,17 @@ export const EcommerceMaybeInterruptStatusCodeEnumType =
     "EcommerceMaybeInterruptStatusCodeEnumType"
   );
 
-function evaluateUnauthorizedStatus(
+function evaluateOutcomeStatus(
   gateway?: string,
   errorCode?: string,
-  gatewayAuthorizationStatus?: string
+  gatewayAuthorizationStatus?: string,
+  executedOutcome?: ViewOutcomeEnum
 ): ViewOutcomeEnum {
   switch (gateway) {
     case PaymentGateway.NPG:
       switch (gatewayAuthorizationStatus) {
+        case NpgAuthorizationStatus.EXECUTED:
+          return executedOutcome || ViewOutcomeEnum.PSP_ERROR
         case NpgAuthorizationStatus.AUTHORIZED:
         case NpgAuthorizationStatus.PENDING:
         case NpgAuthorizationStatus.VOIDED:
