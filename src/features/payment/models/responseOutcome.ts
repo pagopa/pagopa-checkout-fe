@@ -65,18 +65,18 @@ export const responseOutcome: Record<ViewOutcomeEnum, responseMessage> = {
     icon: ko,
   },
   116: {
-    title: "paymentResponsePage.notSufficientFunds.title",
-    body: "paymentResponsePage.notSufficientFunds.body",
+    title: "paymentResponsePage.116.title",
+    body: "paymentResponsePage.116.body",
     icon: question,
   },
   117: {
-    title: "paymentResponsePage.cvvError.title",
-    body: "paymentResponsePage.cvvError.body",
+    title: "paymentResponsePage.117.title",
+    body: "paymentResponsePage.117.body",
     icon: question,
   },
   121: {
-    title: "paymentResponsePage.exceededLimit.title",
-    body: "paymentResponsePage.exceededLimit.body",
+    title: "paymentResponsePage.121.title",
+    body: "paymentResponsePage.121.body",
     icon: question,
   }
 };

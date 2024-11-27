@@ -15,9 +15,9 @@ export enum ViewOutcomeEnum {
   EXCESSIVE_AMOUNT = "10",
   TAKING_CHARGE = "17",
   PSP_ERROR = "25",
-  INSUFFICIENT_BALANCE = "116",
+  BALANCE_LIMIT = "116",
   CVV_ERROR = "117",
-  EXCEEDED_LIMIT = "121"
+  LIMIT_EXCEEDED = "121"
 }
 
 export enum EcommerceFinalStatusCodeEnum {
@@ -110,12 +110,12 @@ export const NpgErrorCodeToOutcome = new Map<NpgErrorCode, ViewOutcomeEnum>([
   ["110", ViewOutcomeEnum.INVALID_DATA],
   ["111", ViewOutcomeEnum.INVALID_CARD],
   ["115", ViewOutcomeEnum.PSP_ERROR],
-  ["116", ViewOutcomeEnum.INSUFFICIENT_BALANCE],
+  ["116", ViewOutcomeEnum.BALANCE_LIMIT],
   ["117", ViewOutcomeEnum.CVV_ERROR],
   ["118", ViewOutcomeEnum.INVALID_DATA],
   ["119", ViewOutcomeEnum.AUTH_ERROR],
   ["120", ViewOutcomeEnum.AUTH_ERROR],
-  ["121", ViewOutcomeEnum.EXCEEDED_LIMIT],
+  ["121", ViewOutcomeEnum.LIMIT_EXCEEDED],
   ["122", ViewOutcomeEnum.AUTH_ERROR],
   ["123", ViewOutcomeEnum.AUTH_ERROR],
   ["124", ViewOutcomeEnum.AUTH_ERROR],
