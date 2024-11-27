@@ -225,7 +225,7 @@ export const getViewOutcomeFromEcommerceResultCode: GetViewOutcomeFromEcommerceR
         ) {
           return ViewOutcomeEnum.SUCCESS;
         }
-        return ViewOutcomeEnum.GENERIC_ERROR;
+        return ViewOutcomeEnum.PSP_ERROR;
       }
       case TransactionStatusEnum.AUTHORIZATION_REQUESTED:
         return ViewOutcomeEnum.TAKING_CHARGE;
