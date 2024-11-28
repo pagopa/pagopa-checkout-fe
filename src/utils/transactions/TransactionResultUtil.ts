@@ -17,7 +17,7 @@ export enum ViewOutcomeEnum {
   PSP_ERROR = "25",
   BALANCE_LIMIT = "116",
   CVV_ERROR = "117",
-  LIMIT_EXCEEDED = "121"
+  LIMIT_EXCEEDED = "121",
 }
 
 export enum EcommerceFinalStatusCodeEnum {
@@ -190,7 +190,7 @@ export const getViewOutcomeFromEcommerceResultCode: GetViewOutcomeFromEcommerceR
         return ViewOutcomeEnum.PSP_ERROR;
       case TransactionStatusEnum.REFUND_ERROR:
       case TransactionStatusEnum.REFUND_REQUESTED:
-        return ViewOutcomeEnum.GENERIC_ERROR; //BE_KO(99)
+        return ViewOutcomeEnum.GENERIC_ERROR; // BE_KO(99)
       case TransactionStatusEnum.EXPIRED_NOT_AUTHORIZED:
         return ViewOutcomeEnum.TIMEOUT;
       case TransactionStatusEnum.CANCELED:
@@ -202,7 +202,7 @@ export const getViewOutcomeFromEcommerceResultCode: GetViewOutcomeFromEcommerceR
           gateway,
           errorCode,
           gatewayAuthorizationStatus,
-          ViewOutcomeEnum.GENERIC_ERROR //BE_KO(99)
+          ViewOutcomeEnum.GENERIC_ERROR // BE_KO(99)
         );
       case TransactionStatusEnum.CLOSURE_REQUESTED:
         return evaluateOutcomeStatus(
@@ -222,28 +222,31 @@ export const getViewOutcomeFromEcommerceResultCode: GetViewOutcomeFromEcommerceR
         return sendPaymentResultOutcome ===
           SendPaymentResultOutcomeEnum.NOT_RECEIVED
           ? ViewOutcomeEnum.TAKING_CHARGE
-          : ViewOutcomeEnum.GENERIC_ERROR; //BE_KO(99)?
+          : ViewOutcomeEnum.GENERIC_ERROR; // BE_KO(99)?
       case TransactionStatusEnum.EXPIRED: {
-        if(gatewayAuthorizationStatus == null)
+        if (gatewayAuthorizationStatus == null) {
           return ViewOutcomeEnum.TAKING_CHARGE;
-        if(gatewayAuthorizationStatus === NpgAuthorizationStatus.EXECUTED) {
-          switch(sendPaymentResultOutcome) {
-            case SendPaymentResultOutcomeEnum.OK: 
+        } else if (
+          gatewayAuthorizationStatus !== NpgAuthorizationStatus.EXECUTED
+        ) {
+          return evaluateOutcomeStatus(
+            gateway,
+            errorCode,
+            gatewayAuthorizationStatus,
+            ViewOutcomeEnum.GENERIC_ERROR
+          );
+        } else {
+          switch (sendPaymentResultOutcome) {
+            case SendPaymentResultOutcomeEnum.OK:
               return ViewOutcomeEnum.SUCCESS;
-            case SendPaymentResultOutcomeEnum.KO: 
+            case SendPaymentResultOutcomeEnum.KO:
               return ViewOutcomeEnum.PSP_ERROR;
-            case SendPaymentResultOutcomeEnum.NOT_RECEIVED: 
+            case SendPaymentResultOutcomeEnum.NOT_RECEIVED:
               return ViewOutcomeEnum.TAKING_CHARGE;
             default:
-              return ViewOutcomeEnum.GENERIC_ERROR; //BE_KO(99)
+              return ViewOutcomeEnum.GENERIC_ERROR; // BE_KO(99)
           }
         }
-        return evaluateOutcomeStatus(
-          gateway,
-          errorCode,
-          gatewayAuthorizationStatus,
-          ViewOutcomeEnum.GENERIC_ERROR
-        );
       }
       case TransactionStatusEnum.AUTHORIZATION_REQUESTED:
         return ViewOutcomeEnum.TAKING_CHARGE;
@@ -295,7 +298,7 @@ function evaluateOutcomeStatus(
     case PaymentGateway.NPG:
       switch (gatewayAuthorizationStatus) {
         case NpgAuthorizationStatus.EXECUTED:
-          return executedOutcome || ViewOutcomeEnum.PSP_ERROR
+          return executedOutcome || ViewOutcomeEnum.PSP_ERROR;
         case NpgAuthorizationStatus.AUTHORIZED:
         case NpgAuthorizationStatus.PENDING:
         case NpgAuthorizationStatus.VOIDED:
