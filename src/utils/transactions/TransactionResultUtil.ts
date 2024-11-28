@@ -222,7 +222,7 @@ export const getViewOutcomeFromEcommerceResultCode: GetViewOutcomeFromEcommerceR
         return sendPaymentResultOutcome ===
           SendPaymentResultOutcomeEnum.NOT_RECEIVED
           ? ViewOutcomeEnum.TAKING_CHARGE
-          : ViewOutcomeEnum.GENERIC_ERROR;
+          : ViewOutcomeEnum.GENERIC_ERROR; //BE_KO(99)?
       case TransactionStatusEnum.EXPIRED: {
         if(gatewayAuthorizationStatus == null)
           return ViewOutcomeEnum.TAKING_CHARGE;
