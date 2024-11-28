@@ -320,17 +320,15 @@ describe("TransactionResultUtil", () => {
 
   // TAKING_CHARGE(17)
   it("should return correctly TAKING_CHARGE(17) outcome with NPG gateway", async () => {
-    [TransactionStatusEnum.EXPIRED].forEach((transactionStatus) => {
-      expect(
-        getViewOutcomeFromEcommerceResultCode(
-          transactionStatus,
-          undefined,
-          PaymentGateway.NPG,
-          undefined,
-          undefined
-        )
-      ).toEqual(ViewOutcomeEnum.TAKING_CHARGE);
-    });
+    expect(
+      getViewOutcomeFromEcommerceResultCode(
+        TransactionStatusEnum.EXPIRED,
+        undefined,
+        PaymentGateway.NPG,
+        undefined,
+        undefined
+      )
+    ).toEqual(ViewOutcomeEnum.TAKING_CHARGE);
 
     expect(
       getViewOutcomeFromEcommerceResultCode(
