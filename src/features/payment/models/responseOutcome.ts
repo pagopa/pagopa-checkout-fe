@@ -78,5 +78,5 @@ export const responseOutcome: Record<ViewOutcomeEnum, responseMessage> = {
     title: "paymentResponsePage.121.title",
     body: "paymentResponsePage.121.body",
     icon: question,
-  }
+  },
 };
