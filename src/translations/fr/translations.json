@@ -245,8 +245,8 @@
       "title": "Il pagamento non è andato a buon fine"
     },
     "116": {
-      "body": "Non è stato addebitato alcun importo. Prima di riprovare, aggiungi fondi alla o usa un altro metodo di pagamento.",
-      "title": "Il saldo è insufficiente"
+      "body": "Non è stato addebitato alcun importo. Prima di riprovare, aggiungi fondi alla carta o usa un altro metodo di pagamento.",
+      "title": "Il saldo della tua carta è insufficiente"
     },
     "117": {
       "body": "Non è stato addebitato alcun importo. Il codice (CVV o CVC) ha 3 cifre ed è riportato sul retro della carta. Se usi American Express, il codice (CID) ha 4 cifre ed è sul fronte.",
@@ -254,7 +254,7 @@
     },
     "121": {
       "body": "Non è stato addebitato alcun importo. Prima di riprovare, modifica il limite di spesa o usa un altro metodo di pagamento.",
-      "title": "Hai superato il limite di spesa"
+      "title": "Hai superato il limite di spesa della tua carta"
     },
     "3dsNotInitiated": {
       "body": "Aucun débit n’a été effectué.\nSi le problème persiste, contactez l’opérateur de votre moyen de paiement, votre banque par exemple.",
