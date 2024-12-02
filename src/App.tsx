@@ -28,6 +28,8 @@ import GdiCheckPage from "./routes/GdiCheckPage";
 import "./translations/i18n";
 import { mixpanelInit } from "./utils/config/mixpanelHelperInit";
 import { SessionItems } from "./utils/storage/sessionStorage";
+import SkipToContent from "./components/commons/SkipToContent";
+import SessionExpiredPage from "./routes/SessionExpiredPage";
 
 declare const OneTrust: any;
 declare const OnetrustActiveGroups: string;
@@ -72,6 +74,7 @@ export function App() {
     CheckoutRoutes.ANNULLATO,
     CheckoutRoutes.ESITO,
     CheckoutRoutes.ERRORE,
+    CheckoutRoutes.SESSIONE_SCADUTA,
     CheckoutRoutes.DONA,
   ];
   React.useEffect(() => {
@@ -173,6 +176,10 @@ export function App() {
                 element={<CancelledPage />}
               />
               <Route path={CheckoutRoutes.ERRORE} element={<KOPage />} />
+              <Route
+                path={CheckoutRoutes.SESSIONE_SCADUTA}
+                element={<SessionExpiredPage />}
+              />
               <Route
                 path=":rptid"
                 element={

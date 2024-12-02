@@ -52,6 +52,7 @@ export default function Header() {
     CheckoutRoutes.DATI_PAGAMENTO,
     CheckoutRoutes.ANNULLATO,
     CheckoutRoutes.ERRORE,
+    CheckoutRoutes.SESSIONE_SCADUTA,
     CheckoutRoutes.ESITO,
     CheckoutRoutes.DONA,
   ];
