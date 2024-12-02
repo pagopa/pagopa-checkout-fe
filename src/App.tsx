@@ -28,7 +28,6 @@ import GdiCheckPage from "./routes/GdiCheckPage";
 import "./translations/i18n";
 import { mixpanelInit } from "./utils/config/mixpanelHelperInit";
 import { SessionItems } from "./utils/storage/sessionStorage";
-import SkipToContent from "./components/commons/SkipToContent";
 import SessionExpiredPage from "./routes/SessionExpiredPage";
 
 declare const OneTrust: any;

@@ -151,9 +151,9 @@ interface Translation {
       };
       disclaimer: string;
     };
-    main:{
+    main: {
       skipToContent: string;
-    }
+    };
   };
   NOTLISTED: {
     body: string;
