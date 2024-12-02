@@ -179,7 +179,10 @@ export const activatePayment = async ({
 }: {
   token: string;
   onResponseActivate: (paymentMethodId: string, orderId: string) => void;
-  onErrorActivate: (e: string) => void;
+  onErrorActivate: (
+    faultCodeCategory: string,
+    faultCodeDetail: string | undefined
+  ) => void;
 }) => {
   const noticeInfo = getSessionItem(SessionItems.noticeInfo) as
     | PaymentFormFields
@@ -206,7 +209,7 @@ export const activatePayment = async ({
   pipe(
     PaymentRequestsGetResponse.decode(paymentInfo),
     E.fold(
-      () => onErrorActivate(ErrorsType.INVALID_DECODE),
+      () => onErrorActivate(ErrorsType.INVALID_DECODE, undefined),
       (response) =>
         pipe(
           activePaymentTask(
@@ -221,7 +224,7 @@ export const activatePayment = async ({
           ),
           TE.fold(
             (e: NodeFaultCode) => async () => {
-              onErrorActivate(`${e.faultCodeCategory}-${e.faultCodeDetail}`);
+              onErrorActivate(e.faultCodeCategory, e.faultCodeDetail);
             },
             (res) => async () => {
               setSessionItem(SessionItems.transaction, res);
@@ -1146,7 +1149,10 @@ export const recaptchaTransaction = async ({
 }: {
   recaptchaRef: ReCAPTCHA;
   onSuccess: (paymentMethodId: string, orderId: string) => void;
-  onError: (m: string) => void;
+  onError: (
+    faultCodeCategory: string,
+    faultCodeDetail: string | undefined
+  ) => void;
 }) => {
   const token = await callRecaptcha(recaptchaRef, true);
   await activatePayment({

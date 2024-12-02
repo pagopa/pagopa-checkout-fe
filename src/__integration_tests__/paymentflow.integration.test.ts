@@ -11,7 +11,6 @@ import {
   selectLanguage,
   fillAndSubmitCardDataForm,
   fillAndSubmitSatispayPayment,
-  checkPspList,
   checkPspListNames,
   checkPspListFees,
 } from "./utils/helpers";
@@ -48,8 +47,10 @@ const FAIL_VERIFY_502_PPT_PSP_SCONOSCIUTO = "302016723749670006";
 const FAIL_ACTIVATE_PPT_PAGAMENTO_IN_CORSO = "302016723749670012";
 /* FAIL_ACTIVATE_PPT_STAZIONE_INT_PA_TIMEOUT end with 15 */
 const FAIL_ACTIVATE_PPT_STAZIONE_INT_PA_TIMEOUT = "302016723749670015";
-/* FAIL_ACTIVATE_502_PPT_PSP_SCONOSCIUTO end with 11 */
+/* FAIL_ACTIVATE_502_PPT_PSP_SCONOSCIUTO end with 13 */
 const FAIL_ACTIVATE_502_PPT_PSP_SCONOSCIUTO = "302016723749670013";
+/* FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA end with 77 */
+const FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA = "302016723749670077";
 /* FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND end with 41 */
 const FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND = "302016723749670041";
 /* PSP_UPTHRESHOLD end with 55 */
@@ -206,6 +207,52 @@ describe("Checkout payment activation failure tests", () => {
     );
 
     expect(resultMessage).toContain("PPT_PSP_SCONOSCIUTO");
+  });
+
+  it.each([
+    ["it", itTranslation],
+    ["en", enTranslation],
+    ["fr", frTranslation],
+    ["de", deTranslation],
+    ["sl", slTranslation]
+  ])("Should fail a satispay payment ACTIVATION and get PPT_WISP_SESSIONE_SCONOSCIUTA", async (lang, translation) => {
+    /*
+     * Satispay payment with notice code that fails on activation and get PPT_WISP_SESSIONE_SCONOSCIUTA
+     * and redirect to expired session page
+     */
+    selectLanguage(lang);
+    await fillAndSubmitSatispayPayment(FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA, VALID_FISCAL_CODE, EMAIL);
+    const titleElem = await page.waitForSelector("#sessionExpiredMessageTitle")
+    const bodyElem = await page.waitForSelector("#sessionExpiredMessageBody")
+    const title = await titleElem.evaluate((el) => el.textContent)
+    const body = await bodyElem.evaluate((el) => el.textContent)
+
+    expect(page.url()).toContain("/sessione-scaduta");
+    expect(title).toContain(translation.paymentResponsePage[4].title);
+    expect(body).toContain(translation.paymentResponsePage[4].body);
+  });
+
+  it.each([
+    ["it", itTranslation],
+    ["en", enTranslation],
+    ["fr", frTranslation],
+    ["de", deTranslation],
+    ["sl", slTranslation]
+  ])("Should fail a card payment ACTIVATION and get PPT_WISP_SESSIONE_SCONOSCIUTA", async (lang, translation) => {
+    /*
+     * Card payment with notice code that fails on activation and get PPT_WISP_SESSIONE_SCONOSCIUTA 
+     * and redirect to expired session page
+     */
+    selectLanguage(lang);
+    await fillAndSubmitCardDataForm(FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA, VALID_FISCAL_CODE, EMAIL, VALID_CARD_DATA);
+    const titleElem = await page.waitForSelector("#sessionExpiredMessageTitle")
+    const bodyElem = await page.waitForSelector("#sessionExpiredMessageBody")
+    const title = await titleElem.evaluate((el) => el.textContent)
+    const body = await bodyElem.evaluate((el) => el.textContent)
+
+    expect(page.url()).toContain("/sessione-scaduta");
+    expect(title).toContain(translation.paymentResponsePage[4].title);
+    expect(body).toContain(translation.paymentResponsePage[4].body);
   });
 
   describe("Auth request failure tests", () => {
