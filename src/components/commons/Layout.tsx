@@ -23,6 +23,7 @@ export function Layout({ sx, children, fixedFooterPages }: LayoutProps) {
     >
       <Header />
       <Container
+        id="main_content"
         component="main"
         sx={{
           ...sx,

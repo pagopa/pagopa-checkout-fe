@@ -28,6 +28,7 @@ import GdiCheckPage from "./routes/GdiCheckPage";
 import "./translations/i18n";
 import { mixpanelInit } from "./utils/config/mixpanelHelperInit";
 import { SessionItems } from "./utils/storage/sessionStorage";
+import SkipToContent from "./components/commons/SkipToContent";
 
 declare const OneTrust: any;
 declare const OnetrustActiveGroups: string;
@@ -88,6 +89,7 @@ export function App() {
     <ThemeProvider theme={checkoutTheme}>
       <CssBaseline />
       <BrowserRouter>
+        <SkipToContent />
         <Layout fixedFooterPages={fixedFooterPages}>
           <Routes>
             <Route path="/" element={<PaymentOutlet />}>
