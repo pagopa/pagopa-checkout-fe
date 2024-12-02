@@ -1,3 +1,4 @@
+import { Button } from '@mui/material';
 import React, { useState } from 'react';
 import { useTranslation } from "react-i18next";
 
@@ -9,26 +10,19 @@ const SkipToContent = () => {
     const handleBlur = () => setIsFocused(false);
 
     const linkStyle: any = {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        background: '#000',
-        color: '#fff',
-        padding: '8px',
-        zIndex: 10000,
-        transform: isFocused ? 'translateY(0)' : 'translateY(-110%)',
-        transition: 'transform 0.3s',
+        transition: "opacity 0.2s ease-out",
+        opacity: isFocused ? '1' : '0',
     };
 
     return (
-        <a
+        <Button
             href="#main_content"
             style={linkStyle}
             onFocus={handleFocus}
             onBlur={handleBlur}
         >
             {t("mainPage.main.skipToContent")}
-        </a>
+        </Button>
     );
 };
 
