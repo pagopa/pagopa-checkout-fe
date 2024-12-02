@@ -59,4 +59,24 @@ export const responseOutcome: Record<ViewOutcomeEnum, responseMessage> = {
     body: "paymentResponsePage.17.body",
     icon: wait,
   },
+  25: {
+    title: "paymentResponsePage.25.title",
+    body: "paymentResponsePage.25.body",
+    icon: ko,
+  },
+  116: {
+    title: "paymentResponsePage.116.title",
+    body: "paymentResponsePage.116.body",
+    icon: question,
+  },
+  117: {
+    title: "paymentResponsePage.117.title",
+    body: "paymentResponsePage.117.body",
+    icon: question,
+  },
+  121: {
+    title: "paymentResponsePage.121.title",
+    body: "paymentResponsePage.121.body",
+    icon: question,
+  },
 };

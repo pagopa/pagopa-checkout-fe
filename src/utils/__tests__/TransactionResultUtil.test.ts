@@ -36,43 +36,43 @@ describe("TransactionResultUtil", () => {
       )
     ).toEqual(ViewOutcomeEnum.SUCCESS);
 
-    // check GENERIC_ERROR when status is NOTIFICATION_ERROR and sendPaymentResultOutcome undefined
+    // check PSP_ERROR when status is NOTIFICATION_ERROR and sendPaymentResultOutcome undefined
     expect(
       getViewOutcomeFromEcommerceResultCode(
         TransactionStatusEnum.NOTIFICATION_ERROR
       )
-    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
+    ).toEqual(ViewOutcomeEnum.PSP_ERROR);
 
-    // check GENERIC_ERROR when status is NOTIFICATION_REQUESTED and sendPaymentResultOutcome undefined
+    // check PSP_ERROR when status is NOTIFICATION_REQUESTED and sendPaymentResultOutcome undefined
     expect(
       getViewOutcomeFromEcommerceResultCode(
         TransactionStatusEnum.NOTIFICATION_REQUESTED
       )
-    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
+    ).toEqual(ViewOutcomeEnum.PSP_ERROR);
 
-    // check GENERIC_ERROR when status is NOTIFICATION_ERROR and sendPaymentResultOutcome KO
+    // check PSP_ERROR when status is NOTIFICATION_ERROR and sendPaymentResultOutcome KO
     expect(
       getViewOutcomeFromEcommerceResultCode(
         TransactionStatusEnum.NOTIFICATION_ERROR,
         SendPaymentResultOutcomeEnum.KO
       )
-    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
+    ).toEqual(ViewOutcomeEnum.PSP_ERROR);
 
-    // check GENERIC_ERROR when status is NOTIFICATION_REQUESTED and sendPaymentResultOutcome KO
+    // check PSP_ERROR when status is NOTIFICATION_REQUESTED and sendPaymentResultOutcome KO
     expect(
       getViewOutcomeFromEcommerceResultCode(
         TransactionStatusEnum.NOTIFICATION_REQUESTED,
         SendPaymentResultOutcomeEnum.KO
       )
-    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
+    ).toEqual(ViewOutcomeEnum.PSP_ERROR);
 
     expect(
       getViewOutcomeFromEcommerceResultCode(TransactionStatusEnum.NOTIFIED_KO)
-    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
+    ).toEqual(ViewOutcomeEnum.PSP_ERROR);
 
     expect(
       getViewOutcomeFromEcommerceResultCode(TransactionStatusEnum.REFUNDED)
-    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
+    ).toEqual(ViewOutcomeEnum.PSP_ERROR);
 
     expect(
       getViewOutcomeFromEcommerceResultCode(
@@ -85,8 +85,14 @@ describe("TransactionResultUtil", () => {
     ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
 
     expect(
-      getViewOutcomeFromEcommerceResultCode(TransactionStatusEnum.CLOSURE_ERROR)
-    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
+      getViewOutcomeFromEcommerceResultCode(
+        TransactionStatusEnum.CLOSURE_ERROR,
+        undefined,
+        PaymentGateway.NPG,
+        undefined,
+        undefined
+      )
+    ).toEqual(ViewOutcomeEnum.PSP_ERROR);
 
     expect(
       getViewOutcomeFromEcommerceResultCode(
@@ -100,9 +106,13 @@ describe("TransactionResultUtil", () => {
 
     expect(
       getViewOutcomeFromEcommerceResultCode(
-        TransactionStatusEnum.AUTHORIZATION_COMPLETED
+        TransactionStatusEnum.AUTHORIZATION_COMPLETED,
+        undefined,
+        PaymentGateway.NPG,
+        undefined,
+        undefined
       )
-    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
+    ).toEqual(ViewOutcomeEnum.PSP_ERROR);
 
     expect(
       getViewOutcomeFromEcommerceResultCode(
@@ -151,21 +161,27 @@ describe("TransactionResultUtil", () => {
 
     expect(
       getViewOutcomeFromEcommerceResultCode(TransactionStatusEnum.REFUNDED)
-    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
+    ).toEqual(ViewOutcomeEnum.PSP_ERROR);
 
     expect(
       getViewOutcomeFromEcommerceResultCode(TransactionStatusEnum.NOTIFIED_KO)
-    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
+    ).toEqual(ViewOutcomeEnum.PSP_ERROR);
 
     // Check EXPIRED cases !wasAuthRequested !sendPaymentResultOK
     expect(
       getViewOutcomeFromEcommerceResultCode(TransactionStatusEnum.EXPIRED)
-    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
-  });
+    ).toEqual(ViewOutcomeEnum.TAKING_CHARGE);
 
-  expect(
-    getViewOutcomeFromEcommerceResultCode(TransactionStatusEnum.UNAUTHORIZED)
-  ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
+    expect(
+      getViewOutcomeFromEcommerceResultCode(
+        TransactionStatusEnum.UNAUTHORIZED,
+        undefined,
+        PaymentGateway.NPG,
+        undefined,
+        undefined
+      )
+    ).toEqual(ViewOutcomeEnum.PSP_ERROR);
+  });
 
   // NPG
   // SUCCESS(0)
@@ -188,23 +204,10 @@ describe("TransactionResultUtil", () => {
     });
   });
 
-  // GENERIC_ERROR(1)
-  it("should return correctly GENERIC_ERROR(1) outcome with NPG gateway", async () => {
-    [TransactionStatusEnum.EXPIRED].forEach((transactionStatus) => {
-      expect(
-        getViewOutcomeFromEcommerceResultCode(
-          transactionStatus,
-          undefined,
-          PaymentGateway.NPG,
-          undefined,
-          undefined
-        )
-      ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
-    });
-
+  // GENERIC_ERRER(1)
+  it("should return correctly GENERIC_ERRER(1) outcome with NPG gateway", async () => {
     [
       TransactionStatusEnum.AUTHORIZATION_COMPLETED,
-      TransactionStatusEnum.CLOSURE_REQUESTED,
       TransactionStatusEnum.CLOSURE_ERROR,
     ].forEach((transactionStatus) => {
       expect(
@@ -214,69 +217,6 @@ describe("TransactionResultUtil", () => {
           PaymentGateway.NPG,
           undefined,
           NpgAuthorizationStatus.EXECUTED
-        )
-      ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
-    });
-
-    expect(
-      getViewOutcomeFromEcommerceResultCode(
-        TransactionStatusEnum.EXPIRED,
-        undefined,
-        PaymentGateway.NPG,
-        undefined,
-        undefined
-      )
-    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
-
-    expect(
-      getViewOutcomeFromEcommerceResultCode(
-        TransactionStatusEnum.CLOSURE_REQUESTED,
-        undefined,
-        PaymentGateway.NPG,
-        undefined,
-        NpgAuthorizationStatus.EXECUTED
-      )
-    ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
-
-    // Testing dinamically on NpgAuthorizationStatus
-    [
-      NpgAuthorizationStatus.AUTHORIZED,
-      NpgAuthorizationStatus.PENDING,
-      NpgAuthorizationStatus.VOIDED,
-      NpgAuthorizationStatus.REFUNDED,
-      NpgAuthorizationStatus.FAILED,
-    ].forEach((npgAuthorizationStatus) => {
-      expect(
-        getViewOutcomeFromEcommerceResultCode(
-          TransactionStatusEnum.UNAUTHORIZED,
-          undefined,
-          PaymentGateway.NPG,
-          undefined,
-          npgAuthorizationStatus
-        )
-      ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
-    });
-
-    // Testing dinamically on errorCode when NpgAuthorizationStatus is declined
-    [
-      "109",
-      "115",
-      "904",
-      "906",
-      "907",
-      "908",
-      "909",
-      "911",
-      "913",
-      "999",
-    ].forEach((errorCode) => {
-      expect(
-        getViewOutcomeFromEcommerceResultCode(
-          TransactionStatusEnum.UNAUTHORIZED,
-          undefined,
-          PaymentGateway.NPG,
-          errorCode,
-          NpgAuthorizationStatus.DECLINED
         )
       ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
     });
@@ -306,11 +246,8 @@ describe("TransactionResultUtil", () => {
       "100",
       "102",
       "106",
-      "116",
-      "117",
       "119",
       "120",
-      "121",
       "122",
       "123",
       "124",
@@ -385,6 +322,16 @@ describe("TransactionResultUtil", () => {
   it("should return correctly TAKING_CHARGE(17) outcome with NPG gateway", async () => {
     expect(
       getViewOutcomeFromEcommerceResultCode(
+        TransactionStatusEnum.EXPIRED,
+        undefined,
+        PaymentGateway.NPG,
+        undefined,
+        undefined
+      )
+    ).toEqual(ViewOutcomeEnum.TAKING_CHARGE);
+
+    expect(
+      getViewOutcomeFromEcommerceResultCode(
         TransactionStatusEnum.CLOSED,
         SendPaymentResultOutcomeEnum.NOT_RECEIVED,
         PaymentGateway.NPG,
@@ -392,5 +339,100 @@ describe("TransactionResultUtil", () => {
         NpgAuthorizationStatus.EXECUTED
       )
     ).toEqual(ViewOutcomeEnum.TAKING_CHARGE);
+
+    expect(
+      getViewOutcomeFromEcommerceResultCode(
+        TransactionStatusEnum.CLOSURE_REQUESTED,
+        undefined,
+        PaymentGateway.NPG,
+        undefined,
+        NpgAuthorizationStatus.EXECUTED
+      )
+    ).toEqual(ViewOutcomeEnum.TAKING_CHARGE);
+  });
+
+  // PSP_ERROR(25)
+  it("should return correctly PSP_ERROR(25) outcome with NPG gateway", async () => {
+    // Testing dinamically on NpgAuthorizationStatus
+    [
+      NpgAuthorizationStatus.AUTHORIZED,
+      NpgAuthorizationStatus.PENDING,
+      NpgAuthorizationStatus.VOIDED,
+      NpgAuthorizationStatus.REFUNDED,
+      NpgAuthorizationStatus.FAILED,
+    ].forEach((npgAuthorizationStatus) => {
+      expect(
+        getViewOutcomeFromEcommerceResultCode(
+          TransactionStatusEnum.UNAUTHORIZED,
+          undefined,
+          PaymentGateway.NPG,
+          undefined,
+          npgAuthorizationStatus
+        )
+      ).toEqual(ViewOutcomeEnum.PSP_ERROR);
+    });
+
+    // Testing dinamically on errorCode when NpgAuthorizationStatus is declined
+    [
+      "109",
+      "115",
+      "904",
+      "906",
+      "907",
+      "908",
+      "909",
+      "911",
+      "913",
+      "999",
+    ].forEach((errorCode) => {
+      expect(
+        getViewOutcomeFromEcommerceResultCode(
+          TransactionStatusEnum.UNAUTHORIZED,
+          undefined,
+          PaymentGateway.NPG,
+          errorCode,
+          NpgAuthorizationStatus.DECLINED
+        )
+      ).toEqual(ViewOutcomeEnum.PSP_ERROR);
+    });
+  });
+
+  // BALANCE_LIMIT(116)
+  it("should return correctly BALANCE_LIMIT(116) outcome with NPG gateway", async () => {
+    expect(
+      getViewOutcomeFromEcommerceResultCode(
+        TransactionStatusEnum.UNAUTHORIZED,
+        undefined,
+        PaymentGateway.NPG,
+        "116",
+        NpgAuthorizationStatus.DECLINED
+      )
+    ).toEqual(ViewOutcomeEnum.BALANCE_LIMIT);
+  });
+
+  // CVV_ERROR(117)
+  it("should return correctly CVV_ERROR(117) outcome with NPG gateway", async () => {
+    expect(
+      getViewOutcomeFromEcommerceResultCode(
+        TransactionStatusEnum.UNAUTHORIZED,
+        undefined,
+        PaymentGateway.NPG,
+        "117",
+        NpgAuthorizationStatus.DECLINED
+      )
+    ).toEqual(ViewOutcomeEnum.CVV_ERROR);
+  });
+
+  // LIMIT_EXCEEDED(121)
+  it("should return correctly LIMIT_EXCEEDED(121) outcome with NPG gateway", async () => {
+    expect(
+      getViewOutcomeFromEcommerceResultCode(
+        TransactionStatusEnum.UNAUTHORIZED,
+        undefined,
+        PaymentGateway.NPG,
+        "121",
+        NpgAuthorizationStatus.DECLINED
+      )
+    ).toEqual(ViewOutcomeEnum.LIMIT_EXCEEDED);
   });
 });
