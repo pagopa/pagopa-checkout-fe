@@ -80,7 +80,7 @@ stages:
               polling_activation_interval: 6000
               polling_activation_attempts: 16
               env: 'DEV'
-              recaptcha_site_key: $(CHECKOUT_CAPTCHA_ID_UAT)
+              recaptcha_site_key: $(CHECKOUT_CAPTCHA_ID_DEV)
               api_payment_transactions_basepath: '/api/checkout/payment-transactions/v1'
               api_timeout: 10000
               api_payment_activations_basepath: '/checkout/payments/v1'
