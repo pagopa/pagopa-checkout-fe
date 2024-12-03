@@ -119,6 +119,10 @@ export default function PaymentCheckPage() {
       onBrowserBackEvent(e);
       setCancelModalOpen(true);
     };
+
+    const pageTitle = t("paymentCheckPage.total");
+    (document.title as any) = pageTitle + " - pagoPA";
+
     window.addEventListener("beforeunload", onBrowserUnload);
     window.history.pushState(null, "", window.location.pathname);
     window.addEventListener("popstate", onBack);
