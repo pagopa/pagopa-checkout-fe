@@ -3,7 +3,7 @@
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import React from "react";
+import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import heartIcon from "../assets/images/heart.svg";
 import PageContainer from "../components/PageContent/PageContainer";
@@ -14,6 +14,13 @@ export default function DonationPageDismissed() {
     "https://pagopa.gov.it/it/notizie/2022-12-23-conclusa-iniziativa-donazioni-ucraina.html";
 
   sessionStorage.clear();
+
+  useEffect(()=>{
+
+    const pageTitle = t("donationPage.dismissTitle");
+    (document.title as any) = pageTitle + " - pagoPA";
+
+  },[])
 
   return (
     <PageContainer title="">
