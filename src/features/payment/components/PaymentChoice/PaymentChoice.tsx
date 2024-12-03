@@ -27,6 +27,7 @@ import {
 } from "../../models/paymentModel";
 import { setThreshold } from "../../../../redux/slices/threshold";
 import { CheckoutRoutes } from "../../../../routes/models/routeModel";
+import { onErrorActivate } from "../../../../utils/api/transactionsErrorHelper";
 import { DisabledPaymentMethods, MethodComponentList } from "./PaymentMethod";
 import { getNormalizedMethods } from "./utils";
 
@@ -97,7 +98,8 @@ export function PaymentChoice(props: {
       onSuccess: async () => {
         await getFees(onSuccess, onPspNotFound, onError);
       },
-      onError,
+      onError: (faultCodeCategory, faultCodeDetail) =>
+        onErrorActivate(faultCodeCategory, faultCodeDetail, onError, navigate),
     });
   };
 

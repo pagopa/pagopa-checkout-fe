@@ -16,9 +16,8 @@ import {
 export default function KOPage() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const redirectUrl =
-    (getSessionItem(SessionItems.cart) as Cart | undefined)?.returnUrls
-      .returnErrorUrl || "/";
+  const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
+  const redirectUrl = cart?.returnUrls.returnErrorUrl || "/";
 
   React.useEffect(() => {
     dispatch(resetThreshold());
@@ -68,7 +67,9 @@ export default function KOPage() {
               minHeight: 45,
             }}
           >
-            {t("koPage.button")}
+            {cart != null
+              ? t("paymentResponsePage.buttons.continue")
+              : t("koPage.button")}
           </Button>
         </Box>
       </Box>
