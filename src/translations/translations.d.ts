@@ -248,6 +248,22 @@ interface Translation {
       body: string;
       title: string;
     };
+    25: {
+      body: string;
+      title: string;
+    };
+    116: {
+      body: string;
+      title: string;
+    };
+    117: {
+      body: string;
+      title: string;
+    };
+    121: {
+      body: string;
+      title: string;
+    };
     "3dsNotInitiated": {
       body: string;
       title: string;
