@@ -11,19 +11,22 @@ const SkipToContent = () => {
 
   const linkStyle: any = {
     transition: "opacity 0.2s ease-out",
+    position: "relative",
     opacity: isFocused ? "1" : "0",
-    cursor: isFocused ? "" : "unset",
+    zIndex: isFocused ? "1" : "-1",
   };
 
   return (
-    <Button
-      href="#main_content"
-      style={linkStyle}
-      onFocus={handleFocus}
-      onBlur={handleBlur}
-    >
-      {t("mainPage.main.skipToContent")}
-    </Button>
+    <div style={{ position: "relative" }}>
+      <Button
+        href="#main_content"
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        style={linkStyle}
+      >
+        {t("mainPage.main.skipToContent")}
+      </Button>
+    </div>
   );
 };
 
