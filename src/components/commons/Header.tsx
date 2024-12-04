@@ -85,7 +85,7 @@ export default function Header() {
           position="relative"
           zIndex="1000"
         >
-          <Stack  
+          <Stack
             spacing={4}
             direction="row"
             justifyContent="space-between"
