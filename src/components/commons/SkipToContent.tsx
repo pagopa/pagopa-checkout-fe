@@ -19,7 +19,8 @@ const SkipToContent = () => {
   return (
     <div style={{ position: "relative" }}>
       <Button
-        href="#main_content"
+        id="skip-to-content"
+        onClick={() => document.getElementById("main_content")?.focus()}
         onFocus={handleFocus}
         onBlur={handleBlur}
         style={linkStyle}

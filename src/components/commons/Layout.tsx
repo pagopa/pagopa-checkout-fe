@@ -25,6 +25,7 @@ export function Layout({ sx, children, fixedFooterPages }: LayoutProps) {
       <Container
         id="main_content"
         component="main"
+        tabIndex={-1}
         sx={{
           ...sx,
           p: { xs: 0 },
