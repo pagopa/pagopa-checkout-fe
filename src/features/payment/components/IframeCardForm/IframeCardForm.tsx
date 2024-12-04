@@ -28,6 +28,7 @@ import {
 } from "../../../../utils/storage/sessionStorage";
 import { setThreshold } from "../../../../redux/slices/threshold";
 import InformationModal from "../../../../components/modals/InformationModal";
+import { onErrorActivate } from "../../../../utils/api/transactionsErrorHelper";
 import { IframeCardField } from "./IframeCardField";
 import type { FieldId, FieldStatus, FormStatus } from "./types";
 import { IdFields } from "./types";
@@ -135,7 +136,13 @@ export default function IframeCardForm(props: Props) {
             void recaptchaTransaction({
               recaptchaRef: ref.current,
               onSuccess: retrievePaymentSession,
-              onError,
+              onError: (faultCodeCategory, faultCodeDetail) =>
+                onErrorActivate(
+                  faultCodeCategory,
+                  faultCodeDetail,
+                  onError,
+                  navigate
+                ),
             });
           }
         };

@@ -92,6 +92,7 @@ export default function PaymentResponsePageV2() {
             width: "100%",
             flexDirection: "column",
             alignItems: "center",
+            whiteSpace: "pre-line",
           }}
         >
           <img
