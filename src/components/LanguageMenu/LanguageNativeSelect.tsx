@@ -10,12 +10,12 @@ export default function LanguageNativeSelect() {
   const theme = useTheme();
   const [lang, setLang] = React.useState<string>(i18n.language.split("-")[0]);
 
-  const currentLanguageLabel = (lang: string)=>{
-    let languages = getSortedLang();
-    let currLang = languages.find((elem) => elem.lang.split("-")[0] === lang);
+  const currentLanguageLabel = (lang: string) => {
+    const languages = getSortedLang();
+    const currLang = languages.find((elem) => elem.lang.split("-")[0] === lang);
     // currLang guaranteed to exist
-    return currLang ? currLang.label : ""; 
-  }
+    return currLang ? currLang.label : "";
+  };
 
   const languages = getSortedLang().map((elem, index) => (
     <option key={index} value={elem.lang.split("-")[0]}>
@@ -51,7 +51,9 @@ export default function LanguageNativeSelect() {
             color: theme.palette.text.primary,
           },
         }}
-        aria-label={currentLanguageLabel(lang in supportedLang ? lang : fallbackLang)}
+        aria-label={currentLanguageLabel(
+          lang in supportedLang ? lang : fallbackLang
+        )}
       >
         {languages}
       </NativeSelect>

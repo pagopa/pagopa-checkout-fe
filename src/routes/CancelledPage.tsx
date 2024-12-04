@@ -26,7 +26,6 @@ export default function CancelledPage() {
 
     const pageTitle = t("cancelledPage.body");
     (document.title as any) = pageTitle + " - pagoPA";
-
   }, []);
 
   return (

@@ -75,12 +75,12 @@ export default function PaymentResponsePageV2() {
 
   const { t } = useTranslation();
 
-  useEffect(()=>{
-    if(outcomeMessage && outcomeMessage.title){
+  useEffect(() => {
+    if (outcomeMessage && outcomeMessage.title) {
       const pageTitle = t(outcomeMessage.title);
       (document.title as any) = pageTitle + " - pagoPA";
     }
-  },[outcomeMessage])
+  }, [outcomeMessage]);
 
   return (
     <PageContainer>

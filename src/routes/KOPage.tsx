@@ -26,7 +26,6 @@ export default function KOPage() {
 
     const pageTitle = t("koPage.title");
     (document.title as any) = pageTitle + " - pagoPA";
-
   }, []);
 
   return (

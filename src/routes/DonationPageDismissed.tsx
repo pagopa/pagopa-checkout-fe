@@ -15,12 +15,10 @@ export default function DonationPageDismissed() {
 
   sessionStorage.clear();
 
-  useEffect(()=>{
-
+  useEffect(() => {
     const pageTitle = t("donationPage.dismissTitle");
     (document.title as any) = pageTitle + " - pagoPA";
-
-  },[])
+  }, []);
 
   return (
     <PageContainer title="">
