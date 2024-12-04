@@ -18,6 +18,7 @@ import { getTotalFromCart } from "../../utils/cart/cart";
 import { moneyFormat } from "../../utils/form/formatters";
 import { paymentSubjectTransform } from "../../utils/transformers/paymentTransformers";
 import DrawerDetail from "../Header/DrawerDetail";
+import SkipToContent from "./SkipToContent";
 
 function amountToShow() {
   const cartInfo = getSessionItem(SessionItems.cart) as Cart | undefined;
@@ -90,6 +91,8 @@ export default function Header() {
             style={{ width: "56px", height: "36px" }}
             aria-hidden="true"
           />
+          <SkipToContent />
+
           {(!!PaymentInfo.receiver || !!CartInfo?.paymentNotices) &&
             !ignoreRoutes.includes(currentPath) && (
               <Button
