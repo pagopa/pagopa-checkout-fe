@@ -12,7 +12,7 @@ const SkipToContent = () => {
   const linkStyle: any = {
     transition: "opacity 0.2s ease-out",
     opacity: isFocused ? "1" : "0",
-    cursor: isFocused ? "" : "unset",
+    cursor: isFocused ? "" : "default",
   };
 
   return (
