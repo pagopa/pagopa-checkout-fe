@@ -11,8 +11,8 @@ export default function LanguageNativeSelect() {
   const [lang, setLang] = React.useState<string>(i18n.language.split("-")[0]);
 
   const currentLanguageLabel = (lang: string)=>{
-    let languaes = getSortedLang();
-    let currLang = languaes.find((elem) => elem.lang.split("-")[0] === lang);
+    let languages = getSortedLang();
+    let currLang = languages.find((elem) => elem.lang.split("-")[0] === lang);
     // currLang guaranteed to exist
     return currLang ? currLang.label : ""; 
   }
