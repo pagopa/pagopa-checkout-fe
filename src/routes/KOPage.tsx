@@ -23,6 +23,10 @@ export default function KOPage() {
     dispatch(resetThreshold());
     window.removeEventListener("beforeunload", onBrowserUnload);
     clearStorage();
+
+    const pageTitle = t("koPage.title");
+    (document.title as any) = pageTitle + " - pagoPA";
+
   }, []);
 
   return (

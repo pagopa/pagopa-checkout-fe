@@ -25,7 +25,15 @@ export default function SessionExpiredPage() {
     dispatch(resetThreshold());
     window.removeEventListener("beforeunload", onBrowserUnload);
     clearStorage();
+
   }, []);
+
+  useEffect(()=>{
+    if(outcomeMessage && outcomeMessage.title){
+      const pageTitle = t(outcomeMessage.title);
+      (document.title as any) = pageTitle + " - pagoPA";
+    }
+  },[outcomeMessage])
 
   return (
     <PageContainer>

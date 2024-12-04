@@ -116,7 +116,15 @@ export default function PaymentResponsePage() {
       clearStorage();
     };
     void callServices(handleFinalStatusResult);
+    
   }, []);
+
+  useEffect(()=>{
+    if(outcomeMessage && outcomeMessage.title){
+      const pageTitle = t(outcomeMessage.title);
+      (document.title as any) = pageTitle + " - pagoPA";
+    }
+  },[outcomeMessage])
 
   const { t } = useTranslation();
 
