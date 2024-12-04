@@ -19,7 +19,6 @@ export default function Footer(props: { fixedPages: Array<string> }) {
 
   return (
     <Box
-      component="footer"
       display={"flex"}
       justifyContent={"space-between"}
       alignItems={"center"}
