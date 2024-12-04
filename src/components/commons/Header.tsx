@@ -85,13 +85,21 @@ export default function Header() {
           position="relative"
           zIndex="1000"
         >
-          <img
-            src={pagopaLogo}
-            alt="pagoPA"
-            style={{ width: "56px", height: "36px" }}
-            aria-hidden="true"
-          />
-          <SkipToContent />
+          <Stack  
+            spacing={4}
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            position="relative"
+          >
+            <img
+              src={pagopaLogo}
+              alt="pagoPA"
+              style={{ width: "56px", height: "36px" }}
+              aria-hidden="true"
+            />
+            <SkipToContent />
+          </Stack>
 
           {(!!PaymentInfo.receiver || !!CartInfo?.paymentNotices) &&
             !ignoreRoutes.includes(currentPath) && (
