@@ -288,10 +288,10 @@ export const checkPspListFees = async (
 
   const pspEditButton = await page.waitForSelector(pspEditButtonSelector, {clickable: true});
   await pspEditButton.click();
-  await new Promise((r) => setTimeout(r, 500));
+  await new Promise((r) => setTimeout(r, 1000));
   const pspFeeSortButton = await page.waitForSelector(pspFeeSortButtonId, {clickable: true});
   await pspFeeSortButton.click();
-  await new Promise((r) => setTimeout(r, 500));
+  await new Promise((r) => setTimeout(r, 1000));
 
   // Wait for the elements and get the list of divs
   const pspElements = await page.$$('.pspFeeValue');
@@ -308,6 +308,7 @@ export const checkPspListFees = async (
   );
   const closePspListButton = await page.waitForSelector("#closePspList", { clickable: true});
   await closePspListButton.click();
+  await new Promise((r) => setTimeout(r, 1000));
   return numericContents;
 };
 
@@ -327,10 +328,10 @@ export const checkPspListNames = async (
 
   const pspEditButton = await page.waitForSelector(pspEditButtonSelector, {visible: true, clickable: true});
   await pspEditButton.click();
-  await new Promise((r) => setTimeout(r, 500));
+  await new Promise((r) => setTimeout(r, 1000));
   const pspFeeSortButton = await page.waitForSelector(pspFeeSortButtonId, {visible: true, clickable: true});
   await pspFeeSortButton.click();
-  await new Promise((r) => setTimeout(r, 500));
+  await new Promise((r) => setTimeout(r, 1000));
 
   // Wait for the elements and get the list of divs
   const pspElements = await page.$$(".pspFeeName");
@@ -343,5 +344,6 @@ export const checkPspListNames = async (
   );
   const closePspListButton = await page.waitForSelector("#closePspList", {visible: true, clickable: true});
   await closePspListButton.click();
+  await new Promise((r) => setTimeout(r, 1000));
   return feeNameContents;
 };
