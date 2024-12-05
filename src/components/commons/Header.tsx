@@ -18,6 +18,7 @@ import { getTotalFromCart } from "../../utils/cart/cart";
 import { moneyFormat } from "../../utils/form/formatters";
 import { paymentSubjectTransform } from "../../utils/transformers/paymentTransformers";
 import DrawerDetail from "../Header/DrawerDetail";
+import SkipToContent from "./SkipToContent";
 
 function amountToShow() {
   const cartInfo = getSessionItem(SessionItems.cart) as Cart | undefined;
@@ -74,7 +75,7 @@ export default function Header() {
       ];
 
   return (
-    <>
+    <header>
       <Box p={3} bgcolor={"white"}>
         <Stack
           spacing={0}
@@ -84,12 +85,22 @@ export default function Header() {
           position="relative"
           zIndex="1000"
         >
-          <img
-            src={pagopaLogo}
-            alt="pagoPA"
-            style={{ width: "56px", height: "36px" }}
-            aria-hidden="true"
-          />
+          <Stack
+            spacing={4}
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            position="relative"
+          >
+            <img
+              src={pagopaLogo}
+              alt="pagoPA"
+              style={{ width: "56px", height: "36px" }}
+              aria-hidden="true"
+            />
+            <SkipToContent />
+          </Stack>
+
           {(!!PaymentInfo.receiver || !!CartInfo?.paymentNotices) &&
             !ignoreRoutes.includes(currentPath) && (
               <Button
@@ -107,6 +118,6 @@ export default function Header() {
         drawstate={drawstate}
         toggleDrawer={() => toggleDrawer(false)}
       />
-    </>
+    </header>
   );
 }

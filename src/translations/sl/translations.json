@@ -138,6 +138,9 @@
         "detailTitle": "Podrobnosti o obvestilu"
       },
       "disclaimer": "Znesek se samodejno posodobi, zato vedno plačate le kar dolgujete in se izognete zamudnim ali drugim obrestim."
+    },
+    "main":{
+      "skipToContent": "Preskoči na vsebino"
     }
   },
   "NOTLISTED": {

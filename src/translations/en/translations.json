@@ -138,6 +138,9 @@
         "detailTitle": "Notice detail"
       },
       "disclaimer": "The amount is updated automatically, therefore you will always pay what is due and avoid arrears or other interest."
+    },
+    "main":{
+      "skipToContent": "Go to content"
     }
   },
   "NOTLISTED": {

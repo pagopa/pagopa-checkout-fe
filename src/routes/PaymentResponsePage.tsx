@@ -118,6 +118,13 @@ export default function PaymentResponsePage() {
     void callServices(handleFinalStatusResult);
   }, []);
 
+  useEffect(() => {
+    if (outcomeMessage && outcomeMessage.title) {
+      const pageTitle = t(outcomeMessage.title);
+      (document.title as any) = pageTitle + " - pagoPA";
+    }
+  }, [outcomeMessage]);
+
   const { t } = useTranslation();
 
   return (

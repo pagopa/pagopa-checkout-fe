@@ -85,7 +85,7 @@ export const checkErrorOnCardDataFormSubmit = async (
 
 export const selectKeyboardForm = async () => {
   const selectFormXPath =
-    "/html/body/div[1]/div/div[2]/div/div[2]/div[2]/div[1]";
+    "/html/body/div[1]/div/main/div/div[2]/div[2]/div[1]";
   const selectFormBtn = await page.waitForXPath(selectFormXPath);
   await selectFormBtn.click();
 };
@@ -233,7 +233,7 @@ export const cancelPaymentOK = async (
   cardData
 ) => {
   const resultMessageXPath =
-    "/html/body/div[1]/div/div[2]/div/div/div/div[1]/div";
+    "/html/body/div[1]/div/main/div/div/div/div[1]/div";
   await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
   const paymentCheckPageButtonCancel = await page.waitForSelector(
     "#paymentCheckPageButtonCancel"
@@ -247,7 +247,6 @@ export const cancelPaymentOK = async (
 };
 
 export const cancelPaymentKO = async (noticeCode, fiscalCode, email) => {
-  const resultMessageXPath = "/html/body/div[7]/div[3]/div/h2/div";
   await fillAndSubmitSatispayPayment(noticeCode, fiscalCode, email);
   const paymentCheckPageButtonCancel = await page.waitForSelector(
     "#paymentCheckPageButtonCancel"

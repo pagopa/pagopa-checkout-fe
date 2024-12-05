@@ -23,6 +23,9 @@ export default function CancelledPage() {
     dispatch(resetThreshold());
     window.removeEventListener("beforeunload", onBrowserUnload);
     clearStorage();
+
+    const pageTitle = t("cancelledPage.body");
+    (document.title as any) = pageTitle + " - pagoPA";
   }, []);
 
   return (
