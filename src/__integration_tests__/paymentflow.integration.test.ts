@@ -374,7 +374,7 @@ describe("Checkout fails to calculate fee", () => {
       await page.waitForSelector(closeErrorModalButton);
       await page.click(closeErrorModalButton);
       const errorDescriptionXpath =
-        '//*[@id="root"]/div/div[2]/div/div/div/div[1]/div[1]';
+        '//*[@id="root"]/div/main/div/div/div/div[1]/div[1]';
       const errorMessageElem = await page.waitForXPath(errorDescriptionXpath);
       const errorMessage = await errorMessageElem.evaluate(
         (el) => el.textContent
