@@ -23,6 +23,9 @@ export function Layout({ sx, children, fixedFooterPages }: LayoutProps) {
     >
       <Header />
       <Container
+        id="main_content"
+        component="main"
+        tabIndex={-1}
         sx={{
           ...sx,
           p: { xs: 0 },

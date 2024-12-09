@@ -22,6 +22,7 @@ export default function Footer(props: { fixedPages: Array<string> }) {
       display={"flex"}
       justifyContent={"space-between"}
       alignItems={"center"}
+      component="footer"
       pb={{ ...(isFixed() ? {} : { xs: 16 }), sm: 0 }}
       pl={{ xs: 3, sm: 6 }}
       pr={{ xs: 3, sm: 6 }}
