@@ -243,6 +243,10 @@
       "body": "You will receive the payment result at the address {{useremail}}.",
       "title": "Wait for payment confirmation"
     },
+    "18": {
+      "body": "The authorized amount has been refunded to your payment method. The money transfer may take some time.",
+      "title": "The payment was not successful"
+    },
     "25": {
       "body": "Non è stato addebitato alcun importo.\n Se il problema persiste, prova a usare un altro metodo o gestore del pagamento.",
       "title": "Il pagamento non è andato a buon fine"

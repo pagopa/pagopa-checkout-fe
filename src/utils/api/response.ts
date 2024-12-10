@@ -33,7 +33,10 @@ import {
   NewTransactionResponse,
   SendPaymentResultOutcomeEnum,
 } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
-import { TransactionInfo } from "../../../generated/definitions/payment-ecommerce/TransactionInfo";
+import {
+  TransactionInfo,
+  TransactionInfo2ClosePaymentResultError,
+} from "../../../generated/definitions/payment-ecommerce/TransactionInfo";
 import { TransactionStatusEnum } from "../../../generated/definitions/payment-ecommerce/TransactionStatus";
 
 /** This function return true when polling on GET transaction must be interrupted */
@@ -98,6 +101,7 @@ const ecommerceClientWithPolling: EcommerceClient = createClient({
 export const callServices = async (
   handleFinalStatusResult: (
     status?: TransactionStatusEnum,
+    closePaymentResultError?: TransactionInfo2ClosePaymentResultError,
     sendPaymentResultOutcome?: SendPaymentResultOutcomeEnum,
     gateway?: string,
     errorCode?: string,
@@ -163,6 +167,7 @@ export const callServices = async (
               });
               handleFinalStatusResult(
                 transactionInfo.status,
+                transactionInfo.closePaymentResultError,
                 transactionInfo.sendPaymentResultOutcome,
                 transactionInfo.gateway,
                 transactionInfo.errorCode,

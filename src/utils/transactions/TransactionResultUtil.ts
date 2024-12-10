@@ -2,7 +2,14 @@ import * as t from "io-ts";
 import { enumType } from "@pagopa/ts-commons/lib/types";
 import { TransactionStatusEnum } from "../../../generated/definitions/payment-ecommerce/TransactionStatus";
 import { SendPaymentResultOutcomeEnum } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
-import { TransactionInfo } from "../../../generated/definitions/payment-ecommerce/TransactionInfo";
+import {
+  TransactionInfo,
+  TransactionInfo2ClosePaymentResultError,
+} from "../../../generated/definitions/payment-ecommerce/TransactionInfo";
+import {
+  ClosePaymentErrorsMap,
+  IClosePaymentErrorItem,
+} from "./transactionClosePaymentErrorUtil";
 
 export enum ViewOutcomeEnum {
   SUCCESS = "0",
@@ -14,6 +21,7 @@ export enum ViewOutcomeEnum {
   CANCELED_BY_USER = "8",
   EXCESSIVE_AMOUNT = "10",
   TAKING_CHARGE = "17",
+  REFUND_IMMEDIATELY = "18",
   PSP_ERROR = "25",
   BALANCE_LIMIT = "116",
   CVV_ERROR = "117",
@@ -162,6 +170,7 @@ export enum NpgAuthorizationStatus {
 
 export type GetViewOutcomeFromEcommerceResultCode = (
   transactionStatus?: TransactionStatusEnum,
+  closePaymentResultError?: TransactionInfo2ClosePaymentResultError,
   sendPaymentResultOutcome?: SendPaymentResultOutcomeEnum,
   gateway?: string,
   errorCode?: string,
@@ -172,6 +181,7 @@ export const getViewOutcomeFromEcommerceResultCode: GetViewOutcomeFromEcommerceR
   // eslint-disable-next-line complexity
   (
     transactionStatus,
+    closePaymentResultError,
     sendPaymentResultOutcome,
     gateway,
     errorCode,
@@ -197,6 +207,7 @@ export const getViewOutcomeFromEcommerceResultCode: GetViewOutcomeFromEcommerceR
       case TransactionStatusEnum.CANCELLATION_EXPIRED:
         return ViewOutcomeEnum.CANCELED_BY_USER;
       case TransactionStatusEnum.CLOSURE_ERROR:
+        return evaluateClosePaymentResultError(closePaymentResultError);
       case TransactionStatusEnum.AUTHORIZATION_COMPLETED:
         return evaluateOutcomeStatus(
           gateway,
@@ -287,6 +298,51 @@ export const EcommerceMaybeInterruptStatusCodeEnumType =
     EcommerceMaybeInterruptStatusCodeEnum,
     "EcommerceMaybeInterruptStatusCodeEnumType"
   );
+
+/**
+ * This function will match any status code from closePaymentResultError with any
+ * status code defined in the ClosePaymentErrorsMap item.
+ *
+ * NOTE:
+ * ClosePaymentErrorsMap supports placeholders, so 5xx will match any error >= 500
+ */
+function evaluateClosePaymentResultError(
+  closePaymentResultError?: TransactionInfo2ClosePaymentResultError
+): ViewOutcomeEnum {
+  // NOTE: this should never happen by design,
+  // is only added just to be sure
+  if (closePaymentResultError === undefined) {
+    return ViewOutcomeEnum.GENERIC_ERROR;
+  }
+
+  function matchStatusCode(numericCode: number, statusCode: string) {
+    const numericCodeStr = numericCode.toString();
+    const regex = new RegExp("^" + statusCode.replace(/x/g, "\\d") + "$");
+    return regex.test(numericCodeStr);
+  }
+
+  // find the proper error output configuration based on the closePaymentResultError
+  const matchingItem: IClosePaymentErrorItem | undefined =
+    ClosePaymentErrorsMap.find(
+      (x: IClosePaymentErrorItem) =>
+        matchStatusCode(
+          closePaymentResultError?.statusCode ?? 0,
+          x.statusCode
+        ) &&
+        (x.enablingDescriptions === undefined ||
+          x.enablingDescriptions.includes(
+            closePaymentResultError.description as string
+          ))
+    );
+
+  // return outcome
+  if (matchingItem) {
+    return matchingItem.outcome;
+  }
+
+  // default
+  return ViewOutcomeEnum.GENERIC_ERROR;
+}
 
 function evaluateOutcomeStatus(
   gateway?: string,

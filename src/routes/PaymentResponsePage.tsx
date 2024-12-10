@@ -36,7 +36,10 @@ import {
 import { resetThreshold } from "../redux/slices/threshold";
 import { Bundle } from "../../generated/definitions/payment-ecommerce/Bundle";
 import { TransactionStatusEnum } from "../../generated/definitions/payment-ecommerce/TransactionStatus";
-import { TransactionInfo } from "../../generated/definitions/payment-ecommerce/TransactionInfo";
+import {
+  TransactionInfo,
+  TransactionInfo2ClosePaymentResultError,
+} from "../../generated/definitions/payment-ecommerce/TransactionInfo";
 
 type PrintData = {
   useremail: string;
@@ -78,6 +81,7 @@ export default function PaymentResponsePage() {
 
     const handleFinalStatusResult = (
       idStatus?: TransactionStatusEnum,
+      closePaymentResultError?: TransactionInfo2ClosePaymentResultError,
       sendPaymentResultOutcome?: SendPaymentResultOutcomeEnum,
       gateway?: string,
       errorCode?: string,
@@ -85,6 +89,7 @@ export default function PaymentResponsePage() {
     ) => {
       const outcome: ViewOutcomeEnum = getViewOutcomeFromEcommerceResultCode(
         idStatus,
+        closePaymentResultError,
         sendPaymentResultOutcome,
         gateway,
         errorCode,

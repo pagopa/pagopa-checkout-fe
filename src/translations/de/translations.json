@@ -243,6 +243,10 @@
       "body": "Du erhältst eine Zahlungsbestätigung an die E-Mail-Adresse {{useremail}}.",
       "title": "Warte auf die Zahlungsbestätigung"
     },
+    "18": {
+      "body": "Der autorisierte Betrag wurde auf Ihre Zahlungsmethode zurückerstattet. Die Geldüberweisung kann einige Zeit in Anspruch nehmen.",
+      "title": "Die Zahlung war nicht erfolgreich"
+    },
     "25": {
       "body": "Non è stato addebitato alcun importo.\n Se il problema persiste, prova a usare un altro metodo o gestore del pagamento.",
       "title": "Il pagamento non è andato a buon fine"
