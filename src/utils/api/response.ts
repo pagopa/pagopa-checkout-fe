@@ -25,14 +25,12 @@ import {
   EcommerceMaybeInterruptStatusCodeEnumType,
   NpgAuthorizationStatus,
 } from "../transactions/TransactionResultUtil";
-import {
-  NewTransactionResponse,
-  SendPaymentResultOutcomeEnum,
-} from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
+import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { TransactionStatusEnum } from "../../../generated/definitions/payment-ecommerce/TransactionStatus";
 import {
   TransactionInfo,
-  TransactionInfoClosePaymentResultError,
+  TransactionInfoGatewayInfo,
+  TransactionInfoNodeInfo,
 } from "../../../generated/definitions/payment-ecommerce-v2/TransactionInfo";
 import {
   createClient,
@@ -42,7 +40,7 @@ import {
 /** This function return true when polling on GET transaction must be interrupted */
 const interruptTransactionPolling = (
   transactionStaus: TransactionInfo["status"],
-  gateway: TransactionInfo["gateway"]
+  gatewayInfo?: TransactionInfoGatewayInfo
 ) =>
   pipe(
     EcommerceInterruptStatusCodeEnumType.decode(transactionStaus),
@@ -52,7 +50,8 @@ const interruptTransactionPolling = (
     EcommerceMaybeInterruptStatusCodeEnumType.decode(transactionStaus),
     E.isRight
   ) &&
-    gateway?.gatewayAuthorizationStatus !== NpgAuthorizationStatus.EXECUTED);
+    gatewayInfo?.gatewayAuthorizationStatus !==
+      NpgAuthorizationStatus.EXECUTED);
 
 const config = getConfigOrThrow();
 /**
@@ -86,9 +85,11 @@ const ecommerceClientWithPolling: EcommerceClient = createClient({
         counter.reset();
         return false;
       }
-      const { status, gateway } = (await r.clone().json()) as TransactionInfo;
+      const { status, gatewayInfo } = (await r
+        .clone()
+        .json()) as TransactionInfo;
       return !(
-        r.status === 200 && interruptTransactionPolling(status, gateway)
+        r.status === 200 && interruptTransactionPolling(status, gatewayInfo)
       );
     }
   ),
@@ -98,10 +99,8 @@ const ecommerceClientWithPolling: EcommerceClient = createClient({
 export const callServices = async (
   handleFinalStatusResult: (
     status?: TransactionStatusEnum,
-    closePaymentResultError?: TransactionInfoClosePaymentResultError,
-    sendPaymentResultOutcome?: SendPaymentResultOutcomeEnum,
-    gateway?: TransactionInfo["gateway"],
-    errorCode?: string
+    nodeInfo?: TransactionInfoNodeInfo,
+    gatewayInfo?: TransactionInfoGatewayInfo
   ) => void
 ) => {
   const transaction = pipe(
@@ -163,10 +162,8 @@ export const callServices = async (
               });
               handleFinalStatusResult(
                 transactionInfo.status,
-                transactionInfo.closePaymentResultError,
-                transactionInfo.sendPaymentResultOutcome,
-                transactionInfo.gateway,
-                transactionInfo.errorCode
+                transactionInfo.nodeInfo,
+                transactionInfo.gatewayInfo
               );
             }
           )

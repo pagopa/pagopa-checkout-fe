@@ -4,7 +4,7 @@ import { TransactionStatusEnum } from "../../../generated/definitions/payment-ec
 import { SendPaymentResultOutcomeEnum } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import {
   TransactionInfo,
-  TransactionInfoClosePaymentResultError,
+  TransactionInfoNodeInfo,
 } from "../../../generated/definitions/payment-ecommerce-v2/TransactionInfo";
 import {
   ClosePaymentErrorsMap,
@@ -170,27 +170,21 @@ export enum NpgAuthorizationStatus {
 
 export type GetViewOutcomeFromEcommerceResultCode = (
   transactionStatus?: TransactionStatusEnum,
-  closePaymentResultError?: TransactionInfoClosePaymentResultError,
-  sendPaymentResultOutcome?: SendPaymentResultOutcomeEnum,
-  gateway?: TransactionInfo["gateway"],
+  nodeInfo?: TransactionInfoNodeInfo,
+  gatewayInfo?: TransactionInfo["gatewayInfo"],
   errorCode?: string
 ) => ViewOutcomeEnum;
 
 export const getViewOutcomeFromEcommerceResultCode: GetViewOutcomeFromEcommerceResultCode =
   // eslint-disable-next-line complexity
-  (
-    transactionStatus,
-    closePaymentResultError,
-    sendPaymentResultOutcome,
-    gateway,
-    errorCode
-  ): ViewOutcomeEnum => {
+  (transactionStatus, nodeInfo, gatewayInfo, errorCode): ViewOutcomeEnum => {
     switch (transactionStatus) {
       case TransactionStatusEnum.NOTIFIED_OK:
         return ViewOutcomeEnum.SUCCESS;
       case TransactionStatusEnum.NOTIFICATION_REQUESTED:
       case TransactionStatusEnum.NOTIFICATION_ERROR:
-        return sendPaymentResultOutcome === SendPaymentResultOutcomeEnum.OK
+        return nodeInfo?.sendPaymentResultOutcome ===
+          SendPaymentResultOutcomeEnum.OK
           ? ViewOutcomeEnum.SUCCESS
           : ViewOutcomeEnum.PSP_ERROR;
       case TransactionStatusEnum.NOTIFIED_KO:
@@ -205,44 +199,46 @@ export const getViewOutcomeFromEcommerceResultCode: GetViewOutcomeFromEcommerceR
       case TransactionStatusEnum.CANCELLATION_EXPIRED:
         return ViewOutcomeEnum.CANCELED_BY_USER;
       case TransactionStatusEnum.CLOSURE_ERROR:
-        return evaluateClosePaymentResultError(closePaymentResultError);
+        return evaluateClosePaymentResultError(
+          nodeInfo?.closePaymentResultError
+        );
       case TransactionStatusEnum.AUTHORIZATION_COMPLETED:
         return evaluateOutcomeStatus(
-          gateway,
+          gatewayInfo,
           errorCode,
           ViewOutcomeEnum.GENERIC_ERROR // BE_KO(99)
         );
       case TransactionStatusEnum.CLOSURE_REQUESTED:
         return evaluateOutcomeStatus(
-          gateway,
+          gatewayInfo,
           errorCode,
           ViewOutcomeEnum.TAKING_CHARGE
         );
       case TransactionStatusEnum.UNAUTHORIZED:
         return evaluateOutcomeStatus(
-          gateway,
+          gatewayInfo,
           errorCode,
           ViewOutcomeEnum.PSP_ERROR
         );
       case TransactionStatusEnum.CLOSED:
-        return sendPaymentResultOutcome ===
+        return nodeInfo?.sendPaymentResultOutcome ===
           SendPaymentResultOutcomeEnum.NOT_RECEIVED
           ? ViewOutcomeEnum.TAKING_CHARGE
           : ViewOutcomeEnum.GENERIC_ERROR; // BE_KO(99)?
       case TransactionStatusEnum.EXPIRED: {
-        if (gateway?.gatewayAuthorizationStatus == null) {
+        if (gatewayInfo?.gatewayAuthorizationStatus == null) {
           return ViewOutcomeEnum.TAKING_CHARGE;
         } else if (
-          gateway?.gatewayAuthorizationStatus !==
+          gatewayInfo?.gatewayAuthorizationStatus !==
           NpgAuthorizationStatus.EXECUTED
         ) {
           return evaluateOutcomeStatus(
-            gateway,
+            gatewayInfo,
             errorCode,
             ViewOutcomeEnum.GENERIC_ERROR
           );
         } else {
-          switch (sendPaymentResultOutcome) {
+          switch (nodeInfo?.sendPaymentResultOutcome) {
             case SendPaymentResultOutcomeEnum.OK:
               return ViewOutcomeEnum.SUCCESS;
             case SendPaymentResultOutcomeEnum.KO:
@@ -302,11 +298,14 @@ export const EcommerceMaybeInterruptStatusCodeEnumType =
  * ClosePaymentErrorsMap supports placeholders, so 5xx will match any error >= 500
  */
 function evaluateClosePaymentResultError(
-  closePaymentResultError?: TransactionInfoClosePaymentResultError
+  nodeInfo?: TransactionInfoNodeInfo
 ): ViewOutcomeEnum {
   // NOTE: this should never happen by design,
   // is only added just to be sure
-  if (closePaymentResultError === undefined) {
+  if (
+    nodeInfo === undefined ||
+    nodeInfo?.closePaymentResultError === undefined
+  ) {
     return ViewOutcomeEnum.GENERIC_ERROR;
   }
 
@@ -321,12 +320,12 @@ function evaluateClosePaymentResultError(
     ClosePaymentErrorsMap.find(
       (x: IClosePaymentErrorItem) =>
         matchStatusCode(
-          closePaymentResultError?.statusCode ?? 0,
+          nodeInfo.closePaymentResultError?.statusCode ?? 0,
           x.statusCode
         ) &&
         (x.enablingDescriptions === undefined ||
           x.enablingDescriptions.includes(
-            closePaymentResultError.description as string
+            nodeInfo.closePaymentResultError?.description as string
           ))
     );
 
@@ -340,13 +339,13 @@ function evaluateClosePaymentResultError(
 }
 
 function evaluateOutcomeStatus(
-  gateway?: TransactionInfo["gateway"],
+  gatewayInfo?: TransactionInfo["gatewayInfo"],
   errorCode?: string,
   executedOutcome?: ViewOutcomeEnum
 ): ViewOutcomeEnum {
-  switch (gateway?.gatewayType) {
+  switch (gatewayInfo?.gateway) {
     case PaymentGateway.NPG:
-      switch (gateway?.gatewayAuthorizationStatus) {
+      switch (gatewayInfo?.gatewayAuthorizationStatus) {
         case NpgAuthorizationStatus.EXECUTED:
           return executedOutcome || ViewOutcomeEnum.PSP_ERROR;
         case NpgAuthorizationStatus.AUTHORIZED:
