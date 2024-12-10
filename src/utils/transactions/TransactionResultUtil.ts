@@ -7,7 +7,7 @@ import {
   TransactionInfoNodeInfo,
 } from "../../../generated/definitions/payment-ecommerce-v2/TransactionInfo";
 import {
-  ClosePaymentErrorsMap,
+  getClosePaymentErrorsMap,
   IClosePaymentErrorItem,
 } from "./transactionClosePaymentErrorUtil";
 
@@ -317,7 +317,7 @@ function evaluateClosePaymentResultError(
 
   // find the proper error output configuration based on the closePaymentResultError
   const matchingItem: IClosePaymentErrorItem | undefined =
-    ClosePaymentErrorsMap.find(
+    getClosePaymentErrorsMap().find(
       (x: IClosePaymentErrorItem) =>
         matchStatusCode(
           nodeInfo.closePaymentResultError?.statusCode ?? 0,
