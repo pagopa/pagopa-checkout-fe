@@ -19,10 +19,6 @@ import { ecommerceTransaction } from "../transactions/transactionHelper";
 import { constantPollingWithPromisePredicateFetch } from "../config/fetch";
 import { getUrlParameter } from "../regex/urlUtilities";
 import { getConfigOrThrow } from "../config/config";
-import {
-  createClient,
-  Client as EcommerceClient,
-} from "../../../generated/definitions/payment-ecommerce/client";
 import { getSessionItem, SessionItems } from "../storage/sessionStorage";
 import {
   EcommerceInterruptStatusCodeEnumType,
@@ -33,16 +29,20 @@ import {
   NewTransactionResponse,
   SendPaymentResultOutcomeEnum,
 } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
+import { TransactionStatusEnum } from "../../../generated/definitions/payment-ecommerce/TransactionStatus";
 import {
   TransactionInfo,
-  TransactionInfo2ClosePaymentResultError,
-} from "../../../generated/definitions/payment-ecommerce/TransactionInfo";
-import { TransactionStatusEnum } from "../../../generated/definitions/payment-ecommerce/TransactionStatus";
+  TransactionInfoClosePaymentResultError,
+} from "../../../generated/definitions/payment-ecommerce-v2/TransactionInfo";
+import {
+  createClient,
+  Client as EcommerceClient,
+} from "../../../generated/definitions/payment-ecommerce-v2/client";
 
 /** This function return true when polling on GET transaction must be interrupted */
 const interruptTransactionPolling = (
   transactionStaus: TransactionInfo["status"],
-  gatewayStaus: TransactionInfo["gatewayAuthorizationStatus"]
+  gateway: TransactionInfo["gateway"]
 ) =>
   pipe(
     EcommerceInterruptStatusCodeEnumType.decode(transactionStaus),
@@ -52,7 +52,7 @@ const interruptTransactionPolling = (
     EcommerceMaybeInterruptStatusCodeEnumType.decode(transactionStaus),
     E.isRight
   ) &&
-    gatewayStaus !== NpgAuthorizationStatus.EXECUTED);
+    gateway?.gatewayAuthorizationStatus !== NpgAuthorizationStatus.EXECUTED);
 
 const config = getConfigOrThrow();
 /**
@@ -86,26 +86,22 @@ const ecommerceClientWithPolling: EcommerceClient = createClient({
         counter.reset();
         return false;
       }
-      const { status, gatewayAuthorizationStatus } = (await r
-        .clone()
-        .json()) as TransactionInfo;
+      const { status, gateway } = (await r.clone().json()) as TransactionInfo;
       return !(
-        r.status === 200 &&
-        interruptTransactionPolling(status, gatewayAuthorizationStatus)
+        r.status === 200 && interruptTransactionPolling(status, gateway)
       );
     }
   ),
-  basePath: config.CHECKOUT_API_ECOMMERCE_BASEPATH,
+  basePath: config.CHECKOUT_API_ECOMMERCE_BASEPATH_V2,
 });
 
 export const callServices = async (
   handleFinalStatusResult: (
     status?: TransactionStatusEnum,
-    closePaymentResultError?: TransactionInfo2ClosePaymentResultError,
+    closePaymentResultError?: TransactionInfoClosePaymentResultError,
     sendPaymentResultOutcome?: SendPaymentResultOutcomeEnum,
-    gateway?: string,
-    errorCode?: string,
-    gatewayAuthorizationStatus?: string
+    gateway?: TransactionInfo["gateway"],
+    errorCode?: string
   ) => void
 ) => {
   const transaction = pipe(
@@ -170,8 +166,7 @@ export const callServices = async (
                 transactionInfo.closePaymentResultError,
                 transactionInfo.sendPaymentResultOutcome,
                 transactionInfo.gateway,
-                transactionInfo.errorCode,
-                transactionInfo.gatewayAuthorizationStatus
+                transactionInfo.errorCode
               );
             }
           )

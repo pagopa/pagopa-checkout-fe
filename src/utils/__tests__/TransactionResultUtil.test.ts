@@ -88,8 +88,11 @@ describe("TransactionResultUtil", () => {
       getViewOutcomeFromEcommerceResultCode(
         TransactionStatusEnum.CLOSURE_ERROR,
         undefined,
-        PaymentGateway.NPG,
         undefined,
+        {
+          gatewayType: PaymentGateway.NPG,
+          gatewayAuthorizationStatus: undefined,
+        },
         undefined
       )
     ).toEqual(ViewOutcomeEnum.PSP_ERROR);
@@ -108,8 +111,11 @@ describe("TransactionResultUtil", () => {
       getViewOutcomeFromEcommerceResultCode(
         TransactionStatusEnum.AUTHORIZATION_COMPLETED,
         undefined,
-        PaymentGateway.NPG,
         undefined,
+        {
+          gatewayType: PaymentGateway.NPG,
+          gatewayAuthorizationStatus: undefined,
+        },
         undefined
       )
     ).toEqual(ViewOutcomeEnum.PSP_ERROR);
@@ -176,8 +182,11 @@ describe("TransactionResultUtil", () => {
       getViewOutcomeFromEcommerceResultCode(
         TransactionStatusEnum.UNAUTHORIZED,
         undefined,
-        PaymentGateway.NPG,
         undefined,
+        {
+          gatewayType: PaymentGateway.NPG,
+          gatewayAuthorizationStatus: undefined,
+        },
         undefined
       )
     ).toEqual(ViewOutcomeEnum.PSP_ERROR);
@@ -195,10 +204,13 @@ describe("TransactionResultUtil", () => {
       expect(
         getViewOutcomeFromEcommerceResultCode(
           transactionStatus,
-          SendPaymentResultOutcomeEnum.OK,
-          PaymentGateway.NPG,
           undefined,
-          NpgAuthorizationStatus.EXECUTED
+          SendPaymentResultOutcomeEnum.OK,
+          {
+            gatewayType: PaymentGateway.NPG,
+            gatewayAuthorizationStatus: NpgAuthorizationStatus.EXECUTED,
+          },
+          undefined
         )
       ).toEqual(ViewOutcomeEnum.SUCCESS);
     });
@@ -214,9 +226,12 @@ describe("TransactionResultUtil", () => {
         getViewOutcomeFromEcommerceResultCode(
           transactionStatus,
           undefined,
-          PaymentGateway.NPG,
           undefined,
-          NpgAuthorizationStatus.EXECUTED
+          {
+            gatewayType: PaymentGateway.NPG,
+            gatewayAuthorizationStatus: NpgAuthorizationStatus.EXECUTED,
+          },
+          undefined
         )
       ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
     });
@@ -234,9 +249,12 @@ describe("TransactionResultUtil", () => {
         getViewOutcomeFromEcommerceResultCode(
           TransactionStatusEnum.UNAUTHORIZED,
           undefined,
-          PaymentGateway.NPG,
           undefined,
-          npgAuthorizationStatus
+          {
+            gatewayType: PaymentGateway.NPG,
+            gatewayAuthorizationStatus: npgAuthorizationStatus,
+          },
+          undefined
         )
       ).toEqual(ViewOutcomeEnum.AUTH_ERROR);
     });
@@ -265,9 +283,12 @@ describe("TransactionResultUtil", () => {
         getViewOutcomeFromEcommerceResultCode(
           TransactionStatusEnum.UNAUTHORIZED,
           undefined,
-          PaymentGateway.NPG,
-          errorCode,
-          NpgAuthorizationStatus.DECLINED
+          undefined,
+          {
+            gatewayType: PaymentGateway.NPG,
+            gatewayAuthorizationStatus: NpgAuthorizationStatus.DECLINED,
+          },
+          errorCode
         )
       ).toEqual(ViewOutcomeEnum.AUTH_ERROR);
     });
@@ -281,9 +302,12 @@ describe("TransactionResultUtil", () => {
         getViewOutcomeFromEcommerceResultCode(
           TransactionStatusEnum.UNAUTHORIZED,
           undefined,
-          PaymentGateway.NPG,
-          errorCode,
-          NpgAuthorizationStatus.DECLINED
+          undefined,
+          {
+            gatewayType: PaymentGateway.NPG,
+            gatewayAuthorizationStatus: NpgAuthorizationStatus.DECLINED,
+          },
+          errorCode
         )
       ).toEqual(ViewOutcomeEnum.INVALID_DATA);
     });
@@ -297,9 +321,12 @@ describe("TransactionResultUtil", () => {
         getViewOutcomeFromEcommerceResultCode(
           TransactionStatusEnum.UNAUTHORIZED,
           undefined,
-          PaymentGateway.NPG,
-          errorCode,
-          NpgAuthorizationStatus.DECLINED
+          undefined,
+          {
+            gatewayType: PaymentGateway.NPG,
+            gatewayAuthorizationStatus: NpgAuthorizationStatus.DECLINED,
+          },
+          errorCode
         )
       ).toEqual(ViewOutcomeEnum.INVALID_CARD);
     });
@@ -311,9 +338,12 @@ describe("TransactionResultUtil", () => {
       getViewOutcomeFromEcommerceResultCode(
         TransactionStatusEnum.UNAUTHORIZED,
         undefined,
-        PaymentGateway.NPG,
         undefined,
-        NpgAuthorizationStatus.CANCELED
+        {
+          gatewayType: PaymentGateway.NPG,
+          gatewayAuthorizationStatus: NpgAuthorizationStatus.CANCELED,
+        },
+        undefined
       )
     ).toEqual(ViewOutcomeEnum.CANCELED_BY_USER);
   });
@@ -324,8 +354,11 @@ describe("TransactionResultUtil", () => {
       getViewOutcomeFromEcommerceResultCode(
         TransactionStatusEnum.EXPIRED,
         undefined,
-        PaymentGateway.NPG,
         undefined,
+        {
+          gatewayType: PaymentGateway.NPG,
+          gatewayAuthorizationStatus: undefined,
+        },
         undefined
       )
     ).toEqual(ViewOutcomeEnum.TAKING_CHARGE);
@@ -333,10 +366,13 @@ describe("TransactionResultUtil", () => {
     expect(
       getViewOutcomeFromEcommerceResultCode(
         TransactionStatusEnum.CLOSED,
-        SendPaymentResultOutcomeEnum.NOT_RECEIVED,
-        PaymentGateway.NPG,
         undefined,
-        NpgAuthorizationStatus.EXECUTED
+        SendPaymentResultOutcomeEnum.NOT_RECEIVED,
+        {
+          gatewayType: PaymentGateway.NPG,
+          gatewayAuthorizationStatus: NpgAuthorizationStatus.EXECUTED,
+        },
+        undefined
       )
     ).toEqual(ViewOutcomeEnum.TAKING_CHARGE);
 
@@ -344,9 +380,12 @@ describe("TransactionResultUtil", () => {
       getViewOutcomeFromEcommerceResultCode(
         TransactionStatusEnum.CLOSURE_REQUESTED,
         undefined,
-        PaymentGateway.NPG,
         undefined,
-        NpgAuthorizationStatus.EXECUTED
+        {
+          gatewayType: PaymentGateway.NPG,
+          gatewayAuthorizationStatus: NpgAuthorizationStatus.EXECUTED,
+        },
+        undefined
       )
     ).toEqual(ViewOutcomeEnum.TAKING_CHARGE);
   });
@@ -365,9 +404,12 @@ describe("TransactionResultUtil", () => {
         getViewOutcomeFromEcommerceResultCode(
           TransactionStatusEnum.UNAUTHORIZED,
           undefined,
-          PaymentGateway.NPG,
           undefined,
-          npgAuthorizationStatus
+          {
+            gatewayType: PaymentGateway.NPG,
+            gatewayAuthorizationStatus: npgAuthorizationStatus,
+          },
+          undefined
         )
       ).toEqual(ViewOutcomeEnum.PSP_ERROR);
     });
@@ -389,9 +431,12 @@ describe("TransactionResultUtil", () => {
         getViewOutcomeFromEcommerceResultCode(
           TransactionStatusEnum.UNAUTHORIZED,
           undefined,
-          PaymentGateway.NPG,
-          errorCode,
-          NpgAuthorizationStatus.DECLINED
+          undefined,
+          {
+            gatewayType: PaymentGateway.NPG,
+            gatewayAuthorizationStatus: NpgAuthorizationStatus.DECLINED,
+          },
+          errorCode
         )
       ).toEqual(ViewOutcomeEnum.PSP_ERROR);
     });
@@ -403,9 +448,12 @@ describe("TransactionResultUtil", () => {
       getViewOutcomeFromEcommerceResultCode(
         TransactionStatusEnum.UNAUTHORIZED,
         undefined,
-        PaymentGateway.NPG,
-        "116",
-        NpgAuthorizationStatus.DECLINED
+        undefined,
+        {
+          gatewayType: PaymentGateway.NPG,
+          gatewayAuthorizationStatus: NpgAuthorizationStatus.DECLINED,
+        },
+        "116"
       )
     ).toEqual(ViewOutcomeEnum.BALANCE_LIMIT);
   });
@@ -416,9 +464,12 @@ describe("TransactionResultUtil", () => {
       getViewOutcomeFromEcommerceResultCode(
         TransactionStatusEnum.UNAUTHORIZED,
         undefined,
-        PaymentGateway.NPG,
-        "117",
-        NpgAuthorizationStatus.DECLINED
+        undefined,
+        {
+          gatewayType: PaymentGateway.NPG,
+          gatewayAuthorizationStatus: NpgAuthorizationStatus.DECLINED,
+        },
+        "117"
       )
     ).toEqual(ViewOutcomeEnum.CVV_ERROR);
   });
@@ -429,9 +480,12 @@ describe("TransactionResultUtil", () => {
       getViewOutcomeFromEcommerceResultCode(
         TransactionStatusEnum.UNAUTHORIZED,
         undefined,
-        PaymentGateway.NPG,
-        "121",
-        NpgAuthorizationStatus.DECLINED
+        undefined,
+        {
+          gatewayType: PaymentGateway.NPG,
+          gatewayAuthorizationStatus: NpgAuthorizationStatus.DECLINED,
+        },
+        "121"
       )
     ).toEqual(ViewOutcomeEnum.LIMIT_EXCEEDED);
   });
