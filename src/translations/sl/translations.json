@@ -244,8 +244,8 @@
       "title": "Počakajte na potrditev plačila"
     },
     "18": {
-      "body": "Odobreni znesek je bil povrnjen na vaš način plačila. Prenos denarja lahko traja nekaj časa.",
-      "title": "Plačilo ni bilo uspešno"
+      "body": "L’importo autorizzato è stato rimborsato sul tuo metodo di pagamento. Il trasferimento di denaro potrebbe richiedere del tempo.",
+      "title": "Il pagamento non è andato a buon fine"
     },
     "25": {
       "body": "Non è stato addebitato alcun importo.\n Se il problema persiste, prova a usare un altro metodo o gestore del pagamento.",

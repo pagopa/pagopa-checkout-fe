@@ -244,8 +244,8 @@
       "title": "Warte auf die Zahlungsbestätigung"
     },
     "18": {
-      "body": "Der autorisierte Betrag wurde auf Ihre Zahlungsmethode zurückerstattet. Die Geldüberweisung kann einige Zeit in Anspruch nehmen.",
-      "title": "Die Zahlung war nicht erfolgreich"
+      "body": "L’importo autorizzato è stato rimborsato sul tuo metodo di pagamento. Il trasferimento di denaro potrebbe richiedere del tempo.",
+      "title": "Il pagamento non è andato a buon fine"
     },
     "25": {
       "body": "Non è stato addebitato alcun importo.\n Se il problema persiste, prova a usare un altro metodo o gestore del pagamento.",

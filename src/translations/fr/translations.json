@@ -244,8 +244,8 @@
       "title": "Attendez de recevoir la validation du paiement"
     },
     "18": {
-      "body": "Le montant autorisé a été remboursé sur votre méthode de paiement. Le transfert d'argent peut prendre un certain temps.",
-      "title": "Le paiement n'a pas réussi"
+      "body": "L’importo autorizzato è stato rimborsato sul tuo metodo di pagamento. Il trasferimento di denaro potrebbe richiedere del tempo.",
+      "title": "Il pagamento non è andato a buon fine"
     },
     "25": {
       "body": "Non è stato addebitato alcun importo.\n Se il problema persiste, prova a usare un altro metodo o gestore del pagamento.",
