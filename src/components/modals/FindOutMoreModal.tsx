@@ -18,7 +18,7 @@ interface IFindOutModeProps {
   maxWidth?: "xs" | "sm" | "lg";
 }
 
-const FindOutMoreModal = (props: IFindOutModeProps) => {
+function FindOutMoreModal(props: IFindOutModeProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   return (
@@ -94,10 +94,6 @@ const FindOutMoreModal = (props: IFindOutModeProps) => {
       </DialogActions>
     </Dialog>
   );
-};
-
-FindOutMoreModal.defaultProps = {
-  maxWidth: "lg",
-};
+}
 
 export default FindOutMoreModal;

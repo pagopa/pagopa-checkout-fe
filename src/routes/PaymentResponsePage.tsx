@@ -131,6 +131,7 @@ export default function PaymentResponsePage() {
   return (
     <PageContainer>
       <FindOutMoreModal
+        maxWidth="lg"
         open={findOutMoreOpen}
         onClose={() => {
           setFindOutMoreOpen(false);
