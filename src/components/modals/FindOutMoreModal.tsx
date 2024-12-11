@@ -50,7 +50,7 @@ function FindOutMoreModal(props: IFindOutModeProps) {
                 <span> {t("findOutMoreModal.section1ContentRow2")}</span>
                 <Link
                   target="_blank"
-                  href="https://www.pagopa.gov.it/it/prestatori-servizi-di-pagamento/elenco-PSP-attivi/"
+                  href="https://www.pagopa.gov.it/it/cittadini/dove-pagare/"
                 >
                   {t("findOutMoreModal.section1ContentRow2Link")}
                 </Link>
