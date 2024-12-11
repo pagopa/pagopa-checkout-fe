@@ -24,7 +24,9 @@ describe("TransactionResultUtil", () => {
     expect(
       getViewOutcomeFromEcommerceResultCode(
         TransactionStatusEnum.NOTIFICATION_ERROR,
-        SendPaymentResultOutcomeEnum.OK
+        {
+          sendPaymentResultOutcome: SendPaymentResultOutcomeEnum.OK,
+        }
       )
     ).toEqual(ViewOutcomeEnum.SUCCESS);
 
@@ -32,7 +34,9 @@ describe("TransactionResultUtil", () => {
     expect(
       getViewOutcomeFromEcommerceResultCode(
         TransactionStatusEnum.NOTIFICATION_REQUESTED,
-        SendPaymentResultOutcomeEnum.OK
+        {
+          sendPaymentResultOutcome: SendPaymentResultOutcomeEnum.OK,
+        }
       )
     ).toEqual(ViewOutcomeEnum.SUCCESS);
 
@@ -54,7 +58,9 @@ describe("TransactionResultUtil", () => {
     expect(
       getViewOutcomeFromEcommerceResultCode(
         TransactionStatusEnum.NOTIFICATION_ERROR,
-        SendPaymentResultOutcomeEnum.KO
+        {
+          sendPaymentResultOutcome: SendPaymentResultOutcomeEnum.KO,
+        }
       )
     ).toEqual(ViewOutcomeEnum.PSP_ERROR);
 
@@ -62,7 +68,9 @@ describe("TransactionResultUtil", () => {
     expect(
       getViewOutcomeFromEcommerceResultCode(
         TransactionStatusEnum.NOTIFICATION_REQUESTED,
-        SendPaymentResultOutcomeEnum.KO
+        {
+          sendPaymentResultOutcome: SendPaymentResultOutcomeEnum.KO,
+        }
       )
     ).toEqual(ViewOutcomeEnum.PSP_ERROR);
 
@@ -119,10 +127,9 @@ describe("TransactionResultUtil", () => {
     ).toEqual(ViewOutcomeEnum.PSP_ERROR);
 
     expect(
-      getViewOutcomeFromEcommerceResultCode(
-        TransactionStatusEnum.CLOSED,
-        SendPaymentResultOutcomeEnum.NOT_RECEIVED
-      )
+      getViewOutcomeFromEcommerceResultCode(TransactionStatusEnum.CLOSED, {
+        sendPaymentResultOutcome: SendPaymentResultOutcomeEnum.NOT_RECEIVED,
+      })
     ).toEqual(ViewOutcomeEnum.TAKING_CHARGE);
 
     expect(
@@ -132,17 +139,15 @@ describe("TransactionResultUtil", () => {
     ).toEqual(ViewOutcomeEnum.TAKING_CHARGE);
 
     expect(
-      getViewOutcomeFromEcommerceResultCode(
-        TransactionStatusEnum.CLOSED,
-        SendPaymentResultOutcomeEnum.OK
-      )
+      getViewOutcomeFromEcommerceResultCode(TransactionStatusEnum.CLOSED, {
+        sendPaymentResultOutcome: SendPaymentResultOutcomeEnum.OK,
+      })
     ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
 
     expect(
-      getViewOutcomeFromEcommerceResultCode(
-        TransactionStatusEnum.CLOSED,
-        SendPaymentResultOutcomeEnum.KO
-      )
+      getViewOutcomeFromEcommerceResultCode(TransactionStatusEnum.CLOSED, {
+        sendPaymentResultOutcome: SendPaymentResultOutcomeEnum.KO,
+      })
     ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
 
     expect(

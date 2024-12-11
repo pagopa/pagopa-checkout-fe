@@ -199,9 +199,11 @@ export const getViewOutcomeFromEcommerceResultCode: GetViewOutcomeFromEcommerceR
       case TransactionStatusEnum.CANCELLATION_EXPIRED:
         return ViewOutcomeEnum.CANCELED_BY_USER;
       case TransactionStatusEnum.CLOSURE_ERROR:
-        return evaluateClosePaymentResultError(
-          nodeInfo?.closePaymentResultError
-        );
+        if(nodeInfo?.closePaymentResultError){
+          return evaluateClosePaymentResultError(
+            nodeInfo?.closePaymentResultError
+          );
+        }
       case TransactionStatusEnum.AUTHORIZATION_COMPLETED:
         return evaluateOutcomeStatus(
           gatewayInfo,
