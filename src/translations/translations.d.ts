@@ -213,7 +213,6 @@ interface Translation {
     section2ContentRow2: string;
     section3Title: string;
     section3ContentRow1: string;
-    section3ContentRow2: string;
     section3ContentRow2Link: string;
   };
   paymentResponsePage: {
