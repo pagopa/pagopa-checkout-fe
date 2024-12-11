@@ -99,8 +99,7 @@ describe("TransactionResultUtil", () => {
         {
           gateway: PaymentGateway.NPG,
           gatewayAuthorizationStatus: undefined,
-        },
-        undefined
+        }
       )
     ).toEqual(ViewOutcomeEnum.PSP_ERROR);
 
@@ -121,8 +120,7 @@ describe("TransactionResultUtil", () => {
         {
           gateway: PaymentGateway.NPG,
           gatewayAuthorizationStatus: undefined,
-        },
-        undefined
+        }
       )
     ).toEqual(ViewOutcomeEnum.PSP_ERROR);
 
@@ -188,8 +186,7 @@ describe("TransactionResultUtil", () => {
         {
           gateway: PaymentGateway.NPG,
           gatewayAuthorizationStatus: undefined,
-        },
-        undefined
+        }
       )
     ).toEqual(ViewOutcomeEnum.PSP_ERROR);
   });
@@ -212,8 +209,7 @@ describe("TransactionResultUtil", () => {
           {
             gateway: PaymentGateway.NPG,
             gatewayAuthorizationStatus: NpgAuthorizationStatus.EXECUTED,
-          },
-          undefined
+          }
         )
       ).toEqual(ViewOutcomeEnum.SUCCESS);
     });
@@ -226,15 +222,10 @@ describe("TransactionResultUtil", () => {
       TransactionStatusEnum.CLOSURE_ERROR,
     ].forEach((transactionStatus) => {
       expect(
-        getViewOutcomeFromEcommerceResultCode(
-          transactionStatus,
-          undefined,
-          {
-            gateway: PaymentGateway.NPG,
-            gatewayAuthorizationStatus: NpgAuthorizationStatus.EXECUTED,
-          },
-          undefined
-        )
+        getViewOutcomeFromEcommerceResultCode(transactionStatus, undefined, {
+          gateway: PaymentGateway.NPG,
+          gatewayAuthorizationStatus: NpgAuthorizationStatus.EXECUTED,
+        })
       ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
     });
   });
@@ -254,8 +245,7 @@ describe("TransactionResultUtil", () => {
           {
             gateway: PaymentGateway.NPG,
             gatewayAuthorizationStatus: npgAuthorizationStatus,
-          },
-          undefined
+          }
         )
       ).toEqual(ViewOutcomeEnum.AUTH_ERROR);
     });
@@ -285,10 +275,10 @@ describe("TransactionResultUtil", () => {
           TransactionStatusEnum.UNAUTHORIZED,
           undefined,
           {
+            errorCode,
             gateway: PaymentGateway.NPG,
             gatewayAuthorizationStatus: NpgAuthorizationStatus.DECLINED,
-          },
-          errorCode
+          }
         )
       ).toEqual(ViewOutcomeEnum.AUTH_ERROR);
     });
@@ -303,10 +293,10 @@ describe("TransactionResultUtil", () => {
           TransactionStatusEnum.UNAUTHORIZED,
           undefined,
           {
+            errorCode,
             gateway: PaymentGateway.NPG,
             gatewayAuthorizationStatus: NpgAuthorizationStatus.DECLINED,
-          },
-          errorCode
+          }
         )
       ).toEqual(ViewOutcomeEnum.INVALID_DATA);
     });
@@ -321,10 +311,10 @@ describe("TransactionResultUtil", () => {
           TransactionStatusEnum.UNAUTHORIZED,
           undefined,
           {
+            errorCode,
             gateway: PaymentGateway.NPG,
             gatewayAuthorizationStatus: NpgAuthorizationStatus.DECLINED,
-          },
-          errorCode
+          }
         )
       ).toEqual(ViewOutcomeEnum.INVALID_CARD);
     });
@@ -339,8 +329,7 @@ describe("TransactionResultUtil", () => {
         {
           gateway: PaymentGateway.NPG,
           gatewayAuthorizationStatus: NpgAuthorizationStatus.CANCELED,
-        },
-        undefined
+        }
       )
     ).toEqual(ViewOutcomeEnum.CANCELED_BY_USER);
   });
@@ -354,8 +343,7 @@ describe("TransactionResultUtil", () => {
         {
           gateway: PaymentGateway.NPG,
           gatewayAuthorizationStatus: undefined,
-        },
-        undefined
+        }
       )
     ).toEqual(ViewOutcomeEnum.TAKING_CHARGE);
 
@@ -368,8 +356,7 @@ describe("TransactionResultUtil", () => {
         {
           gateway: PaymentGateway.NPG,
           gatewayAuthorizationStatus: NpgAuthorizationStatus.EXECUTED,
-        },
-        undefined
+        }
       )
     ).toEqual(ViewOutcomeEnum.TAKING_CHARGE);
 
@@ -380,8 +367,7 @@ describe("TransactionResultUtil", () => {
         {
           gateway: PaymentGateway.NPG,
           gatewayAuthorizationStatus: NpgAuthorizationStatus.EXECUTED,
-        },
-        undefined
+        }
       )
     ).toEqual(ViewOutcomeEnum.TAKING_CHARGE);
   });
@@ -403,8 +389,7 @@ describe("TransactionResultUtil", () => {
           {
             gateway: PaymentGateway.NPG,
             gatewayAuthorizationStatus: npgAuthorizationStatus,
-          },
-          undefined
+          }
         )
       ).toEqual(ViewOutcomeEnum.PSP_ERROR);
     });
@@ -427,10 +412,10 @@ describe("TransactionResultUtil", () => {
           TransactionStatusEnum.UNAUTHORIZED,
           undefined,
           {
+            errorCode,
             gateway: PaymentGateway.NPG,
             gatewayAuthorizationStatus: NpgAuthorizationStatus.DECLINED,
-          },
-          errorCode
+          }
         )
       ).toEqual(ViewOutcomeEnum.PSP_ERROR);
     });
@@ -443,10 +428,10 @@ describe("TransactionResultUtil", () => {
         TransactionStatusEnum.UNAUTHORIZED,
         undefined,
         {
+          errorCode: "116",
           gateway: PaymentGateway.NPG,
           gatewayAuthorizationStatus: NpgAuthorizationStatus.DECLINED,
-        },
-        "116"
+        }
       )
     ).toEqual(ViewOutcomeEnum.BALANCE_LIMIT);
   });
@@ -458,10 +443,10 @@ describe("TransactionResultUtil", () => {
         TransactionStatusEnum.UNAUTHORIZED,
         undefined,
         {
+          errorCode: "117",
           gateway: PaymentGateway.NPG,
           gatewayAuthorizationStatus: NpgAuthorizationStatus.DECLINED,
-        },
-        "117"
+        }
       )
     ).toEqual(ViewOutcomeEnum.CVV_ERROR);
   });
@@ -473,10 +458,10 @@ describe("TransactionResultUtil", () => {
         TransactionStatusEnum.UNAUTHORIZED,
         undefined,
         {
+          errorCode: "121",
           gateway: PaymentGateway.NPG,
           gatewayAuthorizationStatus: NpgAuthorizationStatus.DECLINED,
-        },
-        "121"
+        }
       )
     ).toEqual(ViewOutcomeEnum.LIMIT_EXCEEDED);
   });
