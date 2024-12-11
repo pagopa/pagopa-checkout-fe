@@ -198,6 +198,19 @@
     },
     "title": "Inserisci la tua email"
   },
+  "findOutMoreModal":{
+    "title": "Cosa fare se il pagamento non va a buon fine?",
+    "section1Title": "1. Paga l'avviso",
+    "section1ContentRow1": "Ricorda di pagare l'avviso entro le scadenze previste dall'ente.",
+    "section1ContentRow2": "Se non riesci tramite questo sito, ",
+    "section1ContentRow2Link": "scopri gli altri canali abilitati a pagoPA.",
+    "section2Title": "2. Attendi il rimborso",
+    "section2ContentRow1": "Di solito l'importo viene riaccreditato entro pochi minuti.",
+    "section2ContentRow2": "In altri casi, il trasferimento di denaro sul tuo conto o carta potrebbe richiedere più tempo.",
+    "section3Title": "3. Contatta l'assistenza",
+    "section3ContentRow1": "Se dopo 5 giorni lavorativi non hai ancora ricevuto il rimborso, ",
+    "section3ContentRow2Link": "contatta l'assistenza."
+  },
   "paymentResponsePage": {
     "0": {
       "body": "Abbiamo inviato la ricevuta del pagamento a {{useremail}}",
@@ -269,7 +282,8 @@
       "title": "C’è stato un problema con il gestore del tuo metodo di pagamento"
     },
     "buttons": {
-      "continue": "Continua"
+      "continue": "Continua",
+      "findOutMode": "Scopri di più"
     },
     "survey": {
       "body": "Raccontaci la tua esperienza con il pagamento e aiutaci a migliorare.",

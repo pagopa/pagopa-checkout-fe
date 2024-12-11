@@ -202,6 +202,20 @@ interface Translation {
     };
     title: string;
   };
+  findOutMoreModal: {
+    title: string;
+    section1Title: string;
+    section1ContentRow1: string;
+    section1ContentRow2: string;
+    section1ContentRow2Link: string;
+    section2Title: string;
+    section2ContentRow1: string;
+    section2ContentRow2: string;
+    section3Title: string;
+    section3ContentRow1: string;
+    section3ContentRow2: string;
+    section3ContentRow2Link: string;
+  };
   paymentResponsePage: {
     0: {
       body: string;
@@ -267,6 +281,10 @@ interface Translation {
     "3dsNotInitiated": {
       body: string;
       title: string;
+    };
+    buttons: {
+      continue: string;
+      findOutMode: string;
     };
     survey: {
       body: string;

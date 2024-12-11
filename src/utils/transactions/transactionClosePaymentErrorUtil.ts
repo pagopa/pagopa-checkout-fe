@@ -13,11 +13,11 @@ export const getClosePaymentErrorsMap = () => [
     outcome: ViewOutcomeEnum.REFUND_IMMEDIATELY,
   },
   // this is out of scope, will be used later
-  /*{
+  /* {
     statusCode: "422",
     enablingDescriptions: ["Outcome already acquired"],
     outcome: ViewOutcomeEnum.TAKING_CHARGE,
-  },*/
+  }, */
   {
     statusCode: "400",
     enablingDescriptions: [

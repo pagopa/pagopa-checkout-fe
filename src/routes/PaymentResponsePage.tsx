@@ -37,6 +37,7 @@ import {
   TransactionInfoGatewayInfo,
   TransactionInfoNodeInfo,
 } from "../../generated/definitions/payment-ecommerce-v2/TransactionInfo";
+import FindOutMoreModal from "./../components/modals/FindOutMoreModal";
 
 type PrintData = {
   useremail: string;
@@ -46,6 +47,7 @@ type PrintData = {
 export default function PaymentResponsePage() {
   const conf = getConfigOrThrow();
   const [loading, setLoading] = useState(true);
+  const [findOutMoreOpen, setFindOutMoreOpen] = useState<boolean>(false);
   const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
   const [outcome, setOutcome] = useState<ViewOutcomeEnum>();
   const [outcomeMessage, setOutcomeMessage] = useState<responseMessage>();
@@ -93,6 +95,7 @@ export default function PaymentResponsePage() {
         idStatus,
         outcome,
       });
+
       setOutcome(outcome);
       showFinalResult(outcome);
     };
@@ -127,6 +130,12 @@ export default function PaymentResponsePage() {
 
   return (
     <PageContainer>
+      <FindOutMoreModal
+        open={findOutMoreOpen}
+        onClose={() => {
+          setFindOutMoreOpen(false);
+        }}
+      />
       <Box
         sx={{
           display: "flex",
@@ -169,8 +178,27 @@ export default function PaymentResponsePage() {
                 : ""}
             </Typography>
             <Box px={8} sx={{ width: "100%", height: "100%" }}>
+              {outcome === ViewOutcomeEnum.REFUND_IMMEDIATELY && (
+                <Button
+                  variant="contained"
+                  onClick={() => {
+                    setFindOutMoreOpen(true);
+                  }}
+                  sx={{
+                    width: "100%",
+                    minHeight: 45,
+                    my: 4,
+                  }}
+                >
+                  {t("paymentResponsePage.buttons.findOutMode")}
+                </Button>
+              )}
               <Button
-                variant="outlined"
+                variant={
+                  outcome === ViewOutcomeEnum.REFUND_IMMEDIATELY
+                    ? "text"
+                    : "outlined"
+                }
                 onClick={() => {
                   window.location.replace(redirectUrl);
                 }}
