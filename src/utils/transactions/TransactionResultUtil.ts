@@ -227,11 +227,10 @@ export const getViewOutcomeFromEcommerceResultCode: GetViewOutcomeFromEcommerceR
           ? ViewOutcomeEnum.TAKING_CHARGE
           : ViewOutcomeEnum.GENERIC_ERROR; // BE_KO(99)?
       case TransactionStatusEnum.EXPIRED: {
-        if (gatewayInfo?.gatewayAuthorizationStatus == null) {
+        if (gatewayInfo?.authorizationStatus == null) {
           return ViewOutcomeEnum.TAKING_CHARGE;
         } else if (
-          gatewayInfo?.gatewayAuthorizationStatus !==
-          NpgAuthorizationStatus.EXECUTED
+          gatewayInfo?.authorizationStatus !== NpgAuthorizationStatus.EXECUTED
         ) {
           return evaluateOutcomeStatus(
             gatewayInfo,
@@ -340,7 +339,7 @@ function evaluateOutcomeStatus(
 ): ViewOutcomeEnum {
   switch (gatewayInfo?.gateway) {
     case PaymentGateway.NPG:
-      switch (gatewayInfo?.gatewayAuthorizationStatus) {
+      switch (gatewayInfo?.authorizationStatus) {
         case NpgAuthorizationStatus.EXECUTED:
           return executedOutcome || ViewOutcomeEnum.PSP_ERROR;
         case NpgAuthorizationStatus.AUTHORIZED:

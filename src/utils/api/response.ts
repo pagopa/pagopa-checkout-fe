@@ -50,8 +50,7 @@ const interruptTransactionPolling = (
     EcommerceMaybeInterruptStatusCodeEnumType.decode(transactionStaus),
     E.isRight
   ) &&
-    gatewayInfo?.gatewayAuthorizationStatus !==
-      NpgAuthorizationStatus.EXECUTED);
+    gatewayInfo?.authorizationStatus !== NpgAuthorizationStatus.EXECUTED);
 
 const config = getConfigOrThrow();
 /**

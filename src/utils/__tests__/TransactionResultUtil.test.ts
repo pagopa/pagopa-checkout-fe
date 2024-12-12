@@ -98,7 +98,7 @@ describe("TransactionResultUtil", () => {
         undefined,
         {
           gateway: PaymentGateway.NPG,
-          gatewayAuthorizationStatus: undefined,
+          authorizationStatus: undefined,
         }
       )
     ).toEqual(ViewOutcomeEnum.PSP_ERROR);
@@ -119,7 +119,7 @@ describe("TransactionResultUtil", () => {
         undefined,
         {
           gateway: PaymentGateway.NPG,
-          gatewayAuthorizationStatus: undefined,
+          authorizationStatus: undefined,
         }
       )
     ).toEqual(ViewOutcomeEnum.PSP_ERROR);
@@ -185,7 +185,7 @@ describe("TransactionResultUtil", () => {
         undefined,
         {
           gateway: PaymentGateway.NPG,
-          gatewayAuthorizationStatus: undefined,
+          authorizationStatus: undefined,
         }
       )
     ).toEqual(ViewOutcomeEnum.PSP_ERROR);
@@ -208,7 +208,7 @@ describe("TransactionResultUtil", () => {
           },
           {
             gateway: PaymentGateway.NPG,
-            gatewayAuthorizationStatus: NpgAuthorizationStatus.EXECUTED,
+            authorizationStatus: NpgAuthorizationStatus.EXECUTED,
           }
         )
       ).toEqual(ViewOutcomeEnum.SUCCESS);
@@ -224,7 +224,7 @@ describe("TransactionResultUtil", () => {
       expect(
         getViewOutcomeFromEcommerceResultCode(transactionStatus, undefined, {
           gateway: PaymentGateway.NPG,
-          gatewayAuthorizationStatus: NpgAuthorizationStatus.EXECUTED,
+          authorizationStatus: NpgAuthorizationStatus.EXECUTED,
         })
       ).toEqual(ViewOutcomeEnum.GENERIC_ERROR);
     });
@@ -244,7 +244,7 @@ describe("TransactionResultUtil", () => {
           undefined,
           {
             gateway: PaymentGateway.NPG,
-            gatewayAuthorizationStatus: npgAuthorizationStatus,
+            authorizationStatus: npgAuthorizationStatus,
           }
         )
       ).toEqual(ViewOutcomeEnum.AUTH_ERROR);
@@ -277,7 +277,7 @@ describe("TransactionResultUtil", () => {
           {
             errorCode,
             gateway: PaymentGateway.NPG,
-            gatewayAuthorizationStatus: NpgAuthorizationStatus.DECLINED,
+            authorizationStatus: NpgAuthorizationStatus.DECLINED,
           }
         )
       ).toEqual(ViewOutcomeEnum.AUTH_ERROR);
@@ -295,7 +295,7 @@ describe("TransactionResultUtil", () => {
           {
             errorCode,
             gateway: PaymentGateway.NPG,
-            gatewayAuthorizationStatus: NpgAuthorizationStatus.DECLINED,
+            authorizationStatus: NpgAuthorizationStatus.DECLINED,
           }
         )
       ).toEqual(ViewOutcomeEnum.INVALID_DATA);
@@ -313,7 +313,7 @@ describe("TransactionResultUtil", () => {
           {
             errorCode,
             gateway: PaymentGateway.NPG,
-            gatewayAuthorizationStatus: NpgAuthorizationStatus.DECLINED,
+            authorizationStatus: NpgAuthorizationStatus.DECLINED,
           }
         )
       ).toEqual(ViewOutcomeEnum.INVALID_CARD);
@@ -328,7 +328,7 @@ describe("TransactionResultUtil", () => {
         undefined,
         {
           gateway: PaymentGateway.NPG,
-          gatewayAuthorizationStatus: NpgAuthorizationStatus.CANCELED,
+          authorizationStatus: NpgAuthorizationStatus.CANCELED,
         }
       )
     ).toEqual(ViewOutcomeEnum.CANCELED_BY_USER);
@@ -342,7 +342,7 @@ describe("TransactionResultUtil", () => {
         undefined,
         {
           gateway: PaymentGateway.NPG,
-          gatewayAuthorizationStatus: undefined,
+          authorizationStatus: undefined,
         }
       )
     ).toEqual(ViewOutcomeEnum.TAKING_CHARGE);
@@ -355,7 +355,7 @@ describe("TransactionResultUtil", () => {
         },
         {
           gateway: PaymentGateway.NPG,
-          gatewayAuthorizationStatus: NpgAuthorizationStatus.EXECUTED,
+          authorizationStatus: NpgAuthorizationStatus.EXECUTED,
         }
       )
     ).toEqual(ViewOutcomeEnum.TAKING_CHARGE);
@@ -366,7 +366,7 @@ describe("TransactionResultUtil", () => {
         undefined,
         {
           gateway: PaymentGateway.NPG,
-          gatewayAuthorizationStatus: NpgAuthorizationStatus.EXECUTED,
+          authorizationStatus: NpgAuthorizationStatus.EXECUTED,
         }
       )
     ).toEqual(ViewOutcomeEnum.TAKING_CHARGE);
@@ -388,7 +388,7 @@ describe("TransactionResultUtil", () => {
           undefined,
           {
             gateway: PaymentGateway.NPG,
-            gatewayAuthorizationStatus: npgAuthorizationStatus,
+            authorizationStatus: npgAuthorizationStatus,
           }
         )
       ).toEqual(ViewOutcomeEnum.PSP_ERROR);
@@ -414,7 +414,7 @@ describe("TransactionResultUtil", () => {
           {
             errorCode,
             gateway: PaymentGateway.NPG,
-            gatewayAuthorizationStatus: NpgAuthorizationStatus.DECLINED,
+            authorizationStatus: NpgAuthorizationStatus.DECLINED,
           }
         )
       ).toEqual(ViewOutcomeEnum.PSP_ERROR);
@@ -430,7 +430,7 @@ describe("TransactionResultUtil", () => {
         {
           errorCode: "116",
           gateway: PaymentGateway.NPG,
-          gatewayAuthorizationStatus: NpgAuthorizationStatus.DECLINED,
+          authorizationStatus: NpgAuthorizationStatus.DECLINED,
         }
       )
     ).toEqual(ViewOutcomeEnum.BALANCE_LIMIT);
@@ -445,7 +445,7 @@ describe("TransactionResultUtil", () => {
         {
           errorCode: "117",
           gateway: PaymentGateway.NPG,
-          gatewayAuthorizationStatus: NpgAuthorizationStatus.DECLINED,
+          authorizationStatus: NpgAuthorizationStatus.DECLINED,
         }
       )
     ).toEqual(ViewOutcomeEnum.CVV_ERROR);
@@ -460,7 +460,7 @@ describe("TransactionResultUtil", () => {
         {
           errorCode: "121",
           gateway: PaymentGateway.NPG,
-          gatewayAuthorizationStatus: NpgAuthorizationStatus.DECLINED,
+          authorizationStatus: NpgAuthorizationStatus.DECLINED,
         }
       )
     ).toEqual(ViewOutcomeEnum.LIMIT_EXCEEDED);
