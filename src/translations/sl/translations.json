@@ -197,6 +197,19 @@
     },
     "title": "Vnesite svoj elektronki naslov"
   },
+  "findOutMoreModal":{
+    "title": "Cosa fare se il pagamento non va a buon fine?",
+    "section1Title": "1. Paga l'avviso",
+    "section1ContentRow1": "Ricorda di pagare l'avviso entro le scadenze previste dall'ente.",
+    "section1ContentRow2": "Se non riesci tramite questo sito, ",
+    "section1ContentRow2Link": "scopri gli altri canali abilitati a pagoPA.",
+    "section2Title": "2. Attendi il rimborso",
+    "section2ContentRow1": "Di solito l'importo viene riaccreditato entro pochi minuti.",
+    "section2ContentRow2": "In altri casi, il trasferimento di denaro sul tuo conto o carta potrebbe richiedere più tempo.",
+    "section3Title": "3. Contatta l'assistenza",
+    "section3ContentRow1": "Se dopo 5 giorni lavorativi non hai ancora ricevuto il rimborso, ",
+    "section3ContentRow2Link": "contatta l'assistenza."
+  },
   "paymentResponsePage": {
     "0": {
       "body": "Potrdilo o plačilu smo poslali na {{useremail}}",
@@ -243,6 +256,10 @@
       "body": "Rezultat plačila boste prejeli na naslov {{useremail}}.",
       "title": "Počakajte na potrditev plačila"
     },
+    "18": {
+      "body": "L’importo autorizzato è stato rimborsato sul tuo metodo di pagamento. Il trasferimento di denaro potrebbe richiedere del tempo.",
+      "title": "Il pagamento non è andato a buon fine"
+    },
     "25": {
       "body": "Non è stato addebitato alcun importo.\n Se il problema persiste, prova a usare un altro metodo o gestore del pagamento.",
       "title": "Il pagamento non è andato a buon fine"
@@ -264,7 +281,8 @@
       "title": "Pri vašem ponudniku plačilnega sredstva je prišlo do težave"
     },
     "buttons": {
-      "continue": "Nadaljuj"
+      "continue": "Nadaljuj",
+      "findOutMode": "Scopri di più"
     },
     "survey": {
       "body": "Zaupajte nam svoje izkušnje s plačevanjem in nam pomagajte izboljšati se.",
