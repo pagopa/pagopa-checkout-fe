@@ -40,12 +40,14 @@ import {
 /** This function return true when polling on GET transaction must be interrupted */
 const interruptTransactionPolling = (
   transactionStaus: TransactionInfo["status"],
-  gatewayInfo?: TransactionInfoGatewayInfo
+  gatewayInfo?: TransactionInfoGatewayInfo,
+  nodeInfo?: TransactionInfoNodeInfo
 ) =>
   pipe(
     EcommerceInterruptStatusCodeEnumType.decode(transactionStaus),
     E.isRight
   ) ||
+  nodeInfo?.closePaymentResultError?.statusCode?.toString().startsWith("4") ||
   (pipe(
     EcommerceMaybeInterruptStatusCodeEnumType.decode(transactionStaus),
     E.isRight
@@ -84,11 +86,12 @@ const ecommerceClientWithPolling: EcommerceClient = createClient({
         counter.reset();
         return false;
       }
-      const { status, gatewayInfo } = (await r
+      const { status, gatewayInfo, nodeInfo } = (await r
         .clone()
         .json()) as TransactionInfo;
       return !(
-        r.status === 200 && interruptTransactionPolling(status, gatewayInfo)
+        r.status === 200 &&
+        interruptTransactionPolling(status, gatewayInfo, nodeInfo)
       );
     }
   ),
