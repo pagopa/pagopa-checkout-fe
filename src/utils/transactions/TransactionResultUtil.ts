@@ -179,9 +179,7 @@ export const getViewOutcomeFromEcommerceResultCode: GetViewOutcomeFromEcommerceR
   // eslint-disable-next-line complexity
   (transactionStatus, nodeInfo, gatewayInfo): ViewOutcomeEnum => {
     if (nodeInfo?.closePaymentResultError) {
-      return evaluateClosePaymentResultError(
-        nodeInfo?.closePaymentResultError
-      );
+      return evaluateClosePaymentResultError(nodeInfo?.closePaymentResultError);
     }
     switch (transactionStatus) {
       case TransactionStatusEnum.NOTIFIED_OK:

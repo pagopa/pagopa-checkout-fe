@@ -119,7 +119,7 @@ export default function PaymentResponsePage() {
 
   useEffect(() => {
     if (outcomeMessage && outcomeMessage.title) {
-      const pageTitle =  t(outcomeMessage.title, usefulPrintData);
+      const pageTitle = t(outcomeMessage.title, usefulPrintData);
       (document.title as any) = pageTitle + " - pagoPA";
     }
   }, [outcomeMessage]);
