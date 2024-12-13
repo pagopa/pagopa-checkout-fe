@@ -14,7 +14,6 @@ export const getClosePaymentErrorsMap = () => [
   },
   {
     statusCode: "422",
-    enablingDescriptions: [],
     outcome: ViewOutcomeEnum.GENERIC_ERROR,
   },
   {
