@@ -178,6 +178,11 @@ export type GetViewOutcomeFromEcommerceResultCode = (
 export const getViewOutcomeFromEcommerceResultCode: GetViewOutcomeFromEcommerceResultCode =
   // eslint-disable-next-line complexity
   (transactionStatus, nodeInfo, gatewayInfo): ViewOutcomeEnum => {
+    if (nodeInfo?.closePaymentResultError) {
+      return evaluateClosePaymentResultError(
+        nodeInfo?.closePaymentResultError
+      );
+    }
     switch (transactionStatus) {
       case TransactionStatusEnum.NOTIFIED_OK:
         return ViewOutcomeEnum.SUCCESS;
@@ -199,16 +204,6 @@ export const getViewOutcomeFromEcommerceResultCode: GetViewOutcomeFromEcommerceR
       case TransactionStatusEnum.CANCELLATION_EXPIRED:
         return ViewOutcomeEnum.CANCELED_BY_USER;
       case TransactionStatusEnum.CLOSURE_ERROR:
-        if (nodeInfo?.closePaymentResultError) {
-          return evaluateClosePaymentResultError(
-            nodeInfo?.closePaymentResultError
-          );
-        } else {
-          return evaluateOutcomeStatus(
-            gatewayInfo,
-            ViewOutcomeEnum.GENERIC_ERROR // BE_KO(99)
-          );
-        }
       case TransactionStatusEnum.AUTHORIZATION_COMPLETED:
         return evaluateOutcomeStatus(
           gatewayInfo,
