@@ -177,7 +177,7 @@ export default function PaymentResponsePage() {
                 : ""}
             </Typography>
             <Box px={8} sx={{ width: "100%", height: "100%" }}>
-              {outcome === ViewOutcomeEnum.REFUND_IMMEDIATELY && (
+              {outcome === ViewOutcomeEnum.REFUNDED && (
                 <Button
                   variant="contained"
                   onClick={() => {
@@ -194,7 +194,7 @@ export default function PaymentResponsePage() {
               )}
               <Button
                 variant={
-                  outcome === ViewOutcomeEnum.REFUND_IMMEDIATELY
+                  outcome === ViewOutcomeEnum.REFUNDED
                     ? "text"
                     : "outlined"
                 }

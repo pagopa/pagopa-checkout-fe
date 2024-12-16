@@ -22,7 +22,7 @@ export enum ViewOutcomeEnum {
   CANCELED_BY_USER = "8",
   EXCESSIVE_AMOUNT = "10",
   TAKING_CHARGE = "17",
-  REFUND_IMMEDIATELY = "18",
+  REFUNDED = "18",
   PSP_ERROR = "25",
   BALANCE_LIMIT = "116",
   CVV_ERROR = "117",
