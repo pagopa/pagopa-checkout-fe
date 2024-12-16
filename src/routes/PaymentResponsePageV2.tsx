@@ -133,7 +133,7 @@ export default function PaymentResponsePageV2() {
               ? t(outcomeMessage.body, usefulPrintData)
               : ""}
           </Typography>
-          <Box px={6} sx={{ width: "100%", height: "100%" }}>
+          <Box px={8} my={3} sx={{ width: "100%", height: "100%" }}>
             {outcome === ViewOutcomeEnum.REFUNDED && (
               <Button
                 variant="contained"
@@ -156,7 +156,7 @@ export default function PaymentResponsePageV2() {
               sx={{
                 width: "100%",
                 minHeight: 45,
-                my: 2,
+                my: 1,
               }}
             >
               {cart != null
