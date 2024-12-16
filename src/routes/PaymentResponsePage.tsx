@@ -176,7 +176,7 @@ export default function PaymentResponsePage() {
                 ? t(outcomeMessage.body, usefulPrintData)
                 : ""}
             </Typography>
-            <Box px={8} sx={{ width: "100%", height: "100%" }}>
+            <Box px={8} my={3} sx={{ width: "100%", height: "100%" }}>
               {outcome === ViewOutcomeEnum.REFUNDED && (
                 <Button
                   variant="contained"
@@ -186,7 +186,6 @@ export default function PaymentResponsePage() {
                   sx={{
                     width: "100%",
                     minHeight: 45,
-                    my: 4,
                   }}
                 >
                   {t("paymentResponsePage.buttons.findOutMode")}
@@ -194,9 +193,7 @@ export default function PaymentResponsePage() {
               )}
               <Button
                 variant={
-                  outcome === ViewOutcomeEnum.REFUNDED
-                    ? "text"
-                    : "outlined"
+                  outcome === ViewOutcomeEnum.REFUNDED ? "text" : "outlined"
                 }
                 onClick={() => {
                   window.location.replace(redirectUrl);
@@ -204,7 +201,7 @@ export default function PaymentResponsePage() {
                 sx={{
                   width: "100%",
                   minHeight: 45,
-                  my: 4,
+                  my: 1,
                 }}
               >
                 {cart != null
