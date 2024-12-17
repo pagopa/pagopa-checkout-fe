@@ -289,9 +289,9 @@ export const EcommerceMaybeInterruptStatusCodeEnumType =
  * NOTE:
  * ClosePaymentErrorsMap supports placeholders, so 5xx will match any error >= 500
  */
-function evaluateClosePaymentResultError(
+export const evaluateClosePaymentResultError = (
   closePaymentResultError?: TransactionInfoNodeInfoClosePaymentResultError
-): ViewOutcomeEnum {
+): ViewOutcomeEnum => {
   // NOTE: this should never happen by design,
   // is only added just to be sure
   if (closePaymentResultError === undefined) {
@@ -324,7 +324,7 @@ function evaluateClosePaymentResultError(
 
   // default
   return ViewOutcomeEnum.GENERIC_ERROR;
-}
+};
 
 function evaluateOutcomeStatus(
   gatewayInfo?: TransactionInfo["gatewayInfo"],
