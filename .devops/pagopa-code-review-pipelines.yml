@@ -34,7 +34,7 @@ resources:
     - repository: checkout-be-mock
       type: github
       name: pagopa/pagopa-checkout-be-mock
-      ref: CHK-3619-update-be-mock-with-new-closepayment-error-object
+      ref: main
       endpoint: 'io-azure-devops-github-ro'
 
 stages:
