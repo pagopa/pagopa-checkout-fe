@@ -36,7 +36,7 @@ function FindOutMoreModal(props: IFindOutModeProps) {
       onClose={props.onClose}
     >
       <DialogTitle sx={{ m: 0, p: 2 }}>
-        <Typography variant="h6" component={"div"} sx={{ mb: 2 }}>
+        <Typography variant="h6" component={"div"} sx={{ mb: 2, fontWeight: "bold" }}>
           {t("findOutMoreModal.title")}
         </Typography>
       </DialogTitle>
