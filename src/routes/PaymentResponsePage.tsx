@@ -29,14 +29,15 @@ import {
   ViewOutcomeEnum,
 } from "../utils/transactions/TransactionResultUtil";
 import { Cart } from "../features/payment/models/paymentModel";
-import {
-  NewTransactionResponse,
-  SendPaymentResultOutcomeEnum,
-} from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
+import { NewTransactionResponse } from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { resetThreshold } from "../redux/slices/threshold";
 import { Bundle } from "../../generated/definitions/payment-ecommerce/Bundle";
 import { TransactionStatusEnum } from "../../generated/definitions/payment-ecommerce/TransactionStatus";
-import { TransactionInfo } from "../../generated/definitions/payment-ecommerce/TransactionInfo";
+import {
+  TransactionInfoGatewayInfo,
+  TransactionInfoNodeInfo,
+} from "../../generated/definitions/payment-ecommerce-v2/TransactionInfo";
+import FindOutMoreModal from "./../components/modals/FindOutMoreModal";
 
 type PrintData = {
   useremail: string;
@@ -46,6 +47,7 @@ type PrintData = {
 export default function PaymentResponsePage() {
   const conf = getConfigOrThrow();
   const [loading, setLoading] = useState(true);
+  const [findOutMoreOpen, setFindOutMoreOpen] = useState<boolean>(false);
   const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
   const [outcome, setOutcome] = useState<ViewOutcomeEnum>();
   const [outcomeMessage, setOutcomeMessage] = useState<responseMessage>();
@@ -78,23 +80,20 @@ export default function PaymentResponsePage() {
 
     const handleFinalStatusResult = (
       idStatus?: TransactionStatusEnum,
-      sendPaymentResultOutcome?: SendPaymentResultOutcomeEnum,
-      gateway?: string,
-      errorCode?: string,
-      gatewayAuthorizationStatus?: TransactionInfo["gatewayAuthorizationStatus"]
+      nodeInfo?: TransactionInfoNodeInfo,
+      gatewayInfo?: TransactionInfoGatewayInfo
     ) => {
       const outcome: ViewOutcomeEnum = getViewOutcomeFromEcommerceResultCode(
         idStatus,
-        sendPaymentResultOutcome,
-        gateway,
-        errorCode,
-        gatewayAuthorizationStatus
+        nodeInfo,
+        gatewayInfo
       );
       mixpanel.track(PAYMENT_OUTCOME_CODE.value, {
         EVENT_ID: PAYMENT_OUTCOME_CODE.value,
         idStatus,
         outcome,
       });
+
       setOutcome(outcome);
       showFinalResult(outcome);
     };
@@ -120,7 +119,7 @@ export default function PaymentResponsePage() {
 
   useEffect(() => {
     if (outcomeMessage && outcomeMessage.title) {
-      const pageTitle = t(outcomeMessage.title);
+      const pageTitle = t(outcomeMessage.title, usefulPrintData);
       (document.title as any) = pageTitle + " - pagoPA";
     }
   }, [outcomeMessage]);
@@ -129,6 +128,13 @@ export default function PaymentResponsePage() {
 
   return (
     <PageContainer>
+      <FindOutMoreModal
+        maxWidth="lg"
+        open={findOutMoreOpen}
+        onClose={() => {
+          setFindOutMoreOpen(false);
+        }}
+      />
       <Box
         sx={{
           display: "flex",
@@ -170,16 +176,32 @@ export default function PaymentResponsePage() {
                 ? t(outcomeMessage.body, usefulPrintData)
                 : ""}
             </Typography>
-            <Box px={8} sx={{ width: "100%", height: "100%" }}>
+            <Box px={8} my={3} sx={{ width: "100%", height: "100%" }}>
+              {outcome === ViewOutcomeEnum.REFUNDED && (
+                <Button
+                  variant="contained"
+                  onClick={() => {
+                    setFindOutMoreOpen(true);
+                  }}
+                  sx={{
+                    width: "100%",
+                    minHeight: 45,
+                  }}
+                >
+                  {t("paymentResponsePage.buttons.findOutMode")}
+                </Button>
+              )}
               <Button
-                variant="outlined"
+                variant={
+                  outcome === ViewOutcomeEnum.REFUNDED ? "text" : "outlined"
+                }
                 onClick={() => {
                   window.location.replace(redirectUrl);
                 }}
                 sx={{
                   width: "100%",
                   minHeight: 45,
-                  my: 4,
+                  my: 1,
                 }}
               >
                 {cart != null

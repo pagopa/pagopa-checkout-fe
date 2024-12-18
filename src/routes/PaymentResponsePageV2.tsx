@@ -1,6 +1,7 @@
 import { Box, Button, Typography } from "@mui/material";
-import { default as React, useEffect } from "react";
+import { default as React, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import FindOutMoreModal from "../components/modals/FindOutMoreModal";
 import { getFragmentParameter } from "../utils/regex/urlUtilities";
 import { getConfigOrThrow } from "../utils/config/config";
 import SurveyLink from "../components/commons/SurveyLink";
@@ -36,6 +37,7 @@ export default function PaymentResponsePageV2() {
   const conf = getConfigOrThrow();
 
   const outcomeMessage = responseOutcome[outcome];
+  const [findOutMoreOpen, setFindOutMoreOpen] = useState<boolean>(false);
 
   const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
 
@@ -77,13 +79,20 @@ export default function PaymentResponsePageV2() {
 
   useEffect(() => {
     if (outcomeMessage && outcomeMessage.title) {
-      const pageTitle = t(outcomeMessage.title);
+      const pageTitle = t(outcomeMessage.title, usefulPrintData);
       (document.title as any) = pageTitle + " - pagoPA";
     }
   }, [outcomeMessage]);
 
   return (
     <PageContainer>
+      <FindOutMoreModal
+        maxWidth="lg"
+        open={findOutMoreOpen}
+        onClose={() => {
+          setFindOutMoreOpen(false);
+        }}
+      />
       <Box
         sx={{
           display: "flex",
@@ -124,7 +133,21 @@ export default function PaymentResponsePageV2() {
               ? t(outcomeMessage.body, usefulPrintData)
               : ""}
           </Typography>
-          <Box px={8} sx={{ width: "100%", height: "100%" }}>
+          <Box px={8} my={3} sx={{ width: "100%", height: "100%" }}>
+            {outcome === ViewOutcomeEnum.REFUNDED && (
+              <Button
+                variant="contained"
+                onClick={() => {
+                  setFindOutMoreOpen(true);
+                }}
+                sx={{
+                  width: "100%",
+                  minHeight: 45,
+                }}
+              >
+                {t("paymentResponsePage.buttons.findOutMode")}
+              </Button>
+            )}
             <Button
               variant="outlined"
               onClick={() => {
@@ -133,7 +156,7 @@ export default function PaymentResponsePageV2() {
               sx={{
                 width: "100%",
                 minHeight: 45,
-                my: 4,
+                my: 1,
               }}
             >
               {cart != null
