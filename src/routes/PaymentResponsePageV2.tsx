@@ -158,7 +158,7 @@ export default function PaymentResponsePageV2() {
                 my: 1,
               }}
             >
-              {redirectUrl != "/"
+              {redirectUrl !== "/"
                 ? t("paymentResponsePage.buttons.continue")
                 : t("errorButton.close")}
             </Button>
