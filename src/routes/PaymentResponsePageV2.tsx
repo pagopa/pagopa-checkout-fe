@@ -87,8 +87,9 @@ export default function PaymentResponsePageV2() {
   useEffect(() => {
     dispatch(resetThreshold());
     window.removeEventListener("beforeunload", onBrowserUnload);
+    const returnUrl = initRedirectUrl(outcome);
     clearStorage();
-    setRedirectUrl(initRedirectUrl(outcome));
+    setRedirectUrl(returnUrl);
 
     return () => {
       clearStorage();
