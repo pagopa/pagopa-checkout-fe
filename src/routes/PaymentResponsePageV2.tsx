@@ -89,6 +89,10 @@ export default function PaymentResponsePageV2() {
     window.removeEventListener("beforeunload", onBrowserUnload);
     clearStorage();
     setRedirectUrl(initRedirectUrl(outcome));
+
+    return () => {
+      clearStorage();
+    };
   }, []);
 
   const { t } = useTranslation();

@@ -26,7 +26,7 @@ export enum SessionItems {
   orderId = "orderId",
   correlationId = "correlationId",
   cartClientId = "cartClientId",
-  cartReturnUrl = "cartReturnUrl"
+  cartReturnUrl = "cartReturnUrl",
 }
 const isParsable = (item: SessionItems) =>
   !(
