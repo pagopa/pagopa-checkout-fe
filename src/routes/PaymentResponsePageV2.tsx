@@ -41,9 +41,11 @@ export default function PaymentResponsePageV2() {
 
   const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
 
-  const [redirectUrl, setRedirectUrl] = useState<string>(outcome === ViewOutcomeEnum.SUCCESS
-    ? cart?.returnUrls.returnOkUrl || "/"
-    : cart?.returnUrls.returnErrorUrl || "/");
+  const [redirectUrl] = useState<string>(
+    outcome === ViewOutcomeEnum.SUCCESS
+      ? cart?.returnUrls.returnOkUrl || "/"
+      : cart?.returnUrls.returnErrorUrl || "/"
+  );
 
   const transactionData = getSessionItem(SessionItems.transaction) as
     | NewTransactionResponse
