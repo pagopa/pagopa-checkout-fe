@@ -104,8 +104,8 @@ export default function PaymentResponsePage() {
         outcome,
       });
 
-      setOutcome(ViewOutcomeEnum.REFUNDED);
-      showFinalResult(ViewOutcomeEnum.REFUNDED);
+      setOutcome(outcome);
+      showFinalResult(outcome);
     };
 
     const showFinalResult = (outcome: ViewOutcomeEnum) => {
