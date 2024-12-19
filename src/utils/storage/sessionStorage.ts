@@ -25,8 +25,7 @@ export enum SessionItems {
   paymentMethodInfo = "paymentMethodInfo",
   orderId = "orderId",
   correlationId = "correlationId",
-  cartClientId = "cartClientId",
-  cartReturnUrl = "cartReturnUrl",
+  cartClientId = "cartClientId"
 }
 const isParsable = (item: SessionItems) =>
   !(
@@ -34,8 +33,7 @@ const isParsable = (item: SessionItems) =>
     item === SessionItems.useremail ||
     item === SessionItems.orderId ||
     item === SessionItems.correlationId ||
-    item === SessionItems.cartClientId ||
-    item === SessionItems.cartReturnUrl
+    item === SessionItems.cartClientId
   );
 
 export const getSessionItem = (item: SessionItems) => {

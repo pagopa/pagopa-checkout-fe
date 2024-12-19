@@ -14,7 +14,6 @@ import {
   clearStorage,
   getSessionItem,
   SessionItems,
-  setSessionItem,
 } from "../utils/storage/sessionStorage";
 import { ViewOutcomeEnum } from "../utils/transactions/TransactionResultUtil";
 import { Cart } from "../features/payment/models/paymentModel";
@@ -26,25 +25,6 @@ import { ROUTE_FRAGMENT } from "./models/routeModel";
 type PrintData = {
   useremail: string;
   amount: string;
-};
-
-const initRedirectUrl = (outcome: ViewOutcomeEnum) => {
-  const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
-  const sessionCartRedirectUrl = getSessionItem(
-    SessionItems.cartReturnUrl
-  ) as string;
-
-  if (sessionCartRedirectUrl) {
-    return sessionCartRedirectUrl;
-  }
-  const selectedReturnUrl =
-    outcome === ViewOutcomeEnum.SUCCESS
-      ? cart?.returnUrls.returnOkUrl || "/"
-      : cart?.returnUrls.returnErrorUrl || "/";
-
-  setSessionItem(SessionItems.cartReturnUrl, selectedReturnUrl);
-
-  return selectedReturnUrl;
 };
 
 export default function PaymentResponsePageV2() {
@@ -59,7 +39,11 @@ export default function PaymentResponsePageV2() {
   const outcomeMessage = responseOutcome[outcome];
   const [findOutMoreOpen, setFindOutMoreOpen] = useState<boolean>(false);
 
-  const [redirectUrl, setRedirectUrl] = useState<string>("/");
+  const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
+
+  const [redirectUrl, setRedirectUrl] = useState<string>(outcome === ViewOutcomeEnum.SUCCESS
+    ? cart?.returnUrls.returnOkUrl || "/"
+    : cart?.returnUrls.returnErrorUrl || "/");
 
   const transactionData = getSessionItem(SessionItems.transaction) as
     | NewTransactionResponse
@@ -87,13 +71,7 @@ export default function PaymentResponsePageV2() {
   useEffect(() => {
     dispatch(resetThreshold());
     window.removeEventListener("beforeunload", onBrowserUnload);
-    const returnUrl = initRedirectUrl(outcome);
     clearStorage();
-    setRedirectUrl(returnUrl);
-
-    return () => {
-      clearStorage();
-    };
   }, []);
 
   const { t } = useTranslation();
@@ -180,7 +158,7 @@ export default function PaymentResponsePageV2() {
                 my: 1,
               }}
             >
-              {redirectUrl !== "/"
+              {redirectUrl != "/"
                 ? t("paymentResponsePage.buttons.continue")
                 : t("errorButton.close")}
             </Button>
