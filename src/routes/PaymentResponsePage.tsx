@@ -44,6 +44,11 @@ type PrintData = {
   amount: string;
 };
 
+type CartInformation = {
+  redirectUrl: string;
+  isCart: boolean;
+};
+
 export default function PaymentResponsePage() {
   const conf = getConfigOrThrow();
   const [loading, setLoading] = useState(true);
@@ -51,9 +56,10 @@ export default function PaymentResponsePage() {
   const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
   const [outcome, setOutcome] = useState<ViewOutcomeEnum>();
   const [outcomeMessage, setOutcomeMessage] = useState<responseMessage>();
-  const [redirectUrl, setRedirectUrl] = useState<string>(
-    cart ? cart.returnUrls.returnOkUrl : "/"
-  );
+  const [cartInformation, setCartInformation] = useState<CartInformation>({
+    redirectUrl: cart ? cart.returnUrls.returnOkUrl : "/",
+    isCart: cart != null,
+  });
   const transactionData = getSessionItem(SessionItems.transaction) as
     | NewTransactionResponse
     | undefined;
@@ -109,7 +115,10 @@ export default function PaymentResponsePage() {
           ? cart.returnUrls.returnErrorUrl
           : "/";
       setOutcomeMessage(message);
-      setRedirectUrl(redirectTo || "");
+      setCartInformation({
+        redirectUrl: redirectTo || "",
+        isCart: cart != null,
+      });
       setLoading(false);
       window.removeEventListener("beforeunload", onBrowserUnload);
       clearStorage();
@@ -196,7 +205,7 @@ export default function PaymentResponsePage() {
                   outcome === ViewOutcomeEnum.REFUNDED ? "text" : "outlined"
                 }
                 onClick={() => {
-                  window.location.replace(redirectUrl);
+                  window.location.replace(cartInformation.redirectUrl);
                 }}
                 sx={{
                   width: "100%",
@@ -204,7 +213,7 @@ export default function PaymentResponsePage() {
                   my: 1,
                 }}
               >
-                {redirectUrl !== "/"
+                {cartInformation.isCart
                   ? t("paymentResponsePage.buttons.continue")
                   : t("errorButton.close")}
               </Button>
