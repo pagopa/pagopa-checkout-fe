@@ -27,6 +27,11 @@ type PrintData = {
   amount: string;
 };
 
+type CartInformation = {
+  redirectUrl: string;
+  isCart: boolean;
+};
+
 export default function PaymentResponsePageV2() {
   const outcome = getFragmentParameter(
     window.location.href,
@@ -41,10 +46,18 @@ export default function PaymentResponsePageV2() {
 
   const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
 
-  const redirectUrl =
-    outcome === ViewOutcomeEnum.SUCCESS
-      ? cart?.returnUrls.returnOkUrl || "/"
-      : cart?.returnUrls.returnErrorUrl || "/";
+  const getCartReturnUrl = (outcome: ViewOutcomeEnum) =>
+    ({
+      redirectUrl:
+        outcome === ViewOutcomeEnum.SUCCESS
+          ? cart?.returnUrls.returnOkUrl || "/"
+          : cart?.returnUrls.returnErrorUrl || "/",
+      isCart: cart != null,
+    } as CartInformation);
+
+  const [cartInformation] = useState<CartInformation>(
+    getCartReturnUrl(outcome)
+  );
 
   const transactionData = getSessionItem(SessionItems.transaction) as
     | NewTransactionResponse
@@ -151,7 +164,7 @@ export default function PaymentResponsePageV2() {
             <Button
               variant="outlined"
               onClick={() => {
-                window.location.replace(redirectUrl);
+                window.location.replace(cartInformation.redirectUrl);
               }}
               sx={{
                 width: "100%",
@@ -159,7 +172,7 @@ export default function PaymentResponsePageV2() {
                 my: 1,
               }}
             >
-              {cart != null
+              {cartInformation.isCart
                 ? t("paymentResponsePage.buttons.continue")
                 : t("errorButton.close")}
             </Button>
