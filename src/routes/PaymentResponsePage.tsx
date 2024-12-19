@@ -23,7 +23,6 @@ import {
   clearStorage,
   getSessionItem,
   SessionItems,
-  setSessionItem,
 } from "../utils/storage/sessionStorage";
 import {
   getViewOutcomeFromEcommerceResultCode,
@@ -46,24 +45,15 @@ type PrintData = {
 };
 
 export default function PaymentResponsePage() {
-  const initRedirectUrl = () => {
-    const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
-    const sessionCartRedirectUrl = getSessionItem(
-      SessionItems.cartReturnUrl
-    ) as string;
-    if (sessionCartRedirectUrl) {
-      return sessionCartRedirectUrl;
-    }
-    return cart ? cart.returnUrls.returnOkUrl : "/";
-  };
-
   const conf = getConfigOrThrow();
   const [loading, setLoading] = useState(true);
   const [findOutMoreOpen, setFindOutMoreOpen] = useState<boolean>(false);
   const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
   const [outcome, setOutcome] = useState<ViewOutcomeEnum>();
   const [outcomeMessage, setOutcomeMessage] = useState<responseMessage>();
-  const [redirectUrl, setRedirectUrl] = useState<string>(initRedirectUrl());
+  const [redirectUrl, setRedirectUrl] = useState<string>(
+    cart ? cart.returnUrls.returnOkUrl : "/"
+  );
   const transactionData = getSessionItem(SessionItems.transaction) as
     | NewTransactionResponse
     | undefined;
@@ -123,13 +113,8 @@ export default function PaymentResponsePage() {
       setLoading(false);
       window.removeEventListener("beforeunload", onBrowserUnload);
       clearStorage();
-      setSessionItem(SessionItems.cartReturnUrl, redirectTo);
     };
     void callServices(handleFinalStatusResult);
-
-    return () => {
-      clearStorage();
-    };
   }, []);
 
   useEffect(() => {
@@ -219,7 +204,7 @@ export default function PaymentResponsePage() {
                   my: 1,
                 }}
               >
-                {redirectUrl !== "/"
+                {cart != null
                   ? t("paymentResponsePage.buttons.continue")
                   : t("errorButton.close")}
               </Button>
