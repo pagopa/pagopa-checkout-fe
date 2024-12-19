@@ -204,7 +204,7 @@ export default function PaymentResponsePage() {
                   my: 1,
                 }}
               >
-                {cart != null
+                {redirectUrl !== "/"
                   ? t("paymentResponsePage.buttons.continue")
                   : t("errorButton.close")}
               </Button>
