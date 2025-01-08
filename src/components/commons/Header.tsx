@@ -19,6 +19,7 @@ import { moneyFormat } from "../../utils/form/formatters";
 import { paymentSubjectTransform } from "../../utils/transformers/paymentTransformers";
 import DrawerDetail from "../Header/DrawerDetail";
 import SkipToContent from "./SkipToContent";
+import { useTranslation } from "react-i18next";
 
 function amountToShow() {
   const cartInfo = getSessionItem(SessionItems.cart) as Cart | undefined;
@@ -33,6 +34,7 @@ function amountToShow() {
 }
 
 export default function Header() {
+  const { t } = useTranslation();
   const location = useLocation();
   const currentPath = location.pathname.split("/").slice(-1)[0];
   const paymentInfoData = getSessionItem(SessionItems.paymentInfo) as
@@ -105,6 +107,7 @@ export default function Header() {
             !ignoreRoutes.includes(currentPath) && (
               <Button
                 onClick={() => toggleDrawer(true)}
+                aria-label={t("mainPage.header.detail.detailButton")}
                 endIcon={<ShoppingCart />}
               >
                 {moneyFormat(amountToShow())}
