@@ -92,7 +92,8 @@
       "cvv": "CVV",
       "expirationDate": "Velja do",
       "name": "Imetnik kartice",
-      "number": "Številka kartice"
+      "number": "Številka kartice",
+      "required": "Zahtevano polje"
     },
     "helpLink": "Kje najdem varnostno kodo?",
     "modal": {

@@ -92,7 +92,8 @@
       "cvv": "CVV",
       "expirationDate": "Gültig bis",
       "name": "Karteninhaber",
-      "number": "Kartennummer"
+      "number": "Kartennummer",
+      "required": "Pflichtfeld"
     },
     "helpLink": "Wo finde ich den Sicherheitscode?",
     "modal": {

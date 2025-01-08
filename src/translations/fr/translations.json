@@ -92,7 +92,8 @@
       "cvv": "CVV",
       "expirationDate": "Date d’expiration",
       "name": "Titulaire carte",
-      "number": "Numéro carte"
+      "number": "Numéro carte",
+      "required": "Champ obligatoire"
     },
     "helpLink": "Où se trouve le code de sécurité ?",
     "modal": {

@@ -92,7 +92,8 @@
       "cvv": "CVV",
       "expirationDate": "Expiration date",
       "name": "Card holder",
-      "number": "Card number"
+      "number": "Card number",
+      "required": "Required"
     },
     "helpLink": "Where can I find the security code?",
     "modal": {

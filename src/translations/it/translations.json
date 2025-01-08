@@ -92,7 +92,8 @@
       "cvv": "CVV",
       "expirationDate": "Scadenza",
       "name": "Intestata a",
-      "number": "Numero carta"
+      "number": "Numero carta",
+      "required": "Campo obbligatorio"
     },
     "helpLink": "Dove trovo il codice di sicurezza?",
     "modal": {
