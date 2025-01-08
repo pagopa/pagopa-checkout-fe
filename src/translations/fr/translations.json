@@ -131,6 +131,7 @@
     },
     "header": {
       "detail": {
+        "detailButton": "Apri riepilogo pagamento",
         "detailFC": "Code fiscal organisme créancier",
         "detailIUV": "Code IUV",
         "detailAmount": "Total partiel",

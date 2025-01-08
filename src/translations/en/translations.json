@@ -131,6 +131,7 @@
     },
     "header": {
       "detail": {
+        "detailButton": "Apri riepilogo pagamento",
         "detailFC": "Payee tax code",
         "detailIUV": "IUV code",
         "detailAmount": "Subtotal",

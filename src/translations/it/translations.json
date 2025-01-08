@@ -132,6 +132,7 @@
     },
     "header": {
       "detail": {
+        "detailButton": "Apri riepilogo pagamento",
         "detailFC": "Codice Fiscale Ente Creditore",
         "detailIUV": "Codice IUV",
         "detailAmount": "Totale parziale",

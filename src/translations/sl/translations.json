@@ -131,6 +131,7 @@
     },
     "header": {
       "detail": {
+        "detailButton": "Apri riepilogo pagamento",
         "detailFC": "Davčna številka upnika",
         "detailIUV": "IUV Koda",
         "detailAmount": "Vmesni seštevek",

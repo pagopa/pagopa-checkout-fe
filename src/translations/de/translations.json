@@ -131,6 +131,7 @@
     },
     "header": {
       "detail": {
+        "detailButton": "Apri riepilogo pagamento",
         "detailFC": "Steuernummer des Empfängers",
         "detailIUV": "IUV-Code",
         "detailAmount": "Zwischensumme",
