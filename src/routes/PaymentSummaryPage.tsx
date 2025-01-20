@@ -104,14 +104,12 @@ export default function PaymentSummaryPage() {
         handleCancel={() => navigate(-1)}
       />
       <InformationModal
+        title={t("paymentSummaryPage.dialog.title")}
         open={modalOpen}
         onClose={handleClose}
         maxWidth="sm"
         hideIcon={true}
       >
-        <Typography variant="h6" component={"div"} sx={{ pb: 2 }}>
-          {t("paymentSummaryPage.dialog.title")}
-        </Typography>
         <Typography
           variant="body1"
           component={"div"}
