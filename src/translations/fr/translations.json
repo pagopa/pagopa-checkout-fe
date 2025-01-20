@@ -355,6 +355,7 @@
   },
   "paymentNoticePage": {
     "description": "Saisir les données qui figurent sur l’avis de paiement.",
+    "exampleModalTitle": "Esempio di avviso",
     "formButtons": {
       "cancel": "Retour",
       "submit": "Continuer"

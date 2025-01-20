@@ -108,6 +108,7 @@ export default function PaymentNoticePage() {
         </Box>
 
         <InformationModal
+          title={t("paymentNoticePage.exampleModalTitle")}
           open={modalOpen}
           onClose={() => {
             setModalOpen(false);

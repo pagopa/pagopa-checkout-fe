@@ -355,6 +355,7 @@
   },
   "paymentNoticePage": {
     "description": "Vnesite podatke, kot so navedeni na obvestilu o plačilu.",
+    "exampleModalTitle": "Esempio di avviso",
     "formButtons": {
       "cancel": "Nazaj",
       "submit": "Nadaljuj"

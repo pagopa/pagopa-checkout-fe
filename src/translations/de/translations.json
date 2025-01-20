@@ -355,6 +355,7 @@
   },
   "paymentNoticePage": {
     "description": "Übernimm die Angaben aus der Zahlungsaufforderung.",
+    "exampleModalTitle": "Esempio di avviso",
     "formButtons": {
       "cancel": "Zurück",
       "submit": "Weiter"
