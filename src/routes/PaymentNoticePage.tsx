@@ -93,7 +93,6 @@ export default function PaymentNoticePage() {
           variant="text"
           onClick={() => setModalOpen(true)}
           sx={{ p: 0 }}
-          aria-hidden="true"
           tabIndex={-1}
         >
           {t("paymentNoticePage.helpLink")}
