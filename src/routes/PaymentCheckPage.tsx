@@ -8,6 +8,7 @@ import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import {
   Box,
   Button,
+  IconButton,
   Link,
   Skeleton,
   SvgIcon,
@@ -319,9 +320,8 @@ export default function PaymentCheckPage() {
         sx={{ borderBottom: "", mt: 2 }}
         itemSx={{ pl: 0, pr: 0, gap: 2 }}
         endAdornment={
-          <InfoOutlinedIcon
-            sx={{ color: "primary.main", cursor: "pointer" }}
-            fontSize="medium"
+          <IconButton
+            sx={{ color: "primary.main" }}
             onClick={() => {
               setModalOpen(true);
             }}
@@ -332,8 +332,9 @@ export default function PaymentCheckPage() {
             }}
             tabIndex={0}
             aria-label={t("ariaLabels.informationDialog")}
-            role="dialog"
-          />
+          >
+            <InfoOutlinedIcon fontSize="medium" />
+          </IconButton>
         }
       />
       <FieldContainer
