@@ -373,7 +373,7 @@
   },
   "paymentQrPage": {
     "camBlocked": "Za uporabo kamere potrebujemo vaše soglasje. Če želite spremeniti svojo izbiro, pojdite na nastavitve zasebnosti v svojem brskalniku",
-    "description": "Poskrbite za dobro osvetlitev. Če koda ni izostrena, poskusite telefon rahlo odmakniti od zaslona.",
+    "description": "Za branje QR kode vašega plačilnega obvestila bomo uporabili kamero vaše naprave. Postavite QR kodo pred kamero in počakajte, da jo prepozna. Poskrbite za dobro osvetlitev. Če je koda neostra, jo poskusite nekoliko oddaljiti od zaslona.",
     "navigate": "Ne deluje? Vnesite ročno",
     "reloadPage": "Ponovno naloži stran",
     "title": "Uokvirite kodo QR"

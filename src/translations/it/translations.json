@@ -374,7 +374,7 @@
   },
   "paymentQrPage": {
     "camBlocked": "Abbiamo bisogno del tuo consenso per utilizzare la fotocamera. Per modificare la tua scelta, visita le impostazioni Privacy del tuo browser",
-    "description": "Assicurati di avere una buona illuminazione. Se il codice non è a fuoco, prova ad allontanarlo leggermente dallo schermo.",
+    "description": "Useremo la videocamera del tuo dispositivo per leggere il QR code del tuo avviso di pagamento. Posiziona il QR code davanti la videocamera e attendi che venga riconosciuto. Assicurati di avere una buona illuminazione. Se il codice non è a fuoco, prova ad allontanarlo leggermente dallo schermo.",
     "navigate": "Non funziona? Inserisci manualmente",
     "reloadPage": "Ricarica la pagina",
     "title": "Inquadra il codice QR"

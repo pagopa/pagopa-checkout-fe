@@ -373,7 +373,7 @@
   },
   "paymentQrPage": {
     "camBlocked": "We need your consent to use the camera. To change your selection, go to your browser’s privacy settings",
-    "description": "Make sure to have good lighting. If the code is not in focus, try to move it away slightly from the screen.",
+    "description": "We will use your device's camera to read the QR code of your payment notice. Place the QR code in front of the camera and wait for it to be recognized. Make sure you have good lighting. If the code is out of focus, try moving it slightly away from the screen.",
     "navigate": "Not working? Enter it manually",
     "reloadPage": "Reload the page",
     "title": "Scan the QR code"

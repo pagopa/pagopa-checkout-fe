@@ -373,7 +373,7 @@
   },
   "paymentQrPage": {
     "camBlocked": "Wir benötigen deine Erlaubnis zum Zugriff auf die Kamera. In den Datenschutzeinstellungen deines Internetbrowsers kannst du die Auswahl ändern",
-    "description": "Achte auf gute Beleuchtung. Wenn der Code unscharf ist, halte ihn etwas weiter vom Bildschirm weg.",
+    "description": "Wir werden die Kamera Ihres Geräts verwenden, um den QR-Code Ihrer Zahlungsaufforderung zu lesen. Platzieren Sie den QR-Code vor der Kamera und warten Sie, bis er erkannt wird. Stellen Sie sicher, dass Sie eine gute Beleuchtung haben. Wenn der Code unscharf ist, versuchen Sie, ihn leicht vom Bildschirm wegzubewegen.",
     "navigate": "Funktioniert es nicht? Von Hand eingeben",
     "reloadPage": "Seite neu laden",
     "title": "QR-Code scannen"
