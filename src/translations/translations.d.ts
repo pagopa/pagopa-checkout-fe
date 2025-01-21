@@ -378,6 +378,7 @@ interface Translation {
     navigate: string;
     reloadPage: string;
     title: string;
+    usageHint: string;
   };
   paymentSummaryPage: {
     amount: string;
