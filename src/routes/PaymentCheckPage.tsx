@@ -330,7 +330,6 @@ export default function PaymentCheckPage() {
                 setModalOpen(true);
               }
             }}
-            tabIndex={0}
             aria-label={t("ariaLabels.informationDialog")}
           >
             <InfoOutlinedIcon fontSize="medium" />
