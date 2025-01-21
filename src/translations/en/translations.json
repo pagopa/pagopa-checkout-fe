@@ -92,7 +92,8 @@
       "cvv": "CVV",
       "expirationDate": "Expiration date",
       "name": "Card holder",
-      "number": "Card number"
+      "number": "Card number",
+      "required": "Required"
     },
     "helpLink": "Where can I find the security code?",
     "modal": {
@@ -130,6 +131,7 @@
     },
     "header": {
       "detail": {
+        "detailButton": "Apri riepilogo pagamento",
         "detailFC": "Payee tax code",
         "detailIUV": "IUV code",
         "detailAmount": "Subtotal",
