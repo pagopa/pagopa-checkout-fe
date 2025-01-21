@@ -1,5 +1,5 @@
 const scriptEl = document.createElement("script");
-const domainScript = window._env_.CHECKOUT_ENV === "PROD" ? "" : "-test";
+const domainScript = "";
 scriptEl.setAttribute("src", "/ot/scripttemplates/otSDKStub.js");
 scriptEl.setAttribute("type", "text/javascript");
 scriptEl.setAttribute("charset", "UTF-8");
