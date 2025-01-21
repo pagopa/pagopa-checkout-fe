@@ -106,13 +106,6 @@ export const fillPaymentNotificationForm = async (noticeCode, fiscalCode) => {
   await page.click(verifyBtn);
 };
 
-export const acceptCookiePolicy = async () => {
-  const acceptPolicyBtn = "#onetrust-close-btn-container > button";
-
-  await page.waitForSelector(acceptPolicyBtn);
-  await page.click(acceptPolicyBtn);
-};
-
 export const fillAndSubmitCardDataForm = async (
   noticeCode,
   fiscalCode,

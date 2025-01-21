@@ -1199,7 +1199,6 @@ describe.each([
   beforeAll(async () => {
     await page.goto(CHECKOUT_OUTCOME_URL);
     await page.setViewport({ width: 1200, height: 907 });
-    //await acceptCookiePolicy();
   })
 
 
