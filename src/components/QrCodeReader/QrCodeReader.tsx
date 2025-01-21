@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import QrReader from "react-qr-reader";
 
 export function QrCodeReader(props: {
@@ -7,6 +8,7 @@ export function QrCodeReader(props: {
   enableLoadFromPicture: boolean;
   style?: React.CSSProperties;
 }) {
+  const { t } = useTranslation();
   const qrRef = useRef(null);
   const [legacy, setLegacy] = useState(false);
   const [fromPicture, setFromPicture] = useState(false);
@@ -40,6 +42,7 @@ export function QrCodeReader(props: {
 
   return (
     <>
+      <div aria-label={t("paymentQrPage.usageHint")}></div>
       <QrReader
         delay={300}
         ref={qrRef}
