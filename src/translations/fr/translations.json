@@ -377,7 +377,8 @@
     "navigate": "L’opération a échoué ? Saisir les données manuellement",
     "reloadPage": "Recharger la page",
     "title": "Scanner le code QR",
-    "usageHint": ""
+    "usageHintPc": "",
+    "usageHintMobile": ""
   },
   "paymentSummaryPage": {
     "amount": "Montant mis à jour",

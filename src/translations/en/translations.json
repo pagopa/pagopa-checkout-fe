@@ -377,7 +377,8 @@
     "navigate": "Not working? Enter it manually",
     "reloadPage": "Reload the page",
     "title": "Scan the QR code",
-    "usageHint": ""
+    "usageHintPc": "",
+    "usageHintMobile": ""
   },
   "paymentSummaryPage": {
     "amount": "Amount updated",

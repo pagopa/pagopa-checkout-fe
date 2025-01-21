@@ -377,7 +377,8 @@
     "navigate": "Ne deluje? Vnesite ročno",
     "reloadPage": "Ponovno naloži stran",
     "title": "Uokvirite kodo QR",
-    "usageHint": ""
+    "usageHintPc": "",
+    "usageHintMobile": ""
   },
   "paymentSummaryPage": {
     "amount": "Posodobljeni znesek",

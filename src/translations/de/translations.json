@@ -377,7 +377,8 @@
     "navigate": "Funktioniert es nicht? Von Hand eingeben",
     "reloadPage": "Seite neu laden",
     "title": "QR-Code scannen",
-    "usageHint": ""
+    "usageHintPc": "",
+    "usageHintMobile": ""
   },
   "paymentSummaryPage": {
     "amount": "Aktualisierter Betrag",

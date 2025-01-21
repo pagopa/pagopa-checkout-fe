@@ -378,7 +378,8 @@
     "navigate": "Non funziona? Inserisci manualmente",
     "reloadPage": "Ricarica la pagina",
     "title": "Inquadra il codice QR",
-    "usageHint": "Testo di prova"
+    "usageHintPc": "pc hint testo di prova",
+    "usageHintMobile": "mobile hint testo di prova"
   },
   "paymentSummaryPage": {
     "amount": "Importo aggiornato",
