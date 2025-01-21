@@ -45,11 +45,13 @@ export function QrCodeReader(props: {
 
   return (
     <>
-      {isMobileDevice ? (
-        <div aria-label={t("paymentQrPage.usageHintMobile")}></div>
-      ) : (
-        <div aria-label={t("paymentQrPage.usageHintPc")}></div>
-      )}
+      <div style={{ position: "absolute", zIndex: "-1" }}>
+        {isMobileDevice ? (
+          <div>{t("paymentQrPage.usageHintMobile")}</div>
+        ) : (
+          <div>{t("paymentQrPage.usageHintPc")}</div>
+        )}
+      </div>
       <QrReader
         delay={300}
         ref={qrRef}
