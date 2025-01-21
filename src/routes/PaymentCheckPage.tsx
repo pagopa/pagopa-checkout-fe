@@ -404,11 +404,9 @@ export default function PaymentCheckPage() {
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         maxWidth="sm"
+        title={t("paymentCheckPage.modal.title")}
         hideIcon={true}
       >
-        <Typography variant="h6" component={"div"} sx={{ pb: 2 }}>
-          {t("paymentCheckPage.modal.title")}
-        </Typography>
         <Typography
           variant="body1"
           component={"div"}
