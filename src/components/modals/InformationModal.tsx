@@ -43,7 +43,7 @@ function InformationModal(props: {
       open={props.open}
       onClose={props.onClose}
     >
-      <DialogTitle sx={{ m: 0, p: 2 }}>
+      <DialogTitle sx={{ m: 0, p: 4 }}>
         {props.title && (
           <Typography
             id={props.titleId}
