@@ -3,6 +3,7 @@ import { Box, Button, Stack } from "@mui/material";
 import React from "react";
 import { useLocation } from "react-router-dom";
 import { ShoppingCart } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
 import pagopaLogo from "../../assets/images/pagopa-logo.svg";
 import {
   Cart,
@@ -19,7 +20,6 @@ import { moneyFormat } from "../../utils/form/formatters";
 import { paymentSubjectTransform } from "../../utils/transformers/paymentTransformers";
 import DrawerDetail from "../Header/DrawerDetail";
 import SkipToContent from "./SkipToContent";
-import { useTranslation } from "react-i18next";
 
 function amountToShow() {
   const cartInfo = getSessionItem(SessionItems.cart) as Cart | undefined;
