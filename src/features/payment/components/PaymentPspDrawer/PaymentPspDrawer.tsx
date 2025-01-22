@@ -173,18 +173,16 @@ const SortLabel = ({
     <TableCell
       id={id}
       sortDirection={orderingModel.direction}
-      sx={{
-        cursor: "pointer",
-      }}
+      sx={{ cursor: "pointer" }}
+      component="div"
+      padding="none"
+      aria-hidden="true"
       onClick={() =>
         onClick({
           fieldName,
           direction,
         })
       }
-      component="div"
-      padding="none"
-      aria-hidden="true"
     >
       {children}
       <TableSortLabel
