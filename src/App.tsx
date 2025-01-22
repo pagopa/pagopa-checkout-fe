@@ -30,9 +30,6 @@ import { mixpanelInit } from "./utils/config/mixpanelHelperInit";
 import { SessionItems } from "./utils/storage/sessionStorage";
 import SessionExpiredPage from "./routes/SessionExpiredPage";
 
-declare const OneTrust: any;
-declare const OnetrustActiveGroups: string;
-
 const checkoutTheme = createTheme({
   ...theme,
   palette: {

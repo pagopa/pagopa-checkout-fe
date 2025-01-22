@@ -2,7 +2,7 @@ import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import EuroIcon from "@mui/icons-material/Euro";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
-import { Box, Button, Typography, useTheme } from "@mui/material";
+import { Box, Button, IconButton, Typography, useTheme } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
@@ -65,15 +65,15 @@ export default function PaymentSummaryPage() {
         body={paymentInfo && moneyFormat(paymentInfo.amount)}
         icon={<EuroIcon sx={iconStyle} />}
         endAdornment={
-          <InfoOutlinedIcon
+          <IconButton
             color="primary"
-            sx={{ mr: 2, cursor: "pointer" }}
+            sx={{ mr: 2 }}
             onClick={handleInfoClick}
             onKeyDown={handleKeyDown}
             aria-label={t("ariaLabels.informationDialog")}
-            role="dialog"
-            tabIndex={0}
-          />
+          >
+            <InfoOutlinedIcon />
+          </IconButton>
         }
       />
       {!!noticeInfo?.billCode && (
