@@ -33,7 +33,6 @@ function PspFieldContainer(props: {
         }
       }}
       tabIndex={0}
-      aria-label="psp"
     >
       <Box
         sx={{
