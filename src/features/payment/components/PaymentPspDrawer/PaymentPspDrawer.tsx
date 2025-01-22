@@ -155,15 +155,15 @@ const SortLabel = ({
       component="div"
       padding="none"
       aria-hidden="true"
-      onClick={() =>
-        onClick({
-          fieldName,
-          direction,
-        })
-      }
     >
       {children}
       <TableSortLabel
+        onClick={() =>
+          onClick({
+            fieldName,
+            direction,
+          })
+        }
         direction={orderingModel.direction}
         active={orderingModel.fieldName === fieldName}
       />
