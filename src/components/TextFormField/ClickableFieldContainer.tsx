@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/cognitive-complexity */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable functional/immutable-data */
 /* eslint-disable @typescript-eslint/no-empty-function */
@@ -34,21 +35,25 @@ function ClickableFieldContainer(props: {
     ...props.sx,
   };
 
+  const handleClick = () => {
+    if (!props.disabled && props.onClick) {
+      props.onClick();
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "Enter" && props.onClick) {
+      props.onClick();
+    }
+  };
+
   return (
     <Box
       data-qaid={props.dataTestId}
       data-qalabel={props.dataTestLabel}
       sx={defaultStyle}
-      onClick={() => {
-        if (!props.disabled) {
-          props.onClick && props.onClick();
-        }
-      }}
-      onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
-        if (e.key === "Enter") {
-          !!props.onClick && props.onClick();
-        }
-      }}
+      onClick={props.clickable ? handleClick : undefined}
+      onKeyDown={props.clickable ? handleKeyDown : undefined}
       {...(props.clickable ? { tabIndex: 0 } : {})}
     >
       <Box
