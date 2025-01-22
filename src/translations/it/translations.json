@@ -356,7 +356,7 @@
   },
   "paymentNoticePage": {
     "description": "Inserisci i dati come riportato sull’avviso di pagamento.",
-    "exampleModalTitle": "Esempio di avviso",
+    "exampleModalTitle": "Esempio di avviso pagoPA",
     "formButtons": {
       "cancel": "Indietro",
       "submit": "Continua"
