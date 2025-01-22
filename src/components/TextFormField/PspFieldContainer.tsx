@@ -33,7 +33,6 @@ function PspFieldContainer(props: {
         }
       }}
       tabIndex={0}
-      role="psp"
     >
       <Box
         sx={{
