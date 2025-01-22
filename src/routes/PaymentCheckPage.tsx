@@ -1,4 +1,3 @@
-
 /* eslint-disable functional/immutable-data */
 /* eslint-disable @typescript-eslint/restrict-plus-operands */
 import CreditCardIcon from "@mui/icons-material/CreditCard";
