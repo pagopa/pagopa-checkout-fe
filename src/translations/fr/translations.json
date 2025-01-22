@@ -92,7 +92,8 @@
       "cvv": "CVV",
       "expirationDate": "Date d’expiration",
       "name": "Titulaire carte",
-      "number": "Numéro carte"
+      "number": "Numéro carte",
+      "required": "Champ obligatoire"
     },
     "helpLink": "Où se trouve le code de sécurité ?",
     "modal": {
@@ -130,6 +131,7 @@
     },
     "header": {
       "detail": {
+        "detailButton": "Apri riepilogo pagamento",
         "detailFC": "Code fiscal organisme créancier",
         "detailIUV": "Code IUV",
         "detailAmount": "Total partiel",
@@ -355,7 +357,7 @@
   },
   "paymentNoticePage": {
     "description": "Saisir les données qui figurent sur l’avis de paiement.",
-    "exampleModalTitle": "Esempio di avviso",
+    "exampleModalTitle": "Esempio di avviso pagoPA",
     "formButtons": {
       "cancel": "Retour",
       "submit": "Continuer"
