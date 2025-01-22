@@ -246,8 +246,7 @@ export default function PaymentCheckPage() {
     setPspUpdateLoading(false);
   };
 
-  const isDisabled = () =>
-    pspEditLoading || payLoading || cancelLoading || pspUpdateLoading;
+  const isDisabled = () => payLoading || cancelLoading || pspUpdateLoading;
 
   const isDisabledSubmit = () =>
     isDisabled() || pspSelected?.idPsp === "" || missingThreshold();
