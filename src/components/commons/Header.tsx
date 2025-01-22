@@ -3,6 +3,7 @@ import { Box, Button, Stack } from "@mui/material";
 import React from "react";
 import { useLocation } from "react-router-dom";
 import { ShoppingCart } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
 import pagopaLogo from "../../assets/images/pagopa-logo.svg";
 import {
   Cart,
@@ -33,6 +34,7 @@ function amountToShow() {
 }
 
 export default function Header() {
+  const { t } = useTranslation();
   const location = useLocation();
   const currentPath = location.pathname.split("/").slice(-1)[0];
   const paymentInfoData = getSessionItem(SessionItems.paymentInfo) as
@@ -105,6 +107,7 @@ export default function Header() {
             !ignoreRoutes.includes(currentPath) && (
               <Button
                 onClick={() => toggleDrawer(true)}
+                aria-label={t("mainPage.header.detail.detailButton")}
                 endIcon={<ShoppingCart />}
               >
                 {moneyFormat(amountToShow())}

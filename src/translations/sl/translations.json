@@ -92,7 +92,8 @@
       "cvv": "CVV",
       "expirationDate": "Velja do",
       "name": "Imetnik kartice",
-      "number": "Številka kartice"
+      "number": "Številka kartice",
+      "required": "Zahtevano polje"
     },
     "helpLink": "Kje najdem varnostno kodo?",
     "modal": {
@@ -130,6 +131,7 @@
     },
     "header": {
       "detail": {
+        "detailButton": "Apri riepilogo pagamento",
         "detailFC": "Davčna številka upnika",
         "detailIUV": "IUV Koda",
         "detailAmount": "Vmesni seštevek",
@@ -355,6 +357,7 @@
   },
   "paymentNoticePage": {
     "description": "Vnesite podatke, kot so navedeni na obvestilu o plačilu.",
+    "exampleModalTitle": "Esempio di avviso pagoPA",
     "formButtons": {
       "cancel": "Nazaj",
       "submit": "Nadaljuj"
