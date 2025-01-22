@@ -356,6 +356,7 @@ interface Translation {
   };
   paymentNoticePage: {
     description: string;
+    exampleModalAltText: string;
     exampleModalTitle: string;
     formButtons: {
       cancel: string;

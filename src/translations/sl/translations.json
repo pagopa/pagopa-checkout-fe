@@ -357,6 +357,7 @@
   },
   "paymentNoticePage": {
     "description": "Vnesite podatke, kot so navedeni na obvestilu o plačilu.",
+    "exampleModalAltText": "Avviso di pagamento pagoPA, con evidenziata la parte in cui sono presenti il codice avviso e il codice fiscale dell’ente creditore",
     "exampleModalTitle": "Esempio di avviso pagoPA",
     "formButtons": {
       "cancel": "Nazaj",

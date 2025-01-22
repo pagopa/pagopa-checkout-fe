@@ -110,7 +110,7 @@ export default function PaymentNoticePage() {
         >
           <img
             src={notification}
-            alt="facsimile"
+            alt={t("paymentNoticePage.exampleModalAltText")}
             style={useSmallDevice() ? { width: "100%" } : { height: "80vh" }}
           />
         </InformationModal>
