@@ -380,7 +380,9 @@
     "description": "Achte auf gute Beleuchtung. Wenn der Code unscharf ist, halte ihn etwas weiter vom Bildschirm weg.",
     "navigate": "Funktioniert es nicht? Von Hand eingeben",
     "reloadPage": "Seite neu laden",
-    "title": "QR-Code scannen"
+    "title": "QR-Code scannen",
+    "usageHintPc": "Questa pagina richiede l'uso del lettore di codici QR. Per scansionare il codice QR, consenti al browser l'accesso alla fotocamera quando richiesto. Potresti dover utilizzare una webcam esterna o integrata. Il codice QR deve essere ben inquadrato e ben illuminato per facilitarne la lettura.",
+    "usageHintMobile": "Questa pagina richiede l'uso del lettore di codici QR. Per scansionare il codice QR, consenti al browser l'accesso alla fotocamera quando richiesto. Utilizza la fotocamera posteriore del tuo smartphone e orientala verso il codice QR. Il codice QR deve essere ben inquadrato e ben illuminato per facilitarne la lettura."
   },
   "paymentSummaryPage": {
     "amount": "Aktualisierter Betrag",

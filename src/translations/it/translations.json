@@ -381,7 +381,9 @@
     "description": "Assicurati di avere una buona illuminazione. Se il codice non è a fuoco, prova ad allontanarlo leggermente dallo schermo.",
     "navigate": "Non funziona? Inserisci manualmente",
     "reloadPage": "Ricarica la pagina",
-    "title": "Inquadra il codice QR"
+    "title": "Inquadra il codice QR",
+    "usageHintPc": "Questa pagina richiede l'uso del lettore di codici QR. Per scansionare il codice QR, consenti al browser l'accesso alla fotocamera quando richiesto. Potresti dover utilizzare una webcam esterna o integrata. Il codice QR deve essere ben inquadrato e ben illuminato per facilitarne la lettura.",
+    "usageHintMobile": "Questa pagina richiede l'uso del lettore di codici QR. Per scansionare il codice QR, consenti al browser l'accesso alla fotocamera quando richiesto. Utilizza la fotocamera posteriore del tuo smartphone e orientala verso il codice QR. Il codice QR deve essere ben inquadrato e ben illuminato per facilitarne la lettura."
   },
   "paymentSummaryPage": {
     "amount": "Importo aggiornato",

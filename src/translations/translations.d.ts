@@ -380,6 +380,8 @@ interface Translation {
     navigate: string;
     reloadPage: string;
     title: string;
+    usageHintPc: string;
+    usageHintMobile: string;
   };
   paymentSummaryPage: {
     amount: string;
