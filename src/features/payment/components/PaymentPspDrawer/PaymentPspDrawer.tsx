@@ -6,7 +6,7 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import { default as React } from "react";
+import React, { FocusEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
@@ -146,6 +146,28 @@ const SortLabel = ({
   children,
 }: SortLabelProps) => {
   const direction = orderingModel.direction === "asc" ? "desc" : "asc";
+  const [isMouseOver, setIsMouseOver] = useState(false);
+
+  const handleFocus = (event: FocusEvent<HTMLSpanElement>) => {
+    if (!isMouseOver && event.currentTarget.parentElement) {
+      event.currentTarget.parentElement.style.outline = "2px solid #0073E6";
+    }
+  };
+
+  const handleBlur = (event: FocusEvent<HTMLSpanElement>) => {
+    if (event.currentTarget.parentElement) {
+      event.currentTarget.parentElement.style.outline = "none";
+    }
+  };
+
+  const handleKeyUp = (event: React.KeyboardEvent<HTMLSpanElement>) => {
+    if (event.key === "Enter") {
+      onClick({
+        fieldName,
+        direction,
+      });
+    }
+  };
 
   return (
     <TableCell
@@ -164,6 +186,11 @@ const SortLabel = ({
     >
       {children}
       <TableSortLabel
+        onKeyUp={handleKeyUp}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        onMouseEnter={() => setIsMouseOver(true)}
+        onMouseLeave={() => setIsMouseOver(false)}
         direction={orderingModel.direction}
         active={orderingModel.fieldName === fieldName}
       />
