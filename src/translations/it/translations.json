@@ -358,6 +358,8 @@
   },
   "paymentNoticePage": {
     "description": "Inserisci i dati come riportato sull’avviso di pagamento.",
+    "exampleModalAltText": "Avviso di pagamento pagoPA, con evidenziata la parte in cui sono presenti il codice avviso e il codice fiscale dell’ente creditore",
+    "exampleModalTitle": "Esempio di avviso pagoPA",
     "formButtons": {
       "cancel": "Indietro",
       "submit": "Continua"

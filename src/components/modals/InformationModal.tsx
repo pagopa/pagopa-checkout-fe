@@ -1,7 +1,13 @@
 /* eslint-disable functional/immutable-data */
 /* eslint-disable @typescript-eslint/ban-types */
 import CloseIcon from "@mui/icons-material/Close";
-import { Dialog, DialogContent, DialogTitle, useTheme } from "@mui/material";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -14,6 +20,7 @@ function InformationModal(props: {
   style?: React.CSSProperties;
   maxWidth?: "xs" | "sm" | "lg";
   titleId?: string;
+  title?: string;
   ctaId?: string;
   bodyId?: string;
 }) {
@@ -36,7 +43,17 @@ function InformationModal(props: {
       open={props.open}
       onClose={props.onClose}
     >
-      <DialogTitle sx={{ m: 0, p: 2 }}>
+      <DialogTitle sx={{ m: 0, p: 4 }}>
+        {props.title && (
+          <Typography
+            id={props.titleId}
+            variant="h6"
+            component={"div"}
+            sx={{ mb: 2 }}
+          >
+            {props.title}
+          </Typography>
+        )}
         {!props.hideIcon && (
           <IconButton
             aria-label={t("ariaLabels.close")}
