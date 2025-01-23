@@ -75,6 +75,7 @@ export function IframeCardField(props: Props) {
     <FormControl sx={styles.formControl}>
       <InputLabel
         sx={styles.label}
+        aria-hidden={true}
         margin="dense"
         shrink
         htmlFor={id}
@@ -84,7 +85,8 @@ export function IframeCardField(props: Props) {
       </InputLabel>
       <Box sx={styles.box} aria-busy={!isAllFieldsLoaded}>
         <iframe
-          aria-labelledby={label}
+          aria-label={label + " " + t("inputCardPage.formFields.required")}
+          role="textbox"
           id={`frame_${id}`}
           seamless
           style={styles.iframe}

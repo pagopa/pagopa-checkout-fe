@@ -92,7 +92,8 @@
       "cvv": "CVV",
       "expirationDate": "Scadenza",
       "name": "Intestata a",
-      "number": "Numero carta"
+      "number": "Numero carta",
+      "required": "Campo obbligatorio"
     },
     "helpLink": "Dove trovo il codice di sicurezza?",
     "modal": {
@@ -131,6 +132,7 @@
     },
     "header": {
       "detail": {
+        "detailButton": "Apri riepilogo pagamento",
         "detailFC": "Codice Fiscale Ente Creditore",
         "detailIUV": "Codice IUV",
         "detailAmount": "Totale parziale",
@@ -356,6 +358,8 @@
   },
   "paymentNoticePage": {
     "description": "Inserisci i dati come riportato sull’avviso di pagamento.",
+    "exampleModalAltText": "Avviso di pagamento pagoPA, con evidenziata la parte in cui sono presenti il codice avviso e il codice fiscale dell’ente creditore",
+    "exampleModalTitle": "Esempio di avviso pagoPA",
     "formButtons": {
       "cancel": "Indietro",
       "submit": "Continua"
