@@ -1,4 +1,6 @@
+import { useMediaQuery, useTheme } from "@mui/material";
 import React, { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import QrReader from "react-qr-reader";
 
 export function QrCodeReader(props: {
@@ -7,6 +9,9 @@ export function QrCodeReader(props: {
   enableLoadFromPicture: boolean;
   style?: React.CSSProperties;
 }) {
+  const { t } = useTranslation();
+  const theme = useTheme();
+  const isMobileDevice = useMediaQuery(theme.breakpoints.down("sm"));
   const qrRef = useRef(null);
   const [legacy, setLegacy] = useState(false);
   const [fromPicture, setFromPicture] = useState(false);
@@ -40,6 +45,13 @@ export function QrCodeReader(props: {
 
   return (
     <>
+      <div style={{ position: "absolute", zIndex: "-1" }}>
+        {isMobileDevice ? (
+          <div>{t("paymentQrPage.usageHintMobile")}</div>
+        ) : (
+          <div>{t("paymentQrPage.usageHintPc")}</div>
+        )}
+      </div>
       <QrReader
         delay={300}
         ref={qrRef}
