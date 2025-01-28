@@ -357,6 +357,8 @@
   },
   "paymentNoticePage": {
     "description": "Saisir les données qui figurent sur l’avis de paiement.",
+    "exampleModalAltText": "Avviso di pagamento pagoPA, con evidenziata la parte in cui sono presenti il codice avviso e il codice fiscale dell’ente creditore",
+    "exampleModalTitle": "Esempio di avviso pagoPA",
     "formButtons": {
       "cancel": "Retour",
       "submit": "Continuer"
@@ -378,7 +380,9 @@
     "description": "Vérifier votre éclairage. Si le code n’est pas mis au point, éloignez-vous légèrement de l’écran.",
     "navigate": "L’opération a échoué ? Saisir les données manuellement",
     "reloadPage": "Recharger la page",
-    "title": "Scanner le code QR"
+    "title": "Scanner le code QR",
+    "usageHintPc": "Questa pagina richiede l'uso del lettore di codici QR. Per scansionare il codice QR, consenti al browser l'accesso alla fotocamera quando richiesto. Potresti dover utilizzare una webcam esterna o integrata. Il codice QR deve essere ben inquadrato e ben illuminato per facilitarne la lettura.",
+    "usageHintMobile": "Questa pagina richiede l'uso del lettore di codici QR. Per scansionare il codice QR, consenti al browser l'accesso alla fotocamera quando richiesto. Utilizza la fotocamera posteriore del tuo smartphone e orientala verso il codice QR. Il codice QR deve essere ben inquadrato e ben illuminato per facilitarne la lettura."
   },
   "paymentSummaryPage": {
     "amount": "Montant mis à jour",
