@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getConfigOrThrow } from "utils/config/config";
 import { Millisecond } from "@pagopa/ts-commons/lib/units";
+import { getConfigOrThrow } from "../utils/config/config";
 import PageContainer from "../components/PageContent/PageContainer";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
 import { getFragmentParameter } from "../utils/regex/urlUtilities";
