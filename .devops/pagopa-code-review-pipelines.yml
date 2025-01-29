@@ -111,7 +111,7 @@ stages:
             searchFolder: '$(System.DefaultWorkingDirectory)'
             failTaskOnFailedTests: true
 
-        - task: PublishCodeCoverageResults@1
+        - task: PublishCodeCoverageResults@2
           displayName: 'Publish code coverage from Jest tests'
           inputs:
             codeCoverageTool: Cobertura
