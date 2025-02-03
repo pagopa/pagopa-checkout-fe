@@ -27,7 +27,7 @@
     "description": "Verwendungszweck",
     "fiscalCode": "Steuernummer des Empfängers",
     "iuv": "IUV-Code",
-    "noticeNumber": "Zahlungsaufforderungsnr."
+    "noticeNumber": "Zahlungsaufforderungsnr.",
   },
   "clipboard": {
     "copied": "Kopiert",
