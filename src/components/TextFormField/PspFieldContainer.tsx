@@ -28,6 +28,7 @@ function PspFieldContainer(props: {
       onClick={props.onClick}
       onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
         if (e.key === "Enter") {
+          e.preventDefault();
           // eslint-disable-next-line @typescript-eslint/no-unused-expressions
           !!props.onClick && props.onClick();
         }
