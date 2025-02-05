@@ -74,7 +74,7 @@ parameters:
 
   - name: 'checkout_gdi_check_timeout'
     type: number
-    default: 12000
+    default: 20000
 
   - name: 'checkout_version'
     type: string
