@@ -53,6 +53,7 @@ stages:
             polling_activation_interval: 6000
             polling_activation_attempts: 16
             env: 'DEV'
+            checkout_gdi_check_timeout: 20000
             recaptcha_site_key: $CHECKOUT_CAPTCHA_ID_DEV
             api_payment_transactions_basepath: '/api/checkout/payment-transactions/v1'
             api_timeout: 10000
@@ -60,7 +61,6 @@ stages:
             pm_host: 'https://acardste.vaservices.eu'
             pm_api_basepath: '/pp-restapi/v4'
             checkout_version: "$(Build.SourceBranchName):$(Build.SourceVersion)"
-
         - script: |
             yarn build
           displayName: 'Build'

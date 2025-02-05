@@ -33,6 +33,7 @@ export const IConfig = t.interface({
   CHECKOUT_NPG_SDK_URL: NonEmptyString,
   CHECKOUT_API_RETRY_NUMBERS: t.number,
   CHECKOUT_API_RETRY_DELAY: t.number,
+  CHECKOUT_GDI_CHECK_TIMEOUT: t.number,
 });
 
 // No need to re-evaluate this object for each call
@@ -75,6 +76,11 @@ const errorOrConfig: t.Validation<IConfig> = IConfig.decode({
         10
       )
     : 3000,
+  CHECKOUT_GDI_CHECK_TIMEOUT: parseInt(
+    // eslint-disable-next-line no-underscore-dangle
+    (window as any)._env_.CHECKOUT_GDI_CHECK_TIMEOUT,
+    10
+  ),
 });
 
 /**
