@@ -40,6 +40,7 @@ interface Translation {
     description: string;
     fiscalCode: string;
     noticeNumber: string;
+    iuv: string;
   };
   clipboard: {
     copied: string;

@@ -145,7 +145,9 @@ export default function DrawerCart(props: Props) {
                   mt={2}
                   color="action.active"
                 >
-                  {t("cartDetail.noticeNumber")}
+                  {el.creditorReferenceId
+                    ? t("cartDetail.iuv")
+                    : t("cartDetail.noticeNumber")}
                 </Typography>
                 <Typography
                   component="div"
