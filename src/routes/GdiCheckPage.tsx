@@ -1,5 +1,7 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Millisecond } from "@pagopa/ts-commons/lib/units";
+import { getConfigOrThrow } from "../utils/config/config";
 import PageContainer from "../components/PageContent/PageContainer";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
 import { getFragmentParameter } from "../utils/regex/urlUtilities";
@@ -9,8 +11,8 @@ import { CheckoutRoutes, ROUTE_FRAGMENT } from "./models/routeModel";
 const GdiCheckPage = () => {
   const navigate = useNavigate();
 
-  const gdiCheckTimeout =
-    Number(process.env.CHECKOUT_GDI_CHECK_TIMEOUT) || 12000;
+  const gdiCheckTimeout = getConfigOrThrow()
+    .CHECKOUT_GDI_CHECK_TIMEOUT as Millisecond;
 
   const gdiIframeUrl = getFragmentParameter(
     window.location.href,
