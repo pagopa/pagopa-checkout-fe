@@ -45,7 +45,7 @@ export default function Footer(props: { fixedPages: Array<string> }) {
           flexWrap={"wrap"}
         >
           <Link
-            href="https://form.agid.gov.it/view/3588af90-773f-11ef-b8bf-4f02c3f2bc4b/"
+            href="https://form.agid.gov.it/view/db845560-df2d-11ef-8637-9f856ac3da10"
             target="_blank"
             rel="noopener noreferrer"
             style={{
