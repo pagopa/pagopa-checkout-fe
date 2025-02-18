@@ -20,6 +20,7 @@ import { moneyFormat } from "../../utils/form/formatters";
 import { paymentSubjectTransform } from "../../utils/transformers/paymentTransformers";
 import DrawerDetail from "../Header/DrawerDetail";
 import SkipToContent from "./SkipToContent";
+import LoginHeader from "./LoginHeader";
 
 function amountToShow() {
   const cartInfo = getSessionItem(SessionItems.cart) as Cart | undefined;
@@ -78,43 +79,44 @@ export default function Header() {
 
   return (
     <header>
-      <Box p={3} bgcolor={"white"}>
-        <Stack
-          spacing={0}
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-          position="relative"
-          zIndex="1000"
-        >
+      <Stack position="relative" zIndex="1000">
+        <LoginHeader />
+        <Box p={3} bgcolor={"white"}>
           <Stack
-            spacing={4}
+            spacing={0}
             direction="row"
             justifyContent="space-between"
             alignItems="center"
-            position="relative"
           >
-            <img
-              src={pagopaLogo}
-              alt="pagoPA"
-              style={{ width: "56px", height: "36px" }}
-              aria-hidden="true"
-            />
-            <SkipToContent />
-          </Stack>
+            <Stack
+              spacing={4}
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              position="relative"
+            >
+              <img
+                src={pagopaLogo}
+                alt="pagoPA"
+                style={{ width: "56px", height: "36px" }}
+                aria-hidden="true"
+              />
+              <SkipToContent />
+            </Stack>
 
-          {(!!PaymentInfo.receiver || !!CartInfo?.paymentNotices) &&
-            !ignoreRoutes.includes(currentPath) && (
-              <Button
-                onClick={() => toggleDrawer(true)}
-                aria-label={t("mainPage.header.detail.detailButton")}
-                endIcon={<ShoppingCart />}
-              >
-                {moneyFormat(amountToShow())}
-              </Button>
-            )}
-        </Stack>
-      </Box>
+            {(!!PaymentInfo.receiver || !!CartInfo?.paymentNotices) &&
+              !ignoreRoutes.includes(currentPath) && (
+                <Button
+                  onClick={() => toggleDrawer(true)}
+                  aria-label={t("mainPage.header.detail.detailButton")}
+                  endIcon={<ShoppingCart />}
+                >
+                  {moneyFormat(amountToShow())}
+                </Button>
+              )}
+          </Stack>
+        </Box>
+      </Stack>
       <DrawerDetail
         paymentNotices={paymentNotices}
         amountToShow={amountToShow}
