@@ -131,6 +131,7 @@
       "pagoPA": "Visita il sito pagoPA"
     },
     "header": {
+      "logout": "Esci",
       "detail": {
         "detailButton": "Apri riepilogo pagamento",
         "detailFC": "Codice Fiscale Ente Creditore",
