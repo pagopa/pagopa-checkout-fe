@@ -1,21 +1,26 @@
 /* eslint-disable sonarjs/cognitive-complexity */
 import React from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Logout } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import { HeaderAccount, JwtUser, RootLinkType } from "@pagopa/mui-italia";
+import { ReCAPTCHA } from "react-google-recaptcha";
+import { proceedToLogin } from "../../utils/api/helper";
+import { ErrorsType } from "../../utils/errors/checkErrorsModel";
+import { onBrowserUnload } from "../../utils/eventListeners";
+import ErrorModal from "../../components/modals/ErrorModal";
 import CheckoutLoader from "../../components/PageContent/CheckoutLoader";
 import { CheckoutRoutes } from "../../routes/models/routeModel";
 import {
   clearSessionItem,
   getSessionItem,
   SessionItems,
-  setSessionItem,
 } from "../../utils/storage/sessionStorage";
 
 export default function LoginHeader() {
   const { t } = useTranslation();
   const location = useLocation();
+  const navigate = useNavigate();
   const currentPath = location.pathname.split("/").slice(-1)[0];
   const pagoPALink: RootLinkType = {
     label: "PagoPA S.p.A.",
@@ -38,11 +43,33 @@ export default function LoginHeader() {
     sessionLoggedUser
   );
   const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState("");
+  const [errorModalOpen, setErrorModalOpen] = React.useState(false);
+  const ref = React.useRef<ReCAPTCHA>(null);
   const onAssistanceClick = () => {
     // console.log("Clicked/Tapped on Assistance");
   };
-  const onLoginClick = () => {
-    setLoading(true);
+
+  const onError = (m: string) => {
+    setError(m);
+    setErrorModalOpen(true);
+  };
+
+  const onResponse = (authorizationUrl: string) => {
+    try {
+      window.removeEventListener("beforeunload", onBrowserUnload);
+      const url = new URL(authorizationUrl);
+      if (url.origin === window.location.origin) {
+        navigate(`${url.pathname}${url.hash}`);
+      } else {
+        window.location.replace(url);
+      }
+    } catch {
+      onError(ErrorsType.GENERIC_ERROR);
+    }
+  };
+
+  /* const onResponse = (urlRedirect: string) => {
     const user = {
       id: "1234546",
       email: "email@test.com",
@@ -51,17 +78,21 @@ export default function LoginHeader() {
     };
     setSessionItem(SessionItems.loggedUser, user);
     setLoggedUser(user);
-    setTimeout(() => {
-      setLoading(false)
-    }, 1000)
+  }; */
+
+  const onLoginClick = async () => {
+    setLoading(true);
+    const token = await ref.current?.executeAsync();
+    await proceedToLogin({ recaptcha: token || "", onError, onResponse });
   };
+
   const onLogoutClick = () => {
     setLoading(true);
     clearSessionItem(SessionItems.loggedUser);
     setLoggedUser(undefined);
     setTimeout(() => {
-      setLoading(false)
-    }, 1000)
+      setLoading(false);
+    }, 1000);
   };
   return (
     <>
@@ -82,6 +113,16 @@ export default function LoginHeader() {
         onAssistanceClick={onAssistanceClick}
         onLogin={onLoginClick}
       />
+      {!!error && (
+        <ErrorModal
+          error={error}
+          open={errorModalOpen}
+          titleId="idTitleErrorModalPaymentCheckPage"
+          onClose={() => {
+            setErrorModalOpen(false);
+          }}
+        />
+      )}
     </>
   );
 }
