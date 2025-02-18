@@ -4,6 +4,7 @@ import { useLocation } from "react-router-dom";
 import { Logout } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import { HeaderAccount, JwtUser, RootLinkType } from "@pagopa/mui-italia";
+import CheckoutLoader from "../../components/PageContent/CheckoutLoader";
 import { CheckoutRoutes } from "../../routes/models/routeModel";
 import {
   clearSessionItem,
@@ -36,10 +37,12 @@ export default function LoginHeader() {
   const [loggedUser, setLoggedUser] = React.useState<JwtUser | undefined>(
     sessionLoggedUser
   );
+  const [loading, setLoading] = React.useState(false);
   const onAssistanceClick = () => {
     // console.log("Clicked/Tapped on Assistance");
   };
   const onLoginClick = () => {
+    setLoading(true);
     const user = {
       id: "1234546",
       email: "email@test.com",
@@ -48,27 +51,37 @@ export default function LoginHeader() {
     };
     setSessionItem(SessionItems.loggedUser, user);
     setLoggedUser(user);
+    setTimeout(() => {
+      setLoading(false)
+    }, 1000)
   };
   const onLogoutClick = () => {
+    setLoading(true);
     clearSessionItem(SessionItems.loggedUser);
     setLoggedUser(undefined);
+    setTimeout(() => {
+      setLoading(false)
+    }, 1000)
   };
   return (
-    <HeaderAccount
-      rootLink={pagoPALink}
-      loggedUser={loggedUser}
-      enableDropdown={true}
-      userActions={[
-        {
-          id: "logout",
-          icon: <Logout fontSize="small" />,
-          label: t("mainPage.header.logout"),
-          onClick: onLogoutClick,
-        },
-      ]}
-      enableLogin={loginRoutes.includes(currentPath) || loggedUser != null}
-      onAssistanceClick={onAssistanceClick}
-      onLogin={onLoginClick}
-    />
+    <>
+      {loading && <CheckoutLoader />}
+      <HeaderAccount
+        rootLink={pagoPALink}
+        loggedUser={loggedUser}
+        enableDropdown={true}
+        userActions={[
+          {
+            id: "logout",
+            icon: <Logout fontSize="small" />,
+            label: t("mainPage.header.logout"),
+            onClick: onLogoutClick,
+          },
+        ]}
+        enableLogin={loginRoutes.includes(currentPath) || loggedUser != null}
+        onAssistanceClick={onAssistanceClick}
+        onLogin={onLoginClick}
+      />
+    </>
   );
 }
