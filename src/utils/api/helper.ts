@@ -87,6 +87,7 @@ import {
   apiPaymentEcommerceClientV2,
   apiPaymentEcommerceClientWithRetry,
   apiPaymentEcommerceClientWithRetryV2,
+  apiCheckoutAuthServiceClientV1,
 } from "./client";
 
 export const NodeFaultCodeR = t.interface({
@@ -584,6 +585,57 @@ export const calculateFees = async ({
                 mixpanel.track(PAYMENT_PSPLIST_RESP_ERR.value, {
                   EVENT_ID: PAYMENT_PSPLIST_RESP_ERR.value,
                 });
+              }
+              return {};
+            }
+          )
+        )
+    )
+  )();
+};
+
+export const proceedToLogin = async ({
+  recaptcha,
+  onError,
+  onResponse,
+}: {
+  recaptcha: string;
+  onError: (e: string) => void;
+  onResponse: (r: any) => void;
+}) => {
+  await pipe(
+    O.fromNullable(recaptcha),
+    TE.fromOption(() => {
+      onError(ErrorsType.GENERIC_ERROR);
+      return toError;
+    }),
+    TE.chain((recaptcha) =>
+      TE.tryCatch(
+        () =>
+          apiCheckoutAuthServiceClientV1.authLogin({
+            recaptcha,
+          }),
+        (_e) => {
+          onError(ErrorsType.CONNECTION);
+          return toError;
+        }
+      )
+    ),
+    TE.fold(
+      (_r) => async () => {
+        onError(ErrorsType.SERVER);
+        return {};
+      },
+      (myResExt) => async () =>
+        pipe(
+          myResExt,
+          E.fold(
+            () => [],
+            (myRes) => {
+              if (myRes?.status === 200) {
+                onResponse(myRes?.value.urlRedirect);
+              } else {
+                onError(ErrorsType.GENERIC_ERROR);
               }
               return {};
             }
