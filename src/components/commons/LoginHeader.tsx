@@ -38,9 +38,6 @@ export default function LoginHeader() {
     sessionLoggedUser
   );
   const [loading, setLoading] = React.useState(false);
-  const onAssistanceClick = () => {
-    // console.log("Clicked/Tapped on Assistance");
-  };
   const onLoginClick = () => {
     setLoading(true);
     const user = {
@@ -79,7 +76,8 @@ export default function LoginHeader() {
           },
         ]}
         enableLogin={loginRoutes.includes(currentPath) || loggedUser != null}
-        onAssistanceClick={onAssistanceClick}
+        enableAssistanceButton={false}
+        onAssistanceClick={() => {}}
         onLogin={onLoginClick}
       />
     </>
