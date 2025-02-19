@@ -1173,26 +1173,16 @@ export const evaluateFeatureFlag = async (
   onError: (e: string) => void,
   onResponse: (data: { enabled: boolean }) => void
 ) => {
-  mixpanel.track(FEATURE_FLAG_REQUEST_ACCESS.value, {
-    EVENT_ID: FEATURE_FLAG_REQUEST_ACCESS.value,
-  });
-
   await pipe(
     TE.tryCatch(
       () => apiCheckoutFeatureFlags.evaluateFeatureFlag({ featureKey }),
       () => {
-        mixpanel.track(FEATURE_FLAG_REQUEST_NET_ERROR.value, {
-          EVENT_ID: FEATURE_FLAG_REQUEST_NET_ERROR.value,
-        });
         onError("Network error");
         return new Error("Network error");
       }
     ),
     TE.fold(
       () => async () => {
-        mixpanel.track(FEATURE_FLAG_REQUEST_SVR_ERROR.value, {
-          EVENT_ID: FEATURE_FLAG_REQUEST_SVR_ERROR.value,
-        });
         onError("Server error");
         return {};
       },
@@ -1201,23 +1191,14 @@ export const evaluateFeatureFlag = async (
           response,
           E.fold(
             () => {
-              mixpanel.track(FEATURE_FLAG_REQUEST_RESP_ERROR.value, {
-                EVENT_ID: FEATURE_FLAG_REQUEST_RESP_ERROR.value,
-              });
               onError("Response error");
               return {};
             },
             (res: any) => {
               if (res.value.enabled !== undefined) {
-                mixpanel.track(FEATURE_FLAG_REQUEST_SUCCESS.value, {
-                  EVENT_ID: FEATURE_FLAG_REQUEST_SUCCESS.value,
-                });
                 onResponse(res.value);
                 return res.value;
               } else {
-                mixpanel.track(FEATURE_FLAG_REQUEST_RESP_ERROR.value, {
-                  EVENT_ID: FEATURE_FLAG_REQUEST_RESP_ERROR.value,
-                });
                 onError("Response error");
                 return {};
               }
