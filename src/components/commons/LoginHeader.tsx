@@ -5,6 +5,7 @@ import { Logout } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import { HeaderAccount, JwtUser, RootLinkType } from "@pagopa/mui-italia";
 import { ReCAPTCHA } from "react-google-recaptcha";
+import { Box } from "@mui/material";
 import { proceedToLogin } from "../../utils/api/helper";
 import { ErrorsType } from "../../utils/errors/checkErrorsModel";
 import { onBrowserUnload } from "../../utils/eventListeners";
@@ -13,6 +14,7 @@ import CheckoutLoader from "../../components/PageContent/CheckoutLoader";
 import { CheckoutRoutes } from "../../routes/models/routeModel";
 import {
   clearSessionItem,
+  getReCaptchaKey,
   getSessionItem,
   SessionItems,
 } from "../../utils/storage/sessionStorage";
@@ -42,17 +44,26 @@ export default function LoginHeader() {
   const [loggedUser, setLoggedUser] = React.useState<JwtUser | undefined>(
     sessionLoggedUser
   );
+  const ref = React.useRef<ReCAPTCHA>(null);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState("");
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
-  const ref = React.useRef<ReCAPTCHA>(null);
+
+  React.useEffect(() => {
+    if (ref.current) {
+      setLoading(false);
+    }
+  }, [ref.current]);
+
   const onAssistanceClick = () => {
     // console.log("Clicked/Tapped on Assistance");
   };
 
   const onError = (m: string) => {
+    setLoading(false);
     setError(m);
     setErrorModalOpen(true);
+    ref.current?.reset();
   };
 
   const onResponse = (authorizationUrl: string) => {
@@ -80,12 +91,16 @@ export default function LoginHeader() {
     setLoggedUser(user);
   }; */
 
-  const onLoginClick = async () => {
+  const onLogin = async (recaptchaRef: ReCAPTCHA) => {
     setLoading(true);
-    const token = await ref.current?.executeAsync();
-    await proceedToLogin({ recaptcha: token || "", onError, onResponse });
+    await proceedToLogin({ recaptchaRef, onError, onResponse });
   };
 
+  const handleClickOnLogin = async () => {
+    if (ref.current) {
+      await onLogin(ref.current);
+    }
+  };
   const onLogoutClick = () => {
     setLoading(true);
     clearSessionItem(SessionItems.loggedUser);
@@ -111,8 +126,15 @@ export default function LoginHeader() {
         ]}
         enableLogin={loginRoutes.includes(currentPath) || loggedUser != null}
         onAssistanceClick={onAssistanceClick}
-        onLogin={onLoginClick}
+        onLogin={handleClickOnLogin}
       />
+      <Box display="none">
+        <ReCAPTCHA
+          ref={ref}
+          size="invisible"
+          sitekey={getReCaptchaKey() as string}
+        />
+      </Box>
       {!!error && (
         <ErrorModal
           error={error}

@@ -595,25 +595,26 @@ export const calculateFees = async ({
 };
 
 export const proceedToLogin = async ({
-  recaptcha,
+  recaptchaRef,
   onError,
   onResponse,
 }: {
-  recaptcha: string;
+  recaptchaRef: ReCAPTCHA;
   onError: (e: string) => void;
   onResponse: (r: any) => void;
 }) => {
+  const token = await callRecaptcha(recaptchaRef, true);
   await pipe(
-    O.fromNullable(recaptcha),
+    O.fromNullable(token),
     TE.fromOption(() => {
       onError(ErrorsType.GENERIC_ERROR);
       return toError;
     }),
-    TE.chain((recaptcha) =>
+    TE.chain((token) =>
       TE.tryCatch(
         () =>
           apiCheckoutAuthServiceClientV1.authLogin({
-            recaptcha,
+            recaptcha: token,
           }),
         (_e) => {
           onError(ErrorsType.CONNECTION);
