@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { ShoppingCart } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
-import { evaluateFeatureFlag } from "utils/api/helper";
+import { evaluateFeatureFlag } from "./../../utils/api/helper";
 import pagopaLogo from "../../assets/images/pagopa-logo.svg";
 import {
   Cart,
@@ -82,6 +82,8 @@ export default function Header() {
       ];
 
   const onFeatureFlagError = (e: string) => {
+    // eslint-disable-next-line no-console
+    console.error("Error while getting feature flag", e);
     setSessionItem(SessionItems.enableAuthentication, "false");
     setEnableAuthentication(false);
   };
@@ -95,7 +97,7 @@ export default function Header() {
     const storedFeatureFlag = getSessionItem(SessionItems.enableAuthentication);
 
     // avoid asking again if you already have received an answer
-    if (storedFeatureFlag === null) {
+    if (!storedFeatureFlag) {
       await evaluateFeatureFlag(
         "EnableAuthentication",
         onFeatureFlagError,
@@ -147,6 +149,7 @@ export default function Header() {
             )}
         </Stack>
       </Box>
+      {enableAuthentication && <Button>Mock login button</Button>}
       <DrawerDetail
         paymentNotices={paymentNotices}
         amountToShow={amountToShow}
