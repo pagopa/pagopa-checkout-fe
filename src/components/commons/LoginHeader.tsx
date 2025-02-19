@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Logout } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import { HeaderAccount, JwtUser, RootLinkType } from "@pagopa/mui-italia";
-import { ReCAPTCHA } from "react-google-recaptcha";
+import ReCAPTCHA from "react-google-recaptcha";
 import { Box } from "@mui/material";
 import { proceedToLogin } from "../../utils/api/helper";
 import { ErrorsType } from "../../utils/errors/checkErrorsModel";
