@@ -1208,7 +1208,7 @@ export const evaluateFeatureFlag = async (
               return {};
             },
             (res: any) => {
-              if (res.enabled !== undefined) {
+              if (res.value.enabled !== undefined) {
                 mixpanel.track(FEATURE_FLAG_REQUEST_SUCCESS.value, {
                   EVENT_ID: FEATURE_FLAG_REQUEST_SUCCESS.value,
                 });
