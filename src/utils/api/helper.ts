@@ -94,7 +94,6 @@ import {
   apiPaymentEcommerceClientWithRetry,
   apiPaymentEcommerceClientWithRetryV2,
 } from "./client";
-import { FeatureFlagResponse } from "../../../generated/definitions/checkout-feature-flags/FeatureFlagResponse";
 
 export const NodeFaultCodeR = t.interface({
   faultCodeCategory: t.string,
@@ -1169,7 +1168,6 @@ export const recaptchaTransaction = async ({
   });
 };
 
-
 export const evaluateFeatureFlag = async (
   featureKey: string,
   onError: (e: string) => void,
@@ -1186,8 +1184,8 @@ export const evaluateFeatureFlag = async (
         mixpanel.track(FEATURE_FLAG_REQUEST_NET_ERROR.value, {
           EVENT_ID: FEATURE_FLAG_REQUEST_NET_ERROR.value,
         });
-        onError('Network error');
-        return new Error('Network error');
+        onError("Network error");
+        return new Error("Network error");
       }
     ),
     TE.fold(
@@ -1195,7 +1193,7 @@ export const evaluateFeatureFlag = async (
         mixpanel.track(FEATURE_FLAG_REQUEST_SVR_ERROR.value, {
           EVENT_ID: FEATURE_FLAG_REQUEST_SVR_ERROR.value,
         });
-        onError('Server error');
+        onError("Server error");
         return {};
       },
       (response) => async () =>
@@ -1206,10 +1204,10 @@ export const evaluateFeatureFlag = async (
               mixpanel.track(FEATURE_FLAG_REQUEST_RESP_ERROR.value, {
                 EVENT_ID: FEATURE_FLAG_REQUEST_RESP_ERROR.value,
               });
-              onError('Response error');
+              onError("Response error");
               return {};
             },
-            (res) => {
+            (res: any) => {
               if (res.enabled !== undefined) {
                 mixpanel.track(FEATURE_FLAG_REQUEST_SUCCESS.value, {
                   EVENT_ID: FEATURE_FLAG_REQUEST_SUCCESS.value,
@@ -1220,7 +1218,7 @@ export const evaluateFeatureFlag = async (
                 mixpanel.track(FEATURE_FLAG_REQUEST_RESP_ERROR.value, {
                   EVENT_ID: FEATURE_FLAG_REQUEST_RESP_ERROR.value,
                 });
-                onError('Response error');
+                onError("Response error");
                 return {};
               }
             }

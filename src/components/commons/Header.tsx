@@ -1,9 +1,10 @@
 /* eslint-disable sonarjs/cognitive-complexity */
 import { Box, Button, Stack } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { ShoppingCart } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
+import { evaluateFeatureFlag } from "utils/api/helper";
 import pagopaLogo from "../../assets/images/pagopa-logo.svg";
 import {
   Cart,
@@ -14,6 +15,7 @@ import { CheckoutRoutes } from "../../routes/models/routeModel";
 import {
   getSessionItem,
   SessionItems,
+  setSessionItem,
 } from "../../utils/storage/sessionStorage";
 import { getTotalFromCart } from "../../utils/cart/cart";
 import { moneyFormat } from "../../utils/form/formatters";
@@ -47,6 +49,9 @@ export default function Header() {
   };
   const CartInfo = getSessionItem(SessionItems.cart) as Cart | undefined;
   const [drawstate, setDrawstate] = React.useState(false);
+  const [enableAuthentication, setEnableAuthentication] = React.useState(
+    getSessionItem(SessionItems.enableAuthentication) === "true"
+  );
   const ignoreRoutes: Array<string> = [
     CheckoutRoutes.ROOT,
     CheckoutRoutes.LEGGI_CODICE_QR,
@@ -75,6 +80,33 @@ export default function Header() {
           description: paymentInfoData?.description || "",
         },
       ];
+
+  const onFeatureFlagError = (e: string) => {
+    setSessionItem(SessionItems.enableAuthentication, "false");
+    setEnableAuthentication(false);
+  };
+
+  const onFeatureFlagSuccess = (data: { enabled: boolean }) => {
+    setSessionItem(SessionItems.enableAuthentication, data.enabled.toString());
+    setEnableAuthentication(data.enabled);
+  };
+
+  const initFeatureFlag = async () => {
+    const storedFeatureFlag = getSessionItem(SessionItems.enableAuthentication);
+
+    // avoid asking again if you already have received an answer
+    if (storedFeatureFlag === null) {
+      await evaluateFeatureFlag(
+        "EnableAuthentication",
+        onFeatureFlagError,
+        onFeatureFlagSuccess
+      );
+    }
+  };
+
+  useEffect(() => {
+    void initFeatureFlag();
+  }, []);
 
   return (
     <header>
