@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { ShoppingCart } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
-import featureFlags from "utils/api/featureFlags";
+import featureFlags from "../../utils/featureFlags";
 import pagopaLogo from "../../assets/images/pagopa-logo.svg";
 import {
   Cart,
