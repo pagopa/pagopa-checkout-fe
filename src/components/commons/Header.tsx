@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { ShoppingCart } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
+import featureFlags from "utils/api/featureFlags";
 import pagopaLogo from "../../assets/images/pagopa-logo.svg";
 import {
   Cart,
@@ -99,7 +100,7 @@ export default function Header() {
     // avoid asking again if you already have received an answer
     if (!storedFeatureFlag) {
       await evaluateFeatureFlag(
-        "EnableAuthentication",
+        featureFlags.enableAuthentication,
         onFeatureFlagError,
         onFeatureFlagSuccess
       );
