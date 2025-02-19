@@ -1212,8 +1212,8 @@ export const evaluateFeatureFlag = async (
                 mixpanel.track(FEATURE_FLAG_REQUEST_SUCCESS.value, {
                   EVENT_ID: FEATURE_FLAG_REQUEST_SUCCESS.value,
                 });
-                onResponse(res);
-                return res;
+                onResponse(res.value);
+                return res.value;
               } else {
                 mixpanel.track(FEATURE_FLAG_REQUEST_RESP_ERROR.value, {
                   EVENT_ID: FEATURE_FLAG_REQUEST_RESP_ERROR.value,
