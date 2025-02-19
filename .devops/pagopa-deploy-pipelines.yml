@@ -1,22 +1,22 @@
 # Azure DevOps pipeline to release a new version and deploy to production.
 
 parameters:
-  - name: "DEV_DEPLOY"
-    displayName: "Deploy on DEV environment"
+  - name: 'DEV_DEPLOY'
+    displayName: 'Deploy on DEV environment'
     type: boolean
     default: True
     values:
       - False
       - True
-  - name: "UAT_PROD_DEPLOY"
-    displayName: "Deploy on UAT then PROD environments"
+  - name: 'UAT_PROD_DEPLOY'
+    displayName: 'Deploy on UAT then PROD environments'
     type: boolean
     default: False
     values:
       - False
       - True
-  - name: "RELEASE_SEMVER"
-    displayName: "When packing a release, define the version bump to apply (release is done automatically when deploying on UAT and skipped on DEV) "
+  - name: 'RELEASE_SEMVER'
+    displayName: 'When packing a release, define the version bump to apply (release is done automatically when deploying on UAT and skipped on DEV) '
     type: string
     values:
       - major
@@ -24,9 +24,11 @@ parameters:
       - patch
     default: minor
 
+
 variables:
   NODE_VERSION: 14.16.0
   YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
+
 
 # Only manual activations are intended
 trigger: none
@@ -38,7 +40,7 @@ pr: none
 # runtime, the pipeline is currently configured to use a Windows hosted image for
 # the build and deploy.
 pool:
-  vmImage: "windows-2019"
+  vmImage: 'windows-2019'
 
 resources:
   repositories:
@@ -46,13 +48,13 @@ resources:
       type: github
       name: pagopa/azure-pipeline-templates
       ref: refs/tags/v19
-      endpoint: "io-azure-devops-github-ro"
+      endpoint: 'io-azure-devops-github-ro'
 
     - repository: checkoutTests
       type: github
       name: pagopa/pagopa-checkout-tests
       ref: main
-      endpoint: "io-azure-devops-github-ro"
+      endpoint: 'io-azure-devops-github-ro'
 
 stages:
   - stage: Prepare_artifact_dev
@@ -61,7 +63,7 @@ stages:
     jobs:
       - job: make_build
         pool:
-          vmImage: "ubuntu-latest"
+          vmImage: 'ubuntu-latest'
         steps:
           - template: templates/node-job-setup/template.yaml@pagopaCommons
             parameters:
@@ -77,28 +79,27 @@ stages:
               pagopa_apim_host: $(CHECKOUT_API_HOST_DEV)
               polling_activation_interval: 6000
               polling_activation_attempts: 16
-              env: "DEV"
+              env: 'DEV'
               recaptcha_site_key: $(CHECKOUT_CAPTCHA_ID_DEV)
-              api_payment_transactions_basepath: "/api/checkout/payment-transactions/v1"
+              api_payment_transactions_basepath: '/api/checkout/payment-transactions/v1'
               api_timeout: 10000
-              api_payment_activations_basepath: "/checkout/payments/v1"
-              pm_host: "https://api.dev.platform.pagopa.it/payment-manager"
-              pm_api_basepath: "/pp-restapi/v4"
-              donations_url: "https://api.dev.platform.pagopa.it/donations/api/v1/availabledonations"
-              ecommerce_host: "https://api.dev.platform.pagopa.it"
-              feature_flags_basepath: "/checkout/feature-flags/v1"
-              api_ecommerce_basepath: "/ecommerce/checkout/v1"
-              api_ecommerce_basepath_v2: "/ecommerce/checkout/v2"
-              pagopa_assets_cdn: "https://assets.cdn.platform.pagopa.it/payment-methods"
-              pagopa_logos_cdn: "https://assets.cdn.io.italia.it/logos/abi"
+              api_payment_activations_basepath: '/checkout/payments/v1'
+              pm_host: 'https://api.dev.platform.pagopa.it/payment-manager'
+              pm_api_basepath: '/pp-restapi/v4'
+              donations_url: 'https://api.dev.platform.pagopa.it/donations/api/v1/availabledonations'
+              ecommerce_host: 'https://api.dev.platform.pagopa.it'
+              api_ecommerce_basepath: '/ecommerce/checkout/v1'
+              api_ecommerce_basepath_v2: '/ecommerce/checkout/v2'
+              pagopa_assets_cdn: 'https://assets.cdn.platform.pagopa.it/payment-methods'
+              pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi'
               survey_show: 0
-              checkout_npg_sdk_url: "https://stg-ta.nexigroup.com/monetaweb/resources/hfsdk.js"
+              checkout_npg_sdk_url: 'https://stg-ta.nexigroup.com/monetaweb/resources/hfsdk.js'
               checkout_gdi_check_timeout: 20000
               checkout_version: "$(Build.SourceBranchName):$(Build.SourceVersion)"
 
           - script: |
               yarn build
-            displayName: "Build"
+            displayName: 'Build'
 
           - publish: $(System.DefaultWorkingDirectory)/dist
             artifact: Bundle_DEV
@@ -107,7 +108,7 @@ stages:
     dependsOn:
       - Prepare_artifact_dev
     jobs:
-      - job: "deploy"
+      - job: 'deploy'
         steps:
           - checkout: none
 
@@ -115,17 +116,17 @@ stages:
             artifact: Bundle_DEV
 
           - task: AzureCLI@1
-            displayName: "Sync checkout storage on DEV"
+            displayName: 'Sync checkout storage on DEV'
             inputs:
-              azureSubscription: "DEV-PAGOPA-SERVICE-CONN"
+              azureSubscription: 'DEV-PAGOPA-SERVICE-CONN'
               scriptLocation: inlineScript
               inlineScript: |
                 call az storage blob sync --container $web --account-name pagopadcheckoutsa -s "$(Pipeline.Workspace)\Bundle_DEV" --exclude-path payment-transactions-gateway;ecommerce-fe
 
           - task: AzureCLI@1
-            displayName: "Purge CDN endpoint on DEV"
+            displayName: 'Purge CDN endpoint on DEV'
             inputs:
-              azureSubscription: "DEV-PAGOPA-SERVICE-CONN"
+              azureSubscription: 'DEV-PAGOPA-SERVICE-CONN'
               scriptLocation: inlineScript
               inlineScript: |
                 call az cdn endpoint purge -g pagopa-d-checkout-fe-rg -n pagopa-d-checkout-cdn-endpoint --profile-name pagopa-d-checkout-cdn-profile --content-paths "/*"
@@ -134,7 +135,7 @@ stages:
     dependsOn:
       - Deploy_DEV_pagoPA
     pool:
-      vmImage: "ubuntu-latest"
+      vmImage: 'ubuntu-latest'
     jobs:
       - job: e2e_tests
         steps:
@@ -150,38 +151,39 @@ stages:
 
   - stage: Release
     dependsOn: []
-    condition: and(
-      succeeded(),
-      eq(${{parameters.UAT_PROD_DEPLOY}}, true),
-      or(
-      eq(variables['Build.SourceBranch'], 'refs/heads/main'),
+    condition:
       and(
-      startsWith(variables['Build.SourceBranch'], 'refs/tags'),
-      endsWith(variables['Build.SourceBranch'], '-RELEASE')
-      )
-      )
+        succeeded(),
+        eq(${{parameters.UAT_PROD_DEPLOY}}, true),
+        or(
+          eq(variables['Build.SourceBranch'], 'refs/heads/main'),
+          and(
+            startsWith(variables['Build.SourceBranch'], 'refs/tags'),
+            endsWith(variables['Build.SourceBranch'], '-RELEASE')
+          )
+        )
       )
     pool:
-      vmImage: "ubuntu-latest"
+      vmImage: 'ubuntu-latest'
     jobs:
       - job: make_release
         steps:
-          - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
-              - template: templates/node-job-setup/template.yaml@pagopaCommons
-                parameters:
-                  persistCredentials: true
-              - template: templates/node-github-release/template.yaml@pagopaCommons
-                parameters:
-                  semver: "${{ parameters.RELEASE_SEMVER }}"
-                  gitEmail: $(GIT_EMAIL)
-                  gitUsername: $(GIT_USERNAME)
-                  gitHubConnection: $(GITHUB_CONNECTION)
-                  release_branch: main
+        - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
+          - template: templates/node-job-setup/template.yaml@pagopaCommons
+            parameters:
+              persistCredentials: true
+          - template: templates/node-github-release/template.yaml@pagopaCommons
+            parameters:
+              semver: '${{ parameters.RELEASE_SEMVER }}'
+              gitEmail: $(GIT_EMAIL)
+              gitUsername: $(GIT_USERNAME)
+              gitHubConnection: $(GITHUB_CONNECTION)
+              release_branch: main
 
-          - ${{ if ne(variables['Build.SourceBranch'], 'refs/heads/main') }}:
-              - script: |
-                  echo "We assume this reference to be a valid release: $(Build.SourceBranch). Therefore, there is no need to bundle a new release."
-                displayName: "Skip release bundle"
+        - ${{ if ne(variables['Build.SourceBranch'], 'refs/heads/main') }}:
+          - script: |
+              echo "We assume this reference to be a valid release: $(Build.SourceBranch). Therefore, there is no need to bundle a new release."
+            displayName: 'Skip release bundle'
   # Prepare Artifact
   - stage: Prepare_artifact_uat
     dependsOn:
@@ -189,7 +191,7 @@ stages:
     jobs:
       - job: make_build
         pool:
-          vmImage: "ubuntu-latest"
+          vmImage: 'ubuntu-latest'
         steps:
           - template: templates/node-job-setup/template.yaml@pagopaCommons
             parameters:
@@ -205,28 +207,27 @@ stages:
               pagopa_apim_host: $(CHECKOUT_API_HOST_UAT)
               polling_activation_interval: 6000
               polling_activation_attempts: 16
-              env: "UAT"
+              env: 'UAT'
               recaptcha_site_key: $(CHECKOUT_CAPTCHA_ID_UAT)
-              api_payment_transactions_basepath: "/api/checkout/payment-transactions/v1"
+              api_payment_transactions_basepath: '/api/checkout/payment-transactions/v1'
               api_timeout: 30000
-              api_payment_activations_basepath: "/checkout/payments/v1"
-              pm_host: "https://api.uat.platform.pagopa.it/payment-manager"
-              pm_api_basepath: "/pp-restapi/v4"
-              donations_url: "https://api.uat.platform.pagopa.it/donations/api/v1/availabledonations"
-              ecommerce_host: "https://api.uat.platform.pagopa.it"
-              feature_flags_basepath: "/checkout/feature-flags/v1"
-              api_ecommerce_basepath: "/ecommerce/checkout/v1"
-              api_ecommerce_basepath_v2: "/ecommerce/checkout/v2"
-              pagopa_assets_cdn: "https://assets.cdn.platform.pagopa.it/payment-methods"
-              pagopa_logos_cdn: "https://assets.cdn.io.italia.it/logos/abi/"
+              api_payment_activations_basepath: '/checkout/payments/v1'
+              pm_host: 'https://api.uat.platform.pagopa.it/payment-manager'
+              pm_api_basepath: '/pp-restapi/v4'
+              donations_url: 'https://api.uat.platform.pagopa.it/donations/api/v1/availabledonations'
+              ecommerce_host: 'https://api.uat.platform.pagopa.it'
+              api_ecommerce_basepath: '/ecommerce/checkout/v1'
+              api_ecommerce_basepath_v2: '/ecommerce/checkout/v2'
+              pagopa_assets_cdn: 'https://assets.cdn.platform.pagopa.it/payment-methods'
+              pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi/'
               survey_show: 0
-              checkout_npg_sdk_url: "https://stg-ta.nexigroup.com/monetaweb/resources/hfsdk.js"
+              checkout_npg_sdk_url: 'https://stg-ta.nexigroup.com/monetaweb/resources/hfsdk.js'
               checkout_version: "$(Build.SourceBranchName):$(Build.SourceVersion)"
               checkout_gdi_check_timeout: 20000
-
+              
           - script: |
               yarn build
-            displayName: "Build"
+            displayName: 'Build'
 
           - publish: $(System.DefaultWorkingDirectory)/dist
             artifact: Bundle_UAT
@@ -240,16 +241,16 @@ stages:
         pool: server
         timeoutInMinutes: 4320 # 3 days
         steps:
-          - task: ManualValidation@0
-            timeoutInMinutes: 4320 # 3 days
-            inputs:
-              onTimeout: "skip"
+        - task: ManualValidation@0
+          timeoutInMinutes: 4320 # 3 days
+          inputs:
+            onTimeout: 'skip'
 
   - stage: Deploy_UAT_pagoPA
     dependsOn:
       - UAT_Deploy_approval
     jobs:
-      - job: "deploy"
+      - job: 'deploy'
         steps:
           - checkout: none
 
@@ -257,17 +258,17 @@ stages:
             artifact: Bundle_UAT
 
           - task: AzureCLI@1
-            displayName: "Sync checkout storage on UAT"
+            displayName: 'Sync checkout storage on UAT'
             inputs:
-              azureSubscription: "UAT-PAGOPA-SERVICE-CONN"
+              azureSubscription: 'UAT-PAGOPA-SERVICE-CONN'
               scriptLocation: inlineScript
               inlineScript: |
                 call az storage blob sync --container $web --account-name pagopaucheckoutsa -s "$(Pipeline.Workspace)\Bundle_UAT" --exclude-path payment-transactions-gateway;ecommerce-fe
 
           - task: AzureCLI@1
-            displayName: "Purge CDN endpoint on UAT"
+            displayName: 'Purge CDN endpoint on UAT'
             inputs:
-              azureSubscription: "UAT-PAGOPA-SERVICE-CONN"
+              azureSubscription: 'UAT-PAGOPA-SERVICE-CONN'
               scriptLocation: inlineScript
               inlineScript: |
                 call az cdn endpoint purge -g pagopa-u-checkout-fe-rg -n pagopa-u-checkout-cdn-endpoint --profile-name pagopa-u-checkout-cdn-profile --content-paths "/*"
@@ -276,7 +277,7 @@ stages:
     dependsOn:
       - Deploy_UAT_pagoPA
     pool:
-      vmImage: "ubuntu-latest"
+      vmImage: 'ubuntu-latest'
     jobs:
       - job: e2e_tests
         steps:
@@ -292,7 +293,7 @@ stages:
     jobs:
       - job: make_build
         pool:
-          vmImage: "ubuntu-latest"
+          vmImage: 'ubuntu-latest'
         steps:
           - template: templates/node-job-setup/template.yaml@pagopaCommons
             parameters:
@@ -308,28 +309,27 @@ stages:
               pagopa_apim_host: $(CHECKOUT_API_HOST_PROD)
               polling_activation_interval: 6000
               polling_activation_attempts: 16
-              env: "PROD"
+              env: 'PROD'
               recaptcha_site_key: $(CHECKOUT_CAPTCHA_ID_PROD)
-              api_payment_transactions_basepath: "/api/checkout/payment-transactions/v1"
+              api_payment_transactions_basepath: '/api/checkout/payment-transactions/v1'
               api_timeout: 10000
-              api_payment_activations_basepath: "/checkout/payments/v1"
-              pm_host: "https://api.platform.pagopa.it/payment-manager"
-              pm_api_basepath: "/pp-restapi/v4"
-              donations_url: "https://api.platform.pagopa.it/donations/api/v1/availabledonations"
-              ecommerce_host: "https://api.platform.pagopa.it"
-              feature_flags_basepath: "/checkout/feature-flags/v1"
-              api_ecommerce_basepath: "/ecommerce/checkout/v1"
-              api_ecommerce_basepath_v2: "/ecommerce/checkout/v2"
-              pagopa_assets_cdn: "https://assets.cdn.platform.pagopa.it/payment-methods"
-              pagopa_logos_cdn: "https://assets.cdn.io.italia.it/logos/abi/"
+              api_payment_activations_basepath: '/checkout/payments/v1'
+              pm_host: 'https://api.platform.pagopa.it/payment-manager'
+              pm_api_basepath: '/pp-restapi/v4'
+              donations_url: 'https://api.platform.pagopa.it/donations/api/v1/availabledonations'
+              ecommerce_host: 'https://api.platform.pagopa.it'
+              api_ecommerce_basepath: '/ecommerce/checkout/v1'
+              api_ecommerce_basepath_v2: '/ecommerce/checkout/v2'
+              pagopa_assets_cdn: 'https://assets.cdn.platform.pagopa.it/payment-methods'
+              pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi/'
               survey_show: 0
-              checkout_npg_sdk_url: "https://xpay.nexigroup.com/monetaweb/resources/hfsdk.js"
+              checkout_npg_sdk_url: 'https://xpay.nexigroup.com/monetaweb/resources/hfsdk.js'
               checkout_version: "$(Build.SourceBranchName):$(Build.SourceVersion)"
               checkout_gdi_check_timeout: 20000
 
           - script: |
               yarn build
-            displayName: "Build"
+            displayName: 'Build'
 
           - publish: $(System.DefaultWorkingDirectory)/dist
             artifact: Bundle
@@ -343,16 +343,16 @@ stages:
         pool: server
         timeoutInMinutes: 4320 # 3 days
         steps:
-          - task: ManualValidation@0
-            timeoutInMinutes: 4320 # 3 days
-            inputs:
-              onTimeout: "skip"
+        - task: ManualValidation@0
+          timeoutInMinutes: 4320 # 3 days
+          inputs:
+            onTimeout: 'skip'
 
   - stage: Deploy_PROD_pagoPA
     dependsOn:
       - UAT_to_PROD_promotion
     jobs:
-      - job: "deploy"
+      - job: 'deploy'
         steps:
           - checkout: none
 
@@ -360,17 +360,17 @@ stages:
             artifact: Bundle
 
           - task: AzureCLI@1
-            displayName: "Sync checkout storage on PROD"
+            displayName: 'Sync checkout storage on PROD'
             inputs:
-              azureSubscription: "PROD-PAGOPA-SERVICE-CONN"
+              azureSubscription: 'PROD-PAGOPA-SERVICE-CONN'
               scriptLocation: inlineScript
               inlineScript: |
                 call az storage blob sync --container $web --account-name pagopapcheckoutsa -s "$(Pipeline.Workspace)\Bundle" --exclude-path payment-transactions-gateway;ecommerce-fe
 
           - task: AzureCLI@1
-            displayName: "Purge CDN endpoint on PROD"
+            displayName: 'Purge CDN endpoint on PROD'
             inputs:
-              azureSubscription: "PROD-PAGOPA-SERVICE-CONN"
+              azureSubscription: 'PROD-PAGOPA-SERVICE-CONN'
               scriptLocation: inlineScript
               inlineScript: |
                 call az cdn endpoint purge -g pagopa-p-checkout-fe-rg -n pagopa-p-checkout-cdn-endpoint --profile-name pagopa-p-checkout-cdn-profile --content-paths "/*"
