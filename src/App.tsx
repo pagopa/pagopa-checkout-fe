@@ -74,6 +74,9 @@ export function App() {
     CheckoutRoutes.DONA,
   ];
   React.useEffect(() => {
+
+    
+
     mixpanelInit();
   }, []);
   // eslint-disable-next-line functional/immutable-data

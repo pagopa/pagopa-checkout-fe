@@ -38,6 +38,11 @@ import {
   DONATION_INIT_SESSION,
   DONATION_LIST_ERROR,
   DONATION_LIST_SUCCESS,
+  FEATURE_FLAG_REQUEST_ACCESS,
+  FEATURE_FLAG_REQUEST_NET_ERROR,
+  FEATURE_FLAG_REQUEST_RESP_ERROR,
+  FEATURE_FLAG_REQUEST_SUCCESS,
+  FEATURE_FLAG_REQUEST_SVR_ERROR,
   NPG_INIT,
   NPG_NET_ERR,
   NPG_RESP_ERROR,
@@ -83,11 +88,13 @@ import { CalculateFeeResponse } from "../../../generated/definitions/payment-eco
 import { FaultCategoryEnum } from "../../../generated/definitions/payment-ecommerce/FaultCategory";
 import { CalculateFeeRequest } from "../../../generated/definitions/payment-ecommerce-v2/CalculateFeeRequest";
 import {
+  apiCheckoutFeatureFlags,
   apiPaymentEcommerceClient,
   apiPaymentEcommerceClientV2,
   apiPaymentEcommerceClientWithRetry,
   apiPaymentEcommerceClientWithRetryV2,
 } from "./client";
+import { FeatureFlagResponse } from "../../../generated/definitions/checkout-feature-flags/FeatureFlagResponse";
 
 export const NodeFaultCodeR = t.interface({
   faultCodeCategory: t.string,
@@ -1088,7 +1095,7 @@ export const npgSessionsFields = async (
         )
     )
   )();
-
+  
 export const getFees = (
   onSuccess: (value: boolean) => void,
   onPspNotFound: () => void,
@@ -1160,4 +1167,65 @@ export const recaptchaTransaction = async ({
     onResponseActivate: onSuccess,
     onErrorActivate: onError,
   });
+};
+
+
+export const evaluateFeatureFlag = async (
+  featureKey: string,
+  onError: (e: string) => void,
+  onResponse: (data: { enabled: boolean }) => void
+) => {
+  mixpanel.track(FEATURE_FLAG_REQUEST_ACCESS.value, {
+    EVENT_ID: FEATURE_FLAG_REQUEST_ACCESS.value,
+  });
+
+  await pipe(
+    TE.tryCatch(
+      () => apiCheckoutFeatureFlags.evaluateFeatureFlag({ featureKey }),
+      () => {
+        mixpanel.track(FEATURE_FLAG_REQUEST_NET_ERROR.value, {
+          EVENT_ID: FEATURE_FLAG_REQUEST_NET_ERROR.value,
+        });
+        onError('Network error');
+        return new Error('Network error');
+      }
+    ),
+    TE.fold(
+      () => async () => {
+        mixpanel.track(FEATURE_FLAG_REQUEST_SVR_ERROR.value, {
+          EVENT_ID: FEATURE_FLAG_REQUEST_SVR_ERROR.value,
+        });
+        onError('Server error');
+        return {};
+      },
+      (response) => async () =>
+        pipe(
+          response,
+          E.fold(
+            () => {
+              mixpanel.track(FEATURE_FLAG_REQUEST_RESP_ERROR.value, {
+                EVENT_ID: FEATURE_FLAG_REQUEST_RESP_ERROR.value,
+              });
+              onError('Response error');
+              return {};
+            },
+            (res) => {
+              if (res.enabled !== undefined) {
+                mixpanel.track(FEATURE_FLAG_REQUEST_SUCCESS.value, {
+                  EVENT_ID: FEATURE_FLAG_REQUEST_SUCCESS.value,
+                });
+                onResponse(res);
+                return res;
+              } else {
+                mixpanel.track(FEATURE_FLAG_REQUEST_RESP_ERROR.value, {
+                  EVENT_ID: FEATURE_FLAG_REQUEST_RESP_ERROR.value,
+                });
+                onError('Response error');
+                return {};
+              }
+            }
+          )
+        )
+    )
+  )();
 };
