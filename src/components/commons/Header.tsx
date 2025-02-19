@@ -86,7 +86,6 @@ export default function Header() {
   const onFeatureFlagError = (e: string) => {
     // eslint-disable-next-line no-console
     console.error("Error while getting feature flag", e);
-    setSessionItem(SessionItems.enableAuthentication, "false");
     setEnableAuthentication(false);
   };
 
@@ -115,7 +114,7 @@ export default function Header() {
   return (
     <header>
       <Stack position="relative" zIndex="1000">
-        <LoginHeader />
+        {enableAuthentication && <LoginHeader />}
         <Box p={3} bgcolor={"white"}>
           <Stack
             spacing={0}

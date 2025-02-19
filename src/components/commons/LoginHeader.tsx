@@ -49,16 +49,16 @@ export default function LoginHeader() {
     setSessionItem(SessionItems.loggedUser, user);
     setLoggedUser(user);
     setTimeout(() => {
-      setLoading(false)
-    }, 1000)
+      setLoading(false);
+    }, 1000);
   };
   const onLogoutClick = () => {
     setLoading(true);
     clearSessionItem(SessionItems.loggedUser);
     setLoggedUser(undefined);
     setTimeout(() => {
-      setLoading(false)
-    }, 1000)
+      setLoading(false);
+    }, 1000);
   };
   return (
     <>
@@ -77,7 +77,7 @@ export default function LoginHeader() {
         ]}
         enableLogin={loginRoutes.includes(currentPath) || loggedUser != null}
         enableAssistanceButton={false}
-        onAssistanceClick={() => {}}
+        onAssistanceClick={() => {}} // eslint-disable-line @typescript-eslint/no-empty-function
         onLogin={onLoginClick}
       />
     </>
