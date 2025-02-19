@@ -1096,7 +1096,6 @@ export const npgSessionsFields = async (
     )
   )();
 
-
 export const getFees = (
   onSuccess: (value: boolean) => void,
   onPspNotFound: () => void,
