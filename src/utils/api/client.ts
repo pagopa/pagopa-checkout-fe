@@ -38,7 +38,7 @@ export const apiPaymentEcommerceClientV2 = createEcommerceClientV2({
  * Api client for checkout feature flags
  */
 export const apiCheckoutFeatureFlags = createCheckoutFeatureFlagsClient({
-  baseUrl: conf.CHECKOUT_ECOMMERCE_HOST,
+  baseUrl: conf.CHECKOUT_PAGOPA_APIM_HOST,
   basePath: conf.CHECKOUT_API_FEATURE_FLAGS_BASEPATH as string,
   fetchApi: retryingFetch(fetch, conf.CHECKOUT_API_TIMEOUT as Millisecond, 3),
 });
