@@ -1243,14 +1243,10 @@ export const evaluateFeatureFlag = async (
               return {};
             },
             (res: any) => {
-              const target: any = res.value?.[featureKey] ?? false;
-              if (target) {
-                onResponse({ enabled: target });
-                return { enabled: target };
-              } else {
-                onError("Response error");
-                return {};
-              }
+              const target: any =
+                res.value?.[featureKey] ?? false;
+              onResponse({ enabled: target });
+              return { enabled: target };
             }
           )
         )
