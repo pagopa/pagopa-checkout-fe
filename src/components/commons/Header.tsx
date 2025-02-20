@@ -1,9 +1,10 @@
 /* eslint-disable sonarjs/cognitive-complexity */
 import { Box, Button, Stack } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { ShoppingCart } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
+import featureFlags from "../../utils/featureFlags";
 import pagopaLogo from "../../assets/images/pagopa-logo.svg";
 import {
   Cart,
@@ -14,11 +15,13 @@ import { CheckoutRoutes } from "../../routes/models/routeModel";
 import {
   getSessionItem,
   SessionItems,
+  setSessionItem,
 } from "../../utils/storage/sessionStorage";
 import { getTotalFromCart } from "../../utils/cart/cart";
 import { moneyFormat } from "../../utils/form/formatters";
 import { paymentSubjectTransform } from "../../utils/transformers/paymentTransformers";
 import DrawerDetail from "../Header/DrawerDetail";
+import { evaluateFeatureFlag } from "./../../utils/api/helper";
 import SkipToContent from "./SkipToContent";
 import LoginHeader from "./LoginHeader";
 
@@ -48,6 +51,9 @@ export default function Header() {
   };
   const CartInfo = getSessionItem(SessionItems.cart) as Cart | undefined;
   const [drawstate, setDrawstate] = React.useState(false);
+  const [enableAuthentication, setEnableAuthentication] = React.useState(
+    getSessionItem(SessionItems.enableAuthentication) === "true"
+  );
   const ignoreRoutes: Array<string> = [
     CheckoutRoutes.ROOT,
     CheckoutRoutes.LEGGI_CODICE_QR,
@@ -77,13 +83,36 @@ export default function Header() {
         },
       ];
 
+  const onFeatureFlagError = (e: string) => {
+    // eslint-disable-next-line no-console
+    console.error("Error while getting feature flag", e);
+    setEnableAuthentication(false);
+  };
+
+  const onFeatureFlagSuccess = (data: { enabled: boolean }) => {
+    setSessionItem(SessionItems.enableAuthentication, data.enabled.toString());
+    setEnableAuthentication(data.enabled);
+  };
+
+  const initFeatureFlag = async () => {
+    await evaluateFeatureFlag(
+      featureFlags.enableAuthentication,
+      onFeatureFlagError,
+      onFeatureFlagSuccess
+    );
+  };
+
+  useEffect(() => {
+    void initFeatureFlag();
+  }, []);
+
   return (
     <header>
       <Stack position="relative" zIndex="1000">
-        <LoginHeader />
+        {enableAuthentication && <LoginHeader />}
         <Box p={3} bgcolor={"white"}>
           <Stack
-            spacing={0}
+            spacing={4}
             direction="row"
             justifyContent="space-between"
             alignItems="center"
@@ -103,7 +132,6 @@ export default function Header() {
               />
               <SkipToContent />
             </Stack>
-
             {(!!PaymentInfo.receiver || !!CartInfo?.paymentNotices) &&
               !ignoreRoutes.includes(currentPath) && (
                 <Button
