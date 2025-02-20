@@ -19,6 +19,7 @@
     "test": "jest --config=jest.config.js",
     "test:final-status-integration": "jest --config=jest.final-status.integration.config.js",
     "test:payment-flow-integration": "jest --config=jest.payment-flow.integration.config.js",
+    "test:authentication-integration": "jest --config=jest.authentication.integration.config.js",
     "test:coverage": "jest --coverage --passWithNoTests --config=package.json",
     "preversion": "auto-changelog  --config .auto-changelog.json --unreleased --commit-limit false --stdout --template preview.hbs",
     "version": "auto-changelog -p --config .auto-changelog.json --unreleased && git add CHANGELOG.md",

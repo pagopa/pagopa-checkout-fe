@@ -93,7 +93,7 @@ export default function LoginHeader() {
     }, 1000);
   };
   return (
-    <>
+    <Box component="div" id="login-header">
       {loading && <CheckoutLoader />}
       <HeaderAccount
         rootLink={pagoPALink}
@@ -128,6 +128,6 @@ export default function LoginHeader() {
           }}
         />
       )}
-    </>
+    </Box>
   );
 }
