@@ -49,12 +49,6 @@ export default function LoginHeader() {
   const [error, setError] = React.useState("");
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
 
-  React.useEffect(() => {
-    if (ref.current) {
-      setLoading(false);
-    }
-  }, [ref.current]);
-
   const onAssistanceClick = () => {
     // console.log("Clicked/Tapped on Assistance");
   };
@@ -79,17 +73,6 @@ export default function LoginHeader() {
       onError(ErrorsType.GENERIC_ERROR);
     }
   };
-
-  /* const onResponse = (urlRedirect: string) => {
-    const user = {
-      id: "1234546",
-      email: "email@test.com",
-      name: "Mario",
-      surname: "Rossi",
-    };
-    setSessionItem(SessionItems.loggedUser, user);
-    setLoggedUser(user);
-  }; */
 
   const onLogin = async (recaptchaRef: ReCAPTCHA) => {
     setLoading(true);
