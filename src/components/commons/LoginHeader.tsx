@@ -10,7 +10,6 @@ import {
   clearSessionItem,
   getSessionItem,
   SessionItems,
-  setSessionItem,
 } from "../../utils/storage/sessionStorage";
 
 export default function LoginHeader() {
