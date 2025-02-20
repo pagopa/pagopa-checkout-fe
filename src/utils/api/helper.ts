@@ -1170,7 +1170,7 @@ export const evaluateFeatureFlag = async (
 ) => {
   await pipe(
     TE.tryCatch(
-      () => apiCheckoutFeatureFlags.evaluateFeatureFlag({ featureKey }),
+      () => apiCheckoutFeatureFlags.evaluateFeatureFlags({}),
       () => {
         onError("Network error");
         return new Error("Network error");
@@ -1190,9 +1190,11 @@ export const evaluateFeatureFlag = async (
               return {};
             },
             (res: any) => {
-              if (res.value.enabled !== undefined) {
-                onResponse(res.value);
-                return res.value;
+              const target: any =
+                res.value?.[featureKey] ?? false;
+              if (target) {
+                onResponse({ enabled: target });
+                return { enabled: target };
               } else {
                 onError("Response error");
                 return {};
