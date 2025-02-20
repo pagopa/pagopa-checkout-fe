@@ -74,7 +74,7 @@ const decodeToUUID = (base64: string) => {
 
 const counter = createCounter();
 const ecommerceClientWithPolling: EcommerceClient = createClient({
-  baseUrl: config.CHECKOUT_ECOMMERCE_HOST,
+  baseUrl: config.CHECKOUT_PAGOPA_APIM_HOST,
   fetchApi: constantPollingWithPromisePredicateFetch(
     DeferredPromise<boolean>().e1,
     retries,
