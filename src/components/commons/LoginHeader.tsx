@@ -40,25 +40,19 @@ export default function LoginHeader() {
   const [loading, setLoading] = React.useState(false);
   const onLoginClick = () => {
     setLoading(true);
-    const user = {
-      id: "1234546",
-      email: "email@test.com",
-      name: "Mario",
-      surname: "Rossi",
-    };
+    /*
     setSessionItem(SessionItems.loggedUser, user);
     setLoggedUser(user);
     setTimeout(() => {
       setLoading(false);
     }, 1000);
+    */
   };
   const onLogoutClick = () => {
     setLoading(true);
     clearSessionItem(SessionItems.loggedUser);
     setLoggedUser(undefined);
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
+    setLoading(false);
   };
   return (
     <>
