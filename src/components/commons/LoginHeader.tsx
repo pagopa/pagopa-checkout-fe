@@ -88,9 +88,7 @@ export default function LoginHeader() {
     setLoading(true);
     clearSessionItem(SessionItems.loggedUser);
     setLoggedUser(undefined);
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
+    setLoading(false);
   };
   return (
     <>
