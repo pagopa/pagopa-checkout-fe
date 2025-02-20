@@ -108,7 +108,8 @@ export default function LoginHeader() {
           },
         ]}
         enableLogin={loginRoutes.includes(currentPath) || loggedUser != null}
-        onAssistanceClick={onAssistanceClick}
+        enableAssistanceButton={false}
+        onAssistanceClick={() => {}} // eslint-disable-line @typescript-eslint/no-empty-function
         onLogin={handleClickOnLogin}
       />
       <Box display="none">
