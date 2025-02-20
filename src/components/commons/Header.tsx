@@ -65,6 +65,9 @@ export default function Header() {
     CheckoutRoutes.ESITO,
     CheckoutRoutes.DONA,
   ];
+  const enablePaymentSummaryButton =
+    (!!PaymentInfo.receiver || !!CartInfo?.paymentNotices) &&
+    !ignoreRoutes.includes(currentPath);
   const toggleDrawer = (open: boolean) => {
     setDrawstate(open);
   };
@@ -86,7 +89,6 @@ export default function Header() {
   const onFeatureFlagError = (e: string) => {
     // eslint-disable-next-line no-console
     console.error("Error while getting feature flag", e);
-    setSessionItem(SessionItems.enableAuthentication, "false");
     setEnableAuthentication(false);
   };
 
@@ -96,11 +98,15 @@ export default function Header() {
   };
 
   const initFeatureFlag = async () => {
-    await evaluateFeatureFlag(
-      featureFlags.enableAuthentication,
-      onFeatureFlagError,
-      onFeatureFlagSuccess
-    );
+    const storedFeatureFlag = getSessionItem(SessionItems.enableAuthentication);
+    // avoid asking again if you already have received an answer
+    if (!storedFeatureFlag) {
+      await evaluateFeatureFlag(
+        featureFlags.enableAuthentication,
+        onFeatureFlagError,
+        onFeatureFlagSuccess
+      );
+    }
   };
 
   useEffect(() => {
@@ -110,7 +116,7 @@ export default function Header() {
   return (
     <header>
       <Stack position="relative" zIndex="1000">
-        <LoginHeader />
+        {enableAuthentication && <LoginHeader />}
         <Box p={3} bgcolor={"white"}>
           <Stack
             spacing={0}
@@ -133,16 +139,15 @@ export default function Header() {
               />
               <SkipToContent />
             </Stack>
-            {(!!PaymentInfo.receiver || !!CartInfo?.paymentNotices) &&
-              !ignoreRoutes.includes(currentPath) && (
-                <Button
-                  onClick={() => toggleDrawer(true)}
-                  aria-label={t("mainPage.header.detail.detailButton")}
-                  endIcon={<ShoppingCart />}
-                >
-                  {moneyFormat(amountToShow())}
-                </Button>
-              )}
+            {enablePaymentSummaryButton && (
+              <Button
+                onClick={() => toggleDrawer(true)}
+                aria-label={t("mainPage.header.detail.detailButton")}
+                endIcon={<ShoppingCart />}
+              >
+                {moneyFormat(amountToShow())}
+              </Button>
+            )}
           </Stack>
         </Box>
       </Stack>

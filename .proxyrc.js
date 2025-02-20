@@ -17,6 +17,7 @@ const apiHost = "http://127.0.0.1:8080";
 const checkoutAuthBasepath = "/checkout/auth-service/v1";
 const ecommerceBasepath = "/ecommerce/checkout/v1";
 const ecommerceBasepathV2 = "/ecommerce/checkout/v2";
+const checkoutFeatureFlag = "/checkout/feature-flags/v1";
 
 module.exports = function (app) {
     app.use(createProxyMiddleware(checkoutAuthBasepath, {
@@ -28,6 +29,10 @@ module.exports = function (app) {
     }));
 
     app.use(createProxyMiddleware(ecommerceBasepathV2, {
+        target: apiHost,
+    }));
+
+    app.use(createProxyMiddleware(checkoutFeatureFlag, {
         target: apiHost,
     }));
 
