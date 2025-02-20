@@ -83,6 +83,7 @@ import { CalculateFeeResponse } from "../../../generated/definitions/payment-eco
 import { FaultCategoryEnum } from "../../../generated/definitions/payment-ecommerce/FaultCategory";
 import { CalculateFeeRequest } from "../../../generated/definitions/payment-ecommerce-v2/CalculateFeeRequest";
 import {
+  apiCheckoutFeatureFlags,
   apiPaymentEcommerceClient,
   apiPaymentEcommerceClientV2,
   apiPaymentEcommerceClientWithRetry,
@@ -1213,4 +1214,47 @@ export const recaptchaTransaction = async ({
     onResponseActivate: onSuccess,
     onErrorActivate: onError,
   });
+};
+
+export const evaluateFeatureFlag = async (
+  featureKey: string,
+  onError: (e: string) => void,
+  onResponse: (data: { enabled: boolean }) => void
+) => {
+  await pipe(
+    TE.tryCatch(
+      () => apiCheckoutFeatureFlags.evaluateFeatureFlags({}),
+      () => {
+        onError("Network error");
+        return new Error("Network error");
+      }
+    ),
+    TE.fold(
+      () => async () => {
+        onError("Server error");
+        return {};
+      },
+      (response) => async () =>
+        pipe(
+          response,
+          E.fold(
+            () => {
+              onError("Response error");
+              return {};
+            },
+            (res: any) => {
+              const target: any =
+                res.value?.[featureKey] ?? false;
+              if (target) {
+                onResponse({ enabled: target });
+                return { enabled: target };
+              } else {
+                onError("Response error");
+                return {};
+              }
+            }
+          )
+        )
+    )
+  )();
 };

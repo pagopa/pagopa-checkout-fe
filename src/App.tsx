@@ -72,6 +72,7 @@ export function App() {
     CheckoutRoutes.SESSIONE_SCADUTA,
     CheckoutRoutes.DONA,
   ];
+
   React.useEffect(() => {
     mixpanelInit();
   }, []);

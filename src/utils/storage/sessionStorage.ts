@@ -17,6 +17,7 @@ export enum SessionItems {
   paymentInfo = "paymentInfo",
   noticeInfo = "rptId",
   useremail = "useremail",
+  enableAuthentication = "enableAuthentication",
   paymentMethod = "paymentMethod",
   pspSelected = "pspSelected",
   sessionToken = "sessionToken",
@@ -35,7 +36,8 @@ const isParsable = (item: SessionItems) =>
     item === SessionItems.useremail ||
     item === SessionItems.orderId ||
     item === SessionItems.correlationId ||
-    item === SessionItems.cartClientId
+    item === SessionItems.cartClientId ||
+    item === SessionItems.enableAuthentication
   );
 
 export const getSessionItem = (item: SessionItems) => {
