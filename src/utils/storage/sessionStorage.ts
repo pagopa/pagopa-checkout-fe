@@ -1,3 +1,4 @@
+import { JwtUser } from "@pagopa/mui-italia";
 import { Bundle } from "../../../generated/definitions/payment-ecommerce/Bundle";
 import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { SessionPaymentMethodResponse } from "../../../generated/definitions/payment-ecommerce/SessionPaymentMethodResponse";
@@ -27,6 +28,7 @@ export enum SessionItems {
   orderId = "orderId",
   correlationId = "correlationId",
   cartClientId = "cartClientId",
+  loggedUser = "loggedUser",
 }
 const isParsable = (item: SessionItems) =>
   !(
@@ -56,7 +58,8 @@ export const getSessionItem = (item: SessionItems) => {
           | Cart
           | Bundle
           | SessionPaymentMethodResponse
-          | PaymentMethodInfo)
+          | PaymentMethodInfo
+          | JwtUser)
       : serializedState;
   } catch (e) {
     return undefined;
@@ -77,11 +80,16 @@ export function setSessionItem(
     | Bundle
     | SessionPaymentMethodResponse
     | PaymentMethodInfo
+    | JwtUser
 ) {
   sessionStorage.setItem(
     name,
     typeof item === "string" ? item : JSON.stringify(item)
   );
+}
+
+export function clearSessionItem(name: SessionItems) {
+  sessionStorage.removeItem(name);
 }
 
 export const isStateEmpty = (item: SessionItems) => !getSessionItem(item);

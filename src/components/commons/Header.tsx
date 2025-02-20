@@ -23,6 +23,7 @@ import { paymentSubjectTransform } from "../../utils/transformers/paymentTransfo
 import DrawerDetail from "../Header/DrawerDetail";
 import { evaluateFeatureFlag } from "./../../utils/api/helper";
 import SkipToContent from "./SkipToContent";
+import LoginHeader from "./LoginHeader";
 
 function amountToShow() {
   const cartInfo = getSessionItem(SessionItems.cart) as Cart | undefined;
@@ -64,6 +65,9 @@ export default function Header() {
     CheckoutRoutes.ESITO,
     CheckoutRoutes.DONA,
   ];
+  const enablePaymentSummaryButton =
+    (!!PaymentInfo.receiver || !!CartInfo?.paymentNotices) &&
+    !ignoreRoutes.includes(currentPath);
   const toggleDrawer = (open: boolean) => {
     setDrawstate(open);
   };
@@ -85,7 +89,6 @@ export default function Header() {
   const onFeatureFlagError = (e: string) => {
     // eslint-disable-next-line no-console
     console.error("Error while getting feature flag", e);
-    setSessionItem(SessionItems.enableAuthentication, "false");
     setEnableAuthentication(false);
   };
 
@@ -95,11 +98,15 @@ export default function Header() {
   };
 
   const initFeatureFlag = async () => {
-    await evaluateFeatureFlag(
-      featureFlags.enableAuthentication,
-      onFeatureFlagError,
-      onFeatureFlagSuccess
-    );
+    const storedFeatureFlag = getSessionItem(SessionItems.enableAuthentication);
+    // avoid asking again if you already have received an answer
+    if (!storedFeatureFlag) {
+      await evaluateFeatureFlag(
+        featureFlags.enableAuthentication,
+        onFeatureFlagError,
+        onFeatureFlagSuccess
+      );
+    }
   };
 
   useEffect(() => {
@@ -108,33 +115,31 @@ export default function Header() {
 
   return (
     <header>
-      <Box p={3} bgcolor={"white"}>
-        <Stack
-          spacing={0}
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-          position="relative"
-          zIndex="1000"
-        >
+      <Stack position="relative" zIndex="1000">
+        {enableAuthentication && <LoginHeader />}
+        <Box p={3} bgcolor={"white"}>
           <Stack
             spacing={4}
             direction="row"
             justifyContent="space-between"
             alignItems="center"
-            position="relative"
           >
-            <img
-              src={pagopaLogo}
-              alt="pagoPA"
-              style={{ width: "56px", height: "36px" }}
-              aria-hidden="true"
-            />
-            <SkipToContent />
-          </Stack>
-
-          {(!!PaymentInfo.receiver || !!CartInfo?.paymentNotices) &&
-            !ignoreRoutes.includes(currentPath) && (
+            <Stack
+              spacing={4}
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              position="relative"
+            >
+              <img
+                src={pagopaLogo}
+                alt="pagoPA"
+                style={{ width: "56px", height: "36px" }}
+                aria-hidden="true"
+              />
+              <SkipToContent />
+            </Stack>
+            {enablePaymentSummaryButton && (
               <Button
                 onClick={() => toggleDrawer(true)}
                 aria-label={t("mainPage.header.detail.detailButton")}
@@ -143,9 +148,9 @@ export default function Header() {
                 {moneyFormat(amountToShow())}
               </Button>
             )}
-        </Stack>
-      </Box>
-      {enableAuthentication && <Button>Mock login button</Button>}
+          </Stack>
+        </Box>
+      </Stack>
       <DrawerDetail
         paymentNotices={paymentNotices}
         amountToShow={amountToShow}

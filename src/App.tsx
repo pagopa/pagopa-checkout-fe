@@ -35,7 +35,6 @@ const checkoutTheme = createTheme({
   palette: {
     ...theme.palette,
     background: {
-      paper: theme.palette.background.default,
       default: theme.palette.background.paper,
     },
   },

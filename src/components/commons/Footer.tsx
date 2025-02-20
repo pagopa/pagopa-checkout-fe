@@ -31,10 +31,8 @@ export default function Footer(props: { fixedPages: Array<string> }) {
         sm: 0,
       }}
       bgcolor={{
-        ...(isFixed()
-          ? { xs: "background.paper" }
-          : { xs: "background.default" }),
-        sm: "background.paper",
+        ...(isFixed() ? { xs: "#f2f2f2" } : { xs: "background.default" }),
+        sm: "#f2f2f2",
       }}
     >
       <Typography variant="caption" component={"div"}>
