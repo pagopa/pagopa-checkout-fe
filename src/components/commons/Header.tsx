@@ -117,7 +117,7 @@ export default function Header() {
         {enableAuthentication && <LoginHeader />}
         <Box p={3} bgcolor={"white"}>
           <Stack
-            spacing={0}
+            spacing={4}
             direction="row"
             justifyContent="space-between"
             alignItems="center"
