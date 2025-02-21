@@ -56,10 +56,6 @@ parameters:
     type: string
     default: ''
 
-  - name: 'checkout_auth_service_baspath_v1'
-    type: string
-    default: ''
-
   - name: 'api_ecommerce_basepath_v2'
     type: string
     default: ''
