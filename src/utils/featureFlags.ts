@@ -1,5 +1,5 @@
 const featureFlags = {
-  enableAuthentication: "EnableAuthentication",
+  enableAuthentication: "isAuthenticationEnabled",
 };
 
 export default featureFlags;
