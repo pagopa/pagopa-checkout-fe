@@ -647,6 +647,7 @@ export const proceedToLogin = async ({
   )();
 };
 
+
 export const proceedToPayment = async (
   transaction: NewTransactionResponse,
   onError: (e: string) => void,
