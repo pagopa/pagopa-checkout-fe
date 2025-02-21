@@ -24,18 +24,14 @@ beforeEach(async () => {
 describe("Checkout authentication tests", () => {
   it("Should correctly redirect to auth login url", async () => {
 
+    //search login button and click it
     console.log("Search login button")
     const loginHeader = await page.waitForSelector("#login-header");
     const headerButtons = await loginHeader.$$("button");
-
-    //search login button and click it
-    Array.from(headerButtons).forEach(async (element) => {
-      const buttonText = await element.evaluate((el) => el.textContent);
-      if(buttonText == "Accedi") {
-        console.log("Login button click")
-        await element.click();
-      }
-    })
+    //Login button is the last on the header
+    const loginBtn = headerButtons.at(-1);
+    console.log("Login button click")
+    await loginBtn.click();
     await page.waitForNavigation();
 
     const currentUrl = await page.evaluate(() => location.href);
