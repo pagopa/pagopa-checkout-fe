@@ -34,7 +34,7 @@ resources:
     - repository: checkout-be-mock
       type: github
       name: pagopa/pagopa-checkout-be-mock
-      ref: master
+      ref: CHK-3718-login-mock
       endpoint: 'io-azure-devops-github-ro'
 
 stages:
@@ -227,6 +227,10 @@ stages:
 
         - script: yarn test:payment-flow-integration
           displayName: 'Payment flow integration tests exec'
+          workingDirectory: pagopa-checkout-fe
+
+        - script: yarn test:authentication-integration
+          displayName: 'Authentication integration tests exec'
           workingDirectory: pagopa-checkout-fe
 
         - task: PublishTestResults@2

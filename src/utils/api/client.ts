@@ -2,6 +2,7 @@ import { Millisecond } from "@pagopa/ts-commons/lib/units";
 import { DeferredPromise } from "@pagopa/ts-commons//lib/promises";
 import { createClient as createEcommerceClient } from "../../../generated/definitions/payment-ecommerce/client";
 import { createClient as createEcommerceClientV2 } from "../../../generated/definitions/payment-ecommerce-v2/client";
+import { createClient as createAuthServiceClient } from "../../../generated/definitions/checkout-auth-service-v1/client";
 import { createClient as createCheckoutFeatureFlagsClient } from "../../../generated/definitions/checkout-feature-flags/client";
 import { getConfigOrThrow } from "../config/config";
 import {
@@ -68,4 +69,13 @@ export const apiPaymentEcommerceClientWithRetryV2 = createEcommerceClientV2({
     conf.CHECKOUT_API_TIMEOUT as Millisecond,
     async (r: Response): Promise<boolean> => r.status > 499
   ),
+});
+
+/**
+ * Api client for checkout auth service API V1
+ */
+export const apiCheckoutAuthServiceClientV1 = createAuthServiceClient({
+  baseUrl: conf.CHECKOUT_AUTH_SERVICE_HOST,
+  basePath: conf.CHECKOUT_API_AUTH_SERVICE_BASEPATH_V1 as string,
+  fetchApi: retryingFetch(fetch, conf.CHECKOUT_API_TIMEOUT as Millisecond, 3),
 });

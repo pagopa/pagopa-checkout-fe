@@ -35,6 +35,8 @@ export const IConfig = t.interface({
   CHECKOUT_API_RETRY_NUMBERS: t.number,
   CHECKOUT_API_RETRY_DELAY: t.number,
   CHECKOUT_GDI_CHECK_TIMEOUT: t.number,
+  CHECKOUT_AUTH_SERVICE_HOST: NonEmptyString,
+  CHECKOUT_API_AUTH_SERVICE_BASEPATH_V1: NonEmptyString,
 });
 
 // No need to re-evaluate this object for each call
