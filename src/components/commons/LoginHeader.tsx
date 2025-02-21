@@ -62,6 +62,7 @@ export default function LoginHeader() {
       const url = new URL(authorizationUrl);
       if (url.origin === window.location.origin) {
         navigate(`${url.pathname}${url.hash}`);
+        setLoading(false);
       } else {
         window.location.replace(url);
       }

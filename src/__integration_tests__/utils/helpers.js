@@ -1,5 +1,3 @@
-import { visitEachChild } from "typescript";
-
 export const payNotice = async (
   noticeCode,
   fiscalCode,
@@ -19,7 +17,7 @@ export const payNotice = async (
 };
 
 export const verifyPaymentAndGetError = async (noticeCode, fiscalCode) => {
-  const errorMessageSelector ="#verifyPaymentErrorId";
+  const errorMessageSelector = "#verifyPaymentErrorId";
   await fillPaymentNotificationForm(noticeCode, fiscalCode);
   const errorMessageElem = await page.waitForSelector(errorMessageSelector);
   return await errorMessageElem.evaluate((el) => el.textContent);
