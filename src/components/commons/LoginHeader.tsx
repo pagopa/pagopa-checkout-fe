@@ -84,10 +84,12 @@ export default function LoginHeader() {
     setLoading(true);
     clearSessionItem(SessionItems.loggedUser);
     setLoggedUser(undefined);
-    setLoading(false);
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
   };
   return (
-    <>
+    <Box component="div" id="login-header">
       {loading && <CheckoutLoader />}
       <HeaderAccount
         rootLink={pagoPALink}
@@ -123,6 +125,6 @@ export default function LoginHeader() {
           }}
         />
       )}
-    </>
+    </Box>
   );
 }
