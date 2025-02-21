@@ -44,19 +44,15 @@ parameters:
     type: string
     default: ''
 
-  - name: 'ecommerce_host'
-    type: string
-    default: ''
-
   - name: 'api_ecommerce_basepath'
     type: string
     default: ''
 
-  - name: 'checkout_auth_service_host'
+  - name: 'checkout_auth_service_baspath_v1'
     type: string
     default: ''
 
-  - name: 'checkout_auth_service_baspath_v1'
+  - name: 'checkout_auth_service_host'
     type: string
     default: ''
 
@@ -106,7 +102,6 @@ steps:
       CHECKOUT_ENV=${{ parameters.env }} \
       CHECKOUT_RECAPTCHA_SITE_KEY=${{ parameters.recaptcha_site_key }} \
       CHECKOUT_DONATIONS_URL=${{ parameters.donations_url }} \
-      CHECKOUT_ECOMMERCE_HOST=${{ parameters.ecommerce_host }} \
       CHECKOUT_API_ECOMMERCE_BASEPATH=${{ parameters.api_ecommerce_basepath }} \
       CHECKOUT_API_ECOMMERCE_BASEPATH_V2=${{ parameters.api_ecommerce_basepath_v2 }} \
       CHECKOUT_API_FEATURE_FLAGS_BASEPATH=${{ parameters.feature_flags_basepath }} \
