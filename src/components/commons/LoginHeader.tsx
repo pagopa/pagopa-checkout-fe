@@ -49,10 +49,6 @@ export default function LoginHeader() {
   const [error, setError] = React.useState("");
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
 
-  const onAssistanceClick = () => {
-    // console.log("Clicked/Tapped on Assistance");
-  };
-
   const onError = (m: string) => {
     setLoading(false);
     setError(m);
@@ -88,9 +84,7 @@ export default function LoginHeader() {
     setLoading(true);
     clearSessionItem(SessionItems.loggedUser);
     setLoggedUser(undefined);
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
+    setLoading(false);
   };
   return (
     <>

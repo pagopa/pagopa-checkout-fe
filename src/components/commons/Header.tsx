@@ -65,6 +65,9 @@ export default function Header() {
     CheckoutRoutes.ESITO,
     CheckoutRoutes.DONA,
   ];
+  const enablePaymentSummaryButton =
+    (!!PaymentInfo.receiver || !!CartInfo?.paymentNotices) &&
+    !ignoreRoutes.includes(currentPath);
   const toggleDrawer = (open: boolean) => {
     setDrawstate(open);
   };
@@ -95,11 +98,15 @@ export default function Header() {
   };
 
   const initFeatureFlag = async () => {
-    await evaluateFeatureFlag(
-      featureFlags.enableAuthentication,
-      onFeatureFlagError,
-      onFeatureFlagSuccess
-    );
+    const storedFeatureFlag = getSessionItem(SessionItems.enableAuthentication);
+    // avoid asking again if you already have received an answer
+    if (!storedFeatureFlag) {
+      await evaluateFeatureFlag(
+        featureFlags.enableAuthentication,
+        onFeatureFlagError,
+        onFeatureFlagSuccess
+      );
+    }
   };
 
   useEffect(() => {
@@ -132,16 +139,15 @@ export default function Header() {
               />
               <SkipToContent />
             </Stack>
-            {(!!PaymentInfo.receiver || !!CartInfo?.paymentNotices) &&
-              !ignoreRoutes.includes(currentPath) && (
-                <Button
-                  onClick={() => toggleDrawer(true)}
-                  aria-label={t("mainPage.header.detail.detailButton")}
-                  endIcon={<ShoppingCart />}
-                >
-                  {moneyFormat(amountToShow())}
-                </Button>
-              )}
+            {enablePaymentSummaryButton && (
+              <Button
+                onClick={() => toggleDrawer(true)}
+                aria-label={t("mainPage.header.detail.detailButton")}
+                endIcon={<ShoppingCart />}
+              >
+                {moneyFormat(amountToShow())}
+              </Button>
+            )}
           </Stack>
         </Box>
       </Stack>
