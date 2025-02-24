@@ -647,6 +647,56 @@ export const proceedToLogin = async ({
   )();
 };
 
+export const authentication = async ({
+  onError,
+  onResponse,
+}: {
+  onError: (e: string) => void;
+  onResponse: (r: any) => void;
+}) => {
+  const authCode = getSessionItem(SessionItems.authCode);
+  await pipe(
+    O.fromNullable(authCode),
+    TE.fromOption(() => {
+      onError(ErrorsType.GENERIC_ERROR);
+      return toError;
+    }),
+    TE.chain((authCode) =>
+      TE.tryCatch(
+        () =>
+          apiCheckoutAuthServiceClientV1.authenticateWithAuthToken({
+            authCode,
+          }),
+        (_e) => {
+          onError(ErrorsType.CONNECTION);
+          return toError;
+        }
+      )
+    ),
+    TE.fold(
+      (_r) => async () => {
+        onError(ErrorsType.SERVER);
+        return {};
+      },
+      (myResExt) => async () =>
+        pipe(
+          myResExt,
+          E.fold(
+            () => [],
+            (myRes) => {
+              if (myRes?.status === 200) {
+                onResponse(myRes?.value.authToken);
+              } else {
+                onError(ErrorsType.GENERIC_ERROR);
+              }
+              return {};
+            }
+          )
+        )
+    )
+  )();
+};
+
 export const proceedToPayment = async (
   transaction: NewTransactionResponse,
   onError: (e: string) => void,
