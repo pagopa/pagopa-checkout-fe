@@ -44,6 +44,7 @@ export default function LoginHeader() {
   const [loggedUser, setLoggedUser] = React.useState<JwtUser | undefined>(
     sessionLoggedUser
   );
+  //TODO manage logged user after callback
   const ref = React.useRef<ReCAPTCHA>(null);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState("");
