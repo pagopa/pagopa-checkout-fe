@@ -25,8 +25,8 @@ export default function AuthCallback() {
         //get last page from session storage
         let redirectPage = getSessionItem(SessionItems.loginOriginPage) as string;
 
-        //if authCode or redirect page is not present redirect to root page
-        if(authCode == null || redirectPage == null)
+        //if redirect page is not present redirect to root page
+        if(redirectPage == null)
           redirectPage = `/${CheckoutRoutes.ROOT}`;  
   
         //TODO aggiungere chiamata alla POST /auth
