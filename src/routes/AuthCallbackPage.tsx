@@ -1,49 +1,84 @@
 import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
+import { authentication } from "../utils/api/helper";
 import PageContainer from "../components/PageContent/PageContainer";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
-import { useNavigate } from "react-router-dom";
 import { onBrowserBackEvent, onBrowserUnload } from "../utils/eventListeners";
+import {
+  getSessionItem,
+  SessionItems,
+  setSessionItem,
+} from "../utils/storage/sessionStorage";
+import ErrorModal from "../components/modals/ErrorModal";
 import { CheckoutRoutes } from "./models/routeModel";
-import { getSessionItem, SessionItems, setSessionItem } from "../utils/storage/sessionStorage";
 
 export default function AuthCallback() {
   const navigate = useNavigate();
+  // const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState("");
+  const [errorModalOpen, setErrorModalOpen] = React.useState(false);
+
+  const onError = (m: string) => {
+    // setLoading(false);
+    setError(m);
+    setErrorModalOpen(true);
+  };
 
   useEffect(() => {
-      try {
-        window.addEventListener("beforeunload", onBrowserUnload);
-        window.addEventListener("popstate", onBrowserBackEvent);
+    try {
+      window.addEventListener("beforeunload", onBrowserUnload);
+      window.addEventListener("popstate", onBrowserBackEvent);
 
-        //retrieve auth-code from url
-        const searchParams = new URLSearchParams(window.location.search);
-        const authCode = searchParams.get("auth-code");
+      // retrieve auth-code from url
+      const searchParams = new URLSearchParams(window.location.search);
+      const authCode = searchParams.get("auth-code");
 
-        //if auth code exists save into session storage
-        if(authCode != null)
-          setSessionItem(SessionItems.authCode, authCode);
+      // get last page from session storage
+      const redirectPage = pipe(
+        getSessionItem(SessionItems.loginOriginPage) as string,
+        O.fromNullable,
+        O.getOrElse(() => `/${CheckoutRoutes.ROOT}`)
+      );
 
-        //get last page from session storage
-        let redirectPage = getSessionItem(SessionItems.loginOriginPage) as string;
+      void (async (authCode) => {
+        void authentication({
+          authCode,
+          onResponse: (authToken: string) => {
+            setSessionItem(SessionItems.authToken, authToken);
+            navigate(redirectPage, { replace: true });
+          },
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
+          onError,
+        });
+      })(authCode);
 
-        //if authCode or redirect page is not present redirect to root page
-        if(authCode == null || redirectPage == null)
-          redirectPage = `/${CheckoutRoutes.ROOT}`;  
-  
-        //TODO aggiungere chiamata alla POST /auth
-        navigate(redirectPage, { replace: true });
-        
-        return () => {
-          window.removeEventListener("popstate", onBrowserBackEvent);
-          window.removeEventListener("beforeunload", onBrowserUnload);
-        };
-      } catch {
-        return navigate(`/${CheckoutRoutes.ROOT}`, { replace: true });
-      }
-    }, []);
+      return () => {
+        window.removeEventListener("popstate", onBrowserBackEvent);
+        window.removeEventListener("beforeunload", onBrowserUnload);
+      };
+    } catch {
+      return navigate(`/${CheckoutRoutes.ROOT}`, { replace: true });
+    }
+  }, []);
 
   return (
     <PageContainer>
       <CheckoutLoader />
+      {!!errorModalOpen && (
+        <ErrorModal
+          error={error}
+          open={errorModalOpen}
+          onClose={() => {
+            setErrorModalOpen(false);
+            window.location.replace(`/${CheckoutRoutes.ERRORE}`);
+          }}
+          titleId="iframeCardFormErrorTitleId"
+          errorId="iframeCardFormErrorId"
+          bodyId="iframeCardFormErrorBodyId"
+        />
+      )}
     </PageContainer>
   );
 }

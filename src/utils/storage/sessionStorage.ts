@@ -30,7 +30,6 @@ export enum SessionItems {
   cartClientId = "cartClientId",
   loggedUser = "loggedUser",
   loginOriginPage = "loginOriginPage",
-  authCode = "authCode",
   authToken = "authToken",
 }
 const isParsable = (item: SessionItems) =>
@@ -42,7 +41,6 @@ const isParsable = (item: SessionItems) =>
     item === SessionItems.cartClientId ||
     item === SessionItems.enableAuthentication ||
     item === SessionItems.loginOriginPage ||
-    item === SessionItems.authCode ||
     item === SessionItems.authToken
   );
 
@@ -105,13 +103,11 @@ export const clearStorage = () => {
 };
 
 export const clearStorageAndMaintainAuthData = () => {
-  const authCode = getSessionItem(SessionItems.authCode) as string;
   const authToken = getSessionItem(SessionItems.authToken) as string;
   sessionStorage.clear();
-  if(authCode != null)
-    setSessionItem(SessionItems.authCode, authCode);
-  if(authToken != null)
+  if (authToken != null) {
     setSessionItem(SessionItems.authToken, authToken);
+  }
 };
 
 export function getReCaptchaKey() {

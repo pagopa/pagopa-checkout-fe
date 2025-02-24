@@ -647,18 +647,15 @@ export const proceedToLogin = async ({
   )();
 };
 
-const onResponseAuth = (authToken: string) => {
-  setSessionItem(SessionItems.authToken, authToken);
-};
-
 export const authentication = async ({
-  onError,
+  authCode,
   onResponse,
+  onError,
 }: {
+  authCode: string | null;
+  onResponse: (e: string) => void;
   onError: (e: string) => void;
-  onResponse: (r: any) => void;
 }) => {
-  const authCode = getSessionItem(SessionItems.authCode);
   await pipe(
     O.fromNullable(authCode),
     TE.fromOption(() => {
@@ -689,7 +686,14 @@ export const authentication = async ({
             () => [],
             (myRes) => {
               if (myRes?.status === 200) {
-                onResponse(myRes?.value.authToken);
+                pipe(
+                  myRes?.value.authToken,
+                  O.fromNullable,
+                  O.fold(
+                    () => onError,
+                    () => onResponse
+                  )
+                );
               } else {
                 onError(ErrorsType.GENERIC_ERROR);
               }
