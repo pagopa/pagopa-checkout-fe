@@ -31,7 +31,7 @@ export enum SessionItems {
   loggedUser = "loggedUser",
   loginOriginPage = "loginOriginPage",
   authCode = "authCode",
-  authToken = "authToken"
+  authToken = "authToken",
 }
 const isParsable = (item: SessionItems) =>
   !(

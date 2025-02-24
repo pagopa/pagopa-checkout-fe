@@ -647,6 +647,10 @@ export const proceedToLogin = async ({
   )();
 };
 
+const onResponseAuth = (authToken: string) => {
+  setSessionItem(SessionItems.authToken, authToken);
+};
+
 export const authentication = async ({
   onError,
   onResponse,
