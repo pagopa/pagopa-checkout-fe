@@ -7,8 +7,7 @@ import PageContainer from "../components/PageContent/PageContainer";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
 import { onBrowserBackEvent, onBrowserUnload } from "../utils/eventListeners";
 import {
-  clearSessionItem,
-  getSessionItem,
+  getAndClearSessionItem,
   SessionItems,
   setSessionItem,
 } from "../utils/storage/sessionStorage";
@@ -31,7 +30,7 @@ export default function AuthCallback() {
   const returnToOriginPage = () => {
     navigate(
       pipe(
-        getSessionItem(SessionItems.loginOriginPage) as string,
+        getAndClearSessionItem(SessionItems.loginOriginPage) as string,
         O.fromNullable,
         O.getOrElse(() => `/${CheckoutRoutes.ROOT}`)
       )
