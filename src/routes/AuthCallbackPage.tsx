@@ -26,6 +26,17 @@ export default function AuthCallback() {
     setErrorModalOpen(true);
   };
 
+  // navigate to last page from session storage
+  const returnToOriginPage = () => {
+    navigate(
+      pipe(
+        getSessionItem(SessionItems.loginOriginPage) as string,
+        O.fromNullable,
+        O.getOrElse(() => `/${CheckoutRoutes.ROOT}`)
+      )
+    );
+  };
+
   useEffect(() => {
     try {
       window.addEventListener("beforeunload", onBrowserUnload);
@@ -35,21 +46,13 @@ export default function AuthCallback() {
       const searchParams = new URLSearchParams(window.location.search);
       const authCode = searchParams.get("auth-code");
 
-      // get last page from session storage
-      const redirectPage = pipe(
-        getSessionItem(SessionItems.loginOriginPage) as string,
-        O.fromNullable,
-        O.getOrElse(() => `/${CheckoutRoutes.ROOT}`)
-      );
-
       void (async (authCode) => {
         void authentication({
           authCode,
           onResponse: (authToken: string) => {
             setSessionItem(SessionItems.authToken, authToken);
-            navigate(redirectPage, { replace: true });
+            returnToOriginPage();
           },
-          // eslint-disable-next-line @typescript-eslint/no-empty-function
           onError,
         });
       })(authCode);
@@ -72,7 +75,7 @@ export default function AuthCallback() {
           open={errorModalOpen}
           onClose={() => {
             setErrorModalOpen(false);
-            window.location.replace(`/${CheckoutRoutes.ERRORE}`);
+            returnToOriginPage();
           }}
           titleId="iframeCardFormErrorTitleId"
           errorId="iframeCardFormErrorId"
