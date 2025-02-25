@@ -60,7 +60,7 @@ parameters:
     type: string
     default: ''
 
-  - name: 'feature_flags_basepath'
+  - name: 'checkout_feature_flags_basepath'
     type: string
     default: ''
 
