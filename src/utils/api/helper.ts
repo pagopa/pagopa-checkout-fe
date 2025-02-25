@@ -653,8 +653,8 @@ export const authentication = async ({
   onError,
 }: {
   authCode: string | null;
-  onResponse: (e: string) => void;
-  onError: (e: string) => void;
+  onResponse: (e: string | undefined) => void;
+  onError: (e: string | undefined) => void;
 }) => {
   await pipe(
     O.fromNullable(authCode),
@@ -693,7 +693,7 @@ export const authentication = async ({
                     () => onError,
                     () => onResponse
                   )
-                );
+                )(myRes?.value.authToken);
               } else {
                 onError(ErrorsType.GENERIC_ERROR);
               }

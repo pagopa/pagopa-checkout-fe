@@ -19,11 +19,9 @@ export default function AuthCallback() {
   const [error, setError] = React.useState("");
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
 
-  const onError = (m: string) => {
+  const onError = (m: string | undefined) => {
     window.removeEventListener("popstate", onBrowserBackEvent);
     window.removeEventListener("beforeunload", onBrowserUnload);
-    setError(m);
-    setErrorModalOpen(true);
   };
 
   // navigate to last page from session storage
@@ -49,7 +47,7 @@ export default function AuthCallback() {
       void (async (authCode) => {
         void authentication({
           authCode,
-          onResponse: (authToken: string) => {
+          onResponse: (authToken: string | undefined) => {
             setSessionItem(SessionItems.authToken, authToken);
             returnToOriginPage();
           },

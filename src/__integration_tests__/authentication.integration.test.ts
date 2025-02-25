@@ -4,6 +4,8 @@
 
 const CHECKOUT_URL = `http://localhost:1234`;
 const MOCK_AUTH_REDIRECT_URL = `http://localhost:8080/auth-redirect-url`;
+const CALLBACK_URL = `http://localhost:1234/auth-callback?auth-code=1234`;
+const PAGE_LOGIN_URL = `http://localhost:1234/inserisci-email`;
 
 
 jest.setTimeout(80000);
@@ -39,24 +41,16 @@ describe("Checkout authentication tests", () => {
     expect(currentUrl).toBe(MOCK_AUTH_REDIRECT_URL);
   });
 
-  it("Should correctly redirect to auth login url", async () => {
-    await page.evaluate((language) => {
+  it.only("Should correctly come back to login origin url", async () => {
+    await page.evaluate(() => {
       //set item into sessionStorage and localStorage for pass the route Guard
-      let sessionData = '{"authToken":"token","clientId":"CHECKOUT","payments":[{"amount":12000,"isAllCCP":false,"paymentToken":"paymentToken1","reason":"reason1","rptId":"77777777777302001751670642100","transferList":[{"digitalStamp":true,"paFiscalCode":"66666666666","transferAmount":100,"transferCategory":"transferCategory1"},{"digitalStamp":false,"paFiscalCode":"77777777777","transferAmount":900,"transferCategory":"transferCategory2"}]}],"status":"ACTIVATED","transactionId":"f4f1b6a82b7d473583b506fcd5edf308"}';
-      sessionStorage.setItem('transaction', sessionData);
-      localStorage.setItem('transaction', sessionData);
-      localStorage.setItem("i18nextLng", language);
-    }, lang);
-    
-    await page.setCookie({ name: "mockFlow", value: keyFlowId });
-    await page.goto(CHECKOUT_OUTCOME_URL);
-    const resultTitleSelector = "#responsePageMessageTitle";
-    const message = await page.waitForSelector(resultTitleSelector);
-    const responseMessage = await message.evaluate((el) => el.textContent);
-    expect(responseMessage).toContain(mockFlowWithExpectedResultMap.get(keyFlowId)?.esito);
+      sessionStorage.setItem('loginOriginPage', 'http://localhost:1234/inserisci-email');
+    }, "it");
+    await page.goto(CALLBACK_URL);
+    await page.waitForNavigation();
+    const currentUrl = await page.evaluate(() => location.href);
+    console.log("Current url: " + currentUrl);
+    expect(currentUrl).toBe(PAGE_LOGIN_URL);
   });
-
-
-
   
 });
