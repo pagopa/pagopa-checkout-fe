@@ -48,7 +48,7 @@ parameters:
     type: string
     default: ''
 
-  - name: 'checkout_auth_service_baspath_v1'
+  - name: 'checkout_auth_service_basepath_v1'
     type: string
     default: ''
 
@@ -112,7 +112,7 @@ steps:
       CHECKOUT_GDI_CHECK_TIMEOUT=${{ parameters.checkout_gdi_check_timeout }} \
       CHECKOUT_VERSION=${{ parameters.checkout_version }} \
       CHECKOUT_AUTH_SERVICE_HOST=${{ parameters.checkout_auth_service_host }} \
-      CHECKOUT_API_AUTH_SERVICE_BASEPATH_V1=${{ parameters.checkout_auth_service_baspath_v1 }} \
+      CHECKOUT_API_AUTH_SERVICE_BASEPATH_V1=${{ parameters.checkout_auth_service_basepath_v1 }} \
       bash env.sh
 
   displayName: 'Populate environment file'
