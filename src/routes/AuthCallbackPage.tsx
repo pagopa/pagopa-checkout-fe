@@ -7,6 +7,7 @@ import PageContainer from "../components/PageContent/PageContainer";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
 import { onBrowserBackEvent, onBrowserUnload } from "../utils/eventListeners";
 import {
+  clearSessionItem,
   getSessionItem,
   SessionItems,
   setSessionItem,
@@ -16,12 +17,12 @@ import { CheckoutRoutes } from "./models/routeModel";
 
 export default function AuthCallback() {
   const navigate = useNavigate();
-  // const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState("");
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
 
   const onError = (m: string) => {
-    // setLoading(false);
+    window.removeEventListener("popstate", onBrowserBackEvent);
+    window.removeEventListener("beforeunload", onBrowserUnload);
     setError(m);
     setErrorModalOpen(true);
   };
