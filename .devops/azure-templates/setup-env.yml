@@ -104,7 +104,7 @@ steps:
       CHECKOUT_DONATIONS_URL=${{ parameters.donations_url }} \
       CHECKOUT_API_ECOMMERCE_BASEPATH=${{ parameters.api_ecommerce_basepath }} \
       CHECKOUT_API_ECOMMERCE_BASEPATH_V2=${{ parameters.api_ecommerce_basepath_v2 }} \
-      CHECKOUT_API_FEATURE_FLAGS_BASEPATH=${{ parameters.feature_flags_basepath }} \
+      CHECKOUT_API_FEATURE_FLAGS_BASEPATH=${{ parameters.checkout_feature_flags_basepath }} \
       CHECKOUT_PAGOPA_ASSETS_CDN=${{ parameters.pagopa_assets_cdn }} \
       CHECKOUT_PAGOPA_LOGOS_CDN=${{ parameters.pagopa_logos_cdn }} \
       CHECKOUT_SURVEY_SHOW=${{ parameters.survey_show }} \
