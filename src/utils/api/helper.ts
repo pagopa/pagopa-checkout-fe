@@ -82,6 +82,7 @@ import {
 import { CalculateFeeResponse } from "../../../generated/definitions/payment-ecommerce/CalculateFeeResponse";
 import { FaultCategoryEnum } from "../../../generated/definitions/payment-ecommerce/FaultCategory";
 import { CalculateFeeRequest } from "../../../generated/definitions/payment-ecommerce-v2/CalculateFeeRequest";
+import { AuthRequest } from "../../../generated/definitions/checkout-auth-service-v1/AuthRequest";
 import {
   apiCheckoutFeatureFlags,
   apiPaymentEcommerceClient,
@@ -649,58 +650,51 @@ export const proceedToLogin = async ({
 
 export const authentication = async ({
   authCode,
+  state,
   onResponse,
   onError,
 }: {
   authCode: string | null;
+  state: string | null;
   onResponse: (e: string) => void;
   onError: (e: string) => void;
 }) => {
+  const requestAuthToken = flow(
+    AuthRequest.decode,
+    TE.fromEither,
+    TE.chain(
+      (request: AuthRequest) => () =>
+        apiCheckoutAuthServiceClientV1.authenticateWithAuthToken({
+          body: request,
+        })
+    ),
+    TE.map((response) => {
+      if (response.status === 200) {
+        onResponse(response.value.authToken);
+      } else {
+        onError(ErrorsType.CONNECTION);
+      }
+    })
+  );
+
   await pipe(
-    O.fromNullable(authCode),
-    TE.fromOption(() => {
-      onError(ErrorsType.GENERIC_ERROR);
-      return toError;
-    }),
-    TE.chain((authCode) =>
-      TE.tryCatch(
-        () =>
-          apiCheckoutAuthServiceClientV1.authenticateWithAuthToken({
-            authCode,
-          }),
-        (_e) => {
-          onError(ErrorsType.CONNECTION);
-          return toError;
-        }
+    { authCode, state },
+    O.fromNullable,
+    O.map((p) =>
+      pipe(
+        TE.tryCatch(requestAuthToken(p), (_e) => TE.left(_e)),
+        TE.mapLeft((_e) => {
+          onError(ErrorsType.GENERIC_ERROR);
+          return ErrorsType.GENERIC_ERROR;
+        })
       )
     ),
-    TE.fold(
-      (_r) => async () => {
-        onError(ErrorsType.SERVER);
-        return {};
+    O.fold(
+      () => {
+        onError(ErrorsType.GENERIC_ERROR);
+        return TE.left(ErrorsType.GENERIC_ERROR);
       },
-      (myResExt) => async () =>
-        pipe(
-          myResExt,
-          E.fold(
-            () => [],
-            (myRes) => {
-              if (myRes?.status === 200) {
-                pipe(
-                  myRes?.value.authToken,
-                  O.fromNullable,
-                  O.fold(
-                    () => onError,
-                    () => onResponse
-                  )
-                );
-              } else {
-                onError(ErrorsType.GENERIC_ERROR);
-              }
-              return {};
-            }
-          )
-        )
+      (task) => task
     )
   )();
 };

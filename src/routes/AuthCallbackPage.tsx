@@ -32,11 +32,14 @@ export default function AuthCallback() {
 
   // navigate to last page from session storage
   const returnToOriginPage = () => {
-    navigate(
-      pipe(
-        getAndClearSessionItem(SessionItems.loginOriginPage) as string,
-        O.fromNullable,
-        O.getOrElse(() => `/${CheckoutRoutes.ROOT}`)
+    pipe(
+      getAndClearSessionItem(SessionItems.loginOriginPage) as string,
+      O.fromNullable,
+      O.fold(
+        () => navigate(`/${CheckoutRoutes.ROOT}`, { replace: true }),
+        (path) => {
+          navigate(path, { replace: true });
+        }
       )
     );
   };
@@ -49,19 +52,21 @@ export default function AuthCallback() {
     setErrorOnPostAuth(false);
 
     // retrieve auth-code from url
-    const searchParams = new URLSearchParams(window.location.search);
-    const authCode = searchParams.get("auth-code");
+      const searchParams = new URLSearchParams(window.location.search);
+      const authCode = searchParams.get("code");
+      const state = searchParams.get("state");
 
-    void (async (authCode) => {
-      void authentication({
-        authCode,
-        onResponse: (authToken: string) => {
-          setSessionItem(SessionItems.authToken, authToken);
-          returnToOriginPage();
-        },
-        onError,
-      });
-    })(authCode);
+      void (async (authCode, state) => {
+        void authentication({
+          authCode,
+          state,
+          onResponse: (authToken: string) => {
+            setSessionItem(SessionItems.authToken, authToken);
+            returnToOriginPage();
+          },
+          onError,
+        });
+      })(authCode, state);
   };
 
   useEffect(() => {
