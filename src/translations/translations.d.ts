@@ -34,6 +34,14 @@ interface Translation {
     body: string;
     button: string;
   };
+  authCallbackPage: {
+    title: string;
+    body: string;
+    buttons: {
+      retry: string;
+      continueWithoutLogin: string;
+    };
+  };
   cartDetail: {
     amount: string;
     companyName: string;

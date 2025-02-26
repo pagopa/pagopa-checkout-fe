@@ -21,6 +21,14 @@
     "body": "Postopek je bil preklican",
     "button": "Zapri"
   },
+  "authCallbackPage": {
+    "title": "Non è stato possibile accedere",
+    "body": "Si è verificato un problema durante l'accesso. Riprova tra qualche minuto.",
+    "buttons": {
+      "retry": "Riprova",
+      "continueWithoutLogin": "Continua senza login."
+    }
+  },
   "cartDetail": {
     "amount": "Znesek",
     "companyName": "Upnik",

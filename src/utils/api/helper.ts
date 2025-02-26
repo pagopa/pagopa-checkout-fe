@@ -679,7 +679,8 @@ export const authentication = async ({
 
   await pipe(
     { authCode, state },
-    O.fromNullable,
+    AuthRequest.decode,
+    O.fromEither,
     O.map((p) =>
       pipe(
         TE.tryCatch(requestAuthToken(p), (_e) => TE.left(_e)),
