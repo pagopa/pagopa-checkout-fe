@@ -70,7 +70,7 @@ export default function LoginHeader() {
         navigate(`${url.pathname}${url.search}`);
         setLoading(false);
       } else {
-        window.location.replace(url);
+        window.location.assign(url);
       }
     } catch {
       onError(ErrorsType.GENERIC_ERROR);
