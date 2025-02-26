@@ -28,11 +28,12 @@ export default function AuthCallback() {
 
   // navigate to last page from session storage
   const returnToOriginPage = () => {
-    navigate(
-      pipe(
-        getAndClearSessionItem(SessionItems.loginOriginPage) as string,
-        O.fromNullable,
-        O.getOrElse(() => `/${CheckoutRoutes.ROOT}`)
+    pipe(
+      getAndClearSessionItem(SessionItems.loginOriginPage) as string,
+      O.fromNullable,
+      O.fold(
+        () => navigate(`/${CheckoutRoutes.ROOT}`),
+        (url) => window.location.replace(url)
       )
     );
   };
@@ -44,18 +45,20 @@ export default function AuthCallback() {
 
       // retrieve auth-code from url
       const searchParams = new URLSearchParams(window.location.search);
-      const authCode = searchParams.get("auth-code");
+      const authCode = searchParams.get("code");
+      const state = searchParams.get("state");
 
-      void (async (authCode) => {
+      void (async (authCode, state) => {
         void authentication({
           authCode,
+          state,
           onResponse: (authToken: string) => {
             setSessionItem(SessionItems.authToken, authToken);
             returnToOriginPage();
           },
           onError,
         });
-      })(authCode);
+      })(authCode, state);
 
       return () => {
         window.removeEventListener("popstate", onBrowserBackEvent);
