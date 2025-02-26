@@ -60,14 +60,17 @@ export default function LoginHeader() {
 
   const onResponse = (authorizationUrl: string) => {
     try {
-      setSessionItem(SessionItems.loginOriginPage, window.location.href);
+      setSessionItem(
+        SessionItems.loginOriginPage,
+        `${location.pathname}${location.search}`
+      );
       window.removeEventListener("beforeunload", onBrowserUnload);
       const url = new URL(authorizationUrl);
       if (url.origin === window.location.origin) {
-        navigate(`${url.pathname}${url.search}`);
+        navigate(`${url.pathname}${url.search}`, { replace: true });
         setLoading(false);
       } else {
-        window.location.replace(url);
+        window.location.assign(url);
       }
     } catch {
       onError(ErrorsType.GENERIC_ERROR);

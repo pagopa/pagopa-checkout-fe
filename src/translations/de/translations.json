@@ -21,6 +21,14 @@
     "body": "Der Vorgang wurde abgebrochen",
     "button": "Schließen"
   },
+  "authCallbackPage": {
+    "title": "Non è stato possibile accedere",
+    "body": "Si è verificato un problema durante l'accesso. Riprova tra qualche minuto.",
+    "buttons": {
+      "retry": "Riprova",
+      "continueWithoutLogin": "Continua senza login."
+    }
+  },
   "cartDetail": {
     "amount": "Betrag",
     "companyName": "Zahlungsempfänger",
