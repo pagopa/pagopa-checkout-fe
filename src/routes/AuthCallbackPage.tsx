@@ -33,12 +33,12 @@ export default function AuthCallback() {
   // navigate to last page from session storage
   const returnToOriginPage = () => {
     pipe(
-      getAndClearSessionItem(SessionItems.loginOriginPage) as string,
+      getAndClearSessionItem(SessionItems.loginOriginPage),
       O.fromNullable,
       O.fold(
         () => navigate(`/${CheckoutRoutes.ROOT}`, { replace: true }),
         (path) => {
-          navigate(path, { replace: true });
+          navigate(path as string, { replace: true });
         }
       )
     );

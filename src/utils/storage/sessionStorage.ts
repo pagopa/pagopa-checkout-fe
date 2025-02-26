@@ -1,4 +1,6 @@
 import { JwtUser } from "@pagopa/mui-italia";
+import * as O from "fp-ts/Option";
+import { pipe } from "fp-ts/function";
 import { Bundle } from "../../../generated/definitions/payment-ecommerce/Bundle";
 import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { SessionPaymentMethodResponse } from "../../../generated/definitions/payment-ecommerce/SessionPaymentMethodResponse";
@@ -70,7 +72,7 @@ export const getSessionItem = (item: SessionItems) => {
   }
 };
 
-export const getAndClearSessionItem = (item: SessionItems) => {
+/* export const getAndClearSessionItem = (item: SessionItems) => {
   try {
     const value = getSessionItem(item);
     clearSessionItem(item);
@@ -78,7 +80,20 @@ export const getAndClearSessionItem = (item: SessionItems) => {
   } catch (e) {
     return undefined;
   }
-};
+}; */
+
+export const getAndClearSessionItem = (item: SessionItems) =>
+  pipe(
+    getSessionItem(item),
+    O.fromNullable,
+    O.fold(
+      () => undefined,
+      (value) => {
+        clearSessionItem(item);
+        return value;
+      }
+    )
+  );
 
 export function setSessionItem(
   name: SessionItems,
