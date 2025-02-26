@@ -32,9 +32,9 @@ export default function AuthCallback() {
       getAndClearSessionItem(SessionItems.loginOriginPage) as string,
       O.fromNullable,
       O.fold(
-        () => navigate(`/${CheckoutRoutes.ROOT}`),
+        () => navigate(`/${CheckoutRoutes.ROOT}`, { replace: true }),
         (path) => {
-          navigate(path);
+          navigate(path, { replace: true });
         }
       )
     );
