@@ -666,7 +666,10 @@ export const authentication = async ({
       TE.tryCatch(
         () =>
           apiCheckoutAuthServiceClientV1.authenticateWithAuthToken({
-            authCode,
+            body: {
+              authCode,
+              state: "state",
+            },
           }),
         (_e) => {
           onError(ErrorsType.CONNECTION);
