@@ -29,6 +29,7 @@ import "./translations/i18n";
 import { mixpanelInit } from "./utils/config/mixpanelHelperInit";
 import { SessionItems } from "./utils/storage/sessionStorage";
 import SessionExpiredPage from "./routes/SessionExpiredPage";
+import AuthCallback from "./routes/AuthCallbackPage";
 
 const checkoutTheme = createTheme({
   ...theme,
@@ -91,6 +92,10 @@ export function App() {
           <Routes>
             <Route path="/" element={<PaymentOutlet />}>
               <Route path={CheckoutRoutes.ROOT} element={<IndexPage />} />
+              <Route
+                path={CheckoutRoutes.AUTH_CALLBACK}
+                element={<AuthCallback />}
+              />
               <Route
                 path={CheckoutRoutes.DONA}
                 element={<DonationPageDismissed />}

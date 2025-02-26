@@ -17,6 +17,7 @@ import {
   getReCaptchaKey,
   getSessionItem,
   SessionItems,
+  setSessionItem,
 } from "../../utils/storage/sessionStorage";
 
 export default function LoginHeader() {
@@ -44,7 +45,7 @@ export default function LoginHeader() {
   const [loggedUser, setLoggedUser] = React.useState<JwtUser | undefined>(
     sessionLoggedUser
   );
-  //TODO manage logged user after callback
+  // TODO manage logged user after callback
   const ref = React.useRef<ReCAPTCHA>(null);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState("");
@@ -59,10 +60,11 @@ export default function LoginHeader() {
 
   const onResponse = (authorizationUrl: string) => {
     try {
+      setSessionItem(SessionItems.loginOriginPage, window.location.href);
       window.removeEventListener("beforeunload", onBrowserUnload);
       const url = new URL(authorizationUrl);
       if (url.origin === window.location.origin) {
-        navigate(`${url.pathname}${url.hash}`);
+        navigate(`${url.pathname}${url.search}`);
         setLoading(false);
       } else {
         window.location.replace(url);

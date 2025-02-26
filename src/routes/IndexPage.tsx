@@ -5,7 +5,7 @@ import PageContainer from "../components/PageContent/PageContainer";
 import PrivacyInfo from "../components/PrivacyPolicy/PrivacyInfo";
 import { PaymentNoticeChoice } from "../features/payment/components/PaymentNoticeChoice/PaymentNoticeChoice";
 import { useAppDispatch } from "../redux/hooks/hooks";
-import { clearStorage } from "../utils/storage/sessionStorage";
+import { clearStorageAndMaintainAuthData } from "../utils/storage/sessionStorage";
 
 export default function IndexPage() {
   window.removeEventListener("beforeunload", onBrowserUnload);
@@ -14,7 +14,7 @@ export default function IndexPage() {
   React.useEffect(() => {
     dispatch(resetThreshold());
   }, []);
-  clearStorage();
+  clearStorageAndMaintainAuthData();
 
   return (
     <PageContainer
