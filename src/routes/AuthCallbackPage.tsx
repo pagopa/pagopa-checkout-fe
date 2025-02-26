@@ -33,7 +33,9 @@ export default function AuthCallback() {
       O.fromNullable,
       O.fold(
         () => navigate(`/${CheckoutRoutes.ROOT}`),
-        (url) => window.location.replace(url)
+        (path) => {
+          navigate(path);
+        }
       )
     );
   };

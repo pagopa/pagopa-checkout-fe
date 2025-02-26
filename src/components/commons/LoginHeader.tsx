@@ -60,7 +60,7 @@ export default function LoginHeader() {
 
   const onResponse = (authorizationUrl: string) => {
     try {
-      setSessionItem(SessionItems.loginOriginPage, window.location.href);
+      setSessionItem(SessionItems.loginOriginPage, window.location.pathname);
       window.removeEventListener("beforeunload", onBrowserUnload);
       const url = new URL(authorizationUrl);
       if (url.origin === window.location.origin) {
