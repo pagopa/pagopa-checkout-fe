@@ -67,7 +67,7 @@ export default function LoginHeader() {
       window.removeEventListener("beforeunload", onBrowserUnload);
       const url = new URL(authorizationUrl);
       if (url.origin === window.location.origin) {
-        navigate(`${url.pathname}${url.search}`);
+        navigate(`${url.pathname}${url.search}`, { replace: true });
         setLoading(false);
       } else {
         window.location.assign(url);
