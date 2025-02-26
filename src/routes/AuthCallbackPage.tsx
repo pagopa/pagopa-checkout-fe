@@ -23,7 +23,7 @@ export default function AuthCallback() {
 
   const { t } = useTranslation();
 
-  const onError = (m: string) => {
+  const onError = () => {
     setLoading(false);
     window.removeEventListener("popstate", onBrowserBackEvent);
     window.removeEventListener("beforeunload", onBrowserUnload);
