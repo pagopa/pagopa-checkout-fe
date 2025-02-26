@@ -83,10 +83,12 @@ import { CalculateFeeResponse } from "../../../generated/definitions/payment-eco
 import { FaultCategoryEnum } from "../../../generated/definitions/payment-ecommerce/FaultCategory";
 import { CalculateFeeRequest } from "../../../generated/definitions/payment-ecommerce-v2/CalculateFeeRequest";
 import {
+  apiCheckoutFeatureFlags,
   apiPaymentEcommerceClient,
   apiPaymentEcommerceClientV2,
   apiPaymentEcommerceClientWithRetry,
   apiPaymentEcommerceClientWithRetryV2,
+  apiCheckoutAuthServiceClientV1,
 } from "./client";
 
 export const NodeFaultCodeR = t.interface({
@@ -584,6 +586,58 @@ export const calculateFees = async ({
                 mixpanel.track(PAYMENT_PSPLIST_RESP_ERR.value, {
                   EVENT_ID: PAYMENT_PSPLIST_RESP_ERR.value,
                 });
+              }
+              return {};
+            }
+          )
+        )
+    )
+  )();
+};
+
+export const proceedToLogin = async ({
+  recaptchaRef,
+  onError,
+  onResponse,
+}: {
+  recaptchaRef: ReCAPTCHA;
+  onError: (e: string) => void;
+  onResponse: (r: any) => void;
+}) => {
+  const token = await callRecaptcha(recaptchaRef, true);
+  await pipe(
+    O.fromNullable(token),
+    TE.fromOption(() => {
+      onError(ErrorsType.GENERIC_ERROR);
+      return toError;
+    }),
+    TE.chain((token) =>
+      TE.tryCatch(
+        () =>
+          apiCheckoutAuthServiceClientV1.authLogin({
+            recaptcha: token,
+          }),
+        (_e) => {
+          onError(ErrorsType.CONNECTION);
+          return toError;
+        }
+      )
+    ),
+    TE.fold(
+      (_r) => async () => {
+        onError(ErrorsType.SERVER);
+        return {};
+      },
+      (myResExt) => async () =>
+        pipe(
+          myResExt,
+          E.fold(
+            () => [],
+            (myRes) => {
+              if (myRes?.status === 200) {
+                onResponse(myRes?.value.urlRedirect);
+              } else {
+                onError(ErrorsType.GENERIC_ERROR);
               }
               return {};
             }
@@ -1160,4 +1214,41 @@ export const recaptchaTransaction = async ({
     onResponseActivate: onSuccess,
     onErrorActivate: onError,
   });
+};
+
+export const evaluateFeatureFlag = async (
+  featureKey: string,
+  onError: (e: string) => void,
+  onResponse: (data: { enabled: boolean }) => void
+) => {
+  await pipe(
+    TE.tryCatch(
+      () => apiCheckoutFeatureFlags.evaluateFeatureFlags({}),
+      () => {
+        onError("Network error");
+        return new Error("Network error");
+      }
+    ),
+    TE.fold(
+      () => async () => {
+        onError("Server error");
+        return {};
+      },
+      (response) => async () =>
+        pipe(
+          response,
+          E.fold(
+            () => {
+              onError("Response error");
+              return {};
+            },
+            (res: any) => {
+              const target: any = res.value?.[featureKey] ?? false;
+              onResponse({ enabled: target });
+              return { enabled: target };
+            }
+          )
+        )
+    )
+  )();
 };

@@ -14,22 +14,13 @@ const express = require('express')
 const path = require('path')
 
 const apiHost = "http://127.0.0.1:8080";
-const apiBasepath = "/checkout/payments/v1";
-const pmBasepath = "/pp-restapi/v4";
-const transactionsBasepath = "/checkout/payment-transactions/v1";
+const checkoutAuthBasepath = "/checkout/auth-service/v1";
 const ecommerceBasepath = "/ecommerce/checkout/v1";
 const ecommerceBasepathV2 = "/ecommerce/checkout/v2";
+const checkoutFeatureFlag = "/checkout/feature-flags/v1";
 
 module.exports = function (app) {
-    app.use(createProxyMiddleware(apiBasepath, {
-        target: apiHost,
-    }));
-
-    app.use(createProxyMiddleware(transactionsBasepath, {
-        target: apiHost,
-    }));
-
-    app.use(createProxyMiddleware(pmBasepath, {
+    app.use(createProxyMiddleware(checkoutAuthBasepath, {
         target: apiHost,
     }));
 
@@ -38,6 +29,10 @@ module.exports = function (app) {
     }));
 
     app.use(createProxyMiddleware(ecommerceBasepathV2, {
+        target: apiHost,
+    }));
+
+    app.use(createProxyMiddleware(checkoutFeatureFlag, {
         target: apiHost,
     }));
 

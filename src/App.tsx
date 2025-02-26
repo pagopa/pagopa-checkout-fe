@@ -35,7 +35,6 @@ const checkoutTheme = createTheme({
   palette: {
     ...theme.palette,
     background: {
-      paper: theme.palette.background.default,
       default: theme.palette.background.paper,
     },
   },
@@ -73,6 +72,7 @@ export function App() {
     CheckoutRoutes.SESSIONE_SCADUTA,
     CheckoutRoutes.DONA,
   ];
+
   React.useEffect(() => {
     mixpanelInit();
   }, []);

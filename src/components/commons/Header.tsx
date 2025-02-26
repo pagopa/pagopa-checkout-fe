@@ -1,9 +1,10 @@
 /* eslint-disable sonarjs/cognitive-complexity */
 import { Box, Button, Stack } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { ShoppingCart } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
+import featureFlags from "../../utils/featureFlags";
 import pagopaLogo from "../../assets/images/pagopa-logo.svg";
 import {
   Cart,
@@ -14,12 +15,15 @@ import { CheckoutRoutes } from "../../routes/models/routeModel";
 import {
   getSessionItem,
   SessionItems,
+  setSessionItem,
 } from "../../utils/storage/sessionStorage";
 import { getTotalFromCart } from "../../utils/cart/cart";
 import { moneyFormat } from "../../utils/form/formatters";
 import { paymentSubjectTransform } from "../../utils/transformers/paymentTransformers";
 import DrawerDetail from "../Header/DrawerDetail";
+import { evaluateFeatureFlag } from "./../../utils/api/helper";
 import SkipToContent from "./SkipToContent";
+import LoginHeader from "./LoginHeader";
 
 function amountToShow() {
   const cartInfo = getSessionItem(SessionItems.cart) as Cart | undefined;
@@ -47,7 +51,10 @@ export default function Header() {
   };
   const CartInfo = getSessionItem(SessionItems.cart) as Cart | undefined;
   const [drawstate, setDrawstate] = React.useState(false);
-  const ignoreRoutes: Array<string> = [
+  const [enableAuthentication, setEnableAuthentication] = React.useState(
+    getSessionItem(SessionItems.enableAuthentication) === "true"
+  );
+  const ignoredRoutesForSummaryButton: Array<string> = [
     CheckoutRoutes.ROOT,
     CheckoutRoutes.LEGGI_CODICE_QR,
     CheckoutRoutes.INSERISCI_DATI_AVVISO,
@@ -58,6 +65,9 @@ export default function Header() {
     CheckoutRoutes.ESITO,
     CheckoutRoutes.DONA,
   ];
+  const enablePaymentSummaryButton =
+    (!!PaymentInfo.receiver || !!CartInfo?.paymentNotices) &&
+    !ignoredRoutesForSummaryButton.includes(currentPath);
   const toggleDrawer = (open: boolean) => {
     setDrawstate(open);
   };
@@ -76,35 +86,60 @@ export default function Header() {
         },
       ];
 
+  const onFeatureFlagError = (e: string) => {
+    // eslint-disable-next-line no-console
+    console.error("Error while getting feature flag", e);
+    setEnableAuthentication(false);
+  };
+
+  const onFeatureFlagSuccess = (data: { enabled: boolean }) => {
+    setSessionItem(SessionItems.enableAuthentication, data.enabled.toString());
+    setEnableAuthentication(data.enabled);
+  };
+
+  const initFeatureFlag = async () => {
+    const storedFeatureFlag = getSessionItem(SessionItems.enableAuthentication);
+    // avoid asking again if you already have received an answer
+    if (!storedFeatureFlag) {
+      await evaluateFeatureFlag(
+        featureFlags.enableAuthentication,
+        onFeatureFlagError,
+        onFeatureFlagSuccess
+      );
+    }
+  };
+
+  useEffect(() => {
+    void initFeatureFlag();
+  }, []);
+
   return (
     <header>
-      <Box p={3} bgcolor={"white"}>
-        <Stack
-          spacing={0}
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-          position="relative"
-          zIndex="1000"
-        >
+      <Stack position="relative" zIndex="1000">
+        {enableAuthentication && <LoginHeader />}
+        <Box p={3} bgcolor={"white"}>
           <Stack
-            spacing={4}
+            spacing={0}
             direction="row"
             justifyContent="space-between"
             alignItems="center"
-            position="relative"
           >
-            <img
-              src={pagopaLogo}
-              alt="pagoPA"
-              style={{ width: "56px", height: "36px" }}
-              aria-hidden="true"
-            />
-            <SkipToContent />
-          </Stack>
-
-          {(!!PaymentInfo.receiver || !!CartInfo?.paymentNotices) &&
-            !ignoreRoutes.includes(currentPath) && (
+            <Stack
+              spacing={4}
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              position="relative"
+            >
+              <img
+                src={pagopaLogo}
+                alt="pagoPA"
+                style={{ width: "56px", height: "36px" }}
+                aria-hidden="true"
+              />
+              <SkipToContent />
+            </Stack>
+            {enablePaymentSummaryButton && (
               <Button
                 onClick={() => toggleDrawer(true)}
                 aria-label={t("mainPage.header.detail.detailButton")}
@@ -113,8 +148,9 @@ export default function Header() {
                 {moneyFormat(amountToShow())}
               </Button>
             )}
-        </Stack>
-      </Box>
+          </Stack>
+        </Box>
+      </Stack>
       <DrawerDetail
         paymentNotices={paymentNotices}
         amountToShow={amountToShow}

@@ -122,6 +122,7 @@ export default function PaymentNoticePage() {
           }}
           titleId="verifyPaymentTitleError"
           bodyId="verifyPaymentBodyError"
+          errorId="verifyPaymentErrorId"
         />
       </PageContainer>
       <Box display="none">

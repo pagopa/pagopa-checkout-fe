@@ -229,6 +229,10 @@ stages:
           displayName: 'Payment flow integration tests exec'
           workingDirectory: pagopa-checkout-fe
 
+        - script: yarn test:authentication-integration
+          displayName: 'Authentication integration tests exec'
+          workingDirectory: pagopa-checkout-fe
+
         - task: PublishTestResults@2
           displayName: 'Publish integration tests results from Jest tests'
           inputs:
