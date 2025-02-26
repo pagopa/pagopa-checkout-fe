@@ -659,43 +659,44 @@ export const authentication = async ({
   onResponse: (e: string) => void;
   onError: (e: string) => void;
 }) => {
-  const requestAuthToken = flow(
-    AuthRequest.decode,
-    TE.fromEither,
-    TE.chain(
-      (request: AuthRequest) => () =>
-        apiCheckoutAuthServiceClientV1.authenticateWithAuthToken({
-          body: request,
-        })
-    ),
-    TE.map((response) => {
-      if (response.status === 200) {
-        onResponse(response.value.authToken);
-      } else {
-        onError(ErrorsType.CONNECTION);
-      }
-    })
-  );
-
   await pipe(
     { authCode, state },
     AuthRequest.decode,
-    O.fromEither,
-    O.map((p) =>
-      pipe(
-        TE.tryCatch(requestAuthToken(p), (_e) => TE.left(_e)),
-        TE.mapLeft((_e) => {
-          onError(ErrorsType.GENERIC_ERROR);
-          return ErrorsType.GENERIC_ERROR;
-        })
+    E.mapLeft(() => ErrorsType.GENERIC_ERROR),
+    TE.fromEither,
+    TE.chain((decodedRequest) =>
+      TE.tryCatch(
+        () =>
+          apiCheckoutAuthServiceClientV1.authenticateWithAuthToken({
+            body: decodedRequest,
+          }),
+        () => ErrorsType.GENERIC_ERROR
       )
     ),
-    O.fold(
-      () => {
-        onError(ErrorsType.GENERIC_ERROR);
-        return TE.left(ErrorsType.GENERIC_ERROR);
+    TE.fold(
+      (error) => {
+        onError(error);
+        return TE.left(error);
       },
-      (task) => task
+      (response) =>
+        pipe(
+          response,
+          E.fold(
+            () => {
+              onError(ErrorsType.GENERIC_ERROR);
+              return TE.left(ErrorsType.GENERIC_ERROR);
+            },
+            (res) => {
+              if (res.status === 200) {
+                onResponse(res.value.authToken);
+                return TE.right({});
+              } else {
+                onError(ErrorsType.CONNECTION);
+                return TE.left(ErrorsType.CONNECTION);
+              }
+            }
+          )
+        )
     )
   )();
 };
