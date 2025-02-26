@@ -42,6 +42,9 @@ export default function AuthCallback() {
   };
 
   const doPostAuth = () => {
+    window.addEventListener("beforeunload", onBrowserUnload);
+    window.addEventListener("popstate", onBrowserBackEvent);
+
     setLoading(true);
     setErrorOnPostAuth(false);
 
@@ -63,9 +66,6 @@ export default function AuthCallback() {
 
   useEffect(() => {
     try {
-      window.addEventListener("beforeunload", onBrowserUnload);
-      window.addEventListener("popstate", onBrowserBackEvent);
-
       // converted to function so we can repeat this call
       // in case the user clicks "try again" button
       doPostAuth();
