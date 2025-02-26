@@ -52,21 +52,21 @@ export default function AuthCallback() {
     setErrorOnPostAuth(false);
 
     // retrieve auth-code from url
-      const searchParams = new URLSearchParams(window.location.search);
-      const authCode = searchParams.get("code");
-      const state = searchParams.get("state");
+    const searchParams = new URLSearchParams(window.location.search);
+    const authCode = searchParams.get("code");
+    const state = searchParams.get("state");
 
-      void (async (authCode, state) => {
-        void authentication({
-          authCode,
-          state,
-          onResponse: (authToken: string) => {
-            setSessionItem(SessionItems.authToken, authToken);
-            returnToOriginPage();
-          },
-          onError,
-        });
-      })(authCode, state);
+    void (async (authCode, state) => {
+      void authentication({
+        authCode,
+        state,
+        onResponse: (authToken: string) => {
+          setSessionItem(SessionItems.authToken, authToken);
+          returnToOriginPage();
+        },
+        onError,
+      });
+    })(authCode, state);
   };
 
   useEffect(() => {
