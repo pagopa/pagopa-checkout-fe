@@ -54,7 +54,7 @@ export default function Header() {
   const [enableAuthentication, setEnableAuthentication] = React.useState(
     getSessionItem(SessionItems.enableAuthentication) === "true"
   );
-  const ignoreRoutes: Array<string> = [
+  const ignoredRoutesForSummaryButton: Array<string> = [
     CheckoutRoutes.ROOT,
     CheckoutRoutes.LEGGI_CODICE_QR,
     CheckoutRoutes.INSERISCI_DATI_AVVISO,
@@ -67,7 +67,7 @@ export default function Header() {
   ];
   const enablePaymentSummaryButton =
     (!!PaymentInfo.receiver || !!CartInfo?.paymentNotices) &&
-    !ignoreRoutes.includes(currentPath);
+    !ignoredRoutesForSummaryButton.includes(currentPath);
   const toggleDrawer = (open: boolean) => {
     setDrawstate(open);
   };
