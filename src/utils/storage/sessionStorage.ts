@@ -72,16 +72,6 @@ export const getSessionItem = (item: SessionItems) => {
   }
 };
 
-/* export const getAndClearSessionItem = (item: SessionItems) => {
-  try {
-    const value = getSessionItem(item);
-    clearSessionItem(item);
-    return value;
-  } catch (e) {
-    return undefined;
-  }
-}; */
-
 export const getAndClearSessionItem = (item: SessionItems) =>
   pipe(
     getSessionItem(item),
