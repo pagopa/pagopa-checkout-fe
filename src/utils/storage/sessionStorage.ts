@@ -1,4 +1,6 @@
 import { JwtUser } from "@pagopa/mui-italia";
+import * as O from "fp-ts/Option";
+import { pipe } from "fp-ts/function";
 import { Bundle } from "../../../generated/definitions/payment-ecommerce/Bundle";
 import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { SessionPaymentMethodResponse } from "../../../generated/definitions/payment-ecommerce/SessionPaymentMethodResponse";
@@ -29,6 +31,8 @@ export enum SessionItems {
   correlationId = "correlationId",
   cartClientId = "cartClientId",
   loggedUser = "loggedUser",
+  loginOriginPage = "loginOriginPage",
+  authToken = "authToken",
 }
 const isParsable = (item: SessionItems) =>
   !(
@@ -37,7 +41,9 @@ const isParsable = (item: SessionItems) =>
     item === SessionItems.orderId ||
     item === SessionItems.correlationId ||
     item === SessionItems.cartClientId ||
-    item === SessionItems.enableAuthentication
+    item === SessionItems.enableAuthentication ||
+    item === SessionItems.loginOriginPage ||
+    item === SessionItems.authToken
   );
 
 export const getSessionItem = (item: SessionItems) => {
@@ -65,6 +71,19 @@ export const getSessionItem = (item: SessionItems) => {
     return undefined;
   }
 };
+
+export const getAndClearSessionItem = (item: SessionItems) =>
+  pipe(
+    getSessionItem(item),
+    O.fromNullable,
+    O.fold(
+      () => undefined,
+      (value) => {
+        clearSessionItem(item);
+        return value;
+      }
+    )
+  );
 
 export function setSessionItem(
   name: SessionItems,
@@ -96,6 +115,14 @@ export const isStateEmpty = (item: SessionItems) => !getSessionItem(item);
 
 export const clearStorage = () => {
   sessionStorage.clear();
+};
+
+export const clearStorageAndMaintainAuthData = () => {
+  const authToken = getSessionItem(SessionItems.authToken) as string;
+  sessionStorage.clear();
+  if (authToken != null) {
+    setSessionItem(SessionItems.authToken, authToken);
+  }
 };
 
 export function getReCaptchaKey() {
