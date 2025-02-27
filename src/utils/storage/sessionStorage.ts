@@ -1,4 +1,6 @@
 import { JwtUser } from "@pagopa/mui-italia";
+import * as O from "fp-ts/Option";
+import { pipe } from "fp-ts/function";
 import { Bundle } from "../../../generated/definitions/payment-ecommerce/Bundle";
 import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { SessionPaymentMethodResponse } from "../../../generated/definitions/payment-ecommerce/SessionPaymentMethodResponse";
@@ -30,8 +32,7 @@ export enum SessionItems {
   cartClientId = "cartClientId",
   loggedUser = "loggedUser",
   loginOriginPage = "loginOriginPage",
-  authCode = "authCode",
-  authToken = "authToken"
+  authToken = "authToken",
 }
 const isParsable = (item: SessionItems) =>
   !(
@@ -42,7 +43,6 @@ const isParsable = (item: SessionItems) =>
     item === SessionItems.cartClientId ||
     item === SessionItems.enableAuthentication ||
     item === SessionItems.loginOriginPage ||
-    item === SessionItems.authCode ||
     item === SessionItems.authToken
   );
 
@@ -71,6 +71,29 @@ export const getSessionItem = (item: SessionItems) => {
     return undefined;
   }
 };
+
+/* export const getAndClearSessionItem = (item: SessionItems) => {
+  try {
+    const value = getSessionItem(item);
+    clearSessionItem(item);
+    return value;
+  } catch (e) {
+    return undefined;
+  }
+}; */
+
+export const getAndClearSessionItem = (item: SessionItems) =>
+  pipe(
+    getSessionItem(item),
+    O.fromNullable,
+    O.fold(
+      () => undefined,
+      (value) => {
+        clearSessionItem(item);
+        return value;
+      }
+    )
+  );
 
 export function setSessionItem(
   name: SessionItems,
@@ -105,13 +128,11 @@ export const clearStorage = () => {
 };
 
 export const clearStorageAndMaintainAuthData = () => {
-  const authCode = getSessionItem(SessionItems.authCode) as string;
   const authToken = getSessionItem(SessionItems.authToken) as string;
   sessionStorage.clear();
-  if(authCode != null)
-    setSessionItem(SessionItems.authCode, authCode);
-  if(authToken != null)
+  if (authToken != null) {
     setSessionItem(SessionItems.authToken, authToken);
+  }
 };
 
 export function getReCaptchaKey() {

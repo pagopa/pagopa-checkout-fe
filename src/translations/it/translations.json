@@ -21,6 +21,14 @@
     "body": "L'operazione è stata annullata",
     "button": "Chiudi"
   },
+  "authCallbackPage": {
+    "title": "Non è stato possibile accedere",
+    "body": "Si è verificato un problema durante l'accesso. Riprova tra qualche minuto.",
+    "buttons": {
+      "retry": "Riprova",
+      "continueWithoutLogin": "Continua senza login."
+    }
+  },
   "cartDetail": {
     "amount": "Importo",
     "companyName": "Ente Creditore",

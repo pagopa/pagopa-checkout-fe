@@ -82,6 +82,7 @@ import {
 import { CalculateFeeResponse } from "../../../generated/definitions/payment-ecommerce/CalculateFeeResponse";
 import { FaultCategoryEnum } from "../../../generated/definitions/payment-ecommerce/FaultCategory";
 import { CalculateFeeRequest } from "../../../generated/definitions/payment-ecommerce-v2/CalculateFeeRequest";
+import { AuthRequest } from "../../../generated/definitions/checkout-auth-service-v1/AuthRequest";
 import {
   apiCheckoutFeatureFlags,
   apiPaymentEcommerceClient,
@@ -640,6 +641,59 @@ export const proceedToLogin = async ({
                 onError(ErrorsType.GENERIC_ERROR);
               }
               return {};
+            }
+          )
+        )
+    )
+  )();
+};
+
+export const authentication = async ({
+  authCode,
+  state,
+  onResponse,
+  onError,
+}: {
+  authCode: string | null;
+  state: string | null;
+  onResponse: (e: string) => void;
+  onError: (e: string) => void;
+}) => {
+  await pipe(
+    { authCode, state },
+    AuthRequest.decode,
+    E.mapLeft(() => ErrorsType.GENERIC_ERROR),
+    TE.fromEither,
+    TE.chain((decodedRequest) =>
+      TE.tryCatch(
+        () =>
+          apiCheckoutAuthServiceClientV1.authenticateWithAuthToken({
+            body: decodedRequest,
+          }),
+        () => ErrorsType.GENERIC_ERROR
+      )
+    ),
+    TE.fold(
+      (error) => {
+        onError(error);
+        return TE.left(error);
+      },
+      (response) =>
+        pipe(
+          response,
+          E.fold(
+            () => {
+              onError(ErrorsType.GENERIC_ERROR);
+              return TE.left(ErrorsType.GENERIC_ERROR);
+            },
+            (res) => {
+              if (res.status === 200) {
+                onResponse(res.value.authToken);
+                return TE.right({});
+              } else {
+                onError(ErrorsType.CONNECTION);
+                return TE.left(ErrorsType.CONNECTION);
+              }
             }
           )
         )
