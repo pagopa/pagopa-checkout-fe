@@ -87,6 +87,17 @@ export const selectKeyboardForm = async () => {
   await selectFormBtn.click();
 };
 
+export const clickLoginButton = async () => {
+  //search login button and click it
+  console.log("Search login button")
+  const loginHeader = await page.waitForSelector("#login-header");
+  const headerButtons = await loginHeader.$$("button");
+  //Login button is the last on the header
+  const loginBtn = headerButtons.at(-1);
+  console.log("Login button click")
+  await loginBtn.click();
+}
+
 export const fillPaymentNotificationForm = async (noticeCode, fiscalCode) => {
   const noticeCodeTextInput = "#billCode";
   const fiscalCodeTextInput = "#cf";
