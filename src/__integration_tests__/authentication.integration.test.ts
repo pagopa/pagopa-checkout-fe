@@ -3,7 +3,7 @@ import deTranslation from "../translations/de/translations.json";
 import enTranslation from "../translations/en/translations.json";
 import frTranslation from "../translations/fr/translations.json";
 import slTranslation from "../translations/sl/translations.json";
-import { selectLanguage } from "./utils/helpers";
+import { clickLoginButton, fillPaymentNotificationForm, selectLanguage } from "./utils/helpers";
 /**
  * Test input and configuration
  */
@@ -13,7 +13,9 @@ const CALLBACK_URL = `http://localhost:1234/auth-callback?code=J0NYD7UqPejqXpl6F
 const CALLBACK_URL_NO_CODE = `http://localhost:1234/auth-callback?state=1BWuOGF4L3CTroTEvUVF`;
 const CALLBACK_URL_NO_STATE = `http://localhost:1234/auth-callback?code=J0NYD7UqPejqXpl6Fdv8&`;
 const PAGE_LOGIN_COMEBACK_URL = `http://localhost:1234/inserisci-dati-avviso`;
-
+const VALID_FISCAL_CODE = "77777777777";
+/* POST AUTH TOKEN FAIL ends with 78 */
+const POST_AUTH_TOKEN_FAILS = "302000100000009478"
 
 jest.setTimeout(80000);
 jest.retryTimes(3);
@@ -108,6 +110,29 @@ describe("Checkout authentication tests", () => {
     const body = await titleErrorBody.evaluate((el) => el.textContent);
 
     expect(currentUrl).not.toBe(PAGE_LOGIN_COMEBACK_URL);
+    expect(title).toContain(translation.authCallbackPage.title);
+    expect(body).toContain(translation.authCallbackPage.body);
+  });
+
+  it.each([
+    ["it", itTranslation],
+    ["en", enTranslation],
+    ["fr", frTranslation],
+    ["de", deTranslation],
+    ["sl", slTranslation]
+  ])("Should show error receiving 500 from post auth token for language [%s]", async (lang, translation) => {
+    
+    await fillPaymentNotificationForm(POST_AUTH_TOKEN_FAILS, VALID_FISCAL_CODE);
+
+    await clickLoginButton();
+    
+    const titleErrorElem = await page.waitForSelector("#errorTitle");
+    const titleErrorBody = await page.waitForSelector("#errorBody");
+    const title = await titleErrorElem.evaluate((el) => el.textContent);
+    const body = await titleErrorBody.evaluate((el) => el.textContent);
+
+    const currentUrl = await page.evaluate(() => location.href);
+    expect(currentUrl).toBe(CALLBACK_URL);
     expect(title).toContain(translation.authCallbackPage.title);
     expect(body).toContain(translation.authCallbackPage.body);
   });
