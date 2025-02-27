@@ -71,6 +71,7 @@ export default function LoginHeader() {
         setLoading(false);
       } else {
         window.location.assign(url);
+        setLoading(false);
       }
     } catch {
       onError(ErrorsType.GENERIC_ERROR);
