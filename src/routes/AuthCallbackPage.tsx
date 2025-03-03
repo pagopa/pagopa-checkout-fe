@@ -4,20 +4,21 @@ import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import { Box, Button, CircularProgress, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { authentication } from "../utils/api/helper";
+import ReCAPTCHA from "react-google-recaptcha";
+import { proceedToLogin } from "utils/api/helper";
 import PageContainer from "../components/PageContent/PageContainer";
 import ko from "../assets/images/response-umbrella.svg";
 import { onBrowserBackEvent, onBrowserUnload } from "../utils/eventListeners";
 import {
   getAndClearSessionItem,
+  getReCaptchaKey,
   SessionItems,
-  setSessionItem,
 } from "../utils/storage/sessionStorage";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function AuthCallback() {
   const navigate = useNavigate();
-
+  const ref = React.useRef<ReCAPTCHA>(null);
   const [loading, setLoading] = React.useState(true);
   const [errorOnPostAuth, setErrorOnPostAuth] = React.useState(false);
 
@@ -25,9 +26,33 @@ export default function AuthCallback() {
 
   const onError = () => {
     setLoading(false);
-    window.removeEventListener("popstate", onBrowserBackEvent);
-    window.removeEventListener("beforeunload", onBrowserUnload);
     setErrorOnPostAuth(true);
+    ref.current?.reset();
+  };
+
+  const onResponse = (authorizationUrl: string) => {
+    try {
+      const url = new URL(authorizationUrl);
+      if (url.origin === window.location.origin) {
+        navigate(`${url.pathname}${url.search}`, { replace: true });
+        setLoading(false);
+      } else {
+        window.location.assign(url);
+      }
+    } catch {
+      onError();
+    }
+  };
+
+  const onLogin = async (recaptchaRef: ReCAPTCHA) => {
+    setLoading(true);
+    await proceedToLogin({ recaptchaRef, onError, onResponse });
+  };
+
+  const handleClickOnLogin = async () => {
+    if (ref.current) {
+      await onLogin(ref.current);
+    }
   };
 
   // navigate to last page from session storage
@@ -44,48 +69,15 @@ export default function AuthCallback() {
     );
   };
 
-  const doPostAuth = () => {
-    window.addEventListener("beforeunload", onBrowserUnload);
-    window.addEventListener("popstate", onBrowserBackEvent);
-
-    setLoading(true);
-    setErrorOnPostAuth(false);
-
-    // retrieve auth-code from url
-    const searchParams = new URLSearchParams(window.location.search);
-    const authCode = searchParams.get("code");
-    const state = searchParams.get("state");
-
-    void (async (authCode, state) => {
-      void authentication({
-        authCode,
-        state,
-        onResponse: (authToken: string) => {
-          setSessionItem(SessionItems.authToken, authToken);
-          returnToOriginPage();
-        },
-        onError,
-      });
-    })(authCode, state);
-  };
-
-  useEffect(() => {
-    try {
-      // converted to function so we can repeat this call
-      // in case the user clicks "try again" button
-      doPostAuth();
-
-      return () => {
-        window.removeEventListener("popstate", onBrowserBackEvent);
-        window.removeEventListener("beforeunload", onBrowserUnload);
-      };
-    } catch {
-      return navigate(`/${CheckoutRoutes.ROOT}`, { replace: true });
-    }
-  }, []);
-
   return (
     <PageContainer>
+      <Box display="none">
+        <ReCAPTCHA
+          ref={ref}
+          size="invisible"
+          sitekey={getReCaptchaKey() as string}
+        />
+      </Box>
       {loading && (
         <Box
           display="flex"
@@ -135,7 +127,7 @@ export default function AuthCallback() {
             <Button
               type="button"
               variant="contained"
-              onClick={doPostAuth}
+              onClick={handleClickOnLogin}
               style={{
                 height: "100%",
                 minHeight: 45,
