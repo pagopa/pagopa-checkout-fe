@@ -112,7 +112,6 @@ describe("AuthCallback", () => {
     await waitFor(() => {
       expect(screen.getByText(/retry/i)).toBeInTheDocument();
     });
-
     fireEvent.click(screen.getByText(/retry/i));
     expect(proceedToLogin).toHaveBeenCalled();
   });
