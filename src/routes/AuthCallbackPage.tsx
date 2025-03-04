@@ -5,7 +5,7 @@ import * as O from "fp-ts/Option";
 import { Box, Button, CircularProgress, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import ReCAPTCHA from "react-google-recaptcha";
-import { onBrowserBackEvent, onBrowserUnload } from "utils/eventListeners";
+import { onBrowserBackEvent, onBrowserUnload } from "../utils/eventListeners";
 import PageContainer from "../components/PageContent/PageContainer";
 import ko from "../assets/images/response-umbrella.svg";
 import {
@@ -73,8 +73,6 @@ export default function AuthCallback() {
     try {
       window.addEventListener("beforeunload", onBrowserUnload);
       window.addEventListener("popstate", onBrowserBackEvent);
-
-      setLoading(true);
 
       // retrieve auth-code from url
       const searchParams = new URLSearchParams(window.location.search);
