@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import { Box, Button, CircularProgress, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import ReCAPTCHA from "react-google-recaptcha";
+import { onBrowserBackEvent, onBrowserUnload } from "utils/eventListeners";
 import PageContainer from "../components/PageContent/PageContainer";
 import ko from "../assets/images/response-umbrella.svg";
 import {
@@ -12,14 +13,15 @@ import {
   getReCaptchaKey,
   getSessionItem,
   SessionItems,
+  setSessionItem,
 } from "../utils/storage/sessionStorage";
-import { proceedToLogin } from "./../utils/api/helper";
+import { authentication, proceedToLogin } from "./../utils/api/helper";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function AuthCallback() {
   const navigate = useNavigate();
   const ref = React.useRef<ReCAPTCHA>(null);
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
 
   const { t } = useTranslation();
 
@@ -66,6 +68,39 @@ export default function AuthCallback() {
       )
     );
   };
+
+  useEffect(() => {
+    try {
+      window.addEventListener("beforeunload", onBrowserUnload);
+      window.addEventListener("popstate", onBrowserBackEvent);
+
+      setLoading(true);
+
+      // retrieve auth-code from url
+      const searchParams = new URLSearchParams(window.location.search);
+      const authCode = searchParams.get("code");
+      const state = searchParams.get("state");
+
+      void (async (authCode, state) => {
+        void authentication({
+          authCode,
+          state,
+          onResponse: (authToken: string) => {
+            setSessionItem(SessionItems.authToken, authToken);
+            returnToOriginPage();
+          },
+          onError,
+        });
+      })(authCode, state);
+
+      return () => {
+        window.removeEventListener("popstate", onBrowserBackEvent);
+        window.removeEventListener("beforeunload", onBrowserUnload);
+      };
+    } catch {
+      return navigate(`/${CheckoutRoutes.ROOT}`, { replace: true });
+    }
+  }, []);
 
   // we need the feature flag to be enabled to allow the user to actually see
   // the retry button since its basically a "login" button
