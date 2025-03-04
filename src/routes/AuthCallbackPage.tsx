@@ -10,6 +10,7 @@ import ko from "../assets/images/response-umbrella.svg";
 import {
   getAndClearSessionItem,
   getReCaptchaKey,
+  getSessionItem,
   SessionItems,
 } from "../utils/storage/sessionStorage";
 import { proceedToLogin } from "./../utils/api/helper";
@@ -66,6 +67,10 @@ export default function AuthCallback() {
     );
   };
 
+  // we need the feature flag to be enabled to allow the user to actually see
+  // the retry button since its basically a "login" button
+  const storedFeatureFlag = getSessionItem(SessionItems.enableAuthentication);
+
   return (
     <PageContainer>
       <Box display="none">
@@ -121,17 +126,19 @@ export default function AuthCallback() {
             sx={{ mt: 2 }}
             alignItems={"center"}
           >
-            <Button
-              type="button"
-              variant="contained"
-              onClick={handleClickOnLogin}
-              style={{
-                height: "100%",
-                minHeight: 45,
-              }}
-            >
-              {t("authCallbackPage.buttons.retry")}
-            </Button>
+            {storedFeatureFlag && (
+              <Button
+                type="button"
+                variant="contained"
+                onClick={handleClickOnLogin}
+                style={{
+                  height: "100%",
+                  minHeight: 45,
+                }}
+              >
+                {t("authCallbackPage.buttons.retry")}
+              </Button>
+            )}
             <Button
               type="button"
               variant="text"
