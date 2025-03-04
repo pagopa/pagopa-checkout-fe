@@ -1,19 +1,18 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import { Box, Button, CircularProgress, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import ReCAPTCHA from "react-google-recaptcha";
-import { proceedToLogin } from "utils/api/helper";
 import PageContainer from "../components/PageContent/PageContainer";
 import ko from "../assets/images/response-umbrella.svg";
-import { onBrowserBackEvent, onBrowserUnload } from "../utils/eventListeners";
 import {
   getAndClearSessionItem,
   getReCaptchaKey,
   SessionItems,
 } from "../utils/storage/sessionStorage";
+import { proceedToLogin } from "./../utils/api/helper";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function AuthCallback() {
