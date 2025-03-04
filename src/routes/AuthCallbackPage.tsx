@@ -27,6 +27,8 @@ export default function AuthCallback() {
 
   const onError = () => {
     setLoading(false);
+    window.removeEventListener("popstate", onBrowserBackEvent);
+    window.removeEventListener("beforeunload", onBrowserUnload);
     ref.current?.reset();
   };
 
