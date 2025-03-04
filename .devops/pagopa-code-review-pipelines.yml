@@ -5,6 +5,7 @@
 # set its value to 'skip' without marking it secret:
 # - DANGER_GITHUB_API_TOKEN
 #
+
 variables:
   NODE_VERSION: '14.16.0'
   YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
