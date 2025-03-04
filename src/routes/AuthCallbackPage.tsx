@@ -18,14 +18,12 @@ import { CheckoutRoutes } from "./models/routeModel";
 export default function AuthCallback() {
   const navigate = useNavigate();
   const ref = React.useRef<ReCAPTCHA>(null);
-  const [loading, setLoading] = React.useState(true);
-  const [errorOnPostAuth, setErrorOnPostAuth] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
 
   const { t } = useTranslation();
 
   const onError = () => {
     setLoading(false);
-    setErrorOnPostAuth(true);
     ref.current?.reset();
   };
 
@@ -88,7 +86,7 @@ export default function AuthCallback() {
           <CircularProgress />
         </Box>
       )}
-      {!loading && errorOnPostAuth && (
+      {!loading && (
         <Box
           display="flex"
           flexDirection="column"
