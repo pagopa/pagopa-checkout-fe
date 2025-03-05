@@ -91,6 +91,6 @@ export const apiCheckoutAuthServiceClientV1WithRetry = createAuthServiceClient({
     fetch,
     conf.CHECKOUT_API_TIMEOUT as Millisecond,
     3,
-    (response: Response) => response.status >= 200 && response.status < 400
+    (response: Response) => response.status < 200 && response.status >= 400
   ),
 });
