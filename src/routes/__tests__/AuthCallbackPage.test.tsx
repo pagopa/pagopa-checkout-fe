@@ -5,7 +5,11 @@ import { fireEvent, screen } from "@testing-library/dom";
 import { MemoryRouter } from "react-router-dom";
 import { getSessionItem } from "../../utils/storage/sessionStorage";
 import AuthCallback from "../AuthCallbackPage";
-import { authentication, proceedToLogin } from "../../utils/api/helper";
+import {
+  authentication,
+  proceedToLogin,
+  retrieveUserInfo,
+} from "../../utils/api/helper";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -18,9 +22,14 @@ jest.mock("react-google-recaptcha", () => ({
   )),
 }));
 
-jest.mock("./../../utils/api/helper", () => ({
+jest.mock("../../utils/api/helper", () => ({
   proceedToLogin: jest.fn(),
   authentication: jest.fn(),
+  retrieveUserInfo: jest.fn(),
+}));
+
+jest.mock("../../redux/hooks/hooks", () => ({
+  useAppDispatch: jest.fn(),
 }));
 
 jest.mock("../../utils/storage/sessionStorage", () => ({
@@ -36,7 +45,6 @@ jest.mock("../../utils/storage/sessionStorage", () => ({
 }));
 
 jest.mock("../../utils/eventListeners", () => ({
-  onBrowserBackEvent: jest.fn(),
   onBrowserUnload: jest.fn(),
 }));
 
@@ -45,7 +53,7 @@ describe("AuthCallback", () => {
     (getSessionItem as jest.Mock).mockReturnValue(true);
   });
 
-  it("renders loading state initially", () => {
+  test("Renders loading state initially", () => {
     render(
       <MemoryRouter>
         <AuthCallback />{" "}
@@ -55,7 +63,7 @@ describe("AuthCallback", () => {
     expect(screen.getByRole("progressbar")).toBeInTheDocument();
   });
 
-  test("Calls authentication on mount", async () => {
+  test("Calls authentication and then retrieveUserInfo on mount", async () => {
     (authentication as jest.Mock).mockImplementation(({ onResponse }) => {
       onResponse("fakeAuthToken");
     });
@@ -68,6 +76,7 @@ describe("AuthCallback", () => {
 
     await waitFor(() => {
       expect(authentication).toHaveBeenCalled();
+      expect(retrieveUserInfo).toHaveBeenCalled();
     });
   });
 
