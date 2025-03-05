@@ -41,7 +41,6 @@ export default function AuthCallback() {
 
   const onError = () => {
     setLoading(false);
-    window.removeEventListener("popstate", onBrowserBackEvent);
     window.removeEventListener("beforeunload", onBrowserUnload);
     clearSessionItem(SessionItems.authToken);
     ref.current?.reset();
@@ -50,6 +49,7 @@ export default function AuthCallback() {
   const onLoginResponse = (authorizationUrl: string) => {
     try {
       const url = new URL(authorizationUrl);
+      window.removeEventListener("beforeunload", onBrowserUnload);
       if (url.origin === window.location.origin) {
         navigate(`${url.pathname}${url.search}`, { replace: true });
         setLoading(false);
@@ -62,6 +62,7 @@ export default function AuthCallback() {
   };
 
   const onLogin = async (recaptchaRef: ReCAPTCHA) => {
+    window.addEventListener("beforeunload", onBrowserUnload);
     setLoading(true);
     await proceedToLogin({
       recaptchaRef,
@@ -78,6 +79,7 @@ export default function AuthCallback() {
 
   // navigate to last page from session storage
   const returnToOriginPage = () => {
+    window.removeEventListener("beforeunload", onBrowserUnload);
     pipe(
       getAndClearSessionItem(SessionItems.loginOriginPage),
       O.fromNullable,
@@ -109,7 +111,6 @@ export default function AuthCallback() {
   useEffect(() => {
     try {
       window.addEventListener("beforeunload", onBrowserUnload);
-      window.addEventListener("popstate", onBrowserBackEvent);
 
       void authentication({
         authCode,
@@ -120,11 +121,6 @@ export default function AuthCallback() {
         },
         onError,
       });
-
-      return () => {
-        window.removeEventListener("popstate", onBrowserBackEvent);
-        window.removeEventListener("beforeunload", onBrowserUnload);
-      };
     } catch {
       return navigate(`/${CheckoutRoutes.ROOT}`, { replace: true });
     }
