@@ -108,13 +108,6 @@ export default function AuthCallback() {
 
   return (
     <PageContainer>
-      <Box display="none">
-        <ReCAPTCHA
-          ref={ref}
-          size="invisible"
-          sitekey={getReCaptchaKey() as string}
-        />
-      </Box>
       {loading && (
         <Box
           display="flex"
@@ -133,6 +126,13 @@ export default function AuthCallback() {
           alignItems="center"
           sx={{ mt: 6 }}
         >
+          <Box display="none">
+            <ReCAPTCHA
+              ref={ref}
+              size="invisible"
+              sitekey={getReCaptchaKey() as string}
+            />
+          </Box>
           <img
             src={ko}
             alt="ko-image"
@@ -165,6 +165,7 @@ export default function AuthCallback() {
               <Button
                 type="button"
                 variant="contained"
+                id="auth-retry-button"
                 onClick={handleClickOnLogin}
                 style={{
                   height: "100%",

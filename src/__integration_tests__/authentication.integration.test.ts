@@ -13,6 +13,7 @@ const CALLBACK_URL = `http://localhost:1234/auth-callback?code=J0NYD7UqPejqXpl6F
 const CALLBACK_URL_NO_CODE = `http://localhost:1234/auth-callback?state=1BWuOGF4L3CTroTEvUVF`;
 const CALLBACK_URL_NO_STATE = `http://localhost:1234/auth-callback?code=J0NYD7UqPejqXpl6Fdv8&`;
 const PAGE_LOGIN_COMEBACK_URL = `http://localhost:1234/inserisci-dati-avviso`;
+const QR_CODE_PAGE_URL = "http://localhost:1234/leggi-codice-qr";
 const VALID_FISCAL_CODE = "77777777777";
 /* POST AUTH TOKEN FAIL ends with 78 */
 const POST_AUTH_TOKEN_FAILS = "302000100000009478"
@@ -31,11 +32,32 @@ beforeEach(async () => {
   await page.goto(CHECKOUT_URL);
 });
 
-
 describe("Checkout authentication tests", () => {
-  /* Test to be implemented on e2eTest since mock come back directly in checkout domain
   
-  it("Should correctly redirect to auth login url", async () => {
+  it.only("Should correclty invoke the login flow when clicking login or retry", async () => {
+
+    await page.evaluate(() => {
+      // enable login 
+      localStorage.setItem('enableAuthentication', 'true');
+    });
+
+    // keep track
+    let successfullLogins = 0;
+
+    // Listen for frame navigation (URL change)
+    // when the login is completed (and failed) we will be redirected to CALLBACK_URL_NO_CODE
+    page.on('framenavigated', async (frame) => {
+      const url = frame.url();
+      if(url === CALLBACK_URL_NO_CODE){
+        successfullLogins++;
+      }
+    });
+
+    // we navigate from the first page
+    // to another one to make the enableAuthentication=true flag
+    // be considered when rendering the page
+    // (if the page is already rendered, a change to the localStorage will not affect the ui)
+    await page.goto(QR_CODE_PAGE_URL);
 
     //search login button and click it
     console.log("Search login button")
@@ -43,13 +65,21 @@ describe("Checkout authentication tests", () => {
     const headerButtons = await loginHeader.$$("button");
     //Login button is the last on the header
     const loginBtn = headerButtons.at(-1);
-    console.log("Login button click")
+    console.log("Login button click");
+    
     await loginBtn.click();
 
-    const currentUrl = await page.evaluate(() => location.href);
-    console.log("Current url: " + currentUrl);
-    expect(currentUrl).toBe(CALLBACK_URL);
-  });*/
+    // now navigate to callback url and force error with bad parameters
+    await page.goto(CALLBACK_URL_NO_CODE);
+
+    // click the retry button
+    const retryButton = await page.waitForSelector("#auth-retry-button");
+
+    await retryButton.click();
+
+    // one from login, one from retry
+    expect(successfullLogins).toBe(2);
+  });
 
   it("Should correctly come back to login origin url", async () => {
     await page.evaluate(() => {
@@ -120,7 +150,7 @@ describe("Checkout authentication tests", () => {
     ["fr", frTranslation],
     ["de", deTranslation],
     ["sl", slTranslation]
-  ])("Should show error receiving 500 from post auth token for language [%s]", async (lang, translation) => {
+  ])("Should show error receiving 5xx from post auth token for language [%s]", async (lang, translation) => {
     
     await fillPaymentNotificationForm(POST_AUTH_TOKEN_FAILS, VALID_FISCAL_CODE);
 
