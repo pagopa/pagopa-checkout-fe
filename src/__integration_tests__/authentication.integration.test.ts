@@ -9,9 +9,10 @@ import { clickLoginButton, fillPaymentNotificationForm, selectLanguage } from ".
  */
 
 const CHECKOUT_URL = `http://localhost:1234`;
-const CALLBACK_URL = `http://localhost:1234/auth-callback?code=J0NYD7UqPejqXpl6Fdv8&state=1BWuOGF4L3CTroTEvUVF`;
-const CALLBACK_URL_NO_CODE = `http://localhost:1234/auth-callback?state=1BWuOGF4L3CTroTEvUVF`;
-const CALLBACK_URL_NO_STATE = `http://localhost:1234/auth-callback?code=J0NYD7UqPejqXpl6Fdv8&`;
+const BASE_CALLBACK_URL = "http://localhost:1234/auth-callback";
+const CALLBACK_URL = `${BASE_CALLBACK_URL}?code=J0NYD7UqPejqXpl6Fdv8&state=1BWuOGF4L3CTroTEvUVF`;
+const CALLBACK_URL_NO_CODE = `${BASE_CALLBACK_URL}?state=1BWuOGF4L3CTroTEvUVF`;
+const CALLBACK_URL_NO_STATE = `${BASE_CALLBACK_URL}?code=J0NYD7UqPejqXpl6Fdv8&`;
 const PAGE_LOGIN_COMEBACK_URL = `http://localhost:1234/inserisci-dati-avviso`;
 const QR_CODE_PAGE_URL = "http://localhost:1234/leggi-codice-qr";
 const VALID_FISCAL_CODE = "77777777777";
@@ -48,7 +49,7 @@ describe("Checkout authentication tests", () => {
     // when the login is completed (and failed) we will be redirected to CALLBACK_URL_NO_CODE
     page.on('framenavigated', async (frame) => {
       const url = frame.url();
-      if(url === CALLBACK_URL_NO_CODE){
+      if(url.startsWith(BASE_CALLBACK_URL)){
         successfullLogins++;
       }
     });
