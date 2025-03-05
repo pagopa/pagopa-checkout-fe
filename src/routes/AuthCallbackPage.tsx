@@ -5,7 +5,7 @@ import * as O from "fp-ts/Option";
 import { Box, Button, CircularProgress, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import ReCAPTCHA from "react-google-recaptcha";
-import { onBrowserBackEvent, onBrowserUnload } from "../utils/eventListeners";
+import { onBrowserUnload } from "../utils/eventListeners";
 import PageContainer from "../components/PageContent/PageContainer";
 import ko from "../assets/images/response-umbrella.svg";
 import {
