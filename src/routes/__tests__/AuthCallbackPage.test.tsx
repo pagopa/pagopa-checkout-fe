@@ -95,6 +95,27 @@ describe("AuthCallback", () => {
       expect(screen.getByText(/authCallbackPage.title/i)).toBeInTheDocument();
     });
   });
+  
+  test("Shows error screen if retrieveUserInfo fail after authentication success ", async () => {
+    (authentication as jest.Mock).mockImplementation(({ onResponse }) => {
+      onResponse("fakeAuthToken");
+    });
+    (retrieveUserInfo as jest.Mock).mockImplementation(({ onError }) => {
+      onError();
+    });
+
+    render(
+      <MemoryRouter>
+        <AuthCallback />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(authentication).toHaveBeenCalled();
+      expect(retrieveUserInfo).toHaveBeenCalled();
+      expect(screen.getByText(/authCallbackPage.title/i)).toBeInTheDocument();
+    });
+  });
 
   test("Retry button is visible when feature flag is enabled", async () => {
     (getSessionItem as jest.Mock).mockReturnValue(true);
