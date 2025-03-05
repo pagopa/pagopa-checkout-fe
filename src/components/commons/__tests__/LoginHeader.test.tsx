@@ -1,10 +1,8 @@
 import React from "react";
 import "@testing-library/jest-dom";
-import { MemoryRouter } from "react-router-dom";
 import { render } from "@testing-library/react";
 import { screen } from "@testing-library/dom";
 import LoginHeader from "../LoginHeader";
-import { getSessionItem } from "../../../utils/storage/sessionStorage";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -43,16 +41,8 @@ jest.mock("../../../utils/eventListeners", () => ({
 }));
 
 describe("LoginHeader", () => {
-  beforeEach(() => {
-    (getSessionItem as jest.Mock).mockReturnValue(true);
-  });
-
   test("Renders loading header", () => {
-    render(
-      <MemoryRouter>
-        <LoginHeader />
-      </MemoryRouter>
-    );
+    render(<LoginHeader />);
 
     expect(screen.getByLabelText(/Accedi/i)).toBeInTheDocument();
   });

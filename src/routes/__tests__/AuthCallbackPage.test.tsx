@@ -95,7 +95,7 @@ describe("AuthCallback", () => {
       expect(screen.getByText(/authCallbackPage.title/i)).toBeInTheDocument();
     });
   });
-  
+
   test("Shows error screen if retrieveUserInfo fail after authentication success ", async () => {
     (authentication as jest.Mock).mockImplementation(({ onResponse }) => {
       onResponse("fakeAuthToken");
