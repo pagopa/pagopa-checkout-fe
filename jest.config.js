@@ -2,7 +2,7 @@ module.exports = {
   preset: "ts-jest",
   testEnvironment: "jsdom",
   testPathIgnorePatterns: ["dist", "/node_modules"],
-  testRegex: "./*test\\.ts$",
+  testRegex: "./*test\\.(tsx|ts)$",
   reporters: [
     'default',
     [ 'jest-junit', {
@@ -11,5 +11,8 @@ module.exports = {
     } ]
   ],
   coverageReporters: ["cobertura"],
-  modulePathIgnorePatterns: ["__integration_tests__"]
+  modulePathIgnorePatterns: ["__integration_tests__"],
+  transform: {
+    '\\.svg$': 'jest-transform-stub',
+  },
 };

@@ -4,27 +4,28 @@ import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import { Box, Button, CircularProgress, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { setLoggedUser } from "../redux/slices/loggedUser";
-import { authentication, retrieveUserInfo } from "../utils/api/helper";
+import ReCAPTCHA from "react-google-recaptcha";
+import { onBrowserBackEvent, onBrowserUnload, retrieveUserInfo } from "../utils/eventListeners";
 import PageContainer from "../components/PageContent/PageContainer";
 import ko from "../assets/images/response-umbrella.svg";
-import { onBrowserBackEvent, onBrowserUnload } from "../utils/eventListeners";
 import {
   clearSessionItem,
   getAndClearSessionItem,
+  getReCaptchaKey,
+  getSessionItem,
   SessionItems,
   setSessionItem,
 } from "../utils/storage/sessionStorage";
+import { authentication, proceedToLogin } from "./../utils/api/helper";
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { UserInfoResponse } from "../../generated/definitions/checkout-auth-service-v1/UserInfoResponse";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function AuthCallback() {
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
+  const ref = React.useRef<ReCAPTCHA>(null);  const dispatch = useAppDispatch();
 
   const [loading, setLoading] = React.useState(true);
-  const [errorOnPostAuth, setErrorOnPostAuth] = React.useState(false);
 
   const { t } = useTranslation();
 
@@ -33,7 +34,32 @@ export default function AuthCallback() {
     window.removeEventListener("popstate", onBrowserBackEvent);
     window.removeEventListener("beforeunload", onBrowserUnload);
     clearSessionItem(SessionItems.authToken);
-    setErrorOnPostAuth(true);
+    ref.current?.reset();
+  };
+
+  const onResponse = (authorizationUrl: string) => {
+    try {
+      const url = new URL(authorizationUrl);
+      if (url.origin === window.location.origin) {
+        navigate(`${url.pathname}${url.search}`, { replace: true });
+        setLoading(false);
+      } else {
+        window.location.assign(url);
+      }
+    } catch {
+      onError();
+    }
+  };
+
+  const onLogin = async (recaptchaRef: ReCAPTCHA) => {
+    setLoading(true);
+    await proceedToLogin({ recaptchaRef, onError, onResponse });
+  };
+
+  const handleClickOnLogin = async () => {
+    if (ref.current) {
+      await onLogin(ref.current);
+    }
   };
 
   // navigate to last page from session storage
@@ -50,52 +76,27 @@ export default function AuthCallback() {
     );
   };
 
-  const doPostAuth = () => {
-    window.addEventListener("beforeunload", onBrowserUnload);
-    window.addEventListener("popstate", onBrowserBackEvent);
-
-    setLoading(true);
-    setErrorOnPostAuth(false);
-
-    // retrieve auth-code from url
-    const searchParams = new URLSearchParams(window.location.search);
-    const authCode = searchParams.get("code");
-    const state = searchParams.get("state");
-
-    void (async (authCode, state) => {
-      void authentication({
-        authCode,
-        state,
-        onResponse: (authToken: string) => {
-          setSessionItem(SessionItems.authToken, authToken);
-          doGetUserInfo();
-        },
-        onError,
-      });
-    })(authCode, state);
-  };
-
-  const doGetUserInfo = () => {
-    void retrieveUserInfo({
-      onResponse: (userInfo: UserInfoResponse) => {
-        dispatch(
-          setLoggedUser({
-            id: userInfo.userId,
-            name: userInfo.firstName,
-            surname: userInfo.lastName,
-          })
-        );
-        returnToOriginPage();
-      },
-      onError,
-    });
-  };
-
   useEffect(() => {
     try {
-      // converted to function so we can repeat this call
-      // in case the user clicks "try again" button
-      doPostAuth();
+      window.addEventListener("beforeunload", onBrowserUnload);
+      window.addEventListener("popstate", onBrowserBackEvent);
+
+      // retrieve auth-code from url
+      const searchParams = new URLSearchParams(window.location.search);
+      const authCode = searchParams.get("code");
+      const state = searchParams.get("state");
+
+      void (async (authCode, state) => {
+        void authentication({
+          authCode,
+          state,
+          onResponse: (authToken: string) => {
+            setSessionItem(SessionItems.authToken, authToken);
+            returnToOriginPage();
+          },
+          onError,
+        });
+      })(authCode, state);
 
       return () => {
         window.removeEventListener("popstate", onBrowserBackEvent);
@@ -106,8 +107,19 @@ export default function AuthCallback() {
     }
   }, []);
 
+  // we need the feature flag to be enabled to allow the user to actually see
+  // the retry button since its basically a "login" button
+  const storedFeatureFlag = getSessionItem(SessionItems.enableAuthentication);
+
   return (
     <PageContainer>
+      <Box display="none">
+        <ReCAPTCHA
+          ref={ref}
+          size="invisible"
+          sitekey={getReCaptchaKey() as string}
+        />
+      </Box>
       {loading && (
         <Box
           display="flex"
@@ -119,7 +131,7 @@ export default function AuthCallback() {
           <CircularProgress />
         </Box>
       )}
-      {!loading && errorOnPostAuth && (
+      {!loading && (
         <Box
           display="flex"
           flexDirection="column"
@@ -154,17 +166,19 @@ export default function AuthCallback() {
             sx={{ mt: 2 }}
             alignItems={"center"}
           >
-            <Button
-              type="button"
-              variant="contained"
-              onClick={doPostAuth}
-              style={{
-                height: "100%",
-                minHeight: 45,
-              }}
-            >
-              {t("authCallbackPage.buttons.retry")}
-            </Button>
+            {storedFeatureFlag && (
+              <Button
+                type="button"
+                variant="contained"
+                onClick={handleClickOnLogin}
+                style={{
+                  height: "100%",
+                  minHeight: 45,
+                }}
+              >
+                {t("authCallbackPage.buttons.retry")}
+              </Button>
+            )}
             <Button
               type="button"
               variant="text"
