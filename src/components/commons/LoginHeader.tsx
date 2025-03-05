@@ -67,7 +67,7 @@ export default function LoginHeader() {
   };
 
   const onError = (m: string) => {
-    setLoading(false);
+    hideLoading();
     setError(m);
     setErrorModalOpen(true);
     ref.current?.reset();
@@ -83,7 +83,7 @@ export default function LoginHeader() {
       const url = new URL(authorizationUrl);
       if (url.origin === window.location.origin) {
         navigate(`${url.pathname}${url.search}`, { replace: true });
-        setLoading(false);
+        hideLoading();
       } else {
         window.location.assign(url);
       }
@@ -108,7 +108,7 @@ export default function LoginHeader() {
     dispatch(removeLoggedUser());
     clearSessionItem(SessionItems.authToken);
     setTimeout(() => {
-      setLoading(false);
+      hideLoading();
     }, 1000);
   };
 
@@ -132,7 +132,8 @@ export default function LoginHeader() {
   };
 
   useEffect(() => {
-    window.addEventListener("navigate", hideLoading);
+    // When go back to redirectUrl from outside and page is cached hide loading
+    window.addEventListener("pageshow", hideLoading);
 
     pipe(
       getSessionItem(SessionItems.authToken),
@@ -141,7 +142,7 @@ export default function LoginHeader() {
     );
 
     return () => {
-      window.removeEventListener("navigate", hideLoading);
+      window.removeEventListener("pageshow", hideLoading);
     };
   }, []);
 
