@@ -4,19 +4,24 @@ import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import { Box, Button, CircularProgress, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { authentication } from "../utils/api/helper";
+import { setLoggedUser } from "../redux/slices/loggedUser";
+import { authentication, retrieveUserInfo } from "../utils/api/helper";
 import PageContainer from "../components/PageContent/PageContainer";
 import ko from "../assets/images/response-umbrella.svg";
 import { onBrowserBackEvent, onBrowserUnload } from "../utils/eventListeners";
 import {
+  clearSessionItem,
   getAndClearSessionItem,
   SessionItems,
   setSessionItem,
 } from "../utils/storage/sessionStorage";
+import { useAppDispatch } from "../redux/hooks/hooks";
+import { UserInfoResponse } from "../../generated/definitions/checkout-auth-service-v1/UserInfoResponse";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function AuthCallback() {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const [loading, setLoading] = React.useState(true);
   const [errorOnPostAuth, setErrorOnPostAuth] = React.useState(false);
@@ -27,6 +32,7 @@ export default function AuthCallback() {
     setLoading(false);
     window.removeEventListener("popstate", onBrowserBackEvent);
     window.removeEventListener("beforeunload", onBrowserUnload);
+    clearSessionItem(SessionItems.authToken);
     setErrorOnPostAuth(true);
   };
 
@@ -62,11 +68,27 @@ export default function AuthCallback() {
         state,
         onResponse: (authToken: string) => {
           setSessionItem(SessionItems.authToken, authToken);
-          returnToOriginPage();
+          doGetUserInfo();
         },
         onError,
       });
     })(authCode, state);
+  };
+
+  const doGetUserInfo = () => {
+    void retrieveUserInfo({
+      onResponse: (userInfo: UserInfoResponse) => {
+        dispatch(
+          setLoggedUser({
+            id: userInfo.userId,
+            name: userInfo.firstName,
+            surname: userInfo.lastName,
+          })
+        );
+        returnToOriginPage();
+      },
+      onError,
+    });
   };
 
   useEffect(() => {
@@ -92,7 +114,7 @@ export default function AuthCallback() {
           flexDirection="column"
           alignItems="center"
           justifyContent="space-around"
-          minHeight="60vh"
+          minHeight="70vh"
         >
           <CircularProgress />
         </Box>
@@ -102,7 +124,7 @@ export default function AuthCallback() {
           display="flex"
           flexDirection="column"
           alignItems="center"
-          sx={{ mt: 6 }}
+          sx={{ mt: 15 }}
         >
           <img
             src={ko}

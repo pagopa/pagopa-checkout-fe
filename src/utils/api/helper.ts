@@ -83,6 +83,7 @@ import { CalculateFeeResponse } from "../../../generated/definitions/payment-eco
 import { FaultCategoryEnum } from "../../../generated/definitions/payment-ecommerce/FaultCategory";
 import { CalculateFeeRequest } from "../../../generated/definitions/payment-ecommerce-v2/CalculateFeeRequest";
 import { AuthRequest } from "../../../generated/definitions/checkout-auth-service-v1/AuthRequest";
+import { UserInfoResponse } from "../../../generated/definitions/checkout-auth-service-v1/UserInfoResponse";
 import {
   apiCheckoutFeatureFlags,
   apiPaymentEcommerceClient,
@@ -90,6 +91,7 @@ import {
   apiPaymentEcommerceClientWithRetry,
   apiPaymentEcommerceClientWithRetryV2,
   apiCheckoutAuthServiceClientV1,
+  apiCheckoutAuthServiceClientV1WithRetry,
 } from "./client";
 
 export const NodeFaultCodeR = t.interface({
@@ -851,6 +853,54 @@ export const proceedToPayment = async (
         return TE.left(ErrorsType.GENERIC_ERROR);
       },
       (task) => task
+    )
+  )();
+};
+
+export const retrieveUserInfo = async ({
+  onResponse,
+  onError,
+}: {
+  onResponse: (e: UserInfoResponse) => void;
+  onError: (e: string) => void;
+}) => {
+  await pipe(
+    getSessionItem(SessionItems.authToken) as string,
+    O.fromNullable,
+    TE.fromOption(() => ErrorsType.GENERIC_ERROR),
+    TE.chain((authToken) =>
+      TE.tryCatch(
+        () =>
+          apiCheckoutAuthServiceClientV1WithRetry.authUsers({
+            bearerAuth: authToken,
+          }),
+        () => ErrorsType.GENERIC_ERROR
+      )
+    ),
+    TE.fold(
+      (error) => {
+        onError(error);
+        return TE.left(error);
+      },
+      (response) =>
+        pipe(
+          response,
+          E.fold(
+            () => {
+              onError(ErrorsType.GENERIC_ERROR);
+              return TE.left(ErrorsType.GENERIC_ERROR);
+            },
+            (res) => {
+              if (res.status === 200) {
+                onResponse(res.value);
+                return TE.right(res.value);
+              } else {
+                onError(ErrorsType.CONNECTION);
+                return TE.left(ErrorsType.CONNECTION);
+              }
+            }
+          )
+        )
     )
   )();
 };

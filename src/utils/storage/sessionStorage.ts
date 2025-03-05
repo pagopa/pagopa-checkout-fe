@@ -30,7 +30,6 @@ export enum SessionItems {
   orderId = "orderId",
   correlationId = "correlationId",
   cartClientId = "cartClientId",
-  loggedUser = "loggedUser",
   loginOriginPage = "loginOriginPage",
   authToken = "authToken",
 }
