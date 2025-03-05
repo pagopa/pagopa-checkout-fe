@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import { Box, Button, CircularProgress, Typography } from "@mui/material";
@@ -27,13 +27,17 @@ import {
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function AuthCallback() {
-  const navigate = useNavigate();
-  const ref = React.useRef<ReCAPTCHA>(null);
-  const dispatch = useAppDispatch();
-
-  const [loading, setLoading] = React.useState(true);
-
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const [searchParams, _] = useSearchParams();
+  const [loading, setLoading] = React.useState(true);
+  const ref = React.useRef<ReCAPTCHA>(null);
+  const authCode = searchParams.get("code");
+  const state = searchParams.get("state");
+  // we need the feature flag to be enabled to allow the user to actually see
+  // the retry button since its basically a "login" button
+  const storedFeatureFlag = getSessionItem(SessionItems.enableAuthentication);
 
   const onError = () => {
     setLoading(false);
@@ -107,22 +111,15 @@ export default function AuthCallback() {
       window.addEventListener("beforeunload", onBrowserUnload);
       window.addEventListener("popstate", onBrowserBackEvent);
 
-      // retrieve auth-code from url
-      const searchParams = new URLSearchParams(window.location.search);
-      const authCode = searchParams.get("code");
-      const state = searchParams.get("state");
-
-      void (async (authCode, state) => {
-        void authentication({
-          authCode,
-          state,
-          onResponse: (authToken: string) => {
-            setSessionItem(SessionItems.authToken, authToken);
-            doGetUserInfo();
-          },
-          onError,
-        });
-      })(authCode, state);
+      void authentication({
+        authCode,
+        state,
+        onResponse: (authToken: string) => {
+          setSessionItem(SessionItems.authToken, authToken);
+          doGetUserInfo();
+        },
+        onError,
+      });
 
       return () => {
         window.removeEventListener("popstate", onBrowserBackEvent);
@@ -131,11 +128,7 @@ export default function AuthCallback() {
     } catch {
       return navigate(`/${CheckoutRoutes.ROOT}`, { replace: true });
     }
-  }, []);
-
-  // we need the feature flag to be enabled to allow the user to actually see
-  // the retry button since its basically a "login" button
-  const storedFeatureFlag = getSessionItem(SessionItems.enableAuthentication);
+  }, [authCode, state]);
 
   return (
     <PageContainer>
