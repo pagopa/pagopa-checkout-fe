@@ -5,7 +5,7 @@ import * as O from "fp-ts/Option";
 import { Box, Button, CircularProgress, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import ReCAPTCHA from "react-google-recaptcha";
-import { onBrowserBackEvent, onBrowserUnload, retrieveUserInfo } from "../utils/eventListeners";
+import { onBrowserBackEvent, onBrowserUnload } from "../utils/eventListeners";
 import PageContainer from "../components/PageContent/PageContainer";
 import ko from "../assets/images/response-umbrella.svg";
 import {
@@ -16,14 +16,20 @@ import {
   SessionItems,
   setSessionItem,
 } from "../utils/storage/sessionStorage";
-import { authentication, proceedToLogin } from "./../utils/api/helper";
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { UserInfoResponse } from "../../generated/definitions/checkout-auth-service-v1/UserInfoResponse";
+import { setLoggedUser } from "../redux/slices/loggedUser";
+import {
+  authentication,
+  proceedToLogin,
+  retrieveUserInfo,
+} from "./../utils/api/helper";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function AuthCallback() {
   const navigate = useNavigate();
-  const ref = React.useRef<ReCAPTCHA>(null);  const dispatch = useAppDispatch();
+  const ref = React.useRef<ReCAPTCHA>(null);
+  const dispatch = useAppDispatch();
 
   const [loading, setLoading] = React.useState(true);
 
@@ -37,7 +43,7 @@ export default function AuthCallback() {
     ref.current?.reset();
   };
 
-  const onResponse = (authorizationUrl: string) => {
+  const onLoginResponse = (authorizationUrl: string) => {
     try {
       const url = new URL(authorizationUrl);
       if (url.origin === window.location.origin) {
@@ -53,7 +59,11 @@ export default function AuthCallback() {
 
   const onLogin = async (recaptchaRef: ReCAPTCHA) => {
     setLoading(true);
-    await proceedToLogin({ recaptchaRef, onError, onResponse });
+    await proceedToLogin({
+      recaptchaRef,
+      onError,
+      onResponse: onLoginResponse,
+    });
   };
 
   const handleClickOnLogin = async () => {
@@ -76,6 +86,22 @@ export default function AuthCallback() {
     );
   };
 
+  const doGetUserInfo = () => {
+    void retrieveUserInfo({
+      onResponse: (userInfo: UserInfoResponse) => {
+        dispatch(
+          setLoggedUser({
+            id: userInfo.userId,
+            name: userInfo.firstName,
+            surname: userInfo.lastName,
+          })
+        );
+        returnToOriginPage();
+      },
+      onError,
+    });
+  };
+
   useEffect(() => {
     try {
       window.addEventListener("beforeunload", onBrowserUnload);
@@ -92,7 +118,7 @@ export default function AuthCallback() {
           state,
           onResponse: (authToken: string) => {
             setSessionItem(SessionItems.authToken, authToken);
-            returnToOriginPage();
+            doGetUserInfo();
           },
           onError,
         });
