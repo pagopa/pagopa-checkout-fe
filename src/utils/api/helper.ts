@@ -635,7 +635,10 @@ export const proceedToLogin = async ({
         pipe(
           myResExt,
           E.fold(
-            () => [],
+            () => {
+              onError(ErrorsType.GENERIC_ERROR);
+              return {};
+            },
             (myRes) => {
               if (myRes?.status === 200) {
                 onResponse(myRes?.value.urlRedirect);
