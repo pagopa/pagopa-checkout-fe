@@ -4,12 +4,8 @@
     position: absolute;
 }
 
-.otnotice-sections {
-  .otnotice-section {
-      h2 {
-      font-size: 30px !important;
-      font-weight: 700 !important;
-      line-height: 32px !important;
-    }
-  }
+.otnotice-sections .otnotice-section h2 {
+    font-size: 30px !important;
+    font-weight: 700 !important;
+    line-height: 32px !important;
 }
