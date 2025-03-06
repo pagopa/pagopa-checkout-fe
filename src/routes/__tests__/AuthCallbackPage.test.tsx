@@ -60,7 +60,7 @@ describe("AuthCallback", () => {
   test("Renders loading state initially", () => {
     renderWithReduxProvider(
       <MemoryRouter>
-        <AuthCallback />{" "}
+        <AuthCallback />
       </MemoryRouter>
     );
 
