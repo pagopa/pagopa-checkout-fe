@@ -17,9 +17,16 @@ jest.mock("react-i18next", () => ({
 
 jest.mock("react-google-recaptcha", () => ({
   __esModule: true,
-  default: React.forwardRef((_, ref) => (
-    <div ref={ref as React.RefObject<HTMLDivElement>} data-test="recaptcha" />
-  )),
+  default: React.forwardRef((_, ref) => {
+    React.useImperativeHandle(ref, () => ({
+      reset: jest.fn(),
+      execute: jest.fn(),
+      executeAsync: jest.fn(() => "token"),
+    }));
+    return (
+      <div ref={ref as React.RefObject<HTMLDivElement>} data-test="recaptcha" />
+    );
+  }),
 }));
 
 jest.mock("../../utils/api/helper", () => ({
