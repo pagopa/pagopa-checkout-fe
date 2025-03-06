@@ -12,7 +12,6 @@ module.exports = {
       outputName: 'checkout-unit-TEST.xml',
     } ]
   ],
-  coverageReporters: ["cobertura"],
   transform: {
     ".+\\.(svg|css|styl|less|sass|scss|png|jpg|ttf|woff|woff2)$": "jest-transform-stub"
   },
