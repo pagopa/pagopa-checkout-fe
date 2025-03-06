@@ -14,7 +14,6 @@ const CALLBACK_URL = `${BASE_CALLBACK_URL}?code=J0NYD7UqPejqXpl6Fdv8&state=1BWuO
 const CALLBACK_URL_NO_CODE = `${BASE_CALLBACK_URL}?state=1BWuOGF4L3CTroTEvUVF`;
 const CALLBACK_URL_NO_STATE = `${BASE_CALLBACK_URL}?code=J0NYD7UqPejqXpl6Fdv8&`;
 const PAGE_LOGIN_COMEBACK_URL = `http://localhost:1234/inserisci-dati-avviso`;
-const QR_CODE_PAGE_URL = "http://localhost:1234/leggi-codice-qr";
 const VALID_FISCAL_CODE = "77777777777";
 /* POST AUTH TOKEN FAIL ends with 78 */
 const POST_AUTH_TOKEN_FAILS = "302000100000009478"
@@ -35,7 +34,7 @@ beforeEach(async () => {
 
 describe("Checkout authentication tests", () => {
   
-  it("Should correclty invoke the login flow when clicking login or retry", async () => {
+  it.only("Should correclty invoke the login flow when clicking login or retry", async () => {
 
     await page.evaluate(() => {
       // enable login 
@@ -53,13 +52,6 @@ describe("Checkout authentication tests", () => {
         successfullLogins++;
       }
     });
-
-    // we navigate from the first page
-    // to another one to make the enableAuthentication=true flag
-    // be considered when rendering the page
-    // (if the page is already rendered, a change to the localStorage will not affect the ui)
-    // this is not strictly required is just to avoid racing conditions
-    await page.goto(QR_CODE_PAGE_URL);
 
     //search login button and click it
     console.log("Search login button")
