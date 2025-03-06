@@ -36,11 +36,6 @@ describe("Checkout authentication tests", () => {
   
   it("Should correclty invoke the login flow when clicking login or retry", async () => {
 
-    await page.evaluate(() => {
-      // enable login 
-      localStorage.setItem('enableAuthentication', 'true');
-    });
-
     // keep track
     let successfullLogins = 0;
 
