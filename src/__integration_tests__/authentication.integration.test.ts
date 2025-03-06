@@ -137,7 +137,7 @@ describe("Checkout authentication tests", () => {
     expect(body).toContain(translation.authCallbackPage.body);
   });
 
-  it.only("Should correctly retrieve user info if authToken is present", async () => {
+  it("Should correctly retrieve user info if authToken is present", async () => {
     await page.evaluate(() => {
       //set item into sessionStorage and localStorage for pass the route Guard
       sessionStorage.setItem('authToken', 'auth-token-value');
