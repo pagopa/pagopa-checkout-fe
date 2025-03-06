@@ -52,7 +52,6 @@ export default function AuthCallback() {
       window.removeEventListener("beforeunload", onBrowserUnload);
       if (url.origin === window.location.origin) {
         navigate(`${url.pathname}${url.search}`, { replace: true });
-        setLoading(false);
       } else {
         window.location.assign(url);
       }
