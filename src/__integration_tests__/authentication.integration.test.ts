@@ -58,6 +58,7 @@ describe("Checkout authentication tests", () => {
     // to another one to make the enableAuthentication=true flag
     // be considered when rendering the page
     // (if the page is already rendered, a change to the localStorage will not affect the ui)
+    // this is not strictly required is just to avoid racing conditions
     await page.goto(QR_CODE_PAGE_URL);
 
     //search login button and click it
