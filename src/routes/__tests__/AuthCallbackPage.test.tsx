@@ -1,6 +1,6 @@
 import React from "react";
 import "@testing-library/jest-dom";
-import { render, waitFor } from "@testing-library/react";
+import { waitFor } from "@testing-library/react";
 import { fireEvent, screen } from "@testing-library/dom";
 import { MemoryRouter } from "react-router-dom";
 import { getSessionItem } from "../../utils/storage/sessionStorage";
@@ -10,6 +10,7 @@ import {
   proceedToLogin,
   retrieveUserInfo,
 } from "../../utils/api/helper";
+import { renderWithReduxProvider } from "../../utils/testRenderProviders";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -35,10 +36,6 @@ jest.mock("../../utils/api/helper", () => ({
   retrieveUserInfo: jest.fn(),
 }));
 
-jest.mock("../../redux/hooks/hooks", () => ({
-  useAppDispatch: jest.fn(),
-}));
-
 jest.mock("../../utils/storage/sessionStorage", () => ({
   getSessionItem: jest.fn(),
   getAndClearSessionItem: jest.fn(),
@@ -61,7 +58,7 @@ describe("AuthCallback", () => {
   });
 
   test("Renders loading state initially", () => {
-    render(
+    renderWithReduxProvider(
       <MemoryRouter>
         <AuthCallback />{" "}
       </MemoryRouter>
@@ -75,7 +72,7 @@ describe("AuthCallback", () => {
       onResponse("fakeAuthToken");
     });
 
-    render(
+    renderWithReduxProvider(
       <MemoryRouter>
         <AuthCallback />
       </MemoryRouter>
@@ -92,7 +89,7 @@ describe("AuthCallback", () => {
       onError();
     });
 
-    render(
+    renderWithReduxProvider(
       <MemoryRouter>
         <AuthCallback />
       </MemoryRouter>
@@ -103,7 +100,7 @@ describe("AuthCallback", () => {
     });
   });
 
-  test("Shows error screen if retrieveUserInfo fail after authentication success ", async () => {
+  test("Shows error screen if retrieveUserInfo fail after authentication success", async () => {
     (authentication as jest.Mock).mockImplementation(({ onResponse }) => {
       onResponse("fakeAuthToken");
     });
@@ -111,7 +108,7 @@ describe("AuthCallback", () => {
       onError();
     });
 
-    render(
+    renderWithReduxProvider(
       <MemoryRouter>
         <AuthCallback />
       </MemoryRouter>
@@ -126,7 +123,7 @@ describe("AuthCallback", () => {
 
   test("Retry button is visible when feature flag is enabled", async () => {
     (getSessionItem as jest.Mock).mockReturnValue(true);
-    render(
+    renderWithReduxProvider(
       <MemoryRouter>
         <AuthCallback />
       </MemoryRouter>
@@ -140,7 +137,7 @@ describe("AuthCallback", () => {
   test("Clicking retry button triggers login", async () => {
     (getSessionItem as jest.Mock).mockReturnValue(true);
 
-    render(
+    renderWithReduxProvider(
       <MemoryRouter>
         <AuthCallback />
       </MemoryRouter>

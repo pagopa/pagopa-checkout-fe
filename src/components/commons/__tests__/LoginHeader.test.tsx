@@ -1,16 +1,14 @@
 import React from "react";
 import "@testing-library/jest-dom";
-import {
-  fireEvent,
-  queryByAttribute,
-  render,
-  waitFor,
-} from "@testing-library/react";
+import { fireEvent, queryByAttribute, waitFor } from "@testing-library/react";
 import { screen } from "@testing-library/dom";
 import { MemoryRouter } from "react-router-dom";
-import { proceedToLogin } from "../../../utils/api/helper";
+import { getSessionItem } from "../../../utils/storage/sessionStorage";
+import { proceedToLogin, retrieveUserInfo } from "../../../utils/api/helper";
 import LoginHeader from "../LoginHeader";
 import "jest-location-mock";
+import { UserInfoResponse } from "../../../../generated/definitions/checkout-auth-service-v1/UserInfoResponse";
+import { renderWithReduxProvider } from "../../../utils/testRenderProviders";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -28,13 +26,6 @@ jest.mock("react-google-recaptcha", () => ({
       <div ref={ref as React.RefObject<HTMLDivElement>} data-test="recaptcha" />
     );
   }),
-}));
-
-jest.mock("../../../redux/hooks/hooks", () => ({
-  useAppDispatch: jest.fn(),
-  useAppSelector: jest.fn().mockImplementation(() => ({
-    userInfo: null,
-  })),
 }));
 
 jest.mock("../../../utils/api/helper", () => ({
@@ -75,7 +66,7 @@ const getById = queryByAttribute.bind(null, "id");
 
 describe("LoginHeader", () => {
   test("Renders loading header", () => {
-    render(
+    renderWithReduxProvider(
       <MemoryRouter>
         <LoginHeader />
       </MemoryRouter>
@@ -89,7 +80,7 @@ describe("LoginHeader", () => {
     (proceedToLogin as jest.Mock).mockImplementation(({ onResponse }) => {
       onResponse(redirectUrl);
     });
-    render(
+    renderWithReduxProvider(
       <MemoryRouter>
         <LoginHeader />
       </MemoryRouter>
@@ -107,7 +98,7 @@ describe("LoginHeader", () => {
     (proceedToLogin as jest.Mock).mockImplementation(({ onError }) => {
       onError("Error on get login");
     });
-    const { baseElement } = render(
+    const { baseElement } = renderWithReduxProvider(
       <MemoryRouter>
         <LoginHeader />
       </MemoryRouter>
@@ -119,6 +110,29 @@ describe("LoginHeader", () => {
       expect(proceedToLogin).toHaveBeenCalled();
       expect(
         getById(baseElement, "idTitleErrorModalPaymentCheckPage")
+      ).toBeInTheDocument();
+    });
+  });
+
+  test("Shows name-surname of logged user", async () => {
+    const userInfo: UserInfoResponse = {
+      firstName: "Mario",
+      lastName: "Rossi",
+      userId: "userId",
+    };
+    (getSessionItem as jest.Mock).mockReturnValue(true);
+    (retrieveUserInfo as jest.Mock).mockImplementation(({ onResponse }) => {
+      onResponse(userInfo);
+    });
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <LoginHeader />
+      </MemoryRouter>
+    );
+    await waitFor(() => {
+      expect(retrieveUserInfo).toHaveBeenCalled();
+      expect(
+        screen.getByText(`${userInfo.firstName} ${userInfo.lastName}`)
       ).toBeInTheDocument();
     });
   });
