@@ -1,1 +1,15 @@
 @import '../normalize.css';
+
+.otnotice-content .otnotice-menu {
+    position: absolute;
+}
+
+.otnotice-sections {
+  .otnotice-section {
+      h2 {
+      font-size: 30px !important;
+      font-weight: 700 !important;
+      line-height: 32px !important;
+    }
+  }
+}
