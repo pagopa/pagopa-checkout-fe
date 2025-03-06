@@ -98,6 +98,22 @@ export const clickLoginButton = async () => {
   await loginBtn.click();
 }
 
+export const getUserButton = async () => {
+  //search user button
+  console.log("Search user button")
+  const loginHeader = await page.waitForSelector("#login-header");
+  const headerButtons = await loginHeader.$$("button");
+  // return button with name 
+  let userButton;
+  for(let btn of headerButtons) {
+    const text = await btn.evaluate((el) => el.textContent);
+    if(text === "MarioTest RossiTest") {
+      userButton = btn;
+    }
+  }
+  return userButton;
+}
+
 export const fillPaymentNotificationForm = async (noticeCode, fiscalCode) => {
   const noticeCodeTextInput = "#billCode";
   const fiscalCodeTextInput = "#cf";

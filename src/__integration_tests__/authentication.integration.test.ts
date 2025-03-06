@@ -3,7 +3,7 @@ import deTranslation from "../translations/de/translations.json";
 import enTranslation from "../translations/en/translations.json";
 import frTranslation from "../translations/fr/translations.json";
 import slTranslation from "../translations/sl/translations.json";
-import { clickLoginButton, fillPaymentNotificationForm, selectLanguage } from "./utils/helpers";
+import { clickLoginButton, fillPaymentNotificationForm, getUserButton } from "./utils/helpers";
 /**
  * Test input and configuration
  */
@@ -135,6 +135,18 @@ describe("Checkout authentication tests", () => {
     expect(currentUrl).toBe(CALLBACK_URL);
     expect(title).toContain(translation.authCallbackPage.title);
     expect(body).toContain(translation.authCallbackPage.body);
+  });
+
+  it.only("Should correctly retrieve user info if authToken is present", async () => {
+    await page.evaluate(() => {
+      //set item into sessionStorage and localStorage for pass the route Guard
+      sessionStorage.setItem('authToken', 'auth-token-value');
+    });
+    //reload page in order to read authToken into sessionStorage
+    await page.reload();
+    
+    const userButton = await getUserButton();
+    expect(userButton).toBeDefined();
   });
   
 });
