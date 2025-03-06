@@ -34,7 +34,7 @@ beforeEach(async () => {
 
 describe("Checkout authentication tests", () => {
   
-  it.only("Should correclty invoke the login flow when clicking login or retry", async () => {
+  it("Should correclty invoke the login flow when clicking login or retry", async () => {
 
     await page.evaluate(() => {
       // enable login 
