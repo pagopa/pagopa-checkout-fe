@@ -46,7 +46,7 @@ describe("Checkout authentication tests", () => {
     let successfullLogins = 0;
 
     // Listen for frame navigation (URL change)
-    // when the login is completed (and failed) we will be redirected to CALLBACK_URL_NO_CODE
+    // when the login is completed we will be redirected to BASE_CALLBACK_URL
     page.on('framenavigated', async (frame) => {
       const url = frame.url();
       if(url.startsWith(BASE_CALLBACK_URL)){
@@ -67,19 +67,27 @@ describe("Checkout authentication tests", () => {
     //Login button is the last on the header
     const loginBtn = headerButtons.at(-1);
     console.log("Login button click");
-    
+
     await loginBtn.click();
 
-    // now navigate to callback url and force error with bad parameters
+    // now navigate to callback url (and force error with bad parameters)
+    // so that the retry button will be visible
     await page.goto(CALLBACK_URL_NO_CODE);
 
     // click the retry button
     const retryButton = await page.waitForSelector("#auth-retry-button");
 
+    // repeat login
     await retryButton.click();
+    console.log("Retry button click");
 
-    // one from login, one from retry
-    expect(successfullLogins).toBe(2);
+    // wait for the retry button to appear again so the login is done
+    await page.waitForSelector("#auth-retry-button");
+
+    // one from login button
+    // one from navigating to the auth-callback page to retry
+    // one from retry button
+    expect(successfullLogins).toBe(3);
   });
 
   it("Should correctly come back to login origin url", async () => {
