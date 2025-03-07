@@ -37,4 +37,37 @@ module.exports = function (app) {
     }));
 
     app.use('/', express.static(path.join(__dirname, 'static')))
+    
+    app.use('/termini-di-servizio', (req, res, next) => {
+        if (req.method === 'GET') {
+            res.writeHead(302, {
+                'Location': '/terms/it.html'
+            });
+            res.end();
+        } else {
+            next();
+        }
+    });
+    
+    app.use('/informativa-privacy', (req, res, next) => {
+        if (req.method === 'GET') {
+            res.writeHead(302, {
+                'Location': '/privacypolicy/it.html'
+            });
+            res.end();
+        } else {
+            next();
+        }
+    });
+    
+    app.use('*', (req, res, next) => {
+        if (req.url.startsWith('/checkout/') || 
+            req.url.startsWith('/ecommerce/') ||
+            req.url.includes('.')) {
+            return next();
+        }
+        
+        req.url = '/index.html';
+        express.static(path.join(__dirname, 'dist'))(req, res, next);
+    });
 }
