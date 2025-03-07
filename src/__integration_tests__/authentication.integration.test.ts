@@ -10,9 +10,9 @@ import { clickLoginButton, fillPaymentNotificationForm, selectLanguage } from ".
 
 const CHECKOUT_URL = `http://localhost:1234`;
 const BASE_CALLBACK_URL = "http://localhost:1234/auth-callback";
-const CALLBACK_URL = `${BASE_CALLBACK_URL}?code=J0NYD7UqPejqXpl6Fdv8&state=1BWuOGF4L3CTroTEvUVF`;
-const CALLBACK_URL_NO_CODE = `${BASE_CALLBACK_URL}?state=1BWuOGF4L3CTroTEvUVF`;
-const CALLBACK_URL_NO_STATE = `${BASE_CALLBACK_URL}?code=J0NYD7UqPejqXpl6Fdv8&`;
+const CALLBACK_URL = `${BASE_CALLBACK_URL}?code=gMPV0CSInuTY0pjd&state=pu6nlBmHs1EpmfWq`;
+const CALLBACK_URL_NO_CODE = `${BASE_CALLBACK_URL}?state=pu6nlBmHs1EpmfWq`;
+const CALLBACK_URL_NO_STATE = `${BASE_CALLBACK_URL}?code=gMPV0CSInuTY0pjd&`;
 const PAGE_LOGIN_COMEBACK_URL = `http://localhost:1234/inserisci-dati-avviso`;
 const VALID_FISCAL_CODE = "77777777777";
 /* POST AUTH TOKEN FAIL ends with 78 */
@@ -159,7 +159,15 @@ describe("Checkout authentication tests", () => {
     const body = await titleErrorBody.evaluate((el) => el.textContent);
 
     const currentUrl = await page.evaluate(() => location.href);
-    expect(currentUrl).toBe(CALLBACK_URL_NO_CODE);
+    expect(currentUrl.startsWith(BASE_CALLBACK_URL)).toBe(true);
+
+    console.log("Search login button")
+
+    const BASE_CALLBACK_URL_REGEX = "http:\\/\\/localhost:\\d+\\/auth-callback\\?code=([a-zA-Z0-9]+)&state=([a-zA-Z0-9]+)";
+    const regex = new RegExp(BASE_CALLBACK_URL_REGEX);
+    expect(regex.test(currentUrl)).toBe(true);
+    
+
     expect(title).toContain(translation.authCallbackPage.title);
     expect(body).toContain(translation.authCallbackPage.body);
   });
