@@ -2,7 +2,9 @@ module.exports = {
   preset: "ts-jest",
   testEnvironment: "jsdom",
   testPathIgnorePatterns: ["dist", "/node_modules"],
-  testRegex: "./*test\\.(tsx|ts)$",
+  testMatch: [
+    "**/__tests__/**/*.(tsx|ts)"
+  ],
   reporters: [
     'default',
     [ 'jest-junit', {
@@ -10,9 +12,10 @@ module.exports = {
       outputName: 'checkout-unit-TEST.xml',
     } ]
   ],
-  coverageReporters: ["cobertura"],
-  modulePathIgnorePatterns: ["__integration_tests__"],
   transform: {
-    '\\.svg$': 'jest-transform-stub',
+    ".+\\.(svg|css|styl|less|sass|scss|png|jpg|ttf|woff|woff2)$": "jest-transform-stub"
   },
+  moduleNameMapper: {
+      "^.+.(css|styl|less|sass|scss|png|jpg|ttf|woff|woff2)$": "jest-transform-stub"
+  }
 };

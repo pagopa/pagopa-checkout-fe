@@ -68,6 +68,8 @@ export default function Header() {
   const enablePaymentSummaryButton =
     (!!PaymentInfo.receiver || !!CartInfo?.paymentNotices) &&
     !ignoredRoutesForSummaryButton.includes(currentPath);
+  const hidePaymentHeaderPages: Array<string> = [CheckoutRoutes.AUTH_CALLBACK];
+  const hidePaymentHeader = hidePaymentHeaderPages.includes(currentPath);
   const toggleDrawer = (open: boolean) => {
     setDrawstate(open);
   };
@@ -117,39 +119,41 @@ export default function Header() {
     <header>
       <Stack position="relative" zIndex="1000">
         {enableAuthentication && <LoginHeader />}
-        <Box p={3} bgcolor={"white"}>
-          <Stack
-            spacing={0}
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-          >
+        {!hidePaymentHeader && (
+          <Box p={3} bgcolor={"white"}>
             <Stack
-              spacing={4}
+              spacing={0}
               direction="row"
               justifyContent="space-between"
               alignItems="center"
-              position="relative"
             >
-              <img
-                src={pagopaLogo}
-                alt="pagoPA"
-                style={{ width: "56px", height: "36px" }}
-                aria-hidden="true"
-              />
-              <SkipToContent />
-            </Stack>
-            {enablePaymentSummaryButton && (
-              <Button
-                onClick={() => toggleDrawer(true)}
-                aria-label={t("mainPage.header.detail.detailButton")}
-                endIcon={<ShoppingCart />}
+              <Stack
+                spacing={4}
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                position="relative"
               >
-                {moneyFormat(amountToShow())}
-              </Button>
-            )}
-          </Stack>
-        </Box>
+                <img
+                  src={pagopaLogo}
+                  alt="pagoPA"
+                  style={{ width: "56px", height: "36px" }}
+                  aria-hidden="true"
+                />
+                <SkipToContent />
+              </Stack>
+              {enablePaymentSummaryButton && (
+                <Button
+                  onClick={() => toggleDrawer(true)}
+                  aria-label={t("mainPage.header.detail.detailButton")}
+                  endIcon={<ShoppingCart />}
+                >
+                  {moneyFormat(amountToShow())}
+                </Button>
+              )}
+            </Stack>
+          </Box>
+        )}
       </Stack>
       <DrawerDetail
         paymentNotices={paymentNotices}
