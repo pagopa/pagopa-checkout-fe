@@ -159,7 +159,7 @@ describe("Checkout authentication tests", () => {
     const body = await titleErrorBody.evaluate((el) => el.textContent);
 
     const currentUrl = await page.evaluate(() => location.href);
-    expect(currentUrl).toBe(CALLBACK_URL);
+    expect(currentUrl).toBe(CALLBACK_URL_NO_CODE);
     expect(title).toContain(translation.authCallbackPage.title);
     expect(body).toContain(translation.authCallbackPage.body);
   });
