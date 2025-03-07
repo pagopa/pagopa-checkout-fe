@@ -28,7 +28,8 @@ const API_TIMEOUT = getConfigOrThrow().CHECKOUT_API_TIMEOUT as Millisecond;
 export function retryingFetch(
   fetchApi: typeof fetch,
   timeout: Millisecond = API_TIMEOUT,
-  maxRetries: number = 3
+  maxRetries: number = 3,
+  retryCondition?: (r: Response) => boolean
 ): typeof fetch {
   // a fetch that can be aborted and that gets cancelled after fetchTimeoutMs
   const abortableFetch = AbortableFetch(fetchApi);
@@ -40,11 +41,11 @@ export function retryingFetch(
     maxRetries,
     exponentialBackoff
   );
-  const retryWithTransient429s = retryLogicForTransientResponseError(
-    (_: Response) => _.status === 429,
+  const retryWithTransient = retryLogicForTransientResponseError(
+    retryCondition != null ? retryCondition : (_: Response) => _.status === 429,
     retryLogic
   );
-  return retriableFetch(retryWithTransient429s)(timeoutFetch);
+  return retriableFetch(retryWithTransient)(timeoutFetch);
 }
 
 //
