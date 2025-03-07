@@ -145,6 +145,23 @@ describe("Checkout authentication tests", () => {
     //reload page in order to read authToken into sessionStorage
     await page.reload();
     
+    //Check if user button is present into login header
+    const userButton = await getUserButton();
+    expect(userButton).toBeDefined();
+  });
+
+  it("Should correctly retrieve user info after login is completed", async () => {
+    
+    //Login
+    await clickLoginButton();
+
+    //Wait auth-callback page
+    await page.waitForFunction("window.location.pathname == '/auth-callback'")
+
+    //Wait return to main page
+    await page.waitForFunction("window.location.pathname == '/'")
+
+    //Check if user button is present into login header
     const userButton = await getUserButton();
     expect(userButton).toBeDefined();
   });
