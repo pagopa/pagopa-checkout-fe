@@ -116,8 +116,8 @@ describe("LoginHeader", () => {
 
   test("Shows name-surname of logged user", async () => {
     const userInfo: UserInfoResponse = {
-      firstName: "Mario",
-      lastName: "Rossi",
+      familyName: "Rossi",
+      name: "Mario",
       userId: "userId",
     };
     (getSessionItem as jest.Mock).mockReturnValue(true);
@@ -132,7 +132,7 @@ describe("LoginHeader", () => {
     await waitFor(() => {
       expect(retrieveUserInfo).toHaveBeenCalled();
       expect(
-        screen.getByText(`${userInfo.firstName} ${userInfo.lastName}`)
+        screen.getByText(`${userInfo.name} ${userInfo.familyName}`)
       ).toBeInTheDocument();
     });
   });
