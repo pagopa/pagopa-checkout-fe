@@ -9,9 +9,10 @@ import { clickLoginButton, fillPaymentNotificationForm, getUserButton } from "./
  */
 
 const CHECKOUT_URL = `http://localhost:1234`;
-const CALLBACK_URL = `http://localhost:1234/auth-callback?code=J0NYD7UqPejqXpl6Fdv8&state=1BWuOGF4L3CTroTEvUVF`;
-const CALLBACK_URL_NO_CODE = `http://localhost:1234/auth-callback?state=1BWuOGF4L3CTroTEvUVF`;
-const CALLBACK_URL_NO_STATE = `http://localhost:1234/auth-callback?code=J0NYD7UqPejqXpl6Fdv8&`;
+const BASE_CALLBACK_URL = "http://localhost:1234/auth-callback";
+const CALLBACK_URL = `${BASE_CALLBACK_URL}?code=gMPV0CSInuTY0pjd&state=pu6nlBmHs1EpmfWq`;
+const CALLBACK_URL_NO_CODE = `${BASE_CALLBACK_URL}?state=pu6nlBmHs1EpmfWq`;
+const CALLBACK_URL_NO_STATE = `${BASE_CALLBACK_URL}?code=gMPV0CSInuTY0pjd&`;
 const PAGE_LOGIN_COMEBACK_URL = `http://localhost:1234/inserisci-dati-avviso`;
 const VALID_FISCAL_CODE = "77777777777";
 /* POST AUTH TOKEN FAIL ends with 78 */
@@ -31,11 +32,21 @@ beforeEach(async () => {
   await page.goto(CHECKOUT_URL);
 });
 
-
 describe("Checkout authentication tests", () => {
-  /* Test to be implemented on e2eTest since mock come back directly in checkout domain
   
-  it("Should correctly redirect to auth login url", async () => {
+  it("Should correclty invoke the login flow when clicking login or retry", async () => {
+
+    // keep track
+    let successfullLogins = 0;
+
+    // Listen for frame navigation (URL change)
+    // when the login is completed we will be redirected to BASE_CALLBACK_URL
+    page.on('framenavigated', async (frame) => {
+      const url = frame.url();
+      if(url.startsWith(BASE_CALLBACK_URL)){
+        successfullLogins++;
+      }
+    });
 
     //search login button and click it
     console.log("Search login button")
@@ -43,13 +54,29 @@ describe("Checkout authentication tests", () => {
     const headerButtons = await loginHeader.$$("button");
     //Login button is the last on the header
     const loginBtn = headerButtons.at(-1);
-    console.log("Login button click")
+    console.log("Login button click");
+
     await loginBtn.click();
 
-    const currentUrl = await page.evaluate(() => location.href);
-    console.log("Current url: " + currentUrl);
-    expect(currentUrl).toBe(CALLBACK_URL);
-  });*/
+    // now navigate to callback url (and force error with bad parameters)
+    // so that the retry button will be visible
+    await page.goto(CALLBACK_URL_NO_CODE);
+
+    // click the retry button
+    const retryButton = await page.waitForSelector("#auth-retry-button");
+
+    // repeat login
+    await retryButton.click();
+    console.log("Retry button click");
+
+    // wait for the retry button to appear again so the login is done
+    await page.waitForSelector("#auth-retry-button");
+
+    // one from login button
+    // one from navigating to the auth-callback page to retry
+    // one from retry button
+    expect(successfullLogins).toBe(3);
+  });
 
   it("Should correctly come back to login origin url", async () => {
     await page.evaluate(() => {
@@ -120,7 +147,7 @@ describe("Checkout authentication tests", () => {
     ["fr", frTranslation],
     ["de", deTranslation],
     ["sl", slTranslation]
-  ])("Should show error receiving 500 from post auth token for language [%s]", async (lang, translation) => {
+  ])("Should show error receiving 5xx from post auth token for language [%s]", async (lang, translation) => {
     
     await fillPaymentNotificationForm(POST_AUTH_TOKEN_FAILS, VALID_FISCAL_CODE);
 
@@ -132,7 +159,15 @@ describe("Checkout authentication tests", () => {
     const body = await titleErrorBody.evaluate((el) => el.textContent);
 
     const currentUrl = await page.evaluate(() => location.href);
-    expect(currentUrl).toBe(CALLBACK_URL);
+    expect(currentUrl.startsWith(BASE_CALLBACK_URL)).toBe(true);
+
+    console.log("Search login button")
+
+    const BASE_CALLBACK_URL_REGEX = "http:\\/\\/localhost:\\d+\\/auth-callback\\?code=([a-zA-Z0-9]+)&state=([a-zA-Z0-9]+)";
+    const regex = new RegExp(BASE_CALLBACK_URL_REGEX);
+    expect(regex.test(currentUrl)).toBe(true);
+    
+
     expect(title).toContain(translation.authCallbackPage.title);
     expect(body).toContain(translation.authCallbackPage.body);
   });

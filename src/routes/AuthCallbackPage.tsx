@@ -184,6 +184,7 @@ export default function AuthCallback() {
               <Button
                 type="button"
                 variant="contained"
+                id="auth-retry-button"
                 onClick={handleClickOnLogin}
                 style={{
                   height: "100%",
