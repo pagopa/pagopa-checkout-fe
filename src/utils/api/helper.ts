@@ -908,6 +908,54 @@ export const retrieveUserInfo = async ({
   )();
 };
 
+export const logoutUser = async ({
+  onResponse,
+  onError,
+}: {
+  onResponse: () => void;
+  onError: (e: string) => void;
+}) => {
+  await pipe(
+    getSessionItem(SessionItems.authToken) as string,
+    O.fromNullable,
+    TE.fromOption(() => ErrorsType.GENERIC_ERROR),
+    TE.chain((authToken) =>
+      TE.tryCatch(
+        () =>
+          apiCheckoutAuthServiceClientV1WithRetry.authLogout({
+            bearerAuth: authToken,
+          }),
+        () => ErrorsType.GENERIC_ERROR
+      )
+    ),
+    TE.fold(
+      (error) => {
+        onError(error);
+        return TE.left(error);
+      },
+      (response) =>
+        pipe(
+          response,
+          E.fold(
+            () => {
+              onError(ErrorsType.GENERIC_ERROR);
+              return TE.left(ErrorsType.GENERIC_ERROR);
+            },
+            (res) => {
+              if (res.status === 204) {
+                onResponse();
+                return TE.right(res.value);
+              } else {
+                onError(ErrorsType.CONNECTION);
+                return TE.left(ErrorsType.CONNECTION);
+              }
+            }
+          )
+        )
+    )
+  )();
+};
+
 export const cancelPayment = async (
   onError: (e: string, userCancelRedirect: boolean) => void,
   onResponse: () => void
