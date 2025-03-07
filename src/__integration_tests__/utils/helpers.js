@@ -114,6 +114,30 @@ export const getUserButton = async () => {
   return userButton;
 }
 
+export const tryLoginWithAuthCallbackError = async (noticeCode, fiscalCode) => {
+  //flow test error
+  await fillPaymentNotificationForm(noticeCode, fiscalCode);
+  console.log("MockFlow setted with noticeCode: " + noticeCode);
+
+  //Login
+  await clickLoginButton();
+
+  //Wait for error messages
+  const titleErrorElem = await page.waitForSelector("#errorTitle");
+  const titleErrorBody = await page.waitForSelector("#errorBody");
+  const title = await titleErrorElem.evaluate((el) => el.textContent);
+  const body = await titleErrorBody.evaluate((el) => el.textContent);
+
+  //Error on auth-callback page
+  const currentUrl = page.url();
+  
+  return {
+    title,
+    body,
+    currentUrl,
+  }
+}
+
 export const fillPaymentNotificationForm = async (noticeCode, fiscalCode) => {
   const noticeCodeTextInput = "#billCode";
   const fiscalCodeTextInput = "#cf";
