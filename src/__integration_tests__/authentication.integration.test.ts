@@ -172,7 +172,6 @@ describe("Checkout authentication tests", () => {
     const regex = new RegExp(BASE_CALLBACK_URL_REGEX);
     expect(regex.test(currentUrl)).toBe(true);
     
-
     expect(title).toContain(translation.authCallbackPage.title);
     expect(body).toContain(translation.authCallbackPage.body);
   });
