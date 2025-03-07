@@ -78,5 +78,13 @@ export const apiPaymentEcommerceClientWithRetryV2 = createEcommerceClientV2({
 export const apiCheckoutAuthServiceClientV1 = createAuthServiceClient({
   baseUrl: conf.CHECKOUT_PAGOPA_APIM_HOST,
   basePath: conf.CHECKOUT_API_AUTH_SERVICE_BASEPATH_V1 as string,
-  fetchApi: retryingFetch(fetch, conf.CHECKOUT_API_TIMEOUT as Millisecond, 3),
+  fetchApi: retryingFetch(
+    fetch,
+    conf.CHECKOUT_API_TIMEOUT as Millisecond,
+    1,
+    (response: Response) =>
+      response.status === 503 ||
+      response.status === 504 ||
+      response.status === 429
+  ),
 });

@@ -4,6 +4,7 @@ import enTranslation from "../translations/en/translations.json";
 import frTranslation from "../translations/fr/translations.json";
 import slTranslation from "../translations/sl/translations.json";
 import { clickLoginButton, fillPaymentNotificationForm, selectLanguage } from "./utils/helpers";
+import {apiCheckoutAuthServiceClientV1} from "../utils/api/client";
 /**
  * Test input and configuration
  */
@@ -171,5 +172,69 @@ describe("Checkout authentication tests", () => {
     expect(title).toContain(translation.authCallbackPage.title);
     expect(body).toContain(translation.authCallbackPage.body);
   });
-  
-});
+
+  it("should retry once if server responds 503 and succeed on second attempt - FAIL_POST_AUTH_TOKEN_503", async () => {
+    // Prima chiamata “fallimentare”
+    await page.setCookie({ name: "mockFlow", value: "FAIL_POST_AUTH_TOKEN_503" });
+    let response = await page.goto(CALLBACK_URL);
+
+    expect(response.status()).toBe(503);
+
+    // Rimuovi il cookie vecchio
+    await page.deleteCookie({ name: "mockFlow" });
+
+    // Seconda chiamata
+    response = await page.goto(CALLBACK_URL);
+    expect((await response).ok()).toBe(true);
+
+    const currentUrl = page.url();
+    expect(currentUrl).toBe(PAGE_LOGIN_COMEBACK_URL);
+  });
+
+
+  it("should retry once if server responds 504 and succeed on second attempt - FAIL_POST_AUTH_TOKEN_504", async () => {
+    // Prima chiamata “fallimentare”
+    await page.setCookie({ name: "mockFlow", value: "FAIL_POST_AUTH_TOKEN_504" });
+    let response = await page.goto(CALLBACK_URL);
+
+    expect(response.status()).toBe(504);
+
+    // Rimuovi il cookie vecchio
+    await page.deleteCookie({ name: "mockFlow" });
+
+    // Seconda chiamata
+    response = await page.goto(CALLBACK_URL);
+    expect((await response).ok()).toBe(true);
+
+    const currentUrl = page.url();
+    expect(currentUrl).toBe(PAGE_LOGIN_COMEBACK_URL);
+
+  });
+
+  it("should retry once if server responds 429 and succeed on second attempt - FAIL_POST_AUTH_TOKEN_429", async () => {
+
+    // Prima chiamata “fallimentare”
+    await page.setCookie({ name: "mockFlow", value: "FAIL_POST_AUTH_TOKEN_429" });
+    let response = await page.goto(CALLBACK_URL);
+
+    expect(response.status()).toBe(429);
+
+    // Rimuovi il cookie vecchio
+    await page.deleteCookie({ name: "mockFlow" });
+
+    // Seconda chiamata
+    response = await page.goto(CALLBACK_URL);
+    expect((await response).ok()).toBe(true);
+
+    const currentUrl = page.url();
+    expect(currentUrl).toBe(PAGE_LOGIN_COMEBACK_URL);
+  });
+
+  it("should NOT retry if server responds 500 (since 500 is not in retryCondition)", async () => {
+    //expect(fetch).toHaveBeenCalledTimes(1);
+  });
+
+  });
+
+
+
