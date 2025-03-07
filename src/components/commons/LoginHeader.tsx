@@ -118,8 +118,8 @@ export default function LoginHeader() {
         dispatch(
           setLoggedUser({
             id: userInfo.userId,
-            name: userInfo.firstName,
-            surname: userInfo.lastName,
+            name: userInfo.name,
+            surname: userInfo.familyName,
           })
         );
         setLoginButtonReady(true);
