@@ -82,6 +82,9 @@ export const apiCheckoutAuthServiceClientV1 = createAuthServiceClient({
     fetch,
     conf.CHECKOUT_API_TIMEOUT as Millisecond,
     2,
-    (response: Response) => response.status === 503 || response.status === 504
+    (response: Response) =>
+      response.status === 503 ||
+      response.status === 504 ||
+      response.status === 429
   ),
 });

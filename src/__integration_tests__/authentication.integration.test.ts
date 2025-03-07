@@ -4,13 +4,13 @@ import enTranslation from "../translations/en/translations.json";
 import frTranslation from "../translations/fr/translations.json";
 import slTranslation from "../translations/sl/translations.json";
 import { clickLoginButton, fillPaymentNotificationForm, selectLanguage } from "./utils/helpers";
-import {apiCheckoutAuthServiceClientV1} from "../utils/api/client";
 /**
  * Test input and configuration
  */
 
 const CHECKOUT_URL = `http://localhost:1234`;
 const BASE_CALLBACK_URL = "http://localhost:1234/auth-callback";
+const BASE_CALLBACK_URL_PAYMENT_DATA = "http://localhost:1234/dati-pagamento";
 const CALLBACK_URL = `${BASE_CALLBACK_URL}?code=gMPV0CSInuTY0pjd&state=pu6nlBmHs1EpmfWq`;
 const CALLBACK_URL_NO_CODE = `${BASE_CALLBACK_URL}?state=pu6nlBmHs1EpmfWq`;
 const CALLBACK_URL_NO_STATE = `${BASE_CALLBACK_URL}?code=gMPV0CSInuTY0pjd&`;
@@ -18,6 +18,9 @@ const PAGE_LOGIN_COMEBACK_URL = `http://localhost:1234/inserisci-dati-avviso`;
 const VALID_FISCAL_CODE = "77777777777";
 /* POST AUTH TOKEN FAIL ends with 78 */
 const POST_AUTH_TOKEN_FAILS = "302000100000009478"
+const POST_AUTH_TOKEN_FAILS_503 = "302000100000009479"
+const POST_AUTH_TOKEN_FAILS_504 = "302000100000009480"
+const POST_AUTH_TOKEN_FAILS_429 = "302000100000009481"
 
 jest.setTimeout(80000);
 jest.retryTimes(3);
@@ -34,7 +37,7 @@ beforeEach(async () => {
 });
 
 describe("Checkout authentication tests", () => {
-  
+
   it("Should correclty invoke the login flow when clicking login or retry", async () => {
 
     // keep track
@@ -105,7 +108,7 @@ describe("Checkout authentication tests", () => {
     await page.goto(CALLBACK_URL_NO_CODE);
     const currentUrl = await page.evaluate(() => location.href);
     console.log("Current url: " + currentUrl);
-    
+
     const titleErrorElem = await page.waitForSelector("#errorTitle");
     const titleErrorBody = await page.waitForSelector("#errorBody");
     const title = await titleErrorElem.evaluate((el) => el.textContent);
@@ -131,7 +134,7 @@ describe("Checkout authentication tests", () => {
     await page.goto(CALLBACK_URL_NO_STATE);
     const currentUrl = await page.evaluate(() => location.href);
     console.log("Current url: " + currentUrl);
-    
+
     const titleErrorElem = await page.waitForSelector("#errorTitle");
     const titleErrorBody = await page.waitForSelector("#errorBody");
     const title = await titleErrorElem.evaluate((el) => el.textContent);
@@ -149,11 +152,11 @@ describe("Checkout authentication tests", () => {
     ["de", deTranslation],
     ["sl", slTranslation]
   ])("Should show error receiving 5xx from post auth token for language [%s]", async (lang, translation) => {
-    
+
     await fillPaymentNotificationForm(POST_AUTH_TOKEN_FAILS, VALID_FISCAL_CODE);
 
     await clickLoginButton();
-    
+
     const titleErrorElem = await page.waitForSelector("#errorTitle");
     const titleErrorBody = await page.waitForSelector("#errorBody");
     const title = await titleErrorElem.evaluate((el) => el.textContent);
@@ -167,74 +170,121 @@ describe("Checkout authentication tests", () => {
     const BASE_CALLBACK_URL_REGEX = "http:\\/\\/localhost:\\d+\\/auth-callback\\?code=([a-zA-Z0-9]+)&state=([a-zA-Z0-9]+)";
     const regex = new RegExp(BASE_CALLBACK_URL_REGEX);
     expect(regex.test(currentUrl)).toBe(true);
-    
+
 
     expect(title).toContain(translation.authCallbackPage.title);
     expect(body).toContain(translation.authCallbackPage.body);
   });
 
-  it("should retry once if server responds 503 and succeed on second attempt - FAIL_POST_AUTH_TOKEN_503", async () => {
-    // Prima chiamata “fallimentare”
-    await page.setCookie({ name: "mockFlow", value: "FAIL_POST_AUTH_TOKEN_503" });
-    let response = await page.goto(CALLBACK_URL);
+  it("should retry once if server responds 503 and succeed on second attempt", async () => {
+    let tokenCalls = 0;
+    let first503Response = false;
 
-    expect(response.status()).toBe(503);
+    page.on("response", (response) => {
+      const url = response.url();
+      if (url.includes("/auth/token")) {
+        tokenCalls++;
+        if (response.status() === 503) {
+          first503Response = true;
+        }
+      }
+    });
 
-    // Rimuovi il cookie vecchio
-    await page.deleteCookie({ name: "mockFlow" });
+    await fillPaymentNotificationForm(POST_AUTH_TOKEN_FAILS_503, VALID_FISCAL_CODE);
+    await clickLoginButton();
 
-    // Seconda chiamata
-    response = await page.goto(CALLBACK_URL);
-    expect((await response).ok()).toBe(true);
+    await page.waitForNavigation();
+    await page.waitForNavigation();
+    const currentUrl = await page.evaluate(() => location.href);
 
-    const currentUrl = page.url();
-    expect(currentUrl).toBe(PAGE_LOGIN_COMEBACK_URL);
+
+    expect(first503Response).toBe(true);
+    expect(tokenCalls).toBe(2);
+    expect(currentUrl).toBe(BASE_CALLBACK_URL_PAYMENT_DATA);
   });
 
+  it("should retry once if server responds 504 and succeed on second attempt", async () => {
+    let tokenCalls = 0;
+    let first504Response = false;
 
-  it("should retry once if server responds 504 and succeed on second attempt - FAIL_POST_AUTH_TOKEN_504", async () => {
-    // Prima chiamata “fallimentare”
-    await page.setCookie({ name: "mockFlow", value: "FAIL_POST_AUTH_TOKEN_504" });
-    let response = await page.goto(CALLBACK_URL);
+    page.on("response", (response) => {
+      const url = response.url();
+      if (url.includes("/auth/token")) {
+        tokenCalls++;
+        if (response.status() === 504) {
+          first504Response = true;
+        }
+      }
+    });
 
-    expect(response.status()).toBe(504);
+    await fillPaymentNotificationForm(POST_AUTH_TOKEN_FAILS_504, VALID_FISCAL_CODE);
+    await clickLoginButton();
 
-    // Rimuovi il cookie vecchio
-    await page.deleteCookie({ name: "mockFlow" });
+    await page.waitForNavigation();
+    await page.waitForNavigation();
 
-    // Seconda chiamata
-    response = await page.goto(CALLBACK_URL);
-    expect((await response).ok()).toBe(true);
+    const currentUrl = await page.evaluate(() => location.href);
 
-    const currentUrl = page.url();
-    expect(currentUrl).toBe(PAGE_LOGIN_COMEBACK_URL);
 
+    expect(first504Response).toBe(true);
+    expect(tokenCalls).toBe(2);
+    expect(currentUrl).toBe(BASE_CALLBACK_URL_PAYMENT_DATA);
   });
 
-  it("should retry once if server responds 429 and succeed on second attempt - FAIL_POST_AUTH_TOKEN_429", async () => {
+  it("should retry once if server responds 429 and succeed on second attempt", async () => {
+    let tokenCalls = 0;
+    let first429Response = false;
 
-    // Prima chiamata “fallimentare”
-    await page.setCookie({ name: "mockFlow", value: "FAIL_POST_AUTH_TOKEN_429" });
-    let response = await page.goto(CALLBACK_URL);
+    page.on("response", (response) => {
+      const url = response.url();
+      if (url.includes("/auth/token")) {
+        tokenCalls++;
+        if (response.status() === 429) {
+          first429Response = true;
+        }
+      }
+    });
 
-    expect(response.status()).toBe(429);
+    await fillPaymentNotificationForm(POST_AUTH_TOKEN_FAILS_429, VALID_FISCAL_CODE);
+    await clickLoginButton();
 
-    // Rimuovi il cookie vecchio
-    await page.deleteCookie({ name: "mockFlow" });
+    await page.waitForNavigation();
+    await page.waitForNavigation();
 
-    // Seconda chiamata
-    response = await page.goto(CALLBACK_URL);
-    expect((await response).ok()).toBe(true);
+    const currentUrl = await page.evaluate(() => location.href);
 
-    const currentUrl = page.url();
-    expect(currentUrl).toBe(PAGE_LOGIN_COMEBACK_URL);
+
+    expect(first429Response).toBe(true);
+    expect(tokenCalls).toBe(2);
+    expect(currentUrl).toBe(BASE_CALLBACK_URL_PAYMENT_DATA);
   });
 
   it("should NOT retry if server responds 500 (since 500 is not in retryCondition)", async () => {
-    //expect(fetch).toHaveBeenCalledTimes(1);
+    let tokenCalls = 0;
+    let first500Response = false;
+
+    page.on("response", (response) => {
+      const url = response.url();
+      if (url.includes("/auth/token")) {
+        tokenCalls++;
+        if (response.status() === 500) {
+          first500Response = true;
+        }
+      }
+    });
+
+    await fillPaymentNotificationForm(POST_AUTH_TOKEN_FAILS, VALID_FISCAL_CODE);
+    await clickLoginButton();
+
+    const titleErrorElem = await page.waitForSelector("#errorTitle");
+    const titleErrorBody = await page.waitForSelector("#errorBody");
+    const title = await titleErrorElem.evaluate((el) => el.textContent);
+    const body = await titleErrorBody.evaluate((el) => el.textContent);
+
+    expect(first500Response).toBe(true);
+    expect(tokenCalls).toBe(1);
   });
 
-  });
 
 
-
+});
