@@ -194,15 +194,14 @@ describe("Checkout authentication tests", () => {
     await clickLoginButton();
 
     //Wait auth-callback page
-    await page.waitForFunction(`window.location.href.startsWith("${BASE_CALLBACK_URL}")`);
-
+    await page.waitForNavigation();
     //Wait return to main page
-    await page.waitForFunction("window.location.pathname == '/'");
+    await page.waitForNavigation();
     console.log("Login completed");
 
     //set flow error case
     await fillPaymentNotificationForm(FAIL_GET_USERS_401, VALID_FISCAL_CODE);
-    await page.waitForFunction("window.location.pathname == '/dati-pagamento'");
+    await page.waitForNavigation();
     console.log("MockFlow setted with noticeCode: ", FAIL_GET_USERS_401);
 
     //reload page in order to read authToken into sessionStoWWWWWWrage
@@ -217,15 +216,14 @@ describe("Checkout authentication tests", () => {
     await clickLoginButton();
 
     //Wait auth-callback page
-    await page.waitForFunction(`window.location.href.startsWith("${BASE_CALLBACK_URL}")`);
-
+    await page.waitForNavigation();
     //Wait return to main page
-    await page.waitForFunction("window.location.pathname == '/'");
+    await page.waitForNavigation();
     console.log("Login completed");
 
     //set flow error case
     await fillPaymentNotificationForm(FAIL_GET_USERS_500, VALID_FISCAL_CODE);
-    await page.waitForFunction("window.location.pathname == '/dati-pagamento'");
+    await page.waitForNavigation();
     console.log("MockFlow setted with noticeCode: ", FAIL_GET_USERS_500);
 
     //reload page in order to read authToken into sessionStoWWWWWWrage
@@ -240,10 +238,9 @@ describe("Checkout authentication tests", () => {
     await clickLoginButton();
 
     //Wait auth-callback page
-    await page.waitForFunction(`window.location.href.startsWith("${BASE_CALLBACK_URL}")`);
-
+    await page.waitForNavigation();
     //Wait return to main page
-    await page.waitForFunction("window.location.pathname == '/'");
+    await page.waitForNavigation();
     console.log("Login completed");
 
     //Check if user button is present into login header
