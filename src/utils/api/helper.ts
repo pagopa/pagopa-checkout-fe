@@ -123,19 +123,16 @@ export const getEcommercePaymentInfoTask = (
         // try get auth token
         const authToken = getSessionItem(SessionItems.authToken);
 
-        // base payload shared between both auth and non-auth APIs
-        const payload = {
-          rpt_id: rptId,
-          recaptchaResponse,
-        };
-
         // if authenticated, use v3, else guest flow
         return authToken != null
           ? apiPaymentEcommerceClientV3.getPaymentRequestInfoV3({
+              rpt_id: rptId,
               bearerAuth: authToken as string, // add auth token
-              ...payload,
             })
-          : apiPaymentEcommerceClient.getPaymentRequestInfo(payload);
+          : apiPaymentEcommerceClient.getPaymentRequestInfo({
+              rpt_id: rptId,
+              recaptchaResponse,
+            });
       },
       () => {
         mixpanel.track(PAYMENT_VERIFY_NET_ERR.value, {
@@ -281,7 +278,6 @@ export const activePaymentTask = (
         const payload = {
           "x-correlation-id": correlationId,
           "x-client-id-from-client": cartClientId,
-          recaptchaResponse,
           body: {
             paymentNotices: getPaymentNotices(amountSinglePayment, rptId, cart),
             idCart: cart?.idCart,
@@ -296,7 +292,10 @@ export const activePaymentTask = (
               bearerAuth: authToken as string, // add auth token
               ...payload,
             })
-          : apiPaymentEcommerceClientV2.newTransaction(payload);
+          : apiPaymentEcommerceClientV2.newTransaction({
+              ...payload,
+              recaptchaResponse,
+            });
       },
       () => {
         mixpanel.track(PAYMENT_ACTIVATE_NET_ERR.value, {
