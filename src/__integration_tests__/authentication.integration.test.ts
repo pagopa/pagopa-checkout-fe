@@ -3,20 +3,23 @@ import deTranslation from "../translations/de/translations.json";
 import enTranslation from "../translations/en/translations.json";
 import frTranslation from "../translations/fr/translations.json";
 import slTranslation from "../translations/sl/translations.json";
-import { clickLoginButton, fillPaymentNotificationForm, selectLanguage } from "./utils/helpers";
+import { clickLoginButton, fillPaymentNotificationForm, getUserButton, selectLanguage , tryLoginWithAuthCallbackError } from "./utils/helpers";
 /**
  * Test input and configuration
  */
 
 const CHECKOUT_URL = `http://localhost:1234`;
 const BASE_CALLBACK_URL = "http://localhost:1234/auth-callback";
+const BASE_CALLBACK_URL_REGEX = "http:\\/\\/localhost:\\d+\\/auth-callback\\?code=([a-zA-Z0-9]+)&state=([a-zA-Z0-9]+)";
 const CALLBACK_URL = `${BASE_CALLBACK_URL}?code=gMPV0CSInuTY0pjd&state=pu6nlBmHs1EpmfWq`;
 const CALLBACK_URL_NO_CODE = `${BASE_CALLBACK_URL}?state=pu6nlBmHs1EpmfWq`;
 const CALLBACK_URL_NO_STATE = `${BASE_CALLBACK_URL}?code=gMPV0CSInuTY0pjd&`;
 const PAGE_LOGIN_COMEBACK_URL = `http://localhost:1234/inserisci-dati-avviso`;
 const VALID_FISCAL_CODE = "77777777777";
 /* POST AUTH TOKEN FAIL ends with 78 */
-const POST_AUTH_TOKEN_FAILS = "302000100000009478"
+const POST_AUTH_TOKEN_FAILS = "302000100000009478";
+const FAIL_GET_USERS_401 = "302000100000009479";
+const FAIL_GET_USERS_500 = "302000100000009480";
 
 jest.setTimeout(80000);
 jest.retryTimes(3);
@@ -29,6 +32,8 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
+  await page.evaluate(() => sessionStorage.clear());
+  await page.deleteCookie({name:'mockFlow'});
   await page.goto(CHECKOUT_URL);
 });
 
@@ -69,8 +74,9 @@ describe("Checkout authentication tests", () => {
     await retryButton.click();
     console.log("Retry button click");
 
-    // wait for the retry button to appear again so the login is done
-    await page.waitForSelector("#auth-retry-button");
+    // Wait return to main page so the login is done
+    await page.waitForFunction("window.location.pathname == '/'");
+    console.log("Login completed");
 
     // one from login button
     // one from navigating to the auth-callback page to retry
@@ -96,10 +102,10 @@ describe("Checkout authentication tests", () => {
     ["de", deTranslation],
     ["sl", slTranslation]
   ])("Should show error page when no code param is present in auth callback url for language [%s]", async (lang, translation) => {
-    await page.evaluate((language) => {
+    await selectLanguage(lang);
+    await page.evaluate(() => {
       //set item into sessionStorage and localStorage for pass the route Guard
       sessionStorage.setItem('loginOriginPage', '/inserisci-email');
-      localStorage.setItem("i18nextLng", language);
     });
     await page.goto(CALLBACK_URL_NO_CODE);
     const currentUrl = await page.evaluate(() => location.href);
@@ -122,10 +128,10 @@ describe("Checkout authentication tests", () => {
     ["de", deTranslation],
     ["sl", slTranslation]
   ])("Should show error page when no state param is present in auth callback url for language [%s]", async (lang, translation) => {
-    await page.evaluate((language) => {
+    await selectLanguage(lang);
+    await page.evaluate(() => {
       //set item into sessionStorage and localStorage for pass the route Guard
       sessionStorage.setItem('loginOriginPage', '/inserisci-email');
-      localStorage.setItem("i18nextLng", language);
     });
     await page.goto(CALLBACK_URL_NO_STATE);
     const currentUrl = await page.evaluate(() => location.href);
@@ -148,7 +154,7 @@ describe("Checkout authentication tests", () => {
     ["de", deTranslation],
     ["sl", slTranslation]
   ])("Should show error receiving 5xx from post auth token for language [%s]", async (lang, translation) => {
-    
+    await selectLanguage(lang);
     await fillPaymentNotificationForm(POST_AUTH_TOKEN_FAILS, VALID_FISCAL_CODE);
 
     await clickLoginButton();
@@ -163,13 +169,120 @@ describe("Checkout authentication tests", () => {
 
     console.log("Search login button")
 
-    const BASE_CALLBACK_URL_REGEX = "http:\\/\\/localhost:\\d+\\/auth-callback\\?code=([a-zA-Z0-9]+)&state=([a-zA-Z0-9]+)";
     const regex = new RegExp(BASE_CALLBACK_URL_REGEX);
     expect(regex.test(currentUrl)).toBe(true);
     
-
     expect(title).toContain(translation.authCallbackPage.title);
     expect(body).toContain(translation.authCallbackPage.body);
+  });
+
+  it("Should correctly retrieve user info if authToken is present", async () => {
+    await page.evaluate(() => {
+      //set item into sessionStorage and localStorage for pass the route Guard
+      sessionStorage.setItem('authToken', 'auth-token-value');
+    });
+    //reload page in order to read authToken into sessionStorage
+    await page.reload();
+    
+    //Check if user button is present into login header
+    const userButton = await getUserButton();
+    expect(userButton).toBeDefined();
+  });
+
+  it("Should redirect to error page receiving 401 from get user info on page refresh", async () => {
+    //Do login
+    await clickLoginButton();
+
+    //Wait auth-callback page
+    await page.waitForFunction(`window.location.href.startsWith("${BASE_CALLBACK_URL}")`);
+
+    //Wait return to main page
+    await page.waitForFunction("window.location.pathname == '/'");
+    console.log("Login completed");
+
+    //set flow error case
+    await fillPaymentNotificationForm(FAIL_GET_USERS_401, VALID_FISCAL_CODE);
+    await page.waitForFunction("window.location.pathname == '/dati-pagamento'");
+    console.log("MockFlow setted with noticeCode: ", FAIL_GET_USERS_401);
+
+    //reload page in order to read authToken into sessionStoWWWWWWrage
+    await page.reload();
+
+    //Wait return to error page
+    expect(page.url()).toContain("/errore");
+  });
+
+  it("Should redirect to error page receiving 500 from get user info on page refresh", async () => {
+    //Do login
+    await clickLoginButton();
+
+    //Wait auth-callback page
+    await page.waitForFunction(`window.location.href.startsWith("${BASE_CALLBACK_URL}")`);
+
+    //Wait return to main page
+    await page.waitForFunction("window.location.pathname == '/'");
+    console.log("Login completed");
+
+    //set flow error case
+    await fillPaymentNotificationForm(FAIL_GET_USERS_500, VALID_FISCAL_CODE);
+    await page.waitForFunction("window.location.pathname == '/dati-pagamento'");
+    console.log("MockFlow setted with noticeCode: ", FAIL_GET_USERS_500);
+
+    //reload page in order to read authToken into sessionStoWWWWWWrage
+    await page.reload();
+
+    //Wait return to error page
+    expect(page.url()).toContain("/errore");
+  });
+
+  it("Should correctly retrieve user info after login is completed on auth-callback page", async () => {
+    //Login
+    await clickLoginButton();
+
+    //Wait auth-callback page
+    await page.waitForFunction(`window.location.href.startsWith("${BASE_CALLBACK_URL}")`);
+
+    //Wait return to main page
+    await page.waitForFunction("window.location.pathname == '/'");
+    console.log("Login completed");
+
+    //Check if user button is present into login header
+    const userButton = await getUserButton();
+    expect(userButton).toBeDefined();
+  });
+
+  it.each([
+    ["it", itTranslation],
+    ["en", enTranslation],
+    ["fr", frTranslation],
+    ["de", deTranslation],
+    ["sl", slTranslation]
+  ])("Should show error receiving 401 from get user info on auth-callback page for language [%s]", async (lang, translation) => {
+    await selectLanguage(lang);
+
+    const authCallbackError = await tryLoginWithAuthCallbackError(FAIL_GET_USERS_401, VALID_FISCAL_CODE);
+
+    const regex = new RegExp(BASE_CALLBACK_URL_REGEX);
+    expect(regex.test(authCallbackError.currentUrl)).toBe(true);
+    expect(authCallbackError.title).toContain(translation.authCallbackPage.title);
+    expect(authCallbackError.body).toContain(translation.authCallbackPage.body);
+  });
+
+  it.each([
+    ["it", itTranslation],
+    ["en", enTranslation],
+    ["fr", frTranslation],
+    ["de", deTranslation],
+    ["sl", slTranslation]
+  ])("Should show error receiving 500 from get user info on auth-callback page for language [%s]", async (lang, translation) => {
+    await selectLanguage(lang);
+
+    const authCallbackError = await tryLoginWithAuthCallbackError(FAIL_GET_USERS_500, VALID_FISCAL_CODE);
+
+    const regex = new RegExp(BASE_CALLBACK_URL_REGEX);
+    expect(regex.test(authCallbackError.currentUrl)).toBe(true);
+    expect(authCallbackError.title).toContain(translation.authCallbackPage.title);
+    expect(authCallbackError.body).toContain(translation.authCallbackPage.body);
   });
   
 });
