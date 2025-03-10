@@ -166,13 +166,5 @@ describe("Checkout authentication tests", () => {
 
     expect(title).toContain(translation.authCallbackPage.title);
     expect(body).toContain(translation.authCallbackPage.body);
-  });
-
-
-  it("Should onlu retry on error codes 503, 504, 429", async () => {
-
-
-
-  });
-  
+  });  
 });
