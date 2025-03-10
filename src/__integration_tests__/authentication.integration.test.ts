@@ -48,6 +48,9 @@ describe("Checkout authentication tests", () => {
       }
     });
 
+    // start flow from a url different from home
+    await page.goto(PAGE_LOGIN_COMEBACK_URL);
+
     //search login button and click it
     console.log("Search login button")
     const loginHeader = await page.waitForSelector("#login-header");
@@ -57,6 +60,7 @@ describe("Checkout authentication tests", () => {
     console.log("Login button click");
 
     await loginBtn.click();
+    const urlAfterSuccessfullLogin = await page.evaluate(() => location.href);
 
     // now navigate to callback url (and force error with bad parameters)
     // so that the retry button will be visible
@@ -76,17 +80,9 @@ describe("Checkout authentication tests", () => {
     // one from navigating to the auth-callback page to retry
     // one from retry button
     expect(successfullLogins).toBe(3);
-  });
 
-  it("Should correctly come back to login origin url", async () => {
-    await page.evaluate(() => {
-      //set item into sessionStorage and localStorage for pass the route Guard
-      sessionStorage.setItem('loginOriginPage', '/inserisci-dati-avviso');
-    });
-    await page.goto(CALLBACK_URL);
-    const currentUrl = await page.evaluate(() => location.href);
-    console.log("Current url: " + currentUrl);
-    expect(currentUrl).toBe(PAGE_LOGIN_COMEBACK_URL);
+    // verify successfull login brings back to correct page
+    expect(urlAfterSuccessfullLogin).toBe(PAGE_LOGIN_COMEBACK_URL);
   });
 
   it.each([
@@ -170,6 +166,13 @@ describe("Checkout authentication tests", () => {
 
     expect(title).toContain(translation.authCallbackPage.title);
     expect(body).toContain(translation.authCallbackPage.body);
+  });
+
+
+  it("Should onlu retry on error codes 503, 504, 429", async () => {
+
+
+
   });
   
 });
