@@ -14,7 +14,12 @@ import {
   removeLoggedUser,
   setLoggedUser,
 } from "../../redux/slices/loggedUser";
-import { proceedToLogin, retrieveUserInfo } from "../../utils/api/helper";
+import {
+  cancelPayment,
+  logoutUser,
+  proceedToLogin,
+  retrieveUserInfo,
+} from "../../utils/api/helper";
 import { ErrorsType } from "../../utils/errors/checkErrorsModel";
 import { onBrowserUnload } from "../../utils/eventListeners";
 import ErrorModal from "../../components/modals/ErrorModal";
@@ -103,15 +108,64 @@ export default function LoginHeader() {
     }
   };
 
-  const onLogoutClick = () => {
+  const checkTransactionAndHandleLogout = async () => {
+    await pipe(
+      SessionItems.transaction,
+      O.fromNullable,
+      O.fold(
+        async () =>
+          await logoutUser({
+            onError: () => {
+              dispatch(removeLoggedUser());
+              clearSessionItem(SessionItems.authToken);
+            },
+            onResponse: () => {
+              dispatch(removeLoggedUser());
+              clearSessionItem(SessionItems.authToken);
+            },
+          }),
+        async () =>
+          await cancelPayment(
+            () => {
+              dispatch(removeLoggedUser());
+              clearSessionItem(SessionItems.authToken);
+            },
+            async () => {
+              dispatch(removeLoggedUser());
+              clearSessionItem(SessionItems.authToken);
+              await logoutUser({
+                onError: () => {
+                  // eslint-disable-next-line no-console
+                  console.log("logout KO");
+                  dispatch(removeLoggedUser());
+                  clearSessionItem(SessionItems.authToken);
+                },
+                onResponse: () => {
+                  // eslint-disable-next-line no-console
+                  console.log("logout OK");
+                  dispatch(removeLoggedUser());
+                  clearSessionItem(SessionItems.authToken);
+                },
+              });
+            }
+          )
+      )
+    );
+  };
+  /*
+  const onLogoutClick = async () => {
     setLoading(true);
+    await logoutUser({
+      onResponse: onResponseLogout,
+      onError: onErrorLogout,
+    });
     dispatch(removeLoggedUser());
     clearSessionItem(SessionItems.authToken);
     setTimeout(() => {
       hideLoading();
     }, 1000);
   };
-
+*/
   const doGetUserInfo = () => {
     void retrieveUserInfo({
       onResponse: (userInfo: UserInfoResponse) => {
@@ -158,7 +212,7 @@ export default function LoginHeader() {
             id: "logout",
             icon: <Logout fontSize="small" />,
             label: t("mainPage.header.logout"),
-            onClick: onLogoutClick,
+            onClick: checkTransactionAndHandleLogout,
           },
         ]}
         enableLogin={showLoginButton()}
