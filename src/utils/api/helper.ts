@@ -280,7 +280,6 @@ export const activePaymentTask = (
         const payload = {
           "x-correlation-id": correlationId,
           "x-client-id-from-client": cartClientId,
-          recaptchaResponse,
           body: {
             paymentNotices: getPaymentNotices(amountSinglePayment, rptId, cart),
             idCart: cart?.idCart,
@@ -295,7 +294,10 @@ export const activePaymentTask = (
               bearerAuth: authToken as string, // add auth token
               ...payload,
             })
-          : apiPaymentEcommerceClientV2.newTransaction(payload);
+          : apiPaymentEcommerceClientV2.newTransaction({
+              ...payload,
+              recaptchaResponse,
+            });
       },
       () => {
         mixpanel.track(PAYMENT_ACTIVATE_NET_ERR.value, {
