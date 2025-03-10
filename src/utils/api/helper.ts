@@ -125,7 +125,6 @@ export const getEcommercePaymentInfoTask = (
         // base payload shared between both auth and non-auth APIs
         const payload = {
           rpt_id: rptId,
-          recaptchaResponse,
         };
 
         // if authenticated, use v3, else guest flow
@@ -134,7 +133,10 @@ export const getEcommercePaymentInfoTask = (
               bearerAuth: authToken as string, // add auth token
               ...payload,
             })
-          : apiPaymentEcommerceClient.getPaymentRequestInfo(payload);
+          : apiPaymentEcommerceClient.getPaymentRequestInfo({
+              ...payload,
+              recaptchaResponse,
+            });
       },
       () => {
         mixpanel.track(PAYMENT_VERIFY_NET_ERR.value, {
