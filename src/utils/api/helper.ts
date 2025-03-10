@@ -90,6 +90,7 @@ import {
   apiPaymentEcommerceClientWithRetry,
   apiPaymentEcommerceClientWithRetryV2,
   apiCheckoutAuthServiceClientV1,
+  apiPaymentEcommerceClientV3,
 } from "./client";
 
 export const NodeFaultCodeR = t.interface({
@@ -117,10 +118,23 @@ export const getEcommercePaymentInfoTask = (
         mixpanel.track(PAYMENT_VERIFY_INIT.value, {
           EVENT_ID: PAYMENT_VERIFY_INIT.value,
         });
-        return apiPaymentEcommerceClient.getPaymentRequestInfo({
+
+        // try get auth token
+        const authToken = getSessionItem(SessionItems.authToken);
+
+        // base payload shared between both auth and non-auth APIs
+        const payload = {
           rpt_id: rptId,
           recaptchaResponse,
-        });
+        };
+
+        // if authenticated, use v3, else guest flow
+        return authToken != null
+          ? apiPaymentEcommerceClientV3.getPaymentRequestInfoV3({
+              bearerAuth: authToken as string, // add auth token
+              ...payload,
+            })
+          : apiPaymentEcommerceClient.getPaymentRequestInfo(payload);
       },
       () => {
         mixpanel.track(PAYMENT_VERIFY_NET_ERR.value, {
@@ -165,8 +179,11 @@ export const getEcommercePaymentInfoTask = (
               }
               return responseType.status !== 200
                 ? TE.left({
-                    faultCodeCategory: responseType.value.faultCodeCategory,
-                    faultCodeDetail: responseType.value.faultCodeDetail,
+                    faultCodeCategory:
+                      responseType.value?.faultCodeCategory ??
+                      FaultCategoryEnum.GENERIC_ERROR,
+                    faultCodeDetail:
+                      responseType.value?.faultCodeDetail ?? "Unknown error",
                   })
                 : TE.of(responseType.value);
             }
@@ -255,7 +272,12 @@ export const activePaymentTask = (
         mixpanel.track(PAYMENT_ACTIVATE_INIT.value, {
           EVENT_ID: PAYMENT_ACTIVATE_INIT.value,
         });
-        return apiPaymentEcommerceClientV2.newTransaction({
+
+        // try get auth token
+        const authToken = getSessionItem(SessionItems.authToken);
+
+        // base payload shared between both auth and non-auth APIs
+        const payload = {
           "x-correlation-id": correlationId,
           "x-client-id-from-client": cartClientId,
           recaptchaResponse,
@@ -265,7 +287,15 @@ export const activePaymentTask = (
             email: userEmail,
             orderId,
           },
-        });
+        };
+
+        // if authenticated, use v3, else guest flow
+        return authToken != null
+          ? apiPaymentEcommerceClientV3.newTransactionV3({
+              bearerAuth: authToken as string, // add auth token
+              ...payload,
+            })
+          : apiPaymentEcommerceClientV2.newTransaction(payload);
       },
       () => {
         mixpanel.track(PAYMENT_ACTIVATE_NET_ERR.value, {
@@ -359,8 +389,11 @@ export const activePaymentTask = (
               }
               return responseType.status !== 200
                 ? TE.left({
-                    faultCodeCategory: responseType.value.faultCodeCategory,
-                    faultCodeDetail: responseType.value.faultCodeDetail,
+                    faultCodeCategory:
+                      responseType.value?.faultCodeCategory ??
+                      FaultCategoryEnum.GENERIC_ERROR,
+                    faultCodeDetail:
+                      responseType.value?.faultCodeDetail ?? "Unknown error",
                   })
                 : TE.of(responseType.value);
             }

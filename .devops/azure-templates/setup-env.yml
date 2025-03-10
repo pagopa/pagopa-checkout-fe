@@ -1,118 +1,119 @@
 # Azure DevOps pipeline template used to build bundle.
 parameters:
-  - name: 'pagopa_apim_host'
+  - name: "pagopa_apim_host"
     type: string
-    default: ''
+    default: ""
 
-  - name: 'api_payment_activations_basepath'
+  - name: "api_payment_activations_basepath"
     type: string
-    default: ''
+    default: ""
 
-  - name: 'api_payment_transactions_basepath'
+  - name: "api_payment_transactions_basepath"
     type: string
-    default: ''
+    default: ""
 
-  - name: 'pm_host'
+  - name: "pm_host"
     type: string
-    default: ''
+    default: ""
 
-  - name: 'pm_api_basepath'
+  - name: "pm_api_basepath"
     type: string
-    default: ''
+    default: ""
 
-  - name: 'api_timeout'
+  - name: "api_timeout"
     type: number
     default: 10000
 
-  - name: 'polling_activation_interval'
+  - name: "polling_activation_interval"
     type: number
     default: 6000
 
-  - name: 'polling_activation_attempts'
+  - name: "polling_activation_attempts"
     type: number
     default: 15
 
-  - name: 'env'
+  - name: "env"
     type: string
-    default: ''
+    default: ""
 
-  - name: 'recaptcha_site_key'
+  - name: "recaptcha_site_key"
     type: string
-    default: ''
+    default: ""
 
-  - name: 'donations_url'
+  - name: "donations_url"
     type: string
-    default: ''
+    default: ""
 
-  - name: 'api_ecommerce_basepath'
+  - name: "api_ecommerce_basepath"
     type: string
-    default: ''
+    default: ""
 
-  - name: 'checkout_auth_service_basepath_v1'
+  - name: "checkout_auth_service_basepath_v1"
     type: string
-    default: ''
+    default: ""
 
-  - name: 'checkout_auth_service_host'
+  - name: "checkout_auth_service_host"
     type: string
-    default: ''
+    default: ""
 
-  - name: 'api_ecommerce_basepath_v2'
+  - name: "api_ecommerce_basepath_v2"
     type: string
-    default: ''
+    default: ""
 
-  - name: 'checkout_feature_flags_basepath'
+  - name: "checkout_feature_flags_basepath"
     type: string
-    default: ''
+    default: ""
 
-  - name: 'pagopa_assets_cdn'
+  - name: "pagopa_assets_cdn"
     type: string
-    default: ''
+    default: ""
 
-  - name: 'pagopa_logos_cdn'
+  - name: "pagopa_logos_cdn"
     type: string
-    default: ''
+    default: ""
 
-  - name: 'survey_show'
+  - name: "survey_show"
     type: number
     default: 0
 
-  - name: 'checkout_npg_sdk_url'
+  - name: "checkout_npg_sdk_url"
     type: string
-    default: ''
+    default: ""
 
-  - name: 'checkout_gdi_check_timeout'
+  - name: "checkout_gdi_check_timeout"
     type: number
     default: 20000
 
-  - name: 'checkout_version'
+  - name: "checkout_version"
     type: string
 
 steps:
-- bash: |
-    chmod +x env.sh
-    env -i \
-      CHECKOUT_PAGOPA_APIM_HOST=${{ parameters.pagopa_apim_host }} \
-      CHECKOUT_API_PAYMENT_ACTIVATIONS_BASEPATH=${{ parameters.api_payment_activations_basepath }} \
-      CHECKOUT_API_PAYMENT_TRANSACTIONS_BASEPATH=${{ parameters.api_payment_transactions_basepath }} \
-      CHECKOUT_PM_HOST=${{ parameters.pm_host }} \
-      CHECKOUT_PM_API_BASEPATH=${{ parameters.pm_api_basepath }} \
-      CHECKOUT_API_TIMEOUT=${{ parameters.api_timeout }} \
-      CHECKOUT_POLLING_ACTIVATION_INTERVAL=${{ parameters.polling_activation_interval }} \
-      CHECKOUT_POLLING_ACTIVATION_ATTEMPTS=${{ parameters.polling_activation_attempts }} \
-      CHECKOUT_ENV=${{ parameters.env }} \
-      CHECKOUT_RECAPTCHA_SITE_KEY=${{ parameters.recaptcha_site_key }} \
-      CHECKOUT_DONATIONS_URL=${{ parameters.donations_url }} \
-      CHECKOUT_API_ECOMMERCE_BASEPATH=${{ parameters.api_ecommerce_basepath }} \
-      CHECKOUT_API_ECOMMERCE_BASEPATH_V2=${{ parameters.api_ecommerce_basepath_v2 }} \
-      CHECKOUT_API_FEATURE_FLAGS_BASEPATH=${{ parameters.checkout_feature_flags_basepath }} \
-      CHECKOUT_PAGOPA_ASSETS_CDN=${{ parameters.pagopa_assets_cdn }} \
-      CHECKOUT_PAGOPA_LOGOS_CDN=${{ parameters.pagopa_logos_cdn }} \
-      CHECKOUT_SURVEY_SHOW=${{ parameters.survey_show }} \
-      CHECKOUT_NPG_SDK_URL=${{ parameters.checkout_npg_sdk_url }} \
-      CHECKOUT_GDI_CHECK_TIMEOUT=${{ parameters.checkout_gdi_check_timeout }} \
-      CHECKOUT_VERSION=${{ parameters.checkout_version }} \
-      CHECKOUT_AUTH_SERVICE_HOST=${{ parameters.checkout_auth_service_host }} \
-      CHECKOUT_API_AUTH_SERVICE_BASEPATH_V1=${{ parameters.checkout_auth_service_basepath_v1 }} \
-      bash env.sh
+  - bash: |
+      chmod +x env.sh
+      env -i \
+        CHECKOUT_PAGOPA_APIM_HOST=${{ parameters.pagopa_apim_host }} \
+        CHECKOUT_API_PAYMENT_ACTIVATIONS_BASEPATH=${{ parameters.api_payment_activations_basepath }} \
+        CHECKOUT_API_PAYMENT_TRANSACTIONS_BASEPATH=${{ parameters.api_payment_transactions_basepath }} \
+        CHECKOUT_PM_HOST=${{ parameters.pm_host }} \
+        CHECKOUT_PM_API_BASEPATH=${{ parameters.pm_api_basepath }} \
+        CHECKOUT_API_TIMEOUT=${{ parameters.api_timeout }} \
+        CHECKOUT_POLLING_ACTIVATION_INTERVAL=${{ parameters.polling_activation_interval }} \
+        CHECKOUT_POLLING_ACTIVATION_ATTEMPTS=${{ parameters.polling_activation_attempts }} \
+        CHECKOUT_ENV=${{ parameters.env }} \
+        CHECKOUT_RECAPTCHA_SITE_KEY=${{ parameters.recaptcha_site_key }} \
+        CHECKOUT_DONATIONS_URL=${{ parameters.donations_url }} \
+        CHECKOUT_API_ECOMMERCE_BASEPATH=${{ parameters.api_ecommerce_basepath }} \
+        CHECKOUT_API_ECOMMERCE_BASEPATH_V2=${{ parameters.api_ecommerce_basepath_v2 }} \
+        CHECKOUT_API_ECOMMERCE_BASEPATH_V3=${{ parameters.api_ecommerce_basepath_v3 }} \
+        CHECKOUT_API_FEATURE_FLAGS_BASEPATH=${{ parameters.checkout_feature_flags_basepath }} \
+        CHECKOUT_PAGOPA_ASSETS_CDN=${{ parameters.pagopa_assets_cdn }} \
+        CHECKOUT_PAGOPA_LOGOS_CDN=${{ parameters.pagopa_logos_cdn }} \
+        CHECKOUT_SURVEY_SHOW=${{ parameters.survey_show }} \
+        CHECKOUT_NPG_SDK_URL=${{ parameters.checkout_npg_sdk_url }} \
+        CHECKOUT_GDI_CHECK_TIMEOUT=${{ parameters.checkout_gdi_check_timeout }} \
+        CHECKOUT_VERSION=${{ parameters.checkout_version }} \
+        CHECKOUT_AUTH_SERVICE_HOST=${{ parameters.checkout_auth_service_host }} \
+        CHECKOUT_API_AUTH_SERVICE_BASEPATH_V1=${{ parameters.checkout_auth_service_basepath_v1 }} \
+        bash env.sh
 
-  displayName: 'Populate environment file'
+    displayName: "Populate environment file"
