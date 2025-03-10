@@ -122,19 +122,14 @@ export const getEcommercePaymentInfoTask = (
         // try get auth token
         const authToken = getSessionItem(SessionItems.authToken);
 
-        // base payload shared between both auth and non-auth APIs
-        const payload = {
-          rpt_id: rptId,
-        };
-
         // if authenticated, use v3, else guest flow
         return authToken != null
           ? apiPaymentEcommerceClientV3.getPaymentRequestInfoV3({
+              rpt_id: rptId,
               bearerAuth: authToken as string, // add auth token
-              ...payload,
             })
           : apiPaymentEcommerceClient.getPaymentRequestInfo({
-              ...payload,
+              rpt_id: rptId,
               recaptchaResponse,
             });
       },
