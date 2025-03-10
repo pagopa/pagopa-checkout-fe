@@ -204,8 +204,10 @@ describe("Checkout authentication tests", () => {
     await page.waitForNavigation();
     console.log("MockFlow setted with noticeCode: ", FAIL_GET_USERS_401);
 
-    //reload page in order to read authToken into sessionStoWWWWWWrage
-    await page.reload();
+    //reload page in order to read authToken into sessionStorage
+    page.reload();
+    //wait for redirect to error page
+    await page.waitForNavigation();
 
     //Wait return to error page
     expect(page.url()).toContain("/errore");
@@ -226,8 +228,10 @@ describe("Checkout authentication tests", () => {
     await page.waitForNavigation();
     console.log("MockFlow setted with noticeCode: ", FAIL_GET_USERS_500);
 
-    //reload page in order to read authToken into sessionStoWWWWWWrage
-    await page.reload();
+    //reload page in order to read authToken into sessionStorage
+    page.reload();
+    //wait for redirect to error page
+    await page.waitForNavigation();
 
     //Wait return to error page
     expect(page.url()).toContain("/errore");
