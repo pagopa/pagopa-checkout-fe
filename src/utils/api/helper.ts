@@ -91,6 +91,7 @@ import {
   apiPaymentEcommerceClientWithRetryV2,
   apiCheckoutAuthServiceClientV1,
   apiPaymentEcommerceClientV3,
+  apiPaymentEcommerceClientWithRetryV3,
 } from "./client";
 
 export const NodeFaultCodeR = t.interface({
@@ -1020,7 +1021,19 @@ export const getPaymentInstruments = async (
   });
   const list = await pipe(
     TE.tryCatch(
-      () => apiPaymentEcommerceClient.getAllPaymentMethods(query),
+      () =>
+        pipe(
+          getSessionItem(SessionItems.authToken) as string,
+          O.fromNullable,
+          O.fold(
+            () => apiPaymentEcommerceClient.getAllPaymentMethods(query),
+            (bearerAuth) =>
+              apiPaymentEcommerceClientV3.getAllPaymentMethodsV3({
+                bearerAuth,
+                ...query,
+              })
+          )
+        ),
       () => {
         mixpanel.track(PAYMENT_METHODS_NET_ERROR.value, {
           EVENT_ID: PAYMENT_METHODS_NET_ERROR.value,
@@ -1174,10 +1187,25 @@ export const npgSessionsFields = async (
               | PaymentMethod
               | undefined
           )?.paymentMethodId || "";
-        return apiPaymentEcommerceClientWithRetry.createSession({
+        const payload = {
           id: paymentMethodId,
           lang: localStorage.getItem("i18nextLng") ?? "it",
-        });
+        };
+        return pipe(
+          getSessionItem(SessionItems.authToken) as string,
+          O.fromNullable,
+          O.fold(
+            () =>
+              apiPaymentEcommerceClientWithRetry.createSession({
+                ...payload,
+              }),
+            (bearerAuth) =>
+              apiPaymentEcommerceClientWithRetryV3.createSessionV3({
+                bearerAuth,
+                ...payload,
+              })
+          )
+        );
       },
       () => {
         mixpanel.track(NPG_NET_ERR.value, {
