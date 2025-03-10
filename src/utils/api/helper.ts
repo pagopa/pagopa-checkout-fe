@@ -91,7 +91,7 @@ import {
   apiPaymentEcommerceClientWithRetry,
   apiPaymentEcommerceClientWithRetryV2,
   apiCheckoutAuthServiceClientV1,
-  apiCheckoutAuthServiceClientV1WithRetry,
+  apiCheckoutAuthServiceClientGetUserV1,
 } from "./client";
 
 export const NodeFaultCodeR = t.interface({
@@ -874,7 +874,7 @@ export const retrieveUserInfo = async ({
     TE.chain((authToken) =>
       TE.tryCatch(
         () =>
-          apiCheckoutAuthServiceClientV1WithRetry.authUsers({
+          apiCheckoutAuthServiceClientGetUserV1.authUsers({
             bearerAuth: authToken,
           }),
         () => ErrorsType.GENERIC_ERROR
