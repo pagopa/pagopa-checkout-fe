@@ -90,3 +90,17 @@ export const apiCheckoutAuthServiceClientV1 = createAuthServiceClient({
   basePath: conf.CHECKOUT_API_AUTH_SERVICE_BASEPATH_V1 as string,
   fetchApi: retryingFetch(fetch, conf.CHECKOUT_API_TIMEOUT as Millisecond, 3),
 });
+
+/**
+ * Api client for checkout auth service API V1 with retry with 5xx error status
+ */
+export const apiCheckoutAuthServiceClientGetUserV1 = createAuthServiceClient({
+  baseUrl: conf.CHECKOUT_PAGOPA_APIM_HOST,
+  basePath: conf.CHECKOUT_API_AUTH_SERVICE_BASEPATH_V1 as string,
+  fetchApi: retryingFetch(
+    fetch,
+    conf.CHECKOUT_API_TIMEOUT as Millisecond,
+    3,
+    (response: Response) => response.status >= 500
+  ),
+});

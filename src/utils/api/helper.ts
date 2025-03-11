@@ -83,6 +83,7 @@ import { CalculateFeeResponse } from "../../../generated/definitions/payment-eco
 import { FaultCategoryEnum } from "../../../generated/definitions/payment-ecommerce/FaultCategory";
 import { CalculateFeeRequest } from "../../../generated/definitions/payment-ecommerce-v2/CalculateFeeRequest";
 import { AuthRequest } from "../../../generated/definitions/checkout-auth-service-v1/AuthRequest";
+import { UserInfoResponse } from "../../../generated/definitions/checkout-auth-service-v1/UserInfoResponse";
 import {
   apiCheckoutFeatureFlags,
   apiPaymentEcommerceClient,
@@ -91,6 +92,7 @@ import {
   apiPaymentEcommerceClientWithRetryV2,
   apiCheckoutAuthServiceClientV1,
   apiPaymentEcommerceClientV3,
+  apiCheckoutAuthServiceClientGetUserV1,
 } from "./client";
 
 export const NodeFaultCodeR = t.interface({
@@ -695,7 +697,10 @@ export const proceedToLogin = async ({
         pipe(
           myResExt,
           E.fold(
-            () => [],
+            () => {
+              onError(ErrorsType.GENERIC_ERROR);
+              return {};
+            },
             (myRes) => {
               if (myRes?.status === 200) {
                 onResponse(myRes?.value.urlRedirect);
@@ -913,6 +918,54 @@ export const proceedToPayment = async (
         return TE.left(ErrorsType.GENERIC_ERROR);
       },
       (task) => task
+    )
+  )();
+};
+
+export const retrieveUserInfo = async ({
+  onResponse,
+  onError,
+}: {
+  onResponse: (e: UserInfoResponse) => void;
+  onError: (e: string) => void;
+}) => {
+  await pipe(
+    getSessionItem(SessionItems.authToken) as string,
+    O.fromNullable,
+    TE.fromOption(() => ErrorsType.GENERIC_ERROR),
+    TE.chain((authToken) =>
+      TE.tryCatch(
+        () =>
+          apiCheckoutAuthServiceClientGetUserV1.authUsers({
+            bearerAuth: authToken,
+          }),
+        () => ErrorsType.GENERIC_ERROR
+      )
+    ),
+    TE.fold(
+      (error) => {
+        onError(error);
+        return TE.left(error);
+      },
+      (response) =>
+        pipe(
+          response,
+          E.fold(
+            () => {
+              onError(ErrorsType.GENERIC_ERROR);
+              return TE.left(ErrorsType.GENERIC_ERROR);
+            },
+            (res) => {
+              if (res.status === 200) {
+                onResponse(res.value);
+                return TE.right(res.value);
+              } else {
+                onError(ErrorsType.CONNECTION);
+                return TE.left(ErrorsType.CONNECTION);
+              }
+            }
+          )
+        )
     )
   )();
 };

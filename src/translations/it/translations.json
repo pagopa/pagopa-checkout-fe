@@ -26,7 +26,7 @@
     "body": "Si è verificato un problema durante l'accesso. Riprova tra qualche minuto.",
     "buttons": {
       "retry": "Riprova",
-      "continueWithoutLogin": "Continua senza login."
+      "continueWithoutLogin": "Continua senza login"
     }
   },
   "authExpiredPage": {
