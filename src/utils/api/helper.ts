@@ -119,19 +119,28 @@ export const getEcommercePaymentInfoTask = (
           EVENT_ID: PAYMENT_VERIFY_INIT.value,
         });
 
-        // try get auth token
-        const authToken = getSessionItem(SessionItems.authToken);
+        // init API invocation page to handle return url in case of 401
+        setSessionItem(
+          SessionItems.loginOriginPage,
+          `${location.pathname}${location.search}`
+        );
 
-        // if authenticated, use v3, else guest flow
-        return authToken != null
-          ? apiPaymentEcommerceClientV3.getPaymentRequestInfoV3({
-              rpt_id: rptId,
-              bearerAuth: authToken as string, // add auth token
-            })
-          : apiPaymentEcommerceClient.getPaymentRequestInfo({
-              rpt_id: rptId,
-              recaptchaResponse,
-            });
+        return pipe(
+          getSessionItem(SessionItems.authToken) as string,
+          O.fromNullable,
+          O.fold(
+            () =>
+              apiPaymentEcommerceClient.getPaymentRequestInfo({
+                rpt_id: rptId,
+                recaptchaResponse,
+              }),
+            (bearerAuth) =>
+              apiPaymentEcommerceClientV3.getPaymentRequestInfoV3({
+                rpt_id: rptId,
+                bearerAuth, // add auth token
+              })
+          )
+        );
       },
       () => {
         mixpanel.track(PAYMENT_VERIFY_NET_ERR.value, {
@@ -270,8 +279,11 @@ export const activePaymentTask = (
           EVENT_ID: PAYMENT_ACTIVATE_INIT.value,
         });
 
-        // try get auth token
-        const authToken = getSessionItem(SessionItems.authToken);
+        // init API invocation page to handle return url in case of 401
+        setSessionItem(
+          SessionItems.loginOriginPage,
+          `${location.pathname}${location.search}`
+        );
 
         // base payload shared between both auth and non-auth APIs
         const payload = {
@@ -285,16 +297,22 @@ export const activePaymentTask = (
           },
         };
 
-        // if authenticated, use v3, else guest flow
-        return authToken != null
-          ? apiPaymentEcommerceClientV3.newTransactionV3({
-              bearerAuth: authToken as string, // add auth token
-              ...payload,
-            })
-          : apiPaymentEcommerceClientV2.newTransaction({
-              ...payload,
-              recaptchaResponse,
-            });
+        return pipe(
+          getSessionItem(SessionItems.authToken) as string,
+          O.fromNullable,
+          O.fold(
+            () =>
+              apiPaymentEcommerceClientV2.newTransaction({
+                ...payload,
+                recaptchaResponse,
+              }),
+            (bearerAuth) =>
+              apiPaymentEcommerceClientV3.newTransactionV3({
+                bearerAuth, // add auth token
+                ...payload,
+              })
+          )
+        );
       },
       () => {
         mixpanel.track(PAYMENT_ACTIVATE_NET_ERR.value, {

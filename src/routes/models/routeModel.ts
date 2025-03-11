@@ -2,6 +2,7 @@ export enum CheckoutRoutes {
   ROOT = "",
   DONA = "dona",
   AUTH_CALLBACK = "auth-callback",
+  AUTH_EXPIRED = "sessione-scaduta",
   LEGGI_CODICE_QR = "leggi-codice-qr",
   INSERISCI_DATI_AVVISO = "inserisci-dati-avviso",
   DATI_PAGAMENTO = "dati-pagamento",
