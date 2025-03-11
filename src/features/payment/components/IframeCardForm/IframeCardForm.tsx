@@ -78,6 +78,13 @@ export default function IframeCardForm(props: Props) {
   const [isAllFieldsLoaded, setIsAllFieldsLoaded] = React.useState(false);
 
   const onError = (m: string) => {
+    setLoading(false);
+    setError(m);
+    setErrorModalOpen(true);
+    ref.current?.reset();
+  };
+
+  const onNpgSessionsError = (m: string) => {
     pipe(
       m !== ErrorsType.UNAUTHORIZED,
       B.fold(
@@ -88,12 +95,7 @@ export default function IframeCardForm(props: Props) {
           );
           navigate(`/${CheckoutRoutes.AUTH_EXPIRED}`);
         },
-        () => {
-          setLoading(false);
-          setError(m);
-          setErrorModalOpen(true);
-          ref.current?.reset();
-        }
+        () => onError(m)
       )
     );
   };
@@ -200,7 +202,7 @@ export default function IframeCardForm(props: Props) {
       };
 
       void (async () => {
-        void npgSessionsFields(onError, onResponse);
+        void npgSessionsFields(onNpgSessionsError, onResponse);
       })();
     }
   }, [form?.orderId]);
