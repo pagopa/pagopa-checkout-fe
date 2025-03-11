@@ -37,10 +37,18 @@ export default function PaymentNoticePage() {
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
 
-  const onError = (error: string) => {
-    setLoading(false);
+  const onError = (
+    faultCodeCategory: string,
+    faultCodeDetail: string | undefined
+  ) => {
+    // 401 on secured api means session is expired
+    if (faultCodeDetail === "Unauthorized") {
+      navigate(CheckoutRoutes.AUTH_EXPIRED);
+      return;
+    }
 
-    setError(error);
+    setLoading(false);
+    setError(`${faultCodeCategory}-${faultCodeDetail}`);
     setErrorModalOpen(true);
     ref.current?.reset();
   };
@@ -54,7 +62,7 @@ export default function PaymentNoticePage() {
       await pipe(
         getEcommercePaymentInfoTask(rptId, token || ""),
         TE.mapLeft((err) =>
-          onError(`${err.faultCodeCategory}-${err.faultCodeDetail}`)
+          onError(err.faultCodeCategory, err.faultCodeDetail)
         ),
         TE.map((paymentInfo) => {
           setSessionItem(SessionItems.paymentInfo, paymentInfo);

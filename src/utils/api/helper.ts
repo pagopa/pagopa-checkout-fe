@@ -178,6 +178,12 @@ export const getEcommercePaymentInfoTask = (
                   : PAYMENT_VERIFY_RESP_ERR.value;
               mixpanel.track(EVENT_ID, { EVENT_ID, reason });
 
+              if (responseType.status === 401) {
+                return TE.left({
+                  faultCodeCategory: FaultCategoryEnum.GENERIC_ERROR as string,
+                  faultCodeDetail: "Unauthorized",
+                });
+              }
               if (responseType.status === 400) {
                 return TE.left({
                   faultCodeCategory: FaultCategoryEnum.GENERIC_ERROR as string,
@@ -399,6 +405,12 @@ export const activePaymentTask = (
                   : PAYMENT_ACTIVATE_RESP_ERR.value;
               mixpanel.track(EVENT_ID, { EVENT_ID, reason });
 
+              if (responseType.status === 401) {
+                return TE.left({
+                  faultCodeCategory: FaultCategoryEnum.GENERIC_ERROR as string,
+                  faultCodeDetail: "Unauthorized",
+                });
+              }
               if (responseType.status === 400) {
                 return TE.left({
                   faultCodeCategory: FaultCategoryEnum.GENERIC_ERROR as string,
