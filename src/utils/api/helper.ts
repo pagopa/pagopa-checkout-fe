@@ -182,7 +182,7 @@ export const getEcommercePaymentInfoTask = (
 
               if (responseType.status === 401) {
                 return TE.left({
-                  faultCodeCategory: FaultCategoryEnum.GENERIC_ERROR as string,
+                  faultCodeCategory: "SESSION_EXPIRED",
                   faultCodeDetail: "Unauthorized",
                 });
               }
@@ -409,7 +409,7 @@ export const activePaymentTask = (
 
               if (responseType.status === 401) {
                 return TE.left({
-                  faultCodeCategory: FaultCategoryEnum.GENERIC_ERROR as string,
+                  faultCodeCategory: "SESSION_EXPIRED",
                   faultCodeDetail: "Unauthorized",
                 });
               }

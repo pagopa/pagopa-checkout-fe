@@ -10,7 +10,10 @@ export const onErrorActivate = (
   navigate: NavigateFunction
 ) => {
   // handle 401 on authorized apis
-  if (faultCodeDetail === "Unauthorized") {
+  if (
+    faultCodeCategory === "SESSION_EXPIRED" &&
+    faultCodeDetail === "Unauthorized"
+  ) {
     navigate(`/${CheckoutRoutes.AUTH_EXPIRED}`);
   }
 
