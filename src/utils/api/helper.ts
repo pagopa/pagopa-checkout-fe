@@ -83,6 +83,7 @@ import { CalculateFeeResponse } from "../../../generated/definitions/payment-eco
 import { FaultCategoryEnum } from "../../../generated/definitions/payment-ecommerce/FaultCategory";
 import { CalculateFeeRequest } from "../../../generated/definitions/payment-ecommerce-v2/CalculateFeeRequest";
 import { AuthRequest } from "../../../generated/definitions/checkout-auth-service-v1/AuthRequest";
+import { UserInfoResponse } from "../../../generated/definitions/checkout-auth-service-v1/UserInfoResponse";
 import {
   apiCheckoutFeatureFlags,
   apiPaymentEcommerceClient,
@@ -92,6 +93,7 @@ import {
   apiCheckoutAuthServiceClientV1,
   apiPaymentEcommerceClientV3,
   apiPaymentEcommerceClientWithRetryV3,
+  apiCheckoutAuthServiceClientGetUserV1
 } from "./client";
 
 export const NodeFaultCodeR = t.interface({
@@ -120,19 +122,28 @@ export const getEcommercePaymentInfoTask = (
           EVENT_ID: PAYMENT_VERIFY_INIT.value,
         });
 
-        // try get auth token
-        const authToken = getSessionItem(SessionItems.authToken);
+        // init API invocation page to handle return url in case of 401
+        setSessionItem(
+          SessionItems.loginOriginPage,
+          `${location.pathname}${location.search}`
+        );
 
-        // if authenticated, use v3, else guest flow
-        return authToken != null
-          ? apiPaymentEcommerceClientV3.getPaymentRequestInfoV3({
-              rpt_id: rptId,
-              bearerAuth: authToken as string, // add auth token
-            })
-          : apiPaymentEcommerceClient.getPaymentRequestInfo({
-              rpt_id: rptId,
-              recaptchaResponse,
-            });
+        return pipe(
+          getSessionItem(SessionItems.authToken) as string,
+          O.fromNullable,
+          O.fold(
+            () =>
+              apiPaymentEcommerceClient.getPaymentRequestInfo({
+                rpt_id: rptId,
+                recaptchaResponse,
+              }),
+            (bearerAuth) =>
+              apiPaymentEcommerceClientV3.getPaymentRequestInfoV3({
+                rpt_id: rptId,
+                bearerAuth, // add auth token
+              })
+          )
+        );
       },
       () => {
         mixpanel.track(PAYMENT_VERIFY_NET_ERR.value, {
@@ -170,6 +181,12 @@ export const getEcommercePaymentInfoTask = (
                   : PAYMENT_VERIFY_RESP_ERR.value;
               mixpanel.track(EVENT_ID, { EVENT_ID, reason });
 
+              if (responseType.status === 401) {
+                return TE.left({
+                  faultCodeCategory: "SESSION_EXPIRED",
+                  faultCodeDetail: "Unauthorized",
+                });
+              }
               if (responseType.status === 400) {
                 return TE.left({
                   faultCodeCategory: FaultCategoryEnum.GENERIC_ERROR as string,
@@ -271,8 +288,11 @@ export const activePaymentTask = (
           EVENT_ID: PAYMENT_ACTIVATE_INIT.value,
         });
 
-        // try get auth token
-        const authToken = getSessionItem(SessionItems.authToken);
+        // init API invocation page to handle return url in case of 401
+        setSessionItem(
+          SessionItems.loginOriginPage,
+          `${location.pathname}${location.search}`
+        );
 
         // base payload shared between both auth and non-auth APIs
         const payload = {
@@ -286,16 +306,22 @@ export const activePaymentTask = (
           },
         };
 
-        // if authenticated, use v3, else guest flow
-        return authToken != null
-          ? apiPaymentEcommerceClientV3.newTransactionV3({
-              bearerAuth: authToken as string, // add auth token
-              ...payload,
-            })
-          : apiPaymentEcommerceClientV2.newTransaction({
-              ...payload,
-              recaptchaResponse,
-            });
+        return pipe(
+          getSessionItem(SessionItems.authToken) as string,
+          O.fromNullable,
+          O.fold(
+            () =>
+              apiPaymentEcommerceClientV2.newTransaction({
+                ...payload,
+                recaptchaResponse,
+              }),
+            (bearerAuth) =>
+              apiPaymentEcommerceClientV3.newTransactionV3({
+                bearerAuth, // add auth token
+                ...payload,
+              })
+          )
+        );
       },
       () => {
         mixpanel.track(PAYMENT_ACTIVATE_NET_ERR.value, {
@@ -382,6 +408,12 @@ export const activePaymentTask = (
                   : PAYMENT_ACTIVATE_RESP_ERR.value;
               mixpanel.track(EVENT_ID, { EVENT_ID, reason });
 
+              if (responseType.status === 401) {
+                return TE.left({
+                  faultCodeCategory: "SESSION_EXPIRED",
+                  faultCodeDetail: "Unauthorized",
+                });
+              }
               if (responseType.status === 400) {
                 return TE.left({
                   faultCodeCategory: FaultCategoryEnum.GENERIC_ERROR as string,
@@ -666,7 +698,10 @@ export const proceedToLogin = async ({
         pipe(
           myResExt,
           E.fold(
-            () => [],
+            () => {
+              onError(ErrorsType.GENERIC_ERROR);
+              return {};
+            },
             (myRes) => {
               if (myRes?.status === 200) {
                 onResponse(myRes?.value.urlRedirect);
@@ -884,6 +919,54 @@ export const proceedToPayment = async (
         return TE.left(ErrorsType.GENERIC_ERROR);
       },
       (task) => task
+    )
+  )();
+};
+
+export const retrieveUserInfo = async ({
+  onResponse,
+  onError,
+}: {
+  onResponse: (e: UserInfoResponse) => void;
+  onError: (e: string) => void;
+}) => {
+  await pipe(
+    getSessionItem(SessionItems.authToken) as string,
+    O.fromNullable,
+    TE.fromOption(() => ErrorsType.GENERIC_ERROR),
+    TE.chain((authToken) =>
+      TE.tryCatch(
+        () =>
+          apiCheckoutAuthServiceClientGetUserV1.authUsers({
+            bearerAuth: authToken,
+          }),
+        () => ErrorsType.GENERIC_ERROR
+      )
+    ),
+    TE.fold(
+      (error) => {
+        onError(error);
+        return TE.left(error);
+      },
+      (response) =>
+        pipe(
+          response,
+          E.fold(
+            () => {
+              onError(ErrorsType.GENERIC_ERROR);
+              return TE.left(ErrorsType.GENERIC_ERROR);
+            },
+            (res) => {
+              if (res.status === 200) {
+                onResponse(res.value);
+                return TE.right(res.value);
+              } else {
+                onError(ErrorsType.CONNECTION);
+                return TE.left(ErrorsType.CONNECTION);
+              }
+            }
+          )
+        )
     )
   )();
 };
