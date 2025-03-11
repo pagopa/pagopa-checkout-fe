@@ -122,12 +122,6 @@ export const getEcommercePaymentInfoTask = (
           EVENT_ID: PAYMENT_VERIFY_INIT.value,
         });
 
-        // init API invocation page to handle return url in case of 401
-        setSessionItem(
-          SessionItems.loginOriginPage,
-          `${location.pathname}${location.search}`
-        );
-
         return pipe(
           getSessionItem(SessionItems.authToken) as string,
           O.fromNullable,
@@ -137,11 +131,17 @@ export const getEcommercePaymentInfoTask = (
                 rpt_id: rptId,
                 recaptchaResponse,
               }),
-            (bearerAuth) =>
-              apiPaymentEcommerceClientV3.getPaymentRequestInfoV3({
+            (bearerAuth) => {
+              // init API invocation page to handle return url in case of 401
+              setSessionItem(
+                SessionItems.loginOriginPage,
+                `${location.pathname}${location.search}`
+              );
+              return apiPaymentEcommerceClientV3.getPaymentRequestInfoV3({
                 rpt_id: rptId,
                 bearerAuth, // add auth token
-              })
+              });
+            }
           )
         );
       },
@@ -288,12 +288,6 @@ export const activePaymentTask = (
           EVENT_ID: PAYMENT_ACTIVATE_INIT.value,
         });
 
-        // init API invocation page to handle return url in case of 401
-        setSessionItem(
-          SessionItems.loginOriginPage,
-          `${location.pathname}${location.search}`
-        );
-
         // base payload shared between both auth and non-auth APIs
         const payload = {
           "x-correlation-id": correlationId,
@@ -315,11 +309,17 @@ export const activePaymentTask = (
                 ...payload,
                 recaptchaResponse,
               }),
-            (bearerAuth) =>
-              apiPaymentEcommerceClientV3.newTransactionV3({
+            (bearerAuth) => {
+              // init API invocation page to handle return url in case of 401
+              setSessionItem(
+                SessionItems.loginOriginPage,
+                `${location.pathname}${location.search}`
+              );
+              return apiPaymentEcommerceClientV3.newTransactionV3({
                 bearerAuth, // add auth token
                 ...payload,
-              })
+              });
+            }
           )
         );
       },
