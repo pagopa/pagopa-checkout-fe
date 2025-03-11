@@ -68,7 +68,10 @@ export default function Header() {
   const enablePaymentSummaryButton =
     (!!PaymentInfo.receiver || !!CartInfo?.paymentNotices) &&
     !ignoredRoutesForSummaryButton.includes(currentPath);
-  const hidePaymentHeaderPages: Array<string> = [CheckoutRoutes.AUTH_CALLBACK];
+  const hidePaymentHeaderPages: Array<string> = [
+    CheckoutRoutes.AUTH_CALLBACK,
+    CheckoutRoutes.AUTH_EXPIRED,
+  ];
   const hidePaymentHeader = hidePaymentHeaderPages.includes(currentPath);
   const toggleDrawer = (open: boolean) => {
     setDrawstate(open);
