@@ -7,6 +7,7 @@ import { HeaderAccount, RootLinkType } from "@pagopa/mui-italia";
 import ReCAPTCHA from "react-google-recaptcha";
 import { Box } from "@mui/material";
 import { pipe } from "fp-ts/function";
+import * as E from "fp-ts/Either";
 import * as O from "fp-ts/Option";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks/hooks";
 import {
@@ -33,6 +34,7 @@ import {
   clearSessionItem,
 } from "../../utils/storage/sessionStorage";
 import { UserInfoResponse } from "../../../generated/definitions/checkout-auth-service-v1/UserInfoResponse";
+import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce-v3/NewTransactionResponse";
 
 export default function LoginHeader() {
   const { t } = useTranslation();
@@ -110,9 +112,9 @@ export default function LoginHeader() {
 
   const checkTransactionAndHandleLogout = async () => {
     await pipe(
-      SessionItems.transaction,
-      O.fromNullable,
-      O.fold(
+      getSessionItem(SessionItems.transaction),
+      NewTransactionResponse.decode,
+      E.fold(
         async () =>
           await logoutUser({
             onError: () => {
@@ -131,8 +133,6 @@ export default function LoginHeader() {
               clearSessionItem(SessionItems.authToken);
             },
             async () => {
-              dispatch(removeLoggedUser());
-              clearSessionItem(SessionItems.authToken);
               await logoutUser({
                 onError: () => {
                   // eslint-disable-next-line no-console
@@ -147,25 +147,13 @@ export default function LoginHeader() {
                   clearSessionItem(SessionItems.authToken);
                 },
               });
+              navigate(`/${CheckoutRoutes.ANNULLATO}`);
             }
           )
       )
     );
   };
-  /*
-  const onLogoutClick = async () => {
-    setLoading(true);
-    await logoutUser({
-      onResponse: onResponseLogout,
-      onError: onErrorLogout,
-    });
-    dispatch(removeLoggedUser());
-    clearSessionItem(SessionItems.authToken);
-    setTimeout(() => {
-      hideLoading();
-    }, 1000);
-  };
-*/
+
   const doGetUserInfo = () => {
     void retrieveUserInfo({
       onResponse: (userInfo: UserInfoResponse) => {
