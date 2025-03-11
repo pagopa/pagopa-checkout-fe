@@ -30,7 +30,6 @@ export enum SessionItems {
   orderId = "orderId",
   correlationId = "correlationId",
   cartClientId = "cartClientId",
-  loggedUser = "loggedUser",
   loginOriginPage = "loginOriginPage",
   authToken = "authToken",
 }
@@ -119,9 +118,15 @@ export const clearStorage = () => {
 
 export const clearStorageAndMaintainAuthData = () => {
   const authToken = getSessionItem(SessionItems.authToken) as string;
+  const enableAuthentication = getSessionItem(
+    SessionItems.enableAuthentication
+  ) as string;
   sessionStorage.clear();
   if (authToken != null) {
     setSessionItem(SessionItems.authToken, authToken);
+  }
+  if (enableAuthentication != null) {
+    setSessionItem(SessionItems.enableAuthentication, enableAuthentication);
   }
 };
 
