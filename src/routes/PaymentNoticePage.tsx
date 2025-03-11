@@ -43,7 +43,7 @@ export default function PaymentNoticePage() {
   ) => {
     // 401 on secured api means session is expired
     if (faultCodeDetail === "Unauthorized") {
-      navigate(CheckoutRoutes.AUTH_EXPIRED);
+      navigate(`/${CheckoutRoutes.AUTH_EXPIRED}`);
       return;
     }
 
