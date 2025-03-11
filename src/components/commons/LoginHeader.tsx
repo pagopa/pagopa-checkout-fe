@@ -115,41 +115,52 @@ export default function LoginHeader() {
       getSessionItem(SessionItems.transaction),
       NewTransactionResponse.decode,
       E.fold(
-        async () =>
+        async () => {
           await logoutUser({
             onError: () => {
-              dispatch(removeLoggedUser());
-              clearSessionItem(SessionItems.authToken);
+              // eslint-disable-next-line no-console
+              console.log("logout KO");
             },
             onResponse: () => {
-              dispatch(removeLoggedUser());
-              clearSessionItem(SessionItems.authToken);
+              // eslint-disable-next-line no-console
+              console.log("logout OK");
             },
-          }),
-        async () =>
+          });
+          dispatch(removeLoggedUser());
+          clearSessionItem(SessionItems.authToken);
+        },
+        async () => {
           await cancelPayment(
-            () => {
-              dispatch(removeLoggedUser());
-              clearSessionItem(SessionItems.authToken);
+            async () => {
+              await logoutUser({
+                onError: () => {
+                  // eslint-disable-next-line no-console
+                  console.log("logout KO");
+                },
+                onResponse: () => {
+                  // eslint-disable-next-line no-console
+                  console.log("logout OK");
+                },
+              });
+              navigate(`/${CheckoutRoutes.ERRORE}`);
             },
             async () => {
               await logoutUser({
                 onError: () => {
                   // eslint-disable-next-line no-console
                   console.log("logout KO");
-                  dispatch(removeLoggedUser());
-                  clearSessionItem(SessionItems.authToken);
                 },
                 onResponse: () => {
                   // eslint-disable-next-line no-console
                   console.log("logout OK");
-                  dispatch(removeLoggedUser());
-                  clearSessionItem(SessionItems.authToken);
                 },
               });
               navigate(`/${CheckoutRoutes.ANNULLATO}`);
             }
-          )
+          );
+          dispatch(removeLoggedUser());
+          clearSessionItem(SessionItems.authToken);
+        }
       )
     );
   };
