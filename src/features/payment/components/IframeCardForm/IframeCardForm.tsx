@@ -1,5 +1,6 @@
 import { Box } from "@mui/material";
 import * as O from "fp-ts/Option";
+import * as B from "fp-ts/boolean";
 import { pipe } from "fp-ts/function";
 import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
@@ -77,10 +78,24 @@ export default function IframeCardForm(props: Props) {
   const [isAllFieldsLoaded, setIsAllFieldsLoaded] = React.useState(false);
 
   const onError = (m: string) => {
-    setLoading(false);
-    setError(m);
-    setErrorModalOpen(true);
-    ref.current?.reset();
+    pipe(
+      m !== ErrorsType.UNAUTHORIZED,
+      B.fold(
+        () => {
+          setSessionItem(
+            SessionItems.loginOriginPage,
+            `${location.pathname}${location.search}`
+          );
+          navigate(`/${CheckoutRoutes.AUTH_EXPIRED}`);
+        },
+        () => {
+          setLoading(false);
+          setError(m);
+          setErrorModalOpen(true);
+          ref.current?.reset();
+        }
+      )
+    );
   };
 
   const navigate = useNavigate();
