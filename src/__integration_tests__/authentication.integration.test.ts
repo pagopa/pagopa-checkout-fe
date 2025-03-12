@@ -193,6 +193,7 @@ describe("Checkout authentication tests", () => {
     });
 
     await fillPaymentNotificationForm(POST_AUTH_TOKEN_FAILS_503, VALID_FISCAL_CODE);
+    await page.waitForNavigation();
     await clickLoginButton();
 
     await page.waitForNavigation();
@@ -220,6 +221,7 @@ describe("Checkout authentication tests", () => {
     });
 
     await fillPaymentNotificationForm(POST_AUTH_TOKEN_FAILS_504, VALID_FISCAL_CODE);
+    await page.waitForNavigation();
     await clickLoginButton();
 
     await page.waitForNavigation();
@@ -248,6 +250,7 @@ describe("Checkout authentication tests", () => {
     });
 
     await fillPaymentNotificationForm(POST_AUTH_TOKEN_FAILS_429, VALID_FISCAL_CODE);
+    await page.waitForNavigation();
     await clickLoginButton();
 
     await page.waitForNavigation();
@@ -276,6 +279,7 @@ describe("Checkout authentication tests", () => {
     });
 
     await fillPaymentNotificationForm(POST_AUTH_TOKEN_FAILS, VALID_FISCAL_CODE);
+    await page.waitForNavigation();
     await clickLoginButton();
 
     const titleErrorElem = await page.waitForSelector("#errorTitle");
@@ -300,7 +304,7 @@ describe("Checkout authentication tests", () => {
     expect(userButton).toBeDefined();
   });
 
-  it.only("Should redirect to error page receiving 401 from get user info on page refresh", async () => {
+  it("Should redirect to error page receiving 401 from get user info on page refresh", async () => {
     //Do login
     await clickLoginButton();
 
@@ -322,7 +326,7 @@ describe("Checkout authentication tests", () => {
     expect(page.url()).toContain("/errore");
   });
 
-  it.only("Should redirect to error page receiving 500 from get user info on page refresh", async () => {
+  it("Should redirect to error page receiving 500 from get user info on page refresh", async () => {
     //Do login
     await clickLoginButton();
 
