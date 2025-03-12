@@ -35,15 +35,17 @@ import {
   PaymentMethod,
   PaymentMethodInfo,
 } from "../features/payment/models/paymentModel";
-import { useAppSelector } from "../redux/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "../redux/hooks/hooks";
 import {
   cancelPayment,
   calculateFees,
   proceedToPayment,
+  logoutUser,
 } from "../utils/api/helper";
 import { onBrowserUnload, onBrowserBackEvent } from "../utils/eventListeners";
 import { moneyFormat } from "../utils/form/formatters";
 import {
+  clearSessionItem,
   getSessionItem,
   SessionItems,
   setSessionItem,
@@ -55,6 +57,7 @@ import { Bundle } from "../../generated/definitions/payment-ecommerce/Bundle";
 import { CalculateFeeResponse } from "../../generated/definitions/payment-ecommerce/CalculateFeeResponse";
 import { SessionPaymentMethodResponse } from "../../generated/definitions/payment-ecommerce/SessionPaymentMethodResponse";
 import { ImageComponent } from "../features/payment/components/PaymentChoice/PaymentMethodImage";
+import { removeLoggedUser } from "../redux/slices/loggedUser";
 import { CheckoutRoutes } from "./models/routeModel";
 
 const defaultStyle = {
@@ -70,6 +73,7 @@ const defaultStyle = {
 export default function PaymentCheckPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [modalOpen, setModalOpen] = React.useState(false);
   const [showDisclaimer, setShowDisclaimer] = React.useState(true);
   const [cancelModalOpen, setCancelModalOpen] = React.useState(false);
@@ -130,6 +134,27 @@ export default function PaymentCheckPage() {
     return () => window.removeEventListener("popstate", onBack);
   }, []);
 
+  const checkLogout = () => {
+    pipe(
+      SessionItems.authToken,
+      O.fromNullable,
+      O.fold(
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        () => {},
+        async () => {
+          await logoutUser({
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            onError: () => {},
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            onResponse: () => {},
+          });
+          dispatch(removeLoggedUser());
+          clearSessionItem(SessionItems.authToken);
+        }
+      )
+    );
+  };
+
   const onError = (m: string, userCancelRedirect?: boolean) => {
     setPayLoading(false);
     setCancelLoading(false);
@@ -137,6 +162,7 @@ export default function PaymentCheckPage() {
     setPspUpdateLoading(false);
     setError(m);
     setErrorModalOpen(true);
+    checkLogout();
     if (userCancelRedirect !== undefined) {
       setUserCancelRedirect(
         userCancelRedirect === undefined ? false : userCancelRedirect
