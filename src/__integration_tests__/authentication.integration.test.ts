@@ -186,8 +186,6 @@ describe("Checkout authentication tests", () => {
     expect(userButton).toBeDefined();
   });
 
-  /*
-
   it("Should redirect to error page receiving 401 from get user info on page refresh", async () => {
     //Do login
     await clickLoginButton();
@@ -232,8 +230,7 @@ describe("Checkout authentication tests", () => {
 
     //Wait return to error page
     expect(page.url()).toContain("/errore");
-  });
-*/  
+  }); 
 
   it("Should correctly retrieve user info after login is completed on auth-callback page", async () => {
     //Login
