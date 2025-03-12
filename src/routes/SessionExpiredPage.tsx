@@ -1,17 +1,22 @@
 import { Box, Button, Typography } from "@mui/material";
 import { default as React, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
 import PageContainer from "../components/PageContent/PageContainer";
 import { responseOutcome } from "../features/payment/models/responseOutcome";
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { onBrowserUnload } from "../utils/eventListeners";
 import {
+  clearSessionItem,
   clearStorage,
   getSessionItem,
   SessionItems,
 } from "../utils/storage/sessionStorage";
 import { Cart } from "../features/payment/models/paymentModel";
 import { resetThreshold } from "../redux/slices/threshold";
+import { logoutUser } from "../utils/api/helper";
+import { removeLoggedUser } from "../redux/slices/loggedUser";
 
 export default function SessionExpiredPage() {
   const { t } = useTranslation();
@@ -21,7 +26,29 @@ export default function SessionExpiredPage() {
   const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
   const redirectUrl = cart?.returnUrls.returnErrorUrl || "/";
 
+  const checkLogout = () => {
+    pipe(
+      SessionItems.authToken,
+      O.fromNullable,
+      O.fold(
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        () => {},
+        async () => {
+          await logoutUser({
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            onError: () => {},
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            onResponse: () => {},
+          });
+          dispatch(removeLoggedUser());
+          clearSessionItem(SessionItems.authToken);
+        }
+      )
+    );
+  };
+
   useEffect(() => {
+    checkLogout();
     dispatch(resetThreshold());
     window.removeEventListener("beforeunload", onBrowserUnload);
     clearStorage();

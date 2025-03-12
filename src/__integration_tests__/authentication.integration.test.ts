@@ -3,7 +3,8 @@ import deTranslation from "../translations/de/translations.json";
 import enTranslation from "../translations/en/translations.json";
 import frTranslation from "../translations/fr/translations.json";
 import slTranslation from "../translations/sl/translations.json";
-import { clickLoginButton, fillPaymentNotificationForm, getUserButton, selectLanguage , tryLoginWithAuthCallbackError } from "./utils/helpers";
+import { cancelPaymentKO, cancelPaymentOK, clickLoginButton, fillAndSubmitCardDataForm, fillPaymentNotificationForm, getUserButton, payNotice, selectLanguage , tryLoginWithAuthCallbackError } from "./utils/helpers";
+import { CANCEL_PAYMENT_KO, CANCEL_PAYMENT_OK, CHECKOUT_URL_AFTER_AUTHORIZATION, EMAIL, FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA, VALID_CARD_DATA, VALID_NOTICE_CODE } from "./paymentflow.integration.test";
 /**
  * Test input and configuration
  */
@@ -189,7 +190,7 @@ describe("Checkout authentication tests", () => {
     expect(userButton).toBeDefined();
   });
 
-  it.only("Should redirect to error page receiving 401 from get user info on page refresh", async () => {
+  it("Should redirect to error page receiving 401 from get user info on page refresh", async () => {
     //Do login
     await clickLoginButton();
 
@@ -211,7 +212,7 @@ describe("Checkout authentication tests", () => {
     expect(page.url()).toContain("/errore");
   });
 
-  it.only("Should redirect to error page receiving 500 from get user info on page refresh", async () => {
+  it("Should redirect to error page receiving 500 from get user info on page refresh", async () => {
     //Do login
     await clickLoginButton();
 
@@ -282,6 +283,175 @@ describe("Checkout authentication tests", () => {
     expect(regex.test(authCallbackError.currentUrl)).toBe(true);
     expect(authCallbackError.title).toContain(translation.authCallbackPage.title);
     expect(authCallbackError.body).toContain(translation.authCallbackPage.body);
+  });
+
+  it("Should invoke logout with success", async () => {
+
+    let logout204 = false;
+    page.on("response", (response) => {
+      const url = response.url();
+      if (url.includes("auth/logout")) {
+        if (response.status() === 204) {
+          logout204 = true;
+        }
+      }
+    });
+
+    //Login
+    await clickLoginButton();
+
+    //Wait auth-callback page
+    await page.waitForNavigation();
+    //Wait return to main page
+    await page.waitForNavigation();
+    console.log("Login completed");
+
+    const userButton = await getUserButton();
+    await userButton.click();
+    const logoutButton = await page.waitForSelector('body > div.MuiPopover-root.MuiMenu-root.MuiModal-root.css-1sucic7 > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation8.MuiPopover-paper.MuiMenu-paper.MuiMenu-paper.css-vi4pnh > ul > li');
+    await logoutButton.click();
+    await new Promise((r) => setTimeout(r, 500));
+    expect(logout204).toBe(true);
+  });
+
+  it("Should invoke logout with success when payment response page is show", async () => {
+
+    let logout204 = false;
+    page.on("response", (response) => {
+      const url = response.url();
+      if (url.includes("auth/logout")) {
+        if (response.status() === 204) {
+          logout204 = true;
+        }
+      }
+    });
+
+    //Login
+    await clickLoginButton();
+
+    //Wait auth-callback page
+    await page.waitForNavigation();
+    //Wait return to main page
+    await page.waitForNavigation();
+    console.log("Login completed");
+
+    const resultMessage = await payNotice(
+      VALID_NOTICE_CODE,
+      VALID_FISCAL_CODE,
+      EMAIL,
+      VALID_CARD_DATA,
+      CHECKOUT_URL_AFTER_AUTHORIZATION
+    );
+
+    expect(resultMessage).toContain(itTranslation.paymentResponsePage[0].title.replace("{{amount}}", "120,15\xa0€"));
+    expect(logout204).toBe(true);
+  });
+
+  it("Should invoke logout with success when cancel payment is invoked", async () => {
+
+    let logout204 = false;
+    let deleteTransaction202 = false;
+    page.on("response", (response) => {
+      const url = response.url();
+      if (url.includes("/transactions")) {
+        if (response.status() === 202) {
+          deleteTransaction202 = true && !logout204;
+        }
+      }
+      if (url.includes("auth/logout")) {
+        if (response.status() === 204) {
+          logout204 = true && deleteTransaction202;
+        }
+      }
+    });
+
+    //Login
+    await clickLoginButton();
+
+    //Wait auth-callback page
+    await page.waitForNavigation();
+    //Wait return to main page
+    await page.waitForNavigation();
+    console.log("Login completed");
+
+    const resultMessage = await cancelPaymentOK(
+      CANCEL_PAYMENT_OK,
+      VALID_FISCAL_CODE,
+      EMAIL,
+      VALID_CARD_DATA
+    );
+    expect(resultMessage).toContain(itTranslation.cancelledPage.body);
+    expect(deleteTransaction202).toBe(true);
+    expect(logout204).toBe(true);
+  });
+
+  it("Should invoke logout with success when cancel payment is invoked but it fails", async () => {
+
+    let logout204 = false;
+    let deleteTransactionError = false;
+    page.on("response", (response) => {
+      const url = response.url();
+      if (url.includes("/transactions")) {
+        if (response.status() >= 400) {
+          deleteTransactionError = true && !logout204;
+        }
+      }
+      if (url.includes("auth/logout")) {
+        if (response.status() === 204) {
+          logout204 = true && deleteTransactionError;
+        }
+      }
+    });
+
+    //Login
+    await clickLoginButton();
+
+    //Wait auth-callback page
+    await page.waitForNavigation();
+    //Wait return to main page
+    await page.waitForNavigation();
+    console.log("Login completed");
+
+    const resultMessage = await cancelPaymentKO(
+            CANCEL_PAYMENT_KO,
+            VALID_FISCAL_CODE,
+            EMAIL
+          );
+    expect(resultMessage).toContain(itTranslation.GENERIC_ERROR.title);
+    const closeErrorButton = await page.waitForSelector("#closeError");
+    await closeErrorButton.click();
+    expect(deleteTransactionError).toBe(true);
+    expect(logout204).toBe(true);
+  });
+
+  it("Should invoke logout with success when fail a card payment ACTIVATION and get PPT_WISP_SESSIONE_SCONOSCIUTA", async () => {
+    /*
+     * Card payment with notice code that fails on activation and get PPT_WISP_SESSIONE_SCONOSCIUTA 
+     * and redirect to expired session page
+     */
+    let logout204 = false;
+    page.on("response", (response) => {
+    const url = response.url();
+    if (url.includes("auth/logout")) {
+      if (response.status() === 204) {
+        logout204 = true;
+      }
+    }
+    });
+
+    //Login
+    await clickLoginButton();
+
+    //Wait auth-callback page
+    await page.waitForNavigation();
+    //Wait return to main page
+    await page.waitForNavigation();
+    console.log("Login completed");
+    await fillAndSubmitCardDataForm(FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA, VALID_FISCAL_CODE, EMAIL, VALID_CARD_DATA);
+    await page.waitForNavigation();
+    expect(page.url()).toContain("/sessione-scaduta");
+    await new Promise((r) => setTimeout(r, 500));
+    expect(logout204).toBe(true);
   });
   
 });
