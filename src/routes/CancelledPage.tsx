@@ -1,6 +1,8 @@
 import { Box, Button, Typography } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
 import { resetThreshold } from "../redux/slices/threshold";
 import cancelled from "../assets/images/response-unrecognized.svg";
 import PageContainer from "../components/PageContent/PageContainer";
@@ -8,10 +10,13 @@ import { Cart } from "../features/payment/models/paymentModel";
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { onBrowserUnload } from "../utils/eventListeners";
 import {
+  clearSessionItem,
   clearStorage,
   getSessionItem,
   SessionItems,
 } from "../utils/storage/sessionStorage";
+import { logoutUser } from "../utils/api/helper";
+import { removeLoggedUser } from "../redux/slices/loggedUser";
 
 export default function CancelledPage() {
   const { t } = useTranslation();
@@ -19,7 +24,30 @@ export default function CancelledPage() {
   const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
   const redirectUrl = cart?.returnUrls.returnCancelUrl || "/";
 
+  const checkLogout = () => {
+    pipe(
+      SessionItems.authToken,
+      O.fromNullable,
+      O.fold(
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        () => {},
+        async () =>
+          await logoutUser({
+            onError: () => {
+              dispatch(removeLoggedUser());
+              clearSessionItem(SessionItems.authToken);
+            },
+            onResponse: () => {
+              dispatch(removeLoggedUser());
+              clearSessionItem(SessionItems.authToken);
+            },
+          })
+      )
+    );
+  };
+
   React.useEffect(() => {
+    checkLogout();
     dispatch(resetThreshold());
     window.removeEventListener("beforeunload", onBrowserUnload);
     clearStorage();

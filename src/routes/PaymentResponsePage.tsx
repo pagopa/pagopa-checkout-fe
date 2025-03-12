@@ -85,8 +85,27 @@ export default function PaymentResponsePage() {
   };
 
   const dispatch = useAppDispatch();
+  const checkLogout = () => {
+    pipe(
+      SessionItems.authToken,
+      O.fromNullable,
+      O.fold(
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        () => {},
+        async () => {
+          await logoutUser({
+            onError: () => {},
+            onResponse: () => {},
+          });
+          dispatch(removeLoggedUser());
+          clearSessionItem(SessionItems.authToken);
+        }
+      )
+    );
+  };
 
   useEffect(() => {
+    checkLogout();
     dispatch(resetThreshold());
 
     const handleFinalStatusResult = (
@@ -109,28 +128,6 @@ export default function PaymentResponsePage() {
       showFinalResult(outcome);
     };
 
-    const checkLogout = () => {
-      pipe(
-        SessionItems.authToken,
-        O.fromNullable,
-        O.fold(
-          // eslint-disable-next-line @typescript-eslint/no-empty-function
-          () => {},
-          async () =>
-            await logoutUser({
-              onError: () => {
-                dispatch(removeLoggedUser());
-                clearSessionItem(SessionItems.authToken);
-              },
-              onResponse: () => {
-                dispatch(removeLoggedUser());
-                clearSessionItem(SessionItems.authToken);
-              },
-            })
-        )
-      );
-    };
-
     const showFinalResult = (outcome: ViewOutcomeEnum) => {
       const message = responseOutcome[outcome];
       const redirectTo =
@@ -148,7 +145,6 @@ export default function PaymentResponsePage() {
       });
       setLoading(false);
       window.removeEventListener("beforeunload", onBrowserUnload);
-      checkLogout();
       clearStorage();
     };
     void callServices(handleFinalStatusResult);

@@ -1,6 +1,10 @@
 import { Box, Button, Typography } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
+import { logoutUser } from "../utils/api/helper";
+import { removeLoggedUser } from "../redux/slices/loggedUser";
 import { resetThreshold } from "../redux/slices/threshold";
 import ko from "../assets/images/response-umbrella.svg";
 import PageContainer from "../components/PageContent/PageContainer";
@@ -8,6 +12,7 @@ import { Cart } from "../features/payment/models/paymentModel";
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { onBrowserUnload } from "../utils/eventListeners";
 import {
+  clearSessionItem,
   clearStorage,
   getSessionItem,
   SessionItems,
@@ -19,7 +24,30 @@ export default function KOPage() {
   const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
   const redirectUrl = cart?.returnUrls.returnErrorUrl || "/";
 
+  const checkLogout = () => {
+    pipe(
+      SessionItems.authToken,
+      O.fromNullable,
+      O.fold(
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        () => {},
+        async () =>
+          await logoutUser({
+            onError: () => {
+              dispatch(removeLoggedUser());
+              clearSessionItem(SessionItems.authToken);
+            },
+            onResponse: () => {
+              dispatch(removeLoggedUser());
+              clearSessionItem(SessionItems.authToken);
+            },
+          })
+      )
+    );
+  };
+
   React.useEffect(() => {
+    checkLogout();
     dispatch(resetThreshold());
     window.removeEventListener("beforeunload", onBrowserUnload);
     clearStorage();

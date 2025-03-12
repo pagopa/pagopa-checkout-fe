@@ -1,6 +1,10 @@
 import { Box, Button, Typography } from "@mui/material";
 import { default as React, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { pipe } from "fp-ts/function";
+import * as O from "fp-ts/Option";
+import { removeLoggedUser } from "../redux/slices/loggedUser";
+import { logoutUser } from "../utils/api/helper";
 import FindOutMoreModal from "../components/modals/FindOutMoreModal";
 import { getFragmentParameter } from "../utils/regex/urlUtilities";
 import { getConfigOrThrow } from "../utils/config/config";
@@ -11,6 +15,7 @@ import { useAppDispatch } from "../redux/hooks/hooks";
 import { onBrowserUnload } from "../utils/eventListeners";
 import { moneyFormat } from "../utils/form/formatters";
 import {
+  clearSessionItem,
   clearStorage,
   getSessionItem,
   SessionItems,
@@ -82,7 +87,29 @@ export default function PaymentResponsePageV2() {
 
   const dispatch = useAppDispatch();
 
+  const checkLogout = () => {
+    pipe(
+      SessionItems.authToken,
+      O.fromNullable,
+      O.fold(
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        () => {},
+        async () => {
+          await logoutUser({
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            onError: () => {},
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            onResponse: () => {},
+          });
+          dispatch(removeLoggedUser());
+          clearSessionItem(SessionItems.authToken);
+        }
+      )
+    );
+  };
+
   useEffect(() => {
+    checkLogout();
     dispatch(resetThreshold());
     window.removeEventListener("beforeunload", onBrowserUnload);
     clearStorage();

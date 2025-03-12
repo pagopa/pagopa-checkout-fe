@@ -19,7 +19,6 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
-import { removeLoggedUser } from "../redux/slices/loggedUser";
 import { selectThreshold } from "../redux/slices/threshold";
 import { ErrorsType } from "../utils/errors/checkErrorsModel";
 import sprite from "../assets/images/app.svg";
@@ -36,17 +35,15 @@ import {
   PaymentMethod,
   PaymentMethodInfo,
 } from "../features/payment/models/paymentModel";
-import { useAppDispatch, useAppSelector } from "../redux/hooks/hooks";
+import { useAppSelector } from "../redux/hooks/hooks";
 import {
   cancelPayment,
   calculateFees,
   proceedToPayment,
-  logoutUser,
 } from "../utils/api/helper";
 import { onBrowserUnload, onBrowserBackEvent } from "../utils/eventListeners";
 import { moneyFormat } from "../utils/form/formatters";
 import {
-  clearSessionItem,
   getSessionItem,
   SessionItems,
   setSessionItem,
@@ -73,7 +70,6 @@ const defaultStyle = {
 export default function PaymentCheckPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
   const [modalOpen, setModalOpen] = React.useState(false);
   const [showDisclaimer, setShowDisclaimer] = React.useState(true);
   const [cancelModalOpen, setCancelModalOpen] = React.useState(false);
@@ -193,32 +189,9 @@ export default function PaymentCheckPage() {
     setCancelModalOpen(true);
   }, []);
 
-  const checkLogout = () => {
-    pipe(
-      SessionItems.authToken,
-      O.fromNullable,
-      O.fold(
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        () => {},
-        async () =>
-          await logoutUser({
-            onError: () => {
-              dispatch(removeLoggedUser());
-              clearSessionItem(SessionItems.authToken);
-            },
-            onResponse: () => {
-              dispatch(removeLoggedUser());
-              clearSessionItem(SessionItems.authToken);
-            },
-          })
-      )
-    );
-  };
-
   const onCancelResponse = () => {
     setCancelLoading(false);
     navigate(`/${CheckoutRoutes.ANNULLATO}`);
-    checkLogout();
   };
 
   const onCancelPaymentSubmit = () => {
