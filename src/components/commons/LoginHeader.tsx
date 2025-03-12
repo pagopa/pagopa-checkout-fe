@@ -35,6 +35,7 @@ import {
 } from "../../utils/storage/sessionStorage";
 import { UserInfoResponse } from "../../../generated/definitions/checkout-auth-service-v1/UserInfoResponse";
 import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce-v3/NewTransactionResponse";
+import { CancelPayment } from "../../components/modals/CancelPayment";
 
 export default function LoginHeader() {
   const { t } = useTranslation();
@@ -62,6 +63,8 @@ export default function LoginHeader() {
   const [isLoginButtonReady, setLoginButtonReady] = React.useState(false);
   const [error, setError] = React.useState("");
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
+  const [cancelPaymentModalOpen, setCancelPaymentModalOpen] =
+    React.useState(false);
 
   // the login button should be visible if user is already logged in
   // and user is on pages where he cannot do login
@@ -129,40 +132,43 @@ export default function LoginHeader() {
           dispatch(removeLoggedUser());
           clearSessionItem(SessionItems.authToken);
         },
-        async () => {
-          await cancelPayment(
-            async () => {
-              await logoutUser({
-                onError: () => {
-                  // eslint-disable-next-line no-console
-                  console.log("logout KO");
-                },
-                onResponse: () => {
-                  // eslint-disable-next-line no-console
-                  console.log("logout OK");
-                },
-              });
-              navigate(`/${CheckoutRoutes.ERRORE}`);
-            },
-            async () => {
-              await logoutUser({
-                onError: () => {
-                  // eslint-disable-next-line no-console
-                  console.log("logout KO");
-                },
-                onResponse: () => {
-                  // eslint-disable-next-line no-console
-                  console.log("logout OK");
-                },
-              });
-              navigate(`/${CheckoutRoutes.ANNULLATO}`);
-            }
-          );
-          dispatch(removeLoggedUser());
-          clearSessionItem(SessionItems.authToken);
-        }
+        async () => setCancelPaymentModalOpen(true)
       )
     );
+  };
+
+  const cancelPaymentAndLogout = async () => {
+    await cancelPayment(
+      async () => {
+        await logoutUser({
+          onError: () => {
+            // eslint-disable-next-line no-console
+            console.log("logout KO");
+          },
+          onResponse: () => {
+            // eslint-disable-next-line no-console
+            console.log("logout OK");
+          },
+        });
+        navigate(`/${CheckoutRoutes.ERRORE}`);
+      },
+      async () => {
+        await logoutUser({
+          onError: () => {
+            // eslint-disable-next-line no-console
+            console.log("logout KO");
+          },
+          onResponse: () => {
+            // eslint-disable-next-line no-console
+            console.log("logout OK");
+          },
+        });
+        navigate(`/${CheckoutRoutes.ANNULLATO}`);
+      }
+    );
+    dispatch(removeLoggedUser());
+    clearSessionItem(SessionItems.authToken);
+    setCancelPaymentModalOpen(false);
   };
 
   const doGetUserInfo = () => {
@@ -226,6 +232,11 @@ export default function LoginHeader() {
           sitekey={getReCaptchaKey() as string}
         />
       </Box>
+      <CancelPayment
+        open={cancelPaymentModalOpen}
+        onCancel={() => setCancelPaymentModalOpen(false)}
+        onSubmit={() => cancelPaymentAndLogout()}
+      />
       {!!error && (
         <ErrorModal
           error={error}
