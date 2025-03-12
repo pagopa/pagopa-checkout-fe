@@ -35,7 +35,7 @@ export default function AuthExpiredPage() {
         display="flex"
         flexDirection="column"
         alignItems="center"
-        sx={{ mt: 6 }}
+        sx={{ mt: 15 }}
       >
         <img
           src={timeout}
