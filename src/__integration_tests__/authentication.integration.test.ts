@@ -185,7 +185,7 @@ describe("Checkout authentication tests", () => {
     const userButton = await getUserButton();
     expect(userButton).toBeDefined();
   });
-
+  /* this test requires a merge on be mock side before we can re-enable them
   it("Should redirect to error page receiving 401 from get user info on page refresh", async () => {
     //Do login
     await clickLoginButton();
@@ -231,6 +231,7 @@ describe("Checkout authentication tests", () => {
     //Wait return to error page
     expect(page.url()).toContain("/errore");
   }); 
+  */
 
   it("Should correctly retrieve user info after login is completed on auth-callback page", async () => {
     //Login
