@@ -93,7 +93,7 @@ import {
   apiCheckoutAuthServiceClientV1,
   apiPaymentEcommerceClientV3,
   apiPaymentEcommerceClientWithRetryV3,
-  apiCheckoutAuthServiceClientGetUserV1
+  apiCheckoutAuthServiceClientGetUserV1,
 } from "./client";
 
 export const NodeFaultCodeR = t.interface({

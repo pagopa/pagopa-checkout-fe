@@ -17,12 +17,12 @@ export function getPaymentMethodsMock(): Array<PaymentInstrumentsType> {
       ranges: [],
     },
     {
-      id: "paypal-id",
-      name: "PAYPAL",
-      description: "PayPal (anche in 3 rate)",
+      id: "bancomatpay-id",
+      name: "BANCOMATPAY",
+      description: "BancomatPay",
       status: PaymentMethodStatusEnum.ENABLED,
       methodManagement: PaymentMethodManagementTypeEnum.ONBOARDABLE,
-      paymentTypeCode: PaymentCodeTypeEnum.PPAL,
+      paymentTypeCode: PaymentCodeTypeEnum.BPAY,
       ranges: [],
     },
   ];
