@@ -1407,3 +1407,22 @@ export const evaluateFeatureFlag = async (
     )
   )();
 };
+
+export const checkLogout = (onLogoutCallBack: () => void) => {
+  pipe(
+    SessionItems.authToken,
+    O.fromNullable,
+    O.fold(
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      () => {},
+      async () => {
+        await logoutUser({
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
+          onError: onLogoutCallBack,
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
+          onResponse: onLogoutCallBack,
+        });
+      }
+    )
+  );
+};

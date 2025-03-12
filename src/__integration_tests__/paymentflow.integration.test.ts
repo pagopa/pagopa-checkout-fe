@@ -58,7 +58,7 @@ const PSP_ABOVETHRESHOLD = "302016723749670055";
 /* PSP_BELOWTHRESHOLD end with 56 */
 const PSP_BELOWTHRESHOLD = "302016723749670056";
 /* PSP_FAIL end with 57 */
-const PSP_FAIL = "302016723749670057";
+export const PSP_FAIL = "302016723749670057";
 /* CANCEL_PAYMENT SUCCESS end with 58 */
 export const CANCEL_PAYMENT_OK = "302016723749670058";
 /* CANCEL_PAYMENT_FAIL end with 59 */
@@ -373,9 +373,7 @@ describe("Checkout fails to calculate fee", () => {
       const closeErrorModalButton = "#closeError";
       await page.waitForSelector(closeErrorModalButton);
       await page.click(closeErrorModalButton);
-      const errorDescriptionXpath =
-        '//*[@id="root"]/div/main/div/div/div/div[1]/div[1]';
-      const errorMessageElem = await page.waitForXPath(errorDescriptionXpath);
+      const errorMessageElem = await page.waitForSelector("#iframeCardFormErrorTitleId");
       const errorMessage = await errorMessageElem.evaluate(
         (el) => el.textContent
       );

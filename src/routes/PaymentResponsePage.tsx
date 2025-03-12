@@ -5,8 +5,6 @@
 import { Box, Button, Typography } from "@mui/material";
 import { default as React, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { pipe } from "fp-ts/function";
-import * as O from "fp-ts/Option";
 import { getConfigOrThrow } from "../utils/config/config";
 import SurveyLink from "../components/commons/SurveyLink";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
@@ -41,7 +39,7 @@ import {
   TransactionInfoNodeInfo,
 } from "../../generated/definitions/payment-ecommerce-v2/TransactionInfo";
 import { removeLoggedUser } from "../redux/slices/loggedUser";
-import { logoutUser } from "../utils/api/helper";
+import { checkLogout } from "../utils/api/helper";
 import FindOutMoreModal from "./../components/modals/FindOutMoreModal";
 
 type PrintData = {
@@ -85,27 +83,12 @@ export default function PaymentResponsePage() {
   };
 
   const dispatch = useAppDispatch();
-  const checkLogout = () => {
-    pipe(
-      SessionItems.authToken,
-      O.fromNullable,
-      O.fold(
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        () => {},
-        async () => {
-          await logoutUser({
-            onError: () => {},
-            onResponse: () => {},
-          });
-          dispatch(removeLoggedUser());
-          clearSessionItem(SessionItems.authToken);
-        }
-      )
-    );
-  };
 
   useEffect(() => {
-    checkLogout();
+    checkLogout(() => {
+      dispatch(removeLoggedUser());
+      clearSessionItem(SessionItems.authToken);
+    });
     dispatch(resetThreshold());
 
     const handleFinalStatusResult = (
