@@ -28,7 +28,7 @@ resources:
     - repository: checkout-be-mock
       type: github
       name: pagopa/pagopa-checkout-be-mock
-      ref: master
+      ref: CHK-3767-remove-retry-auth-token
       endpoint: 'io-azure-devops-github-ro'
 
 stages:
