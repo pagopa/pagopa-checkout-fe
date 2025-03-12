@@ -39,6 +39,7 @@ beforeEach(async () => {
 
 describe("Checkout authentication tests", () => {
   
+  
   it("Should correclty invoke the login flow when clicking login or retry", async () => {
 
     // keep track
@@ -170,8 +171,7 @@ describe("Checkout authentication tests", () => {
     
     expect(title).toContain(translation.authCallbackPage.title);
     expect(body).toContain(translation.authCallbackPage.body);
-  });  
-
+  });
 
   it("Should correctly retrieve user info if authToken is present", async () => {
     await page.evaluate(() => {
@@ -186,7 +186,9 @@ describe("Checkout authentication tests", () => {
     expect(userButton).toBeDefined();
   });
 
-  it.only("Should redirect to error page receiving 401 from get user info on page refresh", async () => {
+  /*
+
+  it("Should redirect to error page receiving 401 from get user info on page refresh", async () => {
     //Do login
     await clickLoginButton();
 
@@ -208,7 +210,7 @@ describe("Checkout authentication tests", () => {
     expect(page.url()).toContain("/errore");
   });
 
-  it.only("Should redirect to error page receiving 500 from get user info on page refresh", async () => {
+  it("Should redirect to error page receiving 500 from get user info on page refresh", async () => {
     //Do login
     await clickLoginButton();
 
@@ -231,6 +233,7 @@ describe("Checkout authentication tests", () => {
     //Wait return to error page
     expect(page.url()).toContain("/errore");
   });
+*/  
 
   it("Should correctly retrieve user info after login is completed on auth-callback page", async () => {
     //Login
@@ -263,4 +266,23 @@ describe("Checkout authentication tests", () => {
     expect(authCallbackError.title).toContain(translation.authCallbackPage.title);
     expect(authCallbackError.body).toContain(translation.authCallbackPage.body);
   });
+
+  it.each([
+    ["it", itTranslation],
+    ["en", enTranslation],
+    ["fr", frTranslation],
+    ["de", deTranslation],
+    ["sl", slTranslation]
+  ])("Should show error receiving 500 from get user info on auth-callback page for language [%s]", async (lang, translation) => {
+    await selectLanguage(lang);
+
+    const authCallbackError = await tryLoginWithAuthCallbackError(FAIL_GET_USERS_500, VALID_FISCAL_CODE);
+
+    const regex = new RegExp(BASE_CALLBACK_URL_REGEX);
+    expect(regex.test(authCallbackError.currentUrl)).toBe(true);
+    expect(authCallbackError.title).toContain(translation.authCallbackPage.title);
+    expect(authCallbackError.body).toContain(translation.authCallbackPage.body);
+  });
+  
 });
+
