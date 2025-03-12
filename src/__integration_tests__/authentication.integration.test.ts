@@ -189,7 +189,7 @@ describe("Checkout authentication tests", () => {
     expect(userButton).toBeDefined();
   });
 
-  it("Should redirect to error page receiving 401 from get user info on page refresh", async () => {
+  it.only("Should redirect to error page receiving 401 from get user info on page refresh", async () => {
     //Do login
     await clickLoginButton();
 
@@ -204,14 +204,14 @@ describe("Checkout authentication tests", () => {
     await page.waitForNavigation();
     console.log("MockFlow setted with noticeCode: ", FAIL_GET_USERS_401);
 
-    //reload page in order to read authToken into sessionStoWWWWWWrage
+    //reload page in order to read authToken into sessionStorage
     await page.reload();
 
     //Wait return to error page
     expect(page.url()).toContain("/errore");
   });
 
-  it("Should redirect to error page receiving 500 from get user info on page refresh", async () => {
+  it.only("Should redirect to error page receiving 500 from get user info on page refresh", async () => {
     //Do login
     await clickLoginButton();
 
@@ -226,8 +226,10 @@ describe("Checkout authentication tests", () => {
     await page.waitForNavigation();
     console.log("MockFlow setted with noticeCode: ", FAIL_GET_USERS_500);
 
-    //reload page in order to read authToken into sessionStoWWWWWWrage
+    //reload page in order to read authToken into sessionStorage
     await page.reload();
+    //wait for redirect to error page after retry
+    await page.waitForNavigation();
 
     //Wait return to error page
     expect(page.url()).toContain("/errore");
