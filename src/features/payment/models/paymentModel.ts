@@ -89,6 +89,7 @@ export interface PaymentMethod {
 }
 
 export enum PaymentCodeTypeEnum {
+  PPAL = "PPAL", // PayPal
   RBPR = "RBPR", // Conto BancoPosta Retail
   RBPB = "RBPB", // Conto BancoPosta Impresa
   RBPP = "RBPP", // Paga con Postepay
