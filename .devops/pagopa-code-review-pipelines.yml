@@ -28,7 +28,7 @@ resources:
     - repository: checkout-be-mock
       type: github
       name: pagopa/pagopa-checkout-be-mock
-      ref: master
+      ref: CHK-3751-add-secure-api-v3
       endpoint: 'io-azure-devops-github-ro'
 
 stages:
