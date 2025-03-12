@@ -20,14 +20,14 @@ const VALID_FISCAL_CODE = "77777777777";
 /* POST AUTH TOKEN FAIL ends with 78 */
 const VALID_RPTID = "302000100000009400"; 
 const POST_AUTH_TOKEN_FAILS = "302000100000009478"; 
-const FAIL_GET_USERS_401 = "302000100000009479";
-const FAIL_GET_USERS_500 = "302000100000009480";
-const FAIL_UNAUTHORIZED_401 = "302000100000009481";
+const FAIL_GET_USERS_401 = "302000100000009482";
+const FAIL_GET_USERS_500 = "302000100000009483";
+const FAIL_UNAUTHORIZED_401 = "302000100000009484";
 
-jest.setTimeout(80000);
+jest.setTimeout(30000);
 jest.retryTimes(3);
-page.setDefaultNavigationTimeout(80000);
-page.setDefaultTimeout(80000);
+page.setDefaultNavigationTimeout(10000);
+page.setDefaultTimeout(10000);
 
 beforeAll(async () => {
   await page.goto(CHECKOUT_URL);
