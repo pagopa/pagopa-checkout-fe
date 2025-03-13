@@ -1,20 +1,24 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import { Box, Button, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { useAppDispatch } from "../redux/hooks/hooks";
 import PageContainer from "../components/PageContent/PageContainer";
 import timeout from "../assets/images/response-timeout.svg";
 import {
+  clearSessionItem,
   getAndClearSessionItem,
   SessionItems,
 } from "../utils/storage/sessionStorage";
+import { removeLoggedUser } from "../redux/slices/loggedUser";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function AuthExpiredPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
 
   const returnToOriginPage = () => {
     pipe(
@@ -28,6 +32,11 @@ export default function AuthExpiredPage() {
       )
     );
   };
+
+  useEffect(() => {
+    dispatch(removeLoggedUser());
+    clearSessionItem(SessionItems.authToken);
+  }, []);
 
   return (
     <PageContainer>
