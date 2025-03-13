@@ -28,7 +28,7 @@ resources:
     - repository: checkout-be-mock
       type: github
       name: pagopa/pagopa-checkout-be-mock
-      ref: CHK-3750-mock-logout
+      ref: master
       endpoint: 'io-azure-devops-github-ro'
 
 stages:
