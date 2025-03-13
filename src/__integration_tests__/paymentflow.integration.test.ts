@@ -269,10 +269,6 @@ describe("Checkout payment activation failure tests", () => {
          * 2. Payment with notice code that fails on activation and get FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND
          */
         selectLanguage(lang);
-        page.on("dialog", async (dialog) => {
-          await dialog.accept();
-        });
-
         const errorMessageTitleSelector = "#idTitleErrorModalPaymentCheckPage";
         const resultMessage = await authorizePaymentAndGetError(
           FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND,
@@ -281,11 +277,16 @@ describe("Checkout payment activation failure tests", () => {
           VALID_CARD_DATA,
           errorMessageTitleSelector
         );
-
-        expect(resultMessage).toContain(translation.GENERIC_ERROR.title);
-
         const closeErrorButton = await page.waitForSelector("#closeError");
         await closeErrorButton.click();
+        await new Promise((r) => setTimeout(r, 1000));
+        const paymentCheckPageButtonCancel = await page.waitForSelector("#paymentCheckPageButtonCancel");
+        await paymentCheckPageButtonCancel.click();
+        const cancPayment = await page.waitForSelector("#confirm", {visible: true});
+        await cancPayment.click();
+        await page.waitForNavigation();
+        expect(resultMessage).toContain(translation.GENERIC_ERROR.title);
+        //await cancelPaymentAction();
       }
     );
   });
@@ -373,7 +374,9 @@ describe("Checkout fails to calculate fee", () => {
       const closeErrorModalButton = "#closeError";
       await page.waitForSelector(closeErrorModalButton);
       await page.click(closeErrorModalButton);
-      const errorMessageElem = await page.waitForSelector("#iframeCardFormErrorTitleId");
+      const errorDescriptionXpath =
+        '//*[@id="root"]/div/main/div/div/div/div[1]/div[1]';
+      const errorMessageElem = await page.waitForXPath(errorDescriptionXpath);
       const errorMessage = await errorMessageElem.evaluate(
         (el) => el.textContent
       );
