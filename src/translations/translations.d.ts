@@ -42,6 +42,14 @@ interface Translation {
       continueWithoutLogin: string;
     };
   };
+  authExpiredPage: {
+    title: string;
+    body: string;
+    buttons: {
+      login: string;
+      continueWithoutLogin: string;
+    };
+  };
   cartDetail: {
     amount: string;
     companyName: string;

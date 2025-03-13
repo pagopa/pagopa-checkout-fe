@@ -30,6 +30,7 @@ import { mixpanelInit } from "./utils/config/mixpanelHelperInit";
 import { SessionItems } from "./utils/storage/sessionStorage";
 import SessionExpiredPage from "./routes/SessionExpiredPage";
 import AuthCallback from "./routes/AuthCallbackPage";
+import AuthExpiredPage from "./routes/AuthExpiredPage";
 
 const checkoutTheme = createTheme({
   ...theme,
@@ -95,6 +96,10 @@ export function App() {
               <Route
                 path={CheckoutRoutes.AUTH_CALLBACK}
                 element={<AuthCallback />}
+              />
+              <Route
+                path={CheckoutRoutes.AUTH_EXPIRED}
+                element={<AuthExpiredPage />}
               />
               <Route
                 path={CheckoutRoutes.DONA}

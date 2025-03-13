@@ -29,6 +29,14 @@
       "continueWithoutLogin": "Continua senza login"
     }
   },
+  "authExpiredPage": {
+    "title": "La tua sessione è scaduta",
+    "body": "Accedi per riprendere la sessione, oppure prosegui senza effettuare il login ",
+    "buttons": {
+      "login": "Accedi",
+      "continueWithoutLogin": "Continua senza login."
+    }
+  },
   "cartDetail": {
     "amount": "Amount",
     "companyName": "Payee",
