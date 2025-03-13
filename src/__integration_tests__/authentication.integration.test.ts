@@ -4,7 +4,6 @@ import enTranslation from "../translations/en/translations.json";
 import frTranslation from "../translations/fr/translations.json";
 import slTranslation from "../translations/sl/translations.json";
 import { cancelPaymentKO, cancelPaymentOK, checkErrorOnCardDataFormSubmit, clickLoginButton, fillAndSubmitCardDataForm, fillPaymentNotificationForm, getUserButton, payNotice, selectLanguage , tryLoginWithAuthCallbackError, choosePaymentMethod, verifyPaymentMethods } from "./utils/helpers";
-import { CANCEL_PAYMENT_KO, CANCEL_PAYMENT_OK, CHECKOUT_URL_AFTER_AUTHORIZATION, EMAIL, FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA, PSP_FAIL, VALID_CARD_DATA, VALID_NOTICE_CODE } from "./paymentflow.integration.test";
 /**
  * Test input and configuration
  */
@@ -17,7 +16,6 @@ const CALLBACK_URL_NO_STATE = `${BASE_CALLBACK_URL}?code=gMPV0CSInuTY0pjd&`;
 const PAGE_LOGIN_COMEBACK_URL = `http://localhost:1234/inserisci-dati-avviso`;
 const PAYMENT_METHODS_PAGE = 'http://localhost:1234/scegli-metodo';
 const INSERT_CARD_PAGE = 'http://localhost:1234/inserisci-carta';
-const VALID_FISCAL_CODE = "77777777777";
 /* POST AUTH TOKEN FAIL ends with 78 */
 const VALID_RPTID = "302000100000009400"; 
 const POST_AUTH_TOKEN_FAILS = "302000100000009478"
@@ -29,6 +27,25 @@ const FAIL_GET_USERS_500 = "302000100000009483";
 const FAIL_UNAUTHORIZED_401 = "302000100000009484";
 const FAIL_LOGIN_400 = "302016723749670086";
 const FAIL_LOGIN_500 = "302016723749670087";
+const PSP_FAIL = "302016723749670057";
+/* CANCEL_PAYMENT SUCCESS end with 58 */
+const CANCEL_PAYMENT_OK = "302016723749670058";
+/* CANCEL_PAYMENT_FAIL end with 59 */
+const CANCEL_PAYMENT_KO = "302016723749670059";
+const VALID_FISCAL_CODE = "77777777777";
+const EMAIL = "mario.rossi@email.com";
+const VALID_CARD_DATA = {
+  number: "4333334000098346",
+  expirationDate: "1230",
+  ccv: "123",
+  holderName: "Mario Rossi",
+};
+/* FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA end with 77 */
+const FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA = "302016723749670077";
+const CHECKOUT_URL_AFTER_AUTHORIZATION = `http://localhost:1234/esito`;
+/* VALID_NOTICE_CODE */
+const VALID_NOTICE_CODE = "302016723749670000";
+
 
 jest.setTimeout(30000);
 jest.retryTimes(3);

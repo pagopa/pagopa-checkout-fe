@@ -4,7 +4,7 @@
 import * as E from "fp-ts/Either";
 import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
-import { flow, pipe } from "fp-ts/function";
+import { constVoid, flow, pipe } from "fp-ts/function";
 import { toError } from "fp-ts/lib/Either";
 import ReCAPTCHA from "react-google-recaptcha";
 import * as t from "io-ts";
@@ -1513,7 +1513,7 @@ export const evaluateFeatureFlag = async (
   )();
 };
 
-export const checkLogout = (onLogoutCallBack: () => void) => {
+export const checkLogout = (onLogoutCallBack: typeof constVoid) => {
   pipe(
     SessionItems.authToken,
     O.fromNullable,
