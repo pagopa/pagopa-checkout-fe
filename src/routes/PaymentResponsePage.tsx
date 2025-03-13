@@ -20,6 +20,7 @@ import { mixpanel } from "../utils/config/mixpanelHelperInit";
 import { onBrowserUnload } from "../utils/eventListeners";
 import { moneyFormat } from "../utils/form/formatters";
 import {
+  clearSessionItem,
   clearStorage,
   getSessionItem,
   SessionItems,
@@ -37,6 +38,8 @@ import {
   TransactionInfoGatewayInfo,
   TransactionInfoNodeInfo,
 } from "../../generated/definitions/payment-ecommerce-v2/TransactionInfo";
+import { removeLoggedUser } from "../redux/slices/loggedUser";
+import { checkLogout } from "../utils/api/helper";
 import FindOutMoreModal from "./../components/modals/FindOutMoreModal";
 
 type PrintData = {
@@ -82,6 +85,10 @@ export default function PaymentResponsePage() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
+    checkLogout(() => {
+      dispatch(removeLoggedUser());
+      clearSessionItem(SessionItems.authToken);
+    });
     dispatch(resetThreshold());
 
     const handleFinalStatusResult = (

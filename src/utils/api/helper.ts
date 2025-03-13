@@ -4,7 +4,7 @@
 import * as E from "fp-ts/Either";
 import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
-import { flow, pipe } from "fp-ts/function";
+import { constVoid, flow, pipe } from "fp-ts/function";
 import { toError } from "fp-ts/lib/Either";
 import ReCAPTCHA from "react-google-recaptcha";
 import * as t from "io-ts";
@@ -91,9 +91,9 @@ import {
   apiPaymentEcommerceClientWithRetry,
   apiPaymentEcommerceClientWithRetryV2,
   apiCheckoutAuthServiceClientV1,
+  apiCheckoutAuthServiceWithRetryV1,
   apiPaymentEcommerceClientV3,
   apiPaymentEcommerceClientWithRetryV3,
-  apiCheckoutAuthServiceClientGetUserV1,
   apiCheckoutAuthServiceClientAuthTokenV1,
 } from "./client";
 
@@ -938,7 +938,7 @@ export const retrieveUserInfo = async ({
     TE.chain((authToken) =>
       TE.tryCatch(
         () =>
-          apiCheckoutAuthServiceClientGetUserV1.authUsers({
+          apiCheckoutAuthServiceWithRetryV1.authUsers({
             bearerAuth: authToken,
           }),
         () => ErrorsType.GENERIC_ERROR
@@ -960,6 +960,54 @@ export const retrieveUserInfo = async ({
             (res) => {
               if (res.status === 200) {
                 onResponse(res.value);
+                return TE.right(res.value);
+              } else {
+                onError(ErrorsType.CONNECTION);
+                return TE.left(ErrorsType.CONNECTION);
+              }
+            }
+          )
+        )
+    )
+  )();
+};
+
+export const logoutUser = async ({
+  onResponse,
+  onError,
+}: {
+  onResponse: () => void;
+  onError: (e: string) => void;
+}) => {
+  await pipe(
+    getSessionItem(SessionItems.authToken) as string,
+    O.fromNullable,
+    TE.fromOption(() => ErrorsType.GENERIC_ERROR),
+    TE.chain((authToken) =>
+      TE.tryCatch(
+        () =>
+          apiCheckoutAuthServiceWithRetryV1.authLogout({
+            bearerAuth: authToken,
+          }),
+        () => ErrorsType.GENERIC_ERROR
+      )
+    ),
+    TE.fold(
+      (error) => {
+        onError(error);
+        return TE.left(error);
+      },
+      (response) =>
+        pipe(
+          response,
+          E.fold(
+            () => {
+              onError(ErrorsType.GENERIC_ERROR);
+              return TE.left(ErrorsType.GENERIC_ERROR);
+            },
+            (res) => {
+              if (res.status === 204) {
+                onResponse();
                 return TE.right(res.value);
               } else {
                 onError(ErrorsType.CONNECTION);
@@ -1463,4 +1511,17 @@ export const evaluateFeatureFlag = async (
         )
     )
   )();
+};
+
+export const checkLogout = (onLogoutCallBack: typeof constVoid) => {
+  pipe(
+    SessionItems.authToken,
+    O.fromNullable,
+    O.fold(constVoid, async () => {
+      await logoutUser({
+        onError: onLogoutCallBack,
+        onResponse: onLogoutCallBack,
+      });
+    })
+  );
 };

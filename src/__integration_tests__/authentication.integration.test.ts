@@ -3,7 +3,7 @@ import deTranslation from "../translations/de/translations.json";
 import enTranslation from "../translations/en/translations.json";
 import frTranslation from "../translations/fr/translations.json";
 import slTranslation from "../translations/sl/translations.json";
-import { choosePaymentMethod, clickLoginButton, fillPaymentNotificationForm, getUserButton, selectLanguage , tryLoginWithAuthCallbackError, verifyPaymentMethods } from "./utils/helpers";
+import { cancelPaymentKO, cancelPaymentOK, checkErrorOnCardDataFormSubmit, clickLoginButton, fillAndSubmitCardDataForm, fillPaymentNotificationForm, getUserButton, payNotice, selectLanguage , tryLoginWithAuthCallbackError, choosePaymentMethod, verifyPaymentMethods } from "./utils/helpers";
 /**
  * Test input and configuration
  */
@@ -16,7 +16,6 @@ const CALLBACK_URL_NO_STATE = `${BASE_CALLBACK_URL}?code=gMPV0CSInuTY0pjd&`;
 const PAGE_LOGIN_COMEBACK_URL = `http://localhost:1234/inserisci-dati-avviso`;
 const PAYMENT_METHODS_PAGE = 'http://localhost:1234/scegli-metodo';
 const INSERT_CARD_PAGE = 'http://localhost:1234/inserisci-carta';
-const VALID_FISCAL_CODE = "77777777777";
 /* POST AUTH TOKEN FAIL ends with 78 */
 const VALID_RPTID = "302000100000009400"; 
 const POST_AUTH_TOKEN_FAILS = "302000100000009478"
@@ -26,6 +25,27 @@ const POST_AUTH_TOKEN_FAILS_429 = "302000100000009481"
 const FAIL_GET_USERS_401 = "302000100000009482";
 const FAIL_GET_USERS_500 = "302000100000009483";
 const FAIL_UNAUTHORIZED_401 = "302000100000009484";
+const FAIL_LOGIN_400 = "302016723749670086";
+const FAIL_LOGIN_500 = "302016723749670087";
+const PSP_FAIL = "302016723749670057";
+/* CANCEL_PAYMENT SUCCESS end with 58 */
+const CANCEL_PAYMENT_OK = "302016723749670058";
+/* CANCEL_PAYMENT_FAIL end with 59 */
+const CANCEL_PAYMENT_KO = "302016723749670059";
+const VALID_FISCAL_CODE = "77777777777";
+const EMAIL = "mario.rossi@email.com";
+const VALID_CARD_DATA = {
+  number: "4333334000098346",
+  expirationDate: "1230",
+  ccv: "123",
+  holderName: "Mario Rossi",
+};
+/* FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA end with 77 */
+const FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA = "302016723749670077";
+const CHECKOUT_URL_AFTER_AUTHORIZATION = `http://localhost:1234/esito`;
+/* VALID_NOTICE_CODE */
+const VALID_NOTICE_CODE = "302016723749670000";
+
 
 jest.setTimeout(30000);
 jest.retryTimes(3);
@@ -468,3 +488,299 @@ describe("Checkout authentication tests", () => {
   });
 });
 
+describe("Logout tests", () => {
+
+  it("Should invoke logout with success", async () => {
+    await selectLanguage("it");
+    let logout204 = false;
+    page.on("response", (response) => {
+      const url = response.url();
+      if (url.includes("auth/logout")) {
+        if (response.status() === 204) {
+          logout204 = true;
+        }
+      }
+    });
+
+    //Login
+    await clickLoginButton();
+
+    //Wait auth-callback page
+    await page.waitForNavigation();
+    //Wait return to main page
+    await page.waitForNavigation();
+    console.log("Login completed");
+    const userButton = await getUserButton();
+    await userButton.click();
+    const logoutButton = await page.waitForXPath('/html/body/div[3]/div[3]/ul/li');
+    console.log("wait for logout button");
+    await logoutButton.click();
+    await new Promise((r) => setTimeout(r, 500));
+    expect(logout204).toBe(true);
+  });
+
+  it("Should invoke logout with 4xx error and only one temptative", async () => {
+    await selectLanguage("it");
+    let logout400 = false;
+    let logutCount=0;
+    page.on("response", (response) => {
+      const url = response.url();
+      if (url.includes("auth/logout")) {
+        logutCount++;
+        if (response.status() === 400) {
+          logout400 = true;
+        }
+      }
+    });
+
+    //Login
+    await clickLoginButton();
+
+    //Wait auth-callback page
+    await page.waitForNavigation();
+    //Wait return to main page
+    await page.waitForNavigation();
+    console.log("Login completed");
+
+    await fillPaymentNotificationForm(FAIL_LOGIN_400, VALID_FISCAL_CODE);
+    await page.waitForNavigation();
+    const userButton = await getUserButton();
+    await userButton.click();
+    const logoutButton = await page.waitForXPath('/html/body/div[5]/div[3]/ul/li');
+    console.log("wait for logout button");
+    await logoutButton.click();
+    console.log("Search login button");
+    await new Promise((r) => setTimeout(r, 500));
+    const loginHeader = await page.waitForSelector("#login-header");
+    const headerButtons = await loginHeader.$$("button");
+    //Login button is the last on the header
+    const loginBtn = headerButtons.at(-1);
+    const title = await loginBtn.evaluate((el) => el.textContent);
+    expect(logout400).toBe(true);
+    expect(logutCount).toBe(1);
+    expect(title).toBe("Accedi");
+  });
+
+  it("Should invoke logout with 5xx error by three temptatives", async () => {
+    await selectLanguage("it");
+    let logout500 = false;
+    let logutCount=0;
+    page.on("response", (response) => {
+      const url = response.url();
+      if (url.includes("auth/logout")) {
+        logutCount++;
+        if (response.status() === 500) {
+          logout500 = true;
+        }
+      }
+    });
+
+    //Login
+    await clickLoginButton();
+
+    //Wait auth-callback page
+    await page.waitForNavigation();
+    //Wait return to main page
+    await page.waitForNavigation();
+    console.log("Login completed");
+
+    await fillPaymentNotificationForm(FAIL_LOGIN_500, VALID_FISCAL_CODE);
+    await page.waitForNavigation();
+    const userButton = await getUserButton();
+    await userButton.click();
+    const logoutButton = await page.waitForXPath('/html/body/div[5]/div[3]/ul/li');
+    console.log("wait for logout button");
+    await logoutButton.click();
+    await new Promise((r) => setTimeout(r, 3100));
+    console.log("Search login button")
+    const loginHeader = await page.waitForSelector("#login-header");
+    const headerButtons = await loginHeader.$$("button");
+    //Login button is the last on the header
+    const loginBtn = headerButtons.at(-1);
+    const title = await loginBtn.evaluate((el) => el.textContent);
+    expect(logout500).toBe(true);
+    expect(logutCount).toBe(3);
+    expect(title).toBe("Accedi");
+  });
+
+  it("Should invoke logout with success when payment response page is shown", async () => {
+    await selectLanguage("it");
+    let logout204 = false;
+    page.on("response", (response) => {
+      const url = response.url();
+      if (url.includes("auth/logout")) {
+        if (response.status() === 204) {
+          logout204 = true;
+        }
+      }
+    });
+
+    //Login
+    await clickLoginButton();
+
+    //Wait auth-callback page
+    await page.waitForNavigation();
+    //Wait return to main page
+    await page.waitForNavigation();
+    console.log("Login completed");
+
+    const resultMessage = await payNotice(
+      VALID_NOTICE_CODE,
+      VALID_FISCAL_CODE,
+      EMAIL,
+      VALID_CARD_DATA,
+      CHECKOUT_URL_AFTER_AUTHORIZATION
+    );
+
+    expect(resultMessage).toContain(itTranslation.paymentResponsePage[0].title.replace("{{amount}}", "120,15\xa0€"));
+    expect(logout204).toBe(true);
+  });
+
+  it("Should invoke logout with success when cancel payment is invoked", async () => {
+    await selectLanguage("it");
+    let logout204 = false;
+    let deleteTransaction202 = false;
+    page.on("response", (response) => {
+      const url = response.url();
+      if (url.includes("/transactions")) {
+        if (response.status() === 202) {
+          deleteTransaction202 = true && !logout204;
+        }
+      }
+      if (url.includes("auth/logout")) {
+        if (response.status() === 204) {
+          logout204 = true && deleteTransaction202;
+        }
+      }
+    });
+
+    //Login
+    await clickLoginButton();
+
+    //Wait auth-callback page
+    await page.waitForNavigation();
+    //Wait return to main page
+    await page.waitForNavigation();
+    console.log("Login completed");
+
+    const resultMessage = await cancelPaymentOK(
+      CANCEL_PAYMENT_OK,
+      VALID_FISCAL_CODE,
+      EMAIL,
+      VALID_CARD_DATA
+    );
+    expect(resultMessage).toContain(itTranslation.cancelledPage.body);
+    expect(deleteTransaction202).toBe(true);
+    expect(logout204).toBe(true);
+  });
+
+  it("Should invoke logout with success when cancel payment is invoked but it fails", async () => {
+    await selectLanguage("it");
+    let logout204 = false;
+    let deleteTransactionError = false;
+    page.on("response", (response) => {
+      const url = response.url();
+      if (url.includes("/transactions")) {
+        if (response.status() >= 400) {
+          deleteTransactionError = true && !logout204;
+        }
+      }
+      if (url.includes("auth/logout")) {
+        if (response.status() === 204) {
+          logout204 = true && deleteTransactionError;
+        }
+      }
+    });
+
+    //Login
+    await clickLoginButton();
+
+    //Wait auth-callback page
+    await page.waitForNavigation();
+    //Wait return to main page
+    await page.waitForNavigation();
+    console.log("Login completed");
+
+    const resultMessage = await cancelPaymentKO(
+            CANCEL_PAYMENT_KO,
+            VALID_FISCAL_CODE,
+            EMAIL
+          );
+    expect(resultMessage).toContain(itTranslation.GENERIC_ERROR.title);
+    const closeErrorButton = await page.waitForSelector("#closeError");
+    await closeErrorButton.click();
+    expect(deleteTransactionError).toBe(true);
+    expect(logout204).toBe(true);
+  });
+
+  it("Should invoke logout with success when fail a card payment ACTIVATION and get PPT_WISP_SESSIONE_SCONOSCIUTA", async () => {
+    /*
+     * Card payment with notice code that fails on activation and get PPT_WISP_SESSIONE_SCONOSCIUTA 
+     * and redirect to expired session page
+     */
+    await selectLanguage("it");
+    let logout204 = false;
+    page.on("response", (response) => {
+    const url = response.url();
+    if (url.includes("auth/logout")) {
+      if (response.status() === 204) {
+        logout204 = true;
+      }
+    }
+    });
+
+    //Login
+    await clickLoginButton();
+
+    //Wait auth-callback page
+    await page.waitForNavigation();
+    //Wait return to main page
+    await page.waitForNavigation();
+    console.log("Login completed");
+    await fillAndSubmitCardDataForm(FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA, VALID_FISCAL_CODE, EMAIL, VALID_CARD_DATA);
+    await page.waitForNavigation();
+    expect(page.url()).toContain("/sessione-scaduta");
+    await new Promise((r) => setTimeout(r, 500));
+    expect(logout204).toBe(true);
+  });
+
+
+  it("Should invoke logout with success when error page is shown", async () => {
+    /*
+     * Card payment with notice code that fails on activation and get PPT_WISP_SESSIONE_SCONOSCIUTA 
+     * and redirect to expired session page
+     */
+    await selectLanguage("it");
+    let logout204 = false;
+    page.on("response", (response) => {
+    const url = response.url();
+    if (url.includes("auth/logout")) {
+      if (response.status() === 204) {
+        logout204 = true;
+      }
+    }
+    });
+
+    //Login
+    await clickLoginButton();
+
+    //Wait auth-callback page
+    await page.waitForNavigation();
+    //Wait return to main page
+    await page.waitForNavigation();
+    console.log("Login completed");
+    
+    await checkErrorOnCardDataFormSubmit(
+      PSP_FAIL,
+      VALID_FISCAL_CODE,
+      EMAIL,
+      VALID_CARD_DATA
+    );
+    const closeErrorModalButton = "#closeError";
+    await page.waitForSelector(closeErrorModalButton);
+    await page.click(closeErrorModalButton);
+
+    await new Promise((r) => setTimeout(r, 500));
+    expect(logout204).toBe(true);
+  });
+});

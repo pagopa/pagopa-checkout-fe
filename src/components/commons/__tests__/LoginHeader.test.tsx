@@ -4,7 +4,11 @@ import { fireEvent, queryByAttribute, waitFor } from "@testing-library/react";
 import { screen } from "@testing-library/dom";
 import { MemoryRouter } from "react-router-dom";
 import { getSessionItem } from "../../../utils/storage/sessionStorage";
-import { proceedToLogin, retrieveUserInfo } from "../../../utils/api/helper";
+import {
+  logoutUser,
+  proceedToLogin,
+  retrieveUserInfo,
+} from "../../../utils/api/helper";
 import LoginHeader from "../LoginHeader";
 import "jest-location-mock";
 import { UserInfoResponse } from "../../../../generated/definitions/checkout-auth-service-v1/UserInfoResponse";
@@ -134,6 +138,41 @@ describe("LoginHeader", () => {
       expect(
         screen.getByText(`${userInfo.name} ${userInfo.familyName}`)
       ).toBeInTheDocument();
+    });
+  });
+
+  test.skip("Logout user", async () => {
+    const userInfo: UserInfoResponse = {
+      familyName: "Rossi",
+      name: "Mario",
+      userId: "userId",
+    };
+    (getSessionItem as jest.Mock).mockReturnValue(true);
+    (retrieveUserInfo as jest.Mock).mockImplementation(({ onResponse }) => {
+      onResponse(userInfo);
+    });
+    (logoutUser as jest.Mock).mockImplementation(({ onResponse }) => {
+      onResponse();
+    });
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <LoginHeader />
+      </MemoryRouter>
+    );
+    await waitFor(() => {
+      expect(retrieveUserInfo).toHaveBeenCalled();
+      expect(
+        screen.getByText(`${userInfo.name} ${userInfo.familyName}`)
+      ).toBeInTheDocument();
+      const userButton = screen.getByTitle(
+        `${userInfo.name} ${userInfo.familyName}`
+      );
+      expect(userButton).toBeInTheDocument();
+      fireEvent.click(userButton);
+      const logoutButton = screen.getByTitle(/Esci/i);
+      expect(logoutButton).toBeInTheDocument();
+      fireEvent.click(logoutButton);
+      expect(logoutUser).toHaveBeenCalled();
     });
   });
 });

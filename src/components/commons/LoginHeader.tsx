@@ -7,6 +7,7 @@ import { HeaderAccount, RootLinkType } from "@pagopa/mui-italia";
 import ReCAPTCHA from "react-google-recaptcha";
 import { Box } from "@mui/material";
 import { pipe } from "fp-ts/function";
+import * as E from "fp-ts/Either";
 import * as O from "fp-ts/Option";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks/hooks";
 import {
@@ -14,7 +15,12 @@ import {
   removeLoggedUser,
   setLoggedUser,
 } from "../../redux/slices/loggedUser";
-import { proceedToLogin, retrieveUserInfo } from "../../utils/api/helper";
+import {
+  cancelPayment,
+  logoutUser,
+  proceedToLogin,
+  retrieveUserInfo,
+} from "../../utils/api/helper";
 import { ErrorsType } from "../../utils/errors/checkErrorsModel";
 import { onBrowserUnload } from "../../utils/eventListeners";
 import ErrorModal from "../../components/modals/ErrorModal";
@@ -28,6 +34,8 @@ import {
   clearSessionItem,
 } from "../../utils/storage/sessionStorage";
 import { UserInfoResponse } from "../../../generated/definitions/checkout-auth-service-v1/UserInfoResponse";
+import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce-v3/NewTransactionResponse";
+import { CancelPayment } from "../../components/modals/CancelPayment";
 
 export default function LoginHeader() {
   const { t } = useTranslation();
@@ -55,6 +63,8 @@ export default function LoginHeader() {
   const [isLoginButtonReady, setLoginButtonReady] = React.useState(false);
   const [error, setError] = React.useState("");
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
+  const [cancelPaymentModalOpen, setCancelPaymentModalOpen] =
+    React.useState(false);
 
   // the login button should be visible if user is already logged in
   // and user is on pages where he cannot do login
@@ -103,13 +113,62 @@ export default function LoginHeader() {
     }
   };
 
-  const onLogoutClick = () => {
-    setLoading(true);
+  const checkTransactionAndHandleLogout = async () => {
+    await pipe(
+      getSessionItem(SessionItems.transaction),
+      NewTransactionResponse.decode,
+      E.fold(
+        async () => {
+          await logoutUser({
+            onError: () => {
+              // eslint-disable-next-line no-console
+              console.log("logout KO");
+            },
+            onResponse: () => {
+              // eslint-disable-next-line no-console
+              console.log("logout OK");
+            },
+          });
+          dispatch(removeLoggedUser());
+          clearSessionItem(SessionItems.authToken);
+        },
+        async () => setCancelPaymentModalOpen(true)
+      )
+    );
+  };
+
+  const cancelPaymentAndLogout = async () => {
+    await cancelPayment(
+      async () => {
+        await logoutUser({
+          onError: () => {
+            // eslint-disable-next-line no-console
+            console.log("logout KO");
+          },
+          onResponse: () => {
+            // eslint-disable-next-line no-console
+            console.log("logout OK");
+          },
+        });
+        navigate(`/${CheckoutRoutes.ERRORE}`);
+      },
+      async () => {
+        await logoutUser({
+          onError: () => {
+            // eslint-disable-next-line no-console
+            console.log("logout KO");
+          },
+          onResponse: () => {
+            // eslint-disable-next-line no-console
+            console.log("logout OK");
+          },
+        });
+        navigate(`/${CheckoutRoutes.ANNULLATO}`);
+      }
+    );
     dispatch(removeLoggedUser());
     clearSessionItem(SessionItems.authToken);
-    setTimeout(() => {
-      hideLoading();
-    }, 1000);
+    setCancelPaymentModalOpen(false);
   };
 
   const doGetUserInfo = () => {
@@ -158,7 +217,7 @@ export default function LoginHeader() {
             id: "logout",
             icon: <Logout fontSize="small" />,
             label: t("mainPage.header.logout"),
-            onClick: onLogoutClick,
+            onClick: checkTransactionAndHandleLogout,
           },
         ]}
         enableLogin={showLoginButton()}
@@ -173,6 +232,11 @@ export default function LoginHeader() {
           sitekey={getReCaptchaKey() as string}
         />
       </Box>
+      <CancelPayment
+        open={cancelPaymentModalOpen}
+        onCancel={() => setCancelPaymentModalOpen(false)}
+        onSubmit={() => cancelPaymentAndLogout()}
+      />
       {!!error && (
         <ErrorModal
           error={error}
