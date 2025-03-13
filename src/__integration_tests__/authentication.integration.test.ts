@@ -3,7 +3,7 @@ import deTranslation from "../translations/de/translations.json";
 import enTranslation from "../translations/en/translations.json";
 import frTranslation from "../translations/fr/translations.json";
 import slTranslation from "../translations/sl/translations.json";
-import { clickLoginButton, fillPaymentNotificationForm, getUserButton, selectLanguage , tryLoginWithAuthCallbackError } from "./utils/helpers";
+import { choosePaymentMethod, clickLoginButton, fillPaymentNotificationForm, getUserButton, selectLanguage , tryLoginWithAuthCallbackError, verifyPaymentMethods } from "./utils/helpers";
 /**
  * Test input and configuration
  */
@@ -11,20 +11,23 @@ import { clickLoginButton, fillPaymentNotificationForm, getUserButton, selectLan
 const CHECKOUT_URL = `http://localhost:1234`;
 const BASE_CALLBACK_URL = "http://localhost:1234/auth-callback";
 const BASE_CALLBACK_URL_REGEX = "http:\\/\\/localhost:\\d+\\/auth-callback\\?code=([a-zA-Z0-9]+)&state=([a-zA-Z0-9]+)";
-const CALLBACK_URL = `${BASE_CALLBACK_URL}?code=gMPV0CSInuTY0pjd&state=pu6nlBmHs1EpmfWq`;
 const CALLBACK_URL_NO_CODE = `${BASE_CALLBACK_URL}?state=pu6nlBmHs1EpmfWq`;
 const CALLBACK_URL_NO_STATE = `${BASE_CALLBACK_URL}?code=gMPV0CSInuTY0pjd&`;
 const PAGE_LOGIN_COMEBACK_URL = `http://localhost:1234/inserisci-dati-avviso`;
+const PAYMENT_METHODS_PAGE = 'http://localhost:1234/scegli-metodo';
+const INSERT_CARD_PAGE = 'http://localhost:1234/inserisci-carta';
 const VALID_FISCAL_CODE = "77777777777";
 /* POST AUTH TOKEN FAIL ends with 78 */
-const POST_AUTH_TOKEN_FAILS = "302000100000009478";
-const FAIL_GET_USERS_401 = "302000100000009479";
-const FAIL_GET_USERS_500 = "302000100000009480";
+const VALID_RPTID = "302000100000009400"; 
+const POST_AUTH_TOKEN_FAILS = "302000100000009478"; 
+const FAIL_GET_USERS_401 = "302000100000009482";
+const FAIL_GET_USERS_500 = "302000100000009483";
+const FAIL_UNAUTHORIZED_401 = "302000100000009484";
 
-jest.setTimeout(80000);
+jest.setTimeout(30000);
 jest.retryTimes(3);
-page.setDefaultNavigationTimeout(80000);
-page.setDefaultTimeout(80000);
+page.setDefaultNavigationTimeout(10000);
+page.setDefaultTimeout(10000);
 
 beforeAll(async () => {
   await page.goto(CHECKOUT_URL);
@@ -264,6 +267,76 @@ describe("Checkout authentication tests", () => {
     expect(authCallbackError.body).toContain(translation.authCallbackPage.body);
   });
 
+  it("Should correctly retrieve payment methods with logged user", async () => {
+    await page.evaluate(() => {
+      //set item into sessionStorage for pass the route Guard
+      sessionStorage.setItem('useremail', 'email');
+      sessionStorage.setItem('authToken', 'auth-token-value');
+    });
+    //go to payment methods page
+    await page.goto(PAYMENT_METHODS_PAGE);
+
+    const isPaymentMethodsPresents = await verifyPaymentMethods();
+    expect(isPaymentMethodsPresents).toBeTruthy();
+  });
+
+  it("Should redirect to auth-expired page receiving 401 from get payment-methods", async () => {
+    await page.evaluate(() => {
+      //set item into sessionStorage for pass the route Guard
+      sessionStorage.setItem('useremail', 'email');
+      sessionStorage.setItem('authToken', 'auth-token-value');
+    });
+    
+    //set flow error case
+    await fillPaymentNotificationForm(FAIL_UNAUTHORIZED_401, VALID_FISCAL_CODE);
+    await page.waitForNavigation();
+
+    //go to payment methods page
+    await page.goto(PAYMENT_METHODS_PAGE);
+    expect(page.url()).toContain("/autenticazione-scaduta");
+  });
+
+  it("Should correctly call post sessions with logged user", async () => {
+    await page.evaluate(() => {
+      //set item into sessionStorage for pass the route Guard
+      sessionStorage.setItem('useremail', 'email');
+      sessionStorage.setItem('authToken', 'auth-token-value');
+    });
+
+    //set flow success case
+    await fillPaymentNotificationForm(VALID_RPTID, VALID_FISCAL_CODE);
+    await page.waitForNavigation();
+
+    //go to payment methods page and select card payment
+    await page.goto(PAYMENT_METHODS_PAGE);
+    await choosePaymentMethod("CP");
+
+    //wait until in the session storage are presents correlationId and orderId§
+    await page.waitForFunction("sessionStorage.getItem('correlationId') != null");
+    await page.waitForFunction("sessionStorage.getItem('orderId') != null");
+    //post session finished
+
+    //check current url is correct
+    expect(page.url()).toContain("/inserisci-carta");
+  });
+
+  it("Should redirect to auth-expired page receiving 401 from post sessions", async () => {
+    await page.evaluate(() => {
+      //set item into sessionStorage for pass the route Guard
+      sessionStorage.setItem('useremail', 'email');
+      sessionStorage.setItem('authToken', 'auth-token-value');
+      sessionStorage.setItem('paymentMethod', '{"paymentMethodId":"method-id","paymentTypeCode":"CP"}');
+    });
+    
+    //set flow error case
+    await fillPaymentNotificationForm(FAIL_UNAUTHORIZED_401, VALID_FISCAL_CODE);
+    await page.waitForNavigation();
+
+    //go to payment methods page and select card payment
+    await page.goto(INSERT_CARD_PAGE);
+    expect(page.url()).toContain("/autenticazione-scaduta");
+  });
+
   it.each([
     ["it", itTranslation],
     ["en", enTranslation],
@@ -280,6 +353,4 @@ describe("Checkout authentication tests", () => {
     expect(authCallbackError.title).toContain(translation.authCallbackPage.title);
     expect(authCallbackError.body).toContain(translation.authCallbackPage.body);
   });
-  
 });
-
