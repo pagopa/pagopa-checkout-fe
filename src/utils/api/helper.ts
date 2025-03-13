@@ -93,6 +93,7 @@ import {
   apiCheckoutAuthServiceClientV1,
   apiPaymentEcommerceClientV3,
   apiCheckoutAuthServiceClientGetUserV1,
+  apiCheckoutAuthServiceClientAuthTokenV1,
 } from "./client";
 
 export const NodeFaultCodeR = t.interface({
@@ -734,7 +735,7 @@ export const authentication = async ({
     TE.chain((decodedRequest) =>
       TE.tryCatch(
         () =>
-          apiCheckoutAuthServiceClientV1.authenticateWithAuthToken({
+          apiCheckoutAuthServiceClientAuthTokenV1.authenticateWithAuthToken({
             body: decodedRequest,
           }),
         () => ErrorsType.GENERIC_ERROR
