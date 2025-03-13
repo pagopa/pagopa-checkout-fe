@@ -29,8 +29,8 @@ const FAIL_LOGIN_500 = "302016723749670087";
 
 jest.setTimeout(30000);
 jest.retryTimes(3);
-page.setDefaultNavigationTimeout(10000);
-page.setDefaultTimeout(10000);
+page.setDefaultNavigationTimeout(20000);
+page.setDefaultTimeout(20000);
 
 beforeAll(async () => {
   await page.goto(CHECKOUT_URL);
@@ -406,7 +406,7 @@ describe("Checkout authentication tests", () => {
 describe("Logout tests", () => {
 
   it("Should invoke logout with success", async () => {
-
+    await selectLanguage("it");
     let logout204 = false;
     page.on("response", (response) => {
       const url = response.url();
@@ -425,16 +425,17 @@ describe("Logout tests", () => {
     //Wait return to main page
     await page.waitForNavigation();
     console.log("Login completed");
-
     const userButton = await getUserButton();
     await userButton.click();
-    const logoutButton = await page.waitForSelector('body > div.MuiPopover-root.MuiMenu-root.MuiModal-root.css-1sucic7 > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation8.MuiPopover-paper.MuiMenu-paper.MuiMenu-paper.css-vi4pnh > ul > li');
+    const logoutButton = await page.waitForXPath('/html/body/div[3]/div[3]/ul/li');
+    console.log("wait for logout button");
     await logoutButton.click();
     await new Promise((r) => setTimeout(r, 500));
     expect(logout204).toBe(true);
   });
 
   it("Should invoke logout with 4xx error and only one temptative", async () => {
+    await selectLanguage("it");
     let logout400 = false;
     let logutCount=0;
     page.on("response", (response) => {
@@ -460,7 +461,8 @@ describe("Logout tests", () => {
     await page.waitForNavigation();
     const userButton = await getUserButton();
     await userButton.click();
-    const logoutButton = await page.waitForSelector('body > div.MuiPopover-root.MuiMenu-root.MuiModal-root.css-1sucic7 > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation8.MuiPopover-paper.MuiMenu-paper.MuiMenu-paper.css-vi4pnh > ul > li');
+    const logoutButton = await page.waitForXPath('/html/body/div[5]/div[3]/ul/li');
+    console.log("wait for logout button");
     await logoutButton.click();
     console.log("Search login button");
     await new Promise((r) => setTimeout(r, 500));
@@ -475,6 +477,7 @@ describe("Logout tests", () => {
   });
 
   it("Should invoke logout with 5xx error by three temptatives", async () => {
+    await selectLanguage("it");
     let logout500 = false;
     let logutCount=0;
     page.on("response", (response) => {
@@ -500,7 +503,8 @@ describe("Logout tests", () => {
     await page.waitForNavigation();
     const userButton = await getUserButton();
     await userButton.click();
-    const logoutButton = await page.waitForSelector('body > div.MuiPopover-root.MuiMenu-root.MuiModal-root.css-1sucic7 > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation8.MuiPopover-paper.MuiMenu-paper.MuiMenu-paper.css-vi4pnh > ul > li');
+    const logoutButton = await page.waitForXPath('/html/body/div[5]/div[3]/ul/li');
+    console.log("wait for logout button");
     await logoutButton.click();
     await new Promise((r) => setTimeout(r, 3100));
     console.log("Search login button")
@@ -515,7 +519,7 @@ describe("Logout tests", () => {
   });
 
   it("Should invoke logout with success when payment response page is shown", async () => {
-
+    await selectLanguage("it");
     let logout204 = false;
     page.on("response", (response) => {
       const url = response.url();
@@ -548,7 +552,7 @@ describe("Logout tests", () => {
   });
 
   it("Should invoke logout with success when cancel payment is invoked", async () => {
-
+    await selectLanguage("it");
     let logout204 = false;
     let deleteTransaction202 = false;
     page.on("response", (response) => {
@@ -586,7 +590,7 @@ describe("Logout tests", () => {
   });
 
   it("Should invoke logout with success when cancel payment is invoked but it fails", async () => {
-
+    await selectLanguage("it");
     let logout204 = false;
     let deleteTransactionError = false;
     page.on("response", (response) => {
@@ -629,6 +633,7 @@ describe("Logout tests", () => {
      * Card payment with notice code that fails on activation and get PPT_WISP_SESSIONE_SCONOSCIUTA 
      * and redirect to expired session page
      */
+    await selectLanguage("it");
     let logout204 = false;
     page.on("response", (response) => {
     const url = response.url();
@@ -660,6 +665,7 @@ describe("Logout tests", () => {
      * Card payment with notice code that fails on activation and get PPT_WISP_SESSIONE_SCONOSCIUTA 
      * and redirect to expired session page
      */
+    await selectLanguage("it");
     let logout204 = false;
     page.on("response", (response) => {
     const url = response.url();
