@@ -27,10 +27,10 @@ const FAIL_GET_USERS_500 = "302000100000009483";
 const FAIL_LOGIN_400 = "302016723749670086";
 const FAIL_LOGIN_500 = "302016723749670087";
 
-jest.setTimeout(80000);
+jest.setTimeout(30000);
 jest.retryTimes(3);
-page.setDefaultNavigationTimeout(80000);
-page.setDefaultTimeout(80000);
+page.setDefaultNavigationTimeout(10000);
+page.setDefaultTimeout(10000);
 
 beforeAll(async () => {
   await page.goto(CHECKOUT_URL);
