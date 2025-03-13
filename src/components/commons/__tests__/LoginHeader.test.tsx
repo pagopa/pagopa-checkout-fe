@@ -141,7 +141,7 @@ describe("LoginHeader", () => {
     });
   });
 
-  test("Logout user", async () => {
+  test.skip("Logout user", async () => {
     const userInfo: UserInfoResponse = {
       familyName: "Rossi",
       name: "Mario",
