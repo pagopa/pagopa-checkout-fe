@@ -7,9 +7,9 @@ import { choosePaymentMethod, clickLoginButton, fillPaymentNotificationForm, get
 /**
  * Test input and configuration
  */
-
 const CHECKOUT_URL = `http://localhost:1234`;
 const BASE_CALLBACK_URL = "http://localhost:1234/auth-callback";
+const BASE_CALLBACK_URL_PAYMENT_DATA = "http://localhost:1234/dati-pagamento";
 const BASE_CALLBACK_URL_REGEX = "http:\\/\\/localhost:\\d+\\/auth-callback\\?code=([a-zA-Z0-9]+)&state=([a-zA-Z0-9]+)";
 const CALLBACK_URL_NO_CODE = `${BASE_CALLBACK_URL}?state=pu6nlBmHs1EpmfWq`;
 const CALLBACK_URL_NO_STATE = `${BASE_CALLBACK_URL}?code=gMPV0CSInuTY0pjd&`;
@@ -19,7 +19,10 @@ const INSERT_CARD_PAGE = 'http://localhost:1234/inserisci-carta';
 const VALID_FISCAL_CODE = "77777777777";
 /* POST AUTH TOKEN FAIL ends with 78 */
 const VALID_RPTID = "302000100000009400"; 
-const POST_AUTH_TOKEN_FAILS = "302000100000009478"; 
+const POST_AUTH_TOKEN_FAILS = "302000100000009478"
+const POST_AUTH_TOKEN_FAILS_503 = "302000100000009479"
+const POST_AUTH_TOKEN_FAILS_504 = "302000100000009480"
+const POST_AUTH_TOKEN_FAILS_429 = "302000100000009481"
 const FAIL_GET_USERS_401 = "302000100000009482";
 const FAIL_GET_USERS_500 = "302000100000009483";
 const FAIL_UNAUTHORIZED_401 = "302000100000009484";
@@ -41,8 +44,6 @@ beforeEach(async () => {
 });
 
 describe("Checkout authentication tests", () => {
-  
-  
   it("Should correclty invoke the login flow when clicking login or retry", async () => {
 
     // keep track
@@ -110,7 +111,7 @@ describe("Checkout authentication tests", () => {
     await page.goto(CALLBACK_URL_NO_CODE);
     const currentUrl = await page.evaluate(() => location.href);
     console.log("Current url: " + currentUrl);
-    
+
     const titleErrorElem = await page.waitForSelector("#errorTitle");
     const titleErrorBody = await page.waitForSelector("#errorBody");
     const title = await titleErrorElem.evaluate((el) => el.textContent);
@@ -136,7 +137,7 @@ describe("Checkout authentication tests", () => {
     await page.goto(CALLBACK_URL_NO_STATE);
     const currentUrl = await page.evaluate(() => location.href);
     console.log("Current url: " + currentUrl);
-    
+
     const titleErrorElem = await page.waitForSelector("#errorTitle");
     const titleErrorBody = await page.waitForSelector("#errorBody");
     const title = await titleErrorElem.evaluate((el) => el.textContent);
@@ -158,7 +159,7 @@ describe("Checkout authentication tests", () => {
     await fillPaymentNotificationForm(POST_AUTH_TOKEN_FAILS, VALID_FISCAL_CODE);
 
     await clickLoginButton();
-    
+
     const titleErrorElem = await page.waitForSelector("#errorTitle");
     const titleErrorBody = await page.waitForSelector("#errorBody");
     const title = await titleErrorElem.evaluate((el) => el.textContent);
@@ -171,9 +172,121 @@ describe("Checkout authentication tests", () => {
 
     const regex = new RegExp(BASE_CALLBACK_URL_REGEX);
     expect(regex.test(currentUrl)).toBe(true);
-    
     expect(title).toContain(translation.authCallbackPage.title);
     expect(body).toContain(translation.authCallbackPage.body);
+  });
+
+  it("should retry once if server responds 503 and succeed on second attempt", async () => {
+    let tokenCalls = 0;
+    let first503Response = false;
+
+    page.on("response", (response) => {
+      const url = response.url();
+      if (url.includes("/auth/token")) {
+        tokenCalls++;
+        if (response.status() === 503) {
+          first503Response = true;
+        }
+      }
+    });
+
+    await fillPaymentNotificationForm(POST_AUTH_TOKEN_FAILS_503, VALID_FISCAL_CODE);
+    await page.waitForNavigation();
+    await clickLoginButton();
+
+    await page.waitForNavigation();
+    await page.waitForNavigation();
+    const currentUrl = await page.evaluate(() => location.href);
+
+
+    expect(first503Response).toBe(true);
+    expect(tokenCalls).toBe(2);
+    expect(currentUrl).toBe(BASE_CALLBACK_URL_PAYMENT_DATA);
+  });
+
+  it("should retry once if server responds 504 and succeed on second attempt", async () => {
+    let tokenCalls = 0;
+    let first504Response = false;
+
+    page.on("response", (response) => {
+      const url = response.url();
+      if (url.includes("/auth/token")) {
+        tokenCalls++;
+        if (response.status() === 504) {
+          first504Response = true;
+        }
+      }
+    });
+
+    await fillPaymentNotificationForm(POST_AUTH_TOKEN_FAILS_504, VALID_FISCAL_CODE);
+    await page.waitForNavigation();
+    await clickLoginButton();
+
+    await page.waitForNavigation();
+    await page.waitForNavigation();
+
+    const currentUrl = await page.evaluate(() => location.href);
+
+
+    expect(first504Response).toBe(true);
+    expect(tokenCalls).toBe(2);
+    expect(currentUrl).toBe(BASE_CALLBACK_URL_PAYMENT_DATA);
+  });
+
+  it("should retry once if server responds 429 and succeed on second attempt", async () => {
+    let tokenCalls = 0;
+    let first429Response = false;
+
+    page.on("response", (response) => {
+      const url = response.url();
+      if (url.includes("/auth/token")) {
+        tokenCalls++;
+        if (response.status() === 429) {
+          first429Response = true;
+        }
+      }
+    });
+
+    await fillPaymentNotificationForm(POST_AUTH_TOKEN_FAILS_429, VALID_FISCAL_CODE);
+    await page.waitForNavigation();
+    await clickLoginButton();
+
+    await page.waitForNavigation();
+    await page.waitForNavigation();
+
+    const currentUrl = await page.evaluate(() => location.href);
+
+
+    expect(first429Response).toBe(true);
+    expect(tokenCalls).toBe(2);
+    expect(currentUrl).toBe(BASE_CALLBACK_URL_PAYMENT_DATA);
+  });
+
+  it("should NOT retry if server responds 500 (since 500 is not in retryCondition)", async () => {
+    let tokenCalls = 0;
+    let first500Response = false;
+
+    page.on("response", (response) => {
+      const url = response.url();
+      if (url.includes("/auth/token")) {
+        tokenCalls++;
+        if (response.status() === 500) {
+          first500Response = true;
+        }
+      }
+    });
+
+    await fillPaymentNotificationForm(POST_AUTH_TOKEN_FAILS, VALID_FISCAL_CODE);
+    await page.waitForNavigation();
+    await clickLoginButton();
+
+    const titleErrorElem = await page.waitForSelector("#errorTitle");
+    const titleErrorBody = await page.waitForSelector("#errorBody");
+    const title = await titleErrorElem.evaluate((el) => el.textContent);
+    const body = await titleErrorBody.evaluate((el) => el.textContent);
+
+    expect(first500Response).toBe(true);
+    expect(tokenCalls).toBe(1);
   });
 
   it("Should correctly retrieve user info if authToken is present", async () => {
