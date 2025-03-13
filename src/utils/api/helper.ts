@@ -92,6 +92,7 @@ import {
   apiPaymentEcommerceClientWithRetryV2,
   apiCheckoutAuthServiceClientV1,
   apiPaymentEcommerceClientV3,
+  apiPaymentEcommerceClientWithRetryV3,
   apiCheckoutAuthServiceClientGetUserV1,
   apiCheckoutAuthServiceClientAuthTokenV1,
 } from "./client";
@@ -1103,7 +1104,19 @@ export const getPaymentInstruments = async (
   });
   const list = await pipe(
     TE.tryCatch(
-      () => apiPaymentEcommerceClient.getAllPaymentMethods(query),
+      () =>
+        pipe(
+          getSessionItem(SessionItems.authToken) as string,
+          O.fromNullable,
+          O.fold(
+            () => apiPaymentEcommerceClient.getAllPaymentMethods(query),
+            (bearerAuth) =>
+              apiPaymentEcommerceClientV3.getAllPaymentMethodsV3({
+                bearerAuth,
+                ...query,
+              })
+          )
+        ),
       () => {
         mixpanel.track(PAYMENT_METHODS_NET_ERROR.value, {
           EVENT_ID: PAYMENT_METHODS_NET_ERROR.value,
@@ -1131,16 +1144,23 @@ export const getPaymentInstruments = async (
               return [];
             },
             (myRes) => {
-              if (myRes.status === 200) {
-                mixpanel.track(PAYMENT_METHODS_SUCCESS.value, {
-                  EVENT_ID: PAYMENT_METHODS_SUCCESS.value,
-                });
-                return myRes.value.paymentMethods;
-              } else {
-                mixpanel.track(PAYMENT_METHODS_RESP_ERROR.value, {
-                  EVENT_ID: PAYMENT_METHODS_RESP_ERROR.value,
-                });
-                return [];
+              switch (myRes.status) {
+                case 200:
+                  mixpanel.track(PAYMENT_METHODS_SUCCESS.value, {
+                    EVENT_ID: PAYMENT_METHODS_SUCCESS.value,
+                  });
+                  return myRes.value.paymentMethods;
+                case 401:
+                  mixpanel.track(PAYMENT_METHODS_RESP_ERROR.value, {
+                    EVENT_ID: PAYMENT_METHODS_RESP_ERROR.value,
+                  });
+                  onError(ErrorsType.UNAUTHORIZED);
+                  return [];
+                default:
+                  mixpanel.track(PAYMENT_METHODS_RESP_ERROR.value, {
+                    EVENT_ID: PAYMENT_METHODS_RESP_ERROR.value,
+                  });
+                  return [];
               }
             }
           )
@@ -1257,10 +1277,25 @@ export const npgSessionsFields = async (
               | PaymentMethod
               | undefined
           )?.paymentMethodId || "";
-        return apiPaymentEcommerceClientWithRetry.createSession({
+        const payload = {
           id: paymentMethodId,
           lang: localStorage.getItem("i18nextLng") ?? "it",
-        });
+        };
+        return pipe(
+          getSessionItem(SessionItems.authToken) as string,
+          O.fromNullable,
+          O.fold(
+            () =>
+              apiPaymentEcommerceClientWithRetry.createSession({
+                ...payload,
+              }),
+            (bearerAuth) =>
+              apiPaymentEcommerceClientWithRetryV3.createSessionV3({
+                bearerAuth,
+                ...payload,
+              })
+          )
+        );
       },
       () => {
         mixpanel.track(NPG_NET_ERR.value, {
@@ -1288,24 +1323,31 @@ export const npgSessionsFields = async (
               return {};
             },
             (myRes) => {
-              if (myRes.status === 200) {
-                mixpanel.track(NPG_SUCCESS.value, {
-                  EVENT_ID: NPG_SUCCESS.value,
-                });
-                pipe(
-                  myRes.value.paymentMethodData.form,
-                  validateSessionWalletCardFormFields,
-                  O.match(
-                    () => onError(NPG_RESP_ERROR.value),
-                    () => onResponse(myRes.value)
-                  )
-                );
-                return myRes;
-              } else {
-                mixpanel.track(NPG_RESP_ERROR.value, {
-                  EVENT_ID: NPG_RESP_ERROR.value,
-                });
-                return {};
+              switch (myRes.status) {
+                case 200:
+                  mixpanel.track(NPG_SUCCESS.value, {
+                    EVENT_ID: NPG_SUCCESS.value,
+                  });
+                  pipe(
+                    myRes.value.paymentMethodData.form,
+                    validateSessionWalletCardFormFields,
+                    O.match(
+                      () => onError(NPG_RESP_ERROR.value),
+                      () => onResponse(myRes.value)
+                    )
+                  );
+                  return myRes;
+                case 401:
+                  mixpanel.track(NPG_RESP_ERROR.value, {
+                    EVENT_ID: NPG_RESP_ERROR.value,
+                  });
+                  onError(ErrorsType.UNAUTHORIZED);
+                  return {};
+                default:
+                  mixpanel.track(NPG_RESP_ERROR.value, {
+                    EVENT_ID: NPG_RESP_ERROR.value,
+                  });
+                  return {};
               }
             }
           )

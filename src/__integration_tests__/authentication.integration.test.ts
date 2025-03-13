@@ -25,6 +25,7 @@ const POST_AUTH_TOKEN_FAILS_504 = "302000100000009480"
 const POST_AUTH_TOKEN_FAILS_429 = "302000100000009481"
 const FAIL_GET_USERS_401 = "302000100000009482";
 const FAIL_GET_USERS_500 = "302000100000009483";
+const FAIL_UNAUTHORIZED_401 = "302000100000009484";
 
 jest.setTimeout(30000);
 jest.retryTimes(3);
@@ -379,6 +380,35 @@ describe("Checkout authentication tests", () => {
     expect(authCallbackError.body).toContain(translation.authCallbackPage.body);
   });
 
+  it("Should correctly retrieve payment methods with logged user", async () => {
+    await page.evaluate(() => {
+      //set item into sessionStorage for pass the route Guard
+      sessionStorage.setItem('useremail', 'email');
+      sessionStorage.setItem('authToken', 'auth-token-value');
+    });
+    //go to payment methods page
+    await page.goto(PAYMENT_METHODS_PAGE);
+
+    const isPaymentMethodsPresents = await verifyPaymentMethods();
+    expect(isPaymentMethodsPresents).toBeTruthy();
+  });
+
+  it("Should redirect to auth-expired page receiving 401 from get payment-methods", async () => {
+    await page.evaluate(() => {
+      //set item into sessionStorage for pass the route Guard
+      sessionStorage.setItem('useremail', 'email');
+      sessionStorage.setItem('authToken', 'auth-token-value');
+    });
+    
+    //set flow error case
+    await fillPaymentNotificationForm(FAIL_UNAUTHORIZED_401, VALID_FISCAL_CODE);
+    await page.waitForNavigation();
+
+    //go to payment methods page
+    await page.goto(PAYMENT_METHODS_PAGE);
+    expect(page.url()).toContain("/autenticazione-scaduta");
+  });
+
   it("Should correctly call post sessions with logged user", async () => {
     await page.evaluate(() => {
       //set item into sessionStorage for pass the route Guard
@@ -401,6 +431,23 @@ describe("Checkout authentication tests", () => {
 
     //check current url is correct
     expect(page.url()).toContain("/inserisci-carta");
+  });
+
+  it("Should redirect to auth-expired page receiving 401 from post sessions", async () => {
+    await page.evaluate(() => {
+      //set item into sessionStorage for pass the route Guard
+      sessionStorage.setItem('useremail', 'email');
+      sessionStorage.setItem('authToken', 'auth-token-value');
+      sessionStorage.setItem('paymentMethod', '{"paymentMethodId":"method-id","paymentTypeCode":"CP"}');
+    });
+    
+    //set flow error case
+    await fillPaymentNotificationForm(FAIL_UNAUTHORIZED_401, VALID_FISCAL_CODE);
+    await page.waitForNavigation();
+
+    //go to payment methods page and select card payment
+    await page.goto(INSERT_CARD_PAGE);
+    expect(page.url()).toContain("/autenticazione-scaduta");
   });
 
   it.each([

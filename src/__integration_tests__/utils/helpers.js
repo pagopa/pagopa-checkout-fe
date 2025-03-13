@@ -216,13 +216,7 @@ export const verifyPaymentMethods = async () => {
     "[data-qalabel=payment-method]",
     (elHandles) => elHandles.map((el) => el.getAttribute("data-qaid"))
   );
-  for (const method of methods) {
-    const cardOptionXPath = `[data-qaid=${method}]`;
-
-    const cardOptionBtn = await page.waitForSelector(cardOptionXPath);
-    await cardOptionBtn.click();
-  }
-  return true;
+  return methods.length > 0;
 };
 
 export const fillCardDataForm = async (cardData) => {
