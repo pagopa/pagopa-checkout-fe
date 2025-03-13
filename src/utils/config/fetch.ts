@@ -41,11 +41,11 @@ export function retryingFetch(
     maxRetries,
     exponentialBackoff
   );
-  const retryWithTransient429s = retryLogicForTransientResponseError(
+  const retryWithTransient = retryLogicForTransientResponseError(
     retryCondition != null ? retryCondition : (_: Response) => _.status === 429,
     retryLogic
   );
-  return retriableFetch(retryWithTransient429s)(timeoutFetch);
+  return retriableFetch(retryWithTransient)(timeoutFetch);
 }
 
 //
