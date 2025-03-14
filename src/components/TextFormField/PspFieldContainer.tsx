@@ -56,7 +56,7 @@ function PspFieldContainer(props: {
               alt={`Logo ${props.body}`}
               aria-hidden="true"
               src={props.image}
-              style={{ maxHeight: "32px", width: "auto" }}
+              style={{ maxHeight: "16px", width: "auto" }}
             />
           </Box>
           <Typography
