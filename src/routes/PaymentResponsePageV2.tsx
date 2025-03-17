@@ -1,6 +1,9 @@
 import { Box, Button, Typography } from "@mui/material";
 import { default as React, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import { pipe } from "fp-ts/lib/function";
+import * as O from "fp-ts/Option";
 import { removeLoggedUser } from "../redux/slices/loggedUser";
 import { checkLogout } from "../utils/api/helper";
 import FindOutMoreModal from "../components/modals/FindOutMoreModal";
@@ -36,6 +39,7 @@ type CartInformation = {
 };
 
 export default function PaymentResponsePageV2() {
+  const navigate = useNavigate();
   const outcome = getFragmentParameter(
     window.location.href,
     ROUTE_FRAGMENT.OUTCOME,
@@ -84,6 +88,17 @@ export default function PaymentResponsePageV2() {
   };
 
   const dispatch = useAppDispatch();
+
+  const performRedirect = () => {
+    pipe(
+      cart,
+      O.fromNullable,
+      O.fold(
+        () => navigate(cartInformation.redirectUrl, { replace: true }),
+        () => window.location.replace(cartInformation.redirectUrl)
+      )
+    );
+  };
 
   useEffect(() => {
     checkLogout(() => {
@@ -170,9 +185,7 @@ export default function PaymentResponsePageV2() {
             )}
             <Button
               variant="outlined"
-              onClick={() => {
-                window.location.replace(cartInformation.redirectUrl);
-              }}
+              onClick={performRedirect}
               sx={{
                 width: "100%",
                 minHeight: 45,

@@ -1,6 +1,9 @@
 import { Box, Button, Typography } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import * as O from "fp-ts/Option";
+import { pipe } from "fp-ts/lib/function";
 import { resetThreshold } from "../redux/slices/threshold";
 import cancelled from "../assets/images/response-unrecognized.svg";
 import PageContainer from "../components/PageContent/PageContainer";
@@ -17,10 +20,21 @@ import { checkLogout } from "../utils/api/helper";
 import { removeLoggedUser } from "../redux/slices/loggedUser";
 
 export default function CancelledPage() {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
-  const redirectUrl = cart?.returnUrls.returnCancelUrl || "/";
+
+  const performRedirect = () => {
+    pipe(
+      cart?.returnUrls.returnCancelUrl,
+      O.fromNullable,
+      O.fold(
+        () => navigate("/", { replace: true }),
+        (cartUrl: string) => window.location.replace(cartUrl)
+      )
+    );
+  };
 
   React.useEffect(() => {
     checkLogout(() => {
@@ -57,9 +71,7 @@ export default function CancelledPage() {
           <Button
             type="button"
             variant="outlined"
-            onClick={() => {
-              window.location.replace(redirectUrl);
-            }}
+            onClick={performRedirect}
             style={{
               width: "100%",
               height: "100%",
