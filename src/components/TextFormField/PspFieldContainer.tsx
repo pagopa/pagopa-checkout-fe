@@ -51,7 +51,7 @@ function PspFieldContainer(props: {
             flexDirection: props.flexDirection,
           }}
         >
-          <Box sx={{ width: "80%" }}>
+          <Box sx={{ paddingRight: "10px" }}>
             <img
               alt={`Logo ${props.body}`}
               aria-hidden="true"
