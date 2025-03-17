@@ -174,14 +174,23 @@ export default function LoginHeader() {
   const doGetUserInfo = () => {
     void retrieveUserInfo({
       onResponse: (userInfo: UserInfoResponse) => {
-        dispatch(
-          setLoggedUser({
-            id: userInfo.userId,
-            name: userInfo.name,
-            surname: userInfo.familyName,
-          })
+        pipe(
+          getSessionItem(SessionItems.authToken),
+          O.fromNullable,
+          O.fold(
+            () => setLoginButtonReady(true),
+            () => {
+              dispatch(
+                setLoggedUser({
+                  id: userInfo.userId,
+                  name: userInfo.name,
+                  surname: userInfo.familyName,
+                })
+              );
+              setLoginButtonReady(true);
+            }
+          )
         );
-        setLoginButtonReady(true);
       },
       onError: () => {
         setLoginButtonReady(true);
