@@ -199,7 +199,7 @@ export default function PaymentCheckPage() {
 
   const onCancelResponse = () => {
     setCancelLoading(false);
-    navigate(`/${CheckoutRoutes.ANNULLATO}`);
+    navigate(`/${CheckoutRoutes.ANNULLATO}`, { replace: true });
   };
 
   const onCancelPaymentSubmit = () => {
