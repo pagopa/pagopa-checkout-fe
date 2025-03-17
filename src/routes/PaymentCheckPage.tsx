@@ -199,7 +199,7 @@ export default function PaymentCheckPage() {
 
   const onCancelResponse = () => {
     setCancelLoading(false);
-    navigate(`/${CheckoutRoutes.ANNULLATO}`, { replace: true });
+    navigate(`/${CheckoutRoutes.ANNULLATO}`);
   };
 
   const onCancelPaymentSubmit = () => {
@@ -492,7 +492,7 @@ export default function PaymentCheckPage() {
               variant="contained"
               onClick={() => {
                 setPspNotFoundModalOpen(false);
-                navigate(`/${CheckoutRoutes.SCEGLI_METODO}`);
+                navigate(`/${CheckoutRoutes.SCEGLI_METODO}`, { replace: true });
               }}
               id="pspNotFoundCtaId"
             >
