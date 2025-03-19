@@ -160,7 +160,7 @@ export function PaymentChoice(props: {
           open={errorModalOpen}
           onClose={() => {
             setErrorModalOpen(false);
-            window.location.replace(`/${CheckoutRoutes.ERRORE}`);
+            navigate(`/${CheckoutRoutes.ERRORE}`, { replace: true });
           }}
           titleId="iframeCardFormErrorTitleId"
           errorId="iframeCardFormErrorId"

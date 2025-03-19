@@ -5,6 +5,9 @@
 import { Box, Button, Typography } from "@mui/material";
 import { default as React, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import * as O from "fp-ts/Option";
+import { pipe } from "fp-ts/lib/function";
 import { getConfigOrThrow } from "../utils/config/config";
 import SurveyLink from "../components/commons/SurveyLink";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
@@ -54,6 +57,7 @@ type CartInformation = {
 
 export default function PaymentResponsePage() {
   const conf = getConfigOrThrow();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [findOutMoreOpen, setFindOutMoreOpen] = useState<boolean>(false);
   const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
@@ -83,6 +87,17 @@ export default function PaymentResponsePage() {
   };
 
   const dispatch = useAppDispatch();
+
+  const performRedirect = () => {
+    pipe(
+      cart,
+      O.fromNullable,
+      O.fold(
+        () => navigate(cartInformation.redirectUrl, { replace: true }),
+        () => window.location.replace(cartInformation.redirectUrl)
+      )
+    );
+  };
 
   useEffect(() => {
     checkLogout(() => {
@@ -123,7 +138,7 @@ export default function PaymentResponsePage() {
           : "/";
       setOutcomeMessage(message);
       setCartInformation({
-        redirectUrl: redirectTo || "",
+        redirectUrl: redirectTo,
         isCart: cart != null,
       });
       setLoading(false);
@@ -211,9 +226,7 @@ export default function PaymentResponsePage() {
                 variant={
                   outcome === ViewOutcomeEnum.REFUNDED ? "text" : "outlined"
                 }
-                onClick={() => {
-                  window.location.replace(cartInformation.redirectUrl);
-                }}
+                onClick={performRedirect}
                 sx={{
                   width: "100%",
                   minHeight: 45,

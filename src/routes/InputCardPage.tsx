@@ -182,7 +182,7 @@ export default function InputCardPage() {
           open={pspNotFoundModal}
           onClose={() => {
             setPspNotFoundModalOpen(false);
-            window.location.replace(`/${CheckoutRoutes.SCEGLI_METODO}`);
+            navigate(`/${CheckoutRoutes.SCEGLI_METODO}`, { replace: true });
           }}
           maxWidth="sm"
           hideIcon={true}
@@ -208,7 +208,7 @@ export default function InputCardPage() {
               variant="contained"
               onClick={() => {
                 setPspNotFoundModalOpen(false);
-                window.location.replace(`/${CheckoutRoutes.SCEGLI_METODO}`);
+                navigate(`/${CheckoutRoutes.SCEGLI_METODO}`, { replace: true });
               }}
               id="pspNotFoundCtaId"
             >
