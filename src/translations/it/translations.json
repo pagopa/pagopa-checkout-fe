@@ -26,6 +26,14 @@
     "body": "Si è verificato un problema durante l'accesso. Riprova tra qualche minuto.",
     "buttons": {
       "retry": "Riprova",
+      "continueWithoutLogin": "Continua senza login"
+    }
+  },
+  "authExpiredPage": {
+    "title": "La tua sessione è scaduta",
+    "body": "Accedi per riprendere la sessione, oppure prosegui senza effettuare il login ",
+    "buttons": {
+      "login": "Accedi",
       "continueWithoutLogin": "Continua senza login."
     }
   },

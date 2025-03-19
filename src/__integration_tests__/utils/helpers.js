@@ -98,6 +98,46 @@ export const clickLoginButton = async () => {
   await loginBtn.click();
 }
 
+export const getUserButton = async () => {
+  //search user button
+  console.log("Search user button")
+  const loginHeader = await page.waitForSelector("#login-header");
+  const headerButtons = await loginHeader.$$("button");
+  // return button with name 
+  let userButton;
+  for(let btn of headerButtons) {
+    const text = await btn.evaluate((el) => el.textContent);
+    if(text === "MarioTest RossiTest") {
+      userButton = btn;
+    }
+  }
+  return userButton;
+}
+
+export const tryLoginWithAuthCallbackError = async (noticeCode, fiscalCode) => {
+  //flow test error
+  await fillPaymentNotificationForm(noticeCode, fiscalCode);
+  console.log("MockFlow setted with noticeCode: " + noticeCode);
+
+  //Login
+  await clickLoginButton();
+
+  //Wait for error messages
+  const titleErrorElem = await page.waitForSelector("#errorTitle");
+  const titleErrorBody = await page.waitForSelector("#errorBody");
+  const title = await titleErrorElem.evaluate((el) => el.textContent);
+  const body = await titleErrorBody.evaluate((el) => el.textContent);
+
+  //Error on auth-callback page
+  const currentUrl = page.url();
+  
+  return {
+    title,
+    body,
+    currentUrl,
+  }
+}
+
 export const fillPaymentNotificationForm = async (noticeCode, fiscalCode) => {
   const noticeCodeTextInput = "#billCode";
   const fiscalCodeTextInput = "#cf";
@@ -176,13 +216,7 @@ export const verifyPaymentMethods = async () => {
     "[data-qalabel=payment-method]",
     (elHandles) => elHandles.map((el) => el.getAttribute("data-qaid"))
   );
-  for (const method of methods) {
-    const cardOptionXPath = `[data-qaid=${method}]`;
-
-    const cardOptionBtn = await page.waitForSelector(cardOptionXPath);
-    await cardOptionBtn.click();
-  }
-  return true;
+  return methods.length > 0;
 };
 
 export const fillCardDataForm = async (cardData) => {

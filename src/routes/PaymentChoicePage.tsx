@@ -5,6 +5,8 @@ import { Box, Button, Link } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { pipe } from "fp-ts/function";
+import * as B from "fp-ts/boolean";
 import { CancelPayment } from "../components/modals/CancelPayment";
 import ErrorModal from "../components/modals/ErrorModal";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
@@ -17,7 +19,12 @@ import {
 } from "../features/payment/models/paymentModel";
 import { getPaymentInstruments } from "../utils/api/helper";
 import { getTotalFromCart } from "../utils/cart/cart";
-import { getSessionItem, SessionItems } from "../utils/storage/sessionStorage";
+import {
+  getSessionItem,
+  SessionItems,
+  setSessionItem,
+} from "../utils/storage/sessionStorage";
+import { ErrorsType } from "../utils/errors/checkErrorsModel";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function PaymentChoicePage() {
@@ -55,9 +62,23 @@ export default function PaymentChoicePage() {
   };
 
   const onError = React.useCallback((m: string) => {
-    setLoading(false);
-    setError(m);
-    setErrorModalOpen(true);
+    pipe(
+      m !== ErrorsType.UNAUTHORIZED,
+      B.fold(
+        () => {
+          setSessionItem(
+            SessionItems.loginOriginPage,
+            `${location.pathname}${location.search}`
+          );
+          navigate(`/${CheckoutRoutes.AUTH_EXPIRED}`);
+        },
+        () => {
+          setLoading(false);
+          setError(m);
+          setErrorModalOpen(true);
+        }
+      )
+    );
   }, []);
 
   const onCancelResponse = React.useCallback(() => {

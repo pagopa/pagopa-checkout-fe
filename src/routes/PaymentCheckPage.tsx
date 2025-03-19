@@ -35,15 +35,17 @@ import {
   PaymentMethod,
   PaymentMethodInfo,
 } from "../features/payment/models/paymentModel";
-import { useAppSelector } from "../redux/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "../redux/hooks/hooks";
 import {
   cancelPayment,
   calculateFees,
   proceedToPayment,
+  checkLogout,
 } from "../utils/api/helper";
 import { onBrowserUnload, onBrowserBackEvent } from "../utils/eventListeners";
 import { moneyFormat } from "../utils/form/formatters";
 import {
+  clearSessionItem,
   getSessionItem,
   SessionItems,
   setSessionItem,
@@ -55,6 +57,7 @@ import { Bundle } from "../../generated/definitions/payment-ecommerce/Bundle";
 import { CalculateFeeResponse } from "../../generated/definitions/payment-ecommerce/CalculateFeeResponse";
 import { SessionPaymentMethodResponse } from "../../generated/definitions/payment-ecommerce/SessionPaymentMethodResponse";
 import { ImageComponent } from "../features/payment/components/PaymentChoice/PaymentMethodImage";
+import { removeLoggedUser } from "../redux/slices/loggedUser";
 import { CheckoutRoutes } from "./models/routeModel";
 
 const defaultStyle = {
@@ -70,6 +73,7 @@ const defaultStyle = {
 export default function PaymentCheckPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [modalOpen, setModalOpen] = React.useState(false);
   const [showDisclaimer, setShowDisclaimer] = React.useState(true);
   const [cancelModalOpen, setCancelModalOpen] = React.useState(false);
@@ -137,6 +141,10 @@ export default function PaymentCheckPage() {
     setPspUpdateLoading(false);
     setError(m);
     setErrorModalOpen(true);
+    checkLogout(() => {
+      dispatch(removeLoggedUser());
+      clearSessionItem(SessionItems.authToken);
+    });
     if (userCancelRedirect !== undefined) {
       setUserCancelRedirect(
         userCancelRedirect === undefined ? false : userCancelRedirect
