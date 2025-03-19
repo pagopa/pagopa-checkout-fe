@@ -8,10 +8,13 @@ import { Cart } from "../features/payment/models/paymentModel";
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { onBrowserUnload } from "../utils/eventListeners";
 import {
+  clearSessionItem,
   clearStorage,
   getSessionItem,
   SessionItems,
 } from "../utils/storage/sessionStorage";
+import { checkLogout } from "../utils/api/helper";
+import { removeLoggedUser } from "../redux/slices/loggedUser";
 
 export default function CancelledPage() {
   const { t } = useTranslation();
@@ -20,6 +23,10 @@ export default function CancelledPage() {
   const redirectUrl = cart?.returnUrls.returnCancelUrl || "/";
 
   React.useEffect(() => {
+    checkLogout(() => {
+      dispatch(removeLoggedUser());
+      clearSessionItem(SessionItems.authToken);
+    });
     dispatch(resetThreshold());
     window.removeEventListener("beforeunload", onBrowserUnload);
     clearStorage();

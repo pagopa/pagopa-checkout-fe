@@ -69,10 +69,10 @@ const PSP_NOT_FOUND_FAIL = "302016723749670076";
  * Increase default test timeout (120000ms)
  * to support entire payment flow
  */
-jest.setTimeout(80000);
+jest.setTimeout(30000);
 jest.retryTimes(3);
-page.setDefaultNavigationTimeout(80000);
-page.setDefaultTimeout(80000);
+page.setDefaultNavigationTimeout(30000);
+page.setDefaultTimeout(30000);
 
 beforeAll(async () => {
   await page.goto(CHECKOUT_URL);
@@ -269,10 +269,6 @@ describe("Checkout payment activation failure tests", () => {
          * 2. Payment with notice code that fails on activation and get FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND
          */
         selectLanguage(lang);
-        page.on("dialog", async (dialog) => {
-          await dialog.accept();
-        });
-
         const errorMessageTitleSelector = "#idTitleErrorModalPaymentCheckPage";
         const resultMessage = await authorizePaymentAndGetError(
           FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND,
@@ -281,11 +277,16 @@ describe("Checkout payment activation failure tests", () => {
           VALID_CARD_DATA,
           errorMessageTitleSelector
         );
-
-        expect(resultMessage).toContain(translation.GENERIC_ERROR.title);
-
         const closeErrorButton = await page.waitForSelector("#closeError");
         await closeErrorButton.click();
+        await new Promise((r) => setTimeout(r, 1000));
+        const paymentCheckPageButtonCancel = await page.waitForSelector("#paymentCheckPageButtonCancel");
+        await paymentCheckPageButtonCancel.click();
+        const cancPayment = await page.waitForSelector("#confirm", {visible: true});
+        await cancPayment.click();
+        await page.waitForNavigation();
+        expect(resultMessage).toContain(translation.GENERIC_ERROR.title);
+        //await cancelPaymentAction();
       }
     );
   });

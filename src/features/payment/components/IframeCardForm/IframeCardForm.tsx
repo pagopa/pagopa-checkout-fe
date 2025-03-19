@@ -1,5 +1,6 @@
 import { Box } from "@mui/material";
 import * as O from "fp-ts/Option";
+import * as B from "fp-ts/boolean";
 import { pipe } from "fp-ts/function";
 import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
@@ -81,6 +82,22 @@ export default function IframeCardForm(props: Props) {
     setError(m);
     setErrorModalOpen(true);
     ref.current?.reset();
+  };
+
+  const onNpgSessionsError = (m: string) => {
+    pipe(
+      m !== ErrorsType.UNAUTHORIZED,
+      B.fold(
+        () => {
+          setSessionItem(
+            SessionItems.loginOriginPage,
+            `${location.pathname}${location.search}`
+          );
+          navigate(`/${CheckoutRoutes.AUTH_EXPIRED}`);
+        },
+        () => onError(m)
+      )
+    );
   };
 
   const navigate = useNavigate();
@@ -185,7 +202,7 @@ export default function IframeCardForm(props: Props) {
       };
 
       void (async () => {
-        void npgSessionsFields(onError, onResponse);
+        void npgSessionsFields(onNpgSessionsError, onResponse);
       })();
     }
   }, [form?.orderId]);

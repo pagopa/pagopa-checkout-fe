@@ -4,7 +4,7 @@
 import * as E from "fp-ts/Either";
 import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
-import { flow, pipe } from "fp-ts/function";
+import { constVoid, flow, pipe } from "fp-ts/function";
 import { toError } from "fp-ts/lib/Either";
 import ReCAPTCHA from "react-google-recaptcha";
 import * as t from "io-ts";
@@ -83,6 +83,7 @@ import { CalculateFeeResponse } from "../../../generated/definitions/payment-eco
 import { FaultCategoryEnum } from "../../../generated/definitions/payment-ecommerce/FaultCategory";
 import { CalculateFeeRequest } from "../../../generated/definitions/payment-ecommerce-v2/CalculateFeeRequest";
 import { AuthRequest } from "../../../generated/definitions/checkout-auth-service-v1/AuthRequest";
+import { UserInfoResponse } from "../../../generated/definitions/checkout-auth-service-v1/UserInfoResponse";
 import {
   apiCheckoutFeatureFlags,
   apiPaymentEcommerceClient,
@@ -90,6 +91,10 @@ import {
   apiPaymentEcommerceClientWithRetry,
   apiPaymentEcommerceClientWithRetryV2,
   apiCheckoutAuthServiceClientV1,
+  apiCheckoutAuthServiceWithRetryV1,
+  apiPaymentEcommerceClientV3,
+  apiPaymentEcommerceClientWithRetryV3,
+  apiCheckoutAuthServiceClientAuthTokenV1,
 } from "./client";
 
 export const NodeFaultCodeR = t.interface({
@@ -117,10 +122,29 @@ export const getEcommercePaymentInfoTask = (
         mixpanel.track(PAYMENT_VERIFY_INIT.value, {
           EVENT_ID: PAYMENT_VERIFY_INIT.value,
         });
-        return apiPaymentEcommerceClient.getPaymentRequestInfo({
-          rpt_id: rptId,
-          recaptchaResponse,
-        });
+
+        return pipe(
+          getSessionItem(SessionItems.authToken) as string,
+          O.fromNullable,
+          O.fold(
+            () =>
+              apiPaymentEcommerceClient.getPaymentRequestInfo({
+                rpt_id: rptId,
+                recaptchaResponse,
+              }),
+            (bearerAuth) => {
+              // init API invocation page to handle return url in case of 401
+              setSessionItem(
+                SessionItems.loginOriginPage,
+                `${location.pathname}${location.search}`
+              );
+              return apiPaymentEcommerceClientV3.getPaymentRequestInfoV3({
+                rpt_id: rptId,
+                bearerAuth, // add auth token
+              });
+            }
+          )
+        );
       },
       () => {
         mixpanel.track(PAYMENT_VERIFY_NET_ERR.value, {
@@ -158,6 +182,12 @@ export const getEcommercePaymentInfoTask = (
                   : PAYMENT_VERIFY_RESP_ERR.value;
               mixpanel.track(EVENT_ID, { EVENT_ID, reason });
 
+              if (responseType.status === 401) {
+                return TE.left({
+                  faultCodeCategory: "SESSION_EXPIRED",
+                  faultCodeDetail: "Unauthorized",
+                });
+              }
               if (responseType.status === 400) {
                 return TE.left({
                   faultCodeCategory: FaultCategoryEnum.GENERIC_ERROR as string,
@@ -165,8 +195,11 @@ export const getEcommercePaymentInfoTask = (
               }
               return responseType.status !== 200
                 ? TE.left({
-                    faultCodeCategory: responseType.value.faultCodeCategory,
-                    faultCodeDetail: responseType.value.faultCodeDetail,
+                    faultCodeCategory:
+                      responseType.value?.faultCodeCategory ??
+                      FaultCategoryEnum.GENERIC_ERROR,
+                    faultCodeDetail:
+                      responseType.value?.faultCodeDetail ?? "Unknown error",
                   })
                 : TE.of(responseType.value);
             }
@@ -255,17 +288,41 @@ export const activePaymentTask = (
         mixpanel.track(PAYMENT_ACTIVATE_INIT.value, {
           EVENT_ID: PAYMENT_ACTIVATE_INIT.value,
         });
-        return apiPaymentEcommerceClientV2.newTransaction({
+
+        // base payload shared between both auth and non-auth APIs
+        const payload = {
           "x-correlation-id": correlationId,
           "x-client-id-from-client": cartClientId,
-          recaptchaResponse,
           body: {
             paymentNotices: getPaymentNotices(amountSinglePayment, rptId, cart),
             idCart: cart?.idCart,
             email: userEmail,
             orderId,
           },
-        });
+        };
+
+        return pipe(
+          getSessionItem(SessionItems.authToken) as string,
+          O.fromNullable,
+          O.fold(
+            () =>
+              apiPaymentEcommerceClientV2.newTransaction({
+                ...payload,
+                recaptchaResponse,
+              }),
+            (bearerAuth) => {
+              // init API invocation page to handle return url in case of 401
+              setSessionItem(
+                SessionItems.loginOriginPage,
+                `${location.pathname}${location.search}`
+              );
+              return apiPaymentEcommerceClientV3.newTransactionV3({
+                bearerAuth, // add auth token
+                ...payload,
+              });
+            }
+          )
+        );
       },
       () => {
         mixpanel.track(PAYMENT_ACTIVATE_NET_ERR.value, {
@@ -352,6 +409,12 @@ export const activePaymentTask = (
                   : PAYMENT_ACTIVATE_RESP_ERR.value;
               mixpanel.track(EVENT_ID, { EVENT_ID, reason });
 
+              if (responseType.status === 401) {
+                return TE.left({
+                  faultCodeCategory: "SESSION_EXPIRED",
+                  faultCodeDetail: "Unauthorized",
+                });
+              }
               if (responseType.status === 400) {
                 return TE.left({
                   faultCodeCategory: FaultCategoryEnum.GENERIC_ERROR as string,
@@ -359,8 +422,11 @@ export const activePaymentTask = (
               }
               return responseType.status !== 200
                 ? TE.left({
-                    faultCodeCategory: responseType.value.faultCodeCategory,
-                    faultCodeDetail: responseType.value.faultCodeDetail,
+                    faultCodeCategory:
+                      responseType.value?.faultCodeCategory ??
+                      FaultCategoryEnum.GENERIC_ERROR,
+                    faultCodeDetail:
+                      responseType.value?.faultCodeDetail ?? "Unknown error",
                   })
                 : TE.of(responseType.value);
             }
@@ -633,7 +699,10 @@ export const proceedToLogin = async ({
         pipe(
           myResExt,
           E.fold(
-            () => [],
+            () => {
+              onError(ErrorsType.GENERIC_ERROR);
+              return {};
+            },
             (myRes) => {
               if (myRes?.status === 200) {
                 onResponse(myRes?.value.urlRedirect);
@@ -667,7 +736,7 @@ export const authentication = async ({
     TE.chain((decodedRequest) =>
       TE.tryCatch(
         () =>
-          apiCheckoutAuthServiceClientV1.authenticateWithAuthToken({
+          apiCheckoutAuthServiceClientAuthTokenV1.authenticateWithAuthToken({
             body: decodedRequest,
           }),
         () => ErrorsType.GENERIC_ERROR
@@ -855,6 +924,102 @@ export const proceedToPayment = async (
   )();
 };
 
+export const retrieveUserInfo = async ({
+  onResponse,
+  onError,
+}: {
+  onResponse: (e: UserInfoResponse) => void;
+  onError: (e: string) => void;
+}) => {
+  await pipe(
+    getSessionItem(SessionItems.authToken) as string,
+    O.fromNullable,
+    TE.fromOption(() => ErrorsType.GENERIC_ERROR),
+    TE.chain((authToken) =>
+      TE.tryCatch(
+        () =>
+          apiCheckoutAuthServiceWithRetryV1.authUsers({
+            bearerAuth: authToken,
+          }),
+        () => ErrorsType.GENERIC_ERROR
+      )
+    ),
+    TE.fold(
+      (error) => {
+        onError(error);
+        return TE.left(error);
+      },
+      (response) =>
+        pipe(
+          response,
+          E.fold(
+            () => {
+              onError(ErrorsType.GENERIC_ERROR);
+              return TE.left(ErrorsType.GENERIC_ERROR);
+            },
+            (res) => {
+              if (res.status === 200) {
+                onResponse(res.value);
+                return TE.right(res.value);
+              } else {
+                onError(ErrorsType.CONNECTION);
+                return TE.left(ErrorsType.CONNECTION);
+              }
+            }
+          )
+        )
+    )
+  )();
+};
+
+export const logoutUser = async ({
+  onResponse,
+  onError,
+}: {
+  onResponse: () => void;
+  onError: (e: string) => void;
+}) => {
+  await pipe(
+    getSessionItem(SessionItems.authToken) as string,
+    O.fromNullable,
+    TE.fromOption(() => ErrorsType.GENERIC_ERROR),
+    TE.chain((authToken) =>
+      TE.tryCatch(
+        () =>
+          apiCheckoutAuthServiceWithRetryV1.authLogout({
+            bearerAuth: authToken,
+          }),
+        () => ErrorsType.GENERIC_ERROR
+      )
+    ),
+    TE.fold(
+      (error) => {
+        onError(error);
+        return TE.left(error);
+      },
+      (response) =>
+        pipe(
+          response,
+          E.fold(
+            () => {
+              onError(ErrorsType.GENERIC_ERROR);
+              return TE.left(ErrorsType.GENERIC_ERROR);
+            },
+            (res) => {
+              if (res.status === 204) {
+                onResponse();
+                return TE.right(res.value);
+              } else {
+                onError(ErrorsType.CONNECTION);
+                return TE.left(ErrorsType.CONNECTION);
+              }
+            }
+          )
+        )
+    )
+  )();
+};
+
 export const cancelPayment = async (
   onError: (e: string, userCancelRedirect: boolean) => void,
   onResponse: () => void
@@ -987,7 +1152,19 @@ export const getPaymentInstruments = async (
   });
   const list = await pipe(
     TE.tryCatch(
-      () => apiPaymentEcommerceClient.getAllPaymentMethods(query),
+      () =>
+        pipe(
+          getSessionItem(SessionItems.authToken) as string,
+          O.fromNullable,
+          O.fold(
+            () => apiPaymentEcommerceClient.getAllPaymentMethods(query),
+            (bearerAuth) =>
+              apiPaymentEcommerceClientV3.getAllPaymentMethodsV3({
+                bearerAuth,
+                ...query,
+              })
+          )
+        ),
       () => {
         mixpanel.track(PAYMENT_METHODS_NET_ERROR.value, {
           EVENT_ID: PAYMENT_METHODS_NET_ERROR.value,
@@ -1015,16 +1192,23 @@ export const getPaymentInstruments = async (
               return [];
             },
             (myRes) => {
-              if (myRes.status === 200) {
-                mixpanel.track(PAYMENT_METHODS_SUCCESS.value, {
-                  EVENT_ID: PAYMENT_METHODS_SUCCESS.value,
-                });
-                return myRes.value.paymentMethods;
-              } else {
-                mixpanel.track(PAYMENT_METHODS_RESP_ERROR.value, {
-                  EVENT_ID: PAYMENT_METHODS_RESP_ERROR.value,
-                });
-                return [];
+              switch (myRes.status) {
+                case 200:
+                  mixpanel.track(PAYMENT_METHODS_SUCCESS.value, {
+                    EVENT_ID: PAYMENT_METHODS_SUCCESS.value,
+                  });
+                  return myRes.value.paymentMethods;
+                case 401:
+                  mixpanel.track(PAYMENT_METHODS_RESP_ERROR.value, {
+                    EVENT_ID: PAYMENT_METHODS_RESP_ERROR.value,
+                  });
+                  onError(ErrorsType.UNAUTHORIZED);
+                  return [];
+                default:
+                  mixpanel.track(PAYMENT_METHODS_RESP_ERROR.value, {
+                    EVENT_ID: PAYMENT_METHODS_RESP_ERROR.value,
+                  });
+                  return [];
               }
             }
           )
@@ -1141,10 +1325,25 @@ export const npgSessionsFields = async (
               | PaymentMethod
               | undefined
           )?.paymentMethodId || "";
-        return apiPaymentEcommerceClientWithRetry.createSession({
+        const payload = {
           id: paymentMethodId,
           lang: localStorage.getItem("i18nextLng") ?? "it",
-        });
+        };
+        return pipe(
+          getSessionItem(SessionItems.authToken) as string,
+          O.fromNullable,
+          O.fold(
+            () =>
+              apiPaymentEcommerceClientWithRetry.createSession({
+                ...payload,
+              }),
+            (bearerAuth) =>
+              apiPaymentEcommerceClientWithRetryV3.createSessionV3({
+                bearerAuth,
+                ...payload,
+              })
+          )
+        );
       },
       () => {
         mixpanel.track(NPG_NET_ERR.value, {
@@ -1172,24 +1371,31 @@ export const npgSessionsFields = async (
               return {};
             },
             (myRes) => {
-              if (myRes.status === 200) {
-                mixpanel.track(NPG_SUCCESS.value, {
-                  EVENT_ID: NPG_SUCCESS.value,
-                });
-                pipe(
-                  myRes.value.paymentMethodData.form,
-                  validateSessionWalletCardFormFields,
-                  O.match(
-                    () => onError(NPG_RESP_ERROR.value),
-                    () => onResponse(myRes.value)
-                  )
-                );
-                return myRes;
-              } else {
-                mixpanel.track(NPG_RESP_ERROR.value, {
-                  EVENT_ID: NPG_RESP_ERROR.value,
-                });
-                return {};
+              switch (myRes.status) {
+                case 200:
+                  mixpanel.track(NPG_SUCCESS.value, {
+                    EVENT_ID: NPG_SUCCESS.value,
+                  });
+                  pipe(
+                    myRes.value.paymentMethodData.form,
+                    validateSessionWalletCardFormFields,
+                    O.match(
+                      () => onError(NPG_RESP_ERROR.value),
+                      () => onResponse(myRes.value)
+                    )
+                  );
+                  return myRes;
+                case 401:
+                  mixpanel.track(NPG_RESP_ERROR.value, {
+                    EVENT_ID: NPG_RESP_ERROR.value,
+                  });
+                  onError(ErrorsType.UNAUTHORIZED);
+                  return {};
+                default:
+                  mixpanel.track(NPG_RESP_ERROR.value, {
+                    EVENT_ID: NPG_RESP_ERROR.value,
+                  });
+                  return {};
               }
             }
           )
@@ -1305,4 +1511,17 @@ export const evaluateFeatureFlag = async (
         )
     )
   )();
+};
+
+export const checkLogout = (onLogoutCallBack: typeof constVoid) => {
+  pipe(
+    SessionItems.authToken,
+    O.fromNullable,
+    O.fold(constVoid, async () => {
+      await logoutUser({
+        onError: onLogoutCallBack,
+        onResponse: onLogoutCallBack,
+      });
+    })
+  );
 };

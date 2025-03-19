@@ -6,12 +6,15 @@ import { responseOutcome } from "../features/payment/models/responseOutcome";
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { onBrowserUnload } from "../utils/eventListeners";
 import {
+  clearSessionItem,
   clearStorage,
   getSessionItem,
   SessionItems,
 } from "../utils/storage/sessionStorage";
 import { Cart } from "../features/payment/models/paymentModel";
 import { resetThreshold } from "../redux/slices/threshold";
+import { checkLogout } from "../utils/api/helper";
+import { removeLoggedUser } from "../redux/slices/loggedUser";
 
 export default function SessionExpiredPage() {
   const { t } = useTranslation();
@@ -22,6 +25,10 @@ export default function SessionExpiredPage() {
   const redirectUrl = cart?.returnUrls.returnErrorUrl || "/";
 
   useEffect(() => {
+    checkLogout(() => {
+      dispatch(removeLoggedUser());
+      clearSessionItem(SessionItems.authToken);
+    });
     dispatch(resetThreshold());
     window.removeEventListener("beforeunload", onBrowserUnload);
     clearStorage();

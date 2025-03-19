@@ -1,11 +1,16 @@
 import React from "react";
 import "@testing-library/jest-dom";
-import { render, waitFor } from "@testing-library/react";
+import { waitFor } from "@testing-library/react";
 import { fireEvent, screen } from "@testing-library/dom";
 import { MemoryRouter } from "react-router-dom";
 import { getSessionItem } from "../../utils/storage/sessionStorage";
 import AuthCallback from "../AuthCallbackPage";
-import { authentication, proceedToLogin } from "../../utils/api/helper";
+import {
+  authentication,
+  proceedToLogin,
+  retrieveUserInfo,
+} from "../../utils/api/helper";
+import { renderWithReduxProvider } from "../../utils/testRenderProviders";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -13,14 +18,22 @@ jest.mock("react-i18next", () => ({
 
 jest.mock("react-google-recaptcha", () => ({
   __esModule: true,
-  default: React.forwardRef((_, ref) => (
-    <div ref={ref as React.RefObject<HTMLDivElement>} data-test="recaptcha" />
-  )),
+  default: React.forwardRef((_, ref) => {
+    React.useImperativeHandle(ref, () => ({
+      reset: jest.fn(),
+      execute: jest.fn(),
+      executeAsync: jest.fn(() => "token"),
+    }));
+    return (
+      <div ref={ref as React.RefObject<HTMLDivElement>} data-test="recaptcha" />
+    );
+  }),
 }));
 
-jest.mock("./../../utils/api/helper", () => ({
+jest.mock("../../utils/api/helper", () => ({
   proceedToLogin: jest.fn(),
   authentication: jest.fn(),
+  retrieveUserInfo: jest.fn(),
 }));
 
 jest.mock("../../utils/storage/sessionStorage", () => ({
@@ -36,7 +49,6 @@ jest.mock("../../utils/storage/sessionStorage", () => ({
 }));
 
 jest.mock("../../utils/eventListeners", () => ({
-  onBrowserBackEvent: jest.fn(),
   onBrowserUnload: jest.fn(),
 }));
 
@@ -45,22 +57,22 @@ describe("AuthCallback", () => {
     (getSessionItem as jest.Mock).mockReturnValue(true);
   });
 
-  it("renders loading state initially", () => {
-    render(
+  test("Renders loading state initially", () => {
+    renderWithReduxProvider(
       <MemoryRouter>
-        <AuthCallback />{" "}
+        <AuthCallback />
       </MemoryRouter>
     );
 
     expect(screen.getByRole("progressbar")).toBeInTheDocument();
   });
 
-  test("Calls authentication on mount", async () => {
+  test("Calls authentication and then retrieveUserInfo on mount", async () => {
     (authentication as jest.Mock).mockImplementation(({ onResponse }) => {
       onResponse("fakeAuthToken");
     });
 
-    render(
+    renderWithReduxProvider(
       <MemoryRouter>
         <AuthCallback />
       </MemoryRouter>
@@ -68,6 +80,7 @@ describe("AuthCallback", () => {
 
     await waitFor(() => {
       expect(authentication).toHaveBeenCalled();
+      expect(retrieveUserInfo).toHaveBeenCalled();
     });
   });
 
@@ -76,7 +89,7 @@ describe("AuthCallback", () => {
       onError();
     });
 
-    render(
+    renderWithReduxProvider(
       <MemoryRouter>
         <AuthCallback />
       </MemoryRouter>
@@ -87,9 +100,30 @@ describe("AuthCallback", () => {
     });
   });
 
+  test("Shows error screen if retrieveUserInfo fail after authentication success", async () => {
+    (authentication as jest.Mock).mockImplementation(({ onResponse }) => {
+      onResponse("fakeAuthToken");
+    });
+    (retrieveUserInfo as jest.Mock).mockImplementation(({ onError }) => {
+      onError();
+    });
+
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <AuthCallback />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(authentication).toHaveBeenCalled();
+      expect(retrieveUserInfo).toHaveBeenCalled();
+      expect(screen.getByText(/authCallbackPage.title/i)).toBeInTheDocument();
+    });
+  });
+
   test("Retry button is visible when feature flag is enabled", async () => {
     (getSessionItem as jest.Mock).mockReturnValue(true);
-    render(
+    renderWithReduxProvider(
       <MemoryRouter>
         <AuthCallback />
       </MemoryRouter>
@@ -103,7 +137,7 @@ describe("AuthCallback", () => {
   test("Clicking retry button triggers login", async () => {
     (getSessionItem as jest.Mock).mockReturnValue(true);
 
-    render(
+    renderWithReduxProvider(
       <MemoryRouter>
         <AuthCallback />
       </MemoryRouter>
