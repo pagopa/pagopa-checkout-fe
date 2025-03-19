@@ -9,7 +9,7 @@
  * and apiHost with the host api (for example http://localhost:80).
  */
 
-const {createProxyMiddleware} = require("http-proxy-middleware");
+const { createProxyMiddleware } = require("http-proxy-middleware");
 const express = require('express')
 const path = require('path')
 
@@ -41,7 +41,7 @@ module.exports = function (app) {
         target: apiHost,
     }));
 
-    app.use('/', express.static(path.join(__dirname, 'static')))
+    app.use('/', express.static(path.join(__dirname, 'static')));
     
     app.use('/termini-di-servizio', (req, res, next) => {
         if (req.method === 'GET') {

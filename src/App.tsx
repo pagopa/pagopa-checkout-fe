@@ -31,6 +31,7 @@ import { SessionItems } from "./utils/storage/sessionStorage";
 import SessionExpiredPage from "./routes/SessionExpiredPage";
 import AuthCallback from "./routes/AuthCallbackPage";
 import AuthExpiredPage from "./routes/AuthExpiredPage";
+import StaticHtmlPage from "./components/commons/StaticHtmlPage";
 
 const checkoutTheme = createTheme({
   ...theme,
@@ -61,33 +62,6 @@ const checkoutTheme = createTheme({
     },
   },
 });
-
-interface StaticHtmlPageProps {
-  htmlPath: string;
-}
-
-const StaticHtmlPage: React.FC<StaticHtmlPageProps> = ({ htmlPath }) => {
-  const [content, setContent] = React.useState("");
-
-  React.useEffect(() => {
-    fetch(htmlPath)
-      .then((response) => response.text())
-      .then((html) => {
-        setContent(html);
-      })
-      .catch((error) => {
-        // eslint-disable-next-line no-console
-        console.error("Error loading HTML content:", error);
-      });
-  }, [htmlPath]);
-
-  return (
-    <div
-      className="static-html-wrapper"
-      dangerouslySetInnerHTML={{ __html: content }}
-    />
-  );
-};
 
 export function App() {
   const { t } = useTranslation();
