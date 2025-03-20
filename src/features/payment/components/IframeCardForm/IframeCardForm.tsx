@@ -166,7 +166,7 @@ export default function IframeCardForm(props: Props) {
 
         const onPaymentComplete = () => {
           clearNavigationEvents();
-          window.location.replace(`/${CheckoutRoutes.ESITO}`);
+          navigate(`/${CheckoutRoutes.ESITO}`, { replace: true });
         };
 
         const onPaymentRedirect = (urlredirect: string) => {
@@ -176,7 +176,7 @@ export default function IframeCardForm(props: Props) {
 
         const onBuildError = () => {
           setLoading(false);
-          window.location.replace(`/${CheckoutRoutes.ERRORE}`);
+          navigate(`/${CheckoutRoutes.ERRORE}`, { replace: true });
         };
 
         const onAllFieldsLoaded = () => {
@@ -303,7 +303,7 @@ export default function IframeCardForm(props: Props) {
           open={errorModalOpen}
           onClose={() => {
             setErrorModalOpen(false);
-            window.location.replace(`/${CheckoutRoutes.ERRORE}`);
+            navigate(`/${CheckoutRoutes.ERRORE}`, { replace: true });
           }}
           titleId="iframeCardFormErrorTitleId"
           errorId="iframeCardFormErrorId"
@@ -315,7 +315,7 @@ export default function IframeCardForm(props: Props) {
           open={pspNotFoundModal}
           onClose={() => {
             setPspNotFoundModalOpen(false);
-            window.location.replace(`/${CheckoutRoutes.SCEGLI_METODO}`);
+            navigate(`/${CheckoutRoutes.SCEGLI_METODO}`, { replace: true });
           }}
           maxWidth="sm"
           hideIcon={true}
@@ -341,7 +341,7 @@ export default function IframeCardForm(props: Props) {
               variant="contained"
               onClick={() => {
                 setPspNotFoundModalOpen(false);
-                window.location.replace(`/${CheckoutRoutes.SCEGLI_METODO}`);
+                navigate(`/${CheckoutRoutes.SCEGLI_METODO}`, { replace: true });
               }}
               id="pspNotFoundCtaId"
             >

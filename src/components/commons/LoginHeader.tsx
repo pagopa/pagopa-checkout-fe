@@ -174,20 +174,38 @@ export default function LoginHeader() {
   const doGetUserInfo = () => {
     void retrieveUserInfo({
       onResponse: (userInfo: UserInfoResponse) => {
-        dispatch(
-          setLoggedUser({
-            id: userInfo.userId,
-            name: userInfo.name,
-            surname: userInfo.familyName,
-          })
-        );
-        setLoginButtonReady(true);
+        checkAuthTokenAndContinue(() => {
+          dispatch(
+            setLoggedUser({
+              id: userInfo.userId,
+              name: userInfo.name,
+              surname: userInfo.familyName,
+            })
+          );
+        });
       },
       onError: () => {
-        setLoginButtonReady(true);
-        navigate(`/${CheckoutRoutes.ERRORE}`);
+        checkAuthTokenAndContinue(() => {
+          navigate(`/${CheckoutRoutes.ERRORE}`);
+        });
       },
     });
+  };
+
+  const checkAuthTokenAndContinue = (onCheckSuccess: () => void) => {
+    pipe(
+      getSessionItem(SessionItems.authToken),
+      O.fromNullable,
+      O.fold(
+        // If authToken is not present discard operation
+        () => setLoginButtonReady(true),
+        // If authToken is present do operation
+        () => {
+          onCheckSuccess();
+          setLoginButtonReady(true);
+        }
+      )
+    );
   };
 
   useEffect(() => {
