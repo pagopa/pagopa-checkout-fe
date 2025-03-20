@@ -1,6 +1,9 @@
 import { Box, Button, Typography } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import * as O from "fp-ts/Option";
+import { useNavigate } from "react-router-dom";
+import { pipe } from "fp-ts/lib/function";
 import { removeLoggedUser } from "../redux/slices/loggedUser";
 import { resetThreshold } from "../redux/slices/threshold";
 import ko from "../assets/images/response-umbrella.svg";
@@ -17,10 +20,21 @@ import {
 import { checkLogout } from "../utils/api/helper";
 
 export default function KOPage() {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
-  const redirectUrl = cart?.returnUrls.returnErrorUrl || "/";
+
+  const performRedirect = () => {
+    pipe(
+      cart?.returnUrls.returnErrorUrl,
+      O.fromNullable,
+      O.fold(
+        () => navigate("/", { replace: true }),
+        (cartUrl: string) => window.location.replace(cartUrl)
+      )
+    );
+  };
 
   React.useEffect(() => {
     checkLogout(() => {
@@ -68,9 +82,7 @@ export default function KOPage() {
           <Button
             type="button"
             variant="outlined"
-            onClick={() => {
-              window.location.replace(redirectUrl || "/");
-            }}
+            onClick={performRedirect}
             style={{
               width: "100%",
               height: "100%",
