@@ -130,6 +130,14 @@ export const clearStorageAndMaintainAuthData = () => {
   }
 };
 
+export const getRptIdFromSession = () =>
+  pipe(
+    getSessionItem(SessionItems.noticeInfo) as PaymentFormFields,
+    O.fromNullable,
+    O.map((noticeInfo) => `${noticeInfo?.cf}${noticeInfo?.billCode}`),
+    O.getOrElse(() => "")
+  );
+
 export function getReCaptchaKey() {
   return getConfigOrThrow().CHECKOUT_RECAPTCHA_SITE_KEY;
 }
