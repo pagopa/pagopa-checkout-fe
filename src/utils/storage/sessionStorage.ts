@@ -14,7 +14,6 @@ import {
   PaymentMethodInfo,
 } from "../../features/payment/models/paymentModel";
 import { getConfigOrThrow } from "../config/config";
-import { RptId } from "../../../generated/definitions/payment-ecommerce/RptId";
 
 export enum SessionItems {
   paymentInfo = "paymentInfo",
@@ -131,14 +130,13 @@ export const clearStorageAndMaintainAuthData = () => {
   }
 };
 
-export const getRptIdFromSession = () => {
-  const noticeInfo = getSessionItem(SessionItems.noticeInfo) as
-    | PaymentFormFields
-    | undefined;
-  return noticeInfo
-    ? (`${noticeInfo?.cf}${noticeInfo?.billCode}` as RptId)
-    : undefined;
-};
+export const getRptIdFromSession = () =>
+  pipe(
+    getSessionItem(SessionItems.noticeInfo) as PaymentFormFields,
+    O.fromNullable,
+    O.map((noticeInfo) => `${noticeInfo?.cf}${noticeInfo?.billCode}`),
+    O.getOrElse(() => "")
+  );
 
 export function getReCaptchaKey() {
   return getConfigOrThrow().CHECKOUT_RECAPTCHA_SITE_KEY;
