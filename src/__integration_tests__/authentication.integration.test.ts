@@ -487,7 +487,7 @@ describe("Checkout authentication tests", () => {
     expect(authCallbackError.body).toContain(translation.authCallbackPage.body);
   });
 
-  it("Should invoke auth-service api with x-rpt-ids header", async () => {
+  it("Should invoke auth-service api with x-rpt-id header", async () => {
     let expectedCount = 4; // login - authToken - getUser - logout
     let apiContainsXRptIdCount = 0;
     
@@ -495,7 +495,7 @@ describe("Checkout authentication tests", () => {
       const url = request.url();
       if (url.includes("auth-service/v1")) {
         const headers = await request.headers();
-        if(headers['x-rpt-ids'] != null)
+        if(headers['x-rpt-id'] != null)
           apiContainsXRptIdCount ++
       }
     });
@@ -526,7 +526,7 @@ describe("Checkout authentication tests", () => {
     expect(apiContainsXRptIdCount).toBe(expectedCount);
   });
 
-  it("Should invoke auth-service api without x-rpt-ids if not present", async () => {
+  it("Should invoke auth-service api without x-rpt-id if not present", async () => {
     let expectedCount = 4; // login - authToken - getUser - logout
     let apiNotContainsXRptIdCount = 0;
     
@@ -534,7 +534,7 @@ describe("Checkout authentication tests", () => {
       const url = request.url();
       if (url.includes("auth-service/v1")) {
         const headers = await request.headers();
-        if(headers['x-rpt-ids'] == '') {
+        if(headers['x-rpt-id'] == '') {
           apiNotContainsXRptIdCount ++
         }
       }
