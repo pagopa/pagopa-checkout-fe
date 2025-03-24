@@ -96,7 +96,7 @@ export default function AuthCallback() {
       onResponse: (userInfo: UserInfoResponse) => {
         dispatch(
           setLoggedUser({
-            id: userInfo.name + userInfo.familyName,
+            id: `${userInfo.name || ""}${userInfo.familyName || ""}`,
             name: userInfo.name,
             surname: userInfo.familyName,
           })
