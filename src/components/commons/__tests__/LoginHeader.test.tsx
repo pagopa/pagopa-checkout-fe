@@ -122,7 +122,6 @@ describe("LoginHeader", () => {
     const userInfo: UserInfoResponse = {
       familyName: "Rossi",
       name: "Mario",
-      userId: "userId",
     };
     (getSessionItem as jest.Mock).mockReturnValue(true);
     (retrieveUserInfo as jest.Mock).mockImplementation(({ onResponse }) => {
@@ -145,7 +144,6 @@ describe("LoginHeader", () => {
     const userInfo: UserInfoResponse = {
       familyName: "Rossi",
       name: "Mario",
-      userId: "userId",
     };
     (getSessionItem as jest.Mock).mockReturnValue(true);
     (retrieveUserInfo as jest.Mock).mockImplementation(({ onResponse }) => {
