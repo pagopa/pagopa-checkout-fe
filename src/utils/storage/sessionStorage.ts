@@ -150,7 +150,7 @@ export const getRptIdFromSession = () =>
           O.map((paymentNotices) =>
             paymentNotices
               .map((notice) => `${notice.fiscalCode}${notice.noticeNumber}`)
-              .join(", ")
+              .join(",")
           )
         )
     ),
