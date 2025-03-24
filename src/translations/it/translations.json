@@ -393,6 +393,16 @@
     "helpLink": "Vedi un esempio",
     "title": "Cosa devi pagare?"
   },
+  "paymentPspListPage": {
+    "description": "Scegli chi gestirà il pagamento",
+    "title": "Ogni gestore propone una commissione. In questa lista trovi tutti i gestori compatibili, anche se non sei loro cliente.",
+    "operator": "Gestore",
+    "alreadyClient": "Sei già cliente",
+    "formButtons": {
+      "back": "Indietro",
+      "submit": "Continua"
+    }
+  },
   "paymentQrPage": {
     "camBlocked": "Abbiamo bisogno del tuo consenso per utilizzare la fotocamera. Per modificare la tua scelta, visita le impostazioni Privacy del tuo browser",
     "description": "Assicurati di avere una buona illuminazione. Se il codice non è a fuoco, prova ad allontanarlo leggermente dallo schermo.",

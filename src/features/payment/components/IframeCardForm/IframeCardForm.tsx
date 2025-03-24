@@ -104,7 +104,7 @@ export default function IframeCardForm(props: Props) {
 
   const onSuccess = (belowThreshold: boolean) => {
     dispatch(setThreshold({ belowThreshold }));
-    navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
+    navigate(`/${CheckoutRoutes.LISTA_PSP}`);
   };
 
   const onPspNotFound = () => {

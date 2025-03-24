@@ -391,6 +391,16 @@
     "helpLink": "Oglejte si primer",
     "title": "Kaj morate plačati?"
   },
+  "paymentPspListPage": {
+    "description": "Scegli chi gestirà il pagamento",
+    "title": "Ogni gestore propone una commissione. In questa lista trovi tutti i gestori compatibili, anche se non sei loro cliente.",
+    "operator": "Ponudnik",
+    "alreadyClient": "Sei già cliente",
+    "formButtons": {
+      "back": "Nazaj",
+      "submit": "Nadaljuj"
+    }
+  },
   "paymentQrPage": {
     "camBlocked": "Za uporabo kamere potrebujemo vaše soglasje. Če želite spremeniti svojo izbiro, pojdite na nastavitve zasebnosti v svojem brskalniku",
     "description": "Poskrbite za dobro osvetlitev. Če koda ni izostrena, poskusite telefon rahlo odmakniti od zaslona.",
