@@ -76,7 +76,7 @@ import { mixpanel } from "../config/mixpanelHelperInit";
 import { ErrorsType } from "../errors/checkErrorsModel";
 import {
   SessionItems,
-  getRptIdFromSession,
+  getRptIdsFromSession,
   getSessionItem,
   setSessionItem,
 } from "../storage/sessionStorage";
@@ -140,6 +140,7 @@ export const getEcommercePaymentInfoTask = (
                 `${location.pathname}${location.search}`
               );
               return apiPaymentEcommerceClientV3.getPaymentRequestInfoV3({
+                "x-rpt-id": rptId,
                 rpt_id: rptId,
                 bearerAuth, // add auth token
               });
@@ -318,6 +319,7 @@ export const activePaymentTask = (
                 `${location.pathname}${location.search}`
               );
               return apiPaymentEcommerceClientV3.newTransactionV3({
+                "x-rpt-id": getRptIdsFromSession(),
                 bearerAuth, // add auth token
                 ...payload,
               });
@@ -684,7 +686,7 @@ export const proceedToLogin = async ({
         () =>
           apiCheckoutAuthServiceClientV1.authLogin({
             recaptcha: token,
-            "x-rpt-id": getRptIdFromSession(),
+            "x-rpt-id": getRptIdsFromSession(),
           }),
         (_e) => {
           onError(ErrorsType.CONNECTION);
@@ -740,7 +742,7 @@ export const authentication = async ({
         () =>
           apiCheckoutAuthServiceClientAuthTokenV1.authenticateWithAuthToken({
             body: decodedRequest,
-            "x-rpt-id": getRptIdFromSession(),
+            "x-rpt-id": getRptIdsFromSession(),
           }),
         () => ErrorsType.GENERIC_ERROR
       )
@@ -943,7 +945,7 @@ export const retrieveUserInfo = async ({
         () =>
           apiCheckoutAuthServiceWithRetryV1.authUsers({
             bearerAuth: authToken,
-            "x-rpt-id": getRptIdFromSession(),
+            "x-rpt-id": getRptIdsFromSession(),
           }),
         () => ErrorsType.GENERIC_ERROR
       )
@@ -992,7 +994,7 @@ export const logoutUser = async ({
         () =>
           apiCheckoutAuthServiceWithRetryV1.authLogout({
             bearerAuth: authToken,
-            "x-rpt-id": getRptIdFromSession(),
+            "x-rpt-id": getRptIdsFromSession(),
           }),
         () => ErrorsType.GENERIC_ERROR
       )
@@ -1165,6 +1167,7 @@ export const getPaymentInstruments = async (
             () => apiPaymentEcommerceClient.getAllPaymentMethods(query),
             (bearerAuth) =>
               apiPaymentEcommerceClientV3.getAllPaymentMethodsV3({
+                "x-rpt-id": getRptIdsFromSession(),
                 bearerAuth,
                 ...query,
               })
@@ -1344,6 +1347,7 @@ export const npgSessionsFields = async (
               }),
             (bearerAuth) =>
               apiPaymentEcommerceClientWithRetryV3.createSessionV3({
+                "x-rpt-id": getRptIdsFromSession(),
                 bearerAuth,
                 ...payload,
               })

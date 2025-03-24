@@ -130,7 +130,7 @@ export const clearStorageAndMaintainAuthData = () => {
   }
 };
 
-export const getRptIdFromSession = () =>
+export const getRptIdsFromSession = () =>
   pipe(
     // use cart if present
     getSessionItem(SessionItems.cart) as Cart,
