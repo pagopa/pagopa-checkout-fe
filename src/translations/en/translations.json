@@ -393,7 +393,7 @@
   },
   "paymentPspListPage": {
     "title": "Scegli chi gestirà il pagamento",
-    "description": "Ogni gestore propone una commissione. In questa lista trovi tutti i gestori compatibili, anche se non sei loro cliente.",
+    "description": "Ogni gestore propone una commissione. In questa lista trovi tutti i gestori compatibili, <strong>anche se non sei loro cliente</strong>.",
     "operator": "Operator",
     "alreadyClient": "Client already"
   },

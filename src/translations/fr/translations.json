@@ -392,8 +392,8 @@
     "title": "Que devez-vous payer?"
   },
   "paymentPspListPage": {
-    "description": "Scegli chi gestirà il pagamento",
-    "title": "Ogni gestore propone una commissione. In questa lista trovi tutti i gestori compatibili, anche se non sei loro cliente.",
+    "title": "Scegli chi gestirà il pagamento",
+    "description": "Ogni gestore propone una commissione. In questa lista trovi tutti i gestori compatibili, <strong>anche se non sei loro cliente</strong>.",
     "operator": "Opérateur",
     "alreadyClient": "Sei già cliente",
     "formButtons": {
