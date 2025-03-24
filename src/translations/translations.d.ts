@@ -394,6 +394,12 @@ interface Translation {
   paymentPspListPage: {
     description: string;
     title: string;
+    operator: string;
+    alreadyClient: string;
+    formButtons: {
+      back: string;
+      submit: string;
+    }
   };
   paymentQrPage: {
     camBlocked: string;
