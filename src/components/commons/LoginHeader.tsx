@@ -177,7 +177,7 @@ export default function LoginHeader() {
         checkAuthTokenAndContinue(() => {
           dispatch(
             setLoggedUser({
-              id: `${userInfo.name || ""}${userInfo.familyName || ""}`,
+              id: `${userInfo.name}${userInfo.familyName}`,
               name: userInfo.name,
               surname: userInfo.familyName,
             })
