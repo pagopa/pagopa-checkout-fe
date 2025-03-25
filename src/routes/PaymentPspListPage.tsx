@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useNavigate } from "react-router-dom";
@@ -22,6 +22,7 @@ import { Bundle } from "../../generated/definitions/payment-ecommerce/Bundle";
 import { CalculateFeeResponse } from "../../generated/definitions/payment-ecommerce/CalculateFeeResponse";
 import { SessionPaymentMethodResponse } from "../../generated/definitions/payment-ecommerce/SessionPaymentMethodResponse";
 import { FormButtons } from "../components/FormButtons/FormButtons";
+import InformationModal from "../components/modals/InformationModal";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function PaymentPspListPage() {
@@ -33,8 +34,6 @@ export default function PaymentPspListPage() {
   const [submitEnabled, setSubmitEnabled] = React.useState(false);
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(true);
-  const [pspEditLoading, setPspEditLoading] = React.useState(false);
-  const [pspUpdateLoading, setPspUpdateLoading] = React.useState(false);
   const [pspList, setPspList] = React.useState<Array<Bundle>>([]);
   const [pspNotFoundModal, setPspNotFoundModalOpen] = React.useState(false);
   const paymentMethod = getSessionItem(SessionItems.paymentMethod) as
@@ -44,16 +43,6 @@ export default function PaymentPspListPage() {
   const [pspSelected, setPspSelected] = React.useState<Bundle | undefined>(
     getSessionItem(SessionItems.pspSelected) as Bundle | undefined
   );
-
-  // eslint-disable-next-line no-console
-  console.table({
-    pspEditLoading,
-    pspUpdateLoading,
-    submitEnabled,
-    pspList: JSON.stringify(pspList),
-    pspNotFoundModal,
-    pspSelected: JSON.stringify(pspSelected),
-  });
 
   const onPspListSuccessResponse = (calculateFeeResponse: any) => {
     pipe(
@@ -69,7 +58,6 @@ export default function PaymentPspListPage() {
           }
 
           setLoading(false);
-          setPspEditLoading(false);
 
           // Just one? Select the PSP and proceed
           if (pspList.length === 1) {
@@ -85,9 +73,6 @@ export default function PaymentPspListPage() {
   };
 
   const onPspNotFound = () => {
-    setPspEditLoading(false);
-    setPspUpdateLoading(false);
-    // setError(m);
     setPspNotFoundModalOpen(true);
   };
 
@@ -103,8 +88,6 @@ export default function PaymentPspListPage() {
   );
 
   const onError = (m: string, userCancelRedirect?: boolean) => {
-    setPspEditLoading(false);
-    setPspUpdateLoading(false);
     setError(m);
     setErrorModalOpen(true);
     setSubmitEnabled(false);
@@ -113,11 +96,9 @@ export default function PaymentPspListPage() {
   };
 
   const updateSelectedPSP = (psp: Bundle) => {
-    setPspUpdateLoading(true);
     setSessionItem(SessionItems.pspSelected, psp);
     setPspSelected(psp);
     setSubmitEnabled(true);
-    setPspUpdateLoading(false);
   };
 
   const sessionPaymentMethodResponse = getSessionItem(
@@ -129,7 +110,7 @@ export default function PaymentPspListPage() {
       return;
     }
 
-    setPspSelected(undefined)
+    setPspSelected(undefined);
 
     void calculateFees({
       paymentId: paymentMethod?.paymentMethodId,
@@ -196,6 +177,49 @@ export default function PaymentPspListPage() {
           bodyId="pspListBodyError"
           errorId="pspListErrorId"
         />
+
+        {!!pspNotFoundModal && (
+          <InformationModal
+            open={pspNotFoundModal}
+            onClose={() => {
+              setPspNotFoundModalOpen(false);
+              navigate(`/${CheckoutRoutes.SCEGLI_METODO}`, { replace: true });
+            }}
+            maxWidth="sm"
+            hideIcon={true}
+          >
+            <Typography
+              variant="h6"
+              component={"div"}
+              sx={{ pb: 2 }}
+              id="pspNotFoundTitleId"
+            >
+              {t("pspUnavailable.title")}
+            </Typography>
+            <Typography
+              variant="body1"
+              component={"div"}
+              sx={{ whiteSpace: "pre-line" }}
+              id="pspNotFoundBodyId"
+            >
+              {t("pspUnavailable.body")}
+            </Typography>
+            <Box display="flex" justifyContent="flex-end" sx={{ mt: 3 }}>
+              <Button
+                variant="contained"
+                onClick={() => {
+                  setPspNotFoundModalOpen(false);
+                  navigate(`/${CheckoutRoutes.SCEGLI_METODO}`, {
+                    replace: true,
+                  });
+                }}
+                id="pspNotFoundCtaId"
+              >
+                {t("pspUnavailable.cta.primary")}
+              </Button>
+            </Box>
+          </InformationModal>
+        )}
       </PageContainer>
       <Box display="none">
         <ReCAPTCHA
