@@ -65,7 +65,6 @@ export default function PaymentPspListPage() {
             navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
           } else {
             setPspList(pspList);
-            setSubmitEnabled(true);
           }
         }
       )

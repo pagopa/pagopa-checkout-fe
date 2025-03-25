@@ -399,7 +399,7 @@ interface Translation {
     formButtons: {
       back: string;
       submit: string;
-    }
+    };
   };
   paymentQrPage: {
     camBlocked: string;
