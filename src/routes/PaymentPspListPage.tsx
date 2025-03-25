@@ -81,7 +81,7 @@ export default function PaymentPspListPage() {
       if (e) {
         e.preventDefault();
       }
-      navigate(`/${CheckoutRoutes.LISTA_PSP}`);
+      navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
     },
     [navigate]
   );
