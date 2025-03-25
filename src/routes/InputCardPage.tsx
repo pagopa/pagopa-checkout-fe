@@ -88,23 +88,17 @@ export default function InputCardPage() {
             () => onError(ErrorsType.GENERIC_ERROR),
             (value) => {
               dispatch(setThreshold({ belowThreshold: value }));
-              const allPsp: Array<Bundle> = pipe(
+              const firstPsp = pipe(
                 resp?.bundles,
                 O.fromNullable,
-                O.map((sortedArray) => sortedArray as Array<Bundle>),
-                O.getOrElseW(() => [])
+                O.chain((sortedArray) => O.fromNullable(sortedArray[0])),
+                O.map((a) => a as Bundle),
+                O.getOrElseW(() => ({}))
               );
 
-              if (allPsp.length > 1) {
-                navigate(`/${CheckoutRoutes.SELEZIONE_PSP}`);
-              } else {
-                // when only 1 psp is available, we must skip the psp picker page and
-                // directly go to RIEPILOGO_PAGAMENTO
-                setSessionItem(SessionItems.pspSelected, allPsp[0]);
-                navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
-              }
-
+              setSessionItem(SessionItems.pspSelected, firstPsp);
               setLoading(false);
+              navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
             }
           )
         );
