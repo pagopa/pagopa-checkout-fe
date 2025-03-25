@@ -140,7 +140,6 @@ export const getEcommercePaymentInfoTask = (
                 `${location.pathname}${location.search}`
               );
               return apiPaymentEcommerceClientV3.getPaymentRequestInfoV3({
-                "x-rpt-id": rptId,
                 rpt_id: rptId,
                 bearerAuth, // add auth token
               });
