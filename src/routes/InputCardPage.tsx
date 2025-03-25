@@ -99,7 +99,7 @@ export default function InputCardPage() {
               setSessionItem(SessionItems.pspSelected, firstPsp);
               setLoading(false);
 
-              if (getSessionItem(SessionItems.enablePspPage) === "true") {
+              if (localStorage.getItem(SessionItems.enablePspPage) === "true") {
                 navigate(`/${CheckoutRoutes.LISTA_PSP}`);
               } else {
                 navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);

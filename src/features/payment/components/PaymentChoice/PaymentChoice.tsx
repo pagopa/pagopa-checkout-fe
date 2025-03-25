@@ -80,7 +80,7 @@ export function PaymentChoice(props: {
 
     setLoading(false);
 
-    if (getSessionItem(SessionItems.enablePspPage) === "true") {
+    if (localStorage.getItem(SessionItems.enablePspPage) === "true") {
       navigate(`/${route || CheckoutRoutes.LISTA_PSP}`);
     } else {
       navigate(`/${route || CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);

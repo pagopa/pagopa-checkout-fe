@@ -91,11 +91,13 @@ export function App() {
   };
 
   const onFeatureFlagSuccess = (data: { enabled: boolean }) => {
-    setSessionItem(SessionItems.enablePspPage, data.enabled.toString());
+    // we need to use localstorage to be permanent in case of page refreshes
+    // which happen after entering the credit card data
+    localStorage.setItem(SessionItems.enablePspPage, data.enabled.toString());
   };
 
   const initFeatureFlag = async () => {
-    const storedFeatureFlag = getSessionItem(SessionItems.enablePspPage);
+    const storedFeatureFlag = localStorage.getItem(SessionItems.enablePspPage);
     // avoid asking again if you already have received an answer
     if (!storedFeatureFlag) {
       await evaluateFeatureFlag(

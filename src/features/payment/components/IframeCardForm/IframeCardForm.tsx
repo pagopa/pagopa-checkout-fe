@@ -106,7 +106,7 @@ export default function IframeCardForm(props: Props) {
   const onSuccess = (belowThreshold: boolean) => {
     dispatch(setThreshold({ belowThreshold }));
 
-    if (getSessionItem(SessionItems.enablePspPage) === "true") {
+    if (localStorage.getItem(SessionItems.enablePspPage) === "true") {
       navigate(`/${CheckoutRoutes.LISTA_PSP}`);
     } else {
       navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
