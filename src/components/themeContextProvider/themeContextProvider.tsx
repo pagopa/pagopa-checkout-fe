@@ -11,6 +11,7 @@ const themeLight = createTheme({
     ...theme,
   palette: {
     ...theme.palette,
+    mode: "light",
     background: {
       default: theme.palette.background.paper,
     },
@@ -34,44 +35,60 @@ const themeLight = createTheme({
         },
       },
     },
-  },
-  palette: {
-    mode: "light",
-  } as any,
+  }
 });
 
 const themeDark = createTheme({
     ...darkTheme,
-  palette: {
-    ...theme.palette,
-    background: {
-      default: theme.palette.background.paper,
-    },
-  },
-  components: {
-    ...theme.components,
-    MuiFormHelperText: {
-      styleOverrides: {
-        root: {
-          marginTop: 0,
-          height: 0,
-        },
+    palette: {
+      ...darkTheme.palette,
+      mode: "dark",
+      background: {
+        default: darkTheme.palette.background.paper,
+      },
+      text: {
+        primary: "#fff", // Set primary text color to white
+        secondary: "#fff", // Set secondary text color to white
       },
     },
-    MuiAlert: {
-      styleOverrides: {
-        message: {
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
+    components: {
+      ...darkTheme.components,
+      MuiFormHelperText: {
+        styleOverrides: {
+          root: {
+            marginTop: 0,
+            height: 0,
+            color: "#fff", // Ensure the helper text is white
+          },
         },
       },
+      MuiAlert: {
+        styleOverrides: {
+          message: {
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            color: "#fff", // Ensure the alert text is white
+          },
+        },
+      },
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            color: "#fff", // Set button text color to white
+          },
+        },
+      },
+      MuiTypography: {
+        styleOverrides: {
+          root: {
+            color: "#fff", // Set Typography text color to white
+          },
+        },
+      },
+      // You can add other components here if needed, to ensure all text elements are white
     },
-  },
-  palette: {
-    mode: "dark",
-  } as any,
-});
+  });
 
 interface ThemeContextType {
   mode: string;
