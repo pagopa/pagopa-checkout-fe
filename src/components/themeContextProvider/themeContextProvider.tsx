@@ -44,8 +44,8 @@ const themeDark = createTheme({
       default: darkTheme.palette.background.paper,
     },
     text: {
-      primary: "#fff", // Set primary text color to white
-      secondary: "#fff", // Set secondary text color to white
+      primary: "#fff", 
+      secondary: "#fff", 
     },
   },
   components: {
@@ -55,7 +55,7 @@ const themeDark = createTheme({
         root: {
           marginTop: 0,
           height: 0,
-          color: "#fff", // Ensure the helper text is white
+          color: "#fff", 
         },
       },
     },
@@ -65,25 +65,35 @@ const themeDark = createTheme({
           whiteSpace: "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis",
-          color: "#fff", // Ensure the alert text is white
+          color: "#fff",
         },
       },
     },
     MuiButton: {
       styleOverrides: {
         root: {
-          color: "#fff", // Set button text color to white
+          color: "#fff", 
         },
       },
     },
     MuiTypography: {
       styleOverrides: {
         root: {
-          color: "#fff", // Set Typography text color to white
+          color: "#fff",
         },
       },
     },
-    // You can add other components here if needed, to ensure all text elements are white
+    MuiOutlinedInput: {
+      styleOverrides: {
+        input: {
+          "&:-webkit-autofill": {
+            backgroundColor: "#3e3f40", 
+            color: "#fff", 
+            "-webkit-box-shadow": "0 0 0 30px #3e3f40 inset", 
+          },
+        },
+      },
+    }
   },
 });
 
