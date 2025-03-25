@@ -562,6 +562,40 @@ describe("Checkout authentication tests", () => {
     expect(apiNotContainsXRptIdCount).toBe(expectedCount);
   });
 
+  it("Should invoke checkout v3 api with x-rpt-id header", async () => {
+    let expectedCount = 4; // payment-requests - payment-methods - sessions - transaction
+    let apiContainsXRptIdCount = 0;
+    
+    page.on("request", async (request) => {
+      const url = request.url();
+      if (url.includes("checkout/v3")) {
+        const headers = await request.headers();
+        if(headers['x-rpt-id'] != null)
+          apiContainsXRptIdCount ++
+      }
+    });
+
+    // Login
+    await clickLoginButton();
+
+    //Wait auth-callback page
+    await page.waitForNavigation();
+    //Wait return to main page
+    await page.waitForNavigation();
+    console.log("Login completed");
+
+    // Complete authenticated payment
+    await payNotice(
+          VALID_NOTICE_CODE,
+          VALID_FISCAL_CODE,
+          EMAIL,
+          VALID_CARD_DATA,
+          CHECKOUT_URL_AFTER_AUTHORIZATION
+    );
+        
+    expect(apiContainsXRptIdCount).toBe(expectedCount);
+  });
+
 });
 
 describe("Logout tests", () => {
