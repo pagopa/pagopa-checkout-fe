@@ -4,7 +4,8 @@
     "title": "Warten auf Antwort deiner Bank..."
   },
   "app": {
-    "title": "Zahlungsaufforderungen begleichen – pagoPA"
+    "title": "Zahlungsaufforderungen begleichen – pagoPA",
+    "darkMode": "Tema scuro"
   },
   "ariaLabels": {
     "appLanguage": "Sprache einstellen",

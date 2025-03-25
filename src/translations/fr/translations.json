@@ -4,7 +4,8 @@
     "title": "En attente de la réponse de votre banque…"
   },
   "app": {
-    "title": "Payer un avis - pagoPA"
+    "title": "Payer un avis - pagoPA",
+    "darkMode": "Tema scuro"
   },
   "ariaLabels": {
     "appLanguage": "Sélectionner la langue",

@@ -123,7 +123,7 @@ export default function Header() {
       <Stack position="relative" zIndex="1000">
         {enableAuthentication && <LoginHeader />}
         {!hidePaymentHeader && (
-          <Box p={3} bgcolor={"white"}>
+          <Box p={3}>
             <Stack
               spacing={0}
               direction="row"
