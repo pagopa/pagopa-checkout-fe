@@ -44,8 +44,8 @@ const themeDark = createTheme({
       default: darkTheme.palette.background.paper,
     },
     text: {
-      primary: "#fff", 
-      secondary: "#fff", 
+      primary: "#fff",
+      secondary: "#fff",
     },
   },
   components: {
@@ -55,7 +55,7 @@ const themeDark = createTheme({
         root: {
           marginTop: 0,
           height: 0,
-          color: "#fff", 
+          color: "#fff",
         },
       },
     },
@@ -72,7 +72,7 @@ const themeDark = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          color: "#fff", 
+          color: "#fff",
         },
       },
     },
@@ -87,13 +87,13 @@ const themeDark = createTheme({
       styleOverrides: {
         input: {
           "&:-webkit-autofill": {
-            backgroundColor: "#3e3f40", 
-            color: "#fff", 
-            "-webkit-box-shadow": "0 0 0 30px #3e3f40 inset", 
+            backgroundColor: "#3e3f40",
+            color: "#fff",
+            "-webkit-box-shadow": "0 0 0 30px #3e3f40 inset",
           },
         },
       },
-    }
+    },
   },
 });
 

@@ -18,6 +18,7 @@ interface Translation {
   };
   app: {
     title: string;
+    darkMode: string;
   };
   ariaLabels: {
     appLanguage: string;

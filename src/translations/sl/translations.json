@@ -4,7 +4,8 @@
     "title": "Čakanje na odgovor vaše banke ..."
   },
   "app": {
-    "title": "Plačajte obvestilo – pagoPA"
+    "title": "Plačajte obvestilo – pagoPA",
+    "darkMode": "Tema scuro"
   },
   "ariaLabels": {
     "appLanguage": "Nastavite jezik",
