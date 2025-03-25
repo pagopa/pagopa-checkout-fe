@@ -77,7 +77,7 @@ export const PaymentPSPListGridItem = ({
           {moneyFormat(pspItem.taxPayerFee || 0)}
         </Typography>
         {isSelected ? (
-          <RadioButtonChecked style={{ color: palette.action.active }} />
+          <RadioButtonChecked style={{ color: palette.primary.main }} />
         ) : (
           <RadioButtonUnchecked style={{ color: palette.action.active }} />
         )}
