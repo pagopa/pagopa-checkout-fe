@@ -87,12 +87,10 @@ export default function PaymentPspListPage() {
     [navigate]
   );
 
-  const onError = (m: string, userCancelRedirect?: boolean) => {
+  const onError = (m: string) => {
     setError(m);
     setErrorModalOpen(true);
     setSubmitEnabled(false);
-    // eslint-disable-next-line no-console
-    console.error("onError", m, userCancelRedirect);
   };
 
   const updateSelectedPSP = (psp: Bundle) => {
