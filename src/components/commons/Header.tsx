@@ -25,7 +25,6 @@ import { evaluateFeatureFlag } from "./../../utils/api/helper";
 import SkipToContent from "./SkipToContent";
 import LoginHeader from "./LoginHeader";
 
-
 function amountToShow() {
   const cartInfo = getSessionItem(SessionItems.cart) as Cart | undefined;
   const paymentInfo = getSessionItem(SessionItems.paymentInfo) as

@@ -1,4 +1,3 @@
-import { Box } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -30,7 +29,7 @@ import { SessionItems } from "./utils/storage/sessionStorage";
 import SessionExpiredPage from "./routes/SessionExpiredPage";
 import AuthCallback from "./routes/AuthCallbackPage";
 import AuthExpiredPage from "./routes/AuthExpiredPage";
-
+import { ThemeContextProvider } from "./components/themeContextProvider/themeContextProvider";
 
 export function App() {
   const { t } = useTranslation();
@@ -56,7 +55,7 @@ export function App() {
   };
 
   return (
-    <Box>
+    <ThemeContextProvider>
       <CssBaseline />
       <BrowserRouter>
         <Layout fixedFooterPages={fixedFooterPages}>
@@ -177,6 +176,6 @@ export function App() {
           </Routes>
         </Layout>
       </BrowserRouter>
-    </Box>
+    </ThemeContextProvider>
   );
 }

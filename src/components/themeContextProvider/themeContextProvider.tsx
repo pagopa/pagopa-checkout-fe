@@ -1,14 +1,11 @@
 import React, { createContext, useState, useMemo, useEffect } from "react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { ReactNode } from "react";
-import {
-  SessionItems,
-} from "../../utils/storage/sessionStorage"
 import { theme, darkTheme } from "@pagopa/mui-italia";
-
+import { SessionItems } from "../../utils/storage/sessionStorage";
 
 const themeLight = createTheme({
-    ...theme,
+  ...theme,
   palette: {
     ...theme.palette,
     mode: "light",
@@ -35,60 +32,60 @@ const themeLight = createTheme({
         },
       },
     },
-  }
+  },
 });
 
 const themeDark = createTheme({
-    ...darkTheme,
-    palette: {
-      ...darkTheme.palette,
-      mode: "dark",
-      background: {
-        default: darkTheme.palette.background.paper,
-      },
-      text: {
-        primary: "#fff", // Set primary text color to white
-        secondary: "#fff", // Set secondary text color to white
+  ...darkTheme,
+  palette: {
+    ...darkTheme.palette,
+    mode: "dark",
+    background: {
+      default: darkTheme.palette.background.paper,
+    },
+    text: {
+      primary: "#fff", // Set primary text color to white
+      secondary: "#fff", // Set secondary text color to white
+    },
+  },
+  components: {
+    ...darkTheme.components,
+    MuiFormHelperText: {
+      styleOverrides: {
+        root: {
+          marginTop: 0,
+          height: 0,
+          color: "#fff", // Ensure the helper text is white
+        },
       },
     },
-    components: {
-      ...darkTheme.components,
-      MuiFormHelperText: {
-        styleOverrides: {
-          root: {
-            marginTop: 0,
-            height: 0,
-            color: "#fff", // Ensure the helper text is white
-          },
+    MuiAlert: {
+      styleOverrides: {
+        message: {
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          color: "#fff", // Ensure the alert text is white
         },
       },
-      MuiAlert: {
-        styleOverrides: {
-          message: {
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            color: "#fff", // Ensure the alert text is white
-          },
-        },
-      },
-      MuiButton: {
-        styleOverrides: {
-          root: {
-            color: "#fff", // Set button text color to white
-          },
-        },
-      },
-      MuiTypography: {
-        styleOverrides: {
-          root: {
-            color: "#fff", // Set Typography text color to white
-          },
-        },
-      },
-      // You can add other components here if needed, to ensure all text elements are white
     },
-  });
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          color: "#fff", // Set button text color to white
+        },
+      },
+    },
+    MuiTypography: {
+      styleOverrides: {
+        root: {
+          color: "#fff", // Set Typography text color to white
+        },
+      },
+    },
+    // You can add other components here if needed, to ensure all text elements are white
+  },
+});
 
 interface ThemeContextType {
   mode: string;

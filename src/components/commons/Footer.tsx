@@ -33,8 +33,10 @@ export default function Footer(props: { fixedPages: Array<string> }) {
         sm: 0,
       }}
       bgcolor={{
-        ...(isFixed() ? { xs: isDarkMode?"#424242": "#f2f2f2" } : { xs: "background.default" }),
-        sm: isDarkMode?"#424242":"#f2f2f2",
+        ...(isFixed()
+          ? { xs: isDarkMode ? "#424242" : "#f2f2f2" }
+          : { xs: "background.default" }),
+        sm: isDarkMode ? "#424242" : "#f2f2f2",
       }}
     >
       <Typography variant="caption" component={"div"}>
@@ -106,21 +108,21 @@ export default function Footer(props: { fixedPages: Array<string> }) {
         </Box>
       </Typography>
       <Box display={"flex"} gap="3em" alignItems={"center"}>
-      <ThemeSwitch />
-      <Link
-        href="https://www.pagopa.it/it/"
-        target="_blank"
-        rel="noopener noreferrer"
-        style={{ display: "flex" }}
-        title={t("mainPage.footer.pagoPA")}
-      >
-        <img
-          src={pagopaLogo}
-          alt="pagoPA"
-          style={{ width: "60px", height: "17px" }}
-          aria-hidden="true"
-        />
-      </Link>
+        <ThemeSwitch />
+        <Link
+          href="https://www.pagopa.it/it/"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ display: "flex" }}
+          title={t("mainPage.footer.pagoPA")}
+        >
+          <img
+            src={pagopaLogo}
+            alt="pagoPA"
+            style={{ width: "60px", height: "17px" }}
+            aria-hidden="true"
+          />
+        </Link>
       </Box>
     </Box>
   );
