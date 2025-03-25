@@ -18,6 +18,7 @@ import { mixpanel } from "../../../../utils/config/mixpanelHelperInit";
 import {
   SessionItems,
   getReCaptchaKey,
+  getSessionItem,
   setSessionItem,
 } from "../../../../utils/storage/sessionStorage";
 import {
@@ -78,7 +79,12 @@ export function PaymentChoice(props: {
     }
 
     setLoading(false);
-    navigate(`/${route || CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
+
+    if (getSessionItem(SessionItems.enablePspPage) === "true") {
+      navigate(`/${route || CheckoutRoutes.LISTA_PSP}`);
+    } else {
+      navigate(`/${route || CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
+    }
   };
 
   const onApmChoice = async (

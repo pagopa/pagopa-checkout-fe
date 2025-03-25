@@ -4,6 +4,8 @@ import { theme } from "@pagopa/mui-italia";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { evaluateFeatureFlag } from "utils/api/helper";
+import featureFlags from "utils/featureFlags";
 import Guard from "./components/commons/Guard";
 import { Layout } from "./components/commons/Layout";
 import NoticeGuard from "./components/commons/NoticeGuard";
@@ -27,7 +29,11 @@ import PaymentSummaryPage from "./routes/PaymentSummaryPage";
 import GdiCheckPage from "./routes/GdiCheckPage";
 import "./translations/i18n";
 import { mixpanelInit } from "./utils/config/mixpanelHelperInit";
-import { SessionItems } from "./utils/storage/sessionStorage";
+import {
+  getSessionItem,
+  SessionItems,
+  setSessionItem,
+} from "./utils/storage/sessionStorage";
 import SessionExpiredPage from "./routes/SessionExpiredPage";
 import AuthCallback from "./routes/AuthCallbackPage";
 import AuthExpiredPage from "./routes/AuthExpiredPage";
@@ -76,7 +82,33 @@ export function App() {
     CheckoutRoutes.DONA,
   ];
 
+  const onFeatureFlagError = (e: string) => {
+    // eslint-disable-next-line no-console
+    console.error(
+      "Error while getting feature flag " + SessionItems.enablePspPage,
+      e
+    );
+  };
+
+  const onFeatureFlagSuccess = (data: { enabled: boolean }) => {
+    setSessionItem(SessionItems.enablePspPage, data.enabled.toString());
+  };
+
+  const initFeatureFlag = async () => {
+    const storedFeatureFlag = getSessionItem(SessionItems.enablePspPage);
+    // avoid asking again if you already have received an answer
+    if (!storedFeatureFlag) {
+      await evaluateFeatureFlag(
+        featureFlags.enablePspPage,
+        onFeatureFlagError,
+        onFeatureFlagSuccess
+      );
+    }
+  };
+
   React.useEffect(() => {
+    void initFeatureFlag();
+
     mixpanelInit();
   }, []);
   // eslint-disable-next-line functional/immutable-data

@@ -25,6 +25,7 @@ import { clearNavigationEvents } from "../../../../utils/eventListeners";
 import {
   SessionItems,
   getReCaptchaKey,
+  getSessionItem,
   setSessionItem,
 } from "../../../../utils/storage/sessionStorage";
 import { setThreshold } from "../../../../redux/slices/threshold";
@@ -104,7 +105,12 @@ export default function IframeCardForm(props: Props) {
 
   const onSuccess = (belowThreshold: boolean) => {
     dispatch(setThreshold({ belowThreshold }));
-    navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
+
+    if (getSessionItem(SessionItems.enablePspPage) === "true") {
+      navigate(`/${CheckoutRoutes.LISTA_PSP}`);
+    } else {
+      navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
+    }
   };
 
   const onPspNotFound = () => {
