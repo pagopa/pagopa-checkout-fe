@@ -10,6 +10,7 @@ export enum CheckoutRoutes {
   INSERISCI_CARTA = "inserisci-carta",
   SCEGLI_METODO = "scegli-metodo",
   RIEPILOGO_PAGAMENTO = "riepilogo-pagamento",
+  SELEZIONE_PSP = "seleziona-metodo-di-pagamento",
   GDI_CHECK = "gdi-check",
   CARRELLO = "c",
   ESITO = "esito",

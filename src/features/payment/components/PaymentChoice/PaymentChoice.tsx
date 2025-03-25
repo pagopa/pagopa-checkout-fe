@@ -78,7 +78,7 @@ export function PaymentChoice(props: {
     }
 
     setLoading(false);
-    navigate(`/${route || CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
+    navigate(`/${route || CheckoutRoutes.SELEZIONE_PSP}`);
   };
 
   const onApmChoice = async (
