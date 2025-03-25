@@ -563,7 +563,7 @@ describe("Checkout authentication tests", () => {
   });
 
   it("Should invoke checkout v3 api with x-rpt-id header", async () => {
-    let expectedCount = 4; // payment-requests - payment-methods - sessions - transaction
+    let expectedCount = 3; // payment-methods - sessions - transaction
     let apiContainsXRptIdCount = 0;
     
     page.on("request", async (request) => {
