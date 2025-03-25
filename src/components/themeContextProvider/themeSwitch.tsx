@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Switch, Typography } from "@mui/material";
 import { useContext } from "react";
-import { ThemeContext } from "./ThemeContextProvider";
+import { ThemeContext } from "./themeContextProvider";
 
 export const ThemeSwitch = () => {
   const { mode, toggleTheme } = useContext(ThemeContext);

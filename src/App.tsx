@@ -1,6 +1,5 @@
-import { createTheme, ThemeProvider } from "@mui/material";
+import { Box } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
-import { theme } from "@pagopa/mui-italia";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
@@ -31,37 +30,7 @@ import { SessionItems } from "./utils/storage/sessionStorage";
 import SessionExpiredPage from "./routes/SessionExpiredPage";
 import AuthCallback from "./routes/AuthCallbackPage";
 import AuthExpiredPage from "./routes/AuthExpiredPage";
-import { FakePSPPickerPage_delete_later } from "./FakePSPPickerPage_delete_later";
 
-const checkoutTheme = createTheme({
-  ...theme,
-  palette: {
-    ...theme.palette,
-    background: {
-      default: theme.palette.background.paper,
-    },
-  },
-  components: {
-    ...theme.components,
-    MuiFormHelperText: {
-      styleOverrides: {
-        root: {
-          marginTop: 0,
-          height: 0,
-        },
-      },
-    },
-    MuiAlert: {
-      styleOverrides: {
-        message: {
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-        },
-      },
-    },
-  },
-});
 
 export function App() {
   const { t } = useTranslation();
@@ -87,7 +56,7 @@ export function App() {
   };
 
   return (
-    <ThemeProvider theme={checkoutTheme}>
+    <Box>
       <CssBaseline />
       <BrowserRouter>
         <Layout fixedFooterPages={fixedFooterPages}>
@@ -143,14 +112,6 @@ export function App() {
                 element={
                   <Guard item={SessionItems.useremail}>
                     <PaymentChoicePage />
-                  </Guard>
-                }
-              />
-              <Route
-                path={CheckoutRoutes.SELEZIONE_PSP}
-                element={
-                  <Guard item={SessionItems.transaction}>
-                    <FakePSPPickerPage_delete_later />
                   </Guard>
                 }
               />
@@ -216,6 +177,6 @@ export function App() {
           </Routes>
         </Layout>
       </BrowserRouter>
-    </ThemeProvider>
+    </Box>
   );
 }
