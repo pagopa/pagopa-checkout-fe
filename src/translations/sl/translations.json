@@ -392,10 +392,10 @@
     "title": "Kaj morate plačati?"
   },
   "paymentPspListPage": {
-    "title": "Scegli chi gestirà il pagamento",
-    "description": "Ogni gestore propone una commissione. In questa lista trovi tutti i gestori compatibili, <strong>anche se non sei loro cliente</strong>.",
+    "title": "Izberite, kdo bo upravljal plačilo",
+    "description": "Vsak ponudnik predlaga provizijo. Na tem seznamu najdete vse združljive ponudnike, <strong>tudi če niste njihova stranka</strong>.",
     "operator": "Ponudnik",
-    "alreadyClient": "Sei già cliente",
+    "alreadyClient": "Že ste stranka",
     "formButtons": {
       "back": "Nazaj",
       "submit": "Nadaljuj"

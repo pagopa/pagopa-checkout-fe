@@ -24,21 +24,6 @@ import { SessionPaymentMethodResponse } from "../../generated/definitions/paymen
 import { FormButtons } from "../components/FormButtons/FormButtons";
 import { CheckoutRoutes } from "./models/routeModel";
 
-const pspSortAlgorithm = (pspList: Array<Bundle>): Array<Bundle> =>
-  // current tslib version does not permit spread operator, copy "old style" with Array.from
-  Array.from(pspList).sort((a, b) => {
-    // onUs always 1st
-    if (a.onUs && !b.onUs) {
-      return -1;
-    }
-    // onUs has precedence
-    if (!a.onUs && b.onUs) {
-      return 1;
-    }
-
-    // if there is no onUs, the payer fee has precedence (ASC)
-    return (a?.taxPayerFee ?? 0) - (b?.taxPayerFee ?? 0);
-  });
 export default function PaymentPspListPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -78,21 +63,22 @@ export default function PaymentPspListPage() {
       O.fold(
         () => onError(ErrorsType.GENERIC_ERROR),
         (resp) => {
-          const pspList = pspSortAlgorithm(resp?.bundles?.slice() || []);
+          const pspList = resp?.bundles?.slice() || [];
           if (pspList.length === 0) {
             return onError(ErrorsType.GENERIC_ERROR);
           }
 
-          setPspSelected(pspList[0]);
-
-          if (pspList.length === 1) {
-            // TODO: Directly proceed to the next step
-          }
-
           setLoading(false);
-          setPspList(pspList);
-          setSubmitEnabled(true);
           setPspEditLoading(false);
+
+          // Just one? Select the PSP and proceed
+          if (pspList.length === 1) {
+            setPspSelected(pspList[0]);
+            navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
+          } else {
+            setPspList(pspList);
+            setSubmitEnabled(true);
+          }
         }
       )
     );
@@ -142,6 +128,9 @@ export default function PaymentPspListPage() {
     if (!paymentMethod || pspList.length > 0) {
       return;
     }
+
+    setPspSelected(undefined)
+
     void calculateFees({
       paymentId: paymentMethod?.paymentMethodId,
       bin: sessionPaymentMethodResponse?.bin,

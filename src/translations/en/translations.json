@@ -395,7 +395,11 @@
     "title": "Scegli chi gestirà il pagamento",
     "description": "Ogni gestore propone una commissione. In questa lista trovi tutti i gestori compatibili, <strong>anche se non sei loro cliente</strong>.",
     "operator": "Operator",
-    "alreadyClient": "Client already"
+    "alreadyClient": "Client already",
+    "formButtons": {
+      "back": "Back",
+      "submit": "Continue"
+    }
   },
   "paymentQrPage": {
     "camBlocked": "We need your consent to use the camera. To change your selection, go to your browser’s privacy settings",
