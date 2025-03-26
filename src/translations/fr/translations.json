@@ -391,6 +391,16 @@
     "helpLink": "Voir un exemple",
     "title": "Que devez-vous payer?"
   },
+  "paymentPspListPage": {
+    "title": "Choisissez qui gérera le paiement",
+    "description": "Chaque opérateur propose une commission. Dans cette liste, vous trouverez tous les opérateurs compatibles, <strong>même si vous n'êtes pas leur client</strong>.",
+    "operator": "Opérateur",
+    "alreadyClient": "Vous êtes déjà client",
+    "formButtons": {
+      "back": "Retour",
+      "submit": "Continuer"
+    }
+  },
   "paymentQrPage": {
     "camBlocked": "Nous avons besoin de votre autorisation pour utiliser l’appareil photo. Pour modifier votre choix, visitez les paramètre Confidentialité de votre navigateur",
     "description": "Vérifier votre éclairage. Si le code n’est pas mis au point, éloignez-vous légèrement de l’écran.",

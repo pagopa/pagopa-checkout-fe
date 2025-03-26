@@ -391,6 +391,16 @@
     "helpLink": "Beispiel anzeigen",
     "title": "Was musst du bezahlen?"
   },
+  "paymentPspListPage": {
+    "title": "Wählen Sie, wer die Zahlung verwalten wird",
+    "description": "Jeder Anbieter erhebt eine Gebühr. In dieser Liste finden Sie alle kompatiblen Anbieter, <strong>auch wenn Sie kein Kunde von ihnen sind</strong>.",
+    "operator": "Anbieter",
+    "alreadyClient": "Sie bereits Kunde",
+    "formButtons": {
+      "back": "Zurück",
+      "submit": "Weiter"
+    }
+  },
   "paymentQrPage": {
     "camBlocked": "Wir benötigen deine Erlaubnis zum Zugriff auf die Kamera. In den Datenschutzeinstellungen deines Internetbrowsers kannst du die Auswahl ändern",
     "description": "Achte auf gute Beleuchtung. Wenn der Code unscharf ist, halte ihn etwas weiter vom Bildschirm weg.",
