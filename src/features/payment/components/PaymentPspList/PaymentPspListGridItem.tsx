@@ -42,9 +42,21 @@ export const PaymentPSPListGridItem = ({
   const { t } = useTranslation();
   return (
     <Grid
+      tabIndex={0}
       container
       onClick={handleClick}
-      sx={{ ...styles.pspListItem, borderColor: palette.divider }}
+      sx={{
+        ...styles.pspListItem,
+        borderColor: palette.divider,
+        "&:hover": { color: palette.primary.dark, borderColor: "currentColor" },
+      }}
+      onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+          !!handleClick && handleClick();
+        }
+      }}
     >
       {/* Left side with psp name and onUs info */}
       <Grid item xs={9}>
