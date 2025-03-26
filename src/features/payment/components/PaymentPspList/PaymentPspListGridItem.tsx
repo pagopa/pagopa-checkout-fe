@@ -42,6 +42,7 @@ export const PaymentPSPListGridItem = ({
   const { t } = useTranslation();
   return (
     <Grid
+      id={pspItem.idPsp}
       tabIndex={0}
       container
       onClick={handleClick}
