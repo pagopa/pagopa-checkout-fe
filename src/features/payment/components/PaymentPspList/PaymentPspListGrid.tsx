@@ -14,7 +14,7 @@ export const PaymentPSPListGrid = ({
   onPspSelected,
   currentSelectedPsp,
 }: PSPGridProps) => (
-  <Grid container tabIndex={0} role="link">
+  <Grid container>
     {pspList.map((pspItem, index) => (
       <PaymentPSPListGridItem
         key={pspItem.idPsp ?? `pspItem-${index}`}
