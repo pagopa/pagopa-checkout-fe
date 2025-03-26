@@ -5,18 +5,8 @@ body {
   margin: 0 auto;
 }
 
-@media only screen and (max-width: 767px) {
-  body {
-    width: 100%;
-    padding-right: 0;
-    padding-left: 0;
-  }
-
-  .otnotice-content {
-    width: 100% !important;
-    max-width: 100% !important;
-    padding: 0 !important;
-  }
+.otnotice-content {
+  padding: 0 !important;
 }
 
 .otnotice-sections {
@@ -25,20 +15,39 @@ body {
   width: 100% !important;
 }
 
-.otnotice-menu, .otnotice-menu-mobile {
+.otnotice-menu, 
+.otnotice-menu-mobile {
   position: relative !important;
   margin-left: 0 !important;
   width: 100% !important;
 }
 
-.otnotice-sections > .otnotice-section > h2.otnotice-section-header,
-.otnotice-sections .otnotice-section h2,
+.otnotice-sections > .otnotice-section > .otnotice-section-content,
+.otnotice-sections > .otnotice-section > h2.otnotice-section-header {
+  margin-left: 0 !important;
+}
+
+h2,
 h2.otnotice-section-header,
-h2 {
+.otnotice-sections > .otnotice-section > h2.otnotice-section-header,
+.otnotice-sections .otnotice-section h2 {
   color: #17324D !important;
+  text-transform: uppercase;
+  margin-top: 1.2rem !important;
 }
 
 p br:only-child {
   display: none;
 }
 
+@media only screen and (max-width: 767px) {
+  body {
+    width: 100%;
+  }
+  
+  .otnotice-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+}

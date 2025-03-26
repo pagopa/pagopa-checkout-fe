@@ -31,6 +31,7 @@ import { SessionItems } from "./utils/storage/sessionStorage";
 import SessionExpiredPage from "./routes/SessionExpiredPage";
 import AuthCallback from "./routes/AuthCallbackPage";
 import AuthExpiredPage from "./routes/AuthExpiredPage";
+import StaticHtmlPage from "./components/commons/StaticHtmlPage";
 
 const checkoutTheme = createTheme({
   ...theme,
@@ -200,6 +201,22 @@ export function App() {
                   // set a guard here to check if cartid matches a regex
                   <PaymentCartPage />
                 }
+              />
+              <Route
+                path="/termini-di-servizio"
+                element={<StaticHtmlPage htmlPath="/terms/it.html" />}
+              />
+              <Route
+                path="/informativa-privacy"
+                element={<StaticHtmlPage htmlPath="/privacypolicy/it.html" />}
+              />
+              <Route
+                path="/terms/it.html"
+                element={<Navigate replace to="/termini-di-servizio" />}
+              />
+              <Route
+                path="/privacypolicy/it.html"
+                element={<Navigate replace to="/informativa-privacy" />}
               />
               <Route path="*" element={<Navigate replace to="/" />} />
             </Route>

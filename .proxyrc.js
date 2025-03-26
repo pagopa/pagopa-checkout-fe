@@ -9,7 +9,7 @@
  * and apiHost with the host api (for example http://localhost:80).
  */
 
-const {createProxyMiddleware} = require("http-proxy-middleware");
+const { createProxyMiddleware } = require("http-proxy-middleware");
 const express = require('express')
 const path = require('path')
 
@@ -41,5 +41,38 @@ module.exports = function (app) {
         target: apiHost,
     }));
 
-    app.use('/', express.static(path.join(__dirname, 'static')))
+    app.use('/', express.static(path.join(__dirname, 'static')));
+    
+    app.use('/termini-di-servizio', (req, res, next) => {
+        if (req.method === 'GET') {
+            res.writeHead(302, {
+                'Location': '/terms/it.html'
+            });
+            res.end();
+        } else {
+            next();
+        }
+    });
+    
+    app.use('/informativa-privacy', (req, res, next) => {
+        if (req.method === 'GET') {
+            res.writeHead(302, {
+                'Location': '/privacypolicy/it.html'
+            });
+            res.end();
+        } else {
+            next();
+        }
+    });
+    
+    app.use('*', (req, res, next) => {
+        if (req.url.startsWith('/checkout/') || 
+            req.url.startsWith('/ecommerce/') ||
+            req.url.includes('.')) {
+            return next();
+        }
+        
+        req.url = '/index.html';
+        express.static(path.join(__dirname, 'dist'))(req, res, next);
+    });
 }
