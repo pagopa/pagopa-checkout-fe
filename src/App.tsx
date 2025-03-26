@@ -29,11 +29,7 @@ import PaymentSummaryPage from "./routes/PaymentSummaryPage";
 import GdiCheckPage from "./routes/GdiCheckPage";
 import "./translations/i18n";
 import { mixpanelInit } from "./utils/config/mixpanelHelperInit";
-import {
-  getSessionItem,
-  SessionItems,
-  setSessionItem,
-} from "./utils/storage/sessionStorage";
+import { SessionItems } from "./utils/storage/sessionStorage";
 import SessionExpiredPage from "./routes/SessionExpiredPage";
 import AuthCallback from "./routes/AuthCallbackPage";
 import AuthExpiredPage from "./routes/AuthExpiredPage";

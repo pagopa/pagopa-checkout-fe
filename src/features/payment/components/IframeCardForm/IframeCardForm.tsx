@@ -25,7 +25,6 @@ import { clearNavigationEvents } from "../../../../utils/eventListeners";
 import {
   SessionItems,
   getReCaptchaKey,
-  getSessionItem,
   setSessionItem,
 } from "../../../../utils/storage/sessionStorage";
 import { setThreshold } from "../../../../redux/slices/threshold";

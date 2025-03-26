@@ -18,7 +18,6 @@ import { mixpanel } from "../../../../utils/config/mixpanelHelperInit";
 import {
   SessionItems,
   getReCaptchaKey,
-  getSessionItem,
   setSessionItem,
 } from "../../../../utils/storage/sessionStorage";
 import {
