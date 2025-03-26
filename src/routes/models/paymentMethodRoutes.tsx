@@ -18,33 +18,33 @@ export const PaymentMethodRoutes: PaymentTypecode = {
     route: CheckoutRoutes.INSERISCI_CARTA,
   },
   RBPP: {
-    route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
+    route: CheckoutRoutes.LISTA_PSP,
   },
   RBPR: {
-    route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
+    route: CheckoutRoutes.LISTA_PSP,
   },
   RBPB: {
-    route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
+    route: CheckoutRoutes.LISTA_PSP,
   },
   RPIC: {
-    route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
+    route: CheckoutRoutes.LISTA_PSP,
   },
   RBPS: {
-    route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
+    route: CheckoutRoutes.LISTA_PSP,
   },
   BPAY: {
-    route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
+    route: CheckoutRoutes.LISTA_PSP,
   },
   APPL: {
-    route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
+    route: CheckoutRoutes.LISTA_PSP,
   },
   GOOG: {
-    route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
+    route: CheckoutRoutes.LISTA_PSP,
   },
   MYBK: {
-    route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
+    route: CheckoutRoutes.LISTA_PSP,
   },
   SATY: {
-    route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
+    route: CheckoutRoutes.LISTA_PSP,
   },
 };
