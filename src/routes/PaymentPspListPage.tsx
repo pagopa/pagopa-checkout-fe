@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { pipe } from "fp-ts/lib/function";
 import * as O from "fp-ts/Option";
 import { useTranslation } from "react-i18next";
+import { ButtonNaked } from "@pagopa/mui-italia";
 import { PspOrderingModel, sortBy } from "../utils/SortUtil";
 import { PaymentPspListSortingDrawer } from "../features/payment/components/PaymentPspList/PaymentPspListSortingDrawer";
 import { PaymentPSPListGrid } from "../features/payment/components/PaymentPspList/PaymentPspListGrid";
@@ -37,6 +38,9 @@ export default function PaymentPspListPage() {
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(true);
   const [pspList, setPspList] = React.useState<Array<Bundle>>([]);
+  const [originalPspList, setOriginalPspList] = React.useState<Array<Bundle>>(
+    []
+  );
   const [pspNotFoundModal, setPspNotFoundModalOpen] = React.useState(false);
   const [drawerOpen, setDrawerOpen] = React.useState(true);
   const paymentMethod = getSessionItem(SessionItems.paymentMethod) as
@@ -47,13 +51,13 @@ export default function PaymentPspListPage() {
     getSessionItem(SessionItems.pspSelected) as Bundle | undefined
   );
 
-  let originalPspList: Array<Bundle> = [];
-
   const updatePspSorting = (sortingModel: PspOrderingModel | null) => {
     if (sortingModel === null) {
       setPspList(originalPspList);
     } else {
-      setPspList(pspList.sort(sortBy(sortingModel?.fieldName, "asc")))
+      setPspList(
+        Array.from(originalPspList).sort(sortBy(sortingModel?.fieldName, "asc"))
+      );
     }
   };
 
@@ -74,7 +78,7 @@ export default function PaymentPspListPage() {
             navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
           } else {
             setPspList(bundles);
-            originalPspList = bundles;
+            setOriginalPspList(bundles);
           }
         }
       )
@@ -136,17 +140,35 @@ export default function PaymentPspListPage() {
         description="paymentPspListPage.description"
         childrenSx={{ mt: 6 }}
       >
-        <Box sx={{ mt: 6 }}>
+        <Box
+          sx={{
+            mt: 6,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           <Typography
             component="div"
             typography="body2"
             display="block"
-            mt={2}
             fontWeight="600"
             color="action.active"
           >
             {t("paymentPspListPage.operator")}
           </Typography>
+
+          <ButtonNaked
+            id="sort-psp-list"
+            component="button"
+            style={{ fontWeight: 600, fontSize: "1rem" }}
+            color="primary"
+            onClick={() => {
+              setDrawerOpen(true);
+            }}
+          >
+            {t("paymentPspListPage.sort")}
+          </ButtonNaked>
         </Box>
 
         <form

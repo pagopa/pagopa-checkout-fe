@@ -10,12 +10,8 @@ import {
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { CustomDrawer } from "../../../../components/modals/CustomDrawer";
-import { PspOrderingModel } from "./../../../../utils/SortUtil";
-import { useLargeScreen } from "../../../../hooks/useLargeDevice";
-import { useMediumDevice } from "../../../../hooks/useMediumDevice";
-import { useNormalScreen } from "../../../../hooks/useNormalDevice";
 import { useSmallDevice } from "../../../../hooks/useSmallDevice";
-import { useExtraLargeScreen } from "../../../../hooks/useExtraLargeDevice";
+import { PspOrderingModel } from "./../../../../utils/SortUtil";
 
 // Define an enum for the sorting type
 export enum PaymentPspSortingType {
@@ -88,24 +84,8 @@ export const PaymentPspListSortingDrawer = (props: {
     onClose();
   };
 
-  // We try to get a good looking and spaced drawer
-  const getDrawerMinWidth = () => {
-    const isSmall = useSmallDevice();
-    const isMedium = useMediumDevice();
-    const isNormal = useNormalScreen();
-    const isLarge = useLargeScreen();
-    const isExtraLarge = useExtraLargeScreen();
-    
-    if (isSmall) return '100%';
-    if (isMedium) return '50%';
-    if (isNormal) return '40%';
-    if (isLarge) return '30%';
-    if (isExtraLarge) return '30%';
-    return 'auto';
-  };
-
   return (
-    <CustomDrawer open={open} onClose={onClose} style={{ minWidth: getDrawerMinWidth() }}>
+    <CustomDrawer open={open} onClose={onClose}>
       <Box
         sx={{
           py: 1,
@@ -113,7 +93,7 @@ export const PaymentPspListSortingDrawer = (props: {
           display: "flex",
           flexDirection: "column",
           height: "100%",
-          width: "100%",
+          width: useSmallDevice() ? "auto" : "400px",
         }}
       >
         <Typography variant="h6" component={"div"}>
