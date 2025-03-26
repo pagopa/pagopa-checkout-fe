@@ -1390,10 +1390,10 @@
   dependencies:
     "@octokit/openapi-types" "^11.2.0"
 
-"@pagopa/mui-italia@1.4.0":
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/@pagopa/mui-italia/-/mui-italia-1.4.0.tgz#4e377db0a9e87bc12884ebb7bb17c0e57b0febe1"
-  integrity sha512-8BmKRPKX0gxJpRl57/z2S/ZAosTazDp2BwjxbomCAcieiuF6f1o0Qj/ui2x2WHeGTmJzzWhucH+f0qAkPskxgQ==
+"@pagopa/mui-italia@1.5.1":
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/@pagopa/mui-italia/-/mui-italia-1.5.1.tgz#672322aa8e5f19478d10f5a0979d1c14cf6b8beb"
+  integrity sha512-0ocotj0AMeAbeQlmOI68u5xDYq0v+9ur2rs8P4MyBs9xFcBidEq8FNclnZWd/7YRqBFh0tTRP/jMoM4frmHMOA==
   dependencies:
     "@fontsource/dm-mono" "^4.5.10"
     "@fontsource/titillium-web" "^4.5.9"
