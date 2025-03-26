@@ -31,6 +31,7 @@ import { SessionItems } from "./utils/storage/sessionStorage";
 import SessionExpiredPage from "./routes/SessionExpiredPage";
 import AuthCallback from "./routes/AuthCallbackPage";
 import AuthExpiredPage from "./routes/AuthExpiredPage";
+import PaymentPspListPage from "./routes/PaymentPspListPage";
 
 const checkoutTheme = createTheme({
   ...theme,
@@ -142,6 +143,14 @@ export function App() {
                 element={
                   <Guard item={SessionItems.useremail}>
                     <PaymentChoicePage />
+                  </Guard>
+                }
+              />
+              <Route
+                path={CheckoutRoutes.LISTA_PSP}
+                element={
+                  <Guard item={SessionItems.transaction}>
+                    <PaymentPspListPage />
                   </Guard>
                 }
               />
