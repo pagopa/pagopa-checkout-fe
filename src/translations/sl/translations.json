@@ -399,6 +399,15 @@
     "formButtons": {
       "back": "Nazaj",
       "submit": "Nadaljuj"
+    },
+    "sort": "Razvrsti",
+    "drawer": {
+      "sorting": {
+        "default": "Privzeto",
+        "name": "Po imenu",
+        "amount": "Po znesku"
+      },
+      "showResults": "Prikaži rezultate"
     }
   },
   "paymentQrPage": {
