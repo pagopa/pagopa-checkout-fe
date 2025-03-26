@@ -169,7 +169,12 @@ export const fillAndSubmitCardDataForm = async (
   await fillEmailForm(email);
   await choosePaymentMethod("CP");
   await fillCardDataForm(cardData);
-  await selectPspOnPspPickerPage();
+
+  // this step needs to be skipped during tests
+  // in which we trigger an error modal in the previous page
+  if(page.url().includes("lista-psp")){
+    await selectPspOnPspPickerPage();
+  }
 };
 
 export const selectPspOnPspPickerPage = async () => {
