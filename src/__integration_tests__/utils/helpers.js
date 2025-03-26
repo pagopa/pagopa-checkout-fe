@@ -169,7 +169,21 @@ export const fillAndSubmitCardDataForm = async (
   await fillEmailForm(email);
   await choosePaymentMethod("CP");
   await fillCardDataForm(cardData);
+  await selectPspOnPspPickerPage();
 };
+
+export const selectPspOnPspPickerPage = async () => {
+  const pspPickerRadio = await page.waitForSelector("#psp-radio-button-unchecked", {
+    visible: true,
+  });
+  await pspPickerRadio.click();
+
+  const continueButton = await page.waitForSelector("#paymentPspListPageButtonContinue", {
+    visible: true,
+  });
+  
+  await continueButton.click();
+}
 
 export const fillAndSubmitSatispayPayment = async (
   noticeCode,
