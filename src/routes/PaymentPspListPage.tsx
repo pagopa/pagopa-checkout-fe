@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { pipe } from "fp-ts/lib/function";
 import * as O from "fp-ts/Option";
 import { useTranslation } from "react-i18next";
+import { PspOrderingModel, sortBy } from "../utils/SortUtil";
+import { PaymentPspListSortingDrawer } from "../features/payment/components/PaymentPspList/PaymentPspListSortingDrawer";
 import { PaymentPSPListGrid } from "../features/payment/components/PaymentPspList/PaymentPspListGrid";
 import { calculateFees } from "../utils/api/helper";
 import { ErrorsType } from "../utils/errors/checkErrorsModel";
@@ -36,6 +38,7 @@ export default function PaymentPspListPage() {
   const [loading, setLoading] = React.useState(true);
   const [pspList, setPspList] = React.useState<Array<Bundle>>([]);
   const [pspNotFoundModal, setPspNotFoundModalOpen] = React.useState(false);
+  const [drawerOpen, setDrawerOpen] = React.useState(true);
   const paymentMethod = getSessionItem(SessionItems.paymentMethod) as
     | PaymentMethod
     | undefined;
@@ -43,6 +46,16 @@ export default function PaymentPspListPage() {
   const [pspSelected, setPspSelected] = React.useState<Bundle | undefined>(
     getSessionItem(SessionItems.pspSelected) as Bundle | undefined
   );
+
+  let originalPspList: Array<Bundle> = [];
+
+  const updatePspSorting = (sortingModel: PspOrderingModel | null) => {
+    if (sortingModel === null) {
+      setPspList(originalPspList);
+    } else {
+      setPspList(pspList.sort(sortBy(sortingModel?.fieldName, "asc")))
+    }
+  };
 
   const onPspListSuccessResponse = (calculateFeeResponse: any) => {
     pipe(
@@ -55,13 +68,13 @@ export default function PaymentPspListPage() {
         () => onError(ErrorsType.GENERIC_ERROR),
         (bundles) => {
           setLoading(false);
-
           // Just one? Select the PSP and proceed
           if (bundles.length === 1) {
             setPspSelected(bundles[0]);
             navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
           } else {
             setPspList(bundles);
+            originalPspList = bundles;
           }
         }
       )
@@ -214,6 +227,11 @@ export default function PaymentPspListPage() {
             </Box>
           </InformationModal>
         )}
+        <PaymentPspListSortingDrawer
+          open={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+          onSelect={updatePspSorting}
+        />
       </PageContainer>
       <Box display="none">
         <ReCAPTCHA

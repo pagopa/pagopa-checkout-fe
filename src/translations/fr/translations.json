@@ -399,6 +399,15 @@
     "formButtons": {
       "back": "Retour",
       "submit": "Continuer"
+    },
+    "sort": "Trier",
+    "drawer": {
+      "sorting": {
+        "default": "Par défaut",
+        "name": "Par nom",
+        "amount": "Par montant"
+      },
+      "showResults": "Afficher les résultats"
     }
   },
   "paymentQrPage": {
