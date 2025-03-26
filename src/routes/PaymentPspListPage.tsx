@@ -5,6 +5,9 @@ import { useNavigate } from "react-router-dom";
 import { pipe } from "fp-ts/lib/function";
 import * as O from "fp-ts/Option";
 import { useTranslation } from "react-i18next";
+import { ButtonNaked } from "@pagopa/mui-italia";
+import { PspOrderingModel, sortBy } from "../utils/SortUtil";
+import { PaymentPspListSortingDrawer } from "../features/payment/components/PaymentPspList/PaymentPspListSortingDrawer";
 import { PaymentPSPListGrid } from "../features/payment/components/PaymentPspList/PaymentPspListGrid";
 import { calculateFees } from "../utils/api/helper";
 import { ErrorsType } from "../utils/errors/checkErrorsModel";
@@ -35,7 +38,11 @@ export default function PaymentPspListPage() {
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(true);
   const [pspList, setPspList] = React.useState<Array<Bundle>>([]);
+  const [originalPspList, setOriginalPspList] = React.useState<Array<Bundle>>(
+    []
+  );
   const [pspNotFoundModal, setPspNotFoundModalOpen] = React.useState(false);
+  const [drawerOpen, setDrawerOpen] = React.useState(true);
   const paymentMethod = getSessionItem(SessionItems.paymentMethod) as
     | PaymentMethod
     | undefined;
@@ -43,6 +50,16 @@ export default function PaymentPspListPage() {
   const [pspSelected, setPspSelected] = React.useState<Bundle | undefined>(
     getSessionItem(SessionItems.pspSelected) as Bundle | undefined
   );
+
+  const updatePspSorting = (sortingModel: PspOrderingModel | null) => {
+    if (sortingModel === null) {
+      setPspList(originalPspList);
+    } else {
+      setPspList(
+        Array.from(originalPspList).sort(sortBy(sortingModel?.fieldName, "asc"))
+      );
+    }
+  };
 
   const onPspListSuccessResponse = (calculateFeeResponse: any) => {
     pipe(
@@ -55,13 +72,13 @@ export default function PaymentPspListPage() {
         () => onError(ErrorsType.GENERIC_ERROR),
         (bundles) => {
           setLoading(false);
-
           // Just one? Select the PSP and proceed
           if (bundles.length === 1) {
             setPspSelected(bundles[0]);
             navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
           } else {
             setPspList(bundles);
+            setOriginalPspList(bundles);
           }
         }
       )
@@ -123,17 +140,35 @@ export default function PaymentPspListPage() {
         description="paymentPspListPage.description"
         childrenSx={{ mt: 6 }}
       >
-        <Box sx={{ mt: 6 }}>
+        <Box
+          sx={{
+            mt: 6,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           <Typography
             component="div"
             typography="body2"
             display="block"
-            mt={2}
             fontWeight="600"
             color="action.active"
           >
             {t("paymentPspListPage.operator")}
           </Typography>
+
+          <ButtonNaked
+            id="sort-psp-list"
+            component="button"
+            style={{ fontWeight: 600, fontSize: "1rem" }}
+            color="primary"
+            onClick={() => {
+              setDrawerOpen(true);
+            }}
+          >
+            {t("paymentPspListPage.sort")}
+          </ButtonNaked>
         </Box>
 
         <form
@@ -214,6 +249,11 @@ export default function PaymentPspListPage() {
             </Box>
           </InformationModal>
         )}
+        <PaymentPspListSortingDrawer
+          open={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+          onSelect={updatePspSorting}
+        />
       </PageContainer>
       <Box display="none">
         <ReCAPTCHA

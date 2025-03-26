@@ -401,6 +401,15 @@
     "formButtons": {
       "back": "Indietro",
       "submit": "Continua"
+    },
+    "sort": "Ordina",
+    "drawer": {
+      "sorting": {
+        "default": "Default",
+        "name": "Per nome",
+        "amount": "Per importo"
+      },
+      "showResults": "Mostra risultati"
     }
   },
   "paymentQrPage": {

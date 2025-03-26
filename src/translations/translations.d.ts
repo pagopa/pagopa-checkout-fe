@@ -400,6 +400,15 @@ interface Translation {
       back: string;
       submit: string;
     };
+    sort: string;
+    drawer: {
+      sorting: {
+        default: string;
+        name: string;
+        amount: string;
+      };
+      showResults: string;
+    };
   };
   paymentQrPage: {
     camBlocked: string;
