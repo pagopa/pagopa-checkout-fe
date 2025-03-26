@@ -49,22 +49,19 @@ export default function PaymentPspListPage() {
       calculateFeeResponse,
       CalculateFeeResponse.decode,
       O.fromEither,
+      O.map((resp) => resp.bundles.slice()),
+      O.filter((bundles) => bundles.length > 0),
       O.fold(
         () => onError(ErrorsType.GENERIC_ERROR),
-        (resp) => {
-          const pspList = resp?.bundles?.slice() || [];
-          if (pspList.length === 0) {
-            return onError(ErrorsType.GENERIC_ERROR);
-          }
-
+        (bundles) => {
           setLoading(false);
 
           // Just one? Select the PSP and proceed
-          if (pspList.length === 1) {
-            setPspSelected(pspList[0]);
+          if (bundles.length === 1) {
+            setPspSelected(bundles[0]);
             navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
           } else {
-            setPspList(pspList);
+            setPspList(bundles);
           }
         }
       )
