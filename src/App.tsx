@@ -93,15 +93,12 @@ export function App() {
   };
 
   const initFeatureFlag = async () => {
-    const storedFeatureFlag = localStorage.getItem(SessionItems.enablePspPage);
-    // avoid asking again if you already have received an answer
-    if (!storedFeatureFlag) {
-      await evaluateFeatureFlag(
-        featureFlags.enablePspPage,
-        onFeatureFlagError,
-        onFeatureFlagSuccess
-      );
-    }
+    // we need to always evaluate this flag since is stored in the local storage
+    await evaluateFeatureFlag(
+      featureFlags.enablePspPage,
+      onFeatureFlagError,
+      onFeatureFlagSuccess
+    );
   };
 
   React.useEffect(() => {
