@@ -9,6 +9,7 @@ export enum CheckoutRoutes {
   INSERISCI_EMAIL = "inserisci-email",
   INSERISCI_CARTA = "inserisci-carta",
   SCEGLI_METODO = "scegli-metodo",
+  LISTA_PSP = "lista-psp",
   RIEPILOGO_PAGAMENTO = "riepilogo-pagamento",
   GDI_CHECK = "gdi-check",
   CARRELLO = "c",
