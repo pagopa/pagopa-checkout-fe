@@ -75,11 +75,13 @@ export const PaymentPspListSortingDrawer = (props: {
   const handleSortingTypeChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
+    console.log("Changed");
     setSortingType(event.target.value as PaymentPspSortingType);
   };
 
   // Handle apply button click
   const handleApply = () => {
+    console.log("weee");
     onSelect(getSortingModel(sortingType));
     onClose();
   };
@@ -100,8 +102,20 @@ export const PaymentPspListSortingDrawer = (props: {
           {t("paymentPspListPage.sort")}
         </Typography>
 
-        <FormControl component="fieldset" sx={{ mt: 2 }}>
+        <FormControl
+          component="fieldset"
+          sx={{ mt: 2 }}
+          onKeyDown={(e: React.KeyboardEvent<HTMLFieldSetElement>) => {
+            console.log("key down")
+            if (e.key === "Enter") {
+              e.preventDefault();
+              // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+              handleApply();
+            }
+          }}
+        >
           <RadioGroup
+            tabIndex={0}
             aria-label="sorting-options"
             name="sorting-options"
             value={sortingType}
@@ -152,6 +166,7 @@ export const PaymentPspListSortingDrawer = (props: {
 
         {/* Apply button */}
         <Button
+          id="sort-psp-list"
           variant="contained"
           fullWidth
           onClick={handleApply}
