@@ -82,7 +82,7 @@ export function PaymentChoice(props: {
     const navigateToRoute = route || CheckoutRoutes.RIEPILOGO_PAGAMENTO;
 
     if (
-      correctedRoute === CheckoutRoutes.RIEPILOGO_PAGAMENTO &&
+      navigateToRoute === CheckoutRoutes.RIEPILOGO_PAGAMENTO &&
       localStorage.getItem(SessionItems.enablePspPage) === "true"
     ) {
       navigate(`/${CheckoutRoutes.LISTA_PSP}`);
