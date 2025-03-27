@@ -79,11 +79,16 @@ export function PaymentChoice(props: {
 
     setLoading(false);
 
-    const correctedRoute =
+    const correctedRoute = route || CheckoutRoutes.RIEPILOGO_PAGAMENTO;
+
+    if (
+      correctedRoute === CheckoutRoutes.RIEPILOGO_PAGAMENTO &&
       localStorage.getItem(SessionItems.enablePspPage) === "true"
-        ? CheckoutRoutes.LISTA_PSP
-        : CheckoutRoutes.RIEPILOGO_PAGAMENTO;
-    navigate(`/${route || correctedRoute}`);
+    ) {
+      navigate(`/${CheckoutRoutes.LISTA_PSP}`);
+    } else {
+      navigate(`/${correctedRoute}`);
+    }
   };
 
   const onApmChoice = async (
