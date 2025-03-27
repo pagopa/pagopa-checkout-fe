@@ -110,17 +110,61 @@ export default function PaymentSummaryPage() {
         maxWidth="sm"
         hideIcon={true}
       >
-        <Typography
-          variant="body1"
-          component={"div"}
-          sx={{ whiteSpace: "pre-line" }}
-        >
-          {t("paymentSummaryPage.dialog.description")}
-        </Typography>
-        <Box display="flex" justifyContent="flex-end" sx={{ mt: 3 }}>
-          <Button variant="contained" onClick={handleClose}>
-            {t("paymentSummaryPage.buttons.ok")}
-          </Button>
+        <Box sx={{ mt: -1 }}>
+          <Typography
+            variant="body1"
+            component={"div"}
+            sx={{
+              "& ul": {
+                listStyleType: "none",
+                paddingLeft: 0,
+                marginTop: 2,
+                marginBottom: 0,
+              },
+              "& li": {
+                display: "flex",
+                marginBottom: 1,
+              },
+              "& li.second": {
+                marginTop: 0,
+              },
+              "& li .bullet": {
+                minWidth: "24px",
+              },
+              "& p:first-of-type": {
+                marginTop: 0,
+              },
+            }}
+          >
+            {t("paymentSummaryPage.dialog.description")
+              .split("\n\n")
+              .map((paragraph, idx) => {
+                if (paragraph.includes("• ")) {
+                  const [intro, ...bulletPoints] = paragraph.split("\n• ");
+
+                  return (
+                    <React.Fragment key={idx}>
+                      <p>{intro}</p>
+                      <ul>
+                        {bulletPoints.map((point, pointIdx) => (
+                          <li key={pointIdx}>
+                            <span className="bullet">•</span>
+                            <span>{point}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </React.Fragment>
+                  );
+                } else {
+                  return <p key={idx}>{paragraph}</p>;
+                }
+              })}
+          </Typography>
+          <Box display="flex" justifyContent="flex-end" sx={{ mt: 3 }}>
+            <Button variant="contained" onClick={handleClose}>
+              {t("paymentSummaryPage.buttons.ok")}
+            </Button>
+          </Box>
         </Box>
       </InformationModal>
     </PageContainer>
