@@ -122,7 +122,7 @@ export const PaymentPspListSortingDrawer = (props: {
               value={PaymentPspSortingType.DEFAULT}
               control={<Radio />}
               label={
-                <Box>
+                <Box id="sort-psp-list-drawer-default-order">
                   <Typography variant="body1">
                     {t("paymentPspListPage.drawer.sorting.default")}
                   </Typography>
@@ -135,7 +135,7 @@ export const PaymentPspListSortingDrawer = (props: {
               value={PaymentPspSortingType.NAME}
               control={<Radio />}
               label={
-                <Box>
+                <Box id="sort-psp-list-drawer-order-by-name">
                   <Typography variant="body1">
                     {t("paymentPspListPage.drawer.sorting.name")}
                   </Typography>
@@ -148,7 +148,7 @@ export const PaymentPspListSortingDrawer = (props: {
               value={PaymentPspSortingType.AMOUNT}
               control={<Radio />}
               label={
-                <Box>
+                <Box id="sort-psp-list-drawer-order-by-amount">
                   <Typography variant="body1">
                     {t("paymentPspListPage.drawer.sorting.amount")}
                   </Typography>
@@ -163,7 +163,7 @@ export const PaymentPspListSortingDrawer = (props: {
 
         {/* Apply button */}
         <Button
-          id="sort-psp-list"
+          id="sort-psp-list-drawer"
           variant="contained"
           fullWidth
           onClick={handleApply}
