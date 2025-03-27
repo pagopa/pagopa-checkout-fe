@@ -79,15 +79,15 @@ export function PaymentChoice(props: {
 
     setLoading(false);
 
-    const correctedRoute = route || CheckoutRoutes.RIEPILOGO_PAGAMENTO;
+    const navigateToRoute = route || CheckoutRoutes.RIEPILOGO_PAGAMENTO;
 
     if (
-      correctedRoute === CheckoutRoutes.RIEPILOGO_PAGAMENTO &&
+      navigateToRoute === CheckoutRoutes.RIEPILOGO_PAGAMENTO &&
       localStorage.getItem(SessionItems.enablePspPage) === "true"
     ) {
       navigate(`/${CheckoutRoutes.LISTA_PSP}`);
     } else {
-      navigate(`/${correctedRoute}`);
+      navigate(`/${navigateToRoute}`);
     }
   };
 
