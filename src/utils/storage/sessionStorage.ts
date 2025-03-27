@@ -20,6 +20,7 @@ export enum SessionItems {
   noticeInfo = "rptId",
   useremail = "useremail",
   enableAuthentication = "enableAuthentication",
+  enablePspPage = "enablePspPage",
   paymentMethod = "paymentMethod",
   pspSelected = "pspSelected",
   sessionToken = "sessionToken",

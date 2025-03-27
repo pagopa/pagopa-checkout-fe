@@ -93,7 +93,10 @@ export default function Header() {
 
   const onFeatureFlagError = (e: string) => {
     // eslint-disable-next-line no-console
-    console.error("Error while getting feature flag", e);
+    console.error(
+      "Error while getting feature flag " + SessionItems.enableAuthentication,
+      e
+    );
     setEnableAuthentication(false);
   };
 

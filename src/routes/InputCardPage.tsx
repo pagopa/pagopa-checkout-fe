@@ -98,7 +98,12 @@ export default function InputCardPage() {
 
               setSessionItem(SessionItems.pspSelected, firstPsp);
               setLoading(false);
-              navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
+
+              if (localStorage.getItem(SessionItems.enablePspPage) === "true") {
+                navigate(`/${CheckoutRoutes.LISTA_PSP}`);
+              } else {
+                navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
+              }
             }
           )
         );
