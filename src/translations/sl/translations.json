@@ -430,10 +430,10 @@
     "causal": "Namen plačila",
     "cf": "Davčna številka upnika",
     "creditor": "Upnik",
-    "description": "pagoPA samodejno posodobi znesek, zato vedno plačate točno toliko, kolikor je dolga in se izognete zamudnim ali drugim obrestim",
+    "description": "Ko se znesek spremeni, to pomeni, da je bil samodejno posodobljen. Če je višji, lahko vključuje obresti, kazni ali stroške obvestila.\n\nČe obvestilo pagoPA zadeva pravno veljavno komunikacijo, je lahko povečanje zneska za plačilo odvisno od različnih dejavnikov, na primer:\n\n• če ste prejeli obvestilo s priporočeno pošto (stroški tiskanja in pošiljanja so lahko na breme prejemnika);\n• število poskusov dostave.\n\nZa dodatne podrobnosti se obrnite na upni organ.",
     "dialog": {
-      "description": "pagoPA samodejno posodobi znesek, zato vedno plačate točno toliko, kolikor dolgujete in se izognete zamudnim ali drugim obrestim.",
-      "title": "Ali vidite drugačen znesek?"
+      "description": "Ko se znesek spremeni, to pomeni, da je bil samodejno posodobljen. Če je višji, lahko vključuje obresti, kazni ali stroške obvestila.\n\nČe obvestilo pagoPA zadeva pravno veljavno komunikacijo, je lahko povečanje zneska za plačilo odvisno od različnih dejavnikov, na primer:\n\n• če ste prejeli obvestilo s priporočeno pošto (stroški tiskanja in pošiljanja so lahko na breme prejemnika);\n• število poskusov dostave.\n\nZa dodatne podrobnosti se obrnite na upni organ.",
+      "title": "Je znesek drugačen od tistega na obvestilu pagoPA?"
     },
     "iuv": "IUV koda",
     "title": "Podatki o plačilu"

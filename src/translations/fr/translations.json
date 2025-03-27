@@ -430,10 +430,10 @@
     "causal": "Objet du paiement",
     "cf": "Code fiscal organisme créancier",
     "creditor": "Organisme créancier",
-    "description": "pagoPA met à jour le montant automatiquement : vous payez exactement ce que vous devez, sans pénalité ni intérêt de retard",
+    "description": "Lorsque le montant change, cela signifie qu'il a été mis à jour automatiquement. S'il est plus élevé, il peut inclure des intérêts, des pénalités ou des frais de notification.\n\nSi l'avis pagoPA concerne une communication ayant une valeur juridique, l'augmentation du montant à payer peut dépendre de plusieurs facteurs, par exemple :\n\n• si vous avez reçu la communication par courrier recommandé (les frais d'impression et d'envoi pouvant être à la charge du destinataire) ;\n• le nombre de tentatives de livraison.\n\nPour plus de détails, contactez l'organisme créancier.",
     "dialog": {
-      "description": "pagoPA met à jour le montant automatiquement : vous payez exactement ce que vous devez, sans pénalité ni intérêt de retard.",
-      "title": "Vous voyez un montant différent ?"
+      "description": "Lorsque le montant change, cela signifie qu'il a été mis à jour automatiquement. S'il est plus élevé, il peut inclure des intérêts, des pénalités ou des frais de notification.\n\nSi l'avis pagoPA concerne une communication ayant une valeur juridique, l'augmentation du montant à payer peut dépendre de plusieurs facteurs, par exemple :\n\n• si vous avez reçu la communication par courrier recommandé (les frais d'impression et d'envoi pouvant être à la charge du destinataire) ;\n• le nombre de tentatives de livraison.\n\nPour plus de détails, contactez l'organisme créancier.",
+      "title": "Le montant est-il différent de celui indiqué sur l'avis pagoPA ?"
     },
     "iuv": "Code IUV",
     "title": "Données du paiement"
