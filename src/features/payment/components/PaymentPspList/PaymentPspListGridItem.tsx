@@ -62,7 +62,9 @@ export const PaymentPSPListGridItem = ({
       {/* Left side with psp name and onUs info */}
       <Grid item xs={9}>
         <Box>
-          <Typography variant="sidenav">{pspItem.pspBusinessName}</Typography>
+          <Typography variant="sidenav" className="pspFeeName">
+            {pspItem.pspBusinessName}
+          </Typography>
           {pspItem.onUs && (
             <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 0 }}>
               <img
@@ -83,6 +85,7 @@ export const PaymentPSPListGridItem = ({
       {/* Right side with fee and radiobox */}
       <Grid item xs={3} sx={styles.priceSelectionSection}>
         <Typography
+          className="pspFeeValue"
           variant="sidenav"
           component={"div"}
           style={{ fontWeight: 600, color: palette.primary.main }}
@@ -90,9 +93,15 @@ export const PaymentPSPListGridItem = ({
           {moneyFormat(pspItem.taxPayerFee || 0)}
         </Typography>
         {isSelected ? (
-          <RadioButtonChecked style={{ color: palette.primary.main }} />
+          <RadioButtonChecked
+            id="psp-radio-button-checked"
+            style={{ color: palette.primary.main }}
+          />
         ) : (
-          <RadioButtonUnchecked style={{ color: palette.action.active }} />
+          <RadioButtonUnchecked
+            id="psp-radio-button-unchecked"
+            style={{ color: palette.action.active }}
+          />
         )}
       </Grid>
     </Grid>

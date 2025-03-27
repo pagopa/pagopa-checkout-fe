@@ -42,7 +42,7 @@ export default function PaymentPspListPage() {
     []
   );
   const [pspNotFoundModal, setPspNotFoundModalOpen] = React.useState(false);
-  const [drawerOpen, setDrawerOpen] = React.useState(true);
+  const [drawerOpen, setDrawerOpen] = React.useState(false);
   const paymentMethod = getSessionItem(SessionItems.paymentMethod) as
     | PaymentMethod
     | undefined;

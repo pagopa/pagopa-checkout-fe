@@ -848,7 +848,6 @@ describe("Logout tests", () => {
     await page.waitForNavigation();
     console.log("Login completed");
     await fillAndSubmitCardDataForm(FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA, VALID_FISCAL_CODE, EMAIL, VALID_CARD_DATA);
-    await page.waitForNavigation();
     expect(page.url()).toContain("/sessione-scaduta");
     await new Promise((r) => setTimeout(r, 500));
     expect(logout204).toBe(true);

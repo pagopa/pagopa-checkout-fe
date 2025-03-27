@@ -4,6 +4,8 @@ import { theme } from "@pagopa/mui-italia";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { evaluateFeatureFlag } from "./utils/api/helper";
+import featureFlags from "./utils/featureFlags";
 import Guard from "./components/commons/Guard";
 import { Layout } from "./components/commons/Layout";
 import NoticeGuard from "./components/commons/NoticeGuard";
@@ -76,7 +78,32 @@ export function App() {
     CheckoutRoutes.DONA,
   ];
 
+  const onFeatureFlagError = (e: string) => {
+    // eslint-disable-next-line no-console
+    console.error(
+      "Error while getting feature flag " + SessionItems.enablePspPage,
+      e
+    );
+  };
+
+  const onFeatureFlagSuccess = (data: { enabled: boolean }) => {
+    // we need to use localstorage to be permanent in case of page refreshes
+    // which happen after entering the credit card data
+    localStorage.setItem(SessionItems.enablePspPage, data.enabled.toString());
+  };
+
+  const initFeatureFlag = async () => {
+    // we need to always evaluate this flag since is stored in the local storage
+    await evaluateFeatureFlag(
+      featureFlags.enablePspPage,
+      onFeatureFlagError,
+      onFeatureFlagSuccess
+    );
+  };
+
   React.useEffect(() => {
+    void initFeatureFlag();
+
     mixpanelInit();
   }, []);
   // eslint-disable-next-line functional/immutable-data

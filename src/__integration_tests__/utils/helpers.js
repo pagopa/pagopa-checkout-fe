@@ -169,7 +169,39 @@ export const fillAndSubmitCardDataForm = async (
   await fillEmailForm(email);
   await choosePaymentMethod("CP");
   await fillCardDataForm(cardData);
+  await tryHandlePspPickerPage();
 };
+
+export const tryHandlePspPickerPage = async ()=>{
+  // wait for page to change, max wait time few seconds
+  // this navigation will not happen in all test cases
+  // so we don't want to waste too much time over it
+  try {
+    await page.waitForNavigation({ timeout: 3500 });
+  } catch (error) {
+    // If the navigation doesn't happen within 3500ms, just log and continue
+    console.log("Navigation did not happen within 3500ms. Continuing test.");
+  }
+
+  // this step needs to be skipped during tests
+  // in which we trigger an error modal in the previous page
+  if(page.url().includes("lista-psp")){
+    await selectPspOnPspPickerPage();
+  }
+}
+
+export const selectPspOnPspPickerPage = async () => {
+  const pspPickerRadio = await page.waitForSelector("#psp-radio-button-unchecked", {
+    visible: true,
+  });
+  await pspPickerRadio.click();
+
+  const continueButton = await page.waitForSelector("#paymentPspListPageButtonContinue", {
+    visible: true,
+  });
+  
+  await continueButton.click();
+}
 
 export const fillAndSubmitSatispayPayment = async (
   noticeCode,
@@ -184,6 +216,7 @@ export const fillAndSubmitSatispayPayment = async (
   await payNoticeBtn.click();
   await fillEmailForm(email);
   await choosePaymentMethod("SATY");
+  await tryHandlePspPickerPage();
 };
 
 export const fillEmailForm = async (email) => {
