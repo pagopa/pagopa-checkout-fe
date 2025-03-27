@@ -115,7 +115,6 @@ export const isStateEmpty = (item: SessionItems) => !getSessionItem(item);
 
 export const clearStorage = () => {
   sessionStorage.clear();
-  localStorage.removeItem(SessionItems.enablePspPage);
 };
 
 export const clearStorageAndMaintainAuthData = () => {
@@ -124,7 +123,6 @@ export const clearStorageAndMaintainAuthData = () => {
     SessionItems.enableAuthentication
   ) as string;
   sessionStorage.clear();
-  localStorage.removeItem(SessionItems.enablePspPage);
   if (authToken != null) {
     setSessionItem(SessionItems.authToken, authToken);
   }
