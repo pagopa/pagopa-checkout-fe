@@ -664,8 +664,7 @@ describe("Checkout Payment - PSP Selection Flow", () => {
             EMAIL,
             VALID_CARD_DATA
         );
-        await page.waitForNavigation(); // for CHECKOUT_URL_PSP_LIST
-        // (auto redirect for finding only one psp)
+        await page.waitForNavigation(); // for CHECKOUT_URL_PSP_LIST (auto redirect for response with only one bundle in calculate fee response)
         await page.waitForNavigation(); // for CHECKOUT_URL_PAYMENT_SUMMARY
 
         expect(await page.url()).toContain(CHECKOUT_URL_PAYMENT_SUMMARY);
