@@ -69,13 +69,15 @@ export default function PaymentPspListPage() {
       calculateFeeResponse,
       CalculateFeeResponse.decode,
       O.fromEither,
-      O.map((resp) => {
-        // Handle the threshold here
-        if (resp.belowThreshold !== undefined) {
-          dispatch(setThreshold({ belowThreshold: resp.belowThreshold }));
-        }
-        return resp.bundles.slice();
-      }),
+      O.chain((resp) => 
+        pipe(
+          O.fromNullable(resp.belowThreshold),
+          O.map(belowThreshold => {
+            dispatch(setThreshold({ belowThreshold }));
+            return resp.bundles.slice();
+          })
+        )
+      ),
       O.filter((bundles) => bundles.length > 0),
       O.fold(
         () => onError(ErrorsType.GENERIC_ERROR),
