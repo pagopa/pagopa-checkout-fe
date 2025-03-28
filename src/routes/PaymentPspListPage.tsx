@@ -15,6 +15,8 @@ import ErrorModal from "../components/modals/ErrorModal";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
 import PageContainer from "../components/PageContent/PageContainer";
 import { PaymentMethod } from "../features/payment/models/paymentModel";
+import { useAppDispatch } from "../redux/hooks/hooks";
+import { setThreshold } from "../redux/slices/threshold";
 import {
   getReCaptchaKey,
   getSessionItem,
@@ -31,6 +33,7 @@ import { CheckoutRoutes } from "./models/routeModel";
 export default function PaymentPspListPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const ref = React.useRef<ReCAPTCHA>(null);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
@@ -66,7 +69,13 @@ export default function PaymentPspListPage() {
       calculateFeeResponse,
       CalculateFeeResponse.decode,
       O.fromEither,
-      O.map((resp) => resp.bundles.slice()),
+      O.map((resp) => {
+        // Handle the threshold here
+        if (resp.belowThreshold !== undefined) {
+          dispatch(setThreshold({ belowThreshold: resp.belowThreshold }));
+        }
+        return resp.bundles.slice();
+      }),
       O.filter((bundles) => bundles.length > 0),
       O.fold(
         () => onError(ErrorsType.GENERIC_ERROR),
