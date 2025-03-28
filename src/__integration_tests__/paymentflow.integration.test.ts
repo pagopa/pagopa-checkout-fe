@@ -26,6 +26,8 @@ import slTranslation from "../translations/sl/translations.json";
 
 const CHECKOUT_URL = `http://localhost:1234`;
 const CHECKOUT_URL_AFTER_AUTHORIZATION = `http://localhost:1234/esito`;
+const CHECKOUT_URL_PAYMENT_SUMMARY = `http://localhost:1234/riepilogo-pagamento`;
+const CHECKOUT_URL_PSP_LIST = `http://localhost:1234/lista-psp`;
 const VALID_FISCAL_CODE = "77777777777";
 const EMAIL = "mario.rossi@email.com";
 const VALID_CARD_DATA = {
@@ -581,4 +583,91 @@ describe("PSP list tests", () => {
     await new Promise((r) => setTimeout(r, 500));
     await cancelPaymentAction();
   });
+});
+
+
+describe("Checkout Payment - PSP Selection Flow", () => {
+    it("Should fill form, select PSP, and proceed with payment (IT)", async () => {
+        selectLanguage("it");
+
+        await fillAndSubmitCardDataForm(VALID_NOTICE_CODE, VALID_FISCAL_CODE, EMAIL, VALID_CARD_DATA);
+
+        const radioButtonsSelector = 'svg[data-testid="RadioButtonUncheckedIcon"]';
+        await page.waitForSelector(radioButtonsSelector);
+
+        const radioButtons = await page.$$(radioButtonsSelector);
+        expect(radioButtons.length).toBeGreaterThan(0);
+        expect(await page.url()).toContain(CHECKOUT_URL_PSP_LIST);
+
+        await radioButtons[0].click();
+
+        const continueBtnSelector = "#paymentPspListPageButtonContinue";
+        await page.waitForSelector(continueBtnSelector, { visible: true });
+        await page.click(continueBtnSelector);
+
+        expect(await page.url()).toContain(CHECKOUT_URL_PAYMENT_SUMMARY);
+    });
+
+    it("Should mock PSP list with one PSP and proceed with selection", async () => {
+        selectLanguage("it");
+
+        await page.setRequestInterception(true);
+
+        page.on('request', request => {
+            if (request.isInterceptResolutionHandled()) return;
+            const url = request.url();
+
+            if (url.includes('/ecommerce/checkout/v2/payment-methods/') && url.includes('/fees')) {
+                request.respond({
+                    status: 200,
+                    contentType: 'application/json',
+                    body: JSON.stringify({
+                        asset: "https://assets.cdn.platform.pagopa.it/creditcard/generic.png",
+                        belowThreshold: true,
+                        brandAssets: {
+                            AMEX: "https://assets.cdn.platform.pagopa.it/creditcard/amex.png",
+                            DINERS: "https://assets.cdn.platform.pagopa.it/creditcard/diners.png",
+                            MAESTRO: "https://assets.cdn.platform.pagopa.it/creditcard/maestro.png",
+                            MASTERCARD: "https://assets.cdn.platform.pagopa.it/creditcard/mastercard.png",
+                            MC: "https://assets.cdn.platform.pagopa.it/creditcard/mastercard.png",
+                            VISA: "https://assets.cdn.platform.pagopa.it/creditcard/visa.png"
+                        },
+                        bundles: [
+                            {
+                                abi: "33111",
+                                bundleDescription: "Pagamenti con carte",
+                                bundleName: "Worldline Merchant Services Italia S.p.A.",
+                                idBrokerPsp: "05963231005",
+                                idBundle: "98d24e9a-ab8b-48e3-ae84-f0c16c64db3b",
+                                idChannel: "05963231005_01",
+                                idPsp: "BNLIITRR",
+                                onUs: true,
+                                paymentMethod: "CP",
+                                pspBusinessName: "Worldline Merchant Services Italia S.p.A.",
+                                taxPayerFee: 15,
+                                touchpoint: "CHECKOUT"
+                            },
+                        ],
+                        paymentMethodDescription: "payment method description (v2)",
+                        paymentMethodName: "test",
+                        paymentMethodStatus: "ENABLED"
+                    }),
+                });
+            } else {
+                request.continue();
+            }
+        });
+
+        await fillAndSubmitCardDataForm(
+            VALID_NOTICE_CODE,
+            VALID_FISCAL_CODE,
+            EMAIL,
+            VALID_CARD_DATA
+        );
+        await page.waitForNavigation(); // for CHECKOUT_URL_PSP_LIST (auto redirect for response with only one bundle in calculate fee response)
+        await page.waitForNavigation(); // for CHECKOUT_URL_PAYMENT_SUMMARY
+
+        expect(await page.url()).toContain(CHECKOUT_URL_PAYMENT_SUMMARY);
+    });
+
 });
