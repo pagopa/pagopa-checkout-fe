@@ -97,19 +97,9 @@ stages:
         - script: yarn test:coverage
           displayName: 'Unit tests exec'
 
-        - task: PublishTestResults@2
-          displayName: 'Publish test results from Jest tests'
-          inputs:
-            testResultsFormat: 'JUnit'
-            testResultsFiles: '**/*TEST.xml'
-            searchFolder: '$(System.DefaultWorkingDirectory)'
-            failTaskOnFailedTests: true
-
-        - task: PublishCodeCoverageResults@2
-          displayName: 'Publish code coverage from Jest tests'
-          inputs:
-            codeCoverageTool: Cobertura
-            summaryFileLocation: 'coverage/clover.xml'
+        - bash: |
+            bash <(curl -s https://codecov.io/bash)
+          displayName: 'Code coverage'
 
 # B) Run integration tests if there is a push or pull request on any branch.
   - stage: Integration_Tests_FinalStatus
