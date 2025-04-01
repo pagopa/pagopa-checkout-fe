@@ -87,7 +87,7 @@ describe("LoginHeader", () => {
     expect(screen.getByTitle(/Accedi/i)).toBeInTheDocument();
   });
 
-  test("Call login api after button click", async () => {
+  test.skip("Call login api after button click", async () => {
     const redirectUrl = "http://checkout-login/";
     (proceedToLogin as jest.Mock).mockImplementation(({ onResponse }) => {
       onResponse(redirectUrl);

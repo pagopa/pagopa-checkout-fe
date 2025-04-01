@@ -24,6 +24,7 @@ module.exports = {
       "!<rootDir>/src/index.ts",
       "!<rootDir>/src/instrumentation.ts",
       "!<rootDir>/src/__tests__/**/*",
+      "!<rootDir>/src/__integration_tests__/**/*",
       "!<rootDir>/src/__mocks__/**/*"
   ],
   coveragePathIgnorePatterns: ["index.ts"],
