@@ -78,7 +78,17 @@ export function PaymentChoice(props: {
     }
 
     setLoading(false);
-    navigate(`/${route || CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
+
+    const navigateToRoute = route || CheckoutRoutes.RIEPILOGO_PAGAMENTO;
+
+    if (
+      navigateToRoute === CheckoutRoutes.RIEPILOGO_PAGAMENTO &&
+      localStorage.getItem(SessionItems.enablePspPage) === "true"
+    ) {
+      navigate(`/${CheckoutRoutes.LISTA_PSP}`);
+    } else {
+      navigate(`/${navigateToRoute}`);
+    }
   };
 
   const onApmChoice = async (

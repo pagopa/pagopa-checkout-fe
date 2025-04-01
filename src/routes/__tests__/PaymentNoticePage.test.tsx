@@ -11,6 +11,14 @@ import PaymentNotice from "../PaymentNoticePage";
 // Mock translations and recaptcha
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
+  Trans: ({
+    i18nKey,
+  }: {
+    i18nKey?: string;
+    values?: Record<string, any>;
+    components?: Array<any>;
+    children?: React.ReactNode;
+  }) => <span data-testid="mocked-trans">{i18nKey || "no-key"}</span>,
 }));
 
 jest.mock("react-google-recaptcha", () => ({

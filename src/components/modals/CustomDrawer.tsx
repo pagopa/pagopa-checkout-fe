@@ -22,7 +22,7 @@ export function CustomDrawer(props: {
       onClose={props.onClose}
       sx={{ p: 3 }}
       PaperProps={{
-        sx: { background: theme.palette.background.default },
+        sx: { background: theme.palette.background.default, ...props.style },
       }}
     >
       <Container sx={{ p: 3 }} maxWidth="xs">

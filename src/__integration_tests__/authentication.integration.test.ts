@@ -486,6 +486,116 @@ describe("Checkout authentication tests", () => {
     expect(authCallbackError.title).toContain(translation.authCallbackPage.title);
     expect(authCallbackError.body).toContain(translation.authCallbackPage.body);
   });
+
+  it("Should invoke auth-service api with x-rpt-id header", async () => {
+    let expectedCount = 4; // login - authToken - getUser - logout
+    let apiContainsXRptIdCount = 0;
+    
+    page.on("request", async (request) => {
+      const url = request.url();
+      if (url.includes("auth-service/v1")) {
+        const headers = await request.headers();
+        if(headers['x-rpt-id'] != null)
+          apiContainsXRptIdCount ++
+      }
+    });
+
+    //Insert valid rptId
+    await fillPaymentNotificationForm(VALID_RPTID, VALID_FISCAL_CODE);
+    await page.waitForNavigation();
+
+    //Login
+    await clickLoginButton();
+
+    //Wait auth-callback page
+    await page.waitForNavigation();
+    //Wait return to main page
+    await page.waitForNavigation();
+    console.log("Login completed");
+
+    //Logout
+    const userButton = await getUserButton();
+    await userButton.click();
+    const logoutIconButton = await page.waitForSelector('[data-testid="LogoutIcon"]');
+    const logoutButton = await logoutIconButton.getProperty('parentNode');
+    console.log("wait for logout button");
+    await logoutButton.click();
+    await new Promise((r) => setTimeout(r, 500));
+    console.log("Logout completed");
+        
+    expect(apiContainsXRptIdCount).toBe(expectedCount);
+  });
+
+  it("Should invoke auth-service api without x-rpt-id if not present", async () => {
+    let expectedCount = 4; // login - authToken - getUser - logout
+    let apiNotContainsXRptIdCount = 0;
+    
+    page.on("request", async (request) => {
+      const url = request.url();
+      if (url.includes("auth-service/v1")) {
+        const headers = await request.headers();
+        if(headers['x-rpt-id'] == '') {
+          apiNotContainsXRptIdCount ++
+        }
+      }
+    });
+
+    //Login
+    await clickLoginButton();
+
+    //Wait auth-callback page
+    await page.waitForNavigation();
+    //Wait return to main page
+    await page.waitForNavigation();
+    console.log("Login completed");
+
+    //Logout
+    const userButton = await getUserButton();
+    await userButton.click();
+    const logoutIconButton = await page.waitForSelector('[data-testid="LogoutIcon"]');
+    const logoutButton = await logoutIconButton.getProperty('parentNode');
+    console.log("wait for logout button");
+    await logoutButton.click();
+    await new Promise((r) => setTimeout(r, 500));
+    console.log("Logout completed");
+        
+    expect(apiNotContainsXRptIdCount).toBe(expectedCount);
+  });
+
+  it("Should invoke checkout v3 api with x-rpt-id header", async () => {
+    let expectedCount = 3; // payment-methods - sessions - transaction
+    let apiContainsXRptIdCount = 0;
+    
+    page.on("request", async (request) => {
+      const url = request.url();
+      if (url.includes("checkout/v3")) {
+        const headers = await request.headers();
+        if(headers['x-rpt-id'] != null)
+          apiContainsXRptIdCount ++
+      }
+    });
+
+    // Login
+    await clickLoginButton();
+
+    //Wait auth-callback page
+    await page.waitForNavigation();
+    //Wait return to main page
+    await page.waitForNavigation();
+    console.log("Login completed");
+
+    // Complete authenticated payment
+    await payNotice(
+          VALID_NOTICE_CODE,
+          VALID_FISCAL_CODE,
+          EMAIL,
+          VALID_CARD_DATA,
+          CHECKOUT_URL_AFTER_AUTHORIZATION
+    );
+        
+    expect(apiContainsXRptIdCount).toBe(expectedCount);
+  });
+
 });
 
 describe("Logout tests", () => {
@@ -738,7 +848,6 @@ describe("Logout tests", () => {
     await page.waitForNavigation();
     console.log("Login completed");
     await fillAndSubmitCardDataForm(FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA, VALID_FISCAL_CODE, EMAIL, VALID_CARD_DATA);
-    await page.waitForNavigation();
     expect(page.url()).toContain("/sessione-scaduta");
     await new Promise((r) => setTimeout(r, 500));
     expect(logout204).toBe(true);
