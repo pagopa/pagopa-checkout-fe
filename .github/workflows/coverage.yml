@@ -13,4 +13,4 @@ jobs:
               with:
                 package-manager: yarn
                 test-script: yarn test
-                coverage-file: ./checkout-unit-TEST.xml
+                coverage-file: ./test-report.xml
