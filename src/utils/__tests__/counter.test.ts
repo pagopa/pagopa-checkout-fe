@@ -1,7 +1,13 @@
 import { createCounter } from "../counter";
 
 describe("createCounter", () => {
-  let counter: { getValue: any; increment: any; decrement: any; isZero: any; reset: any; };
+  let counter: {
+    getValue: any;
+    increment: any;
+    decrement: any;
+    isZero: any;
+    reset: any;
+  };
 
   beforeEach(() => {
     counter = createCounter();

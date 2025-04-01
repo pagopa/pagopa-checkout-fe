@@ -9,10 +9,16 @@ describe("featureFlags", () => {
   });
 
   test("should contain enableAuthentication flag", () => {
-    expect(featureFlags).toHaveProperty("enableAuthentication", "isAuthenticationEnabled");
+    expect(featureFlags).toHaveProperty(
+      "enableAuthentication",
+      "isAuthenticationEnabled"
+    );
   });
 
   test("should contain enablePspPage flag", () => {
-    expect(featureFlags).toHaveProperty("enablePspPage", "isPspPickerPageEnabled");
+    expect(featureFlags).toHaveProperty(
+      "enablePspPage",
+      "isPspPickerPageEnabled"
+    );
   });
 });

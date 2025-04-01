@@ -1,14 +1,18 @@
-import { NpgEvtData, NpgFlowState, NpgFlowStateEvtData} from "../../features/payment/models/npgModel";
+import {
+  NpgEvtData,
+  NpgFlowState,
+  NpgFlowStateEvtData,
+} from "../../features/payment/models/npgModel";
 import buildFunction from "../buildConfig";
 
 describe("buildFunction", () => {
   let mockConfig: {
-      onChange: jest.Mock;
-      onReadyForPayment: jest.Mock;
-      onPaymentComplete: jest.Mock;
-      onPaymentRedirect: jest.Mock;
-      onBuildError: jest.Mock;
-      onAllFieldsLoaded: jest.Mock;
+    onChange: jest.Mock;
+    onReadyForPayment: jest.Mock;
+    onPaymentComplete: jest.Mock;
+    onPaymentRedirect: jest.Mock;
+    onBuildError: jest.Mock;
+    onAllFieldsLoaded: jest.Mock;
   };
   let instance: ReturnType<typeof buildFunction>;
 
@@ -34,9 +38,12 @@ describe("buildFunction", () => {
     });
   });
 
-
   test("onBuildError should call onChange with error data", () => {
-    const eventData = { id: "CARD_NUMBER", errorCode: "HF0004", errorMessage: "Invalid card" } as NpgEvtData;
+    const eventData = {
+      id: "CARD_NUMBER",
+      errorCode: "HF0004",
+      errorMessage: "Invalid card",
+    } as NpgEvtData;
     instance.onBuildError(eventData);
     expect(mockConfig.onChange).toHaveBeenCalledWith("CARD_NUMBER", {
       isValid: false,
@@ -51,13 +58,24 @@ describe("buildFunction", () => {
   });
 
   test("onBuildFlowStateChange should handle flow states correctly", () => {
-    instance.onBuildFlowStateChange({ data: { url: "https://redirect.url" } }, NpgFlowState.REDIRECTED_TO_EXTERNAL_DOMAIN);
-    expect(mockConfig.onPaymentRedirect).toHaveBeenCalledWith("https://redirect.url");
+    instance.onBuildFlowStateChange(
+      { data: { url: "https://redirect.url" } },
+      NpgFlowState.REDIRECTED_TO_EXTERNAL_DOMAIN
+    );
+    expect(mockConfig.onPaymentRedirect).toHaveBeenCalledWith(
+      "https://redirect.url"
+    );
 
-    instance.onBuildFlowStateChange({} as NpgFlowStateEvtData, NpgFlowState.READY_FOR_PAYMENT);
+    instance.onBuildFlowStateChange(
+      {} as NpgFlowStateEvtData,
+      NpgFlowState.READY_FOR_PAYMENT
+    );
     expect(mockConfig.onReadyForPayment).toHaveBeenCalled();
 
-    instance.onBuildFlowStateChange({} as NpgFlowStateEvtData, NpgFlowState.PAYMENT_COMPLETE);
+    instance.onBuildFlowStateChange(
+      {} as NpgFlowStateEvtData,
+      NpgFlowState.PAYMENT_COMPLETE
+    );
     expect(mockConfig.onPaymentComplete).toHaveBeenCalled();
   });
 
