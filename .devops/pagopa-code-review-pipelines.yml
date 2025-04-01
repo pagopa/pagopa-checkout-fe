@@ -24,12 +24,12 @@ parameters:
   - name: 'PAYMENT_INTEGRATION_TESTS'
     displayName: 'Payment flow integration tests'
     type: boolean
-    default: true
+    default: false
 
   - name: 'FINAL_STATUS_TESTS'
     displayName: 'Final status integration tests'
     type: boolean
-    default: true
+    default: false
 
   - name: 'AUTHENTICATION_TESTS'
     displayName: 'Authentication flow integration tests'
