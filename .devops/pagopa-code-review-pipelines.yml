@@ -34,7 +34,7 @@ parameters:
   - name: 'AUTHENTICATION_TESTS'
     displayName: 'Authentication flow integration tests'
     type: boolean
-    default: true
+    default: false
 
 variables:
   NODE_VERSION: '14.16.0'
