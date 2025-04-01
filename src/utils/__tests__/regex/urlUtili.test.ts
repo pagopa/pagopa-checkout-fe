@@ -1,5 +1,9 @@
+/* eslint-disable functional/no-let, functional/immutable-data */
 import { ROUTE_FRAGMENT } from "../../../routes/models/routeModel";
-import { getFragmentParameter, getUrlParameter } from "../../../utils/regex/urlUtilities";
+import {
+  getFragmentParameter,
+  getUrlParameter,
+} from "../../../utils/regex/urlUtilities";
 
 describe("urlUtilities tests", () => {
   describe("getFragmentParameter function", () => {
@@ -46,62 +50,62 @@ describe("urlUtilities tests", () => {
 
     beforeEach(() => {
       originalLocationSearch = window.location.search;
-      Object.defineProperty(window, 'location', {
+      Object.defineProperty(window, "location", {
         configurable: true,
         writable: true,
         value: {
           ...window.location,
-          search: ''
-        }
+          search: "",
+        },
       });
     });
 
     afterEach(() => {
-      Object.defineProperty(window, 'location', {
+      Object.defineProperty(window, "location", {
         configurable: true,
         writable: true,
         value: {
           ...window.location,
-          search: originalLocationSearch
-        }
+          search: originalLocationSearch,
+        },
       });
     });
 
     it("should return the correct parameter value from the URL", () => {
-      Object.defineProperty(window.location, 'search', {
+      Object.defineProperty(window.location, "search", {
         writable: true,
-        value: "?param1=value1&param2=value2&special[param]=special%20value"
+        value: "?param1=value1&param2=value2&special[param]=special%20value",
       });
-      
+
       expect(getUrlParameter("param1")).toBe("value1");
       expect(getUrlParameter("param2")).toBe("value2");
       expect(getUrlParameter("special[param]")).toBe("special value");
     });
 
     it("should return an empty string when the parameter doesn't exist", () => {
-      Object.defineProperty(window.location, 'search', {
+      Object.defineProperty(window.location, "search", {
         writable: true,
-        value: "?param1=value1&param2=value2"
+        value: "?param1=value1&param2=value2",
       });
-      
+
       expect(getUrlParameter("nonexistent")).toBe("");
     });
 
     it("should handle empty search string", () => {
-      Object.defineProperty(window.location, 'search', {
+      Object.defineProperty(window.location, "search", {
         writable: true,
-        value: ""
+        value: "",
       });
-      
+
       expect(getUrlParameter("param")).toBe("");
     });
 
     it("should handle URL with no parameters", () => {
-      Object.defineProperty(window.location, 'search', {
+      Object.defineProperty(window.location, "search", {
         writable: true,
-        value: "?"
+        value: "?",
       });
-      
+
       expect(getUrlParameter("param")).toBe("");
     });
   });
