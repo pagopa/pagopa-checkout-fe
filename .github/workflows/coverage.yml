@@ -2,6 +2,7 @@ name: 'coverage'
 on:
     pull_request:
         branches:
+            - master
             - main
 jobs:
     coverage:
@@ -9,6 +10,6 @@ jobs:
         steps:
             - uses: actions/checkout@v3
             - uses: ArtiomTr/jest-coverage-report-action@v2
-        with:
-          package-manager: yarn
-          test-script: yarn test
+              with:
+                package-manager: yarn
+                test-script: yarn test
