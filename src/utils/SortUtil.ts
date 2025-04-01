@@ -1,5 +1,10 @@
 export type PspField = "taxPayerFee" | "pspBusinessName";
 
+export type PspOrderingModel = {
+  fieldName: PspField;
+  direction: "asc" | "desc";
+};
+
 export const sortBy =
   (field: PspField, direction: "asc" | "desc") => (a: any, b: any) => {
     const fieldA = a[field];

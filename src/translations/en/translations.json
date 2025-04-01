@@ -391,6 +391,25 @@
     "helpLink": "View an example",
     "title": "What do you have to pay?"
   },
+  "paymentPspListPage": {
+    "title": "Choose who will handle the payment",
+    "description": "Each provider offers a fee. In this list, you will find all compatible providers, <strong>even if you are not their customer</strong>.",
+    "operator": "Provider",
+    "alreadyClient": "Client already",
+    "formButtons": {
+      "back": "Back",
+      "submit": "Continue"
+    },
+    "sort": "Sort",
+    "drawer": {
+      "sorting": {
+        "default": "Default",
+        "name": "By name",
+        "amount": "By amount"
+      },
+      "showResults": "Show results"
+    }
+  },
   "paymentQrPage": {
     "camBlocked": "We need your consent to use the camera. To change your selection, go to your browser’s privacy settings",
     "description": "Make sure to have good lighting. If the code is not in focus, try to move it away slightly from the screen.",

@@ -391,6 +391,25 @@ interface Translation {
     helpLink: string;
     title: string;
   };
+  paymentPspListPage: {
+    description: string;
+    title: string;
+    operator: string;
+    alreadyClient: string;
+    formButtons: {
+      back: string;
+      submit: string;
+    };
+    sort: string;
+    drawer: {
+      sorting: {
+        default: string;
+        name: string;
+        amount: string;
+      };
+      showResults: string;
+    };
+  };
   paymentQrPage: {
     camBlocked: string;
     description: string;
