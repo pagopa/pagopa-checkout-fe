@@ -130,19 +130,43 @@ stages:
         - script: yarn test:coverage
           displayName: 'Unit tests exec'
 
-        - task: PublishTestResults@2
-          displayName: 'Publish test results from Jest tests'
+        # - task: PublishTestResults@2
+        #   displayName: 'Publish test results from Jest tests'
+        #   inputs:
+        #     testResultsFormat: 'JUnit'
+        #     testResultsFiles: '**/*TEST.xml'
+        #     searchFolder: '$(System.DefaultWorkingDirectory)'
+        #     failTaskOnFailedTests: true
+
+        # - task: PublishCodeCoverageResults@2
+        #   displayName: 'Publish code coverage from Jest tests'
+        #   inputs:
+        #     codeCoverageTool: Cobertura
+        #     summaryFileLocation: 'coverage/clover.xml'
+
+        - task: SonarCloudPrepare@3
+          displayName: 'Prepare SonarCloud analysis configuration'
           inputs:
-            testResultsFormat: 'JUnit'
-            testResultsFiles: '**/*TEST.xml'
-            searchFolder: '$(System.DefaultWorkingDirectory)'
-            failTaskOnFailedTests: true
+            SonarCloud: "SONARCLOUD-SERVICE-CONN"
+            organization: "pagopa"
+            scannerMode: Other
+            extraProperties: |
+              sonar.projectKey=$(SONARCLOUD_PROJECT_KEY)
+              sonar.projectName=$(SONARCLOUD_PROJECT_NAME)
+              sonar.coverage.exclusions=**/config/*,**/*Mock*,**/model/*,**/utils/soap/*,**/mdcutilities/*,**/PagopaEcommerceTransactionsApplication.java
+              sonar.coverage.jacoco.xmlReportPaths=./target/site/jacoco/jacoco.xml
+              sonar.junit.reportPaths=target/surefire-reports/
+                - task: SonarCloudPublish@3
+          displayName: 'Publish SonarCloud results on build summary'
+          inputs:
+            pollingTimeoutSec: '300'
 
         - task: PublishCodeCoverageResults@2
-          displayName: 'Publish code coverage from Jest tests'
           inputs:
-            codeCoverageTool: Cobertura
-            summaryFileLocation: 'coverage/clover.xml'
+            codeCoverageTool: 'JaCoCo'
+            summaryFileLocation: 'target/site/jacoco/jacoco.xml'
+            reportDirectory: 'target/site/jacoco'
+          displayName: 'Publish Code Coverage on Azure Devops'
 
 # B) Run integration tests if there is a push or pull request on any branch.
   - stage: Integration_Tests_FinalStatus
