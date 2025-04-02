@@ -151,8 +151,8 @@ stages:
             organization: "pagopa"
             scannerMode: Other
             extraProperties: |
-              sonar.projectKey=$(SONARCLOUD_PROJECT_KEY)
-              sonar.projectName=$(SONARCLOUD_PROJECT_NAME)
+              sonar.projectKey="pagopa_pagopa-checkout-fe"
+              sonar.projectName="pagopa-checkout-fe
               sonar.coverage.exclusions=**/config/*,**/*Mock*,**/model/*,**/utils/soap/*,**/mdcutilities/*,**/PagopaEcommerceTransactionsApplication.java
               sonar.coverage.jacoco.xmlReportPaths=./target/site/jacoco/jacoco.xml
               sonar.junit.reportPaths=target/surefire-reports/
