@@ -151,12 +151,15 @@ stages:
             organization: "pagopa"
             scannerMode: Other
             extraProperties: |
-              sonar.projectKey="pagopa_pagopa-checkout-fe"
-              sonar.projectName="pagopa-checkout-fe
-              sonar.coverage.exclusions=**/config/*,**/*Mock*,**/model/*,**/utils/soap/*,**/mdcutilities/*,**/PagopaEcommerceTransactionsApplication.java
-              sonar.coverage.jacoco.xmlReportPaths=./target/site/jacoco/jacoco.xml
-              sonar.junit.reportPaths=target/surefire-reports/
-                - task: SonarCloudPublish@3
+              sonar.sources=src/
+              sonar.exclusions=src/**/__tests__/**/*,src/**/__test__/**,**/*.js,src/**/index.ts,src/**/__mocks__/**/*,
+              sonar.tests=src/__tests__
+              sonar.test.inclusions=src/**/__tests__/**/*,src/**/__test__/**
+              sonar.cpd.exclusions=src/**/__tests__/**,src/**/__test__/**,__mocks__/**
+              sonar.javascript.lcov.reportPaths=coverage/lcov.info
+              sonar.testExecutionReportPaths=./test-report.xml
+              sonar.sourceEncoding=UTF-8
+        - task: SonarCloudPublish@3
           displayName: 'Publish SonarCloud results on build summary'
           inputs:
             pollingTimeoutSec: '300'
