@@ -33,7 +33,7 @@ function ErrorModal(props: {
 }) {
   const { t } = useTranslation();
   const theme = useTheme();
-  const [copy, setCopy] = React.useState(t("clipboard.copy"));
+  const [copy, setCopy] = React.useState<string>(t("clipboard.copy"));
 
   const notListed = (faultCategory: string) =>
     PaymentCategoryResponses[

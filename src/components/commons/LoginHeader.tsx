@@ -58,7 +58,7 @@ export default function LoginHeader() {
     CheckoutRoutes.SCEGLI_METODO,
   ];
   const loggedUser = useAppSelector(getLoggedUser);
-  const ref = React.useRef<ReCAPTCHA>(null);
+  const ref = React.useRef<typeof ReCAPTCHA>(null);
   const [loading, setLoading] = React.useState(false);
   const [isLoginButtonReady, setLoginButtonReady] = React.useState(false);
   const [error, setError] = React.useState("");
