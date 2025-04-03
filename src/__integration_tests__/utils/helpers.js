@@ -177,10 +177,10 @@ export const tryHandlePspPickerPage = async ()=>{
   // this navigation will not happen in all test cases
   // so we don't want to waste too much time over it
   try {
-    await page.waitForNavigation({ timeout: 3500 });
+    await page.waitForNavigation({ timeout: 5000 });
   } catch (error) {
-    // If the navigation doesn't happen within 3500ms, just log and continue
-    console.log("Navigation did not happen within 3500ms. Continuing test.");
+    // If the navigation doesn't happen within 5000ms, just log and continue
+    console.log("Navigation did not happen within 5000ms. Continuing test.");
   }
 
   // this step needs to be skipped during tests
@@ -306,10 +306,12 @@ export const cancelPaymentOK = async (
   const paymentCheckPageButtonCancel = await page.waitForSelector(
     "#paymentCheckPageButtonCancel"
   );
+  
   await paymentCheckPageButtonCancel.click();
   const cancPayment = await page.waitForSelector("#confirm");
   await cancPayment.click();
   await page.waitForNavigation();
+  await new Promise((r) => setTimeout(r, 500));
   const message = await page.waitForXPath(resultMessageXPath);
   return await message.evaluate((el) => el.textContent);
 };
