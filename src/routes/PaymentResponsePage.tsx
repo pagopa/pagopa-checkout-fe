@@ -60,20 +60,27 @@ export default function PaymentResponsePage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [findOutMoreOpen, setFindOutMoreOpen] = useState<boolean>(false);
-  const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
+  const [cart] = React.useState<Cart | undefined>(
+    getSessionItem(SessionItems.cart) as Cart | undefined
+  );
   const [outcome, setOutcome] = useState<ViewOutcomeEnum>();
   const [outcomeMessage, setOutcomeMessage] = useState<responseMessage>();
   const [cartInformation, setCartInformation] = useState<CartInformation>({
     redirectUrl: cart ? cart.returnUrls.returnOkUrl : "/",
     isCart: cart != null,
   });
-  const transactionData = getSessionItem(SessionItems.transaction) as
-    | NewTransactionResponse
-    | undefined;
-  const pspSelected = getSessionItem(SessionItems.pspSelected) as
-    | Bundle
-    | undefined;
-  const email = getSessionItem(SessionItems.useremail) as string | undefined;
+  // State initialization for transaction data, pspSelected, and email
+  const [transactionData] = useState<NewTransactionResponse | undefined>(
+    getSessionItem(SessionItems.transaction) as
+      | NewTransactionResponse
+      | undefined
+  );
+  const [pspSelected] = useState<Bundle | undefined>(
+    getSessionItem(SessionItems.pspSelected) as Bundle | undefined
+  );
+  const [email] = useState<string | undefined>(
+    getSessionItem(SessionItems.useremail) as string | undefined
+  );
   const totalAmount =
     Number(
       transactionData?.payments
