@@ -32,7 +32,7 @@ export default function AuthCallback() {
   const dispatch = useAppDispatch();
   const [searchParams, _] = useSearchParams();
   const [loading, setLoading] = React.useState(true);
-  const ref = React.useRef<typeof ReCAPTCHA>(null);
+  const ref = React.useRef<ReCAPTCHA>(null);
   const authCode = searchParams.get("code");
   const state = searchParams.get("state");
   // we need the feature flag to be enabled to allow the user to actually see

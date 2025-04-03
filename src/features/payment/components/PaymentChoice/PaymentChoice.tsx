@@ -36,7 +36,7 @@ export function PaymentChoice(props: {
   paymentInstruments: Array<PaymentInstrumentsType>;
   loading?: boolean;
 }) {
-  const ref = React.useRef<typeof ReCAPTCHA>(null);
+  const ref = React.useRef<ReCAPTCHA>(null);
   const [loading, setLoading] = React.useState(true);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");

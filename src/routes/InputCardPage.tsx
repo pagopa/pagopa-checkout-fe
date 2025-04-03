@@ -38,7 +38,7 @@ export default function InputCardPage() {
   const [wallet] = React.useState<InputCardFormFields>();
   const [hideCancelButton, setHideCancelButton] = React.useState(false);
   const [pspNotFoundModal, setPspNotFoundModalOpen] = React.useState(false);
-  const ref = React.useRef<typeof ReCAPTCHA>(null);
+  const ref = React.useRef<ReCAPTCHA>(null);
   const dispatch = useAppDispatch();
 
   React.useEffect(() => {

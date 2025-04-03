@@ -32,7 +32,7 @@ export default function PaymentPspListPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const ref = React.useRef<typeof ReCAPTCHA>(null);
+  const ref = React.useRef<ReCAPTCHA>(null);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [submitEnabled, setSubmitEnabled] = React.useState(false);
   const [error, setError] = React.useState("");

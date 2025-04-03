@@ -669,7 +669,7 @@ export const proceedToLogin = async ({
   onError,
   onResponse,
 }: {
-  recaptchaRef: typeof ReCAPTCHA;
+  recaptchaRef: ReCAPTCHA;
   onError: (e: string) => void;
   onResponse: (r: any) => void;
 }) => {

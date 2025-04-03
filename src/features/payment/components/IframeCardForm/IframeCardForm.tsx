@@ -67,7 +67,7 @@ export default function IframeCardForm(props: Props) {
   );
   const [formStatus, setFormStatus] =
     React.useState<FormStatus>(initialFieldsState);
-  const ref = React.useRef<typeof ReCAPTCHA>(null);
+  const ref = React.useRef<ReCAPTCHA>(null);
   const dispatch = useAppDispatch();
 
   const [buildInstance, setBuildInstance] = React.useState();
