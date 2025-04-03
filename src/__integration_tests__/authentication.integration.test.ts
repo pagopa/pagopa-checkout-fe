@@ -823,7 +823,7 @@ describe("Logout tests", () => {
     expect(logout204).toBe(true);
   });
 
-  it.only("Should invoke logout with success when fail a card payment ACTIVATION and get PPT_WISP_SESSIONE_SCONOSCIUTA", async () => {
+  it("Should invoke logout with success when fail a card payment ACTIVATION and get PPT_WISP_SESSIONE_SCONOSCIUTA", async () => {
     /*
      * Card payment with notice code that fails on activation and get PPT_WISP_SESSIONE_SCONOSCIUTA 
      * and redirect to expired session page
