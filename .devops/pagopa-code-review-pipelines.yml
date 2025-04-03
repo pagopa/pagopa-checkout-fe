@@ -157,7 +157,7 @@ stages:
         #       sonar.testExecutionReportPaths=./test-report.xml
         #       sonar.sourceEncoding=UTF-8
 
-        - task: SonarCloudPrepare@1
+        - task: SonarCloudPrepare@3
           displayName: 'Prepare SonarCloud analysis configuration'
           inputs:
             SonarCloud: "SONARCLOUD-SERVICE-CONN"
@@ -171,7 +171,7 @@ stages:
               sonar.javascript.lcov.reportPaths=./coverage/lcov.info
               sonar.clover.reportPath=./coverage/clover.xml
 
-        - task: SonarCloudPublish@1
+        - task: SonarCloudPublish@2
           displayName: 'Publish result to sonarcloud'
           inputs:
             pollingTimeoutSec: '300'
