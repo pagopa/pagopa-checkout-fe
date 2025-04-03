@@ -655,12 +655,9 @@ describe("Logout tests", () => {
     await page.waitForNavigation();
     const userButton = await getUserButton();
     await userButton.click();
-    await page.waitForSelector("#logout-button-icon");
-    await page.evaluate(()=>{
-      setTimeout(()=>{
-        document.getElementById("logout-button-icon").parentNode.click();
-      },100);
-    })
+    const logoutButtonIcon = await page.waitForSelector("#logout-button-icon");
+    const logoutButton = await logoutButtonIcon.getProperty('parentNode');
+    await logoutButton.click();
     console.log("Search login button");
     await new Promise((r) => setTimeout(r, 500));
     const loginHeader = await page.waitForSelector("#login-header");
@@ -701,12 +698,9 @@ describe("Logout tests", () => {
     const userButton = await getUserButton();
     await userButton.click();
     console.log("wait for logout button");
-    await page.waitForSelector("#logout-button-icon");
-    await page.evaluate(()=>{
-      setTimeout(()=>{
-        document.getElementById("logout-button-icon").parentNode.click();
-      },100);
-    })
+    const logoutButtonIcon = await page.waitForSelector("#logout-button-icon");
+    const logoutButton = await logoutButtonIcon.getProperty('parentNode');
+    await logoutButton.click();
     await new Promise((r) => setTimeout(r, 3100));
     console.log("Search login button")
     const loginHeader = await page.waitForSelector("#login-header");
