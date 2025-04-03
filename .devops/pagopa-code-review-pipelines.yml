@@ -131,8 +131,8 @@ stages:
             organization: "pagopa"
             scannerMode: 'CLI'
             configMode: 'manual'
-            cliProjectKey: '$(SONARCLOUD_PROJECT_KEY)'
-            cliProjectName: '$(SONARCLOUD_PROJECT_NAME)'
+            cliProjectKey: 'pagopa_pagopa-checkout-fe'
+            cliProjectName: 'pagopa-checkout-fe'
             cliSources: './src'
             extraProperties: |
               sonar.javascript.lcov.reportPaths=coverage/lcov.info
