@@ -141,7 +141,6 @@ export default function PaymentResponsePage() {
         redirectUrl: redirectTo,
         isCart: cart != null,
       });
-
       setLoading(false);
       window.removeEventListener("beforeunload", onBrowserUnload);
       clearStorage();
