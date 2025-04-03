@@ -306,7 +306,6 @@ export const cancelPaymentOK = async (
   const paymentCheckPageButtonCancel = await page.waitForSelector(
     "#paymentCheckPageButtonCancel"
   );
-  
   await paymentCheckPageButtonCancel.click();
   const cancPayment = await page.waitForSelector("#confirm");
   await cancPayment.click();
