@@ -166,9 +166,9 @@ stages:
 
         - task: PublishCodeCoverageResults@2
           inputs:
-            codeCoverageTool: 'JaCoCo'
-            summaryFileLocation: 'target/site/jacoco/jacoco.xml'
-            reportDirectory: 'target/site/jacoco'
+            codeCoverageTool: 'Cobertura'
+            summaryFileLocation: 'coverage/clover.xml'
+            reportDirectory: 'coverage'
           displayName: 'Publish Code Coverage on Azure Devops'
 
 # B) Run integration tests if there is a push or pull request on any branch.
