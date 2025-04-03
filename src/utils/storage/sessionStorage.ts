@@ -117,9 +117,9 @@ export const clearStorage = () => {
   // with react 18 the state update in components follows
   // a different refresh behavior, and we need this delay to make sure
   // this function happens as last action
-  setTimeout(()=>{
+  setTimeout(() => {
     sessionStorage.clear();
-  },100);
+  }, 100);
 };
 
 export const clearStorageAndMaintainAuthData = () => {

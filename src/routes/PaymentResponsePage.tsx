@@ -81,7 +81,7 @@ export default function PaymentResponsePage() {
         .reduce((sum, current) => sum + current, 0)
     ) + Number(pspSelected?.taxPayerFee);
 
-    const usefulPrintData: PrintData = {
+  const usefulPrintData: PrintData = {
     useremail: email || "",
     amount: moneyFormat(totalAmount),
   };
