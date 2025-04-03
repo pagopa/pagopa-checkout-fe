@@ -61,18 +61,10 @@ jest.mock("../../utils/eventListeners", () => ({
   onBrowserUnload: jest.fn(),
 }));
 
-describe.only("AuthExpired", () => {
+describe("AuthExpired", () => {
   beforeEach(() => {});
 
   test("When session is expired should redirect to auth expired page (401)", async () => {
-    // When getLogin is invoked, return a failed TaskEither.
-    /*(getEcommercePaymentInfoTask as jest.Mock).mockReturnValue(
-      TE.left({
-        faultCodeCategory: "SESSION_EXPIRED",
-        faultCodeDetail: "Unauthorized",
-      })
-    );*/
-
     const { container } = renderWithReduxProvider(
       <MemoryRouter>
         <AuthExpiredPage />
