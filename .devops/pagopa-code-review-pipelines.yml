@@ -154,18 +154,12 @@ stages:
               sonar.organization=pagopa
               sonar.projectKey=pagopa_pagopa-checkout-fe
               sonar.javascript.lcov.reportPaths=coverage/lcov.info
-              sonar.testExecutionReportPaths=test-report.xml
+              sonar.testExecutionReportPaths=./test-report.xml
               sonar.sourceEncoding=UTF-8
         - task: SonarCloudPublish@3
           displayName: 'Publish SonarCloud results on build summary'
           inputs:
             pollingTimeoutSec: '300'
-          extraProperties: |
-              sonar.organization=pagopa
-              sonar.projectKey=pagopa_pagopa-checkout-fe
-              sonar.javascript.lcov.reportPaths=coverage/lcov.info
-              sonar.testExecutionReportPaths=test-report.xml
-              sonar.sourceEncoding=UTF-8
 
         - task: PublishCodeCoverageResults@2
           inputs:
