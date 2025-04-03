@@ -179,8 +179,8 @@ export const tryHandlePspPickerPage = async ()=>{
   try {
     await page.waitForNavigation({ timeout: 3500 });
   } catch (error) {
-    // If the navigation doesn't happen within 3500 ms, just log and continue
-    console.log("Navigation did not happen within 3500 ms. Continuing test.");
+    // If the navigation doesn't happen within 3500ms, just log and continue
+    console.log("Navigation did not happen within 3500ms. Continuing test.");
   }
 
   // this step needs to be skipped during tests
