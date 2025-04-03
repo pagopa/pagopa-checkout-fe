@@ -149,7 +149,7 @@ stages:
           inputs:
             SonarCloud: "SONARCLOUD-SERVICE-CONN"
             organization: "pagopa"
-            scannerMode: Other
+            scannerMode: cli
             extraProperties: |
               sonar.organization=pagopa
               sonar.projectKey=pagopa_pagopa-checkout-fe
