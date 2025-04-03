@@ -598,7 +598,7 @@ describe("Checkout Payment - PSP Selection Flow", () => {
         expect(await page.url()).toContain(CHECKOUT_URL_PAYMENT_SUMMARY);
     });
 
-    it.only("Should mock PSP list with one PSP and proceed with selection", async () => {
+    it("Should mock PSP list with one PSP and proceed with selection", async () => {
         selectLanguage("it");
 
         await page.setRequestInterception(true);
