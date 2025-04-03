@@ -196,7 +196,7 @@ describe("Checkout authentication tests", () => {
     expect(body).toContain(translation.authCallbackPage.body);
   });
 
-  it.only("should retry once if server responds 503 and succeed on second attempt", async () => {
+  it("should retry once if server responds 503 and succeed on second attempt", async () => {
     let tokenCalls = 0;
     let first503Response = false;
 
@@ -224,7 +224,7 @@ describe("Checkout authentication tests", () => {
     expect(currentUrl).toBe(BASE_CALLBACK_URL_PAYMENT_DATA);
   });
 
-  it.only("should retry once if server responds 504 and succeed on second attempt", async () => {
+  it("should retry once if server responds 504 and succeed on second attempt", async () => {
     let tokenCalls = 0;
     let first504Response = false;
 
@@ -252,7 +252,7 @@ describe("Checkout authentication tests", () => {
     expect(currentUrl).toBe(BASE_CALLBACK_URL_PAYMENT_DATA);
   });
 
-  it.only("should retry once if server responds 429 and succeed on second attempt", async () => {
+  it("should retry once if server responds 429 and succeed on second attempt", async () => {
     let tokenCalls = 0;
     let first429Response = false;
 
@@ -281,7 +281,7 @@ describe("Checkout authentication tests", () => {
     expect(currentUrl).toBe(BASE_CALLBACK_URL_PAYMENT_DATA);
   });
 
-  it.only("should NOT retry if server responds 500 (since 500 is not in retryCondition)", async () => {
+  it("should NOT retry if server responds 500 (since 500 is not in retryCondition)", async () => {
     let tokenCalls = 0;
     let first500Response = false;
 
@@ -486,7 +486,7 @@ describe("Checkout authentication tests", () => {
     expect(authCallbackError.body).toContain(translation.authCallbackPage.body);
   });
 
-  it.only("Should invoke auth-service api with x-rpt-id header", async () => {
+  it("Should invoke auth-service api with x-rpt-id header", async () => {
     let expectedCount = 4; // login - authToken - getUser - logout
     let apiContainsXRptIdCount = 0;
     
@@ -525,7 +525,7 @@ describe("Checkout authentication tests", () => {
     expect(apiContainsXRptIdCount).toBe(expectedCount);
   });
 
-  it.only("Should invoke auth-service api without x-rpt-id if not present", async () => {
+  it("Should invoke auth-service api without x-rpt-id if not present", async () => {
     let expectedCount = 4; // login - authToken - getUser - logout
     let apiNotContainsXRptIdCount = 0;
     
@@ -561,7 +561,7 @@ describe("Checkout authentication tests", () => {
     expect(apiNotContainsXRptIdCount).toBe(expectedCount);
   });
 
-  it.only("Should invoke checkout v3 api with x-rpt-id header", async () => {
+  it("Should invoke checkout v3 api with x-rpt-id header", async () => {
     let expectedCount = 3; // payment-methods - sessions - transaction
     let apiContainsXRptIdCount = 0;
     
@@ -628,7 +628,7 @@ describe("Logout tests", () => {
     expect(logout204).toBe(true);
   });
 
-  it.only("Should invoke logout with 4xx error and only one temptative", async () => {
+  it("Should invoke logout with 4xx error and only try one attempt", async () => {
     await selectLanguage("it");
     let logout400 = false;
     let logutCount=0;
@@ -661,7 +661,6 @@ describe("Logout tests", () => {
         document.getElementById("logout-button-icon").parentNode.click();
       },100);
     })
-    await logoutButton.click();
     console.log("Search login button");
     await new Promise((r) => setTimeout(r, 500));
     const loginHeader = await page.waitForSelector("#login-header");
@@ -830,7 +829,7 @@ describe("Logout tests", () => {
     expect(logout204).toBe(true);
   });
 
-  it.only("Should invoke logout with success when fail a card payment ACTIVATION and get PPT_WISP_SESSIONE_SCONOSCIUTA", async () => {
+  it("Should invoke logout with success when fail a card payment ACTIVATION and get PPT_WISP_SESSIONE_SCONOSCIUTA", async () => {
     /*
      * Card payment with notice code that fails on activation and get PPT_WISP_SESSIONE_SCONOSCIUTA 
      * and redirect to expired session page
@@ -861,7 +860,7 @@ describe("Logout tests", () => {
   });
 
 
-  it.only("Should invoke logout with success when error page is shown", async () => {
+  it("Should invoke logout with success when error page is shown", async () => {
     /*
      * Card payment with notice code that fails on activation and get PPT_WISP_SESSIONE_SCONOSCIUTA 
      * and redirect to expired session page
