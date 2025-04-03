@@ -656,8 +656,12 @@ describe("Logout tests", () => {
     await page.waitForNavigation();
     const userButton = await getUserButton();
     await userButton.click();
-    const logoutButton = await page.waitForXPath('/html/body/div[5]/div[3]/ul/li');
-    console.log("wait for logout button");
+    await page.waitForSelector("#logout-button-icon");
+    await page.evaluate(()=>{
+      setTimeout(()=>{
+        document.getElementById("logout-button-icon").parentNode.click();
+      },100);
+    })
     await logoutButton.click();
     console.log("Search login button");
     await new Promise((r) => setTimeout(r, 500));
@@ -698,9 +702,13 @@ describe("Logout tests", () => {
     await page.waitForNavigation();
     const userButton = await getUserButton();
     await userButton.click();
-    const logoutButton = await page.waitForXPath('/html/body/div[5]/div[3]/ul/li');
     console.log("wait for logout button");
-    await logoutButton.click();
+    await page.waitForSelector("#logout-button-icon");
+    await page.evaluate(()=>{
+      setTimeout(()=>{
+        document.getElementById("logout-button-icon").parentNode.click();
+      },100);
+    })
     await new Promise((r) => setTimeout(r, 3100));
     console.log("Search login button")
     const loginHeader = await page.waitForSelector("#login-header");
