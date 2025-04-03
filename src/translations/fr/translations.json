@@ -465,6 +465,14 @@
     "HF0007": "Saisir les informations inscrites sur la carte",
     "HF0009": "Vérification 3DS échouée"
   },
+  "userSession": {
+    "logoutModal": {
+      "title": "Voulez-vous vraiment vous deconnecter?",
+      "body": "Vous pourrez toujours effectuer le paiement sans vous connecter.",
+      "submitButton": "Se déconnecter",
+      "cancelButton": "Non, rester connecté"
+    }
+  },
   "__variant-name": "Francese",
   "__variant-description": ""
 }

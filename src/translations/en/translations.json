@@ -465,6 +465,14 @@
     "HF0007": "Enter name as shown on the card",
     "HF0009": "3DS verification failed"
   },
+  "userSession": {
+    "logoutModal": {
+      "title": "Are you sure you want to log out?",
+      "body": "You can still pay even when you're not logged in.",
+      "submitButton": "Log out",
+      "cancelButton": "Cancel"
+    }
+  },
   "__variant-name": "Inglese",
   "__variant-description": ""
 }

@@ -465,6 +465,14 @@
     "HF0007": "Genau wie auf der Karte eingeben",
     "HF0009": "3DS-Überprüfung fehlgeschlagen"
   },
+  "userSession": {
+    "logoutModal": {
+      "title": "Bist du sicher, dass du dich abmelden möchtest?",
+      "body": "Du kannst trotzdem bezahlen, auch wenn du nicht eingeloggt bist.",
+      "submitButton": "Abmelden",
+      "cancelButton": "Abbrechen"
+    }
+  },
   "__variant-name": "Tedesco",
   "__variant-description": ""
 }
