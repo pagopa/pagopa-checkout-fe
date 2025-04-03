@@ -144,20 +144,35 @@ stages:
         #     codeCoverageTool: Cobertura
         #     summaryFileLocation: 'coverage/clover.xml'
 
-        - task: SonarCloudPrepare@3
+        # - task: SonarCloudPrepare@3
+        #   displayName: 'Prepare SonarCloud analysis configuration'
+        #   inputs:
+        #     SonarCloud: "SONARCLOUD-SERVICE-CONN"
+        #     organization: "pagopa"
+        #     scannerMode: cli
+        #     extraProperties: |
+        #       sonar.organization=pagopa
+        #       sonar.projectKey=pagopa_pagopa-checkout-fe
+        #       sonar.javascript.lcov.reportPaths=./coverage/lcov.info
+        #       sonar.testExecutionReportPaths=./test-report.xml
+        #       sonar.sourceEncoding=UTF-8
+
+        - task: SonarCloudPrepare@1
           displayName: 'Prepare SonarCloud analysis configuration'
           inputs:
             SonarCloud: "SONARCLOUD-SERVICE-CONN"
             organization: "pagopa"
-            scannerMode: cli
+            scannerMode: 'CLI'
+            configMode: 'manual'
+            cliProjectKey: '$(SONARCLOUD_PROJECT_KEY)'
+            cliProjectName: '$(SONARCLOUD_PROJECT_NAME)'
+            cliSources: './src'
             extraProperties: |
-              sonar.organization=pagopa
-              sonar.projectKey=pagopa_pagopa-checkout-fe
-              sonar.javascript.lcov.reportPaths=coverage/lcov.info
-              sonar.testExecutionReportPaths=./test-report.xml
-              sonar.sourceEncoding=UTF-8
-        - task: SonarCloudPublish@3
-          displayName: 'Publish SonarCloud results on build summary'
+              sonar.javascript.lcov.reportPaths=./coverage/lcov.info
+              sonar.clover.reportPath=./coverage/clover.xml
+
+        - task: SonarCloudPublish@1
+          displayName: 'Publish result to sonarcloud'
           inputs:
             pollingTimeoutSec: '300'
 
