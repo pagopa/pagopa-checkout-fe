@@ -121,8 +121,6 @@ stages:
     dependsOn: []
     jobs:
       - job: run_unit_tests
-        pool:
-          vmImage: 'ubuntu-latest'
         steps:
         - template: templates/node-job-setup/template.yaml@pagopaCommons
 
@@ -137,33 +135,22 @@ stages:
             cliProjectName: '$(SONARCLOUD_PROJECT_NAME)'
             cliSources: './src'
             extraProperties: |
-              sonar.javascript.lcov.reportPaths=./coverage/lcov.info
-              sonar.clover.reportPath=./coverage/clover.xml
-              sonar.testExecutionReportPaths=./test-report.xml
+              sonar.javascript.lcov.reportPaths=coverage/lcov.info
+              sonar.clover.reportPath=coverage/clover.xml
+              sonar.testExecutionReportPaths=test-report.xml
               sonar.sourceEncoding=UTF-8
 
-        - template: azure-templates/setup-env.yml
-          parameters:
-            pagopa_apim_host: $CHECKOUT_API_HOST_DEV
-            polling_activation_interval: 6000
-            polling_activation_attempts: 16
-            env: 'DEV'
-            checkout_gdi_check_timeout: 20000
-            recaptcha_site_key: $CHECKOUT_CAPTCHA_ID_DEV
-            api_payment_transactions_basepath: '/api/checkout/payment-transactions/v1'
-            api_timeout: 10000
-            api_payment_activations_basepath: '/checkout/payments/v1'
-            pm_host: 'https://acardste.vaservices.eu'
-            pm_api_basepath: '/pp-restapi/v4'
-            checkout_version: "$(Build.SourceBranchName):$(Build.SourceVersion)"
         - script: |
-            yarn build
-          displayName: 'Build'
+            yarn generate
+            yarn test:coverage --watchAll=false
+          displayName: 'Unit tests execution'
 
-        - script: yarn test:coverage
-          displayName: 'Unit tests exec'
+        - script: yarn lint
+          displayName: 'Lint execution'
 
-        - task: SonarCloudPublish@2
+        - task: SonarCloudAnalyze@1
+
+        - task: SonarCloudPublish@3
           displayName: 'Publish result to sonarcloud'
           inputs:
             pollingTimeoutSec: '300'
