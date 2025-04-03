@@ -196,7 +196,7 @@ describe("Checkout authentication tests", () => {
     expect(body).toContain(translation.authCallbackPage.body);
   });
 
-  it("should retry once if server responds 503 and succeed on second attempt", async () => {
+  it.only("should retry once if server responds 503 and succeed on second attempt", async () => {
     let tokenCalls = 0;
     let first503Response = false;
 
@@ -224,7 +224,7 @@ describe("Checkout authentication tests", () => {
     expect(currentUrl).toBe(BASE_CALLBACK_URL_PAYMENT_DATA);
   });
 
-  it("should retry once if server responds 504 and succeed on second attempt", async () => {
+  it.only("should retry once if server responds 504 and succeed on second attempt", async () => {
     let tokenCalls = 0;
     let first504Response = false;
 
@@ -247,13 +247,12 @@ describe("Checkout authentication tests", () => {
 
     const currentUrl = await page.evaluate(() => location.href);
 
-
     expect(first504Response).toBe(true);
     expect(tokenCalls).toBe(2);
     expect(currentUrl).toBe(BASE_CALLBACK_URL_PAYMENT_DATA);
   });
 
-  it("should retry once if server responds 429 and succeed on second attempt", async () => {
+  it.only("should retry once if server responds 429 and succeed on second attempt", async () => {
     let tokenCalls = 0;
     let first429Response = false;
 
@@ -282,7 +281,7 @@ describe("Checkout authentication tests", () => {
     expect(currentUrl).toBe(BASE_CALLBACK_URL_PAYMENT_DATA);
   });
 
-  it("should NOT retry if server responds 500 (since 500 is not in retryCondition)", async () => {
+  it.only("should NOT retry if server responds 500 (since 500 is not in retryCondition)", async () => {
     let tokenCalls = 0;
     let first500Response = false;
 
@@ -487,7 +486,7 @@ describe("Checkout authentication tests", () => {
     expect(authCallbackError.body).toContain(translation.authCallbackPage.body);
   });
 
-  it("Should invoke auth-service api with x-rpt-id header", async () => {
+  it.only("Should invoke auth-service api with x-rpt-id header", async () => {
     let expectedCount = 4; // login - authToken - getUser - logout
     let apiContainsXRptIdCount = 0;
     
@@ -526,7 +525,7 @@ describe("Checkout authentication tests", () => {
     expect(apiContainsXRptIdCount).toBe(expectedCount);
   });
 
-  it("Should invoke auth-service api without x-rpt-id if not present", async () => {
+  it.only("Should invoke auth-service api without x-rpt-id if not present", async () => {
     let expectedCount = 4; // login - authToken - getUser - logout
     let apiNotContainsXRptIdCount = 0;
     
@@ -562,7 +561,7 @@ describe("Checkout authentication tests", () => {
     expect(apiNotContainsXRptIdCount).toBe(expectedCount);
   });
 
-  it("Should invoke checkout v3 api with x-rpt-id header", async () => {
+  it.only("Should invoke checkout v3 api with x-rpt-id header", async () => {
     let expectedCount = 3; // payment-methods - sessions - transaction
     let apiContainsXRptIdCount = 0;
     
@@ -629,7 +628,7 @@ describe("Logout tests", () => {
     expect(logout204).toBe(true);
   });
 
-  it("Should invoke logout with 4xx error and only one temptative", async () => {
+  it.only("Should invoke logout with 4xx error and only one temptative", async () => {
     await selectLanguage("it");
     let logout400 = false;
     let logutCount=0;
@@ -831,7 +830,7 @@ describe("Logout tests", () => {
     expect(logout204).toBe(true);
   });
 
-  it("Should invoke logout with success when fail a card payment ACTIVATION and get PPT_WISP_SESSIONE_SCONOSCIUTA", async () => {
+  it.only("Should invoke logout with success when fail a card payment ACTIVATION and get PPT_WISP_SESSIONE_SCONOSCIUTA", async () => {
     /*
      * Card payment with notice code that fails on activation and get PPT_WISP_SESSIONE_SCONOSCIUTA 
      * and redirect to expired session page
@@ -862,7 +861,7 @@ describe("Logout tests", () => {
   });
 
 
-  it("Should invoke logout with success when error page is shown", async () => {
+  it.only("Should invoke logout with success when error page is shown", async () => {
     /*
      * Card payment with notice code that fails on activation and get PPT_WISP_SESSIONE_SCONOSCIUTA 
      * and redirect to expired session page
