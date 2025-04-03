@@ -128,5 +128,8 @@ export const constantPollingWithPromisePredicateFetch = (
     retryLogic
   );
 
-  return retriableFetch(retryWithPromisePredicate, shouldAbort)(timeoutFetch as any);
+  return retriableFetch(
+    retryWithPromisePredicate,
+    shouldAbort
+  )(timeoutFetch as any);
 };
