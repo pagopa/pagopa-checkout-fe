@@ -69,6 +69,7 @@ export default function CancelledPage() {
         </Box>
         <Box pr={8} pl={8} sx={{ width: "100%", height: "100%" }}>
           <Button
+            id="redirect-button"
             type="button"
             variant="outlined"
             onClick={performRedirect}

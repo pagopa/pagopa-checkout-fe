@@ -1,10 +1,20 @@
 import React from "react";
 import "@testing-library/jest-dom";
-import { waitFor } from "@testing-library/react";
+import { fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { renderWithReduxProvider } from "../../utils/testRenderProviders";
-import "jest-location-mock";
 import AuthExpiredPage from "../AuthExpiredPage";
+import { getAndClearSessionItem } from "../../utils/storage/sessionStorage";
+
+// Create a Jest spy for navigation
+const navigate = jest.fn();
+
+// Mock react-router-dom so that useNavigate returns our spy function.
+// Note: We spread the actual module to preserve its other exports.
+jest.mock("react-router-dom", () => ({
+  ...(jest.requireActual("react-router-dom") as any),
+  useNavigate: () => navigate,
+}));
 
 // Mock translations and recaptcha
 jest.mock("react-i18next", () => ({
@@ -22,25 +32,9 @@ jest.mock("react-i18next", () => ({
 jest.mock("../../utils/storage/sessionStorage", () => ({
   getSessionItem: jest.fn(),
   clearSessionItem: jest.fn(),
-  setSessionItem: jest.fn(),
-  getReCaptchaKey: jest.fn(),
+  getAndClearSessionItem: jest.fn(),
   SessionItems: {
-    paymentInfo: "paymentInfo",
-    noticeInfo: "rptId",
-    useremail: "useremail",
-    enableAuthentication: "enableAuthentication",
-    paymentMethod: "paymentMethod",
-    pspSelected: "pspSelected",
-    sessionToken: "sessionToken",
-    cart: "cart",
-    transaction: "transaction",
-    sessionPaymentMethod: "sessionPayment",
-    paymentMethodInfo: "paymentMethodInfo",
-    orderId: "orderId",
-    correlationId: "correlationId",
-    cartClientId: "cartClientId",
-    loginOriginPage: "loginOriginPage",
-    authToken: "authToken",
+    loginOriginPage: "loginOriginPage"
   },
 }));
 
@@ -49,9 +43,18 @@ jest.mock("../../utils/eventListeners", () => ({
 }));
 
 describe("AuthExpired", () => {
-  beforeEach(() => {});
 
-  test.only("The page should contain login and continue as guest button", async () => {
+  test("The page should contain login and continue as guest button and click to login go to origin page", async () => {
+    // Mock getAndClearSessionItem to back url
+    (getAndClearSessionItem as jest.Mock).mockImplementation((item) => {
+      switch (item) {
+        case "loginOriginPage":
+          return "riepilogo-pagamento";
+        default:
+          return undefined;
+      }
+    });
+
     const { container } = renderWithReduxProvider(
       <MemoryRouter>
         <AuthExpiredPage />
@@ -62,10 +65,61 @@ describe("AuthExpired", () => {
     const authRetryButton = container.querySelector("#auth-retry-button");
     const payGuestButton = container.querySelector("#pay-guest-button");
 
-    // Wait for the API call to resolve and the navigation to occur.
-    await waitFor(() => {
-      expect(authRetryButton).toBeInTheDocument();
-      expect(payGuestButton).toBeInTheDocument();
+    // Verify buttons and click
+    expect(authRetryButton).toBeInTheDocument();
+    expect(payGuestButton).toBeInTheDocument();
+    fireEvent.click(authRetryButton!!);
+    expect(navigate).toHaveBeenCalledWith("riepilogo-pagamento", {"replace": true});
+  });
+
+  test("The page should contain login and continue as guest button and click to payGuestButton go to origin page", async () => {
+    // Mock getAndClearSessionItem to back url
+    (getAndClearSessionItem as jest.Mock).mockImplementation((item) => {
+      switch (item) {
+        case "loginOriginPage":
+          return "riepilogo-pagamento";
+        default:
+          return undefined;
+      }
     });
+
+    const { container } = renderWithReduxProvider(
+      <MemoryRouter>
+        <AuthExpiredPage />
+      </MemoryRouter>
+    );
+
+    // Query the input fields by their id
+    const authRetryButton = container.querySelector("#auth-retry-button");
+    const payGuestButton = container.querySelector("#pay-guest-button");
+
+    // Verify buttons and click
+    expect(authRetryButton).toBeInTheDocument();
+    expect(payGuestButton).toBeInTheDocument();
+    fireEvent.click(payGuestButton!!);
+    expect(navigate).toHaveBeenCalledWith("riepilogo-pagamento", {"replace": true});
+  });
+
+  test("The login origin page sessionItem is empty and click to pay as guest navigate to home page", async () => {
+    // Mock getAndClearSessionItem to back url
+    (getAndClearSessionItem as jest.Mock).mockImplementation(() => {
+      return undefined;
+    });
+
+    const { container } = renderWithReduxProvider(
+      <MemoryRouter>
+        <AuthExpiredPage />
+      </MemoryRouter>
+    );
+
+    // Query the input fields by their id
+    const authRetryButton = container.querySelector("#auth-retry-button");
+    const payGuestButton = container.querySelector("#pay-guest-button");
+
+    // Verify buttons and click
+    expect(authRetryButton).toBeInTheDocument();
+    expect(payGuestButton).toBeInTheDocument();
+    fireEvent.click(payGuestButton!!);
+    expect(navigate).toHaveBeenCalledWith("/", {"replace": true});
   });
 });
