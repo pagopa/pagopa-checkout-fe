@@ -153,9 +153,8 @@ stages:
         - script: yarn lint
           displayName: 'Lint execution'
 
-        - task: SonarCloudAnalyze@7
-          inputs:
-            jdkversion: 'JAVA_HOME_17_X64'
+        - task: SonarCloudAnalyze@3
+          displayName: 'Sonar Analyze'
 
         - task: SonarCloudPublish@3
           displayName: 'Publish result to sonarcloud'
