@@ -1,7 +1,4 @@
-import {
-  cleanSpaces,
-  expireDateFormatter,
-} from "../../form/formatters";
+import { cleanSpaces, expireDateFormatter } from "../../form/formatters";
 describe("expireDateFormatter", () => {
   it("should add leading zero if current month is single digit", () => {
     expect(expireDateFormatter("01", "3")).toBe("03");
