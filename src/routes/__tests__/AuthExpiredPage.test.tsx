@@ -4,7 +4,10 @@ import { fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { renderWithReduxProvider } from "../../utils/testRenderProviders";
 import AuthExpiredPage from "../AuthExpiredPage";
-import { getAndClearSessionItem } from "../../utils/storage/sessionStorage";
+import {
+  getAndClearSessionItem,
+  SessionItems,
+} from "../../utils/storage/sessionStorage";
 
 // Create a Jest spy for navigation
 const navigate = jest.fn();
@@ -34,7 +37,7 @@ jest.mock("../../utils/storage/sessionStorage", () => ({
   clearSessionItem: jest.fn(),
   getAndClearSessionItem: jest.fn(),
   SessionItems: {
-    loginOriginPage: "loginOriginPage"
+    loginOriginPage: "loginOriginPage",
   },
 }));
 
@@ -42,18 +45,19 @@ jest.mock("../../utils/eventListeners", () => ({
   onBrowserUnload: jest.fn(),
 }));
 
-describe("AuthExpired", () => {
+const mockGetSessionItem = (item: SessionItems) => {
+  switch (item) {
+    case "loginOriginPage":
+      return "riepilogo-pagamento";
+    default:
+      return undefined;
+  }
+};
 
+describe("AuthExpired", () => {
   test("The page should contain login and continue as guest button and click to login go to origin page", async () => {
     // Mock getAndClearSessionItem to back url
-    (getAndClearSessionItem as jest.Mock).mockImplementation((item) => {
-      switch (item) {
-        case "loginOriginPage":
-          return "riepilogo-pagamento";
-        default:
-          return undefined;
-      }
-    });
+    (getAndClearSessionItem as jest.Mock).mockImplementation();
 
     const { container } = renderWithReduxProvider(
       <MemoryRouter>
@@ -68,20 +72,17 @@ describe("AuthExpired", () => {
     // Verify buttons and click
     expect(authRetryButton).toBeInTheDocument();
     expect(payGuestButton).toBeInTheDocument();
-    fireEvent.click(authRetryButton!!);
-    expect(navigate).toHaveBeenCalledWith("riepilogo-pagamento", {"replace": true});
+    fireEvent.click(authRetryButton!);
+    expect(navigate).toHaveBeenCalledWith("riepilogo-pagamento", {
+      replace: true,
+    });
   });
 
   test("The page should contain login and continue as guest button and click to payGuestButton go to origin page", async () => {
     // Mock getAndClearSessionItem to back url
-    (getAndClearSessionItem as jest.Mock).mockImplementation((item) => {
-      switch (item) {
-        case "loginOriginPage":
-          return "riepilogo-pagamento";
-        default:
-          return undefined;
-      }
-    });
+    (getAndClearSessionItem as jest.Mock).mockImplementation(
+      mockGetSessionItem
+    );
 
     const { container } = renderWithReduxProvider(
       <MemoryRouter>
@@ -96,15 +97,15 @@ describe("AuthExpired", () => {
     // Verify buttons and click
     expect(authRetryButton).toBeInTheDocument();
     expect(payGuestButton).toBeInTheDocument();
-    fireEvent.click(payGuestButton!!);
-    expect(navigate).toHaveBeenCalledWith("riepilogo-pagamento", {"replace": true});
+    fireEvent.click(payGuestButton!);
+    expect(navigate).toHaveBeenCalledWith("riepilogo-pagamento", {
+      replace: true,
+    });
   });
 
   test("The login origin page sessionItem is empty and click to pay as guest navigate to home page", async () => {
     // Mock getAndClearSessionItem to back url
-    (getAndClearSessionItem as jest.Mock).mockImplementation(() => {
-      return undefined;
-    });
+    (getAndClearSessionItem as jest.Mock).mockImplementation(() => undefined);
 
     const { container } = renderWithReduxProvider(
       <MemoryRouter>
@@ -119,7 +120,7 @@ describe("AuthExpired", () => {
     // Verify buttons and click
     expect(authRetryButton).toBeInTheDocument();
     expect(payGuestButton).toBeInTheDocument();
-    fireEvent.click(payGuestButton!!);
-    expect(navigate).toHaveBeenCalledWith("/", {"replace": true});
+    fireEvent.click(payGuestButton!);
+    expect(navigate).toHaveBeenCalledWith("/", { replace: true });
   });
 });
