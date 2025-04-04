@@ -5,6 +5,36 @@
 # set its value to 'skip' without marking it secret:
 # - DANGER_GITHUB_API_TOKEN
 #
+parameters:
+  - name: 'BUILD'
+    displayName: 'Build'
+    type: boolean
+    default: true
+
+  - name: 'STATIC_ANALISYS'
+    displayName: 'Static analisys'
+    type: boolean
+    default: true
+
+  - name: 'UNIT_TESTS'
+    displayName: 'Unit tests'
+    type: boolean
+    default: true
+
+  - name: 'PAYMENT_INTEGRATION_TESTS'
+    displayName: 'Payment flow integration tests'
+    type: boolean
+    default: true
+
+  - name: 'FINAL_STATUS_TESTS'
+    displayName: 'Final status integration tests'
+    type: boolean
+    default: true
+
+  - name: 'AUTHENTICATION_TESTS'
+    displayName: 'Authentication flow integration tests'
+    type: boolean
+    default: true
 
 variables:
   NODE_VERSION: '14.16.0'
@@ -33,6 +63,7 @@ resources:
 
 stages:
   - stage: Build
+    condition: and(succeeded(), eq('${{parameters.BUILD}}', true))
     dependsOn: []
     jobs:
       - job: make_build
@@ -60,6 +91,7 @@ stages:
           displayName: 'Build'
 
   - stage: Static_Analysis
+    condition: and(succeeded(), eq('${{parameters.STATIC_ANALISYS}}', true))
     dependsOn: []
     jobs:
       - job: lint
@@ -83,6 +115,7 @@ stages:
 
   # B) Run unit tests if there is a push or pull request on any branch.
   - stage: Unit_Tests
+    condition: and(succeeded(), eq('${{parameters.UNIT_TESTS}}', true))
     pool:
       vmImage: 'ubuntu-latest'
     dependsOn: []
@@ -91,18 +124,53 @@ stages:
         steps:
         - template: templates/node-job-setup/template.yaml@pagopaCommons
 
-        - script: yarn generate
-          displayName: 'Generate definitions'
+        - task: SonarCloudPrepare@3
+          displayName: 'Prepare SonarCloud analysis configuration'
+          inputs:
+            SonarCloud: "SONARCLOUD-SERVICE-CONN"
+            organization: "pagopa"
+            scannerMode: 'CLI'
+            configMode: 'manual'
+            cliProjectKey: 'pagopa_pagopa-checkout-fe'
+            cliProjectName: 'pagopa-checkout-fe'
+            cliSources: '.'
+            extraProperties: |
+              sonar.javascript.lcov.reportPaths=coverage/lcov.info
+              sonar.clover.reportPath=coverage/clover.xml
+              sonar.testExecutionReportPaths=test-report.xml
+              sonar.sourceEncoding=UTF-8
+              sonar.sources=src/
+              sonar.exclusions=src/**/__tests__/**/*,src/**/__test__/**,**/*.js,src/**/index.ts,src/**/__mocks__/**/*,
+              sonar.tests=src
+              sonar.test.inclusions=src/**/__tests__/**/*,src/**/__test__/**
+              sonar.cpd.exclusions=src/**/__tests__/**,src/**/__test__/**,__mocks__/**
 
-        - script: yarn test:coverage
-          displayName: 'Unit tests exec'
+        - script: |
+            yarn generate
+            yarn test:coverage --watchAll=false
+          displayName: 'Unit tests execution'
 
-        - bash: |
-            bash <(curl -s https://codecov.io/bash)
-          displayName: 'Code coverage'
+        - script: yarn lint
+          displayName: 'Lint execution'
+
+        - task: SonarCloudAnalyze@3
+          displayName: 'Sonar Analyze'
+
+        - task: SonarCloudPublish@3
+          displayName: 'Publish result to sonarcloud'
+          inputs:
+            pollingTimeoutSec: '300'
+
+        - task: PublishCodeCoverageResults@2
+          inputs:
+            codeCoverageTool: 'Cobertura'
+            summaryFileLocation: 'coverage/clover.xml'
+            reportDirectory: 'coverage'
+          displayName: 'Publish Code Coverage on Azure Devops'
 
 # B) Run integration tests if there is a push or pull request on any branch.
   - stage: Integration_Tests_FinalStatus
+    condition: and(succeeded(), eq('${{parameters.FINAL_STATUS_TESTS}}', true))
     pool:
       vmImage: 'ubuntu-latest'
     dependsOn: []
@@ -162,6 +230,7 @@ stages:
             failTaskOnFailedTests: true
 
   - stage: Integration_Tests_Payment_Flow
+    condition: and(succeeded(), eq('${{parameters.PAYMENT_INTEGRATION_TESTS}}', true))
     pool:
       vmImage: 'ubuntu-latest'
     dependsOn: []
@@ -221,6 +290,7 @@ stages:
             failTaskOnFailedTests: true
 
   - stage: Integration_Tests_Authentication
+    condition: and(succeeded(), eq('${{parameters.AUTHENTICATION_TESTS}}', true))
     pool:
       vmImage: 'ubuntu-latest'
     dependsOn: []
