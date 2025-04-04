@@ -466,5 +466,13 @@
     "HF0006": "Inserisci mm/aa",
     "HF0007": "Inserisci come riportato sulla carta",
     "HF0009": "Verifica 3DS fallita"
+  },
+  "userSession": {
+    "logoutModal": {
+      "title": "Vuoi davvero uscire?",
+      "body": "Potrai comunque pagare anche senza accedere.",
+      "submitButton": "Esci",
+      "cancelButton": "Annulla"
+    }
   }
 }

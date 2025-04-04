@@ -9,6 +9,7 @@ import { Box } from "@mui/material";
 import { pipe } from "fp-ts/function";
 import * as E from "fp-ts/Either";
 import * as O from "fp-ts/Option";
+import { UserLogout } from "../../components/modals/UserLogout";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks/hooks";
 import {
   getLoggedUser,
@@ -65,6 +66,8 @@ export default function LoginHeader() {
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [cancelPaymentModalOpen, setCancelPaymentModalOpen] =
     React.useState(false);
+  const [userSessionLogoutModalOpen, setUserSessionLogoutModalOpen] =
+    React.useState(false);
 
   // the login button should be visible if user is already logged in
   // and user is on pages where he cannot do login
@@ -118,57 +121,40 @@ export default function LoginHeader() {
       getSessionItem(SessionItems.transaction),
       NewTransactionResponse.decode,
       E.fold(
-        async () => {
-          await logoutUser({
-            onError: () => {
-              // eslint-disable-next-line no-console
-              console.log("logout KO");
-            },
-            onResponse: () => {
-              // eslint-disable-next-line no-console
-              console.log("logout OK");
-            },
-          });
-          dispatch(removeLoggedUser());
-          clearSessionItem(SessionItems.authToken);
-        },
-        async () => setCancelPaymentModalOpen(true)
+        async () => setUserSessionLogoutModalOpen(true), // no transaction have been created, user can be logged out without canceling transaction
+        async () => setCancelPaymentModalOpen(true) // transaction have been created, logout will cancel transaction
       )
     );
+  };
+
+  const performUserLogout = async () => {
+    await logoutUser({
+      onError: () => {
+        // eslint-disable-next-line no-console
+        console.log("logout KO");
+      },
+      onResponse: () => {
+        // eslint-disable-next-line no-console
+        console.log("logout OK");
+      },
+    });
+    clearSessionItem(SessionItems.authToken);
+    dispatch(removeLoggedUser());
+    setCancelPaymentModalOpen(false);
+    setUserSessionLogoutModalOpen(false);
   };
 
   const cancelPaymentAndLogout = async () => {
     await cancelPayment(
       async () => {
-        await logoutUser({
-          onError: () => {
-            // eslint-disable-next-line no-console
-            console.log("logout KO");
-          },
-          onResponse: () => {
-            // eslint-disable-next-line no-console
-            console.log("logout OK");
-          },
-        });
+        await performUserLogout();
         navigate(`/${CheckoutRoutes.ERRORE}`);
       },
       async () => {
-        await logoutUser({
-          onError: () => {
-            // eslint-disable-next-line no-console
-            console.log("logout KO");
-          },
-          onResponse: () => {
-            // eslint-disable-next-line no-console
-            console.log("logout OK");
-          },
-        });
+        await performUserLogout();
         navigate(`/${CheckoutRoutes.ANNULLATO}`);
       }
     );
-    dispatch(removeLoggedUser());
-    clearSessionItem(SessionItems.authToken);
-    setCancelPaymentModalOpen(false);
   };
 
   const doGetUserInfo = () => {
@@ -250,6 +236,11 @@ export default function LoginHeader() {
           sitekey={getReCaptchaKey() as string}
         />
       </Box>
+      <UserLogout
+        open={userSessionLogoutModalOpen}
+        onCancel={() => setUserSessionLogoutModalOpen(false)}
+        onSubmit={() => performUserLogout()}
+      />
       <CancelPayment
         open={cancelPaymentModalOpen}
         onCancel={() => setCancelPaymentModalOpen(false)}

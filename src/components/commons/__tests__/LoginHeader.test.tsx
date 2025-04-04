@@ -43,6 +43,7 @@ jest.mock("react-google-recaptcha", () => ({
 jest.mock("../../../utils/api/helper", () => ({
   proceedToLogin: jest.fn(),
   retrieveUserInfo: jest.fn(),
+  logoutUser: jest.fn(),
 }));
 
 jest.mock("../../../utils/storage/sessionStorage", () => ({
@@ -148,37 +149,52 @@ describe("LoginHeader", () => {
     });
   });
 
-  test.skip("Logout user", async () => {
+  test("Logout user for transaction not activated yet", async () => {
     const userInfo: UserInfoResponse = {
       familyName: "Rossi",
       name: "Mario",
     };
-    (getSessionItem as jest.Mock).mockReturnValue(true);
+    (getSessionItem as jest.Mock).mockImplementation((item) => {
+      switch (item) {
+        case "authToken":
+          return "authToken";
+        case "transaction":
+          return undefined; // no transaction activated, transaction in session storage is null
+        default:
+          return undefined;
+      }
+    });
     (retrieveUserInfo as jest.Mock).mockImplementation(({ onResponse }) => {
       onResponse(userInfo);
     });
     (logoutUser as jest.Mock).mockImplementation(({ onResponse }) => {
       onResponse();
     });
-    renderWithReduxProvider(
+    const { baseElement } = renderWithReduxProvider(
       <MemoryRouter>
         <LoginHeader />
       </MemoryRouter>
     );
-    await waitFor(() => {
-      expect(retrieveUserInfo).toHaveBeenCalled();
-      expect(
-        screen.getByText(`${userInfo.name} ${userInfo.familyName}`)
-      ).toBeInTheDocument();
-      const userButton = screen.getByTitle(
-        `${userInfo.name} ${userInfo.familyName}`
-      );
-      expect(userButton).toBeInTheDocument();
-      fireEvent.click(userButton);
-      const logoutButton = screen.getByTitle(/Esci/i);
-      expect(logoutButton).toBeInTheDocument();
-      fireEvent.click(logoutButton);
-      expect(logoutUser).toHaveBeenCalled();
-    });
+
+    await new Promise((r) => setTimeout(r, 250));
+    expect(retrieveUserInfo).toHaveBeenCalled();
+    const userButton = screen.getByText(
+      `${userInfo.name} ${userInfo.familyName}`
+    );
+    expect(userButton).toBeVisible();
+    fireEvent.click(userButton);
+    const logoutButton = screen.getByTestId("LogoutIcon");
+    expect(logoutButton).toBeVisible();
+    fireEvent.click(logoutButton);
+    await new Promise((r) => setTimeout(r, 250));
+    expect(screen.getByText("userSession.logoutModal.title")).toBeVisible();
+    expect(screen.getByText("userSession.logoutModal.body")).toBeVisible();
+    const logoutConfirmButton = getById(baseElement, "confirm");
+    expect(logoutConfirmButton).toBeVisible();
+    if (!logoutConfirmButton) {
+      throw Error("Cannot find logout confirm button");
+    }
+    fireEvent.click(logoutConfirmButton);
+    expect(logoutUser).toHaveBeenCalled();
   });
 });

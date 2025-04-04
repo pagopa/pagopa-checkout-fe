@@ -465,6 +465,14 @@
     "HF0007": "Vnesite, kot je navedeno na kartici",
     "HF0009": "Preverjanje 3DS ni uspelo"
   },
+  "userSession": {
+    "logoutModal": {
+      "title": "Ali res želiš oditi?",
+      "body": "Plačati boš lahko tudi brez prijave.",
+      "submitButton": "Izhod",
+      "cancelButton": "Prekliči"
+    }
+  },
   "__variant-name": "Sloveno",
   "__variant-description": ""
 }
