@@ -143,7 +143,7 @@ export const tryLoginWithAuthCallbackError = async (noticeCode, fiscalCode) => {
   }
 }
 
-export const fillPaymentNotificationForm = async (noticeCode, fiscalCode) => {
+export const fillPaymentNotificationForm = async (noticeCode, fiscalCode, submit=true) => {
   const noticeCodeTextInput = "#billCode";
   const fiscalCodeTextInput = "#cf";
   const verifyBtn = "#paymentNoticeButtonContinue";
@@ -155,8 +155,10 @@ export const fillPaymentNotificationForm = async (noticeCode, fiscalCode) => {
   await page.waitForSelector(fiscalCodeTextInput);
   await page.click(fiscalCodeTextInput);
   await page.keyboard.type(fiscalCode);
-  await page.waitForSelector(verifyBtn);
-  await page.click(verifyBtn);
+  if(submit){
+    await page.waitForSelector(verifyBtn);
+    await page.click(verifyBtn);
+  }
 };
 
 export const fillAndSubmitCardDataForm = async (

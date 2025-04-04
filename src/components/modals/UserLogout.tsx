@@ -18,13 +18,19 @@ export function UserLogout(props: {
       hideIcon={true}
       style={{ width: "444px" }}
     >
-      <Typography variant="h6" component={"div"} sx={{ pb: 2 }}>
+      <Typography
+        id="logoutModalTitle"
+        variant="h6"
+        component={"div"}
+        sx={{ pb: 2 }}
+      >
         {t("userSession.logoutModal.title")}
       </Typography>
       <Typography
         variant="body1"
         component={"div"}
         sx={{ whiteSpace: "pre-line" }}
+        id="logoutModalBody"
       >
         {t("userSession.logoutModal.body")}
       </Typography>
@@ -34,10 +40,18 @@ export function UserLogout(props: {
         justifyContent="flex-end"
         sx={{ mt: 3, gap: 2 }}
       >
-        <Button id="cancel" variant="text" onClick={props.onCancel}>
+        <Button
+          id="logoutModalCancelButton"
+          variant="text"
+          onClick={props.onCancel}
+        >
           {t("userSession.logoutModal.cancelButton")}
         </Button>
-        <Button id="confirm" variant="contained" onClick={props.onSubmit}>
+        <Button
+          id="logoutModalConfirmButton"
+          variant="contained"
+          onClick={props.onSubmit}
+        >
           {t("userSession.logoutModal.submitButton")}
         </Button>
       </Box>
