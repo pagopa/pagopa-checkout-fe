@@ -315,6 +315,9 @@ export const cancelPaymentOK = async (
   const cancPayment = await page.waitForSelector("#confirm");
   await cancPayment.click();
   await page.waitForNavigation();
+  // this new timeout is needed for how react 18 handles the addition of animated content 
+  // to the page. Without it, the resultMessageXPath never resolves
+  await new Promise((r) => setTimeout(r, 200));
   const message = await page.waitForXPath(resultMessageXPath);
   return await message.evaluate((el) => el.textContent);
 };

@@ -45,7 +45,7 @@ export function retryingFetch(
     retryCondition != null ? retryCondition : (_: Response) => _.status === 429,
     retryLogic
   );
-  return retriableFetch(retryWithTransient)(timeoutFetch);
+  return retriableFetch(retryWithTransient)(timeoutFetch as any);
 }
 
 //
@@ -128,5 +128,8 @@ export const constantPollingWithPromisePredicateFetch = (
     retryLogic
   );
 
-  return retriableFetch(retryWithPromisePredicate, shouldAbort)(timeoutFetch);
+  return retriableFetch(
+    retryWithPromisePredicate,
+    shouldAbort
+  )(timeoutFetch as any);
 };

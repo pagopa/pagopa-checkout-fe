@@ -23,7 +23,9 @@ export default function CancelledPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
+  const [cart] = React.useState<Cart | undefined>(
+    getSessionItem(SessionItems.cart) as Cart | undefined
+  );
 
   const performRedirect = () => {
     pipe(
