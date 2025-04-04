@@ -16,5 +16,5 @@ jobs:
                 output: report-markdown
             - uses: marocchino/sticky-pull-request-comment@v2
               with:
-                  pass output from the previous step by id.
+                  #pass output from the previous step by id.
                   message: ${{ steps.coverage.outputs.report }}
