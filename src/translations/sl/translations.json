@@ -333,9 +333,9 @@
     "email": "Rezultat pošlji na:",
     "modal": {
       "body": "Vsako denarno nakazilo (v gotovini ali elektronskem denarju) vključuje stroške, ki zagotavljajo, da je to plačilo varno in uspešno izvedeno.\nVsak ponudnik (ali ponudnik plačilnih storitev) predvideva stroške skladno s svojo poslovno politiko in pogodbenimi pogoji.\nPri pagoPA so ti stroški pregledni in državljan/-ka lahko prosto izbere najudobnejšo in najpriročnejšo možnost. Če želite izvedeti več, obiščite spletno stran ",
-      "cancelBody": "Vsi vneseni podatki bodo izgubljeni.",
-      "cancelButton": "Ne, premislil/-a sem si",
-      "cancelTitle": "Želite zapustiti trenutno plačilo?",
+      "cancelBody": "Če odideš, bodo vsi doslej vneseni podatki izbrisani in začeti bo treba znova.",
+      "cancelButton": "Ne, premislil/-a sem",
+      "cancelTitle": "Tvoje plačilo je v obdelavi. Ali res želiš oditi?",
       "link": "Preglednost stroškov",
       "submitButton": "Izhod",
       "title": "Zakaj obstaja provizija?"
