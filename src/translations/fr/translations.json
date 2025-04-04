@@ -333,11 +333,11 @@
     "email": "Envoyer le résultat à:",
     "modal": {
       "body": "Les opérations de transfert d’argent (en comptant ou en monnaie électronique) ont un coût qui permet de garantir un paiement sûr et vérifié.\nChaque opérateur (ou PSP, Prestataire de service de paiement) chiffre ses frais en fonction de ses stratégies commerciales et de ses conditions contractuelles.\nAvec pagoPA, ces frais sont transparents et le client peut choisir librement l’option qui lui convient. Pour en savoir plus, consulter la page  ",
-      "cancelBody": "Toutes les données saisies seront effacées.",
-      "cancelButton": "J’ai changé d’avis",
-      "cancelTitle": "Sortir du paiement en cours ?",
+      "cancelBody": "Si vous quittez maintenant, les informations saisies seront perdues et vous devrez recommencer l'opération.",
+      "cancelButton": "Non, J'ai changé d'avis",
+      "cancelTitle": "Votre paiement est en cours, voulez-vous vraiment quitter ?",
       "link": "Transparence des frais facturés",
-      "submitButton": "Sortir",
+      "submitButton": "Se déconnecter",
       "title": "Pourquoi y-a-t-il de frais?"
     },
     "psp": "Appliquée depuis",
