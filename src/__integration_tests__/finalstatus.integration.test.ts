@@ -1224,6 +1224,7 @@ describe.each([
         message = await navigateToFinalPage(keyFlowId, lang);
       }catch(e){
         // retry once if the test fails (this has been introduced after react 18 added random errrors on this step)
+        console.log("The test failed waitForSelector(resultTitleSelector). We will retry once");
         message = await navigateToFinalPage(keyFlowId, lang);
       }
 
