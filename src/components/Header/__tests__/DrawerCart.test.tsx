@@ -19,7 +19,6 @@ jest.mock('../../../utils/config/config', () => ({
     }
   }));
 
-// Mock dependencies
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => {

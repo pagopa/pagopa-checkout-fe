@@ -14,8 +14,18 @@ import "jest-location-mock";
 import { UserInfoResponse } from "../../../../generated/definitions/checkout-auth-service-v1/UserInfoResponse";
 import { renderWithReduxProvider } from "../../../utils/testRenderProviders";
 
-jest.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
+jest.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => {
+      // Simple mock translation function
+      const translations: Record<string, string> = {
+      'mainPage.header.logout': 'Esci',
+      'mainPage.footer.pagoPA': 'PagoPA S.p.A.',
+      'ariaLabels.assistance': 'Assistenza',
+      };
+      return translations[key] || key;
+    }
+  }),
   Trans: ({
     i18nKey,
   }: {
