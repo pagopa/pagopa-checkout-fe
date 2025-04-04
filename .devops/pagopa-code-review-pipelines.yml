@@ -24,17 +24,17 @@ parameters:
   - name: 'PAYMENT_INTEGRATION_TESTS'
     displayName: 'Payment flow integration tests'
     type: boolean
-    default: false
+    default: true
 
   - name: 'FINAL_STATUS_TESTS'
     displayName: 'Final status integration tests'
     type: boolean
-    default: false
+    default: true
 
   - name: 'AUTHENTICATION_TESTS'
     displayName: 'Authentication flow integration tests'
     type: boolean
-    default: false
+    default: true
 
 variables:
   NODE_VERSION: '14.16.0'
