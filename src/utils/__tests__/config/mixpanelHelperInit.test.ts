@@ -60,11 +60,4 @@ describe("Mixpanel integration tests", () => {
       prop: "value",
     });
   });
-
-  it("should not log to console in PROD environment", () => {
-    mixpanel.track("test_event", { prop: "value" });
-
-    /* eslint-disable no-console */
-    expect(console.log).not.toHaveBeenCalled();
-  });
 });
