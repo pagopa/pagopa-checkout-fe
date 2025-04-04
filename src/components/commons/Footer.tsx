@@ -69,7 +69,7 @@ export default function Footer(props: { fixedPages: Array<string> }) {
           </Link>
           <p aria-hidden="true">·</p>
           <Link
-            href="https://checkout.pagopa.it/informativa-privacy"
+            href="https://checkout.pagopa.it/privacypolicy/it.html"
             target="_blank"
             rel="noopener noreferrer"
             style={{
