@@ -19,7 +19,7 @@ jest.mock("react-i18next", () => ({
   }) => <span data-testid="mocked-trans">{i18nKey || "no-key"}</span>,
 }));
 
-jest.mock("../../../utils/storage/sessionStorage", () => ({
+jest.mock("../../utils/storage/sessionStorage", () => ({
   getSessionItem: jest.fn(),
   clearSessionItem: jest.fn(),
   setSessionItem: jest.fn(),
@@ -44,19 +44,6 @@ jest.mock("../../../utils/storage/sessionStorage", () => ({
   },
 }));
 
-// Mock storage utilities (and return an empty object if needed)
-jest.mock("../../utils/storage/sessionStorage", () => ({
-  getSessionItem: jest.fn(),
-  setSessionItem: jest.fn(),
-  getReCaptchaKey: jest.fn(),
-  SessionItems: {
-    authToken: "authToken",
-    loginOriginPage: "loginOriginPage",
-    enableAuthentication: "enableAuthentication",
-    rptId: "rptId",
-  },
-}));
-
 jest.mock("../../utils/eventListeners", () => ({
   onBrowserUnload: jest.fn(),
 }));
@@ -64,7 +51,7 @@ jest.mock("../../utils/eventListeners", () => ({
 describe("AuthExpired", () => {
   beforeEach(() => {});
 
-  test("When session is expired should redirect to auth expired page (401)", async () => {
+  test.only("The page should contain login and continue as guest button", async () => {
     const { container } = renderWithReduxProvider(
       <MemoryRouter>
         <AuthExpiredPage />
