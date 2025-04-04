@@ -89,6 +89,7 @@ export default function AuthExpiredPage() {
           <Button
             type="button"
             variant="text"
+            id="pay-guest-button"
             onClick={returnToOriginPage}
             style={{
               height: "100%",
