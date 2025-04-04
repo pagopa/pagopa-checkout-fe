@@ -153,7 +153,7 @@ stages:
         - script: yarn lint
           displayName: 'Lint execution'
 
-        - task: SonarQubeAnalyze@7
+        - task: SonarCloudAnalyze@7
           inputs:
             jdkversion: 'JAVA_HOME_17_X64'
 
