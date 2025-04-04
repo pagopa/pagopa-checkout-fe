@@ -14,8 +14,18 @@ import "jest-location-mock";
 import { UserInfoResponse } from "../../../../generated/definitions/checkout-auth-service-v1/UserInfoResponse";
 import { renderWithReduxProvider } from "../../../utils/testRenderProviders";
 
-jest.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
+jest.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => {
+      // Simple mock translation function
+      const translations: Record<string, string> = {
+      'mainPage.header.logout': 'Esci',
+      'mainPage.footer.pagoPA': 'PagoPA S.p.A.',
+      'ariaLabels.assistance': 'Assistenza',
+      };
+      return translations[key] || key;
+    }
+  }),
   Trans: ({
     i18nKey,
   }: {
@@ -43,6 +53,7 @@ jest.mock("react-google-recaptcha", () => ({
 jest.mock("../../../utils/api/helper", () => ({
   proceedToLogin: jest.fn(),
   retrieveUserInfo: jest.fn(),
+  logoutUser: jest.fn(),
 }));
 
 jest.mock("../../../utils/storage/sessionStorage", () => ({
@@ -148,7 +159,7 @@ describe("LoginHeader", () => {
     });
   });
 
-  test.skip("Logout user", async () => {
+  test("Logout user", async () => {
     const userInfo: UserInfoResponse = {
       familyName: "Rossi",
       name: "Mario",
@@ -165,17 +176,17 @@ describe("LoginHeader", () => {
         <LoginHeader />
       </MemoryRouter>
     );
+    expect(retrieveUserInfo).toHaveBeenCalled();
+    expect(
+      screen.getByText(`${userInfo.name} ${userInfo.familyName}`)
+    ).toBeInTheDocument();
+    const userButton = screen.getByText(
+      `${userInfo.name} ${userInfo.familyName}`
+    );
+    expect(userButton).toBeInTheDocument();
+    fireEvent.click(userButton);
     await waitFor(() => {
-      expect(retrieveUserInfo).toHaveBeenCalled();
-      expect(
-        screen.getByText(`${userInfo.name} ${userInfo.familyName}`)
-      ).toBeInTheDocument();
-      const userButton = screen.getByTitle(
-        `${userInfo.name} ${userInfo.familyName}`
-      );
-      expect(userButton).toBeInTheDocument();
-      fireEvent.click(userButton);
-      const logoutButton = screen.getByTitle(/Esci/i);
+      const logoutButton = screen.getByText(/Esci/i);
       expect(logoutButton).toBeInTheDocument();
       fireEvent.click(logoutButton);
       expect(logoutUser).toHaveBeenCalled();
