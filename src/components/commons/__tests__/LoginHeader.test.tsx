@@ -43,6 +43,7 @@ jest.mock("react-google-recaptcha", () => ({
 jest.mock("../../../utils/api/helper", () => ({
   proceedToLogin: jest.fn(),
   retrieveUserInfo: jest.fn(),
+  logoutUser: jest.fn(),
 }));
 
 jest.mock("../../../utils/storage/sessionStorage", () => ({
@@ -148,7 +149,7 @@ describe("LoginHeader", () => {
     });
   });
 
-  test.skip("Logout user", async () => {
+  test("Logout user", async () => {
     const userInfo: UserInfoResponse = {
       familyName: "Rossi",
       name: "Mario",
@@ -170,12 +171,12 @@ describe("LoginHeader", () => {
       expect(
         screen.getByText(`${userInfo.name} ${userInfo.familyName}`)
       ).toBeInTheDocument();
-      const userButton = screen.getByTitle(
+      const userButton = screen.getByText(
         `${userInfo.name} ${userInfo.familyName}`
       );
       expect(userButton).toBeInTheDocument();
       fireEvent.click(userButton);
-      const logoutButton = screen.getByTitle(/Esci/i);
+      const logoutButton = screen.getByText(/Esci/i);
       expect(logoutButton).toBeInTheDocument();
       fireEvent.click(logoutButton);
       expect(logoutUser).toHaveBeenCalled();
