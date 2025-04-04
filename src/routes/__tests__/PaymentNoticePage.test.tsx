@@ -67,7 +67,7 @@ jest.mock("../../utils/eventListeners", () => ({
   onBrowserUnload: jest.fn(),
 }));
 
-describe.skip("PaymentNotice", () => {
+describe("PaymentNotice", () => {
   beforeEach(() => {
     // Return an object for initial session values (making sure it’s not a boolean)
     (getSessionItem as jest.Mock).mockReturnValue({});
