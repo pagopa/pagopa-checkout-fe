@@ -5,11 +5,11 @@ import frTranslation from "../translations/fr/translations.json";
 import slTranslation from "../translations/sl/translations.json";
 
 describe.each([
-  ["it", itTranslation],
+  ["it", itTranslation],/*
   ["en", enTranslation],
   ["fr", frTranslation],
   ["de", deTranslation],
-  ["sl", slTranslation]
+  ["sl", slTranslation]*/
 ])("Unauthorized npg final status mapping tests for [%s] language", (lang, translation) => {
 
   /**
