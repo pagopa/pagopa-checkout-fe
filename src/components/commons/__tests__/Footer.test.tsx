@@ -124,10 +124,10 @@ describe("Footer", () => {
     expect(helpLink).toHaveAttribute("href", "https://www.pagopa.gov.it/it/helpdesk/");
     
     const privacyLink = screen.getByTitle("mainPage.footer.privacy");
-    expect(privacyLink).toHaveAttribute("href", "https://checkout.pagopa.it/privacypolicy/it.html");
+    expect(privacyLink).toHaveAttribute("href", "https://checkout.pagopa.it/informativa-privacy");
     
     const termsLink = screen.getByTitle("mainPage.footer.terms");
-    expect(termsLink).toHaveAttribute("href", "https://checkout.pagopa.it/terms/it.html");
+    expect(termsLink).toHaveAttribute("href", "https://checkout.pagopa.it/termini-di-servizio");
     
     const pagopaLink = screen.getByTitle("mainPage.footer.pagoPA");
     expect(pagopaLink).toHaveAttribute("href", "https://www.pagopa.it/it/");
