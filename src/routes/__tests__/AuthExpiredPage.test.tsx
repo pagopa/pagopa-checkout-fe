@@ -57,7 +57,7 @@ const mockGetSessionItem = (item: SessionItems) => {
 describe("AuthExpired", () => {
   test("The page should contain login and continue as guest button and click to login go to origin page", async () => {
     // Mock getAndClearSessionItem to back url
-    (getAndClearSessionItem as jest.Mock).mockImplementation();
+    (getAndClearSessionItem as jest.Mock).mockImplementation(mockGetSessionItem);
 
     const { container } = renderWithReduxProvider(
       <MemoryRouter>
