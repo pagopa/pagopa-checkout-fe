@@ -5,11 +5,11 @@ import frTranslation from "../translations/fr/translations.json";
 import slTranslation from "../translations/sl/translations.json";
 
 describe.each([
-  ["it", itTranslation],/*
+  ["it", itTranslation],
   ["en", enTranslation],
   ["fr", frTranslation],
   ["de", deTranslation],
-  ["sl", slTranslation]*/
+  ["sl", slTranslation]
 ])("Unauthorized npg final status mapping tests for [%s] language", (lang, translation) => {
 
   /**
@@ -1183,7 +1183,6 @@ describe.each([
       "REFUNDED_TRANSACTION_WITH_NPG_AUTH_STATUS_EXECUTED",
       { title: "REFUNDED STATUS FOR TRANSACTION WITH NPG AUTHORIZATION STATUS EXECUTED", esito: translation.paymentResponsePage[25].title }
     ]
-
   ]);
 
 
@@ -1201,21 +1200,33 @@ describe.each([
     await page.setViewport({ width: 1200, height: 907 });
   })
 
+  const navigateToFinalPage = async (keyFlowId, lang) => {
+    await page.evaluate((language) => {
+      //set item into sessionStorage and localStorage for pass the route Guard
+      let sessionData = '{"authToken":"token","clientId":"CHECKOUT","payments":[{"amount":12000,"isAllCCP":false,"paymentToken":"paymentToken1","reason":"reason1","rptId":"77777777777302001751670642100","transferList":[{"digitalStamp":true,"paFiscalCode":"66666666666","transferAmount":100,"transferCategory":"transferCategory1"},{"digitalStamp":false,"paFiscalCode":"77777777777","transferAmount":900,"transferCategory":"transferCategory2"}]}],"status":"ACTIVATED","transactionId":"f4f1b6a82b7d473583b506fcd5edf308"}';
+      sessionStorage.setItem('transaction', sessionData);
+      localStorage.setItem('transaction', sessionData);
+      localStorage.setItem("i18nextLng", language);
+    }, lang);
+    
+    await page.setCookie({ name: "mockFlow", value: keyFlowId });
+    await page.goto(CHECKOUT_OUTCOME_URL);
+    const resultTitleSelector = "#responsePageMessageTitle";
+    return await page.waitForSelector(resultTitleSelector);
+  }
 
   Array.from(mockFlowWithExpectedResultMap.keys()).forEach(keyFlowId => {
     it(mockFlowWithExpectedResultMap.get(keyFlowId)?.title || "", async () => {
-      await page.evaluate((language) => {
-        //set item into sessionStorage and localStorage for pass the route Guard
-        let sessionData = '{"authToken":"token","clientId":"CHECKOUT","payments":[{"amount":12000,"isAllCCP":false,"paymentToken":"paymentToken1","reason":"reason1","rptId":"77777777777302001751670642100","transferList":[{"digitalStamp":true,"paFiscalCode":"66666666666","transferAmount":100,"transferCategory":"transferCategory1"},{"digitalStamp":false,"paFiscalCode":"77777777777","transferAmount":900,"transferCategory":"transferCategory2"}]}],"status":"ACTIVATED","transactionId":"f4f1b6a82b7d473583b506fcd5edf308"}';
-        sessionStorage.setItem('transaction', sessionData);
-        localStorage.setItem('transaction', sessionData);
-        localStorage.setItem("i18nextLng", language);
-      }, lang);
-      
-      await page.setCookie({ name: "mockFlow", value: keyFlowId });
-      await page.goto(CHECKOUT_OUTCOME_URL);
-      const resultTitleSelector = "#responsePageMessageTitle";
-      const message = await page.waitForSelector(resultTitleSelector);
+      var message;
+
+      try{
+        // try test
+        message = await navigateToFinalPage(keyFlowId, lang);
+      }catch(e){
+        // retry once if the test fails (this has been introduced after react 18 added random errrors on this step)
+        message = await navigateToFinalPage(keyFlowId, lang);
+      }
+
       const responseMessage = await message.evaluate((el) => el.textContent);
       expect(responseMessage).toContain(mockFlowWithExpectedResultMap.get(keyFlowId)?.esito);
     })
