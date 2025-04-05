@@ -1,3 +1,4 @@
+/* eslint-disable functional/immutable-data */
 Object.defineProperty(global, "window", {
   value: {
     _env_: {

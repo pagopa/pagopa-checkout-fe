@@ -11,7 +11,7 @@ describe("expirationDateChangeValidation", () => {
   });
 
   it("should return false if value length is 1 and not a valid digit", () => {
-    (digitValidation as jest.Mock).mockReturnValue(false);  
+    (digitValidation as jest.Mock).mockReturnValue(false);
     expect(expirationDateChangeValidation("a")).toBe(false);
   });
 
@@ -28,7 +28,7 @@ describe("expirationDateChangeValidation", () => {
   });
 
   it("should return true if value is a valid date without slash", () => {
-    (digitValidation as jest.Mock).mockReturnValue(true);  
+    (digitValidation as jest.Mock).mockReturnValue(true);
     expect(expirationDateChangeValidation("123")).toBe(true);
   });
 

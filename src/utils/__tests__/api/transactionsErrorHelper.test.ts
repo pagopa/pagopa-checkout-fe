@@ -3,12 +3,14 @@ import { CheckoutRoutes } from "../../../routes/models/routeModel";
 
 // Mock the NavigateFunction from react-router-dom
 jest.mock("react-router-dom", () => ({
-  ...(jest.requireActual("react-router-dom") as object),
+  ...jest.requireActual<Record<string, unknown>>("react-router-dom"),
   NavigateFunction: jest.fn(),
 }));
 
 describe("onErrorActivate", () => {
+  /* eslint-disable functional/no-let */
   let mockNavigate: jest.Mock;
+  /* eslint-disable functional/no-let */
   let mockOnError: jest.Mock;
 
   beforeEach(() => {

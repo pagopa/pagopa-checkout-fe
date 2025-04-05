@@ -6,6 +6,7 @@ import {
 import buildFunction from "../buildConfig";
 
 describe("buildFunction", () => {
+  /* eslint-disable functional/no-let */
   let mockConfig: {
     onChange: jest.Mock;
     onReadyForPayment: jest.Mock;
@@ -14,6 +15,7 @@ describe("buildFunction", () => {
     onBuildError: jest.Mock;
     onAllFieldsLoaded: jest.Mock;
   };
+  /* eslint-disable functional/no-let */
   let instance: ReturnType<typeof buildFunction>;
 
   beforeEach(() => {

@@ -1,6 +1,7 @@
 import { createCounter } from "../counter";
 
 describe("createCounter", () => {
+  /* eslint-disable functional/no-let */
   let counter: {
     getValue: any;
     increment: any;

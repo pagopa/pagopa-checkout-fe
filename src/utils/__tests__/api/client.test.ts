@@ -17,11 +17,12 @@ describe("API Clients", () => {
     retryingFetch: jest.fn((_) => jest.fn()),
     constantPollingWithPromisePredicateFetch: jest.fn((_) => jest.fn()),
   }));
-  // Mock global fetch
+  /* eslint-disable functional/immutable-data */
   global.fetch = jest.fn().mockResolvedValue({
     json: jest.fn().mockResolvedValue({}),
     status: 200,
   });
+  /* eslint-disable @typescript-eslint/no-var-requires */
   const {
     apiPaymentEcommerceClient,
     apiPaymentEcommerceClientV2,
