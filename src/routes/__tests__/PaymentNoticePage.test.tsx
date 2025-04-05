@@ -5,7 +5,7 @@ import { MemoryRouter } from "react-router-dom";
 import * as TE from "fp-ts/TaskEither";
 import { getSessionItem } from "../../utils/storage/sessionStorage";
 import { getEcommercePaymentInfoTask } from "../../utils/api/helper";
-import { renderWithReduxProvider } from "../../utils/testRenderProviders";
+import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders";
 import PaymentNotice from "../PaymentNoticePage";
 
 // Mock translations and recaptcha
