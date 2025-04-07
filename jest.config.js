@@ -34,7 +34,8 @@ module.exports = {
       "test-config",
       ".module.ts",
       "<rootDir>/src/generated/",
-      "<rootDir>/src/__mocks__/*.ts"
+      "<rootDir>/src/__mocks__/*.ts",
+      "<rootDir>/src/utils/testing"
   ],
   coverageDirectory: "<rootDir>/coverage/"
 };
