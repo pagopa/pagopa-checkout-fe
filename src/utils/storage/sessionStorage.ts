@@ -118,9 +118,9 @@ export const clearStorage = () => {
   // aftear react 18 finishes it's core updates of components
   // some of which are re-rendered even without the user interaction
   // at mount time
-  setTimeout(()=>{
+  setTimeout(() => {
     sessionStorage.clear();
-  },100);
+  }, 100);
 };
 
 export const clearStorageAndMaintainAuthData = () => {
