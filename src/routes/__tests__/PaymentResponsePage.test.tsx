@@ -4,8 +4,11 @@ import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { renderWithReduxProvider } from "../../utils/testRenderProviders";
 import PaymentResponsePage from "../PaymentResponsePage";
-import { getSessionItem, clearSessionItem, clearStorage } from "../../utils/storage/sessionStorage";
-
+import {
+  getSessionItem,
+  clearSessionItem,
+  clearStorage,
+} from "../../utils/storage/sessionStorage";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -75,8 +78,8 @@ describe("PaymentResponsePage", () => {
       }
     });
 
-    (clearSessionItem as jest.Mock).mockImplementation(() => {});
-    (clearStorage as jest.Mock).mockImplementation(() => {});    
+    (clearSessionItem as jest.Mock).mockReturnValue(true);
+    (clearStorage as jest.Mock).mockReturnValue(true);
   });
 
   test("Cart must be initialized from session", () => {

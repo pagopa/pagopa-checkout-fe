@@ -1,14 +1,20 @@
 import React from "react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
-import { clearSessionItem, getSessionItem, clearStorage } from "../../utils/storage/sessionStorage";
+import {
+  clearSessionItem,
+  getSessionItem,
+  clearStorage,
+} from "../../utils/storage/sessionStorage";
 import { renderWithReduxProvider } from "../../utils/testRenderProviders";
 import SessionExpiredPage from "../SessionExpiredPage";
 
 // Mocking i18n
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
-  Trans: ({ i18nKey }: { i18nKey?: string }) => <span data-testid="mocked-trans">{i18nKey || "no-key"}</span>,
+  Trans: ({ i18nKey }: { i18nKey?: string }) => (
+    <span data-testid="mocked-trans">{i18nKey || "no-key"}</span>
+  ),
 }));
 
 // Mocking reCAPTCHA
@@ -20,7 +26,9 @@ jest.mock("react-google-recaptcha", () => ({
       execute: jest.fn(),
       executeAsync: jest.fn(() => "token"),
     }));
-    return <div ref={ref as React.RefObject<HTMLDivElement>} data-test="recaptcha" />;
+    return (
+      <div ref={ref as React.RefObject<HTMLDivElement>} data-test="recaptcha" />
+    );
   }),
 }));
 
@@ -54,11 +62,8 @@ describe("SessionExpiredPage", () => {
       returnUrls: { returnErrorUrl: "https://some-url.com" },
     });
 
-    // Mock clearing session item
-    (clearSessionItem as jest.Mock).mockImplementation(() => {});
-
-    // Mock clearStorage to do nothing
-    (clearStorage as jest.Mock).mockImplementation(() => {});
+    (clearSessionItem as jest.Mock).mockReturnValue(true);
+    (clearStorage as jest.Mock).mockReturnValue(true);
   });
 
   test("Cart must be initialized from session", () => {

@@ -1,7 +1,11 @@
 import React from "react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
-import { clearSessionItem, getSessionItem, clearStorage } from "../../utils/storage/sessionStorage";
+import {
+  clearSessionItem,
+  getSessionItem,
+  clearStorage,
+} from "../../utils/storage/sessionStorage";
 import { renderWithReduxProvider } from "../../utils/testRenderProviders";
 import CancelledPage from "../CancelledPage";
 
@@ -26,7 +30,9 @@ jest.mock("react-google-recaptcha", () => ({
       execute: jest.fn(),
       executeAsync: jest.fn(() => "token"),
     }));
-    return <div ref={ref as React.RefObject<HTMLDivElement>} data-test="recaptcha" />;
+    return (
+      <div ref={ref as React.RefObject<HTMLDivElement>} data-test="recaptcha" />
+    );
   }),
 }));
 
@@ -60,11 +66,8 @@ describe("CancelledPage", () => {
       returnUrls: { returnErrorUrl: "https://some-url.com" },
     });
 
-    // Mock clearing session item
-    (clearSessionItem as jest.Mock).mockImplementation(() => {});
-
-    // Mock clearStorage to do nothing
-    (clearStorage as jest.Mock).mockImplementation(() => {});
+    (clearSessionItem as jest.Mock).mockReturnValue(true);
+    (clearStorage as jest.Mock).mockReturnValue(true);
   });
 
   test("Cart must be initialized from session", () => {
