@@ -335,9 +335,9 @@
       "body": "All money transfer operations (cash or electronic currency) have a cost that is used to guarantee that the payment is safe and successful.\nEvery operator (or PSP, Payment Service Provider) indicates a cost, according to their commercial policies and contractual conditions.\nWith pagoPA, these costs are transparent and the citizen can freely select the most convenient and affordable option. To learn more, consult the page ",
       "cancelBody": "If you quit, any data you have entered will be deleted and you will have to start again.",
       "cancelButton": "No, I changed my mind",
-      "cancelTitle": "Your payment is in progress. Are you sure you want to log out?",
+      "cancelTitle": "Your payment is pending, do you want to exit?",
       "link": "Cost transparency",
-      "submitButton": "Log out",
+      "submitButton": "Exit",
       "title": "Why is there a fee?"
     },
     "psp": "Applied by",
