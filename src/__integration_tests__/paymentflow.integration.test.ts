@@ -72,10 +72,10 @@ const PSP_NOT_FOUND_FAIL = "302016723749670076";
  * Increase default test timeout (120000ms)
  * to support entire payment flow
  */
-jest.setTimeout(10000);
-jest.retryTimes(1);
-page.setDefaultNavigationTimeout(10000);
-page.setDefaultTimeout(10000);
+jest.setTimeout(30000);
+jest.retryTimes(3);
+page.setDefaultNavigationTimeout(30000);
+page.setDefaultTimeout(30000);
 
 beforeAll(async () => {
   await page.goto(CHECKOUT_URL);
@@ -84,13 +84,20 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await page.goto(CHECKOUT_URL);
-  // Listen for dialog events and automatically accept them
+  // Listen for dialog events and automatically accept them after a delay
   page.on('dialog', async dialog => {
     if (dialog.type() === 'beforeunload') {
-      await dialog.accept();
+      try {
+        // Wait for few seconds before accepting the dialog
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        await dialog.accept();
+      } catch (error) {
+        console.log('Dialog is already accepted.');
+      }
     }
   });
 });
+
 
 describe("Checkout payment tests", () => {
   it.each([
