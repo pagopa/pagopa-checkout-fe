@@ -191,16 +191,20 @@ export const tryHandlePspPickerPage = async ()=>{
 }
 
 export const selectPspOnPspPickerPage = async () => {
-  const pspPickerRadio = await page.waitForSelector("#psp-radio-button-unchecked", {
-    visible: true,
-  });
-  await pspPickerRadio.click();
-
-  const continueButton = await page.waitForSelector("#paymentPspListPageButtonContinue", {
-    visible: true,
-  });
+  try{
+    const pspPickerRadio = await page.waitForSelector("#psp-radio-button-unchecked", {
+      visible: true, timeout: 500
+    });
+    await pspPickerRadio.click();
   
-  await continueButton.click();
+    const continueButton = await page.waitForSelector("#paymentPspListPageButtonContinue", {
+      visible: true, timeout: 500
+    });
+    
+    await continueButton.click();
+  }catch(e){
+    console.log("Buttons not found: this is caused by PSP page immediately navigate to the summary page (if 1 psp available)");
+  }
 }
 
 export const fillAndSubmitSatispayPayment = async (
