@@ -174,6 +174,7 @@ export const fillAndSubmitCardDataForm = async (
   await fillEmailForm(email);
   await choosePaymentMethod("CP");
   await fillCardDataForm(cardData);
+  await tryHandlePspPickerPage();
 };
 
 export const tryHandlePspPickerPage = async ()=>{

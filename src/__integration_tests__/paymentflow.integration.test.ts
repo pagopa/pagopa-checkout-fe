@@ -73,7 +73,7 @@ const PSP_NOT_FOUND_FAIL = "302016723749670076";
  * to support entire payment flow
  */
 jest.setTimeout(30000);
-jest.retryTimes(3);
+jest.retryTimes(1);
 page.setDefaultNavigationTimeout(30000);
 page.setDefaultTimeout(30000);
 
@@ -216,7 +216,6 @@ describe("Checkout payment activation failure tests", () => {
   ])("Should fail a card payment ACTIVATION and get PPT_WISP_SESSIONE_SCONOSCIUTA", async (lang, translation) => {
     selectLanguage(lang);
     await fillAndSubmitCardDataForm(FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA, VALID_FISCAL_CODE, EMAIL, VALID_CARD_DATA);
-    await tryHandlePspPickerPage();
     const titleElem = await page.waitForSelector("#sessionExpiredMessageTitle")
     const bodyElem = await page.waitForSelector("#sessionExpiredMessageBody")
     const title = await titleElem.evaluate((el) => el.textContent)
@@ -361,7 +360,6 @@ describe("Checkout fails to calculate fee", () => {
         EMAIL,
         VALID_CARD_DATA
       );
-      await tryHandlePspPickerPage();
 
       const pspNotFoundTitleId = "#pspNotFoundTitleId";
       const pspNotFoundTitleElem = await page.waitForSelector(
@@ -534,7 +532,6 @@ describe("Checkout Payment - PSP Selection Flow", () => {
     it("Should fill form, select PSP, and proceed with payment (IT)", async () => {
         selectLanguage("it");
         await fillAndSubmitCardDataForm(VALID_NOTICE_CODE, VALID_FISCAL_CODE, EMAIL, VALID_CARD_DATA);
-        await tryHandlePspPickerPage();
 
         expect(await page.url()).toContain(CHECKOUT_URL_PAYMENT_SUMMARY);
     });

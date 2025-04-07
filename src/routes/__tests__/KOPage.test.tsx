@@ -1,6 +1,8 @@
 import React from "react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
+import { screen } from "@testing-library/dom";
+import { waitFor } from "@testing-library/react";
 import {
   clearSessionItem,
   getSessionItem,
@@ -66,12 +68,19 @@ describe("KOPage", () => {
     (clearStorage as jest.Mock).mockReturnValue(true);
   });
 
-  test("Cart must be initialized from session", () => {
+  test("Cart must be initialized from session", async () => {
     renderWithReduxProvider(
       <MemoryRouter>
         <KOPage />
       </MemoryRouter>
     );
+
+    // Verify that the button text changes depending on the cart value
+    await waitFor(() => {
+      expect(
+        screen.getByText(/paymentResponsePage.buttons.continue/i)
+      ).toBeInTheDocument();
+    });
 
     // Ensure that `getSessionItem` is called with "cart"
     expect(getSessionItem).toHaveBeenCalledWith("cart");
