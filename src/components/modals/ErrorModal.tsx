@@ -33,7 +33,7 @@ function ErrorModal(props: {
 }) {
   const { t } = useTranslation();
   const theme = useTheme();
-  const [copy, setCopy] = React.useState<string>(t("clipboard.copy"));
+  const [copy, setCopy] = React.useState(t("clipboard.copy"));
 
   const notListed = (faultCategory: string) =>
     PaymentCategoryResponses[
@@ -126,7 +126,7 @@ function ErrorModal(props: {
               borderLeft: "4px solid",
             }}
             action={
-              <Tooltip title={copy} onMouseOver={(e) => e.stopPropagation()}>
+              <Tooltip title={copy as any} onMouseOver={(e) => e.stopPropagation()}>
                 <Button
                   variant="text"
                   onClick={() => {
