@@ -25,9 +25,7 @@ export default function SessionExpiredPage() {
   const dispatch = useAppDispatch();
 
   const outcomeMessage = responseOutcome[4];
-  const [cart] = React.useState<Cart | undefined>(
-    getSessionItem(SessionItems.cart) as Cart | undefined
-  );
+  const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
 
   const performRedirect = () => {
     pipe(

@@ -114,7 +114,13 @@ export function clearSessionItem(name: SessionItems) {
 export const isStateEmpty = (item: SessionItems) => !getSessionItem(item);
 
 export const clearStorage = () => {
-  sessionStorage.clear();
+  // this set timeout will force JS to schedule this action
+  // aftear react 18 finishes it's core updates of components
+  // some of which are re-rendered even without the user interaction
+  // at mount time
+  setTimeout(()=>{
+    sessionStorage.clear();
+  },100);
 };
 
 export const clearStorageAndMaintainAuthData = () => {

@@ -23,9 +23,7 @@ export default function KOPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const [cart] = React.useState<Cart | undefined>(
-    getSessionItem(SessionItems.cart) as Cart | undefined
-  );
+  const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
 
   const performRedirect = () => {
     pipe(
