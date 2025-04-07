@@ -126,7 +126,10 @@ function ErrorModal(props: {
               borderLeft: "4px solid",
             }}
             action={
-              <Tooltip title={copy as any} onMouseOver={(e) => e.stopPropagation()}>
+              <Tooltip
+                title={copy as any}
+                onMouseOver={(e) => e.stopPropagation()}
+              >
                 <Button
                   variant="text"
                   onClick={() => {
