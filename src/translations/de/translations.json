@@ -333,11 +333,11 @@
     "email": "Sende Bestätigung an:",
     "modal": {
       "body": "Jeder Geldtransfer (Bargeld oder elektronisches Geld) ist mit Kosten verbunden, die gewährleisten, dass die Zahlung sicher und erfolgreich ist.\nJeder Anbieter (oder PSP, Payment Service Provider) erhebt Kosten, die von seiner eigenen Geschäftspolitik und seinen Vertragsbedingungen abhängen.\nMit pagoPA sind diese Kosten transparent und der Bürger kann die bequemste und günstigste Option frei wählen. Weitere Informationen findest du auf der Seite ",
-      "cancelBody": "Wenn du dich jetzt abmeldest, gehen alle bisher eingegebenen Daten verloren und du musst von vorne anfangen.",
+      "cancelBody": "Wenn du dich jetzt beendest, gehen alle bisher eingegebenen Daten verloren und du musst von vorne anfangen.",
       "cancelButton": "Nein, ich habe es mir anders überlegt",
-      "cancelTitle": "Deine Zahlung ist in Bearbeitung. Bist du sicher, dass du dich abmelden möchtest?",
+      "cancelTitle": "Deine Zahlung ist in Bearbeitung. Bist du sicher, dass du dich beenden möchtest?",
       "link": "Kostentransparenz",
-      "submitButton": "Abmelden",
+      "submitButton": "Beenden",
       "title": "Weshalb fallen Gebühren an?"
     },
     "psp": "Erhoben von",
