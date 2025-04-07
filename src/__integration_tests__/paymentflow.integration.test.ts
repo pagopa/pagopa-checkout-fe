@@ -10,6 +10,7 @@ import {
   cancelPaymentKO,
   selectLanguage,
   fillAndSubmitCardDataForm,
+  tryHandlePspPickerPage,
   fillAndSubmitSatispayPayment,
   checkPspListNames,
   checkPspListFees,
@@ -215,6 +216,7 @@ describe("Checkout payment activation failure tests", () => {
   ])("Should fail a card payment ACTIVATION and get PPT_WISP_SESSIONE_SCONOSCIUTA", async (lang, translation) => {
     selectLanguage(lang);
     await fillAndSubmitCardDataForm(FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA, VALID_FISCAL_CODE, EMAIL, VALID_CARD_DATA);
+    await tryHandlePspPickerPage();
     const titleElem = await page.waitForSelector("#sessionExpiredMessageTitle")
     const bodyElem = await page.waitForSelector("#sessionExpiredMessageBody")
     const title = await titleElem.evaluate((el) => el.textContent)
@@ -359,6 +361,7 @@ describe("Checkout fails to calculate fee", () => {
         EMAIL,
         VALID_CARD_DATA
       );
+      await tryHandlePspPickerPage();
 
       const pspNotFoundTitleId = "#pspNotFoundTitleId";
       const pspNotFoundTitleElem = await page.waitForSelector(
@@ -530,21 +533,8 @@ describe("PSP list tests", () => {
 describe("Checkout Payment - PSP Selection Flow", () => {
     it("Should fill form, select PSP, and proceed with payment (IT)", async () => {
         selectLanguage("it");
-
         await fillAndSubmitCardDataForm(VALID_NOTICE_CODE, VALID_FISCAL_CODE, EMAIL, VALID_CARD_DATA);
-
-        const radioButtonsSelector = 'svg[data-testid="RadioButtonUncheckedIcon"]';
-        await page.waitForSelector(radioButtonsSelector);
-
-        const radioButtons = await page.$$(radioButtonsSelector);
-        expect(radioButtons.length).toBeGreaterThan(0);
-        expect(await page.url()).toContain(CHECKOUT_URL_PSP_LIST);
-
-        await radioButtons[0].click();
-
-        const continueBtnSelector = "#paymentPspListPageButtonContinue";
-        await page.waitForSelector(continueBtnSelector, { visible: true });
-        await page.click(continueBtnSelector);
+        await tryHandlePspPickerPage();
 
         expect(await page.url()).toContain(CHECKOUT_URL_PAYMENT_SUMMARY);
     });
@@ -605,6 +595,12 @@ describe("Checkout Payment - PSP Selection Flow", () => {
             EMAIL,
             VALID_CARD_DATA
         );
+<<<<<<< HEAD
+=======
+
+        await page.waitForNavigation(); // for CHECKOUT_URL_PSP_LIST (auto redirect for response with only one bundle in calculate fee response)
+        await page.waitForNavigation(); // for CHECKOUT_URL_PAYMENT_SUMMARY
+>>>>>>> ef450adc9f4c33c9b7f34e96ecd81c58c2d28a3e
 
         expect(await page.url()).toContain(CHECKOUT_URL_PAYMENT_SUMMARY);
     });
