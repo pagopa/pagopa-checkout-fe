@@ -1,7 +1,7 @@
 import React from "react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
-import { act, fireEvent } from "@testing-library/react";
+import { act, fireEvent, screen } from "@testing-library/react";
 import {
   PaymentFormFields,
   PaymentInfo,
@@ -116,5 +116,22 @@ describe("PaymentSummaryPage", () => {
       fireEvent.click(submit!);
     });
     // expect(navigate).toHaveBeenCalled();
+  });
+
+  test.skip("click info button show modal", () => {
+    act(() => {
+      const { container } = renderWithReduxProvider(
+        <MemoryRouter>
+          <PaymentSummaryPage />
+        </MemoryRouter>
+      );
+      // Query the input fields by their id
+      const info = container.querySelector("#infoButton");
+      expect(info).toBeInTheDocument();
+      expect(info).toBeEnabled();
+      fireEvent.click(info!!);
+      const dialogTitle = screen.findByText("paymentSummaryPage.dialog.title");
+      expect(dialogTitle).toBeVisible();
+    });
   });
 });

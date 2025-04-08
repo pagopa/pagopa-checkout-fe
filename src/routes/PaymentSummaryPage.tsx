@@ -66,6 +66,7 @@ export default function PaymentSummaryPage() {
         icon={<EuroIcon sx={iconStyle} />}
         endAdornment={
           <IconButton
+            id="infoButton"
             color="primary"
             sx={{ mr: 2 }}
             onClick={handleInfoClick}
