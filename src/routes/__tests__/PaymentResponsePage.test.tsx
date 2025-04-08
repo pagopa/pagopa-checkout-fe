@@ -1,7 +1,7 @@
 import React from "react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
-import { act, screen } from "@testing-library/react";
+import { act } from "@testing-library/react";
 import {
   PaymentInfo,
   PaymentMethod,
