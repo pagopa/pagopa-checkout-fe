@@ -4,7 +4,6 @@ import { MemoryRouter } from "react-router-dom";
 import { renderWithReduxProvider } from "../../utils/testRenderProviders";
 import PaymentOutlet from "../PaymentOutlet";
 
-
 describe("PaymentOutlet", () => {
   test("Render page", async () => {
     // When getEcommercePaymentInfoTask is invoked, return a failed TaskEither.
@@ -14,5 +13,5 @@ describe("PaymentOutlet", () => {
       </MemoryRouter>
     );
     expect(container).toBeDefined();
-});
+  });
 });

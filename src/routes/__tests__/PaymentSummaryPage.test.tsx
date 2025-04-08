@@ -129,7 +129,7 @@ describe("PaymentSummaryPage", () => {
       const info = container.querySelector("#infoButton");
       expect(info).toBeInTheDocument();
       expect(info).toBeEnabled();
-      fireEvent.click(info!!);
+      fireEvent.click(info!);
       const dialogTitle = screen.findByText("paymentSummaryPage.dialog.title");
       expect(dialogTitle).toBeVisible();
     });
