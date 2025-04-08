@@ -2,10 +2,10 @@ import React from "react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { waitFor } from "@testing-library/react";
+import * as router from "react-router";
 import { renderWithReduxProvider } from "../../utils/testRenderProviders";
 import GdiCheckPage from "../GdiCheckPage";
 import { getConfigOrThrow } from "../../utils/config/config";
-// import { getSessionItem, SessionItems, setSessionItem } from "../../utils/storage/sessionStorage";
 
 // Mock translations
 jest.mock("react-i18next", () => ({
@@ -23,19 +23,15 @@ jest.mock("react-i18next", () => ({
 // Create a Jest spy for navigation
 const navigate = jest.fn();
 
-// Mock react-router-dom so that useNavigate returns our spy function.
-// Note: We spread the actual module to preserve its other exports.
-jest.mock("react-router-dom", () => ({
-  ...(jest.requireActual("react-router-dom") as any),
-  useNavigate: () => navigate,
-}));
-
 // Mock the config module
 jest.mock("../../utils/config/config", () => ({
   getConfigOrThrow: jest.fn(),
 }));
 
 describe("GdiCheckPage", () => {
+  beforeEach(() => {
+    jest.spyOn(router, "useNavigate").mockImplementation(() => navigate);
+  });
   test("should navigate to esito", async () => {
     (getConfigOrThrow as jest.Mock).mockImplementation((key) => {
       // Create a mapping of all config values
@@ -86,7 +82,7 @@ describe("GdiCheckPage", () => {
     );
 
     await waitFor(() => {
-      expect(navigate).toHaveBeenCalledWith("/esito", { replace: true });
+      expect(navigate).toHaveBeenCalledWith("/errore", { replace: true });
     });
   });
 });

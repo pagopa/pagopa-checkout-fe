@@ -6,6 +6,7 @@ import {
   PaymentFormFields,
   PaymentInfo,
 } from "features/payment/models/paymentModel";
+import * as router from "react-router";
 import { renderWithReduxProvider } from "../../utils/testRenderProviders";
 import PaymentSummaryPage from "../PaymentSummaryPage";
 import { AmountEuroCents } from "../../../generated/definitions/payment-ecommerce/AmountEuroCents";
@@ -14,7 +15,6 @@ import {
   getSessionItem,
   SessionItems,
 } from "../../utils/storage/sessionStorage";
-// import { getSessionItem, SessionItems, setSessionItem } from "../../utils/storage/sessionStorage";
 
 // Mock translations
 jest.mock("react-i18next", () => ({
@@ -66,18 +66,12 @@ const mockGetSessionItem = (item: SessionItems) => {
 // Create a Jest spy for navigation
 const navigate = jest.fn();
 
-// Mock react-router-dom so that useNavigate returns our spy function.
-// Note: We spread the actual module to preserve its other exports.
-jest.mock("react-router-dom", () => ({
-  ...(jest.requireActual("react-router-dom") as any),
-  useNavigate: () => navigate,
-}));
-
 describe("PaymentSummaryPage", () => {
   beforeEach(() => {
     // Clear previous calls to our spy navigate function before each test
     // navigate.mockClear();
     (getSessionItem as jest.Mock).mockImplementation(mockGetSessionItem);
+    jest.spyOn(router, "useNavigate").mockImplementation(() => navigate);
   });
   // CANNOT TEST NAVIGATE HERE
   test("click back goes to inserisci dati avviso page", () => {
@@ -96,9 +90,8 @@ describe("PaymentSummaryPage", () => {
       expect(submit).toBeEnabled();
       fireEvent.click(back!);
     });
-    //    expect(navigate).toHaveBeenCalledWith(-1);
+    expect(navigate).toHaveBeenCalledWith(-1);
   });
-  // CANNOT TEST NAVIGATE HERE
   test("click back goes to inserisci dati avviso page", () => {
     act(() => {
       const { container } = renderWithReduxProvider(
@@ -115,7 +108,7 @@ describe("PaymentSummaryPage", () => {
       expect(submit).toBeEnabled();
       fireEvent.click(submit!);
     });
-    // expect(navigate).toHaveBeenCalled();
+    expect(navigate).toHaveBeenCalledWith("/inserisci-email");
   });
 
   test.skip("click info button show modal", () => {

@@ -2,9 +2,9 @@ import React from "react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { act, fireEvent, screen } from "@testing-library/react";
+import * as router from "react-router";
 import { renderWithReduxProvider } from "../../utils/testRenderProviders";
 import PaymentEmailPage from "../PaymentEmailPage";
-// import { getSessionItem, SessionItems, setSessionItem } from "../../utils/storage/sessionStorage";
 
 // Mock translations
 jest.mock("react-i18next", () => ({
@@ -24,10 +24,6 @@ const navigate = jest.fn();
 
 // Mock react-router-dom so that useNavigate returns our spy function.
 // Note: We spread the actual module to preserve its other exports.
-jest.mock("react-router-dom", () => ({
-  ...(jest.requireActual("react-router-dom") as any),
-  useNavigate: () => navigate,
-}));
 
 jest.mock("../../utils/storage/sessionStorage", () => ({
   getSessionItem: jest.fn(),
@@ -43,20 +39,10 @@ jest.mock("../../utils/eventListeners", () => ({
   onBrowserUnload: jest.fn(),
   removeEventListener: jest.fn(),
 }));
-/*
-  const mockGetSessionItem = (item: SessionItems) => {
-    switch (item) {
-      case "useremail":
-        return undefined;
-      default:
-        return undefined;
-    }
-  }; */
 
 describe("PaymentEmailPage", () => {
   beforeEach(() => {
-    // Clear previous calls to our spy navigate function before each test
-    navigate.mockClear();
+    jest.spyOn(router, "useNavigate").mockImplementation(() => navigate);
   });
   // This test fails beacause the submit button seems to be disabled due to different email between the 2 fields
   test.skip("test fill email", async () => {

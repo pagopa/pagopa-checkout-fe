@@ -7,6 +7,7 @@ import {
   PaymentMethod,
   PaymentMethodInfo,
 } from "features/payment/models/paymentModel";
+import * as router from "react-router";
 import { renderWithReduxProvider } from "../../utils/testRenderProviders";
 import PaymentCheckPage from "../PaymentCheckPage";
 import {
@@ -26,6 +27,7 @@ import { ClientIdEnum } from "../../../generated/definitions/payment-ecommerce/N
 import { AmountEuroCents } from "../../../generated/definitions/payment-ecommerce/AmountEuroCents";
 import { Bundle } from "../../../generated/definitions/payment-ecommerce-v2/Bundle";
 import { SessionPaymentMethodResponse } from "../../../generated/definitions/payment-ecommerce/SessionPaymentMethodResponse";
+
 // Create a Jest spy for navigation
 const navigate = jest.fn();
 
@@ -176,9 +178,7 @@ const mockGetSessionItem = (item: SessionItems) => {
 
 describe("PaymentCheckPage", () => {
   beforeEach(() => {
-    // Clear previous calls to our spy navigate function before each test
-    navigate.mockClear();
-
+    jest.spyOn(router, "useNavigate").mockImplementation(() => navigate);
     (getSessionItem as jest.Mock).mockImplementation(mockGetSessionItem);
   });
 
@@ -211,7 +211,7 @@ describe("PaymentCheckPage", () => {
     expect(proceedToPayment).toHaveBeenCalledTimes(0);
   });
 
-  test.skip("test edit cardbutton should navigate to payment choice page", async () => {
+  test("test edit cardbutton should navigate to payment choice page", async () => {
     const { container } = renderWithReduxProvider(
       <MemoryRouter>
         <PaymentCheckPage />
@@ -230,7 +230,9 @@ describe("PaymentCheckPage", () => {
     fireEvent.click(cardEditBUtton!);
 
     await waitFor(() => {
-      expect(navigate).toHaveBeenCalledWith("scegli-metodo", { replace: true });
+      expect(navigate).toHaveBeenCalledWith("/scegli-metodo", {
+        replace: true,
+      });
     });
   });
 
