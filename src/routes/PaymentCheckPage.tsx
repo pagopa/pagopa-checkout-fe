@@ -310,6 +310,7 @@ export default function PaymentCheckPage() {
         }}
         endAdornment={
           <Button
+            id="cardEdit"
             variant="text"
             onClick={onCardEdit}
             startIcon={<EditIcon />}

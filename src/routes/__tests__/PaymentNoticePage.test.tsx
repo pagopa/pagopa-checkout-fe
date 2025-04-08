@@ -1,7 +1,7 @@
 import React from "react";
 import "@testing-library/jest-dom";
-import { fireEvent, waitFor, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import { fireEvent, waitFor, screen } from "@testing-library/react";
 import * as TE from "fp-ts/TaskEither";
 import { getSessionItem } from "../../utils/storage/sessionStorage";
 import { getEcommercePaymentInfoTask } from "../../utils/api/helper";
