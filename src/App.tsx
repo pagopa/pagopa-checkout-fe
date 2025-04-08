@@ -116,7 +116,12 @@ export function App() {
   return (
     <ThemeProvider theme={checkoutTheme}>
       <CssBaseline />
-      <BrowserRouter>
+      <BrowserRouter
+        future={{
+          v7_relativeSplatPath: true,
+          v7_startTransition: true,
+        }}
+      >
         <Layout fixedFooterPages={fixedFooterPages}>
           <Routes>
             <Route path="/" element={<PaymentOutlet />}>

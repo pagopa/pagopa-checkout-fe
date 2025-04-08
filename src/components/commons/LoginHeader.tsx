@@ -219,7 +219,7 @@ export default function LoginHeader() {
         userActions={[
           {
             id: "logout",
-            icon: <Logout fontSize="small" />,
+            icon: <Logout id="logout-button-icon" fontSize="small" />,
             label: t("mainPage.header.logout"),
             onClick: checkTransactionAndHandleLogout,
           },
