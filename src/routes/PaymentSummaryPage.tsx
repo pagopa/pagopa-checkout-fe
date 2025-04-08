@@ -99,6 +99,7 @@ export default function PaymentSummaryPage() {
         submitTitle="paymentSummaryPage.buttons.submit"
         cancelTitle="paymentSummaryPage.buttons.cancel"
         idSubmit="paymentSummaryButtonPay"
+        idCancel="paymentSummaryButtonBack"
         disabledSubmit={false}
         handleSubmit={onSubmit}
         handleCancel={() => navigate(-1)}
