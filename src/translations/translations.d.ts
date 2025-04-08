@@ -465,4 +465,12 @@ interface Translation {
     HF0009: string;
     HF0001: string;
   };
+  userSession: {
+    logoutModal: {
+      title: string;
+      body: string;
+      submitButton: string;
+      cancelButton: string;
+    };
+  };
 }
