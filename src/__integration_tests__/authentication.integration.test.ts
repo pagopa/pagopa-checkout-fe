@@ -519,6 +519,8 @@ describe("Checkout authentication tests", () => {
     const logoutButton = await logoutIconButton.getProperty('parentNode');
     console.log("wait for logout button");
     await logoutButton.click();
+    const confirmButton = await page.waitForSelector("#logoutModalConfirmButton");
+    await confirmButton.click();
     await new Promise((r) => setTimeout(r, 500));
     console.log("Logout completed");
         
@@ -555,6 +557,8 @@ describe("Checkout authentication tests", () => {
     const logoutButton = await logoutIconButton.getProperty('parentNode');
     console.log("wait for logout button");
     await logoutButton.click();
+    const confirmButton = await page.waitForSelector("#logoutModalConfirmButton");
+    await confirmButton.click();
     await new Promise((r) => setTimeout(r, 500));
     console.log("Logout completed");
         
@@ -624,6 +628,8 @@ describe("Logout tests", () => {
     const logoutButton = await page.waitForXPath('/html/body/div[3]/div[3]/ul/li');
     console.log("wait for logout button");
     await logoutButton.click();
+    const confirmButton = await page.waitForSelector("#logoutModalConfirmButton");
+    await confirmButton.click();
     await new Promise((r) => setTimeout(r, 500));
     expect(logout204).toBe(true);
   });
@@ -658,6 +664,8 @@ describe("Logout tests", () => {
     const logoutButtonIcon = await page.waitForSelector("#logout-button-icon");
     const logoutButton = await logoutButtonIcon.getProperty('parentNode');
     await logoutButton.click();
+    const confirmButton = await page.waitForSelector("#logoutModalConfirmButton");
+    await confirmButton.click();
     console.log("Search login button");
     await new Promise((r) => setTimeout(r, 500));
     const loginHeader = await page.waitForSelector("#login-header");
@@ -701,6 +709,8 @@ describe("Logout tests", () => {
     const logoutButtonIcon = await page.waitForSelector("#logout-button-icon");
     const logoutButton = await logoutButtonIcon.getProperty('parentNode');
     await logoutButton.click();
+    const confirmButton = await page.waitForSelector("#logoutModalConfirmButton");
+    await confirmButton.click();
     await new Promise((r) => setTimeout(r, 3100));
     console.log("Search login button")
     const loginHeader = await page.waitForSelector("#login-header");
@@ -891,5 +901,42 @@ describe("Logout tests", () => {
 
     await new Promise((r) => setTimeout(r, 500));
     expect(logout204).toBe(true);
+  });
+  
+  it.each([
+    ["it", itTranslation],
+    ["en", enTranslation],
+    ["fr", frTranslation],
+    ["de", deTranslation],
+    ["sl", slTranslation]
+  ])
+  ("Should remain on the same page in case of logout for no active transaction [%s]", async (lang, translation) => {
+    await selectLanguage(lang);
+    //Insert valid rptId and remain on payment form page
+    await fillPaymentNotificationForm(VALID_RPTID, VALID_FISCAL_CODE, false);
+
+    //Login
+    await clickLoginButton();
+
+    //Wait auth-callback page
+    await page.waitForNavigation();
+    //Wait return to main page
+    await page.waitForNavigation();
+    console.log("Login completed");
+
+    //Logout
+    const userButton = await getUserButton();
+    await userButton.click();
+    const logoutIconButton = await page.waitForSelector('[data-testid="LogoutIcon"]');
+    const logoutButton = await logoutIconButton.getProperty('parentNode');
+    await logoutButton.click();
+    console.log("logout button clicked");
+    await new Promise(r => setTimeout(r, 1000));
+    const logoutUserModalTitleElement = await page.waitForSelector("#logoutModalTitle");
+    const logoutModalTitle = await logoutUserModalTitleElement.evaluate((el) => el.textContent);
+    expect(logoutModalTitle).toBe(translation.userSession.logoutModal.title);
+    const confirmButton = await page.waitForSelector("#logoutModalConfirmButton");
+    await confirmButton.click();
+
   });
 });
