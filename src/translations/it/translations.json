@@ -335,9 +335,9 @@
     "email": "Invia esito a:",
     "modal": {
       "body": "Qualsiasi operazione di trasferimento di denaro (in contanti o in moneta elettronica) ha un costo, che serve a garantirti che quel pagamento sia sicuro e arrivi a buon fine.\nOgni gestore (o PSP, Prestatore di Servizi di Pagamento) propone un costo, a seconda delle proprie politiche commerciali e condizioni contrattuali.\nCon pagoPA, questi costi sono trasparenti e il cittadino può scegliere liberamente l'opzione più comoda e conveniente. Per saperne di più, consulta la pagina ",
-      "cancelBody": "Tutti i dati inseriti andranno persi.",
+      "cancelBody": "Se esci, tutti i dati inseriti fino ad ora verranno cancellati e dovrai ricominciare da capo",
       "cancelButton": "No, ho cambiato idea",
-      "cancelTitle": "Uscire dal pagamento in corso?",
+      "cancelTitle": "Il tuo pagamento è in corso, vuoi davvero uscire?",
       "link": "Trasparenza Costi",
       "submitButton": "Esci",
       "title": "Perché c'è un costo di commissione?"
@@ -466,5 +466,13 @@
     "HF0006": "Inserisci mm/aa",
     "HF0007": "Inserisci come riportato sulla carta",
     "HF0009": "Verifica 3DS fallita"
+  },
+  "userSession": {
+    "logoutModal": {
+      "title": "Vuoi davvero uscire?",
+      "body": "Potrai comunque pagare anche senza accedere.",
+      "submitButton": "Esci",
+      "cancelButton": "Annulla"
+    }
   }
 }
