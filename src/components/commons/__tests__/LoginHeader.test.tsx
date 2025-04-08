@@ -188,7 +188,10 @@ describe("LoginHeader", () => {
     await new Promise((r) => setTimeout(r, 250));
     expect(screen.getByText("userSession.logoutModal.title")).toBeVisible();
     expect(screen.getByText("userSession.logoutModal.body")).toBeVisible();
-    const logoutConfirmButton = getById(baseElement, "logoutModalConfirmButton");
+    const logoutConfirmButton = getById(
+      baseElement,
+      "logoutModalConfirmButton"
+    );
     if (!logoutConfirmButton) {
       throw Error("Cannot find logout confirm button");
     }
