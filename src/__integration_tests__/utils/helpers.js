@@ -8,7 +8,6 @@ export const payNotice = async (
   const payBtnSelector = "#paymentCheckPageButtonPay";
   const resultTitleSelector = "#responsePageMessageTitle";
   await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
-  await tryHandlePspPickerPage();
   const payBtn = await page.waitForSelector(payBtnSelector);
   await payBtn.click();
   await page.waitForNavigation();
@@ -32,7 +31,6 @@ export const activatePaymentAndGetError = async (
   selectorId
 ) => {
   await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
-  await tryHandlePspPickerPage();
   const errorMessageElem = await page.waitForSelector(selectorId);
   return await errorMessageElem.evaluate((el) => el.textContent);
 };
@@ -46,7 +44,6 @@ export const authorizePaymentAndGetError = async (
 ) => {
   const payBtnSelector = "#paymentCheckPageButtonPay";
   await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
-  await tryHandlePspPickerPage();
   const payBtn = await page.waitForSelector(payBtnSelector);
   await payBtn.click();
   const errorMessageElem = await page.waitForSelector(
@@ -63,7 +60,6 @@ export const checkPspDisclaimerBeforeAuthorizePayment = async (
 ) => {
   const pspDisclaimerSelectorById = "#pspDisclaimer";
   await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
-  await tryHandlePspPickerPage();
   const disclaimerElement = await page.waitForSelector(
     pspDisclaimerSelectorById
   );
@@ -78,7 +74,6 @@ export const checkErrorOnCardDataFormSubmit = async (
 ) => {
   const errorMessageTitleSelector = "#iframeCardFormErrorTitleId";
   await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
-  await tryHandlePspPickerPage();
   const errorMessageElem = await page.waitForSelector(
     errorMessageTitleSelector
   );
@@ -174,6 +169,7 @@ export const fillAndSubmitCardDataForm = async (
   await fillEmailForm(email);
   await choosePaymentMethod("CP");
   await fillCardDataForm(cardData);
+  await tryHandlePspPickerPage();
 };
 
 export const tryHandlePspPickerPage = async ()=>{
@@ -189,22 +185,26 @@ export const tryHandlePspPickerPage = async ()=>{
 
   // this step needs to be skipped during tests
   // in which we trigger an error modal in the previous page
-  if(page.url().includes("lista-psp")){
+  if(await page.url().includes("lista-psp")){
     await selectPspOnPspPickerPage();
   }
 }
 
 export const selectPspOnPspPickerPage = async () => {
-  const pspPickerRadio = await page.waitForSelector("#psp-radio-button-unchecked", {
-    visible: true,
-  });
-  await pspPickerRadio.click();
-
-  const continueButton = await page.waitForSelector("#paymentPspListPageButtonContinue", {
-    visible: true,
-  });
+  try{
+    const pspPickerRadio = await page.waitForSelector("#psp-radio-button-unchecked", {
+      visible: true, timeout: 500
+    });
+    await pspPickerRadio.click();
   
-  await continueButton.click();
+    const continueButton = await page.waitForSelector("#paymentPspListPageButtonContinue", {
+      visible: true, timeout: 500
+    });
+    
+    await continueButton.click();
+  }catch(e){
+    console.log("Buttons not found: this is caused by PSP page immediately navigate to the summary page (if 1 psp available)");
+  }
 }
 
 export const fillAndSubmitSatispayPayment = async (
@@ -307,7 +307,6 @@ export const cancelPaymentOK = async (
   const resultMessageXPath =
     "/html/body/div[1]/div/main/div/div/div/div[1]/div";
   await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
-  await tryHandlePspPickerPage();
   const paymentCheckPageButtonCancel = await page.waitForSelector(
     "#paymentCheckPageButtonCancel"
   );
@@ -315,6 +314,9 @@ export const cancelPaymentOK = async (
   const cancPayment = await page.waitForSelector("#confirm");
   await cancPayment.click();
   await page.waitForNavigation();
+  // this new timeout is needed for how react 18 handles the addition of animated content 
+  // to the page. Without it, the resultMessageXPath never resolves
+  await new Promise((r) => setTimeout(r, 200));
   const message = await page.waitForXPath(resultMessageXPath);
   return await message.evaluate((el) => el.textContent);
 };
@@ -358,7 +360,6 @@ export const checkPspListFees = async (
   const pspFeeSortButtonId = "#sortByFee";
 
   await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
-  await tryHandlePspPickerPage();
 
   const pspEditButton = await page.waitForSelector(pspEditButtonSelector, {clickable: true});
   await pspEditButton.click();
@@ -398,7 +399,6 @@ export const checkPspListNames = async (
   const pspFeeSortButtonId = "#sortByName";
 
   await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
-  await tryHandlePspPickerPage();
 
   const pspEditButton = await page.waitForSelector(pspEditButtonSelector, {visible: true, clickable: true});
   await pspEditButton.click();

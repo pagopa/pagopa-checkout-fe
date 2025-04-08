@@ -247,7 +247,6 @@ describe("Checkout authentication tests", () => {
 
     const currentUrl = await page.evaluate(() => location.href);
 
-
     expect(first504Response).toBe(true);
     expect(tokenCalls).toBe(2);
     expect(currentUrl).toBe(BASE_CALLBACK_URL_PAYMENT_DATA);
@@ -629,7 +628,7 @@ describe("Logout tests", () => {
     expect(logout204).toBe(true);
   });
 
-  it("Should invoke logout with 4xx error and only one temptative", async () => {
+  it("Should invoke logout with 4xx error and only try one attempt", async () => {
     await selectLanguage("it");
     let logout400 = false;
     let logutCount=0;
@@ -656,8 +655,8 @@ describe("Logout tests", () => {
     await page.waitForNavigation();
     const userButton = await getUserButton();
     await userButton.click();
-    const logoutButton = await page.waitForXPath('/html/body/div[5]/div[3]/ul/li');
-    console.log("wait for logout button");
+    const logoutButtonIcon = await page.waitForSelector("#logout-button-icon");
+    const logoutButton = await logoutButtonIcon.getProperty('parentNode');
     await logoutButton.click();
     console.log("Search login button");
     await new Promise((r) => setTimeout(r, 500));
@@ -698,8 +697,9 @@ describe("Logout tests", () => {
     await page.waitForNavigation();
     const userButton = await getUserButton();
     await userButton.click();
-    const logoutButton = await page.waitForXPath('/html/body/div[5]/div[3]/ul/li');
     console.log("wait for logout button");
+    const logoutButtonIcon = await page.waitForSelector("#logout-button-icon");
+    const logoutButton = await logoutButtonIcon.getProperty('parentNode');
     await logoutButton.click();
     await new Promise((r) => setTimeout(r, 3100));
     console.log("Search login button")
@@ -848,7 +848,6 @@ describe("Logout tests", () => {
     await page.waitForNavigation();
     console.log("Login completed");
     await fillAndSubmitCardDataForm(FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA, VALID_FISCAL_CODE, EMAIL, VALID_CARD_DATA);
-    await tryHandlePspPickerPage();
     expect(page.url()).toContain("/sessione-scaduta");
     await new Promise((r) => setTimeout(r, 500));
     expect(logout204).toBe(true);
