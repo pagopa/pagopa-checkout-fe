@@ -75,12 +75,12 @@ describe("PaymentSummaryPage", () => {
   });
   // CANNOT TEST NAVIGATE HERE
   test("click back goes to inserisci dati avviso page", () => {
+    const { container } = renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentSummaryPage />
+      </MemoryRouter>
+    );
     act(() => {
-      const { container } = renderWithReduxProvider(
-        <MemoryRouter>
-          <PaymentSummaryPage />
-        </MemoryRouter>
-      );
       // Query the input fields by their id
       const back = container.querySelector("#paymentSummaryButtonBack");
       const submit = container.querySelector("#paymentSummaryButtonPay");
@@ -93,12 +93,12 @@ describe("PaymentSummaryPage", () => {
     expect(navigate).toHaveBeenCalledWith(-1);
   });
   test("click back goes to inserisci dati avviso page", () => {
+    const { container } = renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentSummaryPage />
+      </MemoryRouter>
+    );
     act(() => {
-      const { container } = renderWithReduxProvider(
-        <MemoryRouter>
-          <PaymentSummaryPage />
-        </MemoryRouter>
-      );
       // Query the input fields by their id
       const back = container.querySelector("#paymentSummaryButtonBack");
       const submit = container.querySelector("#paymentSummaryButtonPay");
@@ -112,12 +112,12 @@ describe("PaymentSummaryPage", () => {
   });
 
   test.skip("click info button show modal", () => {
+    const { container } = renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentSummaryPage />
+      </MemoryRouter>
+    );
     act(() => {
-      const { container } = renderWithReduxProvider(
-        <MemoryRouter>
-          <PaymentSummaryPage />
-        </MemoryRouter>
-      );
       // Query the input fields by their id
       const info = container.querySelector("#infoButton");
       expect(info).toBeInTheDocument();

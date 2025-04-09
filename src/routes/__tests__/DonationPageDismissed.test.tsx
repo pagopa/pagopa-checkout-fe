@@ -21,12 +21,12 @@ jest.mock("react-i18next", () => ({
 
 describe("DonationPageDismissed", () => {
   test("page go to iniziativa donazioni", async () => {
-    act(() => {
-      renderWithReduxProvider(
-        <MemoryRouter>
-          <DonationPageDismissed />
-        </MemoryRouter>
-      );
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <DonationPageDismissed />
+      </MemoryRouter>
+    );
+    await act(async () => {
       const dimissCta = screen.getByText("donationPage.dismissCTA");
       fireEvent.click(dimissCta);
     });

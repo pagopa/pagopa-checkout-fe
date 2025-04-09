@@ -148,12 +148,12 @@ describe("IFrameCardPage", () => {
   });
 
   test("test back button", async () => {
-    act(() => {
-      renderWithReduxProvider(
-        <MemoryRouter>
-          <IFrameCardPage />
-        </MemoryRouter>
-      );
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <IFrameCardPage />
+      </MemoryRouter>
+    );
+    await act(async () => {
       const back = screen.getByText("paymentNoticePage.formButtons.cancel");
       fireEvent.click(back);
     });
