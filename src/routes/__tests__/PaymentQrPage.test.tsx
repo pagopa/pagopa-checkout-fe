@@ -47,18 +47,18 @@ jest.mock("../../utils/config/config", () =>
 // Create a Jest spy for navigation
 const navigate = jest.fn();
 // Error with definition of worker
-describe.skip("PaymentQrPage", () => {
+describe("PaymentQrPage", () => {
   beforeEach(() => {
     jest.spyOn(router, "useNavigate").mockImplementation(() => navigate);
   });
 
-  test("should show link to go to manual enter", () => {
+  test.skip("should show link to go to manual enter", () => {
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentQrPage />
+      </MemoryRouter>
+    );
     act(() => {
-      renderWithReduxProvider(
-        <MemoryRouter>
-          <PaymentQrPage />
-        </MemoryRouter>
-      );
       const goToInserisciManualmente = screen.getByText(
         "paymentQrPage.navigate"
       );
