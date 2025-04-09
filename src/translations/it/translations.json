@@ -273,7 +273,7 @@
       "title": "Il metodo di pagamento non è supportato"
     },
     "17": {
-      "body": "Il pagamento non si è ancora concluso: riceverai a breve l’esito all'indirizzo {{useremail}}. L’operazione può richiedere fino a 15 minuti.",
+      "body": "Il pagamento non si è ancora concluso: se non ricevi l'esito positivo entro 15 minuti all'indirizzo {{useremail}} riprova di nuovo.",
       "title": "Attendi la conferma del pagamento"
     },
     "18": {
