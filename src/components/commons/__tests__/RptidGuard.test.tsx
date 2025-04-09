@@ -1,25 +1,26 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import RptidGuard from '../RptidGuard';
+import React from "react";
+import { render, screen } from "@testing-library/react";
+import "@testing-library/jest-dom";
+// Import the mocked function
+import { useParams } from "react-router-dom";
+import RptidGuard from "../RptidGuard";
 
 // Mock only the specific functions you need
-jest.mock('react-router-dom', () => ({
+jest.mock("react-router-dom", () => ({
   useParams: jest.fn(),
-  Navigate: () => <div data-testid="navigate">Redirected to home</div>
+  Navigate: () => <div data-testid="navigate">Redirected to home</div>,
 }));
 
-// Import the mocked function
-import { useParams } from 'react-router-dom';
-
-describe('RptidGuard Component', () => {
+describe("RptidGuard Component", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('renders children when rptid is a valid 29-digit number', () => {
+  it("renders children when rptid is a valid 29-digit number", () => {
     // Mock useParams to return a valid rptid
-    (useParams as jest.Mock).mockReturnValue({ rptid: '12345678901234567890123456789' });
+    (useParams as jest.Mock).mockReturnValue({
+      rptid: "12345678901234567890123456789",
+    });
 
     render(
       <RptidGuard>
@@ -27,13 +28,13 @@ describe('RptidGuard Component', () => {
       </RptidGuard>
     );
 
-    expect(screen.getByText('Protected Content')).toBeInTheDocument();
-    expect(screen.queryByTestId('navigate')).not.toBeInTheDocument();
+    expect(screen.getByText("Protected Content")).toBeInTheDocument();
+    expect(screen.queryByTestId("navigate")).not.toBeInTheDocument();
   });
 
   it('navigates to "/" when rptid is not a 29-digit number', () => {
     // Mock useParams to return an invalid rptid
-    (useParams as jest.Mock).mockReturnValue({ rptid: '123456' });
+    (useParams as jest.Mock).mockReturnValue({ rptid: "123456" });
 
     render(
       <RptidGuard>
@@ -41,13 +42,15 @@ describe('RptidGuard Component', () => {
       </RptidGuard>
     );
 
-    expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
-    expect(screen.getByTestId('navigate')).toBeInTheDocument();
+    expect(screen.queryByText("Protected Content")).not.toBeInTheDocument();
+    expect(screen.getByTestId("navigate")).toBeInTheDocument();
   });
 
   it('navigates to "/" when rptid contains non-numeric characters', () => {
     // Mock useParams to return an rptid with non-numeric characters
-    (useParams as jest.Mock).mockReturnValue({ rptid: '12345678901234567890123456abc' });
+    (useParams as jest.Mock).mockReturnValue({
+      rptid: "12345678901234567890123456abc",
+    });
 
     render(
       <RptidGuard>
@@ -55,8 +58,8 @@ describe('RptidGuard Component', () => {
       </RptidGuard>
     );
 
-    expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
-    expect(screen.getByTestId('navigate')).toBeInTheDocument();
+    expect(screen.queryByText("Protected Content")).not.toBeInTheDocument();
+    expect(screen.getByTestId("navigate")).toBeInTheDocument();
   });
 
   it('navigates to "/" when rptid is undefined', () => {
@@ -69,13 +72,15 @@ describe('RptidGuard Component', () => {
       </RptidGuard>
     );
 
-    expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
-    expect(screen.getByTestId('navigate')).toBeInTheDocument();
+    expect(screen.queryByText("Protected Content")).not.toBeInTheDocument();
+    expect(screen.getByTestId("navigate")).toBeInTheDocument();
   });
 
   it('navigates to "/" when rptid is more than 29 digits', () => {
     // Mock useParams to return an rptid with more than 29 digits
-    (useParams as jest.Mock).mockReturnValue({ rptid: '123456789012345678901234567890' });
+    (useParams as jest.Mock).mockReturnValue({
+      rptid: "123456789012345678901234567890",
+    });
 
     render(
       <RptidGuard>
@@ -83,13 +88,15 @@ describe('RptidGuard Component', () => {
       </RptidGuard>
     );
 
-    expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
-    expect(screen.getByTestId('navigate')).toBeInTheDocument();
+    expect(screen.queryByText("Protected Content")).not.toBeInTheDocument();
+    expect(screen.getByTestId("navigate")).toBeInTheDocument();
   });
 
-  it('validates rptid correctly with surrounding text', () => {
+  it("validates rptid correctly with surrounding text", () => {
     // The regex in RptidGuard uses \b word boundaries, so we should test this behavior
-    (useParams as jest.Mock).mockReturnValue({ rptid: 'prefix12345678901234567890123456789suffix' });
+    (useParams as jest.Mock).mockReturnValue({
+      rptid: "prefix12345678901234567890123456789suffix",
+    });
 
     render(
       <RptidGuard>
@@ -97,7 +104,7 @@ describe('RptidGuard Component', () => {
       </RptidGuard>
     );
 
-    expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
-    expect(screen.getByTestId('navigate')).toBeInTheDocument();
+    expect(screen.queryByText("Protected Content")).not.toBeInTheDocument();
+    expect(screen.getByTestId("navigate")).toBeInTheDocument();
   });
 });
