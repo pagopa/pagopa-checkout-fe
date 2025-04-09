@@ -1,6 +1,6 @@
 import React from "react";
 import "@testing-library/jest-dom";
-import { fireEvent } from "@testing-library/react";
+import { fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { Cart, PaymentNotice } from "features/payment/models/paymentModel";
 import { renderWithReduxProvider } from "../../utils/testRenderProviders";
@@ -10,16 +10,7 @@ import {
   getSessionItem,
 } from "../../utils/storage/sessionStorage";
 import { CartRequestReturnUrls } from "../../../generated/definitions/payment-ecommerce/CartRequest";
-
-// Create a Jest spy for navigation
-const navigate = jest.fn();
-
-// Mock react-router-dom so that useNavigate returns our spy function.
-// Note: We spread the actual module to preserve its other exports.
-jest.mock("react-router-dom", () => ({
-  ...(jest.requireActual("react-router-dom") as any),
-  useNavigate: () => navigate,
-}));
+import "jest-location-mock";
 
 // Mock translations and recaptcha
 jest.mock("react-i18next", () => ({
@@ -54,8 +45,6 @@ describe("CancelledPage", () => {
   beforeEach(() => {
     // Return an object for initial session values (making sure it’s not a boolean)
     (getSessionItem as jest.Mock).mockClear();
-    // Clear previous calls to our spy navigate function before each test
-    navigate.mockClear();
   });
 
   test("Should clear storage when landing on cancelled page. Button redirects to home page when cart is not in session storage", async () => {
@@ -73,7 +62,9 @@ describe("CancelledPage", () => {
 
     expect(redirectButton).toBeInTheDocument();
     fireEvent.click(redirectButton!);
-    expect(navigate).toHaveBeenCalledWith("/", { replace: true });
+    await waitFor(async () => {
+      expect(location.href).toBe("http://localhost/");
+    });
   });
 
   test("Should clear storage when landing on cancelled page. Button redirects to custom url when cart is in session storage", async () => {
@@ -93,7 +84,7 @@ describe("CancelledPage", () => {
     (getSessionItem as jest.Mock).mockImplementation((item) => {
       switch (item) {
         case "cart":
-          return JSON.parse(JSON.stringify(cart));
+          return cart;
         default:
           return undefined;
       }
@@ -113,9 +104,10 @@ describe("CancelledPage", () => {
       "paymentResponsePage.buttons.continue"
     );
     fireEvent.click(redirectButton!);
-    expect(navigate).not.toHaveBeenCalled();
-    /* await waitFor(() => {
-        expect(location.href).toBe(returnUrls.returnCancelUrl);
-      }); */
+    await waitFor(async () => {
+      expect(location.href).toBe(
+        cart.returnUrls.returnCancelUrl.toLowerCase() + "/"
+      );
+    });
   });
 });
