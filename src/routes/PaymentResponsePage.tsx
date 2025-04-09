@@ -136,7 +136,6 @@ export default function PaymentResponsePage() {
     });
     setLoading(false);
     window.removeEventListener("beforeunload", onBrowserUnload);
-    clearStorage();
   };
 
   const performCallsAndClearStorage = async () => {
