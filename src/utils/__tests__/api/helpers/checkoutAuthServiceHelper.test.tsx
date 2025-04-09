@@ -73,8 +73,8 @@ describe("Checkout auth service helper - proceedToLogin tests", () => {
   });
 
   it("Should call onError with ErrorsType.SERVER when api fail", async () => {
-    (apiCheckoutAuthServiceClientV1.authLogin as jest.Mock).mockReturnValue(
-      Promise.reject("Api error")
+    (apiCheckoutAuthServiceClientV1.authLogin as jest.Mock).mockRejectedValue(
+      "Api error"
     );
     await proceedToLogin({
       recaptchaRef: {} as ReCAPTCHA,
@@ -136,7 +136,7 @@ describe("Checkout auth service helper - authentication tests", () => {
   it("Should call onError with ErrorsType.GENERIC_ERROR when api fail", async () => {
     (
       apiCheckoutAuthServiceClientAuthTokenV1.authenticateWithAuthToken as jest.Mock
-    ).mockReturnValue(Promise.reject("Api error"));
+    ).mockRejectedValue("Api error");
     await authentication({
       authCode: "code",
       state: "state",
@@ -203,9 +203,9 @@ describe("Checkout auth service helper - checkLogout tests", () => {
 
   it("Should call onLogoutCallBack on logoutUser error", async () => {
     (getSessionItem as jest.Mock).mockReturnValue("authToken");
-    (apiCheckoutAuthServiceWithRetryV1.authLogout as jest.Mock).mockReturnValue(
-      Promise.reject("Api error")
-    );
+    (
+      apiCheckoutAuthServiceWithRetryV1.authLogout as jest.Mock
+    ).mockRejectedValue("Api error");
     await checkLogout(onLogoutCallBack);
     expect(onLogoutCallBack).toHaveBeenCalled();
   });
@@ -237,9 +237,9 @@ describe("Checkout auth service helper - logoutUser tests", () => {
 
   it("Should call onError with ErrorsType.GENERIC_ERROR when api fail", async () => {
     (getSessionItem as jest.Mock).mockReturnValue("authToken");
-    (apiCheckoutAuthServiceWithRetryV1.authLogout as jest.Mock).mockReturnValue(
-      Promise.reject("Api error")
-    );
+    (
+      apiCheckoutAuthServiceWithRetryV1.authLogout as jest.Mock
+    ).mockRejectedValue("Api error");
     await logoutUser({
       onResponse: mockOnResponse,
       onError: mockOnError,
@@ -297,9 +297,9 @@ describe("Checkout auth service helper - retrieveUserInfo tests", () => {
 
   it("Should call onError with ErrorsType.GENERIC_ERROR when api fail", async () => {
     (getSessionItem as jest.Mock).mockReturnValue("authToken");
-    (apiCheckoutAuthServiceWithRetryV1.authUsers as jest.Mock).mockReturnValue(
-      Promise.reject("Api error")
-    );
+    (
+      apiCheckoutAuthServiceWithRetryV1.authUsers as jest.Mock
+    ).mockRejectedValue("Api error");
     await retrieveUserInfo({
       onResponse: mockOnResponse,
       onError: mockOnError,

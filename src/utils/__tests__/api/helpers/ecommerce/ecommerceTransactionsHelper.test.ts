@@ -111,8 +111,8 @@ describe("Ecommerce transactions helper - activatePayment tests", () => {
 
   it("Should call onError with ErrorsType.GENERIC_ERROR when api fail", async () => {
     mockSetSessionForActivatePayment(false);
-    (apiPaymentEcommerceClientV2.newTransaction as jest.Mock).mockReturnValue(
-      Promise.reject("Api error")
+    (apiPaymentEcommerceClientV2.newTransaction as jest.Mock).mockRejectedValue(
+      "Api error"
     );
     await activatePayment({
       token: "token",
@@ -174,9 +174,9 @@ describe("Ecommerce transactions helper - activatePayment tests", () => {
 
   it("Should call onError with ErrorsType.GENERIC_ERROR when api fail on v3 api", async () => {
     mockSetSessionForActivatePayment(true);
-    (apiPaymentEcommerceClientV3.newTransactionV3 as jest.Mock).mockReturnValue(
-      Promise.reject("Api error")
-    );
+    (
+      apiPaymentEcommerceClientV3.newTransactionV3 as jest.Mock
+    ).mockRejectedValue("Api error");
     await activatePayment({
       token: "token",
       onResponseActivate: mockOnResponse,
@@ -284,8 +284,8 @@ describe("Ecommerce transactions helper - recaptchaTransaction tests", () => {
 
   it("Should call onError with ErrorsType.GENERIC_ERROR when activate payment fail", async () => {
     mockSetSessionForActivatePayment(false);
-    (apiPaymentEcommerceClientV2.newTransaction as jest.Mock).mockReturnValue(
-      Promise.reject("Api error")
+    (apiPaymentEcommerceClientV2.newTransaction as jest.Mock).mockRejectedValue(
+      "Api error"
     );
     await recaptchaTransaction({
       recaptchaRef: {} as ReCAPTCHA,
@@ -329,7 +329,7 @@ describe("Ecommerce transactions helper - proceedToPayment tests", () => {
     (getSessionItem as jest.Mock).mockReturnValueOnce(cardPaymentMethodMock);
     (
       apiPaymentEcommerceClientWithRetry.requestTransactionAuthorization as jest.Mock
-    ).mockReturnValue(Promise.reject("Api error"));
+    ).mockRejectedValue("Api error");
     await proceedToPayment(
       sessionItemTransactionMock as NewTransactionResponse,
       mockOnError,
@@ -379,7 +379,7 @@ describe("Ecommerce transactions helper - cancelPayment tests", () => {
     (getSessionItem as jest.Mock).mockReturnValue(sessionItemTransactionMock);
     (
       apiPaymentEcommerceClient.requestTransactionUserCancellation as jest.Mock
-    ).mockReturnValue(Promise.reject("Api error"));
+    ).mockRejectedValue("Api error");
     await cancelPayment(mockOnError, mockOnResponse);
     expect(mockOnError).toHaveBeenCalledWith(ErrorsType.CONNECTION, false);
   });

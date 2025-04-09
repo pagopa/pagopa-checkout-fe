@@ -89,7 +89,7 @@ describe("Ecommerce payment methods helper - retrieveCardData tests", () => {
   it("Should call onError with ErrorsType.SERVER when api fail", async () => {
     (
       apiPaymentEcommerceClient.getSessionPaymentMethod as jest.Mock
-    ).mockReturnValue(Promise.reject("Api error"));
+    ).mockRejectedValue("Api error");
     await retrieveCardData({
       paymentId: "paymentId",
       orderId: "orderId",
@@ -146,7 +146,7 @@ describe("Ecommerce payment methods helper - calculateFees tests", () => {
     (getSessionItem as jest.Mock).mockReturnValue(sessionItemTransactionMock);
     (
       apiPaymentEcommerceClientWithRetryV2.calculateFees as jest.Mock
-    ).mockReturnValue(Promise.reject("Api error"));
+    ).mockRejectedValue("Api error");
     await calculateFees({
       paymentId: "paymentId",
       bin: "bin",
@@ -227,7 +227,7 @@ describe("Ecommerce payment methods helper - getPaymentInstruments tests", () =>
   it("Should call onError with ErrorsType.STATUS_ERROR when api fail", async () => {
     (
       apiPaymentEcommerceClient.getAllPaymentMethods as jest.Mock
-    ).mockReturnValue(Promise.reject("Api error"));
+    ).mockRejectedValue("Api error");
     await getPaymentInstruments(
       {
         amount: 1,
@@ -266,7 +266,7 @@ describe("Ecommerce payment methods helper - getPaymentInstruments tests", () =>
     (getSessionItem as jest.Mock).mockReturnValue("authToken");
     (
       apiPaymentEcommerceClientV3.getAllPaymentMethodsV3 as jest.Mock
-    ).mockReturnValue(Promise.reject("Api error"));
+    ).mockRejectedValue("Api error");
     await getPaymentInstruments(
       {
         amount: 1,
@@ -318,7 +318,7 @@ describe("Ecommerce payment methods helper - npgSessionsFields tests", () => {
   it("Should call onError with NPG_NET_ERR when api fail", async () => {
     (
       apiPaymentEcommerceClientWithRetry.createSession as jest.Mock
-    ).mockReturnValue(Promise.reject("Api error"));
+    ).mockRejectedValue("Api error");
     await npgSessionsFields(mockOnError, mockOnResponse);
     expect(mockOnError).toHaveBeenCalledWith(NPG_NET_ERR.value);
   });
@@ -343,7 +343,7 @@ describe("Ecommerce payment methods helper - npgSessionsFields tests", () => {
     (getSessionItem as jest.Mock).mockReturnValue("authToken");
     (
       apiPaymentEcommerceClientWithRetryV3.createSessionV3 as jest.Mock
-    ).mockReturnValue(Promise.reject("Api error"));
+    ).mockRejectedValue("Api error");
     await npgSessionsFields(mockOnError, mockOnResponse);
     expect(mockOnError).toHaveBeenCalledWith(NPG_NET_ERR.value);
   });

@@ -39,9 +39,9 @@ describe("Checkout feature flags helper test", () => {
   });
 
   it("Should call onError when api fail", async () => {
-    (apiCheckoutFeatureFlags.evaluateFeatureFlags as jest.Mock).mockReturnValue(
-      Promise.reject("Api error")
-    );
+    (
+      apiCheckoutFeatureFlags.evaluateFeatureFlags as jest.Mock
+    ).mockRejectedValue("Api error");
     await evaluateFeatureFlag(
       "isFeatureFlagEnabled",
       mockOnError,

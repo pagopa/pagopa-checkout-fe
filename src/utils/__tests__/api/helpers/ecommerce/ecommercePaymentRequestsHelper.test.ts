@@ -67,7 +67,7 @@ describe("Ecommerce payment requests helper - getEcommercePaymentInfoTask tests"
   it("Should return error when api fail", async () => {
     (
       apiPaymentEcommerceClient.getPaymentRequestInfo as jest.Mock
-    ).mockReturnValue(Promise.reject("Api error"));
+    ).mockRejectedValue("Api error");
     const result = await pipe(
       getEcommercePaymentInfoTask(
         "77777777777302011511243515601" as RptId,
@@ -133,7 +133,7 @@ describe("Ecommerce payment requests helper - getEcommercePaymentInfoTask tests"
     (getSessionItem as jest.Mock).mockReturnValue("authToken");
     (
       apiPaymentEcommerceClientV3.getPaymentRequestInfoV3 as jest.Mock
-    ).mockReturnValue(Promise.reject("Api error"));
+    ).mockRejectedValue("Api error");
     const result = await pipe(
       getEcommercePaymentInfoTask(
         "77777777777302011511243515601" as RptId,
@@ -219,8 +219,8 @@ describe("Ecommerce payment requests helper - getCarts tests", () => {
   });
 
   it("Should call onError with ErrorsType.STATUS_ERROR when api fail", async () => {
-    (apiPaymentEcommerceClient.GetCarts as jest.Mock).mockReturnValue(
-      Promise.reject("Api error")
+    (apiPaymentEcommerceClient.GetCarts as jest.Mock).mockRejectedValue(
+      "Api error"
     );
     await getCarts("cartId", mockOnError, mockOnResponse);
     expect(mockOnError).toHaveBeenCalledWith(ErrorsType.STATUS_ERROR);
