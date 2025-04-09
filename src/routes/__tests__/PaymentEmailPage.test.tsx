@@ -45,18 +45,19 @@ describe("PaymentEmailPage", () => {
     jest.spyOn(router, "useNavigate").mockImplementation(() => navigate);
   });
   // This test fails beacause the submit button seems to be disabled due to different email between the 2 fields
-  test.skip("test fill email", async () => {
+  test("test fill email", async () => {
     // (getSessionItem as jest.Mock).mockReturnValue(mockGetSessionItem);
     // (setSessionItem as jest.Mock).mockReturnValue(() => {});
+
+    const { container } = renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentEmailPage />
+      </MemoryRouter>
+    );
+    // Query the input fields by their id
+    const email = container.querySelector("#email");
+    const confirmEmail = container.querySelector("#confirmEmail");
     await act(async () => {
-      const { container } = renderWithReduxProvider(
-        <MemoryRouter>
-          <PaymentEmailPage />
-        </MemoryRouter>
-      );
-      // Query the input fields by their id
-      const email = container.querySelector("#email");
-      const confirmEmail = container.querySelector("#confirmEmail");
       // Populate the form fields
       fireEvent.change(email!, {
         target: { value: "gianluca.ciuffa@pagopa.it" },
@@ -65,35 +66,35 @@ describe("PaymentEmailPage", () => {
         target: { value: "gianluca.ciuffa@pagopa.it" },
       });
 
-      // const submit = screen.getByText("paymentEmailPage.formButtons.submit");
-      // fireEvent.click(submit);
+      const submit = screen.getByText("paymentEmailPage.formButtons.submit");
+      fireEvent.click(submit);
     });
     // const addressDiff = screen.getByText("paymentEmailPage.formErrors.notEqual");
     // expect(addressDiff).toBeVisible();
-    expect(navigate).toHaveBeenCalled();
+    expect(navigate).toHaveBeenCalledWith("/scegli-metodo");
   });
 
   test("test different email", async () => {
+    const { container } = renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentEmailPage />
+      </MemoryRouter>
+    );
+    // Query the input fields by their id
+    const email = container.querySelector("#email");
+    const confirmEmail = container.querySelector("#confirmEmail");
+    // Populate the form fields
     await act(async () => {
-      const { container } = renderWithReduxProvider(
-        <MemoryRouter>
-          <PaymentEmailPage />
-        </MemoryRouter>
-      );
-      // Query the input fields by their id
-      const email = container.querySelector("#email");
-      const confirmEmail = container.querySelector("#confirmEmail");
-      // Populate the form fields
       fireEvent.change(email!, {
         target: { value: "gtest1@pagopa.it" },
       });
       fireEvent.change(confirmEmail!, {
         target: { value: "test2@pagopa.it" },
       });
-
-      // const submit = screen.getByText("paymentEmailPage.formButtons.submit");
-      // fireEvent.click(submit);
+      const event = new KeyboardEvent("keydown", { keyCode: 13 });
+      confirmEmail!.dispatchEvent(event);
     });
+
     const addressDiff = screen.getByText(
       "paymentEmailPage.formErrors.notEqual"
     );
