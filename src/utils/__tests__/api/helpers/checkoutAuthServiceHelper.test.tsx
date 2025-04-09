@@ -198,7 +198,7 @@ describe("Checkout auth service helper - checkLogout tests", () => {
         },
       })
     );
-    checkLogout(onLogoutCallBack);
+    await checkLogout(onLogoutCallBack);
     await waitFor(() => {
       expect(onLogoutCallBack).toHaveBeenCalled();
     });
@@ -209,8 +209,18 @@ describe("Checkout auth service helper - checkLogout tests", () => {
     (apiCheckoutAuthServiceWithRetryV1.authLogout as jest.Mock).mockReturnValue(
       Promise.reject("Api error")
     );
-    checkLogout(onLogoutCallBack);
-    expect(onLogoutCallBack).toHaveBeenCalled();
+    await checkLogout(onLogoutCallBack);
+    await waitFor(() => {
+      expect(onLogoutCallBack).toHaveBeenCalled();
+    });
+  });
+
+  it("Should not call onLogoutCallBack when authToken is not present", async () => {
+    (getSessionItem as jest.Mock).mockReturnValue(undefined);
+    await checkLogout(onLogoutCallBack);
+    await waitFor(() => {
+      expect(onLogoutCallBack).toHaveBeenCalledTimes(0);
+    });
   });
 });
 
@@ -229,7 +239,9 @@ describe("Checkout auth service helper - logoutUser tests", () => {
       onResponse: mockOnResponse,
       onError: mockOnError,
     });
-    expect(mockOnResponse).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(mockOnResponse).toHaveBeenCalled();
+    });
   });
 
   it("Should call onError with ErrorsType.GENERIC_ERROR when api fail", async () => {

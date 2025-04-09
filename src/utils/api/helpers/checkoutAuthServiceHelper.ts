@@ -128,18 +128,19 @@ export const authentication = async ({
   )();
 };
 
-export const checkLogout = (onLogoutCallBack: typeof constVoid) => {
+export const checkLogout = (onLogoutCallBack: typeof constVoid) =>
   pipe(
-    SessionItems.authToken,
+    getSessionItem(SessionItems.authToken),
     O.fromNullable,
-    O.fold(constVoid, async () => {
-      await logoutUser({
-        onError: onLogoutCallBack,
-        onResponse: onLogoutCallBack,
-      });
-    })
-  );
-};
+    TE.fromOption(constVoid),
+    TE.map(
+      async () =>
+        await logoutUser({
+          onError: onLogoutCallBack,
+          onResponse: onLogoutCallBack,
+        })
+    )
+  )();
 
 export const logoutUser = async ({
   onResponse,
