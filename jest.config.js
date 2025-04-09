@@ -37,5 +37,5 @@ module.exports = {
       "<rootDir>/src/generated/",
       "<rootDir>/src/__mocks__/*.ts"
   ],
-  coverageDirectory: "<rootDir>/coverage/",
+  coverageDirectory: "<rootDir>/coverage/"
 };
