@@ -4,13 +4,11 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { PaymentEmailForm } from "../PaymentEmailForm";
 
-// Mock the email validation function
 jest.mock("../../../../../utils/regex/validators", () => ({
   emailValidation: (email: string) =>
     email.includes("@") && email.includes("."),
 }));
 
-// Mock dependencies
 jest.mock("../../../../../components/FormButtons/FormButtons", () => ({
   FormButtons: ({ handleSubmit, handleCancel, disabledSubmit }: any) => (
     <div data-testid="form-buttons">

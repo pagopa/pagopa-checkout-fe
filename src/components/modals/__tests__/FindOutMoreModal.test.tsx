@@ -1,10 +1,8 @@
-// FindOutMoreModal.test.tsx
 import "@testing-library/jest-dom";
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import FindOutMoreModal from "../FindOutMoreModal";
 
-// Mock the useTranslation hook
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string) => {
@@ -34,7 +32,6 @@ jest.mock("react-i18next", () => ({
   }),
 }));
 
-// Mock the InformationModal component
 jest.mock("../InformationModal", () => ({
   __esModule: true,
   default: ({ children, open, maxWidth, hideIcon }: any) =>
@@ -172,8 +169,7 @@ describe("FindOutMoreModal Component", () => {
       screen.getByText("3. Contatta l'assistenza"),
     ];
 
-    // We can't directly test the sx props with our current mocks,
-    // but we can verify the content is rendered correctly
+    // Verify the content is rendered correctly
     sectionTitles.forEach((title) => {
       expect(title).toBeInTheDocument();
     });
@@ -192,8 +188,7 @@ describe("FindOutMoreModal Component", () => {
   it("renders button with correct variant", () => {
     render(<FindOutMoreModal open={true} onClose={mockOnClose} />);
 
-    // We can't directly test the variant prop with our current mocks,
-    // but we can verify the button is rendered
+    // Verify the button is rendered
     const okButton = screen.getByText("OK");
     expect(okButton).toBeInTheDocument();
   });

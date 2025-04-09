@@ -15,7 +15,7 @@ import { CheckoutRoutes } from "../../../../../routes/models/routeModel";
 import { ErrorsType } from "../../../../../utils/errors/checkErrorsModel";
 import "@testing-library/jest-dom";
 
-// Improved Box mock that handles MUI props properly
+// Box mock that handles MUI props properly
 jest.mock("@mui/material", () => ({
   Box: ({
     children,
@@ -27,7 +27,6 @@ jest.mock("@mui/material", () => ({
     width,
     ...props
   }: any) => {
-    // Transform MUI props to style object
     // eslint-disable-next-line functional/immutable-data
     const style: Record<string, string | number> = {};
 
@@ -128,13 +127,11 @@ jest.mock("react-i18next", () => ({
   }),
 }));
 
-// Mock react-router-dom
 const mockNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
   useNavigate: () => mockNavigate,
 }));
 
-// Mock FormButtons component
 jest.mock("../../../../../components/FormButtons/FormButtons", () => ({
   FormButtons: ({
     handleSubmit,
@@ -158,7 +155,6 @@ jest.mock("../../../../../components/FormButtons/FormButtons", () => ({
   ),
 }));
 
-// Mock ErrorModal component
 jest.mock("../../../../../components/modals/ErrorModal", () => ({
   __esModule: true,
   default: ({ error, open, onClose }: any) =>
@@ -172,7 +168,6 @@ jest.mock("../../../../../components/modals/ErrorModal", () => ({
     ) : null,
 }));
 
-// Mock InformationModal component
 jest.mock("../../../../../components/modals/InformationModal", () => ({
   __esModule: true,
   default: ({ open, onClose, children }: any) =>
@@ -186,7 +181,6 @@ jest.mock("../../../../../components/modals/InformationModal", () => ({
     ) : null,
 }));
 
-// Mock IframeCardField component
 jest.mock("../IframeCardField", () => ({
   IframeCardField: ({
     label,
@@ -207,7 +201,6 @@ jest.mock("../IframeCardField", () => ({
   ),
 }));
 
-// Mock API helpers
 jest.mock("../../../../../utils/api/helper", () => ({
   getFees: jest.fn(),
   npgSessionsFields: jest.fn(),
@@ -215,12 +208,10 @@ jest.mock("../../../../../utils/api/helper", () => ({
   retrieveCardData: jest.fn(),
 }));
 
-// Mock error helper
 jest.mock("../../../../../utils/api/transactionsErrorHelper", () => ({
   onErrorActivate: jest.fn(),
 }));
 
-// Mock session storage
 jest.mock("../../../../../utils/storage/sessionStorage", () => ({
   SessionItems: {
     orderId: "orderId",
@@ -232,13 +223,11 @@ jest.mock("../../../../../utils/storage/sessionStorage", () => ({
   setSessionItem: jest.fn(),
 }));
 
-// Mock buildConfig
 jest.mock("../../../../../utils/buildConfig", () => ({
   __esModule: true,
   default: jest.fn(() => ({})),
 }));
 
-// Mock event listeners
 jest.mock("../../../../../utils/eventListeners", () => ({
   clearNavigationEvents: jest.fn(),
 }));
@@ -274,8 +263,7 @@ global.Build = jest.fn().mockImplementation((config) => {
   };
 });
 
-/* eslint-enable functional/immutable-data */
-
+/* eslint-disable functional/immutable-data */
 // Mock localStorage
 const localStorageMock = (() => {
   // eslint-disable-next-line functional/no-let
@@ -283,15 +271,15 @@ const localStorageMock = (() => {
   return {
     getItem: (key: string) => store[key] || null,
     setItem: (key: string, value: string) => {
-      // eslint-disable-next-line functional/immutable-data
       store[key] = value.toString();
     },
     clear: () => {
-      store = {}; // eslint-disable-line functional/immutable-data
+      store = {};
     },
   };
 })();
-Object.defineProperty(window, "localStorage", { value: localStorageMock }); // eslint-disable-line functional/immutable-data
+Object.defineProperty(window, "localStorage", { value: localStorageMock });
+/* eslint-enable functional/immutable-data */
 
 // Mock window.location
 const originalLocation = window.location;
@@ -501,9 +489,6 @@ describe("IframeCardForm", () => {
   });
 
   it.skip("should handle PSP not found scenario", async () => {
-    // Create a mock implementation for InformationModal
-    // const InformationModal = require("../../../../../components/modals/InformationModal").default;
-
     // Mock the API response
     const mockSessionResponse = setupSimpleMockSessionResponse();
 

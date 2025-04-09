@@ -4,7 +4,6 @@ import "@testing-library/jest-dom";
 import { ThemeProvider, createTheme } from "@mui/material";
 import { ImageComponent } from "../PaymentMethodImage";
 
-// Mock MUI icons
 jest.mock(
   "@mui/icons-material/MobileFriendly",
   () =>
@@ -31,7 +30,7 @@ const theme = createTheme({
 });
 
 describe("ImageComponent", () => {
-  test("renders default icon when no asset is provided", () => {
+  it("renders default icon when no asset is provided", () => {
     render(
       <ThemeProvider theme={theme}>
         <ImageComponent name="Test Method" />
@@ -45,7 +44,7 @@ describe("ImageComponent", () => {
     );
   });
 
-  test("renders default icon when asset is undefined", () => {
+  it("renders default icon when asset is undefined", () => {
     render(
       <ThemeProvider theme={theme}>
         <ImageComponent name="Test Method" asset={undefined} />
@@ -55,7 +54,7 @@ describe("ImageComponent", () => {
     expect(screen.getByTestId("mobile-friendly-icon")).toBeInTheDocument();
   });
 
-  test("renders image when asset is provided", () => {
+  it("renders image when asset is provided", () => {
     const { container } = render(
       <ThemeProvider theme={theme}>
         <ImageComponent
@@ -73,7 +72,7 @@ describe("ImageComponent", () => {
     expect(img).toHaveAttribute("aria-hidden", "true");
   });
 
-  test("falls back to default icon when image fails to load", () => {
+  it("falls back to default icon when image fails to load", () => {
     const { container } = render(
       <ThemeProvider theme={theme}>
         <ImageComponent
@@ -94,7 +93,7 @@ describe("ImageComponent", () => {
     expect(screen.getByTestId("mobile-friendly-icon")).toBeInTheDocument();
   });
 
-  test("applies disabled styling to default icon when disabled", () => {
+  it("applies disabled styling to default icon when disabled", () => {
     render(
       <ThemeProvider theme={theme}>
         <ImageComponent name="Test Method" disabled={true} />
@@ -106,7 +105,7 @@ describe("ImageComponent", () => {
     );
   });
 
-  test("applies disabled styling to image when disabled", () => {
+  it("applies disabled styling to image when disabled", () => {
     const { container } = render(
       <ThemeProvider theme={theme}>
         <ImageComponent
@@ -124,7 +123,7 @@ describe("ImageComponent", () => {
     expect(img!.style.color).toBe("rgb(204, 204, 204)"); // #cccccc
   });
 
-  test("applies correct image size", () => {
+  it("applies correct image size", () => {
     const { container } = render(
       <ThemeProvider theme={theme}>
         <ImageComponent

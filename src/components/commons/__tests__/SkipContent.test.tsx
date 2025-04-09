@@ -3,7 +3,6 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import SkipToContent from "../SkipToContent";
 
-// Mock the useTranslation hook
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string) => {

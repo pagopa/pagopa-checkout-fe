@@ -3,7 +3,6 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import PrivacyInfo from "../PrivacyInfo";
 
-// Mock the Trans component from react-i18next
 jest.mock("react-i18next", () => ({
   Trans: ({
     i18nKey,
@@ -12,7 +11,6 @@ jest.mock("react-i18next", () => ({
     i18nKey: string;
     components?: Record<string, React.ReactNode>;
   }) => {
-    // Simulate different translations based on the i18nKey
     switch (i18nKey) {
       case "privacyInfo.privacyDesc":
         return (
@@ -52,7 +50,6 @@ jest.mock("react-i18next", () => ({
   },
 }));
 
-// Mock MUI components
 jest.mock("@mui/material", () => ({
   Box: ({ children, mt }: any) => (
     <div
@@ -72,7 +69,7 @@ jest.mock("@mui/material", () => ({
     </div>
   ),
   Link: ({ children, href, target, rel, style, sx }: any) => {
-    // Safely combine style and sx props for testing
+    // Combine style and sx props for testing
     const combinedStyle = { ...(style || {}), ...(sx || {}) };
 
     return (
@@ -91,7 +88,6 @@ jest.mock("@mui/material", () => ({
 
 describe("PrivacyInfo Component", () => {
   it("renders correctly with default props", () => {
-    // Add this line to render the component first
     render(<PrivacyInfo />);
 
     // Check if Box has correct margin top
@@ -112,7 +108,7 @@ describe("PrivacyInfo Component", () => {
     // Check if donation privacy is not rendered
     expect(screen.queryByTestId("privacy-donation")).not.toBeInTheDocument();
 
-    // Check for period using a more flexible approach - check the typography content
+    // Check for period using the typography content
     const typographyContent = typographyElement.textContent;
     expect(typographyContent).toContain(".");
 
@@ -125,7 +121,10 @@ describe("PrivacyInfo Component", () => {
       .getByTestId("privacy-link")
       .querySelector('[data-testid="link-component"]');
     expect(privacyLink).toBeInTheDocument();
-    expect(privacyLink).toHaveAttribute("href", "/informativa-privacy");
+    expect(privacyLink).toHaveAttribute(
+      "href",
+      "/privacypolicy/it.html#informativa-sul-trattamento-dei-dati-personali"
+    );
     expect(privacyLink).toHaveAttribute("target", "_blank");
     expect(privacyLink).toHaveAttribute("rel", "noreferrer");
     expect(privacyLink).toHaveStyle("font-weight: 600");
@@ -169,7 +168,7 @@ describe("PrivacyInfo Component", () => {
     // Check if typography content doesn't contain a standalone period
     const typographyElement = screen.getByTestId("typography-component");
     const typographyText = typographyElement.textContent;
-    // We can check that the text doesn't have a standalone period between the sections
+    // Check that the text doesn't have a standalone period between the sections
     const privacyDescText = screen.getByTestId("privacy-desc").textContent;
     const googleDescText = screen.getByTestId("google-desc").textContent;
     const textBetween = typographyText!

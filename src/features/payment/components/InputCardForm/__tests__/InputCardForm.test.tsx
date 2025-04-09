@@ -9,7 +9,6 @@ import {
   expireDateFormatter,
 } from "../../../../../utils/form/formatters";
 
-// Mock dependencies
 jest.mock("card-validator");
 jest.mock("../../../../../utils/form/formatters");
 jest.mock("../../../../../utils/form/validators", () => ({
@@ -55,7 +54,7 @@ jest.mock("../../../../../components/TextFormField/TextFormField", () => ({
     errorText,
     startAdornment,
     endAdornment,
-    fullWidth, // Capture this prop but don't pass it to the input
+    fullWidth,
     ...props
   }: any) => (
     <div data-testid={`text-field-${id}`}>
@@ -79,7 +78,6 @@ jest.mock("../../../../../components/TextFormField/TextFormField", () => ({
   ),
 }));
 
-// Type cast the mocked module
 const mockedCardValidator = cardValidator as jest.Mocked<
   typeof cardValidator
 > & {
@@ -100,7 +98,6 @@ describe("InputCardForm", () => {
     onSubmit: jest.fn(),
   };
 
-  // Setup before each test
   beforeEach(() => {
     jest.clearAllMocks();
 
@@ -268,7 +265,6 @@ describe("InputCardForm", () => {
     expect(mockedCardValidator.number).toHaveBeenCalledWith("378282246310005");
   });
 
-  // Skip the problematic tests for now
   it("should validate form fields correctly", async () => {
     await act(async () => {
       render(<InputCardForm {...mockProps} />);
@@ -276,10 +272,10 @@ describe("InputCardForm", () => {
 
     await fillForm();
 
-    // Instead of checking the disabled attribute, let's check if we can click the button
+    // Check if we can click the button
     const submitButton = screen.getByTestId("submit-button");
 
-    // If we can't directly check the disabled attribute, let's try to click it anyway
+    // Click it
     await act(async () => {
       fireEvent.click(submitButton);
     });

@@ -2,7 +2,6 @@ import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { CancelPayment } from "../CancelPayment";
 
-// Just mock InformationModal since it's your own component
 jest.mock("../InformationModal", () =>
   jest.fn(({ children, open }) =>
     open ? <div data-testid="modal">{children}</div> : null
@@ -12,7 +11,6 @@ jest.mock("../InformationModal", () =>
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string) => {
-      // Simple mock translation function
       const translations: Record<string, string> = {
         "paymentCheckPage.modal.cancelTitle": "Cancel Payment",
         "paymentCheckPage.modal.cancelBody":

@@ -5,7 +5,6 @@ import { ThemeProvider, createTheme } from "@mui/material";
 import { PaymentPspListSortingDrawer } from "../PaymentPspListSortingDrawer";
 import { PspOrderingModel } from "../../../../../utils/SortUtil";
 
-// Mock the dependencies
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string) => {

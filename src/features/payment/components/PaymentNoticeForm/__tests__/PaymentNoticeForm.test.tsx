@@ -10,7 +10,6 @@ import {
 import { PaymentNoticeForm } from "../PaymentNoticeForm";
 import { cleanSpaces } from "../../../../../utils/form/formatters";
 
-// Mock dependencies
 jest.mock("../../../../../utils/form/formatters", () => ({
   cleanSpaces: jest.fn((val) => val.replace(/\s/g, "")),
 }));
@@ -259,7 +258,7 @@ describe("PaymentNoticeForm", () => {
       );
     });
 
-    // With our mock, the button should not be disabled
+    // Button should not be disabled
     expect(screen.getByTestId("submit-button")).not.toBeDisabled();
 
     // Clean up

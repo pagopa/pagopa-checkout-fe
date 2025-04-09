@@ -3,11 +3,9 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { ThemeProvider, createTheme } from "@mui/material";
 
-// Mock dependencies
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string) => {
-      // Simple mock translation function
       const translations: Record<string, string> = {
         "paymentCheckPage.drawer.title": "Select Payment Service Provider",
         "paymentCheckPage.drawer.body": "Choose a payment service provider",
@@ -23,7 +21,6 @@ jest.mock("react-i18next", () => ({
 jest.mock("../../../../../utils/config/config", () =>
   // Return the actual implementation but with our mock for getConfigOrThrow
   ({
-    // This is the key fix - handle the case when no key is provided
     getConfigOrThrow: jest.fn((key) => {
       // Create a mapping of all config values
       const configValues = {
@@ -35,12 +32,12 @@ jest.mock("../../../../../utils/config/config", () =>
         // Add other config values as needed
       } as any;
 
-      // If no key provided, return all config values (this is the important part)
+      // If no key provided, return all config values
       if (key === undefined) {
         return configValues;
       }
 
-      // Otherwise return the specific config value
+      // Return the specific config value
       return configValues[key] || "";
     }),
     isTestEnv: jest.fn(() => false),
@@ -101,7 +98,7 @@ describe("PaymentPspDrawer Component", () => {
     },
   ];
 
-  test("renders loading state correctly", () => {
+  it("renders loading state correctly", () => {
     render(
       <ThemeProvider theme={mockTheme}>
         <PaymentPspDrawer
@@ -118,7 +115,7 @@ describe("PaymentPspDrawer Component", () => {
     expect(skeletons).toHaveLength(3);
   });
 
-  test("renders PSP list correctly when not loading", () => {
+  it("renders PSP list correctly when not loading", () => {
     render(
       <ThemeProvider theme={mockTheme}>
         <PaymentPspDrawer
@@ -139,7 +136,7 @@ describe("PaymentPspDrawer Component", () => {
     expect(screen.getByText("PSP Two")).toBeInTheDocument();
   });
 
-  test("calls onSelect when a PSP is clicked", () => {
+  it("calls onSelect when a PSP is clicked", () => {
     const mockOnSelect = jest.fn();
 
     render(
@@ -165,7 +162,7 @@ describe("PaymentPspDrawer Component", () => {
     ).toBeTruthy();
   });
 
-  test("calls onClose when drawer is closed", () => {
+  it("calls onClose when drawer is closed", () => {
     const mockOnClose = jest.fn();
 
     render(
@@ -186,7 +183,7 @@ describe("PaymentPspDrawer Component", () => {
     expect(mockOnClose).toHaveBeenCalled();
   });
 
-  test("sorts PSP list by name when name header is clicked", () => {
+  it("sorts PSP list by name when name header is clicked", () => {
     // Create a list with names in reverse order to test sorting
     const reversedNameList = [
       {
@@ -224,7 +221,7 @@ describe("PaymentPspDrawer Component", () => {
     expect(screen.getByText("PSP Two")).toBeInTheDocument();
   });
 
-  test("sorts PSP list by fee when amount header is clicked", () => {
+  it("sorts PSP list by fee when amount header is clicked", () => {
     // Create a list with fees in reverse order to test sorting
     const reversedFeeList = [
       {
@@ -274,7 +271,7 @@ describe("SortLabel Component", () => {
   const mockOnClick = jest.fn();
   const defaultProps = {
     id: "test-sort",
-    fieldName: "pspBusinessName" as const, // Use const assertion to narrow the type
+    fieldName: "pspBusinessName" as const,
     onClick: mockOnClick,
     orderingModel: {
       fieldName: "pspBusinessName" as const,
@@ -283,13 +280,13 @@ describe("SortLabel Component", () => {
     children: "Test Label",
   };
 
-  test("renders correctly with active state", () => {
+  it("renders correctly with active state", () => {
     render(<PspListSortLabel {...defaultProps} />);
 
     expect(screen.getByText("Test Label")).toBeInTheDocument();
   });
 
-  test("calls onClick with toggled direction when clicked", () => {
+  it("calls onClick with toggled direction when clicked", () => {
     render(<PspListSortLabel {...defaultProps} />);
 
     const tableCell = screen.getByText("Test Label").closest("div");
@@ -301,7 +298,7 @@ describe("SortLabel Component", () => {
     });
   });
 
-  test("handles keyboard Enter key", () => {
+  it("handles keyboard Enter key", () => {
     render(<PspListSortLabel {...defaultProps} />);
 
     // Find the actual element that should receive the keyUp event
@@ -316,7 +313,7 @@ describe("SortLabel Component", () => {
     }
   });
 
-  // Skip the focus styling tests since they're difficult to mock properly
+  // Skip the focus styling tests
   test.skip("applies focus styling", () => {
     // This test is skipped
   });
@@ -327,7 +324,7 @@ describe("SortLabel Component", () => {
 });
 
 describe("pspImagePath utility", () => {
-  test("returns correct path when abi is provided", () => {
+  it("returns correct path when abi is provided", () => {
     render(
       <ThemeProvider theme={createTheme()}>
         <PaymentPspDrawer
@@ -355,7 +352,7 @@ describe("pspImagePath utility", () => {
     );
   });
 
-  test("returns empty string when abi is undefined", () => {
+  it("returns empty string when abi is undefined", () => {
     render(
       <ThemeProvider theme={createTheme()}>
         <PaymentPspDrawer

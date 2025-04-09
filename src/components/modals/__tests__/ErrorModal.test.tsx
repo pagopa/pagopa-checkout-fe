@@ -1,6 +1,4 @@
-// First, import jest-dom to extend Jest with DOM testing assertions
 import "@testing-library/jest-dom";
-// Now import the component to test and testing utilities
 import React from "react";
 import {
   render,
@@ -11,11 +9,9 @@ import {
 } from "@testing-library/react";
 import ErrorModal from "../ErrorModal";
 
-// Set up the mocks before importing any components
 import { FaultCategoryEnum } from "../../../../generated/definitions/payment-ecommerce/FaultCategory";
 import { ErrorsType } from "../../../utils/errors/checkErrorsModel";
 
-// Mock the useTranslation hook
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string) => {
@@ -69,7 +65,6 @@ jest.mock("@mui/material", () => {
 
 // Mock the PaymentCategoryResponses object
 jest.mock("../../../utils/errors/errorsModel", () => {
-  // Import the real FaultCategoryEnum to use in the mock
   const { FaultCategoryEnum } = jest.requireActual(
     "../../../../generated/definitions/payment-ecommerce/FaultCategory"
   );
@@ -145,14 +140,12 @@ jest.mock("../../../utils/errors/errorsModel", () => {
   };
 });
 
-// Define the ErrorModalBtn interface if needed
 interface ErrorModalBtn {
   text?: string;
   title?: string;
   action?: () => void;
 }
 
-// Mock the ErrorButtons component
 jest.mock("../../FormButtons/ErrorButtons", () => ({
   ErrorButtons: ({
     handleClose,
@@ -175,7 +168,6 @@ jest.mock("../../FormButtons/ErrorButtons", () => ({
   ),
 }));
 
-// Mock CopyAllIcon
 jest.mock("@mui/icons-material/CopyAll", () => ({
   __esModule: true,
   default: () => <span data-testid="copy-icon">CopyIcon</span>,
@@ -232,7 +224,7 @@ describe("ErrorModal Component", () => {
 
     render(<ErrorModal error={errorCode} open={true} onClose={mockOnClose} />);
 
-    // Check if error details are shown - use a more flexible approach
+    // Check if error details are shown
     const alertElement = screen.getByRole("alert");
     expect(alertElement).toBeInTheDocument();
 
@@ -259,7 +251,7 @@ describe("ErrorModal Component", () => {
       "INVALID_CARD_NUMBER"
     );
 
-    // Check if button has the "Copied" aria-label (instead of looking for text content)
+    // Check if button has the "Copied" aria-label
     await waitFor(() => {
       expect(copyButton).toHaveAttribute("aria-label", "Copied");
     });
@@ -344,9 +336,6 @@ describe("ErrorModal Component", () => {
         style={customStyle}
       />
     );
-
-    // This test is mostly for coverage of the style prop
-    // We can't easily check the style with the mocked components
   });
 
   it("uses provided IDs for accessibility", () => {
@@ -390,7 +379,7 @@ describe("ErrorModal Component", () => {
       />
     );
 
-    // Check if error ID is applied correctly - need to find the element differently
+    // Check if error ID is applied correctly
     const alertElement = screen.getByRole("alert");
     const errorTitle = within(alertElement).getByText("INVALID_CARD_NUMBER");
     expect(errorTitle.id).toBe("custom-error-id");
@@ -426,8 +415,7 @@ describe("ErrorModal Component", () => {
     expect(screen.getByText("Payment Data Error")).toBeInTheDocument();
     expect(screen.getByText("ErrorCodeDescription")).toBeInTheDocument();
 
-    // The alert might still be rendered but with empty details
-    // Let's check if there's an alert with no title content
+    // Check if there's an alert with no title content
     const alertElement = screen.getByRole("alert");
     const emptyAlertTitle = within(alertElement).queryByRole("heading");
 

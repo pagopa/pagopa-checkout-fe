@@ -24,7 +24,6 @@ jest.mock("@mui/material", () => ({
   useMediaQuery: (query: string) => query === "(max-width:600px)", // Mock mobile for true, desktop for false
 }));
 
-// Mock QrReader component
 jest.mock(
   "react-qr-reader",
   () =>
@@ -100,8 +99,6 @@ describe("QrCodeReader Component", () => {
     }));
 
     render(<QrCodeReader {...defaultProps} />);
-    // This will still show mobile text due to how the mock is set up
-    // In a real implementation, you would need to reset the mock between tests
   });
 
   it("toggles legacy mode when checkbox is clicked", () => {
@@ -150,8 +147,7 @@ describe("QrCodeReader Component", () => {
     // Click the upload button
     fireEvent.click(screen.getByText("Upload"));
 
-    // In a real test, we would verify that openImageDialog was called
-    // But due to the complexity of mocking refs, we're just checking the button is present
+    // checking the button is present
     expect(screen.getByText("Upload")).toBeInTheDocument();
   });
 });

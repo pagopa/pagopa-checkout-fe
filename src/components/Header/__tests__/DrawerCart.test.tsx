@@ -22,7 +22,6 @@ jest.mock("../../../utils/storage/sessionStorage", () => ({
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string) => {
-      // Simple mock translation function
       const translations: Record<string, string> = {
         "cartDetail.amount": "Amount",
         "cartDetail.description": "Description",
@@ -100,7 +99,6 @@ describe("DrawerCart Component", () => {
     },
   ];
 
-  // Reset mocks before each test
   beforeEach(() => {
     jest.clearAllMocks();
   });

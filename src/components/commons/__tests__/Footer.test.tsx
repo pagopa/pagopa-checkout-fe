@@ -134,7 +134,7 @@ describe("Footer", () => {
     const privacyLink = screen.getByTitle("mainPage.footer.privacy");
     expect(privacyLink).toHaveAttribute(
       "href",
-      "https://checkout.pagopa.it/informativa-privacy"
+      "https://checkout.pagopa.it/privacypolicy/it.html#termini-e-condizioni-di-uso"
     );
 
     const termsLink = screen.getByTitle("mainPage.footer.terms");

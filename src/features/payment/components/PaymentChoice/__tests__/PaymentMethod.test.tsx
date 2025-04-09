@@ -7,7 +7,6 @@ import { PaymentMethodStatusEnum } from "../../../../../../generated/definitions
 import { PaymentMethodManagementTypeEnum } from "../../../../../../generated/definitions/payment-ecommerce/PaymentMethodManagementType";
 import { PaymentCodeTypeEnum } from "../../../models/paymentModel";
 
-// Mock dependencies
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string) => key,
@@ -108,7 +107,7 @@ const mockMethods = [
 const theme = createTheme();
 
 describe("MethodComponentList", () => {
-  test("renders all payment methods", () => {
+  it("renders all payment methods", () => {
     render(<MethodComponentList methods={mockMethods} />);
 
     expect(screen.getByText("Carte di Credito e Debito")).toBeInTheDocument();
@@ -116,7 +115,7 @@ describe("MethodComponentList", () => {
     expect(screen.getByText("Disabled Method")).toBeInTheDocument();
   });
 
-  test("calls onClick with the correct method when clicked", () => {
+  it("calls onClick with the correct method when clicked", () => {
     const onClickMock = jest.fn();
     render(<MethodComponentList methods={mockMethods} onClick={onClickMock} />);
 
@@ -126,7 +125,7 @@ describe("MethodComponentList", () => {
     expect(onClickMock).toHaveBeenCalledWith(mockMethods[0]);
   });
 
-  test("adds test attributes when testable is true", () => {
+  it("adds test attributes when testable is true", () => {
     render(<MethodComponentList methods={mockMethods} testable={true} />);
 
     // Check for clickable fields with the correct test IDs
@@ -135,7 +134,7 @@ describe("MethodComponentList", () => {
     expect(screen.getByTestId("DISABLED")).toBeInTheDocument();
   });
 
-  test("renders enabled methods as clickable", () => {
+  it("renders enabled methods as clickable", () => {
     render(<MethodComponentList methods={mockMethods} />);
 
     // The parent elements of the enabled methods should have the clickable class
@@ -148,7 +147,7 @@ describe("MethodComponentList", () => {
     expect(paypalElement).toHaveClass("clickable");
   });
 
-  test("renders disabled methods as non-clickable", () => {
+  it("renders disabled methods as non-clickable", () => {
     render(<MethodComponentList methods={mockMethods} />);
 
     // The parent element of the disabled method should have the disabled class
@@ -164,7 +163,7 @@ describe("DisabledPaymentMethods", () => {
     (method) => method.status === PaymentMethodStatusEnum.DISABLED
   );
 
-  test("renders accordion when disabled methods are provided", () => {
+  it("renders accordion when disabled methods are provided", () => {
     render(
       <ThemeProvider theme={theme}>
         <DisabledPaymentMethods methods={disabledMethods} />
@@ -175,7 +174,7 @@ describe("DisabledPaymentMethods", () => {
     expect(screen.getByText("paymentChoicePage.showMore")).toBeInTheDocument();
   });
 
-  test("renders nothing when methods array is empty", () => {
+  it("renders nothing when methods array is empty", () => {
     const { container } = render(
       <ThemeProvider theme={theme}>
         <DisabledPaymentMethods methods={[]} />
@@ -185,7 +184,7 @@ describe("DisabledPaymentMethods", () => {
     expect(container.firstChild).toBeNull();
   });
 
-  test("displays all disabled methods", () => {
+  it("displays all disabled methods", () => {
     render(
       <ThemeProvider theme={theme}>
         <DisabledPaymentMethods methods={disabledMethods} />

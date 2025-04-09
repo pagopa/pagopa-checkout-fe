@@ -5,10 +5,9 @@ import { ErrorButtons } from "../ErrorButtons";
 import { ErrorModalBtn } from "../../../utils/errors/errorsModel";
 import { useSmallDevice } from "../../../hooks/useSmallDevice";
 
-// Mock the dependencies
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
-    t: (key: string) => key, // Return the key as the translation for simplicity
+    t: (key: string) => key,
   }),
 }));
 
@@ -17,7 +16,6 @@ jest.mock("../../../hooks/useSmallDevice", () => ({
 }));
 
 describe("ErrorButtons Component", () => {
-  // Mock data for testing
   const mockHandleClose = jest.fn();
   const mockButtonAction = jest.fn();
 
@@ -31,7 +29,7 @@ describe("ErrorButtons Component", () => {
   });
 
   it("renders all buttons from buttonsDetail prop", () => {
-    // Mock useSmallDevice to return false (desktop view)
+    // Desktop
     (useSmallDevice as jest.Mock).mockReturnValue(false);
 
     render(
@@ -58,7 +56,7 @@ describe("ErrorButtons Component", () => {
       />
     );
 
-    // Click the first button (which doesn't have an action)
+    // Click the first button
     const cancelButton = screen.getByText("button.cancel");
     fireEvent.click(cancelButton);
 
@@ -130,7 +128,7 @@ describe("ErrorButtons Component", () => {
   });
 
   it("applies paddingTop: 0 style to Grid items on small devices", () => {
-    // Mock useSmallDevice to return true (mobile view)
+    // Mobile
     (useSmallDevice as jest.Mock).mockReturnValue(true);
 
     const { container } = render(
@@ -152,7 +150,7 @@ describe("ErrorButtons Component", () => {
   });
 
   it("does not apply paddingTop: 0 style to Grid items on large devices", () => {
-    // Mock useSmallDevice to return false (desktop view)
+    // Desktop
     (useSmallDevice as jest.Mock).mockReturnValue(false);
 
     const { container } = render(
@@ -190,8 +188,7 @@ describe("ErrorButtons Component", () => {
     // Check that it exists
     expect(containerGrid).toBeInTheDocument();
 
-    // Check for Grid items with correct xs and sm props
-    // This is harder to test directly, but we can check for the existence of Grid items
+    // Wwe check for the existence of Grid items
     const gridItems = container.querySelectorAll(".MuiGrid-item");
     expect(gridItems).toHaveLength(2);
 

@@ -2,14 +2,12 @@ import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import LanguageMenu from "../LanguageMenu";
 
-// Mock the translations module
 jest.mock("../../../translations/i18n", () => ({
   fallbackLang: "en",
 }));
 
-// Mock the supported languages with proper TypeScript typing
 jest.mock("../../../translations/lang", () => {
-  // Create the base object with language definitions
+  // Base object with language definitions
   const supportedLang: Record<string, { label: string }> = {
     en: { label: "English" },
     it: { label: "Italiano" },

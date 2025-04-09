@@ -6,7 +6,6 @@ import { NavigateFunction } from "react-router";
 import { PaymentNoticeChoice } from "../PaymentNoticeChoice";
 import { CheckoutRoutes } from "../../../../../routes/models/routeModel";
 
-// Mock the required dependencies
 jest.mock("react-router", () => ({
   useNavigate: jest.fn(),
 }));
@@ -14,7 +13,6 @@ jest.mock("react-router", () => ({
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string) => {
-      // Simple mock translation function
       const translations: Record<string, string> = {
         "paymentNoticeChoice.qr.title": "Scan QR Code",
         "paymentNoticeChoice.qr.description":
@@ -33,7 +31,6 @@ describe("PaymentNoticeChoice Component", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    // Fix the TypeScript error by using proper typing
     jest
       .spyOn(router, "useNavigate")
       .mockImplementation(() => mockNavigate as NavigateFunction);

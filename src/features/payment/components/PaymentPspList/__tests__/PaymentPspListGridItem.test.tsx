@@ -4,7 +4,6 @@ import "@testing-library/jest-dom";
 import { ThemeProvider, createTheme } from "@mui/material";
 import { PaymentPSPListGridItem } from "../PaymentPspListGridItem";
 
-// Mock MUI components and hooks
 jest.mock("@mui/material", () => {
   const originalModule = jest.requireActual("@mui/material");
   return {
@@ -24,7 +23,6 @@ jest.mock("@mui/material", () => {
   };
 });
 
-// Mock RadioButton components
 jest.mock("@mui/icons-material/RadioButtonChecked", () => ({
   __esModule: true,
   default: function MockRadioButtonChecked(props: any) {
@@ -57,7 +55,6 @@ jest.mock("react-i18next", () => ({
   }),
 }));
 
-// Mock moneyFormat function
 jest.mock("../../../../../utils/form/formatters", () => ({
   moneyFormat: (value: number) => `€ ${value.toFixed(2)}`,
 }));

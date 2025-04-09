@@ -12,7 +12,6 @@ import { PaymentMethodStatusEnum } from "../../../../../../generated/definitions
 import { PaymentMethodManagementTypeEnum } from "../../../../../../generated/definitions/payment-ecommerce/PaymentMethodManagementType";
 import "whatwg-fetch";
 
-// Import the modules we need to mock
 import * as mixpanelModule from "../../../../../utils/config/mixpanelHelperInit";
 import * as helperModule from "../../../../../utils/api/helper";
 import * as transactionsErrorHelperModule from "../../../../../utils/api/transactionsErrorHelper";

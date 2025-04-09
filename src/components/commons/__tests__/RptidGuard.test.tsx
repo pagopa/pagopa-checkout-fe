@@ -1,11 +1,9 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-// Import the mocked function
 import { useParams } from "react-router-dom";
 import RptidGuard from "../RptidGuard";
 
-// Mock only the specific functions you need
 jest.mock("react-router-dom", () => ({
   useParams: jest.fn(),
   Navigate: () => <div data-testid="navigate">Redirected to home</div>,

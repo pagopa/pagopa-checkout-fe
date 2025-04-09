@@ -159,11 +159,7 @@ describe("LoginHeader", () => {
     });
   });
 
-<<<<<<< HEAD
-  test("Logout user for transaction not activated yet", async () => {
-=======
-  it("Logout user", async () => {
->>>>>>> b752c907 (feat: adding tests for features and components)
+  it("Logout user for transaction not activated yet", async () => {
     const userInfo: UserInfoResponse = {
       familyName: "Rossi",
       name: "Mario",

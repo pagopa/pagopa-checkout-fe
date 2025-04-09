@@ -4,7 +4,6 @@ import "@testing-library/jest-dom";
 import { ThemeProvider, createTheme } from "@mui/material";
 import SkeletonFieldContainer from "../SkeletonFieldContainer";
 
-// Create a theme for testing
 const theme = createTheme();
 
 describe("SkeletonFieldContainer", () => {

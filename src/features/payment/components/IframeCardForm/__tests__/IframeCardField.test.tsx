@@ -1,12 +1,10 @@
-// IframeCardField.test.tsx
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import "@testing-library/jest-dom"; // Add this import for DOM matchers
+import "@testing-library/jest-dom";
 import { ThemeProvider, createTheme } from "@mui/material";
 import { IframeCardField } from "../IframeCardField";
 import { IdFields, FieldId } from "../types";
 
-// Mock the dependencies
 jest.mock("@mui/icons-material/ErrorOutline", () => ({
   __esModule: true,
   default: () => <div data-testid="error-icon" />,
@@ -27,7 +25,7 @@ jest.mock("react-i18next", () => ({
 }));
 
 describe("IframeCardField Component", () => {
-  // Create a properly typed mock iframe
+  // Create a mock iframe
   const mockIframeContentWindow = {
     location: {
       replace: jest.fn(),
@@ -41,7 +39,6 @@ describe("IframeCardField Component", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    // Type the mock implementation correctly
     // eslint-disable-next-line functional/immutable-data
     document.getElementById = jest
       .fn()
@@ -50,7 +47,6 @@ describe("IframeCardField Component", () => {
 
   const theme = createTheme();
 
-  // Fix the renderWithTheme function to make options parameter optional
   const renderWithTheme = (ui: React.ReactElement, options = {}) =>
     render(<ThemeProvider theme={theme}>{ui}</ThemeProvider>, options);
 
@@ -61,7 +57,7 @@ describe("IframeCardField Component", () => {
     { id: IdFields.SECURITY_CODE, src: "https://example.com/cvv" },
   ];
 
-  // Default props with correct types
+  // Default props
   const defaultProps = {
     label: "Card Number",
     id: IdFields.CARD_NUMBER,
@@ -80,7 +76,6 @@ describe("IframeCardField Component", () => {
     expect(iframe).toBeInTheDocument();
   });
 
-  // Fix for the "renders skeleton when fields are not loaded" test
   it("renders skeleton when fields are not loaded", () => {
     const { container } = renderWithTheme(
       <IframeCardField {...defaultProps} isAllFieldsLoaded={false} />
@@ -153,7 +148,6 @@ describe("IframeCardField Component", () => {
     expect(errorIcon).toHaveStyle("visibility: hidden");
   });
 
-  // Fix for the "applies focus styles when field is active" test
   it("applies focus styles when field is active", () => {
     // We need to mock the useBorderStyles hook's return value
     // or test the component with the actual styling logic
@@ -162,17 +156,15 @@ describe("IframeCardField Component", () => {
       <IframeCardField {...defaultProps} activeField={IdFields.CARD_NUMBER} />
     );
 
-    // Instead of testing the exact color, check if the label exists
-    // and has the correct attributes that would indicate focus
+    // Check if the label exists and has the correct attributes that would indicate focus
     const label = screen.getByText("Card Number");
     expect(label).toBeInTheDocument();
 
-    // Or check if the FormControl has the expected focus-related class
+    // Check if the FormControl has the expected focus-related class
     const formControl = label.closest(".MuiFormControl-root");
     expect(formControl).toBeInTheDocument();
 
-    // If we can't directly test the style, we can check if the component
-    // is rendered with the active field matching the id
+    // Check if the component is rendered with the active field matching the id
     expect(screen.getByRole("textbox")).toHaveAttribute(
       "id",
       "frame_CARD_NUMBER"

@@ -5,7 +5,6 @@ import { ThemeProvider, createTheme } from "@mui/material";
 import { PaymentPSPListGrid } from "../PaymentPspListGrid";
 import { PaymentPSPListGridItem } from "../PaymentPspListGridItem";
 
-// Mock the PaymentPSPListGridItem component
 jest.mock("../PaymentPspListGridItem", () => ({
   PaymentPSPListGridItem: jest.fn(({ pspItem, isSelected, handleClick }) => (
     <div

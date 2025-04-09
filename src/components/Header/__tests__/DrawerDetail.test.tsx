@@ -10,7 +10,6 @@ jest.mock("../../../utils/config/config", () => ({
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string) => {
-      // Simple mock translation function
       const translations: Record<string, string> = {
         "mainPage.header.detail.detailAmount": "Total Amount",
         "mainPage.header.disclaimer": "This is a disclaimer text",

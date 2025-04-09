@@ -1,11 +1,9 @@
-// InformationModal.test.tsx
 import "@testing-library/jest-dom";
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { createTheme } from "@mui/material/styles";
 import InformationModal from "../InformationModal";
 
-// Mock the MUI Dialog component
 jest.mock("@mui/material", () => {
   const originalModule = jest.requireActual("@mui/material");
   return {
@@ -53,7 +51,6 @@ jest.mock("@mui/material", () => {
   };
 });
 
-// Mock the MUI IconButton component
 jest.mock(
   "@mui/material/IconButton",
   () =>
@@ -70,12 +67,10 @@ jest.mock(
       )
 );
 
-// Mock the CloseIcon component
 jest.mock("@mui/icons-material/Close", () => () => (
   <span data-testid="close-icon">X</span>
 ));
 
-// Mock the useTranslation hook
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string) => {

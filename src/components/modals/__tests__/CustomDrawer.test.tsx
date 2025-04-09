@@ -3,15 +3,12 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { CustomDrawer } from "../CustomDrawer";
 import * as useSmallDeviceModule from "../../../hooks/useSmallDevice";
 
-// Mock only the custom hooks and components
 jest.mock("../../../hooks/useSmallDevice", () => ({
-  useSmallDevice: jest.fn(() => false), // Default to desktop view
+  useSmallDevice: jest.fn(() => false), // Default = desktop
 }));
 
-// Create typed mock for useSmallDevice
 const mockedUseSmallDevice = useSmallDeviceModule.useSmallDevice as jest.Mock;
 
-// Mock the SkeletonFieldContainer component
 jest.mock("../../Skeletons/SkeletonFieldContainer", () => ({
   __esModule: true,
   default: jest.fn(() => <div data-testid="skeleton-container" />),
@@ -20,7 +17,6 @@ jest.mock("../../Skeletons/SkeletonFieldContainer", () => ({
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string) => {
-      // Simple mock translation function
       const translations: Record<string, string> = {
         "ariaLabels.close": "Close",
       };
@@ -84,7 +80,7 @@ describe("CustomDrawer Component", () => {
   });
 
   it("uses correct anchor based on device size", () => {
-    // First test with desktop (useSmallDevice returns false)
+    // First test: desktop
     render(
       <CustomDrawer open={true} onClose={mockOnClose}>
         <div>Content</div>
@@ -94,7 +90,7 @@ describe("CustomDrawer Component", () => {
     // We can't directly check the anchor prop, but we can verify the hook was called
     expect(mockedUseSmallDevice).toHaveBeenCalled();
 
-    // Now test with mobile (useSmallDevice returns true)
+    // Mobile
     mockedUseSmallDevice.mockReturnValue(true);
 
     render(

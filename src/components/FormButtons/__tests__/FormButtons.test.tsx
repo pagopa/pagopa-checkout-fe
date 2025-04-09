@@ -4,11 +4,9 @@ import "@testing-library/jest-dom";
 import { FormButtons } from "../FormButtons";
 import { useSmallDevice } from "../../../hooks/useSmallDevice";
 
-// Mock the dependencies
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string) => {
-      // Simple mock translation function
       const translations: Record<string, string> = {
         "ariaLabels.loading": "Loading...",
         cancel: "Cancel",
@@ -35,7 +33,7 @@ describe("FormButtons Component", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    // Default to desktop view
+    // Default = Desktop
     (useSmallDevice as jest.Mock).mockReturnValue(false);
   });
 
@@ -229,8 +227,7 @@ describe("FormButtons Component", () => {
     const mainGrid = container.querySelector(".MuiGrid-container");
     expect(mainGrid).toBeInTheDocument();
 
-    // Check that it has the correct classes for responsive styling
-    // This is harder to test directly, but we can check for the Grid's existence
+    // We can check for the Grid's existence
     expect(mainGrid).toHaveClass("MuiGrid-container");
   });
 
