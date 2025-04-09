@@ -133,12 +133,13 @@ export const checkLogout = (onLogoutCallBack: typeof constVoid) =>
     getSessionItem(SessionItems.authToken),
     O.fromNullable,
     TE.fromOption(constVoid),
-    TE.map(
-      async () =>
+    TE.chain(() =>
+      TE.fromTask(async () => {
         await logoutUser({
           onError: onLogoutCallBack,
           onResponse: onLogoutCallBack,
-        })
+        });
+      })
     )
   )();
 

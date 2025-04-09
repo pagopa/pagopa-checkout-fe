@@ -39,7 +39,7 @@ export default function SessionExpiredPage() {
   };
 
   useEffect(() => {
-    checkLogout(() => {
+    void checkLogout(() => {
       dispatch(removeLoggedUser());
       clearSessionItem(SessionItems.authToken);
     });

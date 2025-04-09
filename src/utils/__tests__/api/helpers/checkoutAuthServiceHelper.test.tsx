@@ -1,5 +1,4 @@
 import ReCAPTCHA from "react-google-recaptcha";
-import { waitFor } from "@testing-library/react";
 import { mockApiConfig } from "../../../testUtils";
 import {
   apiCheckoutAuthServiceClientAuthTokenV1,
@@ -199,9 +198,7 @@ describe("Checkout auth service helper - checkLogout tests", () => {
       })
     );
     await checkLogout(onLogoutCallBack);
-    await waitFor(() => {
-      expect(onLogoutCallBack).toHaveBeenCalled();
-    });
+    expect(onLogoutCallBack).toHaveBeenCalled();
   });
 
   it("Should call onLogoutCallBack on logoutUser error", async () => {
@@ -210,17 +207,13 @@ describe("Checkout auth service helper - checkLogout tests", () => {
       Promise.reject("Api error")
     );
     await checkLogout(onLogoutCallBack);
-    await waitFor(() => {
-      expect(onLogoutCallBack).toHaveBeenCalled();
-    });
+    expect(onLogoutCallBack).toHaveBeenCalled();
   });
 
   it("Should not call onLogoutCallBack when authToken is not present", async () => {
     (getSessionItem as jest.Mock).mockReturnValue(undefined);
     await checkLogout(onLogoutCallBack);
-    await waitFor(() => {
-      expect(onLogoutCallBack).toHaveBeenCalledTimes(0);
-    });
+    expect(onLogoutCallBack).toHaveBeenCalledTimes(0);
   });
 });
 
@@ -239,9 +232,7 @@ describe("Checkout auth service helper - logoutUser tests", () => {
       onResponse: mockOnResponse,
       onError: mockOnError,
     });
-    await waitFor(() => {
-      expect(mockOnResponse).toHaveBeenCalled();
-    });
+    expect(mockOnResponse).toHaveBeenCalled();
   });
 
   it("Should call onError with ErrorsType.GENERIC_ERROR when api fail", async () => {

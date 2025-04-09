@@ -101,7 +101,7 @@ export default function PaymentResponsePageV2() {
   };
 
   useEffect(() => {
-    checkLogout(() => {
+    void checkLogout(() => {
       dispatch(removeLoggedUser());
       clearSessionItem(SessionItems.authToken);
     });

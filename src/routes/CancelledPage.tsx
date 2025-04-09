@@ -37,7 +37,7 @@ export default function CancelledPage() {
   };
 
   React.useEffect(() => {
-    checkLogout(() => {
+    void checkLogout(() => {
       dispatch(removeLoggedUser());
       clearSessionItem(SessionItems.authToken);
     });
