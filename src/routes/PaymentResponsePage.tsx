@@ -99,53 +99,59 @@ export default function PaymentResponsePage() {
     );
   };
 
-  useEffect(() => {
-    void checkLogout(() => {
+  const handleFinalStatusResult = (
+    idStatus?: TransactionStatusEnum,
+    nodeInfo?: TransactionInfoNodeInfo,
+    gatewayInfo?: TransactionInfoGatewayInfo
+  ) => {
+    const outcome: ViewOutcomeEnum = getViewOutcomeFromEcommerceResultCode(
+      idStatus,
+      nodeInfo,
+      gatewayInfo
+    );
+    mixpanel.track(PAYMENT_OUTCOME_CODE.value, {
+      EVENT_ID: PAYMENT_OUTCOME_CODE.value,
+      idStatus,
+      outcome,
+    });
+
+    setOutcome(outcome);
+    showFinalResult(outcome);
+  };
+
+  const showFinalResult = (outcome: ViewOutcomeEnum) => {
+    const message = responseOutcome[outcome];
+    const redirectTo =
+      outcome === "0"
+        ? cart
+          ? cart.returnUrls.returnOkUrl
+          : "/"
+        : cart
+        ? cart.returnUrls.returnErrorUrl
+        : "/";
+    setOutcomeMessage(message);
+    setCartInformation({
+      redirectUrl: redirectTo,
+      isCart: cart != null,
+    });
+    setLoading(false);
+    window.removeEventListener("beforeunload", onBrowserUnload);
+    clearStorage();
+  };
+
+  const performCallsAndClearStorage = async () => {
+    await callServices(handleFinalStatusResult);
+
+    await checkLogout(() => {
       dispatch(removeLoggedUser());
       clearSessionItem(SessionItems.authToken);
     });
+    clearStorage();
+  };
+
+  useEffect(() => {
     dispatch(resetThreshold());
-
-    const handleFinalStatusResult = (
-      idStatus?: TransactionStatusEnum,
-      nodeInfo?: TransactionInfoNodeInfo,
-      gatewayInfo?: TransactionInfoGatewayInfo
-    ) => {
-      const outcome: ViewOutcomeEnum = getViewOutcomeFromEcommerceResultCode(
-        idStatus,
-        nodeInfo,
-        gatewayInfo
-      );
-      mixpanel.track(PAYMENT_OUTCOME_CODE.value, {
-        EVENT_ID: PAYMENT_OUTCOME_CODE.value,
-        idStatus,
-        outcome,
-      });
-
-      setOutcome(outcome);
-      showFinalResult(outcome);
-    };
-
-    const showFinalResult = (outcome: ViewOutcomeEnum) => {
-      const message = responseOutcome[outcome];
-      const redirectTo =
-        outcome === "0"
-          ? cart
-            ? cart.returnUrls.returnOkUrl
-            : "/"
-          : cart
-          ? cart.returnUrls.returnErrorUrl
-          : "/";
-      setOutcomeMessage(message);
-      setCartInformation({
-        redirectUrl: redirectTo,
-        isCart: cart != null,
-      });
-      setLoading(false);
-      window.removeEventListener("beforeunload", onBrowserUnload);
-      clearStorage();
-    };
-    void callServices(handleFinalStatusResult);
+    void performCallsAndClearStorage();
   }, []);
 
   useEffect(() => {

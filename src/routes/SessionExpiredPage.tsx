@@ -38,14 +38,18 @@ export default function SessionExpiredPage() {
     );
   };
 
-  useEffect(() => {
-    void checkLogout(() => {
+  const checkLogoutAndClearStorage = async () => {
+    await checkLogout(() => {
       dispatch(removeLoggedUser());
       clearSessionItem(SessionItems.authToken);
     });
+    clearStorage();
+  };
+
+  useEffect(() => {
+    void checkLogoutAndClearStorage();
     dispatch(resetThreshold());
     window.removeEventListener("beforeunload", onBrowserUnload);
-    clearStorage();
   }, []);
 
   useEffect(() => {
