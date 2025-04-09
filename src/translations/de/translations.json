@@ -333,9 +333,9 @@
     "email": "Sende Bestätigung an:",
     "modal": {
       "body": "Jeder Geldtransfer (Bargeld oder elektronisches Geld) ist mit Kosten verbunden, die gewährleisten, dass die Zahlung sicher und erfolgreich ist.\nJeder Anbieter (oder PSP, Payment Service Provider) erhebt Kosten, die von seiner eigenen Geschäftspolitik und seinen Vertragsbedingungen abhängen.\nMit pagoPA sind diese Kosten transparent und der Bürger kann die bequemste und günstigste Option frei wählen. Weitere Informationen findest du auf der Seite ",
-      "cancelBody": "Alle Eingaben gehen verloren.",
+      "cancelBody": "Wenn du dich jetzt beendest, gehen alle bisher eingegebenen Daten verloren und du musst von vorne anfangen.",
       "cancelButton": "Nein, ich habe es mir anders überlegt",
-      "cancelTitle": "Aktuelle Zahlung beenden?",
+      "cancelTitle": "Deine Zahlung ist in Bearbeitung. Bist du sicher, dass du dich beenden möchtest?",
       "link": "Kostentransparenz",
       "submitButton": "Beenden",
       "title": "Weshalb fallen Gebühren an?"
@@ -464,6 +464,14 @@
     "HF0006": "MM/JJ eingeben",
     "HF0007": "Genau wie auf der Karte eingeben",
     "HF0009": "3DS-Überprüfung fehlgeschlagen"
+  },
+  "userSession": {
+    "logoutModal": {
+      "title": "Bist du sicher, dass du dich abmelden möchtest?",
+      "body": "Du kannst trotzdem bezahlen, auch wenn du nicht eingeloggt bist.",
+      "submitButton": "Abmelden",
+      "cancelButton": "Abbrechen"
+    }
   },
   "__variant-name": "Tedesco",
   "__variant-description": ""
