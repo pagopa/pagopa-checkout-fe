@@ -8,16 +8,9 @@ import {
   SessionItems,
 } from "../../utils/storage/sessionStorage";
 import { renderWithReduxProvider } from "../../utils/testRenderProviders";
-import { AmountEuroCents } from "../../../generated/definitions/payment-ecommerce/AmountEuroCents";
-import {
-  NewTransactionResponse,
-  ClientIdEnum,
-} from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
-import { RptId } from "../../../generated/definitions/payment-ecommerce/RptId";
-import { TransactionStatusEnum } from "../../../generated/definitions/payment-ecommerce/TransactionStatus";
 import { npgSessionsFields, retrieveCardData } from "../../utils/api/helper";
-import { SessionPaymentMethodResponse } from "../../../generated/definitions/payment-ecommerce/SessionPaymentMethodResponse";
 import { CreateSessionResponse } from "../../../generated/definitions/payment-ecommerce-v3/CreateSessionResponse";
+import { sessionPayment, transaction } from "./_model";
 
 // Create a Jest spy for navigation
 const navigate = jest.fn();
@@ -62,30 +55,6 @@ jest.mock("../../utils/api/helper", () => ({
   npgSessionsFields: jest.fn(),
 }));
 
-const transaction: NewTransactionResponse = {
-  transactionId: "6f7d9be5fbb94ca29bf55972321783e7",
-  status: TransactionStatusEnum.ACTIVATED,
-  payments: [
-    {
-      paymentToken: "1fb8539bdbc94123849a21be8eead8dd",
-      rptId: "77777777777302000100000009488" as RptId,
-      reason: "TARI/TEFA 2021",
-      amount: 12000 as AmountEuroCents,
-      transferList: [
-        {
-          digitalStamp: true,
-          paFiscalCode: "00000000000",
-          transferAmount: 100 as AmountEuroCents,
-          transferCategory: "transfCat0",
-        },
-      ],
-      isAllCCP: false,
-    },
-  ],
-  clientId: ClientIdEnum.CHECKOUT,
-  authToken: "token",
-};
-
 const mockGetSessionItem = (item: SessionItems) => {
   switch (item) {
     case "transaction":
@@ -93,14 +62,6 @@ const mockGetSessionItem = (item: SessionItems) => {
     default:
       return undefined;
   }
-};
-
-const sessionPayment: SessionPaymentMethodResponse = {
-  sessionId: "4c15c2aa-3bd9-45d2-b06e-73525983b87b",
-  bin: "42424242",
-  lastFourDigits: "4242",
-  expiringDate: "12/30",
-  brand: "VISA",
 };
 
 const createSessionResponse: CreateSessionResponse = {

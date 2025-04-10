@@ -2,19 +2,14 @@ import React from "react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { act, fireEvent, screen } from "@testing-library/react";
-import {
-  PaymentFormFields,
-  PaymentInfo,
-} from "features/payment/models/paymentModel";
 import * as router from "react-router";
 import { renderWithReduxProvider } from "../../utils/testRenderProviders";
 import PaymentSummaryPage from "../PaymentSummaryPage";
-import { AmountEuroCents } from "../../../generated/definitions/payment-ecommerce/AmountEuroCents";
-import { RptId } from "../../../generated/definitions/payment-ecommerce/RptId";
 import {
   getSessionItem,
   SessionItems,
 } from "../../utils/storage/sessionStorage";
+import { paymentInfo, rptId } from "./_model";
 
 // Mock translations
 jest.mock("react-i18next", () => ({
@@ -36,21 +31,6 @@ jest.mock("../../utils/storage/sessionStorage", () => ({
     paymentInfo: "paymentInfo",
   },
 }));
-
-const paymentInfo: PaymentInfo = {
-  amount: 12000 as AmountEuroCents,
-  paymentContextCode: "ff368bb048fa4e1daa2a297e1a9fd353",
-  rptId: "77777777777302000100000009488" as RptId,
-  paFiscalCode: "77777777777",
-  paName: "companyName",
-  description: "Pagamento di Test",
-  dueDate: "2021-07-31",
-};
-
-const rptId: PaymentFormFields = {
-  billCode: "302034567870000000",
-  cf: "77777777777",
-};
 
 const mockGetSessionItem = (item: SessionItems) => {
   switch (item) {

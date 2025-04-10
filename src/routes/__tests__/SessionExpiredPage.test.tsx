@@ -2,12 +2,11 @@ import React from "react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { fireEvent, act, screen, waitFor } from "@testing-library/react";
-import { Cart, PaymentNotice } from "features/payment/models/paymentModel";
 import { renderWithReduxProvider } from "../../utils/testRenderProviders";
 import SessionExpiredPage from "../../routes/SessionExpiredPage";
-import { CartRequestReturnUrls } from "../../../generated/definitions/payment-ecommerce/CartRequest";
 import { getSessionItem } from "../../utils/storage/sessionStorage";
 import "jest-location-mock";
+import { cart } from "./_model";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -60,18 +59,6 @@ describe("SessionExpiredPage", () => {
 
   test("session expired with cart", async () => {
     navigate.mockReset();
-    const returnUrls: CartRequestReturnUrls = {
-      returnOkUrl: "http://okUrl",
-      returnCancelUrl: "http://cancelUrl",
-      returnErrorUrl: "http://errorUrl",
-    };
-
-    const cart: Cart = {
-      emailNotice: "test@test.it",
-      idCart: "idCart",
-      paymentNotices: [] as Array<PaymentNotice>,
-      returnUrls,
-    };
 
     (getSessionItem as jest.Mock).mockImplementation(() => cart);
 

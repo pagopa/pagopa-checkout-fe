@@ -2,11 +2,6 @@ import React from "react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { screen, fireEvent, waitFor } from "@testing-library/react";
-import {
-  PaymentInfo,
-  PaymentMethod,
-  PaymentMethodInfo,
-} from "features/payment/models/paymentModel";
 import * as router from "react-router";
 import { renderWithReduxProvider } from "../../utils/testRenderProviders";
 import PaymentCheckPage from "../PaymentCheckPage";
@@ -20,13 +15,14 @@ import {
   getSessionItem,
   SessionItems,
 } from "../../utils/storage/sessionStorage";
-import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
-import { RptId } from "../../../generated/definitions/payment-ecommerce/RptId";
-import { TransactionStatusEnum } from "../../../generated/definitions/payment-ecommerce/TransactionStatus";
-import { ClientIdEnum } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
-import { AmountEuroCents } from "../../../generated/definitions/payment-ecommerce/AmountEuroCents";
-import { Bundle } from "../../../generated/definitions/payment-ecommerce-v2/Bundle";
-import { SessionPaymentMethodResponse } from "../../../generated/definitions/payment-ecommerce/SessionPaymentMethodResponse";
+import {
+  paymentInfo,
+  paymentMethod,
+  paymentMethodInfo,
+  pspSelected,
+  sessionPayment,
+  transaction,
+} from "./_model";
 
 // Create a Jest spy for navigation
 const navigate = jest.fn();
@@ -86,74 +82,6 @@ jest.mock("../../utils/api/helper", () => ({
 jest.mock("../../utils/config/config", () => ({
   getConfigOrThrow: jest.fn(),
 }));
-
-const transaction: NewTransactionResponse = {
-  transactionId: "6f7d9be5fbb94ca29bf55972321783e7",
-  status: TransactionStatusEnum.ACTIVATED,
-  payments: [
-    {
-      paymentToken: "1fb8539bdbc94123849a21be8eead8dd",
-      rptId: "77777777777302000100000009488" as RptId,
-      reason: "TARI/TEFA 2021",
-      amount: 12000 as AmountEuroCents,
-      transferList: [
-        {
-          digitalStamp: true,
-          paFiscalCode: "00000000000",
-          transferAmount: 100 as AmountEuroCents,
-          transferCategory: "transfCat0",
-        },
-      ],
-      isAllCCP: false,
-    },
-  ],
-  clientId: ClientIdEnum.CHECKOUT,
-  authToken: "token",
-};
-
-const paymentMethod: PaymentMethod = {
-  paymentMethodId: "e7058cac-5e1a-4002-8994-5bab31e9f385",
-  paymentTypeCode: "CP",
-};
-
-const paymentMethodInfo: PaymentMethodInfo = {
-  title: "· · · · 4242",
-  body: "12/30",
-  icon: "visa",
-};
-
-const pspSelected: Bundle = {
-  abi: "33111",
-  bundleDescription: "Pagamenti con carte",
-  bundleName: "Worldline Merchant Services Italia S.p.A.",
-  idBrokerPsp: "05963231005",
-  idBundle: "98d24e9a-ab8b-48e3-ae84-f0c16c64db3b",
-  idChannel: "05963231005_01",
-  idPsp: "BNLIITRR",
-  onUs: false,
-  paymentMethod: "CP",
-  taxPayerFee: 95,
-  touchpoint: "CHECKOUT",
-  pspBusinessName: "Worldline",
-};
-
-const paymentInfo: PaymentInfo = {
-  amount: 12000 as AmountEuroCents,
-  paymentContextCode: "ff368bb048fa4e1daa2a297e1a9fd353",
-  rptId: "77777777777302000100000009488" as RptId,
-  paFiscalCode: "77777777777",
-  paName: "companyName",
-  description: "Pagamento di Test",
-  dueDate: "2021-07-31",
-};
-
-const sessionPayment: SessionPaymentMethodResponse = {
-  sessionId: "4c15c2aa-3bd9-45d2-b06e-73525983b87b",
-  bin: "42424242",
-  lastFourDigits: "4242",
-  expiringDate: "12/30",
-  brand: "VISA",
-};
 
 const mockGetSessionItem = (item: SessionItems) => {
   switch (item) {

@@ -3,21 +3,14 @@ import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { act, fireEvent, screen } from "@testing-library/react";
 import * as router from "react-router";
-import { PaymentInfo } from "features/payment/models/paymentModel";
-import { NonNegativeInteger } from "@pagopa/ts-commons/lib/numbers";
 import {
   getSessionItem,
   SessionItems,
 } from "../../utils/storage/sessionStorage";
 import { renderWithReduxProvider } from "../../utils/testRenderProviders";
 import PaymentChoicePage from "../../routes/PaymentChoicePage";
-import { AmountEuroCents } from "../../../generated/definitions/payment-ecommerce/AmountEuroCents";
-import { RptId } from "../../../generated/definitions/payment-ecommerce/RptId";
-import { PaymentMethodManagementTypeEnum } from "../../../generated/definitions/payment-ecommerce/PaymentMethodManagementType";
-import { PaymentMethodStatusEnum } from "../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
 import { getPaymentInstruments } from "../../utils/api/helper";
-import { PaymentMethodsResponse } from "../../../generated/definitions/payment-ecommerce/PaymentMethodsResponse";
-import { PaymentMethodResponse } from "../../../generated/definitions/payment-ecommerce-v3/PaymentMethodResponse";
+import { createSuccessGetPaymentMethods, paymentInfo } from "./_model";
 // Mock translations and recaptcha
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -128,61 +121,6 @@ jest.mock("../../utils/config/config", () =>
     isProdEnv: jest.fn(() => true),
   })
 );
-
-const paymentInfo: PaymentInfo = {
-  amount: 12000 as AmountEuroCents,
-  paymentContextCode: "ff368bb048fa4e1daa2a297e1a9fd353",
-  rptId: "77777777777302000100000009488" as RptId,
-  paFiscalCode: "77777777777",
-  paName: "companyName",
-  description: "Pagamento di Test",
-  dueDate: "2021-07-31",
-};
-
-export const cardBrandAssets = {
-  AMEX: "https://assets.cdn.platform.pagopa.it/creditcard/amex.png",
-  DINERS: "https://assets.cdn.platform.pagopa.it/creditcard/diners.png",
-  MAESTRO: "https://assets.cdn.platform.pagopa.it/creditcard/maestro.png",
-  MASTERCARD: "https://assets.cdn.platform.pagopa.it/creditcard/mastercard.png",
-  MC: "https://assets.cdn.platform.pagopa.it/creditcard/mastercard.png",
-  VISA: "https://assets.cdn.platform.pagopa.it/creditcard/visa.png",
-};
-
-const createSuccessGetPaymentMethods: PaymentMethodsResponse = {
-  paymentMethods: [
-    {
-      asset: "https://assets.cdn.platform.pagopa.it/creditcard/generic.png",
-      brandAssets: cardBrandAssets,
-      description: "Carte",
-      id: "3ebea7a1-2e77-4a1b-ac1b-3aca0d67f813",
-      methodManagement: PaymentMethodManagementTypeEnum.ONBOARDABLE,
-      name: "Carte",
-      paymentTypeCode: "CP",
-      ranges: [
-        {
-          max: 999999 as NonNegativeInteger,
-          min: 0 as NonNegativeInteger,
-        },
-      ],
-      status: PaymentMethodStatusEnum.ENABLED,
-    } as PaymentMethodResponse,
-    {
-      asset: "https://assets.cdn.io.italia.it/logos/apps/paga-con-postepay.png",
-      description: "Paga con Postepay",
-      id: "1c12349f-8133-42f3-ad96-7e6527d27a41",
-      methodManagement: PaymentMethodManagementTypeEnum.REDIRECT,
-      name: "Paga con Poste Pay",
-      paymentTypeCode: "RBPP",
-      ranges: [
-        {
-          max: 999999 as NonNegativeInteger,
-          min: 0 as NonNegativeInteger,
-        },
-      ],
-      status: PaymentMethodStatusEnum.ENABLED,
-    } as PaymentMethodResponse,
-  ],
-};
 
 const mockGetSessionItem = (item: SessionItems) => {
   switch (item) {

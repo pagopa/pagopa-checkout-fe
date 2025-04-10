@@ -44,11 +44,7 @@ describe("PaymentEmailPage", () => {
   beforeEach(() => {
     jest.spyOn(router, "useNavigate").mockImplementation(() => navigate);
   });
-  // This test fails beacause the submit button seems to be disabled due to different email between the 2 fields
   test("test fill email", async () => {
-    // (getSessionItem as jest.Mock).mockReturnValue(mockGetSessionItem);
-    // (setSessionItem as jest.Mock).mockReturnValue(() => {});
-
     const { container } = renderWithReduxProvider(
       <MemoryRouter>
         <PaymentEmailPage />

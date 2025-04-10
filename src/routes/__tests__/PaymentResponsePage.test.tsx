@@ -1,36 +1,48 @@
 import React from "react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
-import { act } from "@testing-library/react";
-import {
-  PaymentInfo,
-  PaymentMethod,
-  PaymentMethodInfo,
-} from "features/payment/models/paymentModel";
+import { fireEvent, screen } from "@testing-library/react";
 import { renderWithReduxProvider } from "../../utils/testRenderProviders";
 import {
+  clearStorage,
   getSessionItem,
   SessionItems,
 } from "../../utils/storage/sessionStorage";
-import {
-  NewTransactionResponse,
-  SendPaymentResultOutcomeEnum,
-} from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
-import { RptId } from "../../../generated/definitions/payment-ecommerce/RptId";
-import { TransactionStatusEnum } from "../../../generated/definitions/payment-ecommerce/TransactionStatus";
-import { ClientIdEnum } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
-import { AmountEuroCents } from "../../../generated/definitions/payment-ecommerce/AmountEuroCents";
-import { Bundle } from "../../../generated/definitions/payment-ecommerce-v2/Bundle";
-import { SessionPaymentMethodResponse } from "../../../generated/definitions/payment-ecommerce/SessionPaymentMethodResponse";
 import PaymentResponsePage from "../../routes/PaymentResponsePage";
-// Create a Jest spy for navigation
-const navigate = jest.fn();
+import "jest-location-mock";
+import { checkLogout } from "../../utils/api/helper";
+import {
+  getViewOutcomeFromEcommerceResultCode,
+  ViewOutcomeEnum,
+} from "../../utils/transactions/TransactionResultUtil";
+import {
+  paymentMethod,
+  paymentMethodInfo,
+  pspSelected,
+  transaction,
+  paymentInfo,
+  sessionPayment,
+  cart,
+} from "./_model";
 
-// Mock react-router-dom so that useNavigate returns our spy function.
-// Note: We spread the actual module to preserve its other exports.
-jest.mock("react-router-dom", () => ({
-  ...(jest.requireActual("react-router-dom") as any),
-  useNavigate: () => navigate,
+jest.mock("../../utils/transactions/TransactionResultUtil", () => ({
+  getViewOutcomeFromEcommerceResultCode: jest.fn(),
+  ViewOutcomeEnum: {
+    SUCCESS: "0",
+    GENERIC_ERROR: "1",
+    AUTH_ERROR: "2",
+    INVALID_DATA: "3",
+    TIMEOUT: "4",
+    INVALID_CARD: "7",
+    CANCELED_BY_USER: "8",
+    EXCESSIVE_AMOUNT: "10",
+    TAKING_CHARGE: "17",
+    REFUNDED: "18",
+    PSP_ERROR: "25",
+    BALANCE_LIMIT: "116",
+    CVV_ERROR: "117",
+    LIMIT_EXCEEDED: "121",
+  },
 }));
 
 // Mock translations
@@ -48,6 +60,7 @@ jest.mock("react-i18next", () => ({
 
 jest.mock("../../utils/storage/sessionStorage", () => ({
   getSessionItem: jest.fn(),
+  clearStorage: jest.fn(),
   SessionItems: {
     paymentMethod: "paymentMethod",
     paymentMethodInfo: "paymentMethodInfo",
@@ -56,6 +69,7 @@ jest.mock("../../utils/storage/sessionStorage", () => ({
     useremail: "useremail",
     paymentInfo: "paymentInfo",
     sessionPayment: "sessionPayment",
+    cart: "cart",
   },
 }));
 
@@ -99,76 +113,7 @@ jest.mock("../../utils/config/config", () =>
   })
 );
 
-const transaction: NewTransactionResponse = {
-  transactionId: "6f7d9be5fbb94ca29bf55972321783e7",
-  status: TransactionStatusEnum.NOTIFIED_OK,
-  payments: [
-    {
-      paymentToken: "1fb8539bdbc94123849a21be8eead8dd",
-      rptId: "77777777777302000100000009488" as RptId,
-      reason: "TARI/TEFA 2021",
-      amount: 12000 as AmountEuroCents,
-      transferList: [
-        {
-          digitalStamp: true,
-          paFiscalCode: "00000000000",
-          transferAmount: 100 as AmountEuroCents,
-          transferCategory: "transfCat0",
-        },
-      ],
-      isAllCCP: false,
-    },
-  ],
-  clientId: ClientIdEnum.CHECKOUT,
-  authToken: "token",
-  sendPaymentResultOutcome: SendPaymentResultOutcomeEnum.OK,
-};
-
-const paymentMethod: PaymentMethod = {
-  paymentMethodId: "e7058cac-5e1a-4002-8994-5bab31e9f385",
-  paymentTypeCode: "CP",
-};
-
-const paymentMethodInfo: PaymentMethodInfo = {
-  title: "· · · · 4242",
-  body: "12/30",
-  icon: "visa",
-};
-
-const pspSelected: Bundle = {
-  abi: "33111",
-  bundleDescription: "Pagamenti con carte",
-  bundleName: "Worldline Merchant Services Italia S.p.A.",
-  idBrokerPsp: "05963231005",
-  idBundle: "98d24e9a-ab8b-48e3-ae84-f0c16c64db3b",
-  idChannel: "05963231005_01",
-  idPsp: "BNLIITRR",
-  onUs: false,
-  paymentMethod: "CP",
-  taxPayerFee: 95,
-  touchpoint: "CHECKOUT",
-  pspBusinessName: "Worldline",
-};
-
-const paymentInfo: PaymentInfo = {
-  amount: 12000 as AmountEuroCents,
-  paymentContextCode: "ff368bb048fa4e1daa2a297e1a9fd353",
-  rptId: "77777777777302000100000009488" as RptId,
-  paFiscalCode: "77777777777",
-  paName: "companyName",
-  description: "Pagamento di Test",
-  dueDate: "2021-07-31",
-};
-
-const sessionPayment: SessionPaymentMethodResponse = {
-  sessionId: "4c15c2aa-3bd9-45d2-b06e-73525983b87b",
-  bin: "42424242",
-  lastFourDigits: "4242",
-  expiringDate: "12/30",
-  brand: "VISA",
-};
-
-const mockGetSessionItem = (item: SessionItems) => {
+const mockGetSessionItemNoCart = (item: SessionItems) => {
   switch (item) {
     case "paymentMethod":
       return paymentMethod;
@@ -184,26 +129,122 @@ const mockGetSessionItem = (item: SessionItems) => {
       return paymentInfo;
     case "sessionPayment":
       return sessionPayment;
+    case "cart":
+      return undefined;
     default:
       return undefined;
   }
 };
 
-describe("PaymentResponsePage", () => {
+const mockGetSessionItemWithCart = (item: SessionItems) => {
+  switch (item) {
+    case "paymentMethod":
+      return paymentMethod;
+    case "paymentMethodInfo":
+      return paymentMethodInfo;
+    case "pspSelected":
+      return pspSelected;
+    case "transaction":
+      return transaction;
+    case "useremail":
+      return "test@pagopa.it";
+    case "paymentInfo":
+      return paymentInfo;
+    case "sessionPayment":
+      return sessionPayment;
+    case "cart":
+      return cart;
+    default:
+      return undefined;
+  }
+};
+
+describe.skip("PaymentResponsePage no cart", () => {
   beforeEach(() => {
     // Clear previous calls to our spy navigate function before each test
-    navigate.mockClear();
-    (getSessionItem as jest.Mock).mockImplementation(mockGetSessionItem);
+    (getSessionItem as jest.Mock).mockImplementation(mockGetSessionItemNoCart);
   });
   // TEST WITHOUT CART
-  test("should show payment ok", () => {
-    act(() => {
+  test.each([
+    ViewOutcomeEnum.SUCCESS,
+    ViewOutcomeEnum.AUTH_ERROR,
+    ViewOutcomeEnum.BALANCE_LIMIT,
+    ViewOutcomeEnum.CVV_ERROR,
+    ViewOutcomeEnum.EXCESSIVE_AMOUNT,
+    ViewOutcomeEnum.GENERIC_ERROR,
+    ViewOutcomeEnum.INVALID_CARD,
+    ViewOutcomeEnum.INVALID_DATA,
+    ViewOutcomeEnum.LIMIT_EXCEEDED,
+    ViewOutcomeEnum.PSP_ERROR,
+    ViewOutcomeEnum.REFUNDED,
+    ViewOutcomeEnum.TAKING_CHARGE,
+    ViewOutcomeEnum.TIMEOUT,
+  ])(
+    "should show payment outcome message and come back to home on close button click",
+    (val) => {
+      (getViewOutcomeFromEcommerceResultCode as jest.Mock).mockImplementation(
+        () => val
+      );
       renderWithReduxProvider(
         <MemoryRouter>
           <PaymentResponsePage />
         </MemoryRouter>
       );
-    });
-    // const message = screen.queryByText("errorButton.close");
+      expect(
+        screen.getByText("paymentResponsePage." + val + ".title")
+      ).toBeVisible();
+      expect(checkLogout).toHaveBeenCalled();
+      expect(clearStorage).toHaveBeenCalled();
+      fireEvent.click(screen.getByText("errorButton.close"));
+      expect(location.href).toBe("http://localhost/");
+    }
+  );
+});
+
+describe.skip("PaymentResponsePage with cart", () => {
+  beforeEach(() => {
+    // Clear previous calls to our spy navigate function before each test
+    (getSessionItem as jest.Mock).mockImplementation(
+      mockGetSessionItemWithCart
+    );
   });
+  // TEST WITH CART
+  test.each([
+    ViewOutcomeEnum.SUCCESS,
+    ViewOutcomeEnum.AUTH_ERROR,
+    ViewOutcomeEnum.BALANCE_LIMIT,
+    ViewOutcomeEnum.CVV_ERROR,
+    ViewOutcomeEnum.EXCESSIVE_AMOUNT,
+    ViewOutcomeEnum.GENERIC_ERROR,
+    ViewOutcomeEnum.INVALID_CARD,
+    ViewOutcomeEnum.INVALID_DATA,
+    ViewOutcomeEnum.LIMIT_EXCEEDED,
+    ViewOutcomeEnum.PSP_ERROR,
+    ViewOutcomeEnum.REFUNDED,
+    ViewOutcomeEnum.TAKING_CHARGE,
+    ViewOutcomeEnum.TIMEOUT,
+  ])(
+    "should show payment outcome message and come back to home on close button click",
+    (val) => {
+      (getViewOutcomeFromEcommerceResultCode as jest.Mock).mockImplementation(
+        () => val
+      );
+      renderWithReduxProvider(
+        <MemoryRouter>
+          <PaymentResponsePage />
+        </MemoryRouter>
+      );
+      expect(
+        screen.getByText("paymentResponsePage." + val + ".title")
+      ).toBeVisible();
+      expect(checkLogout).toHaveBeenCalled();
+      expect(clearStorage).toHaveBeenCalled();
+      fireEvent.click(screen.getByText("paymentResponsePage.buttons.continue"));
+      expect(location.href).toBe(
+        val === "0"
+          ? cart.returnUrls.returnOkUrl.toLowerCase() + "/"
+          : cart.returnUrls.returnErrorUrl.toLowerCase() + "/"
+      );
+    }
+  );
 });

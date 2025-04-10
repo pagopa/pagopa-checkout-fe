@@ -2,15 +2,14 @@ import React from "react";
 import "@testing-library/jest-dom";
 import { fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { Cart, PaymentNotice } from "features/payment/models/paymentModel";
 import { renderWithReduxProvider } from "../../utils/testRenderProviders";
 import CancelledPage from "../CancelledPage";
 import {
   clearStorage,
   getSessionItem,
 } from "../../utils/storage/sessionStorage";
-import { CartRequestReturnUrls } from "../../../generated/definitions/payment-ecommerce/CartRequest";
 import "jest-location-mock";
+import { cart } from "./_model";
 
 // Mock translations and recaptcha
 jest.mock("react-i18next", () => ({
@@ -68,19 +67,6 @@ describe("CancelledPage", () => {
   });
 
   test("Should clear storage when landing on cancelled page. Button redirects to custom url when cart is in session storage", async () => {
-    const returnUrls: CartRequestReturnUrls = {
-      returnOkUrl: "http://okUrl",
-      returnCancelUrl: "http://cancelUrl",
-      returnErrorUrl: "http://koUrl",
-    };
-
-    const cart: Cart = {
-      emailNotice: "test@test.it",
-      idCart: "idCart",
-      paymentNotices: [] as Array<PaymentNotice>,
-      returnUrls,
-    };
-
     (getSessionItem as jest.Mock).mockImplementation((item) => {
       switch (item) {
         case "cart":

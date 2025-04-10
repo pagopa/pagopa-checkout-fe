@@ -1,7 +1,7 @@
 module.exports = {
   preset: "ts-jest",
   testEnvironment: "jsdom",
-  testPathIgnorePatterns: ["dist", "/node_modules"],
+  testPathIgnorePatterns: ["dist", "/node_modules","<rootDir>/src/routes/__tests__/_model.ts"],
   testMatch: [
     "**/__tests__/**/*.(tsx|ts)"
   ],

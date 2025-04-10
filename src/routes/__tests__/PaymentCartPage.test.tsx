@@ -1,13 +1,12 @@
 import React from "react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
-import { Cart, PaymentNotice } from "features/payment/models/paymentModel";
 import { fireEvent, screen, waitFor } from "@testing-library/dom";
 import { setSessionItem } from "../../utils/storage/sessionStorage";
 import { apiPaymentEcommerceClient } from "../../utils/api/client";
 import { renderWithReduxProvider } from "../../utils/testRenderProviders";
 import PaymentCartPage from "../PaymentCartPage";
-import { CartRequestReturnUrls } from "../../../generated/definitions/payment-ecommerce/CartRequest";
+import { cart } from "./_model";
 
 // Mock translations and recaptcha
 jest.mock("react-i18next", () => ({
@@ -87,32 +86,7 @@ jest.mock("../../utils/config/config", () =>
   })
 );
 
-// Mock the API call with fp-ts TaskEither
-const returnUrls: CartRequestReturnUrls = {
-  returnOkUrl: "http://okUrl",
-  returnCancelUrl: "http://cancelUrl",
-  returnErrorUrl: "http://errorUrl",
-};
-
-const cart: Cart = {
-  emailNotice: "test@test.it",
-  idCart: "idCart",
-  paymentNotices: [
-    {
-      noticeNumber: "302034567876500000",
-      fiscalCode: "77777777777",
-      amount: 100,
-    },
-  ] as Array<PaymentNotice>,
-  returnUrls,
-};
-
 describe("PaymentCartPage", () => {
-  beforeEach(() => {
-    // jest.spyOn(router, 'useParams').mockReturnValue({ cartid: '123' });
-    // jest.spyOn(router, "useNavigate").mockImplementation(() => navigate);
-  });
-
   test("should show cart start page", async () => {
     (apiPaymentEcommerceClient.GetCarts as jest.Mock).mockReturnValue(
       Promise.resolve({
