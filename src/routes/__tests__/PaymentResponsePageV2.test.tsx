@@ -2,6 +2,7 @@ import React from "react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { fireEvent, screen, waitFor } from "@testing-library/react";
+import * as router from "react-router";
 import { renderWithReduxProvider } from "../../utils/testRenderProviders";
 import {
   clearStorage,
@@ -77,6 +78,7 @@ jest.mock("../../utils/config/config", () =>
       // Create a mapping of all config values
       const configValues = {
         CHECKOUT_ENV: "TEST",
+        CHECKOUT_SURVEY_SHOW: "TEST",
         // Add other config values as needed
       } as any;
 
@@ -140,9 +142,15 @@ const mockGetSessionItemWithCart = (item: SessionItems) => {
   }
 };
 
+// Create a Jest spy for navigation
+const navigate = jest.fn();
+
 describe("V2PaymentResponsePage no cart", () => {
   beforeEach(() => {
     // Clear previous calls to our spy navigate function before each test
+    // jest.resetAllMocks();
+    jest.spyOn(router, "useNavigate").mockReset();
+    jest.spyOn(router, "useNavigate").mockImplementation(() => navigate);
     (getSessionItem as jest.Mock).mockImplementation(mockGetSessionItemNoCart);
   });
   // TEST WITHOUT CART
@@ -178,7 +186,7 @@ describe("V2PaymentResponsePage no cart", () => {
         expect(clearStorage).toHaveBeenCalled();
       });
       fireEvent.click(screen.getByText("errorButton.close"));
-      expect(location.href).toBe("http://localhost/");
+      expect(navigate).toHaveBeenCalledWith("/", { replace: true });
     }
   );
 });
@@ -186,6 +194,7 @@ describe("V2PaymentResponsePage no cart", () => {
 describe("V2PaymentResponsePage with cart", () => {
   beforeEach(() => {
     // Clear previous calls to our spy navigate function before each test
+    jest.spyOn(router, "useNavigate").mockReset();
     (getSessionItem as jest.Mock).mockImplementation(
       mockGetSessionItemWithCart
     );
@@ -221,10 +230,10 @@ describe("V2PaymentResponsePage with cart", () => {
       expect(checkLogout).toHaveBeenCalled();
       expect(clearStorage).toHaveBeenCalled();
       fireEvent.click(screen.getByText("paymentResponsePage.buttons.continue"));
-      expect(location.href).toBe(
+      expect(window.location.replace).toHaveBeenCalledWith(
         val === "0"
-          ? cart.returnUrls.returnOkUrl.toLowerCase() + "/"
-          : cart.returnUrls.returnErrorUrl.toLowerCase() + "/"
+          ? cart.returnUrls.returnOkUrl
+          : cart.returnUrls.returnErrorUrl
       );
     }
   );
