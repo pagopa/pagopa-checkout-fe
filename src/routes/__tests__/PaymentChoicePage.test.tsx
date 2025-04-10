@@ -1,3 +1,5 @@
+/* eslint-disable sonarjs/no-identical-functions */
+
 import React from "react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
@@ -10,8 +12,15 @@ import {
 } from "../../utils/storage/sessionStorage";
 import { renderWithReduxProvider } from "../../utils/testRenderProviders";
 import PaymentChoicePage from "../../routes/PaymentChoicePage";
-import { apiPaymentEcommerceClient } from "../../utils/api/client";
-import { createSuccessGetPaymentMethods, paymentInfo } from "./_model";
+import {
+  apiPaymentEcommerceClient,
+  apiPaymentEcommerceClientV3,
+} from "../../utils/api/client";
+import {
+  createSuccessGetPaymentMethodsV1,
+  createSuccessGetPaymentMethodsV3,
+  paymentInfo,
+} from "./_model";
 // Mock translations and recaptcha
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -32,6 +41,9 @@ jest.mock("../../utils/api/client", () => ({
   apiPaymentEcommerceClient: {
     getAllPaymentMethods: jest.fn(),
   },
+  apiPaymentEcommerceClientV3: {
+    getAllPaymentMethodsV3: jest.fn(),
+  },
 }));
 
 // Mock storage utilities (and return an empty object if needed)
@@ -39,6 +51,7 @@ jest.mock("../../utils/storage/sessionStorage", () => ({
   getSessionItem: jest.fn(),
   setSessionItem: jest.fn(),
   getReCaptchaKey: jest.fn(),
+  getRptIdsFromSession: jest.fn(),
   SessionItems: {
     authToken: "authToken",
     loginOriginPage: "loginOriginPage",
@@ -143,7 +156,7 @@ describe("PaymentChoicePage guest", () => {
       Promise.resolve({
         right: {
           status: 200,
-          value: createSuccessGetPaymentMethods.paymentMethods,
+          value: createSuccessGetPaymentMethodsV1.paymentMethods,
         },
       })
     );
@@ -172,20 +185,21 @@ describe("PaymentChoicePage guest", () => {
       // Query the input fields by their id
       fireEvent.click(
         screen.getByText(
-          createSuccessGetPaymentMethods.paymentMethods![0].description
+          createSuccessGetPaymentMethodsV1.paymentMethods![0].description
         )
       );
       expect(setSessionItem).toHaveBeenCalledWith(
         SessionItems.paymentMethodInfo,
         {
-          title: createSuccessGetPaymentMethods.paymentMethods![0].description,
-          assett: createSuccessGetPaymentMethods.paymentMethods![0].asset,
+          title:
+            createSuccessGetPaymentMethodsV1.paymentMethods![0].description,
+          assett: createSuccessGetPaymentMethodsV1.paymentMethods![0].asset,
         }
       );
       expect(setSessionItem).toHaveBeenCalledWith(SessionItems.paymentMethod, {
-        paymentMethodId: createSuccessGetPaymentMethods.paymentMethods![0].id,
+        paymentMethodId: createSuccessGetPaymentMethodsV1.paymentMethods![0].id,
         paymentTypeCode:
-          createSuccessGetPaymentMethods.paymentMethods![0].paymentTypeCode,
+          createSuccessGetPaymentMethodsV1.paymentMethods![0].paymentTypeCode,
       });
       expect(navigate).toHaveBeenCalledWith("inserisci-carta");
     });
@@ -212,20 +226,135 @@ describe("PaymentChoicePage guest", () => {
       // Query the input fields by their id
       fireEvent.click(
         screen.getByText(
-          createSuccessGetPaymentMethods.paymentMethods![1].description
+          createSuccessGetPaymentMethodsV1.paymentMethods![1].description
         )
       );
       expect(setSessionItem).toHaveBeenCalledWith(
         SessionItems.paymentMethodInfo,
         {
-          title: createSuccessGetPaymentMethods.paymentMethods![1].description,
-          assett: createSuccessGetPaymentMethods.paymentMethods![1].asset,
+          title:
+            createSuccessGetPaymentMethodsV1.paymentMethods![1].description,
+          assett: createSuccessGetPaymentMethodsV1.paymentMethods![1].asset,
         }
       );
       expect(setSessionItem).toHaveBeenCalledWith(SessionItems.paymentMethod, {
-        paymentMethodId: createSuccessGetPaymentMethods.paymentMethods![1].id,
+        paymentMethodId: createSuccessGetPaymentMethodsV1.paymentMethods![1].id,
         paymentTypeCode:
-          createSuccessGetPaymentMethods.paymentMethods![1].paymentTypeCode,
+          createSuccessGetPaymentMethodsV1.paymentMethods![1].paymentTypeCode,
+      });
+      expect(navigate).toHaveBeenCalledWith("riepilogo-pagamento");
+    });
+  });
+});
+
+const mockGetSessionItemAuthenticated = (item: SessionItems) => {
+  switch (item) {
+    case "paymentInfo":
+      return paymentInfo;
+    case "authToken":
+      return "authToken";
+    default:
+      return undefined;
+  }
+};
+
+describe("PaymentChoicePage authenticated", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    (getSessionItem as jest.Mock).mockImplementation(
+      mockGetSessionItemAuthenticated
+    );
+    (
+      apiPaymentEcommerceClientV3.getAllPaymentMethodsV3 as jest.Mock
+    ).mockReturnValue(
+      Promise.resolve({
+        right: {
+          status: 200,
+          value: createSuccessGetPaymentMethodsV3.paymentMethods,
+        },
+      })
+    );
+    jest.spyOn(router, "useNavigate").mockImplementation(() => navigate);
+  });
+
+  test("go back to history by 1 step when back button is clicked (authenticated flow)", () => {
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentChoicePage />
+      </MemoryRouter>
+    );
+    void waitFor(() => {
+      fireEvent.click(screen.getByText("paymentChoicePage.button"));
+      expect(navigate).toHaveBeenCalledWith(-1);
+    });
+  });
+
+  test("select credit card and navigate to inserisci-dati-carta", async () => {
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentChoicePage />
+      </MemoryRouter>
+    );
+    void waitFor(() => {
+      // Query the input fields by their id
+      fireEvent.click(
+        screen.getByText(
+          createSuccessGetPaymentMethodsV3.paymentMethods![0].description
+        )
+      );
+      expect(setSessionItem).toHaveBeenCalledWith(
+        SessionItems.paymentMethodInfo,
+        {
+          title:
+            createSuccessGetPaymentMethodsV3.paymentMethods![0].description,
+          assett: createSuccessGetPaymentMethodsV3.paymentMethods![0].asset,
+        }
+      );
+      expect(setSessionItem).toHaveBeenCalledWith(SessionItems.paymentMethod, {
+        paymentMethodId: createSuccessGetPaymentMethodsV3.paymentMethods![0].id,
+        paymentTypeCode:
+          createSuccessGetPaymentMethodsV3.paymentMethods![0].paymentTypeCode,
+      });
+      expect(navigate).toHaveBeenCalledWith("inserisci-carta");
+    });
+  });
+
+  test("select apm and navigate to riepilogo-pagamento", () => {
+    /* const localStorageMock = {
+      getItem: jest.fn().mockReturnValue("true"),
+      setItem: jest.fn(),
+      clear: jest.fn(),
+      removeItem: jest.fn(),
+      length: 0,
+      key: jest.fn(),
+    };
+    // eslint-disable-next-line functional/immutable-data
+    Object.defineProperty(window, "localStorage", { value: localStorageMock }); */
+
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentChoicePage />
+      </MemoryRouter>
+    );
+    void waitFor(() => {
+      // Query the input fields by their id
+      fireEvent.click(
+        screen.getByText(
+          createSuccessGetPaymentMethodsV3.paymentMethods![1].description
+        )
+      );
+      expect(setSessionItem).toHaveBeenCalledWith(
+        SessionItems.paymentMethodInfo,
+        {
+          title:
+            createSuccessGetPaymentMethodsV3.paymentMethods![1].description,
+          assett: createSuccessGetPaymentMethodsV3.paymentMethods![1].asset,
+        }
+      );
+      expect(setSessionItem).toHaveBeenCalledWith(SessionItems.paymentMethod, {
+        paymentMethodId: createSuccessGetPaymentMethodsV3.paymentMethods![1].id,
+        paymentTypeCode:
+          createSuccessGetPaymentMethodsV3.paymentMethods![1].paymentTypeCode,
       });
       expect(navigate).toHaveBeenCalledWith("riepilogo-pagamento");
     });
