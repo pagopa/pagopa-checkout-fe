@@ -1,6 +1,6 @@
 {
   "name": "io-pay-portal-frontend",
-  "version": "4.11.3",
+  "version": "4.12.0",
   "scripts": {
     "type-check": "tsc",
     "generate": "npm-run-all generate:*",
@@ -34,7 +34,7 @@
     "@mui/icons-material": "^5.14.3",
     "@mui/lab": "^5.0.0-alpha.140",
     "@mui/material": "^5.16.14",
-    "@pagopa/mui-italia": "1.4.0",
+    "@pagopa/mui-italia": "1.5.2",
     "@pagopa/openapi-codegen-ts": "^13.2.0",
     "@reduxjs/toolkit": "^1.7.2",
     "@types/dotenv": "^8.2.0",
