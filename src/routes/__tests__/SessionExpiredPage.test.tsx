@@ -1,7 +1,8 @@
 import React from "react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
-import { fireEvent, act, screen, waitFor } from "@testing-library/react";
+import { fireEvent, act, screen } from "@testing-library/react";
+import * as router from "react-router";
 import { renderWithReduxProvider } from "../../utils/testRenderProviders";
 import SessionExpiredPage from "../../routes/SessionExpiredPage";
 import { getSessionItem } from "../../utils/storage/sessionStorage";
@@ -37,7 +38,8 @@ jest.mock("../../utils/storage/sessionStorage", () => ({
 
 describe("SessionExpiredPage", () => {
   beforeEach(() => {
-    // jest.spyOn(router, "useNavigate").mockImplementation(() => navigate);
+    jest.spyOn(router, "useNavigate").mockReset();
+    jest.spyOn(router, "useNavigate").mockImplementation(() => navigate);
   });
 
   test("session expired", async () => {
@@ -51,10 +53,7 @@ describe("SessionExpiredPage", () => {
       fireEvent.click(screen.getByText("errorButton.close"));
     });
 
-    // expect(navigate).toHaveBeenCalledWith("/", { replace: true });
-    await waitFor(async () => {
-      expect(location.href).toBe("http://localhost/");
-    });
+    expect(navigate).toHaveBeenCalledWith("/", { replace: true });
   });
 
   test("session expired with cart", async () => {
@@ -72,10 +71,9 @@ describe("SessionExpiredPage", () => {
       const close = screen.getByText("paymentResponsePage.buttons.continue");
       fireEvent.click(close);
     });
-    await waitFor(async () => {
-      expect(location.href).toBe(
-        cart.returnUrls.returnErrorUrl.toLowerCase() + "/"
-      );
-    });
+
+    expect(window.location.replace).toHaveBeenCalledWith(
+      cart.returnUrls.returnErrorUrl
+    );
   });
 });
