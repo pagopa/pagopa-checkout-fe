@@ -66,8 +66,7 @@ export default function PaymentSummaryPage() {
         icon={<EuroIcon sx={iconStyle} />}
         endAdornment={
           <IconButton
-            color="primary"
-            sx={{ mr: 2 }}
+            sx={{ mr: 2, color: "primary.main" }}
             onClick={handleInfoClick}
             onKeyDown={handleKeyDown}
             aria-label={t("ariaLabels.informationDialog")}
