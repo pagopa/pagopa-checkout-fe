@@ -2,6 +2,7 @@ import React from "react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { fireEvent, act, screen, waitFor } from "@testing-library/react";
+import * as router from "react-router";
 import { renderWithReduxProvider } from "../../utils/testRenderProviders";
 import KOPage from "../../routes/KOPage";
 import { getSessionItem } from "../../utils/storage/sessionStorage";
@@ -32,7 +33,15 @@ jest.mock("../../utils/storage/sessionStorage", () => ({
   },
 }));
 
+// Create a Jest spy for navigation
+const navigate = jest.fn();
+
 describe("KOPage", () => {
+  beforeEach(() => {
+    // Clear previous calls to our spy navigate function before each test
+    jest.spyOn(router, "useNavigate").mockReset();
+    jest.spyOn(router, "useNavigate").mockImplementation(() => navigate);
+  });
   test("ko page", () => {
     renderWithReduxProvider(
       <MemoryRouter>
@@ -44,7 +53,7 @@ describe("KOPage", () => {
       fireEvent.click(screen.getByText("koPage.button"));
     });
 
-    expect(location.href).toBe("http://localhost/");
+    expect(navigate).toHaveBeenCalledWith("/", { replace: true });
   });
 
   test("ko page with cart", async () => {
@@ -61,8 +70,8 @@ describe("KOPage", () => {
       fireEvent.click(close);
     });
     await waitFor(async () => {
-      expect(location.href).toBe(
-        cart.returnUrls.returnErrorUrl.toLowerCase() + "/"
+      expect(window.location.replace).toHaveBeenCalledWith(
+        cart.returnUrls.returnErrorUrl
       );
     });
   });
