@@ -1,7 +1,7 @@
 import React from "react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
-import { fireEvent, screen } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { renderWithReduxProvider } from "../../utils/testRenderProviders";
 import {
   clearStorage,
@@ -11,10 +11,7 @@ import {
 import PaymentResponsePage from "../../routes/PaymentResponsePage";
 import "jest-location-mock";
 import { checkLogout } from "../../utils/api/helper";
-import {
-  getViewOutcomeFromEcommerceResultCode,
-  ViewOutcomeEnum,
-} from "../../utils/transactions/TransactionResultUtil";
+import { getViewOutcomeFromEcommerceResultCode } from "../../utils/transactions/TransactionResultUtil";
 import {
   paymentMethod,
   paymentMethodInfo,
@@ -159,26 +156,27 @@ const mockGetSessionItemWithCart = (item: SessionItems) => {
   }
 };
 
-describe.skip("PaymentResponsePage no cart", () => {
+describe("V1PaymentResponsePage no cart", () => {
   beforeEach(() => {
     // Clear previous calls to our spy navigate function before each test
     (getSessionItem as jest.Mock).mockImplementation(mockGetSessionItemNoCart);
   });
   // TEST WITHOUT CART
   test.each([
-    ViewOutcomeEnum.SUCCESS,
-    ViewOutcomeEnum.AUTH_ERROR,
-    ViewOutcomeEnum.BALANCE_LIMIT,
-    ViewOutcomeEnum.CVV_ERROR,
-    ViewOutcomeEnum.EXCESSIVE_AMOUNT,
-    ViewOutcomeEnum.GENERIC_ERROR,
-    ViewOutcomeEnum.INVALID_CARD,
-    ViewOutcomeEnum.INVALID_DATA,
-    ViewOutcomeEnum.LIMIT_EXCEEDED,
-    ViewOutcomeEnum.PSP_ERROR,
-    ViewOutcomeEnum.REFUNDED,
-    ViewOutcomeEnum.TAKING_CHARGE,
-    ViewOutcomeEnum.TIMEOUT,
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "7",
+    "8",
+    "10",
+    "17",
+    "18",
+    "25",
+    "116",
+    "117",
+    "121",
   ])(
     "should show payment outcome message and come back to home on close button click",
     (val) => {
@@ -190,18 +188,20 @@ describe.skip("PaymentResponsePage no cart", () => {
           <PaymentResponsePage />
         </MemoryRouter>
       );
-      expect(
-        screen.getByText("paymentResponsePage." + val + ".title")
-      ).toBeVisible();
-      expect(checkLogout).toHaveBeenCalled();
-      expect(clearStorage).toHaveBeenCalled();
-      fireEvent.click(screen.getByText("errorButton.close"));
-      expect(location.href).toBe("http://localhost/");
+      void waitFor(() => {
+        expect(
+          screen.getByText("paymentResponsePage." + val + ".title")
+        ).toBeVisible();
+        expect(checkLogout).toHaveBeenCalled();
+        expect(clearStorage).toHaveBeenCalled();
+        fireEvent.click(screen.getByText("errorButton.close"));
+        expect(location.href).toBe("http://localhost/");
+      });
     }
   );
 });
 
-describe.skip("PaymentResponsePage with cart", () => {
+describe("V1PaymentResponsePage with cart", () => {
   beforeEach(() => {
     // Clear previous calls to our spy navigate function before each test
     (getSessionItem as jest.Mock).mockImplementation(
@@ -210,19 +210,20 @@ describe.skip("PaymentResponsePage with cart", () => {
   });
   // TEST WITH CART
   test.each([
-    ViewOutcomeEnum.SUCCESS,
-    ViewOutcomeEnum.AUTH_ERROR,
-    ViewOutcomeEnum.BALANCE_LIMIT,
-    ViewOutcomeEnum.CVV_ERROR,
-    ViewOutcomeEnum.EXCESSIVE_AMOUNT,
-    ViewOutcomeEnum.GENERIC_ERROR,
-    ViewOutcomeEnum.INVALID_CARD,
-    ViewOutcomeEnum.INVALID_DATA,
-    ViewOutcomeEnum.LIMIT_EXCEEDED,
-    ViewOutcomeEnum.PSP_ERROR,
-    ViewOutcomeEnum.REFUNDED,
-    ViewOutcomeEnum.TAKING_CHARGE,
-    ViewOutcomeEnum.TIMEOUT,
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "7",
+    "8",
+    "10",
+    "17",
+    "18",
+    "25",
+    "116",
+    "117",
+    "121",
   ])(
     "should show payment outcome message and come back to home on close button click",
     (val) => {
@@ -234,17 +235,21 @@ describe.skip("PaymentResponsePage with cart", () => {
           <PaymentResponsePage />
         </MemoryRouter>
       );
-      expect(
-        screen.getByText("paymentResponsePage." + val + ".title")
-      ).toBeVisible();
-      expect(checkLogout).toHaveBeenCalled();
-      expect(clearStorage).toHaveBeenCalled();
-      fireEvent.click(screen.getByText("paymentResponsePage.buttons.continue"));
-      expect(location.href).toBe(
-        val === "0"
-          ? cart.returnUrls.returnOkUrl.toLowerCase() + "/"
-          : cart.returnUrls.returnErrorUrl.toLowerCase() + "/"
-      );
+      void waitFor(() => {
+        expect(
+          screen.getByText("paymentResponsePage." + val + ".title")
+        ).toBeVisible();
+        expect(checkLogout).toHaveBeenCalled();
+        expect(clearStorage).toHaveBeenCalled();
+        fireEvent.click(
+          screen.getByText("paymentResponsePage.buttons.continue")
+        );
+        expect(location.href).toBe(
+          val === "0"
+            ? cart.returnUrls.returnOkUrl.toLowerCase() + "/"
+            : cart.returnUrls.returnErrorUrl.toLowerCase() + "/"
+        );
+      });
     }
   );
 });

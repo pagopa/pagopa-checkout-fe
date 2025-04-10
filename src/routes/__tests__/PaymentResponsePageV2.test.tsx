@@ -140,7 +140,7 @@ const mockGetSessionItemWithCart = (item: SessionItems) => {
   }
 };
 
-describe("PaymentResponsePageV2 no cart", () => {
+describe("V2PaymentResponsePage no cart", () => {
   beforeEach(() => {
     // Clear previous calls to our spy navigate function before each test
     (getSessionItem as jest.Mock).mockImplementation(mockGetSessionItemNoCart);
@@ -181,7 +181,7 @@ describe("PaymentResponsePageV2 no cart", () => {
   );
 });
 
-describe("PaymentResponsePageV2 with cart", () => {
+describe("V2PaymentResponsePage with cart", () => {
   beforeEach(() => {
     // Clear previous calls to our spy navigate function before each test
     (getSessionItem as jest.Mock).mockImplementation(
