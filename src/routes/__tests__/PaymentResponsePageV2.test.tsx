@@ -1,7 +1,7 @@
 import React from "react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
-import { fireEvent, screen } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { renderWithReduxProvider } from "../../utils/testRenderProviders";
 import {
   clearStorage,
@@ -163,7 +163,7 @@ describe("V2PaymentResponsePage no cart", () => {
     "121",
   ])(
     "should show payment outcome message and come back to home on close button click",
-    (val) => {
+    async (val) => {
       (getFragmentParameter as jest.Mock).mockImplementation(() => val);
       renderWithReduxProvider(
         <MemoryRouter>
@@ -174,7 +174,9 @@ describe("V2PaymentResponsePage no cart", () => {
         screen.getByText("paymentResponsePage." + val + ".title")
       ).toBeVisible();
       expect(checkLogout).toHaveBeenCalled();
-      expect(clearStorage).toHaveBeenCalled();
+      await waitFor(() => {
+        expect(clearStorage).toHaveBeenCalled();
+      });
       fireEvent.click(screen.getByText("errorButton.close"));
       expect(location.href).toBe("http://localhost/");
     }

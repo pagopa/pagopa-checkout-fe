@@ -1,7 +1,8 @@
 import React from "react";
 import "@testing-library/jest-dom";
-import { fireEvent, waitFor } from "@testing-library/react";
+import { act, fireEvent, waitFor, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import * as router from "react-router";
 import { renderWithReduxProvider } from "../../utils/testRenderProviders";
 import CancelledPage from "../CancelledPage";
 import {
@@ -9,6 +10,7 @@ import {
   getSessionItem,
 } from "../../utils/storage/sessionStorage";
 import "jest-location-mock";
+import { checkLogout } from "../../utils/api/helper";
 import { cart } from "./_model";
 
 // Mock translations and recaptcha
@@ -29,6 +31,7 @@ jest.mock("../../utils/storage/sessionStorage", () => ({
   clearStorage: jest.fn(),
   SessionItems: {
     cart: "cart",
+    authToken: "authToken",
   },
 }));
 
@@ -40,33 +43,47 @@ jest.mock("../../utils/eventListeners", () => ({
   removeEventListener: jest.fn(),
 }));
 
+// Create a Jest spy for navigation
+const navigate = jest.fn();
+
 describe("CancelledPage", () => {
   beforeEach(() => {
     // Return an object for initial session values (making sure it’s not a boolean)
+    jest.resetAllMocks();
+    jest.spyOn(router, "useNavigate").mockReset();
+    jest.spyOn(router, "useNavigate").mockImplementation(() => navigate);
     (getSessionItem as jest.Mock).mockClear();
+    (checkLogout as jest.Mock).mockClear();
   });
 
   test("Should clear storage when landing on cancelled page. Button redirects to home page when cart is not in session storage", async () => {
     (getSessionItem as jest.Mock).mockImplementation(() => undefined);
+    (checkLogout as jest.Mock).mockImplementation(() => undefined);
 
     const { container } = renderWithReduxProvider(
       <MemoryRouter>
         <CancelledPage />
       </MemoryRouter>
     );
-    expect(clearStorage).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(clearStorage).toHaveBeenCalled();
+    });
     // expect(removeEventListener).toHaveBeenCalled();
     // Query the button by its id
-    const redirectButton = container.querySelector("#redirect-button");
+    act(() => {
+      const redirectButton = container.querySelector("#redirect-button");
 
-    expect(redirectButton).toBeInTheDocument();
-    fireEvent.click(redirectButton!);
+      expect(redirectButton).toBeInTheDocument();
+      fireEvent.click(redirectButton!);
+    });
     await waitFor(async () => {
-      expect(location.href).toBe("http://localhost/");
+      // expect(location.href).toBe("http://localhost/");
+      expect(navigate).toHaveBeenCalledWith("/", { replace: true });
     });
   });
 
   test("Should clear storage when landing on cancelled page. Button redirects to custom url when cart is in session storage", async () => {
+    (checkLogout as jest.Mock).mockImplementation(() => undefined);
     (getSessionItem as jest.Mock).mockImplementation((item) => {
       switch (item) {
         case "cart":
@@ -76,24 +93,20 @@ describe("CancelledPage", () => {
       }
     });
 
-    const { container } = renderWithReduxProvider(
+    renderWithReduxProvider(
       <MemoryRouter>
         <CancelledPage />
       </MemoryRouter>
     );
-    expect(clearStorage).toHaveBeenCalled();
-    // Query the button by its id
-    const redirectButton = container.querySelector("#redirect-button");
-
-    expect(redirectButton).toBeInTheDocument();
-    expect(redirectButton?.textContent).toBe(
-      "paymentResponsePage.buttons.continue"
-    );
-    fireEvent.click(redirectButton!);
-    await waitFor(async () => {
-      expect(location.href).toBe(
-        cart.returnUrls.returnCancelUrl.toLowerCase() + "/"
-      );
+    await waitFor(() => {
+      expect(clearStorage).toHaveBeenCalled();
     });
+    act(() => {
+      // Query the button by its id
+      fireEvent.click(screen.getByText("paymentResponsePage.buttons.continue"));
+    });
+    expect(window.location.replace).toHaveBeenCalledWith(
+      cart.returnUrls.returnCancelUrl
+    );
   });
 });
