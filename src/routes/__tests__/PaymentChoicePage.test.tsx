@@ -1,15 +1,16 @@
 import React from "react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
-import { act, fireEvent, screen } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import * as router from "react-router";
 import {
   getSessionItem,
   SessionItems,
+  setSessionItem,
 } from "../../utils/storage/sessionStorage";
 import { renderWithReduxProvider } from "../../utils/testRenderProviders";
 import PaymentChoicePage from "../../routes/PaymentChoicePage";
-import { getPaymentInstruments } from "../../utils/api/helper";
+import { apiPaymentEcommerceClient } from "../../utils/api/client";
 import { createSuccessGetPaymentMethods, paymentInfo } from "./_model";
 // Mock translations and recaptcha
 jest.mock("react-i18next", () => ({
@@ -27,9 +28,10 @@ jest.mock("react-i18next", () => ({
 // Create a Jest spy for navigation
 const navigate = jest.fn();
 
-// Mock the API call with fp-ts TaskEither
-jest.mock("../../utils/api/helper", () => ({
-  getPaymentInstruments: jest.fn(),
+jest.mock("../../utils/api/client", () => ({
+  apiPaymentEcommerceClient: {
+    getAllPaymentMethods: jest.fn(),
+  },
 }));
 
 // Mock storage utilities (and return an empty object if needed)
@@ -122,7 +124,7 @@ jest.mock("../../utils/config/config", () =>
   })
 );
 
-const mockGetSessionItem = (item: SessionItems) => {
+const mockGetSessionItemNoAuth = (item: SessionItems) => {
   switch (item) {
     case "paymentInfo":
       return paymentInfo;
@@ -131,27 +133,101 @@ const mockGetSessionItem = (item: SessionItems) => {
   }
 };
 
-describe("PaymentChoicePage", () => {
+describe("PaymentChoicePage guest", () => {
   beforeEach(() => {
-    (getSessionItem as jest.Mock).mockImplementation(mockGetSessionItem);
-    (getPaymentInstruments as jest.Mock).mockImplementation(
-      () => createSuccessGetPaymentMethods
+    jest.clearAllMocks();
+    (getSessionItem as jest.Mock).mockImplementation(mockGetSessionItemNoAuth);
+    (
+      apiPaymentEcommerceClient.getAllPaymentMethods as jest.Mock
+    ).mockReturnValue(
+      Promise.resolve({
+        right: {
+          status: 200,
+          value: createSuccessGetPaymentMethods.paymentMethods,
+        },
+      })
     );
     jest.spyOn(router, "useNavigate").mockImplementation(() => navigate);
   });
 
-  test.skip("test back", () => {
+  test("go back to history by 1 step when back button is clicked", () => {
     renderWithReduxProvider(
       <MemoryRouter>
         <PaymentChoicePage />
       </MemoryRouter>
     );
-    act(() => {
-      // Query the input fields by their id
-      const back = screen.getByText("paymentChoicePage.button");
-      expect(back).toBeEnabled();
-      fireEvent.click(back);
+    void waitFor(() => {
+      fireEvent.click(screen.getByText("paymentChoicePage.button"));
+      expect(navigate).toHaveBeenCalledWith(-1);
     });
-    expect(navigate).toHaveBeenCalledWith(-1);
+  });
+
+  test("select credit card and navigate to inserisci-dati-carta", async () => {
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentChoicePage />
+      </MemoryRouter>
+    );
+    void waitFor(() => {
+      // Query the input fields by their id
+      fireEvent.click(
+        screen.getByText(
+          createSuccessGetPaymentMethods.paymentMethods![0].description
+        )
+      );
+      expect(setSessionItem).toHaveBeenCalledWith(
+        SessionItems.paymentMethodInfo,
+        {
+          title: createSuccessGetPaymentMethods.paymentMethods![0].description,
+          assett: createSuccessGetPaymentMethods.paymentMethods![0].asset,
+        }
+      );
+      expect(setSessionItem).toHaveBeenCalledWith(SessionItems.paymentMethod, {
+        paymentMethodId: createSuccessGetPaymentMethods.paymentMethods![0].id,
+        paymentTypeCode:
+          createSuccessGetPaymentMethods.paymentMethods![0].paymentTypeCode,
+      });
+      expect(navigate).toHaveBeenCalledWith("inserisci-carta");
+    });
+  });
+
+  test("select apm and navigate to riepilogo-pagamento", () => {
+    /* const localStorageMock = {
+      getItem: jest.fn().mockReturnValue("true"),
+      setItem: jest.fn(),
+      clear: jest.fn(),
+      removeItem: jest.fn(),
+      length: 0,
+      key: jest.fn(),
+    };
+    // eslint-disable-next-line functional/immutable-data
+    Object.defineProperty(window, "localStorage", { value: localStorageMock }); */
+
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentChoicePage />
+      </MemoryRouter>
+    );
+    void waitFor(() => {
+      // Query the input fields by their id
+      fireEvent.click(
+        screen.getByText(
+          createSuccessGetPaymentMethods.paymentMethods![1].description
+        )
+      );
+      expect(setSessionItem).toHaveBeenCalledWith(
+        SessionItems.paymentMethodInfo,
+        {
+          title: createSuccessGetPaymentMethods.paymentMethods![1].description,
+          assett: createSuccessGetPaymentMethods.paymentMethods![1].asset,
+        }
+      );
+      expect(setSessionItem).toHaveBeenCalledWith(SessionItems.paymentMethod, {
+        paymentMethodId: createSuccessGetPaymentMethods.paymentMethods![1].id,
+        paymentTypeCode:
+          createSuccessGetPaymentMethods.paymentMethods![1].paymentTypeCode,
+      });
+      expect(navigate).toHaveBeenCalledWith("riepilogo-pagamento");
+    });
   });
 });
