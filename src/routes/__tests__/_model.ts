@@ -54,14 +54,14 @@ export const transactionInfoOK: TransactionInfo = {
   ],
   status: TransactionStatusEnum.NOTIFIED_OK,
   nodeInfo: {
-    sendPaymentResultOutcome: SendPaymentResultOutcomeEnum.OK
+    sendPaymentResultOutcome: SendPaymentResultOutcomeEnum.OK,
   },
   gatewayInfo: {
     gateway: "NPG",
     authorizationStatus: "OK",
-    authorizationCode: "000"
-  }
-}
+    authorizationCode: "000",
+  },
+};
 
 export const transaction: NewTransactionResponseV2 = {
   transactionId: "6f7d9be5fbb94ca29bf55972321783e7",
