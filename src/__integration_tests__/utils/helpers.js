@@ -30,7 +30,7 @@ export const activatePaymentAndGetError = async (
   cardData,
   selectorId
 ) => {
-  await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
+  await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData, true);
   const errorMessageElem = await page.waitForSelector(selectorId);
   return await errorMessageElem.evaluate((el) => el.textContent);
 };
@@ -73,7 +73,7 @@ export const checkErrorOnCardDataFormSubmit = async (
   cardData
 ) => {
   const errorMessageTitleSelector = "#iframeCardFormErrorTitleId";
-  await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
+  await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData, true);
   const errorMessageElem = await page.waitForSelector(
     errorMessageTitleSelector
   );
@@ -160,7 +160,9 @@ export const fillAndSubmitCardDataForm = async (
   noticeCode,
   fiscalCode,
   email,
-  cardData
+  cardData,
+  isSubmitFailed = false,
+  pspPageSkipped = false,
 ) => {
   const payNoticeBtnSelector = "#paymentSummaryButtonPay";
   await fillPaymentNotificationForm(noticeCode, fiscalCode);
@@ -171,48 +173,39 @@ export const fillAndSubmitCardDataForm = async (
   await fillEmailForm(email);
   await choosePaymentMethod("CP");
   await fillCardDataForm(cardData);
-  await tryHandlePspPickerPage();
+  if(!isSubmitFailed)
+    await tryHandlePspPickerPage(pspPageSkipped);
 };
 
-export const tryHandlePspPickerPage = async ()=>{
-  // wait for page to change, max wait time few seconds
-  // this navigation will not happen in all test cases
-  // so we don't want to waste too much time over it
-  try {
-    await page.waitForNavigation({ timeout: 3500 });
-  } catch (error) {
-    // If the navigation doesn't happen within 3500ms, just log and continue
-    console.log("Navigation did not happen within 3500ms. Continuing test.");
-  }
+export const tryHandlePspPickerPage = async (pspPageSkipped = false) => {
+  await page.waitForNavigation();
 
-  // this step needs to be skipped during tests
-  // in which we trigger an error modal in the previous page
   if(await page.url().includes("lista-psp")){
-    await selectPspOnPspPickerPage();
+    if(!pspPageSkipped)
+      await selectPspOnPspPickerPage();
+    else
+      await page.waitForNavigation();
   }
 }
 
 export const selectPspOnPspPickerPage = async () => {
-  try{
     const pspPickerRadio = await page.waitForSelector("#psp-radio-button-unchecked", {
-      visible: true, timeout: 500
+      visible: true
     });
     await pspPickerRadio.click();
   
     const continueButton = await page.waitForSelector("#paymentPspListPageButtonContinue", {
-      visible: true, timeout: 500
+      visible: true
     });
     
     await continueButton.click();
-  }catch(e){
-    console.log("Buttons not found: this is caused by PSP page immediately navigate to the summary page (if 1 psp available)");
-  }
 }
 
 export const fillAndSubmitSatispayPayment = async (
   noticeCode,
   fiscalCode,
-  email
+  email,
+  isSubmitFailed = false,
 ) => {
   const payNoticeBtnSelector = "#paymentSummaryButtonPay";
   await fillPaymentNotificationForm(noticeCode, fiscalCode);
@@ -222,7 +215,8 @@ export const fillAndSubmitSatispayPayment = async (
   await payNoticeBtn.click();
   await fillEmailForm(email);
   await choosePaymentMethod("SATY");
-  await tryHandlePspPickerPage();
+  if(!isSubmitFailed)
+    await tryHandlePspPickerPage();
 };
 
 export const fillEmailForm = async (email) => {
@@ -308,7 +302,7 @@ export const cancelPaymentOK = async (
 ) => {
   const resultMessageXPath =
     "/html/body/div[1]/div/main/div/div/div/div[1]/div";
-  await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
+  await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData, false);
   const paymentCheckPageButtonCancel = await page.waitForSelector(
     "#paymentCheckPageButtonCancel"
   );
