@@ -159,18 +159,6 @@ jest.mock("../../utils/config/config", () =>
     isProdEnv: jest.fn(() => true),
   })
 );
-/*
-    const localStorageMock = {
-      getItem: jest.fn(),
-      setItem: jest.fn(),
-      clear: jest.fn(),
-      removeItem: jest.fn(),
-      length: 0,
-      key: jest.fn(),
-    };
-    // eslint-disable-next-line functional/immutable-data
-    Object.defineProperty(window, "localStorage", { value: localStorageMock }); 
-*/
 
 const mockGetSessionItemNoAuth = (item: SessionItems) => {
   switch (item) {
@@ -194,6 +182,19 @@ const mockGetSessionItemNoAuth = (item: SessionItems) => {
       return undefined;
   }
 };
+
+const getItemLocalStorage = jest.fn();
+
+const localStorageMock = {
+  getItem: getItemLocalStorage,
+  setItem: jest.fn(),
+  clear: jest.fn(),
+  removeItem: jest.fn(),
+  length: 0,
+  key: jest.fn(),
+};
+// eslint-disable-next-line functional/immutable-data
+Object.defineProperty(window, "localStorage", { value: localStorageMock });
 
 describe("PaymentChoicePage guest", () => {
   beforeEach(() => {
@@ -232,6 +233,7 @@ describe("PaymentChoicePage guest", () => {
   });
 
   test("go back to history by 1 step when back button is clicked", async () => {
+    (getItemLocalStorage as jest.Mock).mockReturnValue("false");
     renderWithReduxProvider(
       <MemoryRouter>
         <PaymentChoicePage />
@@ -244,6 +246,7 @@ describe("PaymentChoicePage guest", () => {
   });
 
   test("select credit card and navigate to inserisci-dati-carta", async () => {
+    (getItemLocalStorage as jest.Mock).mockReturnValue("false");
     renderWithReduxProvider(
       <MemoryRouter>
         <PaymentChoicePage />
@@ -256,35 +259,24 @@ describe("PaymentChoicePage guest", () => {
           createSuccessGetPaymentMethodsV1.paymentMethods![0].description
         )
       );
-      expect(setSessionItem).toHaveBeenCalledWith(
-        SessionItems.paymentMethodInfo,
-        {
-          title:
-            createSuccessGetPaymentMethodsV1.paymentMethods![0].description,
-          asset: createSuccessGetPaymentMethodsV1.paymentMethods![0].asset,
-        }
-      );
-      expect(setSessionItem).toHaveBeenCalledWith(SessionItems.paymentMethod, {
-        paymentMethodId: createSuccessGetPaymentMethodsV1.paymentMethods![0].id,
-        paymentTypeCode:
-          createSuccessGetPaymentMethodsV1.paymentMethods![0].paymentTypeCode,
-      });
-      expect(navigate).toHaveBeenCalledWith("/inserisci-carta");
     });
+    expect(setSessionItem).toHaveBeenCalledWith(
+      SessionItems.paymentMethodInfo,
+      {
+        title: createSuccessGetPaymentMethodsV1.paymentMethods![0].description,
+        asset: createSuccessGetPaymentMethodsV1.paymentMethods![0].asset,
+      }
+    );
+    expect(setSessionItem).toHaveBeenCalledWith(SessionItems.paymentMethod, {
+      paymentMethodId: createSuccessGetPaymentMethodsV1.paymentMethods![0].id,
+      paymentTypeCode:
+        createSuccessGetPaymentMethodsV1.paymentMethods![0].paymentTypeCode,
+    });
+    expect(navigate).toHaveBeenCalledWith("/inserisci-carta");
   });
 
   test("select apm and navigate to riepilogo-pagamento", async () => {
-    /* const localStorageMock = {
-      getItem: jest.fn().mockReturnValue("true"),
-      setItem: jest.fn(),
-      clear: jest.fn(),
-      removeItem: jest.fn(),
-      length: 0,
-      key: jest.fn(),
-    };
-    // eslint-disable-next-line functional/immutable-data
-    Object.defineProperty(window, "localStorage", { value: localStorageMock }); */
-
+    (getItemLocalStorage as jest.Mock).mockReturnValue("false");
     renderWithReduxProvider(
       <MemoryRouter>
         <PaymentChoicePage />
@@ -297,21 +289,50 @@ describe("PaymentChoicePage guest", () => {
           createSuccessGetPaymentMethodsV1.paymentMethods![1].description
         )
       );
-      expect(setSessionItem).toHaveBeenCalledWith(
-        SessionItems.paymentMethodInfo,
-        {
-          title:
-            createSuccessGetPaymentMethodsV1.paymentMethods![1].description,
-          asset: createSuccessGetPaymentMethodsV1.paymentMethods![1].asset,
-        }
-      );
-      expect(setSessionItem).toHaveBeenCalledWith(SessionItems.paymentMethod, {
-        paymentMethodId: createSuccessGetPaymentMethodsV1.paymentMethods![1].id,
-        paymentTypeCode:
-          createSuccessGetPaymentMethodsV1.paymentMethods![1].paymentTypeCode,
-      });
-      expect(navigate).toHaveBeenCalledWith("/riepilogo-pagamento");
     });
+    expect(setSessionItem).toHaveBeenCalledWith(
+      SessionItems.paymentMethodInfo,
+      {
+        title: createSuccessGetPaymentMethodsV1.paymentMethods![1].description,
+        asset: createSuccessGetPaymentMethodsV1.paymentMethods![1].asset,
+      }
+    );
+    expect(setSessionItem).toHaveBeenCalledWith(SessionItems.paymentMethod, {
+      paymentMethodId: createSuccessGetPaymentMethodsV1.paymentMethods![1].id,
+      paymentTypeCode:
+        createSuccessGetPaymentMethodsV1.paymentMethods![1].paymentTypeCode,
+    });
+    expect(navigate).toHaveBeenCalledWith("/riepilogo-pagamento");
+  });
+
+  test("select apm and navigate to scelta-psp with feature flag enabled", async () => {
+    (getItemLocalStorage as jest.Mock).mockReturnValue("true");
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentChoicePage />
+      </MemoryRouter>
+    );
+    await waitFor(() => {
+      // Query the input fields by their id
+      fireEvent.click(
+        screen.getByText(
+          createSuccessGetPaymentMethodsV1.paymentMethods![1].description
+        )
+      );
+    });
+    expect(setSessionItem).toHaveBeenCalledWith(
+      SessionItems.paymentMethodInfo,
+      {
+        title: createSuccessGetPaymentMethodsV1.paymentMethods![1].description,
+        asset: createSuccessGetPaymentMethodsV1.paymentMethods![1].asset,
+      }
+    );
+    expect(setSessionItem).toHaveBeenCalledWith(SessionItems.paymentMethod, {
+      paymentMethodId: createSuccessGetPaymentMethodsV1.paymentMethods![1].id,
+      paymentTypeCode:
+        createSuccessGetPaymentMethodsV1.paymentMethods![1].paymentTypeCode,
+    });
+    expect(navigate).toHaveBeenCalledWith("/lista-psp");
   });
 });
 
@@ -378,6 +399,8 @@ describe("PaymentChoicePage authenticated", () => {
   });
 
   test("go back to history by 1 step when back button is clicked (authenticated flow)", async () => {
+    (getItemLocalStorage as jest.Mock).mockReturnValue("false");
+
     renderWithReduxProvider(
       <MemoryRouter>
         <PaymentChoicePage />
@@ -392,12 +415,13 @@ describe("PaymentChoicePage authenticated", () => {
       ).toBeVisible();
 
       fireEvent.click(screen.getByText("paymentChoicePage.button"));
-
       expect(navigate).toHaveBeenCalledWith(-1);
     });
   });
 
   test("select credit card and navigate to inserisci-dati-carta", async () => {
+    (getItemLocalStorage as jest.Mock).mockReturnValue("false");
+
     renderWithReduxProvider(
       <MemoryRouter>
         <PaymentChoicePage />
@@ -410,34 +434,24 @@ describe("PaymentChoicePage authenticated", () => {
           createSuccessGetPaymentMethodsV3.paymentMethods![0].description
         )
       );
-      expect(setSessionItem).toHaveBeenCalledWith(
-        SessionItems.paymentMethodInfo,
-        {
-          title:
-            createSuccessGetPaymentMethodsV3.paymentMethods![0].description,
-          asset: createSuccessGetPaymentMethodsV3.paymentMethods![0].asset,
-        }
-      );
-      expect(setSessionItem).toHaveBeenCalledWith(SessionItems.paymentMethod, {
-        paymentMethodId: createSuccessGetPaymentMethodsV3.paymentMethods![0].id,
-        paymentTypeCode:
-          createSuccessGetPaymentMethodsV3.paymentMethods![0].paymentTypeCode,
-      });
-      expect(navigate).toHaveBeenCalledWith("/inserisci-carta");
     });
+    expect(setSessionItem).toHaveBeenCalledWith(
+      SessionItems.paymentMethodInfo,
+      {
+        title: createSuccessGetPaymentMethodsV3.paymentMethods![0].description,
+        asset: createSuccessGetPaymentMethodsV3.paymentMethods![0].asset,
+      }
+    );
+    expect(setSessionItem).toHaveBeenCalledWith(SessionItems.paymentMethod, {
+      paymentMethodId: createSuccessGetPaymentMethodsV3.paymentMethods![0].id,
+      paymentTypeCode:
+        createSuccessGetPaymentMethodsV3.paymentMethods![0].paymentTypeCode,
+    });
+    expect(navigate).toHaveBeenCalledWith("/inserisci-carta");
   });
 
   test("select apm and navigate to riepilogo-pagamento", async () => {
-    /* const localStorageMock = {
-      getItem: jest.fn().mockReturnValue("true"),
-      setItem: jest.fn(),
-      clear: jest.fn(),
-      removeItem: jest.fn(),
-      length: 0,
-      key: jest.fn(),
-    };
-    // eslint-disable-next-line functional/immutable-data
-    Object.defineProperty(window, "localStorage", { value: localStorageMock }); */
+    (getItemLocalStorage as jest.Mock).mockReturnValue("false");
 
     renderWithReduxProvider(
       <MemoryRouter>
@@ -451,20 +465,50 @@ describe("PaymentChoicePage authenticated", () => {
           createSuccessGetPaymentMethodsV3.paymentMethods![1].description
         )
       );
-      expect(setSessionItem).toHaveBeenCalledWith(
-        SessionItems.paymentMethodInfo,
-        {
-          title:
-            createSuccessGetPaymentMethodsV3.paymentMethods![1].description,
-          asset: createSuccessGetPaymentMethodsV3.paymentMethods![1].asset,
-        }
-      );
-      expect(setSessionItem).toHaveBeenCalledWith(SessionItems.paymentMethod, {
-        paymentMethodId: createSuccessGetPaymentMethodsV3.paymentMethods![1].id,
-        paymentTypeCode:
-          createSuccessGetPaymentMethodsV3.paymentMethods![1].paymentTypeCode,
-      });
-      expect(navigate).toHaveBeenCalledWith("/riepilogo-pagamento");
     });
+    expect(setSessionItem).toHaveBeenCalledWith(
+      SessionItems.paymentMethodInfo,
+      {
+        title: createSuccessGetPaymentMethodsV3.paymentMethods![1].description,
+        asset: createSuccessGetPaymentMethodsV3.paymentMethods![1].asset,
+      }
+    );
+    expect(setSessionItem).toHaveBeenCalledWith(SessionItems.paymentMethod, {
+      paymentMethodId: createSuccessGetPaymentMethodsV3.paymentMethods![1].id,
+      paymentTypeCode:
+        createSuccessGetPaymentMethodsV3.paymentMethods![1].paymentTypeCode,
+    });
+    expect(navigate).toHaveBeenCalledWith("/riepilogo-pagamento");
+  });
+
+  test("select apm and navigate to lista-psp", async () => {
+    (getItemLocalStorage as jest.Mock).mockReturnValue("true");
+
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentChoicePage />
+      </MemoryRouter>
+    );
+    await waitFor(() => {
+      // Query the input fields by their id
+      fireEvent.click(
+        screen.getByText(
+          createSuccessGetPaymentMethodsV3.paymentMethods![1].description
+        )
+      );
+    });
+    expect(setSessionItem).toHaveBeenCalledWith(
+      SessionItems.paymentMethodInfo,
+      {
+        title: createSuccessGetPaymentMethodsV3.paymentMethods![1].description,
+        asset: createSuccessGetPaymentMethodsV3.paymentMethods![1].asset,
+      }
+    );
+    expect(setSessionItem).toHaveBeenCalledWith(SessionItems.paymentMethod, {
+      paymentMethodId: createSuccessGetPaymentMethodsV3.paymentMethods![1].id,
+      paymentTypeCode:
+        createSuccessGetPaymentMethodsV3.paymentMethods![1].paymentTypeCode,
+    });
+    expect(navigate).toHaveBeenCalledWith("/lista-psp");
   });
 });
