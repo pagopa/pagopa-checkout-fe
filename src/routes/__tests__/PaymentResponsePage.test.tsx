@@ -3,6 +3,7 @@ import React from "react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import * as router from "react-router";
+import * as TE from "fp-ts/TaskEither";
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { renderWithReduxProvider } from "../../utils/testRenderProviders";
 import {
@@ -22,7 +23,11 @@ import {
   paymentInfo,
   sessionPayment,
   cart,
+  transactionInfoOK,
 } from "./_model";
+import { ecommerceTransaction } from "../../utils/transactions/transactionHelper";
+import { getUrlParameter } from "../../utils/regex/urlUtilities";
+import { decodeToUUID } from "../../utils/api/response";
 
 jest.mock("../../utils/transactions/TransactionResultUtil", () => ({
   getViewOutcomeFromEcommerceResultCode: jest.fn(),
@@ -82,8 +87,21 @@ jest.mock("../../utils/api/helper", () => ({
   checkLogout: jest.fn(),
 }));
 
+jest.mock("../../utils/transactions/transactionHelper", () => ({
+  ecommerceTransaction: jest.fn(),
+}));
+
+jest.mock("../../utils/config/fetch", () => ({
+  constantPollingWithPromisePredicateFetch: jest.fn()
+}));
+
+jest.mock("../../utils/regex/urlUtilities", () => ({
+  getUrlParameter: jest.fn()
+}))
+
 jest.mock("../../utils/api/response", () => ({
-  callServices: jest.fn(),
+  ...(jest.requireActual("../../utils/api/response") as any),
+  decodeToUUID: jest.fn(),
 }));
 
 // Mock the config module
@@ -158,15 +176,21 @@ const mockGetSessionItemWithCart = (item: SessionItems) => {
   }
 };
 
+
 // Create a Jest spy for navigation
 const navigate = jest.fn();
 
-describe.skip("V1PaymentResponsePage no cart", () => {
+describe("V1PaymentResponsePage no cart", () => {
   beforeEach(() => {
     // Clear previous calls to our spy navigate function before each test
     jest.spyOn(router, "useNavigate").mockReset();
     jest.spyOn(router, "useNavigate").mockImplementation(() => navigate);
     (getSessionItem as jest.Mock).mockImplementation(mockGetSessionItemNoCart);
+    (getUrlParameter as jest.Mock).mockReturnValue(transactionInfoOK.transactionId);
+    (decodeToUUID as jest.Mock).mockImplementation(() => transactionInfoOK.transactionId);
+    (ecommerceTransaction as jest.Mock).mockReturnValue(
+          TE.right(transactionInfoOK)
+        );
   });
   // TEST WITHOUT CART
   test.each([
@@ -201,14 +225,14 @@ describe.skip("V1PaymentResponsePage no cart", () => {
         ).toBeVisible();
         expect(checkLogout).toHaveBeenCalled();
         expect(clearStorage).toHaveBeenCalled();
-      });
-      fireEvent.click(screen.getByText("errorButton.close"));
-      expect(navigate).toHaveBeenCalledWith("/");
+        fireEvent.click(screen.getByText("errorButton.close"));
+      });  
+      expect(navigate).toHaveBeenCalledWith("/", {"replace": true});
     }
   );
 });
 
-describe.skip("V1PaymentResponsePage with cart", () => {
+describe("V1PaymentResponsePage with cart", () => {
   beforeEach(() => {
     // Clear previous calls to our spy navigate function before each test
     jest.spyOn(router, "useNavigate").mockReset();
@@ -216,6 +240,13 @@ describe.skip("V1PaymentResponsePage with cart", () => {
     (getSessionItem as jest.Mock).mockImplementation(
       mockGetSessionItemWithCart
     );
+    
+      (getUrlParameter as jest.Mock).mockReturnValue(transactionInfoOK.transactionId);
+      (decodeToUUID as jest.Mock).mockImplementation(() => transactionInfoOK.transactionId);
+      (ecommerceTransaction as jest.Mock).mockReturnValue(
+            TE.right(transactionInfoOK)
+          );
+  
   });
   // TEST WITH CART
   test.each([

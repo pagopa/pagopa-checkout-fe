@@ -30,6 +30,38 @@ import { PaymentMethodResponse as PaymentMethodResponseV3 } from "../../../gener
 import { PaymentMethodsResponse as PaymentMethodsResponseV3 } from "../../../generated/definitions/payment-ecommerce-v3/PaymentMethodsResponse";
 import { PaymentMethodStatusEnum as PaymentMethodStatusEnumV3 } from "../../../generated/definitions/payment-ecommerce-v3/PaymentMethodStatus";
 import { CalculateFeeResponse } from "../../../generated/definitions/payment-ecommerce-v2/CalculateFeeResponse";
+import { TransactionInfo } from "../../../generated/definitions/payment-ecommerce-v2/TransactionInfo";
+import { SendPaymentResultOutcomeEnum } from "../../../generated/definitions/payment-ecommerce-v3/NewTransactionResponse";
+
+export const transactionInfoOK: TransactionInfo = {
+  transactionId: "6f7d9be5fbb94ca29bf55972321783e7",
+  payments: [
+    {
+      paymentToken: "1fb8539bdbc94123849a21be8eead8dd",
+      rptId: "77777777777302000100000009488" as RptId,
+      reason: "TARI/TEFA 2021",
+      amount: 12000 as AmountEuroCents,
+      transferList: [
+        {
+          digitalStamp: true,
+          paFiscalCode: "00000000000",
+          transferAmount: 100 as AmountEuroCents,
+          transferCategory: "transfCat0",
+        },
+      ],
+      isAllCCP: false,
+    },
+  ],
+  status: TransactionStatusEnum.NOTIFIED_OK,
+  nodeInfo: {
+    sendPaymentResultOutcome: SendPaymentResultOutcomeEnum.OK
+  },
+  gatewayInfo: {
+    gateway: "NPG",
+    authorizationStatus: "OK",
+    authorizationCode: "000"
+  }
+}
 
 export const transaction: NewTransactionResponseV2 = {
   transactionId: "6f7d9be5fbb94ca29bf55972321783e7",
