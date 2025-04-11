@@ -285,6 +285,8 @@ export default function IframeCardForm(props: Props) {
           </Box>
         </Box>
         <FormButtons
+          idCancel="cancel"
+          idSubmit="submit"
           loadingSubmit={loading}
           type="submit"
           submitTitle="paymentNoticePage.formButtons.submit"

@@ -65,10 +65,14 @@ export function PaymentNoticeChoice() {
                 pb: 0,
               }}
             >
-              <Typography variant="sidenav" component={"div"}>
+              <Typography variant="sidenav" component={"div"} id="qrCTA">
                 {t("paymentNoticeChoice.qr.title")}
               </Typography>
-              <Typography variant="body2" component={"div"}>
+              <Typography
+                variant="body2"
+                component={"div"}
+                id="paymentNoticeCTA"
+              >
                 {t("paymentNoticeChoice.qr.description")}
               </Typography>
             </Box>

@@ -15,7 +15,17 @@ import { UserInfoResponse } from "../../../../generated/definitions/checkout-aut
 import { renderWithReduxProvider } from "../../../utils/testing/testRenderProviders";
 
 jest.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
+  useTranslation: () => ({
+    t: (key: string) => {
+      // Simple mock translation function
+      const translations: Record<string, string> = {
+        "mainPage.header.logout": "Esci",
+        "mainPage.footer.pagoPA": "PagoPA S.p.A.",
+        "ariaLabels.assistance": "Assistenza",
+      };
+      return translations[key] || key;
+    },
+  }),
   Trans: ({
     i18nKey,
   }: {
@@ -78,7 +88,7 @@ jest.mock("../../../utils/eventListeners", () => ({
 const getById = queryByAttribute.bind(null, "id");
 
 describe("LoginHeader", () => {
-  test("Renders loading header", () => {
+  it("Renders loading header", () => {
     renderWithReduxProvider(
       <MemoryRouter>
         <LoginHeader />
@@ -88,7 +98,7 @@ describe("LoginHeader", () => {
     expect(screen.getByTitle(/Accedi/i)).toBeInTheDocument();
   });
 
-  test("Call login api after button click", async () => {
+  it("Call login api after button click", async () => {
     const redirectUrl = "http://checkout-login/";
     (proceedToLogin as jest.Mock).mockImplementation(({ onResponse }) => {
       onResponse(redirectUrl);
@@ -107,7 +117,7 @@ describe("LoginHeader", () => {
     });
   });
 
-  test("Shows error modal if proceedToLogin fails", async () => {
+  it("Shows error modal if proceedToLogin fails", async () => {
     (proceedToLogin as jest.Mock).mockImplementation(({ onError }) => {
       onError("Error on get login");
     });
@@ -127,7 +137,7 @@ describe("LoginHeader", () => {
     });
   });
 
-  test("Shows name-surname of logged user", async () => {
+  it("Shows name-surname of logged user", async () => {
     const userInfo: UserInfoResponse = {
       familyName: "Rossi",
       name: "Mario",
@@ -149,7 +159,7 @@ describe("LoginHeader", () => {
     });
   });
 
-  test("Logout user for transaction not activated yet", async () => {
+  it("Logout user for transaction not activated yet", async () => {
     const userInfo: UserInfoResponse = {
       familyName: "Rossi",
       name: "Mario",

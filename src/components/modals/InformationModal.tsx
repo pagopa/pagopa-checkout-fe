@@ -15,6 +15,7 @@ import { useTranslation } from "react-i18next";
 function InformationModal(props: {
   open: boolean;
   onClose: () => void;
+  id?: string;
   hideIcon?: boolean;
   children?: React.ReactNode;
   style?: React.CSSProperties;
