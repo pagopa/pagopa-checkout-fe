@@ -1,5 +1,5 @@
 import ReCAPTCHA from "react-google-recaptcha";
-import { mockApiConfig } from "../../../testUtils";
+import { mockApiConfig } from "../../../../utils/testing/testUtils";
 import {
   apiCheckoutAuthServiceClientAuthTokenV1,
   apiCheckoutAuthServiceClientV1,

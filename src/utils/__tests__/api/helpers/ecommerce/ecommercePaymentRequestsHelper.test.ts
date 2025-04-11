@@ -5,7 +5,7 @@ import {
   getCartResponseMock,
   getPaymentRequestInfoResponseMock,
   mockApiConfig,
-} from "../../../../../utils/testUtils";
+} from "../../../../../utils/testing/testUtils";
 import {
   apiPaymentEcommerceClient,
   apiPaymentEcommerceClientV3,
