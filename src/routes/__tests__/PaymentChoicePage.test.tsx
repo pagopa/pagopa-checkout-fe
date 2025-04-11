@@ -79,6 +79,7 @@ jest.mock("../../utils/storage/sessionStorage", () => ({
     orderId: "orderId",
     correlationId: "correlationId",
     sessionPayment: "sessionPayment",
+    transaction: "transaction",
   },
 }));
 
@@ -187,6 +188,8 @@ const mockGetSessionItemNoAuth = (item: SessionItems) => {
       return "correlationId";
     case "sessionPayment":
       return sessionPayment;
+    case "transaction":
+      return transaction;
     default:
       return undefined;
   }
@@ -270,7 +273,7 @@ describe("PaymentChoicePage guest", () => {
     });
   });
 
-  test.skip("select apm and navigate to riepilogo-pagamento", async () => {
+  test("select apm and navigate to riepilogo-pagamento", async () => {
     /* const localStorageMock = {
       getItem: jest.fn().mockReturnValue("true"),
       setItem: jest.fn(),
@@ -314,10 +317,24 @@ describe("PaymentChoicePage guest", () => {
 
 const mockGetSessionItemAuthenticated = (item: SessionItems) => {
   switch (item) {
-    case "paymentInfo":
-      return paymentInfo;
     case "authToken":
       return "authToken";
+    case "paymentInfo":
+      return paymentInfo;
+    case "rptId":
+      return rptId;
+    case "useremail":
+      return "mail@mail.it";
+    case "paymentMethod":
+      return paymentMethod;
+    case "orderId":
+      return "orderId";
+    case "correlationId":
+      return "correlationId";
+    case "sessionPayment":
+      return sessionPayment;
+    case "transaction":
+      return transaction;
     default:
       return undefined;
   }
@@ -344,6 +361,16 @@ describe("PaymentChoicePage authenticated", () => {
         right: {
           status: 200,
           value: transaction,
+        },
+      })
+    );
+    (
+      apiPaymentEcommerceClientWithRetryV2.calculateFees as jest.Mock
+    ).mockReturnValue(
+      Promise.resolve({
+        right: {
+          status: 200,
+          value: calculateFeeResponse,
         },
       })
     );
@@ -400,7 +427,7 @@ describe("PaymentChoicePage authenticated", () => {
     });
   });
 
-  test.skip("select apm and navigate to riepilogo-pagamento", async () => {
+  test("select apm and navigate to riepilogo-pagamento", async () => {
     /* const localStorageMock = {
       getItem: jest.fn().mockReturnValue("true"),
       setItem: jest.fn(),
