@@ -9,7 +9,7 @@ import {
   setSessionItem,
 } from "../../utils/storage/sessionStorage";
 import { getEcommercePaymentInfoTask } from "../../utils/api/helper";
-import { renderWithReduxProvider } from "../../utils/testRenderProviders";
+import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders";
 import PaymentNotice from "../PaymentNoticePage";
 import { paymentInfo, rptId } from "./_model";
 
