@@ -10,7 +10,7 @@ import {
   SessionItems,
   setSessionItem,
 } from "../../utils/storage/sessionStorage";
-import { renderWithReduxProvider } from "../../utils/testRenderProviders";
+import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders";
 import PaymentChoicePage from "../../routes/PaymentChoicePage";
 import {
   apiPaymentEcommerceClient,

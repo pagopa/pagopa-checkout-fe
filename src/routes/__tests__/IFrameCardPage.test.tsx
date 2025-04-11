@@ -7,7 +7,7 @@ import {
   getSessionItem,
   SessionItems,
 } from "../../utils/storage/sessionStorage";
-import { renderWithReduxProvider } from "../../utils/testRenderProviders";
+import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders";
 import { npgSessionsFields, retrieveCardData } from "../../utils/api/helper";
 import { CreateSessionResponse } from "../../../generated/definitions/payment-ecommerce-v3/CreateSessionResponse";
 import { sessionPayment, transaction } from "./_model";

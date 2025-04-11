@@ -4,7 +4,7 @@ import { MemoryRouter } from "react-router-dom";
 import { fireEvent, screen, waitFor } from "@testing-library/dom";
 import { setSessionItem } from "../../utils/storage/sessionStorage";
 import { apiPaymentEcommerceClient } from "../../utils/api/client";
-import { renderWithReduxProvider } from "../../utils/testRenderProviders";
+import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders";
 import PaymentCartPage from "../PaymentCartPage";
 import { cart } from "./_model";
 

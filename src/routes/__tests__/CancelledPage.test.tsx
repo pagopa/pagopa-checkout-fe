@@ -3,7 +3,7 @@ import "@testing-library/jest-dom";
 import { act, fireEvent, waitFor, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import * as router from "react-router";
-import { renderWithReduxProvider } from "../../utils/testRenderProviders";
+import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders";
 import CancelledPage from "../CancelledPage";
 import {
   clearStorage,

@@ -4,7 +4,7 @@ import { MemoryRouter } from "react-router-dom";
 import { fireEvent, act, screen, waitFor } from "@testing-library/react";
 import * as router from "react-router";
 import { apiPaymentEcommerceClientWithRetryV2 } from "../../utils/api/client";
-import { renderWithReduxProvider } from "../../utils/testRenderProviders";
+import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders";
 import PaymentPspListPage from "../PaymentPspListPage";
 import {
   getSessionItem,

@@ -3,7 +3,7 @@ import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { fireEvent, act, screen, waitFor } from "@testing-library/react";
 import * as router from "react-router";
-import { renderWithReduxProvider } from "../../utils/testRenderProviders";
+import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders";
 import KOPage from "../../routes/KOPage";
 import { getSessionItem } from "../../utils/storage/sessionStorage";
 import "jest-location-mock";

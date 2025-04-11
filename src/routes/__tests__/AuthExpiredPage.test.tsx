@@ -2,7 +2,7 @@ import React from "react";
 import "@testing-library/jest-dom";
 import { fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { renderWithReduxProvider } from "../../utils/testRenderProviders";
+import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders";
 import AuthExpiredPage from "../AuthExpiredPage";
 import {
   getAndClearSessionItem,

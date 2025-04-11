@@ -3,7 +3,7 @@ import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { waitFor } from "@testing-library/react";
 import * as router from "react-router";
-import { renderWithReduxProvider } from "../../utils/testRenderProviders";
+import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders";
 import GdiCheckPage from "../GdiCheckPage";
 import { getConfigOrThrow } from "../../utils/config/config";
 

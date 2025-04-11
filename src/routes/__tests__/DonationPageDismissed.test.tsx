@@ -2,7 +2,7 @@ import React from "react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { fireEvent, screen, act } from "@testing-library/react";
-import { renderWithReduxProvider } from "../../utils/testRenderProviders";
+import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders";
 import DonationPageDismissed from "../DonationPageDismissed";
 import "jest-location-mock";
 

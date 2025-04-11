@@ -5,7 +5,7 @@ import { MemoryRouter } from "react-router-dom";
 import * as router from "react-router";
 import * as TE from "fp-ts/TaskEither";
 import { fireEvent, screen, waitFor } from "@testing-library/react";
-import { renderWithReduxProvider } from "../../utils/testRenderProviders";
+import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders";
 import {
   clearStorage,
   getSessionItem,
