@@ -4,7 +4,7 @@ import { queryByAttribute } from "@testing-library/react";
 import { screen } from "@testing-library/dom";
 import { MemoryRouter } from "react-router-dom";
 import Footer from "../Footer";
-import { renderWithReduxProvider } from "../../../utils/testRenderProviders";
+import { renderWithReduxProvider } from "../../../utils/testing/testRenderProviders";
 
 // Mock the translations module
 jest.mock("../../../translations/lang", () => ({
