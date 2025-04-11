@@ -36,14 +36,18 @@ export default function CancelledPage() {
     );
   };
 
-  React.useEffect(() => {
-    checkLogout(() => {
+  const checkLogoutAndClearStorage = async () => {
+    await checkLogout(() => {
       dispatch(removeLoggedUser());
       clearSessionItem(SessionItems.authToken);
     });
+    clearStorage();
+  };
+
+  React.useEffect(() => {
+    void checkLogoutAndClearStorage();
     dispatch(resetThreshold());
     window.removeEventListener("beforeunload", onBrowserUnload);
-    clearStorage();
 
     const pageTitle = t("cancelledPage.body");
     (document.title as any) = pageTitle + " - pagoPA";
