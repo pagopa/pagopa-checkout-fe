@@ -66,6 +66,7 @@ export default function PaymentSummaryPage() {
         icon={<EuroIcon sx={iconStyle} />}
         endAdornment={
           <IconButton
+            id="infoButton"
             sx={{ mr: 2, color: "primary.main" }}
             onClick={handleInfoClick}
             onKeyDown={handleKeyDown}
@@ -98,6 +99,7 @@ export default function PaymentSummaryPage() {
         submitTitle="paymentSummaryPage.buttons.submit"
         cancelTitle="paymentSummaryPage.buttons.cancel"
         idSubmit="paymentSummaryButtonPay"
+        idCancel="paymentSummaryButtonBack"
         disabledSubmit={false}
         handleSubmit={onSubmit}
         handleCancel={() => navigate(-1)}
