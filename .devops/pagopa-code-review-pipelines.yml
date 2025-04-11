@@ -140,10 +140,10 @@ stages:
               sonar.testExecutionReportPaths=test-report.xml
               sonar.sourceEncoding=UTF-8
               sonar.sources=src/
-              sonar.exclusions=src/**/__tests__/**/*,src/**/__test__/**,**/*.js,src/**/index.ts,src/**/__mocks__/**/*,
+              sonar.exclusions=src/**/__tests__/**/*,src/**/__test__/**,**/*.js,src/**/index.ts,src/**/__mocks__/**/*,/src/utils/testing/**
               sonar.tests=src
               sonar.test.inclusions=src/**/__tests__/**/*,src/**/__test__/**
-              sonar.cpd.exclusions=src/**/__tests__/**,src/**/__test__/**,__mocks__/**
+              sonar.cpd.exclusions=src/**/__tests__/**,src/**/__test__/**,__mocks__/**,/src/utils/testing/**
 
         - script: |
             yarn generate

@@ -10,7 +10,7 @@ import {
   proceedToLogin,
   retrieveUserInfo,
 } from "../../utils/api/helper";
-import { renderWithReduxProvider } from "../../utils/testRenderProviders";
+import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),

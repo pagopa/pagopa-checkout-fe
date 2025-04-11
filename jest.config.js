@@ -1,7 +1,7 @@
 module.exports = {
   preset: "ts-jest",
   testEnvironment: "jsdom",
-  testPathIgnorePatterns: ["dist", "/node_modules"],
+  testPathIgnorePatterns: ["dist", "/node_modules","/src/utils/testing"],
   testMatch: [
     "**/__tests__/**/*.(tsx|ts)"
   ],
@@ -35,7 +35,8 @@ module.exports = {
       "test-config",
       ".module.ts",
       "<rootDir>/src/generated/",
-      "<rootDir>/src/__mocks__/*.ts"
+      "<rootDir>/src/__mocks__/*.ts",
+      "<rootDir>/src/utils/testing"
   ],
   coverageDirectory: "<rootDir>/coverage/"
 };
