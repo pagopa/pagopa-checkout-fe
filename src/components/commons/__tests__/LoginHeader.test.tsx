@@ -12,7 +12,7 @@ import {
 import LoginHeader from "../LoginHeader";
 import "jest-location-mock";
 import { UserInfoResponse } from "../../../../generated/definitions/checkout-auth-service-v1/UserInfoResponse";
-import { renderWithReduxProvider } from "../../../utils/testRenderProviders";
+import { renderWithReduxProvider } from "../../../utils/testing/testRenderProviders";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({

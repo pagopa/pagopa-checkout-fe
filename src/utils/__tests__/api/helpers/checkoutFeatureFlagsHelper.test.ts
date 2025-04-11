@@ -1,4 +1,4 @@
-import { mockApiConfig } from "../../../../utils/testUtils";
+import { mockApiConfig } from "../../../../utils/testing/testUtils";
 import { apiCheckoutFeatureFlags } from "../../../api/client";
 import { evaluateFeatureFlag } from "../../../api/helper";
 

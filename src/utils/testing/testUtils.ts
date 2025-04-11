@@ -1,10 +1,10 @@
 import {
   PaymentCodeTypeEnum,
   PaymentInstrumentsType,
-} from "../features/payment/models/paymentModel";
-import { PaymentMethodStatusEnum } from "../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
-import { PaymentMethodManagementTypeEnum } from "../../generated/definitions/payment-ecommerce/PaymentMethodManagementType";
-import { RptId } from "../../generated/definitions/payment-ecommerce-v3/RptId";
+} from "../../features/payment/models/paymentModel";
+import { PaymentMethodStatusEnum } from "../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
+import { PaymentMethodManagementTypeEnum } from "../../../generated/definitions/payment-ecommerce/PaymentMethodManagementType";
+import { RptId } from "../../../generated/definitions/payment-ecommerce-v3/RptId";
 
 export const paymentMethodsMock: Array<PaymentInstrumentsType> = [
   {
