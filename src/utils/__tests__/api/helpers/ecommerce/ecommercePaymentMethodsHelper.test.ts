@@ -1,6 +1,13 @@
 import { getSessionItem } from "../../../../../utils/storage/sessionStorage";
 import { ErrorsType } from "../../../../../utils/errors/checkErrorsModel";
-import { calculateFeeResponseMock, mockApiConfig, paymentMethodResponseMock, paymentMethodsMock, postSessionResponseMock, sessionItemTransactionMock } from "../../../../../utils/testing/testUtils";
+import {
+  calculateFeeResponseMock,
+  mockApiConfig,
+  paymentMethodResponseMock,
+  paymentMethodsMock,
+  postSessionResponseMock,
+  sessionItemTransactionMock,
+} from "../../../../../utils/testing/testUtils";
 import {
   apiPaymentEcommerceClient,
   apiPaymentEcommerceClientV3,
