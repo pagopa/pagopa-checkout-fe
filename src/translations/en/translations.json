@@ -333,9 +333,9 @@
     "email": "Send the result to:",
     "modal": {
       "body": "All money transfer operations (cash or electronic currency) have a cost that is used to guarantee that the payment is safe and successful.\nEvery operator (or PSP, Payment Service Provider) indicates a cost, according to their commercial policies and contractual conditions.\nWith pagoPA, these costs are transparent and the citizen can freely select the most convenient and affordable option. To learn more, consult the page ",
-      "cancelBody": "All the data will be lost.",
-      "cancelButton": "No, I’ve changed my mind",
-      "cancelTitle": "Do you want to cancel the payment in progress?",
+      "cancelBody": "If you quit, any data you have entered will be deleted and you will have to start again.",
+      "cancelButton": "No, I changed my mind",
+      "cancelTitle": "Your payment is pending, do you want to exit?",
       "link": "Cost transparency",
       "submitButton": "Exit",
       "title": "Why is there a fee?"
@@ -430,10 +430,10 @@
     "causal": "Payment description",
     "cf": "Payee tax code",
     "creditor": "Payee",
-    "description": "pagoPA updates the amount automatically to make sure you have paid exactly what is due and avoid arrears or other interest",
+    "description": "When the amount changes, it means it has been updated automatically. If it is higher, there may be interest, penalties, or notification costs.\n\nIf the pagoPA notice concerns a legally significant communication, the increase in the amount to be paid may depend on various factors, such as:\n• receiving the communication via registered mail (as printing and delivery costs may be charged to the recipient);\n• the number of delivery attempts.\n\nFor further details, contact the Payee.",
     "dialog": {
-      "description": "pagoPA updates the amount automatically to make sure you have paid exactly what is due and avoid arrears or other interest.",
-      "title": "Do you see a different amount?"
+      "description": "When the amount changes, it means it has been updated automatically. If it is higher, there may be interest, penalties, or notification costs.\n\nIf the pagoPA notice concerns a legally significant communication, the increase in the amount to be paid may depend on various factors, such as:\n• receiving the communication via registered mail (as printing and delivery costs may be charged to the recipient);\n• the number of delivery attempts.\n\nFor further details, contact the Payee.",
+      "title": "Is the amount different from the one on the pagoPA notice?"
     },
     "iuv": "IUV code",
     "title": "Payment data"
@@ -464,6 +464,14 @@
     "HF0006": "Enter mm/yy",
     "HF0007": "Enter name as shown on the card",
     "HF0009": "3DS verification failed"
+  },
+  "userSession": {
+    "logoutModal": {
+      "title": "Are you sure you want to log out?",
+      "body": "You can still pay even when you're not logged in.",
+      "submitButton": "Log out",
+      "cancelButton": "Cancel"
+    }
   },
   "__variant-name": "Inglese",
   "__variant-description": ""

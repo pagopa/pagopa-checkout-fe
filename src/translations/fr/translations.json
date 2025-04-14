@@ -333,9 +333,9 @@
     "email": "Envoyer le résultat à:",
     "modal": {
       "body": "Les opérations de transfert d’argent (en comptant ou en monnaie électronique) ont un coût qui permet de garantir un paiement sûr et vérifié.\nChaque opérateur (ou PSP, Prestataire de service de paiement) chiffre ses frais en fonction de ses stratégies commerciales et de ses conditions contractuelles.\nAvec pagoPA, ces frais sont transparents et le client peut choisir librement l’option qui lui convient. Pour en savoir plus, consulter la page  ",
-      "cancelBody": "Toutes les données saisies seront effacées.",
-      "cancelButton": "J’ai changé d’avis",
-      "cancelTitle": "Sortir du paiement en cours ?",
+      "cancelBody": "Si vous quittez maintenant, les informations saisies seront perdues et vous devrez recommencer l'opération.",
+      "cancelButton": "Non, J'ai changé d'avis",
+      "cancelTitle": "Votre paiement est en cours, voulez-vous vraiment quitter ?",
       "link": "Transparence des frais facturés",
       "submitButton": "Sortir",
       "title": "Pourquoi y-a-t-il de frais?"
@@ -430,10 +430,10 @@
     "causal": "Objet du paiement",
     "cf": "Code fiscal organisme créancier",
     "creditor": "Organisme créancier",
-    "description": "pagoPA met à jour le montant automatiquement : vous payez exactement ce que vous devez, sans pénalité ni intérêt de retard",
+    "description": "Lorsque le montant change, cela signifie qu'il a été mis à jour automatiquement. S'il est plus élevé, il peut inclure des intérêts, des pénalités ou des frais de notification.\n\nSi l'avis pagoPA concerne une communication ayant une valeur juridique, l'augmentation du montant à payer peut dépendre de plusieurs facteurs, par exemple :\n• si vous avez reçu la communication par courrier recommandé (les frais d'impression et d'envoi pouvant être à la charge du destinataire) ;\n• le nombre de tentatives de livraison.\n\nPour plus de détails, contactez l'organisme créancier.",
     "dialog": {
-      "description": "pagoPA met à jour le montant automatiquement : vous payez exactement ce que vous devez, sans pénalité ni intérêt de retard.",
-      "title": "Vous voyez un montant différent ?"
+      "description": "Lorsque le montant change, cela signifie qu'il a été mis à jour automatiquement. S'il est plus élevé, il peut inclure des intérêts, des pénalités ou des frais de notification.\n\nSi l'avis pagoPA concerne une communication ayant une valeur juridique, l'augmentation du montant à payer peut dépendre de plusieurs facteurs, par exemple :\n• si vous avez reçu la communication par courrier recommandé (les frais d'impression et d'envoi pouvant être à la charge du destinataire) ;\n• le nombre de tentatives de livraison.\n\nPour plus de détails, contactez l'organisme créancier.",
+      "title": "Le montant est-il différent de celui indiqué sur l'avis pagoPA ?"
     },
     "iuv": "Code IUV",
     "title": "Données du paiement"
@@ -464,6 +464,14 @@
     "HF0006": "Saisir mm/aa",
     "HF0007": "Saisir les informations inscrites sur la carte",
     "HF0009": "Vérification 3DS échouée"
+  },
+  "userSession": {
+    "logoutModal": {
+      "title": "Voulez-vous vraiment vous deconnecter?",
+      "body": "Vous pourrez toujours effectuer le paiement sans vous connecter.",
+      "submitButton": "Se déconnecter",
+      "cancelButton": "Non, rester connecté"
+    }
   },
   "__variant-name": "Francese",
   "__variant-description": ""

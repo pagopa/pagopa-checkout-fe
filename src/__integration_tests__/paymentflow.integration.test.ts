@@ -10,6 +10,7 @@ import {
   cancelPaymentKO,
   selectLanguage,
   fillAndSubmitCardDataForm,
+  tryHandlePspPickerPage,
   fillAndSubmitSatispayPayment,
   checkPspListNames,
   checkPspListFees,
@@ -83,7 +84,20 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await page.goto(CHECKOUT_URL);
+  // Listen for dialog events and automatically accept them after a delay
+  page.on('dialog', async dialog => {
+    if (dialog.type() === 'beforeunload') {
+      try {
+        // Wait for few seconds before accepting the dialog
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        await dialog.accept();
+      } catch (error) {
+        console.log('Dialog is already accepted.');
+      }
+    }
+  });
 });
+
 
 describe("Checkout payment tests", () => {
   it.each([
@@ -93,9 +107,6 @@ describe("Checkout payment tests", () => {
     ["de", deTranslation],
     ["sl", slTranslation]
   ])("Should correctly execute a payment for language [%s]", async (lang, translation) => {
-    /*
-     * 1. Payment with valid notice code
-    */
     selectLanguage(lang);
     const resultMessage = await payNotice(
       VALID_NOTICE_CODE,
@@ -111,10 +122,6 @@ describe("Checkout payment tests", () => {
 
 describe("Checkout payment verify failure tests", () => {
   it("Should fail a payment VERIFY and get FAIL_VERIFY_404_PPT_STAZIONE_INT_PA_SCONOSCIUTA", async () => {
-    /*
-     * 2. Payment with notice code that fails on verify and get PPT_STAZIONE_INT_PA_SCONOSCIUTA
-     * No need for testing other languages
-     */
     const resultMessage = await verifyPaymentAndGetError(
       FAIL_VERIFY_404_PPT_STAZIONE_INT_PA_SCONOSCIUTA,
       VALID_FISCAL_CODE
@@ -124,10 +131,6 @@ describe("Checkout payment verify failure tests", () => {
   });
 
   it("Should fail a payment VERIFY and get FAIL_VERIFY_503_PPT_STAZIONE_INT_PA_TIMEOUT", async () => {
-    /*
-     * 2. Payment with notice code that fails on verify and get FAIL_VERIFY_503_PPT_STAZIONE_INT_PA_TIMEOUT
-     * No need for testing other languages
-     */
     const resultMessage = await verifyPaymentAndGetError(
       FAIL_VERIFY_503_PPT_STAZIONE_INT_PA_TIMEOUT,
       VALID_FISCAL_CODE
@@ -137,10 +140,6 @@ describe("Checkout payment verify failure tests", () => {
   });
 
   it("Should fail a payment VERIFY and get FAIL_VERIFY_502_PPT_PSP_SCONOSCIUTO", async () => {
-    /*
-     * 2. Payment with notice code that fails on verify and get FAIL_VERIFY_502_PPT_PSP_SCONOSCIUTO
-     * No need for testing other languages
-     */
     const resultMessage = await verifyPaymentAndGetError(
       FAIL_VERIFY_502_PPT_PSP_SCONOSCIUTO,
       VALID_FISCAL_CODE
@@ -160,9 +159,6 @@ describe("Checkout payment ongoing failure tests", () => {
   ])(
     "Should fail a payment ACTIVATION and get PPT_PAGAMENTO_IN_CORSO for language [%s]",
     async (lang, translation) => {
-      /*
-       * 2. Payment with notice code that fails on activation and get PPT_PAGAMENTO_IN_CORSO
-       */
       selectLanguage(lang);
       const ErrorTitleID = "#iframeCardFormErrorTitleId";
       const resultMessage = await activatePaymentAndGetError(
@@ -180,9 +176,6 @@ describe("Checkout payment ongoing failure tests", () => {
 
 describe("Checkout payment activation failure tests", () => {
   it("Should fail a payment ACTIVATION and get PPT_STAZIONE_INT_PA_TIMEOUT", async () => {
-    /*
-     * 2. Payment with notice code that fails on activation and get PPT_STAZIONE_INT_PA_TIMEOUT
-     */
     const errorID = "#iframeCardFormErrorId";
     const resultMessage = await activatePaymentAndGetError(
       FAIL_ACTIVATE_PPT_STAZIONE_INT_PA_TIMEOUT,
@@ -196,9 +189,6 @@ describe("Checkout payment activation failure tests", () => {
   });
 
   it("Should fail a payment ACTIVATION and get PPT_PSP_SCONOSCIUTO", async () => {
-    /*
-     * 2. Payment with notice code that fails on activation and get PPT_PSP_SCONOSCIUTO
-     */
     const errorID = "#iframeCardFormErrorId";
     const resultMessage = await activatePaymentAndGetError(
       FAIL_ACTIVATE_502_PPT_PSP_SCONOSCIUTO,
@@ -218,10 +208,6 @@ describe("Checkout payment activation failure tests", () => {
     ["de", deTranslation],
     ["sl", slTranslation]
   ])("Should fail a satispay payment ACTIVATION and get PPT_WISP_SESSIONE_SCONOSCIUTA", async (lang, translation) => {
-    /*
-     * Satispay payment with notice code that fails on activation and get PPT_WISP_SESSIONE_SCONOSCIUTA
-     * and redirect to expired session page
-     */
     selectLanguage(lang);
     await fillAndSubmitSatispayPayment(FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA, VALID_FISCAL_CODE, EMAIL);
     const titleElem = await page.waitForSelector("#sessionExpiredMessageTitle")
@@ -241,10 +227,6 @@ describe("Checkout payment activation failure tests", () => {
     ["de", deTranslation],
     ["sl", slTranslation]
   ])("Should fail a card payment ACTIVATION and get PPT_WISP_SESSIONE_SCONOSCIUTA", async (lang, translation) => {
-    /*
-     * Card payment with notice code that fails on activation and get PPT_WISP_SESSIONE_SCONOSCIUTA 
-     * and redirect to expired session page
-     */
     selectLanguage(lang);
     await fillAndSubmitCardDataForm(FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA, VALID_FISCAL_CODE, EMAIL, VALID_CARD_DATA);
     const titleElem = await page.waitForSelector("#sessionExpiredMessageTitle")
@@ -256,42 +238,39 @@ describe("Checkout payment activation failure tests", () => {
     expect(title).toContain(translation.paymentResponsePage[4].title);
     expect(body).toContain(translation.paymentResponsePage[4].body);
   });
+});
 
-  describe("Auth request failure tests", () => {
-    it.each([
-      ["it", itTranslation],
-      ["en", enTranslation],
-      ["fr", frTranslation],
-      ["de", deTranslation],
-      ["sl", slTranslation],
-    ])(
-      "Should fail a payment AUTHORIZATION REQUEST and get FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND for language [%s]",
-      async (lang, translation) => {
-        /*
-         * 2. Payment with notice code that fails on activation and get FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND
-         */
-        selectLanguage(lang);
-        const errorMessageTitleSelector = "#idTitleErrorModalPaymentCheckPage";
-        const resultMessage = await authorizePaymentAndGetError(
-          FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND,
-          VALID_FISCAL_CODE,
-          EMAIL,
-          VALID_CARD_DATA,
-          errorMessageTitleSelector
-        );
-        const closeErrorButton = await page.waitForSelector("#closeError");
-        await closeErrorButton.click();
-        await new Promise((r) => setTimeout(r, 1000));
-        const paymentCheckPageButtonCancel = await page.waitForSelector("#paymentCheckPageButtonCancel");
-        await paymentCheckPageButtonCancel.click();
-        const cancPayment = await page.waitForSelector("#confirm", {visible: true});
-        await cancPayment.click();
-        await page.waitForNavigation();
-        expect(resultMessage).toContain(translation.GENERIC_ERROR.title);
-        //await cancelPaymentAction();
-      }
-    );
-  });
+describe("Auth request failure tests", () => {
+  it.each([
+    ["it", itTranslation],
+    ["en", enTranslation],
+    ["fr", frTranslation],
+    ["de", deTranslation],
+    ["sl", slTranslation],
+  ])(
+    "Should fail a payment AUTHORIZATION REQUEST and get FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND for language [%s]",
+    async (lang, translation) => {
+      selectLanguage(lang);
+      const errorMessageTitleSelector = "#idTitleErrorModalPaymentCheckPage";
+      const resultMessage = await authorizePaymentAndGetError(
+        FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND,
+        VALID_FISCAL_CODE,
+        EMAIL,
+        VALID_CARD_DATA,
+        errorMessageTitleSelector
+      );
+      const closeErrorButton = await page.waitForSelector("#closeError");
+      await closeErrorButton.click();
+      await new Promise((r) => setTimeout(r, 1000));
+      const paymentCheckPageButtonCancel = await page.waitForSelector("#paymentCheckPageButtonCancel");
+      await paymentCheckPageButtonCancel.click();
+      const cancPayment = await page.waitForSelector("#confirm", {visible: true});
+      await cancPayment.click();
+      await page.waitForNavigation();
+      expect(resultMessage).toContain(translation.GENERIC_ERROR.title);
+      //await cancelPaymentAction();
+    }
+  );
 });
 
 describe("PSP disclaimer tests", () => {
@@ -304,9 +283,6 @@ describe("PSP disclaimer tests", () => {
   ])(
     "Should show up threshold disclaimer (why manage creditcard) for language [%s]",
     async (lang, translation) => {
-      /*
-       * Credit card manage psp
-       */
       selectLanguage(lang);
       const resultMessage = await checkPspDisclaimerBeforeAuthorizePayment(
         PSP_ABOVETHRESHOLD,
@@ -332,9 +308,6 @@ describe("PSP disclaimer tests", () => {
   ])(
     "Should show below threshold disclaimer (why is cheaper) for language [%s]",
     async (lang, translation) => {
-      /*
-       * Cheaper psp
-       */
       selectLanguage(lang);
       const resultMessage = await checkPspDisclaimerBeforeAuthorizePayment(
         PSP_BELOWTHRESHOLD,
@@ -362,9 +335,6 @@ describe("Checkout fails to calculate fee", () => {
   ])(
     "Should fails calculate fee for language [%s]",
     async (lang, translation) => {
-      /*
-       * Calculate fee fails
-       */
       selectLanguage(lang);
       const resultMessage = await checkErrorOnCardDataFormSubmit(
         PSP_FAIL,
@@ -395,9 +365,6 @@ describe("Checkout fails to calculate fee", () => {
   ])(
     "Should fails calculate fee with 404 for CARDS and language [%s]",
     async (lang, translation) => {
-      /*
-       * Calculate fee fails
-       */
       selectLanguage(lang);
 
       await fillAndSubmitCardDataForm(
@@ -450,9 +417,6 @@ describe("Checkout fails to calculate fee", () => {
   ])(
     "Should fails calculate fee with 404 for SATISPAY and language [%s]",
     async (lang, translation) => {
-      /*
-       * Calculate fee fails
-       */
       selectLanguage(lang);
 
       await fillAndSubmitSatispayPayment(
@@ -506,9 +470,6 @@ describe("Cancel payment tests", () => {
   ])(
     "Should correctly execute CANCEL PAYMENT by user for language [%s]",
     async (lang, translation) => {
-      /*
-       * Cancel payment OK
-       */
       selectLanguage(lang);
       const resultMessage = await cancelPaymentOK(
         CANCEL_PAYMENT_OK,
@@ -531,9 +492,6 @@ describe("Cancel payment failure tests (satispay)", () => {
   ])(
     "Should fail a CANCEL PAYMENT by user for language [%s]",
     async (lang, translation) => {
-      /*
-       * Cancel payment KO
-       */
       selectLanguage(lang);
       const resultMessage = await cancelPaymentKO(
         CANCEL_PAYMENT_KO,
@@ -546,8 +504,6 @@ describe("Cancel payment failure tests (satispay)", () => {
     }
   );
 });
-
-
 
 describe("PSP list tests", () => {
   it("Should sort psp by fees", async () => {
@@ -585,25 +541,10 @@ describe("PSP list tests", () => {
   });
 });
 
-
 describe("Checkout Payment - PSP Selection Flow", () => {
     it("Should fill form, select PSP, and proceed with payment (IT)", async () => {
         selectLanguage("it");
-
         await fillAndSubmitCardDataForm(VALID_NOTICE_CODE, VALID_FISCAL_CODE, EMAIL, VALID_CARD_DATA);
-
-        const radioButtonsSelector = 'svg[data-testid="RadioButtonUncheckedIcon"]';
-        await page.waitForSelector(radioButtonsSelector);
-
-        const radioButtons = await page.$$(radioButtonsSelector);
-        expect(radioButtons.length).toBeGreaterThan(0);
-        expect(await page.url()).toContain(CHECKOUT_URL_PSP_LIST);
-
-        await radioButtons[0].click();
-
-        const continueBtnSelector = "#paymentPspListPageButtonContinue";
-        await page.waitForSelector(continueBtnSelector, { visible: true });
-        await page.click(continueBtnSelector);
 
         expect(await page.url()).toContain(CHECKOUT_URL_PAYMENT_SUMMARY);
     });
@@ -664,8 +605,6 @@ describe("Checkout Payment - PSP Selection Flow", () => {
             EMAIL,
             VALID_CARD_DATA
         );
-        await page.waitForNavigation(); // for CHECKOUT_URL_PSP_LIST (auto redirect for response with only one bundle in calculate fee response)
-        await page.waitForNavigation(); // for CHECKOUT_URL_PAYMENT_SUMMARY
 
         expect(await page.url()).toContain(CHECKOUT_URL_PAYMENT_SUMMARY);
     });

@@ -273,7 +273,7 @@
       "title": "Il metodo di pagamento non è supportato"
     },
     "17": {
-      "body": "Il pagamento non si è ancora concluso: riceverai a breve l’esito all'indirizzo {{useremail}}. L’operazione può richiedere fino a 15 minuti.",
+      "body": "Il pagamento non si è ancora concluso: se non ricevi l'esito positivo entro 15 minuti all'indirizzo {{useremail}} riprova di nuovo.",
       "title": "Attendi la conferma del pagamento"
     },
     "18": {
@@ -335,9 +335,9 @@
     "email": "Invia esito a:",
     "modal": {
       "body": "Qualsiasi operazione di trasferimento di denaro (in contanti o in moneta elettronica) ha un costo, che serve a garantirti che quel pagamento sia sicuro e arrivi a buon fine.\nOgni gestore (o PSP, Prestatore di Servizi di Pagamento) propone un costo, a seconda delle proprie politiche commerciali e condizioni contrattuali.\nCon pagoPA, questi costi sono trasparenti e il cittadino può scegliere liberamente l'opzione più comoda e conveniente. Per saperne di più, consulta la pagina ",
-      "cancelBody": "Tutti i dati inseriti andranno persi.",
+      "cancelBody": "Se esci, tutti i dati inseriti fino ad ora verranno cancellati e dovrai ricominciare da capo",
       "cancelButton": "No, ho cambiato idea",
-      "cancelTitle": "Uscire dal pagamento in corso?",
+      "cancelTitle": "Il tuo pagamento è in corso, vuoi davvero uscire?",
       "link": "Trasparenza Costi",
       "submitButton": "Esci",
       "title": "Perché c'è un costo di commissione?"
@@ -432,10 +432,10 @@
     "causal": "Oggetto del pagamento",
     "cf": "Codice Fiscale Ente Creditore",
     "creditor": "Ente Creditore",
-    "description": "pagoPA aggiorna automaticamente l'importo per assicurarti di aver pagato esattamente quanto dovuto ed evitarsi così more o altri interessi",
+    "description": "Quando l'importo cambia, significa che è stato aggiornato automaticamente. Se è più alto, potrebbero esserci interessi, sanzioni o costi di notifica.\n\nSe l'avviso pagoPA riguarda una comunicazione a valore legale, l'aumento dell'importo da pagare può dipendere da diversi fattori, per esempio:\n• se hai ricevuto la comunicazione tramite raccomandata (i cui costi di stampa e invio possono essere a carico del destinatario);\n• il numero di tentativi di recapito.\n\nPer ulteriori dettagli contatta l'ente creditore.",
     "dialog": {
-      "description": "pagoPA aggiorna automaticamente l'importo per assicurarti di aver pagato esattamente quanto dovuto ed evitarti così more o altri interessi.",
-      "title": "Vedi un importo diverso?"
+      "description": "Quando l'importo cambia, significa che è stato aggiornato automaticamente. Se è più alto, potrebbero esserci interessi, sanzioni o costi di notifica.\n\nSe l'avviso pagoPA riguarda una comunicazione a valore legale, l'aumento dell'importo da pagare può dipendere da diversi fattori, per esempio:\n• se hai ricevuto la comunicazione tramite raccomandata (i cui costi di stampa e invio possono essere a carico del destinatario);\n• il numero di tentativi di recapito.\n\nPer ulteriori dettagli contatta l'ente creditore.",
+      "title": "L'importo è diverso da quello riportato sull'avviso pagoPA?"
     },
     "iuv": "Codice IUV",
     "title": "Dati del pagamento"
@@ -466,5 +466,13 @@
     "HF0006": "Inserisci mm/aa",
     "HF0007": "Inserisci come riportato sulla carta",
     "HF0009": "Verifica 3DS fallita"
+  },
+  "userSession": {
+    "logoutModal": {
+      "title": "Vuoi davvero uscire?",
+      "body": "Potrai comunque pagare anche senza accedere.",
+      "submitButton": "Esci",
+      "cancelButton": "Annulla"
+    }
   }
 }

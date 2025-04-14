@@ -333,9 +333,9 @@
     "email": "Rezultat pošlji na:",
     "modal": {
       "body": "Vsako denarno nakazilo (v gotovini ali elektronskem denarju) vključuje stroške, ki zagotavljajo, da je to plačilo varno in uspešno izvedeno.\nVsak ponudnik (ali ponudnik plačilnih storitev) predvideva stroške skladno s svojo poslovno politiko in pogodbenimi pogoji.\nPri pagoPA so ti stroški pregledni in državljan/-ka lahko prosto izbere najudobnejšo in najpriročnejšo možnost. Če želite izvedeti več, obiščite spletno stran ",
-      "cancelBody": "Vsi vneseni podatki bodo izgubljeni.",
-      "cancelButton": "Ne, premislil/-a sem si",
-      "cancelTitle": "Želite zapustiti trenutno plačilo?",
+      "cancelBody": "Če odideš, bodo vsi doslej vneseni podatki izbrisani in začeti bo treba znova.",
+      "cancelButton": "Ne, premislil/-a sem",
+      "cancelTitle": "Tvoje plačilo je v obdelavi. Ali res želiš oditi?",
       "link": "Preglednost stroškov",
       "submitButton": "Izhod",
       "title": "Zakaj obstaja provizija?"
@@ -430,10 +430,10 @@
     "causal": "Namen plačila",
     "cf": "Davčna številka upnika",
     "creditor": "Upnik",
-    "description": "pagoPA samodejno posodobi znesek, zato vedno plačate točno toliko, kolikor je dolga in se izognete zamudnim ali drugim obrestim",
+    "description": "Ko se znesek spremeni, to pomeni, da je bil samodejno posodobljen. Če je višji, lahko vključuje obresti, kazni ali stroške obvestila.\n\nČe obvestilo pagoPA zadeva pravno veljavno komunikacijo, je lahko povečanje zneska za plačilo odvisno od različnih dejavnikov, na primer:\n• če ste prejeli obvestilo s priporočeno pošto (stroški tiskanja in pošiljanja so lahko na breme prejemnika);\n• število poskusov dostave.\n\nZa dodatne podrobnosti se obrnite na upni organ.",
     "dialog": {
-      "description": "pagoPA samodejno posodobi znesek, zato vedno plačate točno toliko, kolikor dolgujete in se izognete zamudnim ali drugim obrestim.",
-      "title": "Ali vidite drugačen znesek?"
+      "description": "Ko se znesek spremeni, to pomeni, da je bil samodejno posodobljen. Če je višji, lahko vključuje obresti, kazni ali stroške obvestila.\n\nČe obvestilo pagoPA zadeva pravno veljavno komunikacijo, je lahko povečanje zneska za plačilo odvisno od različnih dejavnikov, na primer:\n• če ste prejeli obvestilo s priporočeno pošto (stroški tiskanja in pošiljanja so lahko na breme prejemnika);\n• število poskusov dostave.\n\nZa dodatne podrobnosti se obrnite na upni organ.",
+      "title": "Je znesek drugačen od tistega na obvestilu pagoPA?"
     },
     "iuv": "IUV koda",
     "title": "Podatki o plačilu"
@@ -464,6 +464,14 @@
     "HF0006": "Vnesite mm/ll",
     "HF0007": "Vnesite, kot je navedeno na kartici",
     "HF0009": "Preverjanje 3DS ni uspelo"
+  },
+  "userSession": {
+    "logoutModal": {
+      "title": "Ali res želiš oditi?",
+      "body": "Plačati boš lahko tudi brez prijave.",
+      "submitButton": "Izhod",
+      "cancelButton": "Prekliči"
+    }
   },
   "__variant-name": "Sloveno",
   "__variant-description": ""

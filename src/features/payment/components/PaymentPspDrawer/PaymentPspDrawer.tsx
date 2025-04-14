@@ -65,22 +65,22 @@ export const PaymentPspDrawer = (props: {
           {t("paymentCheckPage.drawer.body")}
         </Typography>
         <Box sx={styles.defaultStyle}>
-          <SortLabel
+          <PspListSortLabel
             id="sortByName"
             fieldName="pspBusinessName"
             onClick={setSortingOrd}
             orderingModel={sortingOrd}
           >
             {t("paymentCheckPage.drawer.header.name")}
-          </SortLabel>
-          <SortLabel
+          </PspListSortLabel>
+          <PspListSortLabel
             id="sortByFee"
             fieldName="taxPayerFee"
             onClick={setSortingOrd}
             orderingModel={sortingOrd}
           >
             {t("paymentCheckPage.drawer.header.amount")}
-          </SortLabel>
+          </PspListSortLabel>
         </Box>
       </Box>
       {loading
@@ -129,7 +129,7 @@ export const PaymentPspDrawer = (props: {
   );
 };
 
-type SortLabelProps = {
+type PspListSortLabelProps = {
   id?: string;
   fieldName: PspField;
   onClick: (sortingOrd: PspOrderingModel) => void;
@@ -137,13 +137,13 @@ type SortLabelProps = {
   children: React.ReactNode;
 };
 
-const SortLabel = ({
+export const PspListSortLabel = ({
   id,
   fieldName,
   onClick,
   orderingModel,
   children,
-}: SortLabelProps) => {
+}: PspListSortLabelProps) => {
   const direction = orderingModel.direction === "asc" ? "desc" : "asc";
   const [isMouseOver, setIsMouseOver] = useState(false);
 

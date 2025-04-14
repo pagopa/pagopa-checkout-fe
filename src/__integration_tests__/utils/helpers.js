@@ -138,7 +138,7 @@ export const tryLoginWithAuthCallbackError = async (noticeCode, fiscalCode) => {
   }
 }
 
-export const fillPaymentNotificationForm = async (noticeCode, fiscalCode) => {
+export const fillPaymentNotificationForm = async (noticeCode, fiscalCode, submit=true) => {
   const noticeCodeTextInput = "#billCode";
   const fiscalCodeTextInput = "#cf";
   const verifyBtn = "#paymentNoticeButtonContinue";
@@ -150,8 +150,10 @@ export const fillPaymentNotificationForm = async (noticeCode, fiscalCode) => {
   await page.waitForSelector(fiscalCodeTextInput);
   await page.click(fiscalCodeTextInput);
   await page.keyboard.type(fiscalCode);
-  await page.waitForSelector(verifyBtn);
-  await page.click(verifyBtn);
+  if(submit){
+    await page.waitForSelector(verifyBtn);
+    await page.click(verifyBtn);
+  }
 };
 
 export const fillAndSubmitCardDataForm = async (
@@ -185,22 +187,26 @@ export const tryHandlePspPickerPage = async ()=>{
 
   // this step needs to be skipped during tests
   // in which we trigger an error modal in the previous page
-  if(page.url().includes("lista-psp")){
+  if(await page.url().includes("lista-psp")){
     await selectPspOnPspPickerPage();
   }
 }
 
 export const selectPspOnPspPickerPage = async () => {
-  const pspPickerRadio = await page.waitForSelector("#psp-radio-button-unchecked", {
-    visible: true,
-  });
-  await pspPickerRadio.click();
-
-  const continueButton = await page.waitForSelector("#paymentPspListPageButtonContinue", {
-    visible: true,
-  });
+  try{
+    const pspPickerRadio = await page.waitForSelector("#psp-radio-button-unchecked", {
+      visible: true, timeout: 500
+    });
+    await pspPickerRadio.click();
   
-  await continueButton.click();
+    const continueButton = await page.waitForSelector("#paymentPspListPageButtonContinue", {
+      visible: true, timeout: 500
+    });
+    
+    await continueButton.click();
+  }catch(e){
+    console.log("Buttons not found: this is caused by PSP page immediately navigate to the summary page (if 1 psp available)");
+  }
 }
 
 export const fillAndSubmitSatispayPayment = async (
@@ -310,6 +316,9 @@ export const cancelPaymentOK = async (
   const cancPayment = await page.waitForSelector("#confirm");
   await cancPayment.click();
   await page.waitForNavigation();
+  // this new timeout is needed for how react 18 handles the addition of animated content 
+  // to the page. Without it, the resultMessageXPath never resolves
+  await new Promise((r) => setTimeout(r, 200));
   const message = await page.waitForXPath(resultMessageXPath);
   return await message.evaluate((el) => el.textContent);
 };
