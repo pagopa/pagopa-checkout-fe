@@ -388,6 +388,7 @@ export const proceedToPayment = async (
         case "PPAL":
         case "APPL":
         case "SATY":
+        case "GOOG":
           return O.some({
             detailType: "apm",
           });
