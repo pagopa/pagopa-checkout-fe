@@ -39,7 +39,7 @@ export const proceedToLogin = async ({
         () =>
           apiCheckoutAuthServiceClientV1.authLogin({
             recaptcha: token,
-            "x-rpt-id": getRptIdsFromSession(),
+            "x-rpt-ids": getRptIdsFromSession(),
           }),
         (_e) => {
           onError(ErrorsType.CONNECTION);
@@ -95,7 +95,7 @@ export const authentication = async ({
         () =>
           apiCheckoutAuthServiceClientAuthTokenV1.authenticateWithAuthToken({
             body: decodedRequest,
-            "x-rpt-id": getRptIdsFromSession(),
+            "x-rpt-ids": getRptIdsFromSession(),
           }),
         () => ErrorsType.GENERIC_ERROR
       )
@@ -159,7 +159,7 @@ export const logoutUser = async ({
         () =>
           apiCheckoutAuthServiceWithRetryV1.authLogout({
             bearerAuth: authToken,
-            "x-rpt-id": getRptIdsFromSession(),
+            "x-rpt-ids": getRptIdsFromSession(),
           }),
         () => ErrorsType.GENERIC_ERROR
       )
@@ -208,7 +208,7 @@ export const retrieveUserInfo = async ({
         () =>
           apiCheckoutAuthServiceWithRetryV1.authUsers({
             bearerAuth: authToken,
-            "x-rpt-id": getRptIdsFromSession(),
+            "x-rpt-ids": getRptIdsFromSession(),
           }),
         () => ErrorsType.GENERIC_ERROR
       )
