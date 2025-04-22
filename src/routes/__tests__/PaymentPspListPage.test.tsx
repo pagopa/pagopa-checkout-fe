@@ -19,7 +19,10 @@ import {
   sessionPayment,
   calculateFeeResponse,
   calculateFeeResponseOnlyOnePSP,
+  calculateFeeResponseNoPsp,
 } from "./_model";
+
+import { setThreshold } from "../../redux/slices/threshold";
 
 // Mock translations
 jest.mock("react-i18next", () => ({
@@ -100,9 +103,13 @@ jest.mock("../../utils/storage/sessionStorage", () => ({
   },
 }));
 
+jest.mock("../../redux/slices/threshold", () => ({
+  setThreshold: jest.fn(() => ({ type: "SET_THRESHOLD" })),
+}));
+
 // Create a Jest spy for navigation
 const navigate = jest.fn();
-// Error with definition of worker
+
 describe("PaymentPspListPage", () => {
   beforeEach(() => {
     jest.spyOn(router, "useNavigate").mockReset();
@@ -111,6 +118,7 @@ describe("PaymentPspListPage", () => {
     (
       apiPaymentEcommerceClientWithRetryV2.calculateFees as jest.Mock
     ).mockReset();
+    jest.mocked(setThreshold).mockClear();
   });
 
   test("should call navigate -1 clicking on back button", () => {
@@ -235,5 +243,140 @@ describe("PaymentPspListPage", () => {
     );
 
     expect(screen.getByText("2pspUnavailable.title")).toBeVisible();
+  });
+
+  test('should update the threshold after calling calculateFees', async () => {
+    (
+      apiPaymentEcommerceClientWithRetryV2.calculateFees as jest.Mock
+    ).mockReturnValue(
+      Promise.resolve({
+        right: {
+          status: 200,
+          value: calculateFeeResponse,
+        },
+      })
+    );
+    
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentPspListPage />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      const mockedSetThreshold = jest.mocked(setThreshold);
+      expect(mockedSetThreshold).toHaveBeenCalled();
+    
+      // Check how many times it was called
+      expect(mockedSetThreshold).toHaveBeenCalledTimes(1);
+    
+      // Check if it was called with the expected arguments
+      expect(mockedSetThreshold).toHaveBeenCalledWith({"belowThreshold": false});    
+    })
+  })
+});
+
+describe("PaymentPspListPage - session missing values", () => {
+
+  const mockGetSessionItemNoPaymentMethod = (item: SessionItems) => {
+    switch (item) {
+      case "paymentMethod":
+        return null;
+      default:
+        return undefined;
+    }
+  };
+
+  beforeEach(() => {
+    jest.spyOn(router, "useNavigate").mockReset();
+    jest.spyOn(router, "useNavigate").mockImplementation(() => navigate);
+    (getSessionItem as jest.Mock).mockImplementation(mockGetSessionItemNoPaymentMethod);
+    (
+      apiPaymentEcommerceClientWithRetryV2.calculateFees as jest.Mock
+    ).mockReset();
+    jest.mocked(setThreshold).mockClear();
+  });
+
+  test('should not call calculateFees and setThreshold if payment method not present and psp list is not empty', async () => {
+    (
+      apiPaymentEcommerceClientWithRetryV2.calculateFees as jest.Mock
+    ).mockReturnValue(
+      Promise.resolve({
+        right: {
+          status: 200,
+          value: calculateFeeResponse,
+        },
+      })
+    );
+    
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentPspListPage />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      const mockedSetThreshold = jest.mocked(setThreshold);
+      expect(mockedSetThreshold).not.toHaveBeenCalled();
+    
+      expect((
+        apiPaymentEcommerceClientWithRetryV2.calculateFees as jest.Mock
+      )).not.toHaveBeenCalled();
+    })
+  })
+});
+
+describe("PaymentPspListPage - session missing values", () => {
+
+  const mockGetSessionItemNoPaymentMethod = (item: SessionItems) => {
+    switch (item) {
+      case "paymentMethod":
+        return null;
+      default:
+        return undefined;
+    }
+  };
+
+  beforeEach(() => {
+    jest.spyOn(router, "useNavigate").mockReset();
+    jest.spyOn(router, "useNavigate").mockImplementation(() => navigate);
+    (getSessionItem as jest.Mock).mockImplementation(mockGetSessionItemNoPaymentMethod);
+    (
+      apiPaymentEcommerceClientWithRetryV2.calculateFees as jest.Mock
+    ).mockReset();
+    jest.mocked(setThreshold).mockClear();
+  });
+
+  test("should not call calculateFees and setThreshold if payment method present but psp list is empty", async () => {
+    (
+      apiPaymentEcommerceClientWithRetryV2.calculateFees as jest.Mock
+    ).mockReturnValue(
+      Promise.resolve({
+        right: {
+          status: 200,
+          value: calculateFeeResponseNoPsp,
+        },
+      })
+    );
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentPspListPage />
+      </MemoryRouter>
+    );
+    
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentPspListPage />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      const mockedSetThreshold = jest.mocked(setThreshold);
+      expect(mockedSetThreshold).not.toHaveBeenCalled();
+    
+      expect((
+        apiPaymentEcommerceClientWithRetryV2.calculateFees as jest.Mock
+      )).not.toHaveBeenCalled();
+    })
   });
 });
