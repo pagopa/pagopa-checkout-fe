@@ -268,7 +268,7 @@ export const getPaymentInstruments = async (
             () => apiPaymentEcommerceClient.getAllPaymentMethods(query),
             (bearerAuth) =>
               apiPaymentEcommerceClientV3.getAllPaymentMethodsV3({
-                "x-rpt-id": getRptIdsFromSession(),
+                "x-rpt-ids": getRptIdsFromSession(),
                 bearerAuth,
                 ...query,
               })
@@ -357,7 +357,7 @@ export const npgSessionsFields = async (
               }),
             (bearerAuth) =>
               apiPaymentEcommerceClientWithRetryV3.createSessionV3({
-                "x-rpt-id": getRptIdsFromSession(),
+                "x-rpt-ids": getRptIdsFromSession(),
                 bearerAuth,
                 ...payload,
               })
