@@ -212,6 +212,16 @@ export const calculateFeeResponseOnlyOnePSP: CalculateFeeResponse = {
   brandAssets: cardBrandAssets,
 };
 
+export const calculateFeeResponseNoPsp: CalculateFeeResponse = {
+  paymentMethodName: "CARDS",
+  paymentMethodDescription: "Carte di Credito e Debito",
+  paymentMethodStatus: PaymentMethodStatusEnum.ENABLED,
+  belowThreshold: false,
+  bundles: [],
+  asset: "https://assets.cdn.platform.pagopa.it/creditcard/generic.png",
+  brandAssets: cardBrandAssets,
+};
+
 export const paymentInfo: PaymentInfo = {
   amount: 12000 as AmountEuroCents,
   paymentContextCode: "ff368bb048fa4e1daa2a297e1a9fd353",
