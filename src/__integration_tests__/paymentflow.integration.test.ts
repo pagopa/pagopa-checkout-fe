@@ -84,18 +84,6 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await page.goto(CHECKOUT_URL);
-  // Listen for dialog events and automatically accept them after a delay
-  page.on('dialog', async dialog => {
-    if (dialog.type() === 'beforeunload') {
-      try {
-        // Wait for few seconds before accepting the dialog
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        await dialog.accept();
-      } catch (error) {
-        console.log('Dialog is already accepted.');
-      }
-    }
-  });
 });
 
 
@@ -228,7 +216,7 @@ describe("Checkout payment activation failure tests", () => {
     ["sl", slTranslation]
   ])("Should fail a card payment ACTIVATION and get PPT_WISP_SESSIONE_SCONOSCIUTA", async (lang, translation) => {
     selectLanguage(lang);
-    await fillAndSubmitCardDataForm(FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA, VALID_FISCAL_CODE, EMAIL, VALID_CARD_DATA);
+    await fillAndSubmitCardDataForm(FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA, VALID_FISCAL_CODE, EMAIL, VALID_CARD_DATA, true);
     const titleElem = await page.waitForSelector("#sessionExpiredMessageTitle")
     const bodyElem = await page.waitForSelector("#sessionExpiredMessageBody")
     const title = await titleElem.evaluate((el) => el.textContent)
@@ -371,7 +359,8 @@ describe("Checkout fails to calculate fee", () => {
         PSP_NOT_FOUND_FAIL,
         VALID_FISCAL_CODE,
         EMAIL,
-        VALID_CARD_DATA
+        VALID_CARD_DATA, 
+        true
       );
 
       const pspNotFoundTitleId = "#pspNotFoundTitleId";
@@ -422,7 +411,8 @@ describe("Checkout fails to calculate fee", () => {
       await fillAndSubmitSatispayPayment(
         PSP_NOT_FOUND_FAIL,
         VALID_FISCAL_CODE,
-        EMAIL
+        EMAIL,
+        true,
       );
 
       const pspNotFoundTitleId = "#pspNotFoundTitleId";
@@ -603,8 +593,11 @@ describe("Checkout Payment - PSP Selection Flow", () => {
             VALID_NOTICE_CODE,
             VALID_FISCAL_CODE,
             EMAIL,
-            VALID_CARD_DATA
+            VALID_CARD_DATA,
+            false,
+            true,
         );
+        await page.waitForNavigation();
 
         expect(await page.url()).toContain(CHECKOUT_URL_PAYMENT_SUMMARY);
     });
