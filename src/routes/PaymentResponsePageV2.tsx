@@ -7,7 +7,6 @@ import * as O from "fp-ts/Option";
 import { removeLoggedUser } from "../redux/slices/loggedUser";
 import { checkLogout } from "../utils/api/helper";
 import FindOutMoreModal from "../components/modals/FindOutMoreModal";
-import { getFragmentParameter } from "../utils/regex/urlUtilities";
 import { getConfigOrThrow } from "../utils/config/config";
 import SurveyLink from "../components/commons/SurveyLink";
 import PageContainer from "../components/PageContent/PageContainer";
@@ -23,10 +22,7 @@ import {
 } from "../utils/storage/sessionStorage";
 import { ViewOutcomeEnum } from "../utils/transactions/TransactionResultUtil";
 import { Cart } from "../features/payment/models/paymentModel";
-import { NewTransactionResponse } from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { resetThreshold } from "../redux/slices/threshold";
-import { Bundle } from "../../generated/definitions/payment-ecommerce/Bundle";
-import { ROUTE_FRAGMENT } from "./models/routeModel";
 
 type PrintData = {
   useremail: string;
@@ -40,20 +36,38 @@ type CartInformation = {
 
 export default function PaymentResponsePageV2() {
   const navigate = useNavigate();
-  const outcome = getFragmentParameter(
-    window.location.href,
-    ROUTE_FRAGMENT.OUTCOME,
-    false
-  ) as ViewOutcomeEnum;
+  const [outcome, setOutcome] = useState<ViewOutcomeEnum | undefined>();
+  const [totalAmount, setTotalAmount] = useState<string>("");
 
   const conf = getConfigOrThrow();
 
-  const outcomeMessage = responseOutcome[outcome];
+  useEffect(() => {
+    const storedOutcome = getSessionItem(SessionItems.outcome) as
+      | ViewOutcomeEnum
+      | undefined;
+    const storedTotalAmount = getSessionItem(SessionItems.totalAmount) as
+      | number
+      | undefined;
+
+    setOutcome(storedOutcome);
+    if (
+      storedOutcome === ViewOutcomeEnum.SUCCESS &&
+      storedTotalAmount !== undefined
+    ) {
+      setTotalAmount(moneyFormat(storedTotalAmount));
+    } else {
+      setTotalAmount("-");
+    }
+
+    clearSessionItem(SessionItems.outcome);
+    clearSessionItem(SessionItems.totalAmount);
+  }, []);
+
   const [findOutMoreOpen, setFindOutMoreOpen] = useState<boolean>(false);
 
   const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
 
-  const getCartReturnUrl = (outcome: ViewOutcomeEnum) =>
+  const getCartReturnUrl = (outcome: ViewOutcomeEnum | undefined) =>
     ({
       redirectUrl:
         outcome === ViewOutcomeEnum.SUCCESS
@@ -66,25 +80,11 @@ export default function PaymentResponsePageV2() {
     getCartReturnUrl(outcome)
   );
 
-  const transactionData = getSessionItem(SessionItems.transaction) as
-    | NewTransactionResponse
-    | undefined;
-
-  const pspSelected = getSessionItem(SessionItems.pspSelected) as
-    | Bundle
-    | undefined;
-
   const email = getSessionItem(SessionItems.useremail) as string | undefined;
-
-  const totalAmount =
-    Number(
-      // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-      transactionData?.payments.reduce((sum, { amount }) => sum + amount, 0)
-    ) + Number(pspSelected?.taxPayerFee);
 
   const usefulPrintData: PrintData = {
     useremail: email || "",
-    amount: moneyFormat(totalAmount),
+    amount: totalAmount,
   };
 
   const dispatch = useAppDispatch();
@@ -115,6 +115,8 @@ export default function PaymentResponsePageV2() {
   }, []);
 
   const { t } = useTranslation();
+
+  const outcomeMessage = outcome ? responseOutcome[outcome] : undefined;
 
   useEffect(() => {
     if (outcomeMessage && outcomeMessage.title) {
