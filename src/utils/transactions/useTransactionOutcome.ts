@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { isLeft } from "fp-ts/Either";
 import { PathReporter } from "io-ts/PathReporter";
-import { apiPaymentEcommerceClient } from "utils/api/client";
-import { getConfigOrThrow } from "utils/config/config";
+import { apiPaymentEcommerceClient } from "../../utils/api/client";
+import { getConfigOrThrow } from "../../utils/config/config";
 import type { TransactionOutcomeInfo } from "../../../generated/definitions/payment-ecommerce/TransactionOutcomeInfo";
 import { ViewOutcomeEnum } from "./TransactionResultUtil";
 
