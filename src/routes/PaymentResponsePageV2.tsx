@@ -42,6 +42,21 @@ export default function PaymentResponsePageV2() {
 
   const conf = getConfigOrThrow();
 
+  const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
+
+  const getCartReturnUrl = (outcome: ViewOutcomeEnum | undefined) =>
+    ({
+      redirectUrl:
+        outcome === ViewOutcomeEnum.SUCCESS
+          ? cart?.returnUrls.returnOkUrl || "/"
+          : cart?.returnUrls.returnErrorUrl || "/",
+      isCart: cart != null,
+    } as CartInformation);
+
+  const [cartInformation, setCartInformation] = useState<CartInformation>(
+    getCartReturnUrl(undefined)
+  );
+
   useEffect(() => {
     const storedOutcome = getSessionItem(SessionItems.outcome) as
       | ViewOutcomeEnum
@@ -60,26 +75,12 @@ export default function PaymentResponsePageV2() {
       setTotalAmount("-");
     }
 
+    setCartInformation(getCartReturnUrl(storedOutcome));
     clearSessionItem(SessionItems.outcome);
     clearSessionItem(SessionItems.totalAmount);
   }, []);
 
   const [findOutMoreOpen, setFindOutMoreOpen] = useState<boolean>(false);
-
-  const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
-
-  const getCartReturnUrl = (outcome: ViewOutcomeEnum | undefined) =>
-    ({
-      redirectUrl:
-        outcome === ViewOutcomeEnum.SUCCESS
-          ? cart?.returnUrls.returnOkUrl || "/"
-          : cart?.returnUrls.returnErrorUrl || "/",
-      isCart: cart != null,
-    } as CartInformation);
-
-  const [cartInformation] = useState<CartInformation>(
-    getCartReturnUrl(outcome)
-  );
 
   const email = getSessionItem(SessionItems.useremail) as string | undefined;
 
