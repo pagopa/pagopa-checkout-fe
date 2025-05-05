@@ -1,6 +1,7 @@
 /* eslint-disable functional/immutable-data */
 /* eslint-disable no-bitwise */
 /* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable no-console */
 import * as E from "fp-ts/Either";
 import * as TE from "fp-ts/TaskEither";
 import * as O from "fp-ts/Option";
@@ -56,6 +57,7 @@ export const decodeToUUID = (base64: string) => {
 const outcomePollingCounter = createCounter();
 
 // predicate function for the polling fetcher
+// eslint-disable-next-line sonarjs/cognitive-complexity
 const outcomePollingPredicate = async (r: Response): Promise<boolean> => {
   outcomePollingCounter.increment();
   const status = r.status;

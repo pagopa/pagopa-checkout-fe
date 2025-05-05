@@ -26,7 +26,9 @@ export function useTransactionOutcome(
   });
   const mounted = useRef(true);
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   useEffect(() => {
+    // eslint-disable-next-line functional/immutable-data
     mounted.current = true;
 
     const fetchOnce = async () => {
@@ -60,7 +62,10 @@ export function useTransactionOutcome(
         });
 
         if (!isFinalStatus) {
-          setTimeout(fetchOnce, CHECKOUT_POLLING_ACTIVATION_INTERVAL);
+          setTimeout(
+            () => void fetchOnce(),
+            CHECKOUT_POLLING_ACTIVATION_INTERVAL
+          );
         }
       } catch (err) {
         if (!mounted.current) {
@@ -74,8 +79,10 @@ export function useTransactionOutcome(
       }
     };
 
-    fetchOnce();
+    void fetchOnce();
+
     return () => {
+      // eslint-disable-next-line functional/immutable-data
       mounted.current = false;
     };
   }, [transactionId, bearerAuth, CHECKOUT_POLLING_ACTIVATION_INTERVAL]);

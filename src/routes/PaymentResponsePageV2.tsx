@@ -34,6 +34,7 @@ type CartInformation = {
   isCart: boolean;
 };
 
+// eslint-disable-next-line sonarjs/cognitive-complexity
 export default function PaymentResponsePageV2() {
   const navigate = useNavigate();
   const [outcome, setOutcome] = useState<ViewOutcomeEnum | undefined>();
