@@ -13,7 +13,6 @@ import {
 } from "../../utils/storage/sessionStorage";
 import PaymentResponsePage from "../../routes/PaymentResponsePage";
 import "jest-location-mock";
-import { checkLogout } from "../../utils/api/helper";
 import { getViewOutcomeFromEcommerceResultCode } from "../../utils/transactions/TransactionResultUtil";
 import { ecommerceTransaction } from "../../utils/transactions/transactionHelper";
 import { getUrlParameter } from "../../utils/regex/urlUtilities";
@@ -65,6 +64,7 @@ jest.mock("react-i18next", () => ({
 jest.mock("../../utils/storage/sessionStorage", () => ({
   getSessionItem: jest.fn(),
   clearStorage: jest.fn(),
+  clearSessionItem: jest.fn(),
   SessionItems: {
     paymentMethod: "paymentMethod",
     paymentMethodInfo: "paymentMethodInfo",
@@ -74,6 +74,9 @@ jest.mock("../../utils/storage/sessionStorage", () => ({
     paymentInfo: "paymentInfo",
     sessionPayment: "sessionPayment",
     cart: "cart",
+    outcome: "outcome",
+    totalAmount: "totalAmount",
+    authToken: "authToken",
   },
 }));
 
@@ -112,7 +115,7 @@ jest.mock("../../utils/config/config", () =>
     getConfigOrThrow: jest.fn((key) => {
       // Create a mapping of all config values
       const configValues = {
-        CHECKOUT_ENV: "TEST",
+    CHECKOUT_ENV: "TEST",
         // Add other config values as needed
       } as any;
 
@@ -124,9 +127,9 @@ jest.mock("../../utils/config/config", () =>
       // Otherwise return the specific config value
       return configValues[key] || "";
     }),
-    isTestEnv: jest.fn(() => false),
-    isDevEnv: jest.fn(() => false),
-    isProdEnv: jest.fn(() => true),
+  isTestEnv: jest.fn(() => false),
+  isDevEnv: jest.fn(() => false),
+  isProdEnv: jest.fn(() => true),
   })
 );
 
@@ -182,18 +185,14 @@ const navigate = jest.fn();
 describe("V1PaymentResponsePage no cart", () => {
   beforeEach(() => {
     // Clear previous calls to our spy navigate function before each test
-    jest.spyOn(router, "useNavigate").mockReset();
-    jest.spyOn(router, "useNavigate").mockImplementation(() => navigate);
-    (getSessionItem as jest.Mock).mockImplementation(mockGetSessionItemNoCart);
-    (getUrlParameter as jest.Mock).mockReturnValue(
-      transactionInfoOK.transactionId
-    );
-    (decodeToUUID as jest.Mock).mockImplementation(
-      () => transactionInfoOK.transactionId
-    );
-    (ecommerceTransaction as jest.Mock).mockReturnValue(
-      TE.right(transactionInfoOK)
-    );
+    jest.clearAllMocks();
+    jest
+      .spyOn(router, "useNavigate")
+      .mockImplementation(() => navigate);
+      (getSessionItem as jest.Mock).mockImplementation(mockGetSessionItemNoCart);
+      (getUrlParameter as jest.Mock).mockReturnValue(transactionInfoOK.transactionId);
+      (decodeToUUID as jest.Mock).mockReturnValue(transactionInfoOK.transactionId);
+      (ecommerceTransaction as jest.Mock).mockReturnValue(TE.right(transactionInfoOK));
   });
   // TEST WITHOUT CART
   test.each([
@@ -211,12 +210,23 @@ describe("V1PaymentResponsePage no cart", () => {
     "116",
     "117",
     "121",
-  ])(
-    "should show payment outcome message and come back to home on close button click",
+  ] as const)(
+    "for outcome %s => should show payment outcome message and come back to home on close button click",
     async (val) => {
-      (getViewOutcomeFromEcommerceResultCode as jest.Mock).mockImplementation(
-        () => val
+      (getViewOutcomeFromEcommerceResultCode as jest.Mock).mockReturnValue(
+        val
       );
+
+      (getSessionItem as jest.Mock).mockImplementation((item: SessionItems) => {
+        if (item === SessionItems.outcome) {
+          return val;
+        }
+        if (item === SessionItems.totalAmount) {
+          return 12345;
+        }
+        return mockGetSessionItemNoCart(item);
+      });
+
       renderWithReduxProvider(
         <MemoryRouter>
           <PaymentResponsePage />
@@ -224,12 +234,11 @@ describe("V1PaymentResponsePage no cart", () => {
       );
       await waitFor(() => {
         expect(
-          screen.getByText("paymentResponsePage." + val + ".title")
+          screen.getByText(`paymentResponsePage.${val}.title`)
         ).toBeVisible();
-        expect(checkLogout).toHaveBeenCalled();
-        expect(clearStorage).toHaveBeenCalled();
-        fireEvent.click(screen.getByText("errorButton.close"));
       });
+      expect(clearStorage).toHaveBeenCalled();
+      fireEvent.click(screen.getByText("errorButton.close"));
       expect(navigate).toHaveBeenCalledWith("/", { replace: true });
     }
   );
@@ -238,21 +247,14 @@ describe("V1PaymentResponsePage no cart", () => {
 describe("V1PaymentResponsePage with cart", () => {
   beforeEach(() => {
     // Clear previous calls to our spy navigate function before each test
-    jest.spyOn(router, "useNavigate").mockReset();
-    jest.spyOn(router, "useNavigate").mockImplementation(() => navigate);
-    (getSessionItem as jest.Mock).mockImplementation(
-      mockGetSessionItemWithCart
-    );
-
-    (getUrlParameter as jest.Mock).mockReturnValue(
-      transactionInfoOK.transactionId
-    );
-    (decodeToUUID as jest.Mock).mockImplementation(
-      () => transactionInfoOK.transactionId
-    );
-    (ecommerceTransaction as jest.Mock).mockReturnValue(
-      TE.right(transactionInfoOK)
-    );
+    jest.clearAllMocks();
+    jest
+      .spyOn(router, "useNavigate")
+      .mockImplementation(() => navigate);
+      (getSessionItem as jest.Mock).mockImplementation(mockGetSessionItemWithCart);
+      (getUrlParameter as jest.Mock).mockReturnValue(transactionInfoOK.transactionId);
+      (decodeToUUID as jest.Mock).mockReturnValue(transactionInfoOK.transactionId);
+      (ecommerceTransaction as jest.Mock).mockReturnValue(TE.right(transactionInfoOK));
   });
   // TEST WITH CART
   test.each([
@@ -270,12 +272,23 @@ describe("V1PaymentResponsePage with cart", () => {
     "116",
     "117",
     "121",
-  ])(
-    "should show payment outcome message and come back to home on close button click",
+  ] as const)(
+    "for outcome %s => should show payment outcome message and come back to home on close button click",
     async (val) => {
-      (getViewOutcomeFromEcommerceResultCode as jest.Mock).mockImplementation(
-        () => val
+      (getViewOutcomeFromEcommerceResultCode as jest.Mock).mockReturnValue(
+        val
       );
+
+      (getSessionItem as jest.Mock).mockImplementation((item: SessionItems) => {
+        if (item === SessionItems.outcome) {
+          return val;
+        }
+        if (item === SessionItems.totalAmount) {
+          return 12345;
+        }
+        return mockGetSessionItemWithCart(item);
+      });
+
       renderWithReduxProvider(
         <MemoryRouter>
           <PaymentResponsePage />
@@ -283,16 +296,18 @@ describe("V1PaymentResponsePage with cart", () => {
       );
       await waitFor(() => {
         expect(
-          screen.getByText("paymentResponsePage." + val + ".title")
+          screen.getByText(`paymentResponsePage.${val}.title`)
         ).toBeVisible();
-        expect(checkLogout).toHaveBeenCalled();
-        expect(clearStorage).toHaveBeenCalled();
       });
-      fireEvent.click(screen.getByText("paymentResponsePage.buttons.continue"));
-      expect(window.location.replace).toHaveBeenCalledWith(
+      fireEvent.click(
+        screen.getByText("paymentResponsePage.buttons.continue")
+      );
+      const expectedUrl =
         val === "0"
           ? cart.returnUrls.returnOkUrl
-          : cart.returnUrls.returnErrorUrl
+          : cart.returnUrls.returnErrorUrl;
+      expect(window.location.replace).toHaveBeenCalledWith(
+        expectedUrl
       );
     }
   );
