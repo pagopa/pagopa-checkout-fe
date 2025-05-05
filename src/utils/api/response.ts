@@ -1,6 +1,6 @@
 /* eslint-disable functional/immutable-data */
 /* eslint-disable no-bitwise */
-/* eslint @typescript-eslint/no-var-requires: "off" */
+/* eslint-disable @typescript-eslint/no-var-requires */
 import * as E from "fp-ts/Either";
 import * as TE from "fp-ts/TaskEither";
 import * as O from "fp-ts/Option";
@@ -82,32 +82,25 @@ const outcomePollingPredicate = async (r: Response): Promise<boolean> => {
 
   // status is 200, check the body
   try {
-    // clone response to read body without touching the original resp
+    // clone response in order to read body without touching the original resp
     const body = await r.clone().json();
     const decoded = TransactionOutcomeInfo.decode(body);
 
     if (E.isRight(decoded)) {
-      // decoding successful, check if outcome is present
       const outcomeData = decoded.right;
-      if (outcomeData.outcome !== undefined && outcomeData.outcome !== null) {
-        // outcome is present, stop polling
-        // TODO dylan remove
-        console.log(
-          `Outcome received (${outcomeData.outcome}). Stopping polling.`
-        );
+      if (outcomeData.isFinalStatus) {
+        console.log(`isFinalStatus=true; stopping polling.`);
         outcomePollingCounter.reset();
         return false;
       } else {
-        // outcome is missing (empty object {} case), keep polling
         if (outcomePollingCounter.getValue() >= retries) {
           console.error(
-            `Polling /outcomes (V1) reached max retries (${retries}) while waiting for outcome field. Stopping.`
+            `Polling /outcomes (V1) reached max retries (${retries}) while waiting for final status. Stopping.`
           );
           outcomePollingCounter.reset();
           return false;
         }
-        // TODO dylan remove
-        console.log("Status 200, but outcome missing. Continuing polling...");
+        console.log(`isFinalStatus=false; continuing polling.`);
         return true;
       }
     } else {
@@ -157,17 +150,14 @@ const ecommerceV1OutcomeClientWithPolling: EcommerceClientV1 =
 
 // define a type for potential errors from polling
 type PollingError = Error | ProblemJson | t.Errors;
-
 // define the successful result structure
 interface OutcomeResult {
-  outcome: TransactionOutcomeInfo["outcome"];
-  totalAmount: TransactionOutcomeInfo["totalAmount"];
+  outcome: number;
+  totalAmount?: number;
 }
 
 /**
- * Calls the V1 getTransactionOutcomes endpoint using the configured polling client.
- * Assumes polling stops ONLY when the outcome is ready or retries are exhausted.
- * Returns the final outcome and potentially the total amount.
+ * call the polling endpoint + decode final body when we exit polling
  */
 const pollTransactionOutcomeV1 = (
   transactionId: string,
@@ -175,7 +165,7 @@ const pollTransactionOutcomeV1 = (
   client: EcommerceClientV1 = ecommerceV1OutcomeClientWithPolling
 ): TE.TaskEither<PollingError, OutcomeResult> =>
   pipe(
-    // execute the polling call
+    // fire the request (this will keep polling under the hood)
     TE.tryCatch(
       () =>
         client.getTransactionOutcomes({
@@ -184,7 +174,7 @@ const pollTransactionOutcomeV1 = (
         }),
       (error) =>
         new Error(
-          `Polling Promise rejected: ${
+          `Polling request rejected: ${
             error instanceof Error ? error.message : String(error)
           }`
         ) as PollingError
@@ -200,7 +190,7 @@ const pollTransactionOutcomeV1 = (
     // process the final ApiResponse after polling has stopped
     TE.chainEitherKW((response: TypeofApiResponse<GetTransactionOutcomesT>) => {
       if (response.status === 200) {
-        // likely outcome was found -> decode final response.
+        // decode the final body (isFinalStatus===true)
         return pipe(
           TransactionOutcomeInfo.decode(response.value),
           E.mapLeft(
@@ -212,32 +202,27 @@ const pollTransactionOutcomeV1 = (
               ) as PollingError
           ),
           E.chainW((decodedInfo) => {
-            // double check outcome is present inf the final resp
-            if (
-              decodedInfo.outcome === undefined ||
-              decodedInfo.outcome === null
-            ) {
+            if (!decodedInfo.isFinalStatus) {
               return E.left(
                 new Error(
-                  `Polling stopped but FINAL response missing outcome field!`
+                  `Polling ended but isFinalStatus=false`
                 ) as PollingError
               );
             }
             return E.right({
               outcome: decodedInfo.outcome,
               totalAmount: decodedInfo.totalAmount,
-            } as OutcomeResult);
+            });
           })
         );
       } else {
-        // non-200 status on last attempt OR retries maxed out.
         return pipe(
           ProblemJson.decode(response.value),
           E.fold(
             () =>
               E.left(
                 new Error(
-                  `Polling stopped on error status: ${response.status}, body not ProblemJson`
+                  `Polling stopped on status ${response.status}, not ProblemJson`
                 ) as PollingError
               ),
             (problem) => E.left(problem as PollingError)
@@ -249,12 +234,8 @@ const pollTransactionOutcomeV1 = (
 
 /**
  * Main function orchestrating the polling process using the V1 /outcomes endpoint.
- * It determines the transaction ID, initiates polling which continues until an 'outcome'
- * is received from the backend or retries are exhausted.
- * Stores the final outcome string and amount (if applicable for success) in session storage.
- * Invokes the callback ONLY to signal completion (success or failure).
- *
- * @param onPollingComplete Callback function invoked once polling is finished, regardless of success or failure.
+ * Retrieves transactionId/authToken, kicks off polling,
+ *    writes outcome to sessionStorage and fires callback.
  */
 export const callServices = async (
   onPollingComplete: () => void
@@ -330,7 +311,7 @@ export const callServices = async (
           // failure case -> executes if pollTransactionOutcomeV1 returns Left<PollingError>
           (error) =>
             T.fromIO(() => {
-              console.error("Polling V1 /outcomes failed:", error);
+              console.error("Polling /outcomes failed:", error);
               const errorDetails =
                 error instanceof Error ? error.message : JSON.stringify(error);
               mixpanel.track("CHECKOUT_POLLING_OUTCOME_ERROR", {
@@ -338,7 +319,6 @@ export const callServices = async (
                 TRANSACTION_ID: transactionId,
                 error: errorDetails,
               });
-
               setSessionItem(
                 SessionItems.outcome,
                 ViewOutcomeEnum.GENERIC_ERROR
@@ -358,31 +338,18 @@ export const callServices = async (
               const finalOutcome = String(
                 outcomeResult.outcome
               ) as ViewOutcomeEnum;
+              setSessionItem(SessionItems.outcome, finalOutcome);
 
-              if (Object.values(ViewOutcomeEnum).includes(finalOutcome)) {
-                setSessionItem(SessionItems.outcome, finalOutcome);
-                // store amount only if outcome is success and amount is present
-                if (
-                  finalOutcome === ViewOutcomeEnum.SUCCESS &&
-                  outcomeResult.totalAmount !== undefined
-                ) {
-                  setSessionItem(
-                    SessionItems.totalAmount,
-                    outcomeResult.totalAmount
-                  );
-                } else {
-                  // clear amount
-                  clearSessionItem(SessionItems.totalAmount);
-                }
-              } else {
-                console.error(
-                  `Received unexpected outcome code from backend (V1): ${outcomeResult.outcome}`
-                );
+              if (
+                finalOutcome === ViewOutcomeEnum.SUCCESS &&
+                outcomeResult.totalAmount != null
+              ) {
                 setSessionItem(
-                  SessionItems.outcome,
-                  ViewOutcomeEnum.GENERIC_ERROR
+                  SessionItems.totalAmount,
+                  outcomeResult.totalAmount
                 );
-                clearSessionItem(SessionItems.totalAmount); // clear amount
+              } else {
+                clearSessionItem(SessionItems.totalAmount);
               }
               onPollingComplete();
             })

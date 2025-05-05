@@ -17,7 +17,6 @@ import {
   responseOutcome,
 } from "../features/payment/models/responseOutcome";
 import { useAppDispatch } from "../redux/hooks/hooks";
-import { callServices } from "../utils/api/response";
 import { PAYMENT_OUTCOME_CODE } from "../utils/config/mixpanelDefs";
 import { mixpanel } from "../utils/config/mixpanelHelperInit";
 import { onBrowserUnload } from "../utils/eventListeners";
@@ -28,22 +27,10 @@ import {
   getSessionItem,
   SessionItems,
 } from "../utils/storage/sessionStorage";
-import {
-  getViewOutcomeFromEcommerceResultCode,
-  ViewOutcomeEnum,
-} from "../utils/transactions/TransactionResultUtil";
+import { ViewOutcomeEnum } from "../utils/transactions/TransactionResultUtil";
 import { Cart } from "../features/payment/models/paymentModel";
-import { NewTransactionResponse } from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { resetThreshold } from "../redux/slices/threshold";
-import { Bundle } from "../../generated/definitions/payment-ecommerce/Bundle";
-import { TransactionStatusEnum } from "../../generated/definitions/payment-ecommerce/TransactionStatus";
-import {
-  TransactionInfoGatewayInfo,
-  TransactionInfoNodeInfo,
-} from "../../generated/definitions/payment-ecommerce-v2/TransactionInfo";
-import { removeLoggedUser } from "../redux/slices/loggedUser";
-import { checkLogout } from "../utils/api/helper";
-import FindOutMoreModal from "./../components/modals/FindOutMoreModal";
+import FindOutMoreModal from "../components/modals/FindOutMoreModal";
 
 type PrintData = {
   useremail: string;
@@ -67,23 +54,11 @@ export default function PaymentResponsePage() {
     redirectUrl: cart ? cart.returnUrls.returnOkUrl : "/",
     isCart: cart != null,
   });
-  const transactionData = getSessionItem(SessionItems.transaction) as
-    | NewTransactionResponse
-    | undefined;
-  const pspSelected = getSessionItem(SessionItems.pspSelected) as
-    | Bundle
-    | undefined;
   const email = getSessionItem(SessionItems.useremail) as string | undefined;
-  const totalAmount =
-    Number(
-      transactionData?.payments
-        .map((p) => p.amount)
-        .reduce((sum, current) => sum + current, 0)
-    ) + Number(pspSelected?.taxPayerFee);
 
   const usefulPrintData: PrintData = {
     useremail: email || "",
-    amount: moneyFormat(totalAmount),
+    amount: "", // it will get filled later
   };
 
   const dispatch = useAppDispatch();
@@ -99,30 +74,10 @@ export default function PaymentResponsePage() {
     );
   };
 
-  const handleFinalStatusResult = (
-    idStatus?: TransactionStatusEnum,
-    nodeInfo?: TransactionInfoNodeInfo,
-    gatewayInfo?: TransactionInfoGatewayInfo
-  ) => {
-    const outcome: ViewOutcomeEnum = getViewOutcomeFromEcommerceResultCode(
-      idStatus,
-      nodeInfo,
-      gatewayInfo
-    );
-    mixpanel.track(PAYMENT_OUTCOME_CODE.value, {
-      EVENT_ID: PAYMENT_OUTCOME_CODE.value,
-      idStatus,
-      outcome,
-    });
-
-    setOutcome(outcome);
-    showFinalResult(outcome);
-  };
-
   const showFinalResult = (outcome: ViewOutcomeEnum) => {
     const message = responseOutcome[outcome];
     const redirectTo =
-      outcome === "0"
+      outcome === ViewOutcomeEnum.SUCCESS
         ? cart
           ? cart.returnUrls.returnOkUrl
           : "/"
@@ -137,20 +92,36 @@ export default function PaymentResponsePage() {
     setLoading(false);
     window.removeEventListener("beforeunload", onBrowserUnload);
   };
-
-  const performCallsAndClearStorage = async () => {
-    await callServices(handleFinalStatusResult);
-
-    await checkLogout(() => {
-      dispatch(removeLoggedUser());
-      clearSessionItem(SessionItems.authToken);
-    });
-    clearStorage();
-  };
-
   useEffect(() => {
     dispatch(resetThreshold());
-    void performCallsAndClearStorage();
+
+    const _o = getSessionItem(SessionItems.outcome) as
+      | ViewOutcomeEnum
+      | undefined;
+    const _a = getSessionItem(SessionItems.totalAmount) as number | undefined;
+
+    if (_o) {
+      mixpanel.track(PAYMENT_OUTCOME_CODE.value, {
+        EVENT_ID: PAYMENT_OUTCOME_CODE.value,
+        outcome: _o,
+      });
+
+      setOutcome(_o);
+      usefulPrintData.amount =
+        _o === ViewOutcomeEnum.SUCCESS && typeof _a === "number"
+          ? moneyFormat(_a)
+          : "-";
+
+      showFinalResult(_o);
+    } else {
+      // nothing to show -> clear
+      setLoading(false);
+    }
+
+    clearSessionItem(SessionItems.outcome);
+    clearSessionItem(SessionItems.totalAmount);
+    clearSessionItem(SessionItems.authToken);
+    clearStorage();
   }, []);
 
   useEffect(() => {
