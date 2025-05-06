@@ -13,6 +13,7 @@ import { ViewOutcomeEnum } from "./TransactionResultUtil";
 export interface OutcomeData {
   outcome: ViewOutcomeEnum;
   isFinalStatus: boolean;
+  totalAmount?: number;
   loading: boolean;
   error?: Error;
 }
@@ -58,9 +59,11 @@ export function useTransactionOutcome(
           throw new Error(`Unexpected HTTP status ${resp.status}`);
         }
 
-        // extract the raw outcome and final status
+        // extract the raw outcome, final status and amount+fees
         const info = resp.value as TransactionOutcomeInfo;
-        const { outcome: rawOutcome, isFinalStatus } = info;
+        const { outcome: rawOutcome, isFinalStatus, totalAmount, fees } = info;
+
+        const amountAndFees = (totalAmount ?? 0) + (fees ?? 0);
 
         // map the raw code string into our ViewOutcomeEnum
         const key = rawOutcome?.toString() as keyof typeof ViewOutcomeEnum;
@@ -71,11 +74,12 @@ export function useTransactionOutcome(
           return; // avoid state update if unmounted
         }
 
-        // update loading/outcome/isFinalStatus
+        // update loading/outcome/isFinalStatus/amount
         setState({
           outcome: mappedOutcome,
           isFinalStatus,
           loading: !isFinalStatus,
+          totalAmount: amountAndFees
         });
 
         // if not final, schedule the next poll
