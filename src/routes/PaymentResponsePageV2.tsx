@@ -38,7 +38,7 @@ type CartInformation = {
 export default function PaymentResponsePageV2() {
   const navigate = useNavigate();
   const [outcome, setOutcome] = useState<ViewOutcomeEnum | undefined>();
-  const [totalAmount, setTotalAmount] = useState<string>("");
+  const [totalAmount, setTotalAmount] = useState<string>("-");
 
   const conf = getConfigOrThrow();
 
@@ -52,11 +52,11 @@ export default function PaymentResponsePageV2() {
           : cart?.returnUrls.returnErrorUrl || "/",
       isCart: cart != null,
     } as CartInformation);
-
+  // initial placeholder, will be populated after reading session
   const [cartInformation, setCartInformation] = useState<CartInformation>(
     getCartReturnUrl(undefined)
   );
-
+  // read outcome / amount set by backend
   useEffect(() => {
     const storedOutcome = getSessionItem(SessionItems.outcome) as
       | ViewOutcomeEnum
@@ -74,7 +74,7 @@ export default function PaymentResponsePageV2() {
     } else {
       setTotalAmount("-");
     }
-
+    // recompute cart return URL now that we know the outcome
     setCartInformation(getCartReturnUrl(storedOutcome));
     clearSessionItem(SessionItems.outcome);
     clearSessionItem(SessionItems.totalAmount);

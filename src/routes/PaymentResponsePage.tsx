@@ -46,10 +46,13 @@ type CartInformation = {
 export default function PaymentResponsePage() {
   const conf = getConfigOrThrow();
   const navigate = useNavigate();
+
+  // local state for loading spinner/modals
   const [loading, setLoading] = useState(true);
   const [findOutMoreOpen, setFindOutMoreOpen] = useState<boolean>(false);
   const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
   const [outcome, setOutcome] = useState<ViewOutcomeEnum>();
+  // outcome + message
   const [outcomeMessage, setOutcomeMessage] = useState<responseMessage>();
   const [cartInformation, setCartInformation] = useState<CartInformation>({
     redirectUrl: cart ? cart.returnUrls.returnOkUrl : "/",
@@ -93,32 +96,39 @@ export default function PaymentResponsePage() {
     setLoading(false);
     window.removeEventListener("beforeunload", onBrowserUnload);
   };
+
+  // called once on mount to read session
   useEffect(() => {
     dispatch(resetThreshold());
 
-    const _o = getSessionItem(SessionItems.outcome) as
+     // read outcome/amount pushed by backend during redirect
+    const storedOutcome = getSessionItem(SessionItems.outcome) as
       | ViewOutcomeEnum
       | undefined;
-    const _a = getSessionItem(SessionItems.totalAmount) as number | undefined;
+    const storedAmount = getSessionItem(SessionItems.totalAmount) as number | undefined;
 
-    if (_o) {
+    if (storedOutcome) {
+      // analytics
       mixpanel.track(PAYMENT_OUTCOME_CODE.value, {
         EVENT_ID: PAYMENT_OUTCOME_CODE.value,
-        outcome: _o,
+        outcome: storedOutcome,
       });
 
-      setOutcome(_o);
+      setOutcome(storedOutcome);
+
+      // fill the amount text on success
       usefulPrintData.amount =
-        _o === ViewOutcomeEnum.SUCCESS && typeof _a === "number"
-          ? moneyFormat(_a)
+        storedOutcome === ViewOutcomeEnum.SUCCESS && typeof storedAmount === "number"
+          ? moneyFormat(storedAmount)
           : "-";
 
-      showFinalResult(_o);
+      showFinalResult(storedOutcome);
     } else {
       // nothing to show -> clear
       setLoading(false);
     }
 
+    // session cleanup
     clearSessionItem(SessionItems.outcome);
     clearSessionItem(SessionItems.totalAmount);
     clearSessionItem(SessionItems.authToken);
