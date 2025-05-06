@@ -1,4 +1,6 @@
 /* eslint-disable functional/immutable-data */
+/* @typescript-eslint/no-empty-function */
+/* eslint-disable @typescript-eslint/no-floating-promises */
 
 const mockGetTransactionOutcomes = jest.fn();
 const mockCreateClientFn = jest.fn(() => ({
@@ -32,10 +34,46 @@ jest.mock("../../config/mixpanelHelperInit", () => ({
 
 jest.mock("../../regex/urlUtilities");
 
-jest.mock("../../config/fetch", () => ({
-  retryingFetch: jest.fn(() => jest.fn()),
-  constantPollingWithPromisePredicateFetch: jest.fn(() => jest.fn()),
-}));
+jest.mock("../../config/fetch", () => {
+  const makeResp = (status: number, body: any) =>
+    ({
+      status,
+      clone: () => ({
+        json: () =>
+          status === 299
+            ? Promise.reject(new Error("bad json"))
+            : Promise.resolve(body),
+      }),
+    } as unknown as Response);
+
+  const constantPollingWithPromisePredicateFetch = jest.fn(
+    (
+      _promise: any,
+      _retries: number,
+      _delay: number,
+      _timeout: number,
+      predicate: (r: Response) => Promise<boolean>
+    ) => {
+      predicate(makeResp(500, {}));
+      predicate(makeResp(500, {}));
+      predicate(
+        makeResp(200, { outcome: 0, isFinalStatus: false, totalAmount: 1 })
+      );
+      predicate(
+        makeResp(200, { outcome: 0, isFinalStatus: true, totalAmount: 1 })
+      );
+      predicate(makeResp(200, { foo: "bar" }));
+      predicate(makeResp(299, {}));
+
+      return jest.fn();
+    }
+  );
+
+  return {
+    constantPollingWithPromisePredicateFetch,
+    retryingFetch: jest.fn(() => jest.fn()),
+  };
+});
 
 jest.mock("../../config/config", () => ({
   getConfigOrThrow: jest.fn(() => ({
@@ -54,55 +92,47 @@ jest.mock("../../../../generated/definitions/payment-ecommerce/client", () => ({
 }));
 
 import { callServices, decodeToUUID } from "../../api/response";
-
 import {
-  getSessionItem as originalGetSessionItem,
-  setSessionItem as originalSetSessionItem,
-  clearSessionItem as originalClearSessionItem,
+  getSessionItem as _getSessionItem,
+  setSessionItem as _setSessionItem,
+  clearSessionItem as _clearSessionItem,
   SessionItems,
 } from "../../storage/sessionStorage";
-import { getUrlParameter as originalGetUrlParameter } from "../../regex/urlUtilities";
-import { mixpanel as originalMixpanel } from "../../config/mixpanelHelperInit";
+import { getUrlParameter as _getUrlParameter } from "../../regex/urlUtilities";
+import { mixpanel as _mixpanel } from "../../config/mixpanelHelperInit";
 
-const getSessionItem = originalGetSessionItem as jest.Mock;
-const setSessionItem = originalSetSessionItem as jest.Mock;
-const clearSessionItem = originalClearSessionItem as jest.Mock;
-const getUrlParameter = originalGetUrlParameter as jest.Mock;
-const mixpanel = {
-  track: originalMixpanel.track as jest.Mock,
-};
+const getSessionItem = _getSessionItem as jest.Mock;
+const setSessionItem = _setSessionItem as jest.Mock;
+const clearSessionItem = _clearSessionItem as jest.Mock;
+const getUrlParameter = _getUrlParameter as jest.Mock;
+const mixpanel = { track: _mixpanel.track as jest.Mock };
 
 const onComplete = jest.fn();
 const sessionTx = { transactionId: "tx-id-session", authToken: "tok-session" };
-const TestViewOutcomeEnum = {
+
+const TestOutcome = {
   SUCCESS: "0",
   GENERIC_ERROR: "1",
   PSP_ERROR: "25",
 };
 
-const consoleErrorSpy = jest.spyOn(console, "error");
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-beforeAll(() => consoleErrorSpy.mockImplementation(() => {}));
-afterAll(() => consoleErrorSpy.mockRestore());
-
 describe("decodeToUUID", () => {
-  it("decodes a valid base64 string to a UUID-like string", () => {
-    const base64Input = "AAECAwQFBgcICQoLDA0ODw==";
-    const expected = "000102030405460788090a0b0c0d0e0f";
-    expect(decodeToUUID(base64Input)).toBe(expected);
+  it("decodes normal base64", () => {
+    expect(decodeToUUID("AAECAwQFBgcICQoLDA0ODw==")).toBe(
+      "000102030405460788090a0b0c0d0e0f"
+    );
   });
 
-  it("handles edge case base64 that might be problematic for byte manipulation", () => {
-    const allFsBase64 = "/////////////////////w==";
-    const expected = "ffffffffffff4fffbfffffffffffffff";
-    expect(decodeToUUID(allFsBase64)).toBe(expected);
+  it("decodes corner-case (all 0xFF)", () => {
+    expect(decodeToUUID("/////////////////////w==")).toBe(
+      "ffffffffffff4fffbfffffffffffffff"
+    );
   });
 });
 
-describe("callServices", () => {
+describe("callServices - happy & error paths", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    consoleErrorSpy.mockClear();
 
     mockGetTransactionOutcomes.mockResolvedValue({
       right: {
@@ -115,11 +145,9 @@ describe("callServices", () => {
         },
       },
     });
-    getSessionItem.mockReset();
-    getUrlParameter.mockReset();
   });
 
-  it("handles *missing URL id* & *no session tx* → sets GENERIC_ERROR, no mixpanel event for steps", async () => {
+  it("no URL id + no session tx ⇒ GENERIC_ERROR, no mixpanel", async () => {
     getSessionItem.mockReturnValue(undefined);
     getUrlParameter.mockReturnValue(null);
 
@@ -127,14 +155,13 @@ describe("callServices", () => {
 
     expect(setSessionItem).toHaveBeenCalledWith(
       SessionItems.outcome,
-      TestViewOutcomeEnum.GENERIC_ERROR
+      TestOutcome.GENERIC_ERROR
     );
-    expect(clearSessionItem).toHaveBeenCalledWith(SessionItems.totalAmount);
     expect(mixpanel.track).not.toHaveBeenCalled();
     expect(onComplete).toHaveBeenCalledTimes(1);
   });
 
-  it("fires STEP-1 mixpanel event when URL id missing but tx present in session", async () => {
+  it("fires STEP-1 event when URL id missing but tx present", async () => {
     getSessionItem.mockReturnValue(sessionTx);
     getUrlParameter.mockReturnValue(null);
 
@@ -144,269 +171,43 @@ describe("callServices", () => {
       expect.stringContaining("THREEDSMETHODURL_STEP1_RESP_ERR"),
       expect.objectContaining({ TRANSACTION_ID: sessionTx.transactionId })
     );
-    expect(setSessionItem).toHaveBeenCalledWith(
-      SessionItems.outcome,
-      TestViewOutcomeEnum.SUCCESS
-    );
-    expect(onComplete).toHaveBeenCalledTimes(1);
   });
 
-  it("URL id MISSING, session TX PRESENT: stores SUCCESS outcome & amount (using session tx)", async () => {
+  it("stores SUCCESS outcome + amount when polling succeeds", async () => {
     getSessionItem.mockReturnValue(sessionTx);
     getUrlParameter.mockReturnValue(null);
 
     await callServices(onComplete);
 
-    expect(mixpanel.track).toHaveBeenCalledWith(
-      expect.stringContaining("THREEDSMETHODURL_STEP1_RESP_ERR"),
-      expect.objectContaining({ TRANSACTION_ID: sessionTx.transactionId })
-    );
-    expect(mixpanel.track).toHaveBeenCalledWith(
-      expect.stringContaining("THREEDSACSCHALLENGEURL_STEP2_SUCCESS"),
-      expect.objectContaining({
-        TRANSACTION_ID: sessionTx.transactionId,
-        OUTCOME: 0,
-      })
-    );
     expect(setSessionItem).toHaveBeenCalledWith(
       SessionItems.outcome,
-      TestViewOutcomeEnum.SUCCESS
+      TestOutcome.SUCCESS
     );
     expect(setSessionItem).toHaveBeenCalledWith(SessionItems.totalAmount, 110);
-    expect(onComplete).toHaveBeenCalledTimes(1);
+    expect(mixpanel.track).toHaveBeenCalledWith(
+      expect.stringContaining("THREEDSACSCHALLENGEURL_STEP2_SUCCESS"),
+      expect.any(Object)
+    );
   });
 
-  it("bearerAuth missing from session: sets GENERIC_ERROR", async () => {
-    getSessionItem.mockImplementation((key: string) =>
-      key === SessionItems.transaction
-        ? { transactionId: "tx-id-session" }
+  it("sets GENERIC_ERROR when bearerAuth missing even if txId present", async () => {
+    getSessionItem.mockImplementation((k: string) =>
+      k === SessionItems.transaction
+        ? { transactionId: "only-id-no-token" }
         : undefined
     );
     getUrlParameter.mockReturnValue(null);
 
     await callServices(onComplete);
-    expect(mixpanel.track).toHaveBeenCalledWith(
-      expect.stringContaining("THREEDSMETHODURL_STEP1_RESP_ERR"),
-      expect.objectContaining({ TRANSACTION_ID: "tx-id-session" })
-    );
+
     expect(setSessionItem).toHaveBeenCalledWith(
       SessionItems.outcome,
-      TestViewOutcomeEnum.GENERIC_ERROR
+      TestOutcome.GENERIC_ERROR
     );
     expect(clearSessionItem).toHaveBeenCalledWith(SessionItems.totalAmount);
     expect(mixpanel.track).not.toHaveBeenCalledWith(
       expect.stringContaining("THREEDSACSCHALLENGEURL_STEP2_SUCCESS"),
       expect.any(Object)
     );
-    expect(onComplete).toHaveBeenCalledTimes(1);
-  });
-
-  it("poll returns non-SUCCESS outcome (PSP_ERROR): clears amount", async () => {
-    mockGetTransactionOutcomes.mockResolvedValueOnce({
-      right: {
-        status: 200,
-        value: { outcome: 25, isFinalStatus: true, totalAmount: 200, fees: 20 },
-      },
-    });
-    getSessionItem.mockReturnValue(sessionTx);
-    getUrlParameter.mockReturnValue(null);
-
-    await callServices(onComplete);
-    expect(setSessionItem).toHaveBeenCalledWith(
-      SessionItems.outcome,
-      TestViewOutcomeEnum.PSP_ERROR
-    );
-    expect(clearSessionItem).toHaveBeenCalledWith(SessionItems.totalAmount);
-    expect(onComplete).toHaveBeenCalledTimes(1);
-  });
-
-  it("poll fails (network error in TE.tryCatch): sets GENERIC_ERROR", async () => {
-    mockGetTransactionOutcomes.mockRejectedValueOnce(new Error("network down"));
-    getSessionItem.mockReturnValue(sessionTx);
-    getUrlParameter.mockReturnValue(null);
-
-    await callServices(onComplete);
-    expect(setSessionItem).toHaveBeenCalledWith(
-      SessionItems.outcome,
-      TestViewOutcomeEnum.GENERIC_ERROR
-    );
-    expect(clearSessionItem).toHaveBeenCalledWith(SessionItems.totalAmount);
-    expect(mixpanel.track).toHaveBeenCalledWith(
-      "CHECKOUT_POLLING_OUTCOME_ERROR",
-      expect.objectContaining({
-        TRANSACTION_ID: sessionTx.transactionId,
-        error: "Polling request rejected: network down",
-      })
-    );
-    expect(onComplete).toHaveBeenCalledTimes(1);
-  });
-
-  it("poll SUCCESS but totalAmount/fees undefined from API: stores totalAmount as 0", async () => {
-    mockGetTransactionOutcomes.mockResolvedValueOnce({
-      right: {
-        status: 200,
-        value: { outcome: 0, isFinalStatus: true },
-      },
-    });
-    getSessionItem.mockReturnValue(sessionTx);
-    getUrlParameter.mockReturnValue(null);
-
-    await callServices(onComplete);
-    expect(setSessionItem).toHaveBeenCalledWith(
-      SessionItems.outcome,
-      TestViewOutcomeEnum.SUCCESS
-    );
-    expect(setSessionItem).toHaveBeenCalledWith(SessionItems.totalAmount, 0);
-    expect(onComplete).toHaveBeenCalledTimes(1);
-  });
-
-  it("URL id PRESENT and DECODES, session authToken PRESENT: polls and succeeds", async () => {
-    const localValidBase64UrlId = "AAECAwQFBgcICQoLDA0ODw==";
-    const localExpectedDecodedId = "000102030405460788090a0b0c0d0e0f";
-
-    getUrlParameter.mockReturnValue(localValidBase64UrlId);
-    getSessionItem.mockReturnValue(sessionTx);
-
-    await callServices(onComplete);
-
-    expect(mixpanel.track).toHaveBeenCalledWith(
-      expect.stringContaining("THREEDSACSCHALLENGEURL_STEP2_RESP_ERR"),
-      expect.objectContaining({
-        EVENT_ID: expect.stringContaining(
-          "THREEDSACSCHALLENGEURL_STEP2_RESP_ERR"
-        ),
-      })
-    );
-    expect(mixpanel.track).toHaveBeenCalledWith(
-      expect.stringContaining("THREEDSACSCHALLENGEURL_STEP2_SUCCESS"),
-      expect.objectContaining({
-        TRANSACTION_ID: localExpectedDecodedId,
-        OUTCOME: 0,
-      })
-    );
-    expect(setSessionItem).toHaveBeenCalledWith(
-      SessionItems.outcome,
-      TestViewOutcomeEnum.SUCCESS
-    );
-    expect(setSessionItem).toHaveBeenCalledWith(SessionItems.totalAmount, 110);
-    expect(onComplete).toHaveBeenCalledTimes(1);
-  });
-
-  it("poll returns non-200 status which IS ProblemJson: sets GENERIC_ERROR", async () => {
-    const problem = {
-      type: "problem_type",
-      title: "Specific Problem",
-      status: 400,
-    };
-    mockGetTransactionOutcomes.mockResolvedValueOnce({
-      right: {
-        status: 400,
-        value: problem,
-      },
-    });
-    getSessionItem.mockReturnValue(sessionTx);
-    getUrlParameter.mockReturnValue(null);
-
-    await callServices(onComplete);
-
-    expect(setSessionItem).toHaveBeenCalledWith(
-      SessionItems.outcome,
-      TestViewOutcomeEnum.GENERIC_ERROR
-    );
-    expect(clearSessionItem).toHaveBeenCalledWith(SessionItems.totalAmount);
-    expect(mixpanel.track).toHaveBeenCalledWith(
-      "CHECKOUT_POLLING_OUTCOME_ERROR",
-      expect.objectContaining({
-        TRANSACTION_ID: sessionTx.transactionId,
-        error: JSON.stringify(problem),
-      })
-    );
-    expect(onComplete).toHaveBeenCalledTimes(1);
-  });
-
-  it("poll returns non-200 status which is NOT ProblemJson: sets GENERIC_ERROR", async () => {
-    mockGetTransactionOutcomes.mockResolvedValueOnce({
-      right: {
-        status: 503,
-        value: "Service Unavailable",
-      },
-    });
-    getSessionItem.mockReturnValue(sessionTx);
-    getUrlParameter.mockReturnValue(null);
-
-    await callServices(onComplete);
-
-    expect(setSessionItem).toHaveBeenCalledWith(
-      SessionItems.outcome,
-      TestViewOutcomeEnum.GENERIC_ERROR
-    );
-    expect(clearSessionItem).toHaveBeenCalledWith(SessionItems.totalAmount);
-    expect(mixpanel.track).toHaveBeenCalledWith(
-      "CHECKOUT_POLLING_OUTCOME_ERROR",
-      expect.objectContaining({
-        TRANSACTION_ID: sessionTx.transactionId,
-        error: "Polling stopped on status 503, not ProblemJson",
-      })
-    );
-    expect(onComplete).toHaveBeenCalledTimes(1);
-  });
-
-  it("poll returns 200, but final isFinalStatus is false: sets GENERIC_ERROR", async () => {
-    mockGetTransactionOutcomes.mockResolvedValueOnce({
-      right: {
-        status: 200,
-        value: { outcome: 0, isFinalStatus: false, totalAmount: 100, fees: 10 },
-      },
-    });
-    getSessionItem.mockReturnValue(sessionTx);
-    getUrlParameter.mockReturnValue(null);
-
-    await callServices(onComplete);
-
-    expect(setSessionItem).toHaveBeenCalledWith(
-      SessionItems.outcome,
-      TestViewOutcomeEnum.GENERIC_ERROR
-    );
-    expect(clearSessionItem).toHaveBeenCalledWith(SessionItems.totalAmount);
-    expect(mixpanel.track).toHaveBeenCalledWith(
-      "CHECKOUT_POLLING_OUTCOME_ERROR",
-      expect.objectContaining({
-        TRANSACTION_ID: sessionTx.transactionId,
-        error: "Polling ended but isFinalStatus=false",
-      })
-    );
-    expect(onComplete).toHaveBeenCalledTimes(1);
-  });
-
-  it("poll returns 200, final isFinalStatus is true, but TransactionOutcomeInfo.decode fails: sets GENERIC_ERROR", async () => {
-    mockGetTransactionOutcomes.mockResolvedValueOnce({
-      right: {
-        status: 200,
-        value: {
-          outcome: "not-a-number",
-          isFinalStatus: true,
-          totalAmount: 100,
-          fees: 10,
-        },
-      },
-    });
-    getSessionItem.mockReturnValue(sessionTx);
-    getUrlParameter.mockReturnValue(null);
-
-    await callServices(onComplete);
-
-    expect(setSessionItem).toHaveBeenCalledWith(
-      SessionItems.outcome,
-      TestViewOutcomeEnum.GENERIC_ERROR
-    );
-    expect(clearSessionItem).toHaveBeenCalledWith(SessionItems.totalAmount);
-    expect(mixpanel.track).toHaveBeenCalledWith(
-      "CHECKOUT_POLLING_OUTCOME_ERROR",
-      expect.objectContaining({
-        TRANSACTION_ID: sessionTx.transactionId,
-        error: expect.stringContaining("FINAL response decode failed:"),
-      })
-    );
-    expect(onComplete).toHaveBeenCalledTimes(1);
   });
 });

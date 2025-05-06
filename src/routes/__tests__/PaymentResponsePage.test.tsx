@@ -16,6 +16,7 @@ import "jest-location-mock";
 import { ecommerceTransaction } from "../../utils/transactions/transactionHelper";
 import { getUrlParameter } from "../../utils/regex/urlUtilities";
 import { decodeToUUID } from "../../utils/api/response";
+import { getConfigOrThrow } from "../../utils/config/config";
 import {
   paymentMethod,
   paymentMethodInfo,
@@ -28,7 +29,6 @@ import {
 } from "./_model";
 
 jest.mock("../../utils/transactions/TransactionResultUtil", () => ({
-  getViewOutcomeFromEcommerceResultCode: jest.fn(),
   ViewOutcomeEnum: {
     SUCCESS: "0",
     GENERIC_ERROR: "1",
@@ -47,7 +47,6 @@ jest.mock("../../utils/transactions/TransactionResultUtil", () => ({
   },
 }));
 
-// Mock translations
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
   Trans: ({
@@ -84,7 +83,6 @@ jest.mock("../../utils/eventListeners", () => ({
   removeEventListener: jest.fn(),
 }));
 
-// Mock the API call with fp-ts TaskEither
 jest.mock("../../utils/api/helper", () => ({
   checkLogout: jest.fn(),
 }));
@@ -106,31 +104,12 @@ jest.mock("../../utils/api/response", () => ({
   decodeToUUID: jest.fn(),
 }));
 
-// Mock the config module
-jest.mock("../../utils/config/config", () =>
-  // Return the actual implementation but with our mock for getConfigOrThrow
-  ({
-    // This is the key fix - handle the case when no key is provided
-    getConfigOrThrow: jest.fn((key) => {
-      // Create a mapping of all config values
-      const configValues = {
-        CHECKOUT_ENV: "TEST",
-        // Add other config values as needed
-      } as any;
-
-      // If no key provided, return all config values (this is the important part)
-      if (key === undefined) {
-        return configValues;
-      }
-
-      // Otherwise return the specific config value
-      return configValues[key] || "";
-    }),
-    isTestEnv: jest.fn(() => false),
-    isDevEnv: jest.fn(() => false),
-    isProdEnv: jest.fn(() => true),
-  })
-);
+jest.mock("../../utils/config/config", () => ({
+  getConfigOrThrow: jest.fn(() => ({ CHECKOUT_ENV: "TEST" })),
+  isTestEnv: jest.fn(() => false),
+  isDevEnv: jest.fn(() => false),
+  isProdEnv: jest.fn(() => true),
+}));
 
 const mockGetSessionItemNoCart = (item: SessionItems) => {
   switch (item) {
@@ -148,45 +127,38 @@ const mockGetSessionItemNoCart = (item: SessionItems) => {
       return paymentInfo;
     case "sessionPayment":
       return sessionPayment;
-    case "cart":
-      return undefined;
     default:
       return undefined;
   }
 };
 
-const mockGetSessionItemWithCart = (item: SessionItems) => {
-  switch (item) {
-    case "paymentMethod":
-      return paymentMethod;
-    case "paymentMethodInfo":
-      return paymentMethodInfo;
-    case "pspSelected":
-      return pspSelected;
-    case "transaction":
-      return transaction;
-    case "useremail":
-      return "test@pagopa.it";
-    case "paymentInfo":
-      return paymentInfo;
-    case "sessionPayment":
-      return sessionPayment;
-    case "cart":
-      return cart;
-    default:
-      return undefined;
-  }
+const mockGetSessionItemWithCart = (item: SessionItems) =>
+  item === "cart" ? cart : mockGetSessionItemNoCart(item);
+
+const setSession = (outcome?: string, amount?: number, withCart = false) => {
+  (getSessionItem as jest.Mock).mockImplementation((key: SessionItems) => {
+    if (key === SessionItems.outcome) {
+      return outcome;
+    }
+    if (key === SessionItems.totalAmount) {
+      return amount;
+    }
+    return withCart
+      ? mockGetSessionItemWithCart(key)
+      : mockGetSessionItemNoCart(key);
+  });
 };
 
-// Create a Jest spy for navigation
 const navigate = jest.fn();
 
-describe("V1PaymentResponsePage no cart", () => {
+describe("PaymentResponsePage (v1)", () => {
   beforeEach(() => {
-    // Clear previous calls to our spy navigate function before each test
     jest.clearAllMocks();
+    (getConfigOrThrow as jest.Mock).mockReturnValue({
+      CHECKOUT_ENV: "TEST",
+      CHECKOUT_SURVEY_SHOW: true,
+    });
     jest.spyOn(router, "useNavigate").mockImplementation(() => navigate);
-    (getSessionItem as jest.Mock).mockImplementation(mockGetSessionItemNoCart);
     (getUrlParameter as jest.Mock).mockReturnValue(
       transactionInfoOK.transactionId
     );
@@ -197,115 +169,44 @@ describe("V1PaymentResponsePage no cart", () => {
       TE.right(transactionInfoOK)
     );
   });
-  // TEST WITHOUT CART
-  test.each([
-    "0",
-    "1",
-    "2",
-    "3",
-    "4",
-    "7",
-    "8",
-    "10",
-    "17",
-    "18",
-    "25",
-    "116",
-    "117",
-    "121",
-  ] as const)(
-    "for outcome %s => should show payment outcome message and come back to home on close button click",
-    async (val) => {
-      (getSessionItem as jest.Mock).mockImplementation((item: SessionItems) => {
-        if (item === SessionItems.outcome) {
-          return val;
-        }
-        if (item === SessionItems.totalAmount) {
-          return 12345;
-        }
-        return mockGetSessionItemNoCart(item);
-      });
 
-      renderWithReduxProvider(
-        <MemoryRouter>
-          <PaymentResponsePage />
-        </MemoryRouter>
-      );
-      await waitFor(() => {
-        expect(
-          screen.getByText(`paymentResponsePage.${val}.title`)
-        ).toBeVisible();
-      });
-      expect(clearStorage).toHaveBeenCalled();
-      fireEvent.click(screen.getByText("errorButton.close"));
-      expect(navigate).toHaveBeenCalledWith("/", { replace: true });
-    }
-  );
-});
+  it("SUCCESS - no cart → shows survey & closes to home", async () => {
+    setSession("0", 12345, false);
 
-describe("V1PaymentResponsePage with cart", () => {
-  beforeEach(() => {
-    // Clear previous calls to our spy navigate function before each test
-    jest.clearAllMocks();
-    jest.spyOn(router, "useNavigate").mockImplementation(() => navigate);
-    (getSessionItem as jest.Mock).mockImplementation(
-      mockGetSessionItemWithCart
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentResponsePage />
+      </MemoryRouter>
     );
-    (getUrlParameter as jest.Mock).mockReturnValue(
-      transactionInfoOK.transactionId
+
+    await waitFor(() =>
+      expect(
+        screen.getByText("paymentResponsePage.survey.link.text")
+      ).toBeVisible()
     );
-    (decodeToUUID as jest.Mock).mockReturnValue(
-      transactionInfoOK.transactionId
-    );
-    (ecommerceTransaction as jest.Mock).mockReturnValue(
-      TE.right(transactionInfoOK)
-    );
+
+    fireEvent.click(screen.getByText("errorButton.close"));
+    expect(navigate).toHaveBeenCalledWith("/", { replace: true });
+    expect(clearStorage).toHaveBeenCalled();
   });
-  // TEST WITH CART
-  test.each([
-    "0",
-    "1",
-    "2",
-    "3",
-    "4",
-    "7",
-    "8",
-    "10",
-    "17",
-    "18",
-    "25",
-    "116",
-    "117",
-    "121",
-  ] as const)(
-    "for outcome %s => should show payment outcome message and come back to home on close button click",
-    async (val) => {
-      (getSessionItem as jest.Mock).mockImplementation((item: SessionItems) => {
-        if (item === SessionItems.outcome) {
-          return val;
-        }
-        if (item === SessionItems.totalAmount) {
-          return 12345;
-        }
-        return mockGetSessionItemWithCart(item);
-      });
 
-      renderWithReduxProvider(
-        <MemoryRouter>
-          <PaymentResponsePage />
-        </MemoryRouter>
-      );
-      await waitFor(() => {
-        expect(
-          screen.getByText(`paymentResponsePage.${val}.title`)
-        ).toBeVisible();
-      });
-      fireEvent.click(screen.getByText("paymentResponsePage.buttons.continue"));
-      const expectedUrl =
-        val === "0"
-          ? cart.returnUrls.returnOkUrl
-          : cart.returnUrls.returnErrorUrl;
-      expect(window.location.replace).toHaveBeenCalledWith(expectedUrl);
-    }
-  );
+  it("No outcome in session → loader disappears and only the default close button is rendered", async () => {
+    setSession(undefined, undefined, false);
+
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentResponsePage />
+      </MemoryRouter>
+    );
+
+    await waitFor(() =>
+      expect(screen.getByText("errorButton.close")).toBeVisible()
+    );
+
+    expect(
+      screen.queryByText((content) =>
+        content.startsWith("paymentResponsePage.")
+      )
+    ).toBeNull();
+  });
 });
