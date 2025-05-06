@@ -12,8 +12,18 @@ export const payNotice = async (
   await payBtn.click();
   await page.waitForNavigation();
   await page.goto(checkoutUrlAfterAuth);
-  const message = await page.waitForSelector(resultTitleSelector);
-  return await message.evaluate((el) => el.textContent);
+
+  await page.waitForFunction(
+    (sel) => {
+      const el = document.querySelector(sel);
+      return !!el && !!el.textContent && el.textContent.trim().length > 0;
+    },
+    {},
+    resultTitleSelector
+  );
+
+  const message = await page.$(resultTitleSelector);
+  return message ? message.evaluate((el) => el.textContent) : "";
 };
 
 export const verifyPaymentAndGetError = async (noticeCode, fiscalCode) => {
