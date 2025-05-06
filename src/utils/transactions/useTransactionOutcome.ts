@@ -63,7 +63,9 @@ export function useTransactionOutcome(
         const info = resp.value as TransactionOutcomeInfo;
         const { outcome: rawOutcome, isFinalStatus, totalAmount, fees } = info;
 
-        const amountAndFees = (totalAmount ?? 0) + (fees ?? 0);
+        const baseAmount = Number(totalAmount ?? 0);
+        const feeAmount = Number(fees ?? 0);
+        const amountAndFees = baseAmount + feeAmount;
 
         // map the raw code string into our ViewOutcomeEnum
         const key = rawOutcome?.toString() as keyof typeof ViewOutcomeEnum;
@@ -79,7 +81,7 @@ export function useTransactionOutcome(
           outcome: mappedOutcome,
           isFinalStatus,
           loading: !isFinalStatus,
-          totalAmount: amountAndFees
+          totalAmount: amountAndFees,
         });
 
         // if not final, schedule the next poll

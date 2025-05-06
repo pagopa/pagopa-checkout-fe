@@ -101,11 +101,13 @@ export default function PaymentResponsePage() {
   useEffect(() => {
     dispatch(resetThreshold());
 
-     // read outcome/amount pushed by backend during redirect
+    // read outcome/amount pushed by backend during redirect
     const storedOutcome = getSessionItem(SessionItems.outcome) as
       | ViewOutcomeEnum
       | undefined;
-    const storedAmount = getSessionItem(SessionItems.totalAmount) as number | undefined;
+    const storedAmount = getSessionItem(SessionItems.totalAmount) as
+      | number
+      | undefined;
 
     if (storedOutcome) {
       // analytics
@@ -118,7 +120,8 @@ export default function PaymentResponsePage() {
 
       // fill the amount text on success
       usefulPrintData.amount =
-        storedOutcome === ViewOutcomeEnum.SUCCESS && typeof storedAmount === "number"
+        storedOutcome === ViewOutcomeEnum.SUCCESS &&
+        typeof storedAmount === "number"
           ? moneyFormat(storedAmount)
           : "-";
 

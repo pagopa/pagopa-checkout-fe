@@ -204,6 +204,9 @@ const pollTransactionOutcomeV1 = (
               ) as PollingError
           ),
           E.chainW((decodedInfo) => {
+            const amount = Number(decodedInfo.totalAmount ?? 0);
+            const fees = Number(decodedInfo.fees ?? 0);
+            const amountAndFees = amount + fees;
             if (!decodedInfo.isFinalStatus) {
               return E.left(
                 new Error(
@@ -213,7 +216,7 @@ const pollTransactionOutcomeV1 = (
             }
             return E.right({
               outcome: decodedInfo.outcome,
-              totalAmount: decodedInfo.totalAmount,
+              totalAmount: amountAndFees,
             });
           })
         );
