@@ -20,44 +20,12 @@ import { constantPollingWithPromisePredicateFetch } from "../config/fetch";
 import { getUrlParameter } from "../regex/urlUtilities";
 import { getConfigOrThrow } from "../config/config";
 import { getSessionItem, SessionItems } from "../storage/sessionStorage";
-// import {
-//   EcommerceInterruptStatusCodeEnumType,
-//   EcommerceMaybeInterruptStatusCodeEnumType,
-//   NpgAuthorizationStatus,
-// } from "../transactions/TransactionResultUtil";
 import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
-// import { TransactionStatusEnum } from "../../../generated/definitions/payment-ecommerce/TransactionStatus";
-// import {
-//   TransactionInfo,
-//   TransactionInfoGatewayInfo,
-//   TransactionInfoNodeInfo,
-// } from "../../../generated/definitions/payment-ecommerce-v2/TransactionInfo";
 import {
   createClient as createClientV1,
   Client as EcommerceClientV1,
 } from "../../../generated/definitions/payment-ecommerce/client";
-// import {
-//   createClient,
-//   Client as EcommerceClient,
-// } from "../../../generated/definitions/payment-ecommerce-v2/client";
 import { TransactionOutcomeInfo } from "../../../generated/definitions/payment-ecommerce/TransactionOutcomeInfo";
-
-/** This function return true when polling on GET transaction must be interrupted */
-// const interruptTransactionPolling = (
-//   transactionStaus: TransactionInfo["status"],
-//   gatewayInfo?: TransactionInfoGatewayInfo,
-//   nodeInfo?: TransactionInfoNodeInfo
-// ) =>
-//   pipe(
-//     EcommerceInterruptStatusCodeEnumType.decode(transactionStaus),
-//     E.isRight
-//   ) ||
-//   nodeInfo?.closePaymentResultError?.statusCode?.toString().startsWith("4") ||
-//   (pipe(
-//     EcommerceMaybeInterruptStatusCodeEnumType.decode(transactionStaus),
-//     E.isRight
-//   ) &&
-//     gatewayInfo?.authorizationStatus !== NpgAuthorizationStatus.EXECUTED);
 
 const config = getConfigOrThrow();
 /**
@@ -78,31 +46,6 @@ export const decodeToUUID = (base64: string) => {
 };
 
 const counter = createCounter();
-
-// const ecommerceClientWithPolling: EcommerceClient = createClient({
-//   baseUrl: config.CHECKOUT_PAGOPA_APIM_HOST,
-//   fetchApi: constantPollingWithPromisePredicateFetch(
-//     DeferredPromise<boolean>().e1,
-//     retries,
-//     delay,
-//     timeout,
-//     async (r: Response): Promise<boolean> => {
-//       counter.increment();
-//       if (counter.getValue() === retries) {
-//         counter.reset();
-//         return false;
-//       }
-//       const { status, gatewayInfo, nodeInfo } = (await r
-//         .clone()
-//         .json()) as TransactionInfo;
-//       return !(
-//         r.status === 200 &&
-//         interruptTransactionPolling(status, gatewayInfo, nodeInfo)
-//       );
-//     }
-//   ),
-//   basePath: config.CHECKOUT_API_ECOMMERCE_BASEPATH_V2,
-// });
 
 const ecommerceClientWithPollingV1: EcommerceClientV1 = createClientV1({
   baseUrl: config.CHECKOUT_PAGOPA_APIM_HOST,
