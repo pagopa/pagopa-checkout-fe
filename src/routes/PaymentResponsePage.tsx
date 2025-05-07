@@ -9,6 +9,9 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import * as O from "fp-ts/Option";
 import { pipe } from "fp-ts/lib/function";
+import { checkLogout } from "../utils/api/helper";
+import { removeLoggedUser } from "../redux/slices/loggedUser";
+import { useTransactionOutcome } from "../utils/transactions/useTransactionOutcome";
 import { getConfigOrThrow } from "../utils/config/config";
 import SurveyLink from "../components/commons/SurveyLink";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
@@ -32,6 +35,7 @@ import { ViewOutcomeEnum } from "../utils/transactions/TransactionResultUtil";
 import { Cart } from "../features/payment/models/paymentModel";
 import { resetThreshold } from "../redux/slices/threshold";
 import FindOutMoreModal from "../components/modals/FindOutMoreModal";
+import { NewTransactionResponse } from "../../generated/definitions/payment-ecommerce-v2/NewTransactionResponse";
 
 type PrintData = {
   useremail: string;
@@ -58,6 +62,9 @@ export default function PaymentResponsePage() {
     redirectUrl: cart ? cart.returnUrls.returnOkUrl : "/",
     isCart: cart != null,
   });
+  const transactionData = getSessionItem(SessionItems.transaction) as
+    | NewTransactionResponse
+    | undefined;
   const email = getSessionItem(SessionItems.useremail) as string | undefined;
 
   const usefulPrintData: PrintData = {
@@ -97,9 +104,23 @@ export default function PaymentResponsePage() {
     window.removeEventListener("beforeunload", onBrowserUnload);
   };
 
+  const performCallsAndClearStorage = async () => {
+    // await callServices(handleFinalStatusResult);
+    useTransactionOutcome(
+      transactionData!.transactionId,
+      transactionData!.authToken!
+    );
+    await checkLogout(() => {
+      dispatch(removeLoggedUser());
+      clearSessionItem(SessionItems.authToken);
+    });
+    clearStorage();
+  };
+
   // called once on mount to read session
   useEffect(() => {
     dispatch(resetThreshold());
+    void performCallsAndClearStorage();
 
     // read outcome/amount pushed by backend during redirect
     const storedOutcome = getSessionItem(SessionItems.outcome) as
