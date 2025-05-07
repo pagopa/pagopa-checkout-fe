@@ -123,7 +123,7 @@ const ecommerceClientWithPollingV1: EcommerceClientV1 = createClientV1({
       return !(r.status === 200 && isFinalStatus);
     }
   ),
-  basePath: config.CHECKOUT_API_ECOMMERCE_BASEPATH_V2,
+  basePath: config.CHECKOUT_API_ECOMMERCE_BASEPATH,
 });
 
 export const callServices = async (
