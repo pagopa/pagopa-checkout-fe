@@ -29,20 +29,21 @@ import {
   SessionItems,
 } from "../utils/storage/sessionStorage";
 import {
-  getViewOutcomeFromEcommerceResultCode,
+  // getViewOutcomeFromEcommerceResultCode,
   ViewOutcomeEnum,
 } from "../utils/transactions/TransactionResultUtil";
 import { Cart } from "../features/payment/models/paymentModel";
 import { NewTransactionResponse } from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { resetThreshold } from "../redux/slices/threshold";
 import { Bundle } from "../../generated/definitions/payment-ecommerce/Bundle";
-import { TransactionStatusEnum } from "../../generated/definitions/payment-ecommerce/TransactionStatus";
-import {
-  TransactionInfoGatewayInfo,
-  TransactionInfoNodeInfo,
-} from "../../generated/definitions/payment-ecommerce-v2/TransactionInfo";
+// import { TransactionStatusEnum } from "../../generated/definitions/payment-ecommerce/TransactionStatus";
+// import {
+//   TransactionInfoGatewayInfo,
+//   TransactionInfoNodeInfo,
+// } from "../../generated/definitions/payment-ecommerce-v2/TransactionInfo";
 import { removeLoggedUser } from "../redux/slices/loggedUser";
 import { checkLogout } from "../utils/api/helper";
+import { TransactionOutcomeInfo } from "../../generated/definitions/payment-ecommerce/TransactionOutcomeInfo";
 import FindOutMoreModal from "./../components/modals/FindOutMoreModal";
 
 type PrintData = {
@@ -99,19 +100,33 @@ export default function PaymentResponsePage() {
     );
   };
 
-  const handleFinalStatusResult = (
-    idStatus?: TransactionStatusEnum,
-    nodeInfo?: TransactionInfoNodeInfo,
-    gatewayInfo?: TransactionInfoGatewayInfo
-  ) => {
-    const outcome: ViewOutcomeEnum = getViewOutcomeFromEcommerceResultCode(
-      idStatus,
-      nodeInfo,
-      gatewayInfo
-    );
+  // const handleFinalStatusResult = (
+  //   idStatus?: TransactionStatusEnum,
+  //   nodeInfo?: TransactionInfoNodeInfo,
+  //   gatewayInfo?: TransactionInfoGatewayInfo
+  // ) => {
+  //   const outcome: ViewOutcomeEnum = getViewOutcomeFromEcommerceResultCode(
+  //     idStatus,
+  //     nodeInfo,
+  //     gatewayInfo
+  //   );
+  //   mixpanel.track(PAYMENT_OUTCOME_CODE.value, {
+  //     EVENT_ID: PAYMENT_OUTCOME_CODE.value,
+  //     idStatus,
+  //     outcome,
+  //   });
+
+  //   setOutcome(outcome);
+  //   showFinalResult(outcome);
+  // };
+
+  const handleOutcome = (transactionOutcomeInfo?: TransactionOutcomeInfo) => {
+    const outcome: ViewOutcomeEnum =
+      (transactionOutcomeInfo?.outcome.toString() as ViewOutcomeEnum) ||
+      ViewOutcomeEnum.GENERIC_ERROR;
+
     mixpanel.track(PAYMENT_OUTCOME_CODE.value, {
       EVENT_ID: PAYMENT_OUTCOME_CODE.value,
-      idStatus,
       outcome,
     });
 
@@ -139,7 +154,7 @@ export default function PaymentResponsePage() {
   };
 
   const performCallsAndClearStorage = async () => {
-    await callServices(handleFinalStatusResult);
+    await callServices(handleOutcome);
 
     await checkLogout(() => {
       dispatch(removeLoggedUser());
