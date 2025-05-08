@@ -26,10 +26,6 @@ import {
   cart,
 } from "./_model";
 
-/* ------------------------------------------------------------------ */
-/*                               MOCKS                                */
-/* ------------------------------------------------------------------ */
-
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
   Trans: ({
@@ -66,7 +62,6 @@ jest.mock("../../utils/api/helper", () => ({
   checkLogout: jest.fn(),
 }));
 
-// <-- NEW: mock the only API the component now calls
 jest.mock("../../utils/api/response", () => ({
   callServices: jest.fn(),
 }));
@@ -79,10 +74,6 @@ jest.mock("../../utils/config/config", () => ({
   isDevEnv: jest.fn(() => false),
   isProdEnv: jest.fn(() => true),
 }));
-
-/* ------------------------------------------------------------------ */
-/*                        SESSION-STORAGE STUBS                        */
-/* ------------------------------------------------------------------ */
 
 const mockGetSessionItemNoCart = (item: SessionItems) => {
   switch (item) {
@@ -130,10 +121,6 @@ const mockGetSessionItemWithCart = (item: SessionItems) => {
   }
 };
 
-/* ------------------------------------------------------------------ */
-/*                           TEST SUITES                               */
-/* ------------------------------------------------------------------ */
-
 const navigate = jest.fn();
 
 describe("PaymentResponsePage — no cart", () => {
@@ -159,7 +146,6 @@ describe("PaymentResponsePage — no cart", () => {
     "117",
     "121",
   ])("renders outcome %s and returns home", async (val) => {
-    /* ---------- prepare the API mock ----------------------------- */
     const transactionOutcomeInfo = {
       outcome: Number(val),
       isFinalStatus: true,
@@ -171,7 +157,6 @@ describe("PaymentResponsePage — no cart", () => {
       return Promise.resolve();
     });
 
-    /* ---------- render ------------------------------------------- */
     renderWithReduxProvider(
       <MemoryRouter>
         <PaymentResponsePage />
