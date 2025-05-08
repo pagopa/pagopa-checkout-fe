@@ -26,6 +26,7 @@ import { Cart } from "../features/payment/models/paymentModel";
 import { NewTransactionResponse } from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { resetThreshold } from "../redux/slices/threshold";
 import { Bundle } from "../../generated/definitions/payment-ecommerce/Bundle";
+import { TransactionOutcomeInfo } from "../../generated/definitions/payment-ecommerce/TransactionOutcomeInfo";
 import { ROUTE_FRAGMENT } from "./models/routeModel";
 
 type PrintData = {
@@ -38,13 +39,17 @@ type CartInformation = {
   isCart: boolean;
 };
 
+// eslint-disable-next-line sonarjs/cognitive-complexity
 export default function PaymentResponsePageV2() {
   const navigate = useNavigate();
-  const outcome = getFragmentParameter(
-    window.location.href,
-    ROUTE_FRAGMENT.OUTCOME,
-    false
-  ) as ViewOutcomeEnum;
+
+  const transactionOutcomeInfo = getSessionItem(SessionItems.transaction) as
+    | TransactionOutcomeInfo
+    | undefined;
+
+  const outcome = (transactionOutcomeInfo?.outcome?.toString() ??
+    getFragmentParameter(window.location.href, ROUTE_FRAGMENT.OUTCOME, false) ?? // fallback
+    ViewOutcomeEnum.GENERIC_ERROR) as ViewOutcomeEnum;
 
   const conf = getConfigOrThrow();
 
@@ -76,11 +81,31 @@ export default function PaymentResponsePageV2() {
 
   const email = getSessionItem(SessionItems.useremail) as string | undefined;
 
-  const totalAmount =
-    Number(
-      // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-      transactionData?.payments.reduce((sum, { amount }) => sum + amount, 0)
-    ) + Number(pspSelected?.taxPayerFee);
+  const calculateTotalAmount = (): number => {
+    if (
+      transactionOutcomeInfo &&
+      (transactionOutcomeInfo.totalAmount !== undefined ||
+        transactionOutcomeInfo.fees !== undefined)
+    ) {
+      const baseAmount = Number(transactionOutcomeInfo.totalAmount ?? 0);
+      const feesAmount = Number(transactionOutcomeInfo.fees ?? 0);
+      return baseAmount + feesAmount;
+    }
+
+    // fallback if transactionOutcomeInfo is not present
+    if (transactionData) {
+      return (
+        Number(
+          // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+          transactionData.payments.reduce((sum, { amount }) => sum + amount, 0)
+        ) + Number(pspSelected?.taxPayerFee)
+      );
+    }
+
+    return 0;
+  };
+
+  const totalAmount = calculateTotalAmount();
 
   const usefulPrintData: PrintData = {
     useremail: email || "",
