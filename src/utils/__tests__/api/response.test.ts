@@ -108,3 +108,31 @@ describe("callServices", () => {
     expect(mockHandleOutcome).toHaveBeenCalledTimes(1);
   });
 });
+
+describe("response.ts polling predicate", () => {
+  const mkRes = (status: number, isFinal: boolean) =>
+    ({
+      status,
+      clone() {
+        return this;
+      },
+      json: async () => ({ isFinalStatus: isFinal }),
+    } as unknown as Response);
+
+  const getFreshPredicate = async () => {
+    jest.resetModules();
+    await import("../../api/response");
+    const {
+      constantPollingWithPromisePredicateFetch,
+      /* eslint-disable-next-line @typescript-eslint/no-var-requires */
+    } = require("../../config/fetch");
+    return constantPollingWithPromisePredicateFetch.mock.calls[0][4] as (
+      r: Response
+    ) => Promise<boolean>;
+  };
+
+  it("should return false immediately when status===200 and isFinalStatus is true", async () => {
+    const predicate = await getFreshPredicate();
+    await expect(predicate(mkRes(200, true))).resolves.toBe(false);
+  });
+});
