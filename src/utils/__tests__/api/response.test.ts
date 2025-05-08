@@ -1,6 +1,6 @@
 jest.mock("../../config/fetch", () => ({
-  retryingFetch: jest.fn((_) => jest.fn()),
-  constantPollingWithPromisePredicateFetch: jest.fn((_) => jest.fn()),
+  retryingFetch: jest.fn(() => jest.fn()),
+  constantPollingWithPromisePredicateFetch: jest.fn(() => jest.fn()),
 }));
 
 jest.mock("../../config/config", () => ({
@@ -13,108 +13,115 @@ jest.mock("../../config/config", () => ({
     CHECKOUT_API_FEATURE_FLAGS_BASEPATH: "/feature-flags",
     CHECKOUT_API_AUTH_SERVICE_BASEPATH_V1: "/auth-service",
     CHECKOUT_API_TIMEOUT: 5000,
+    CHECKOUT_API_RETRY_NUMBERS: 3,
+    CHECKOUT_API_RETRY_DELAY: 250,
   })),
 }));
-
-import * as TE from "fp-ts/TaskEither";
-import * as O from "fp-ts/Option";
-import { callServices } from "../../api/response";
-import { getSessionItem } from "../../storage/sessionStorage";
-import { mixpanel } from "../../config/mixpanelHelperInit";
-import { ecommerceTransaction } from "../../transactions/transactionHelper";
-import { getUrlParameter } from "../../regex/urlUtilities";
-import { TransactionStatusEnum } from "../../../../generated/definitions/payment-ecommerce/TransactionStatus";
 
 jest.mock("../../storage/sessionStorage");
 jest.mock("../../config/mixpanelHelperInit");
 jest.mock("../../transactions/transactionHelper");
 jest.mock("../../regex/urlUtilities");
 
+import * as TE from "fp-ts/TaskEither";
+import { callServices } from "../../api/response";
+import { getSessionItem } from "../../storage/sessionStorage";
+import { mixpanel } from "../../config/mixpanelHelperInit";
+import { ecommerceTransactionOutcome } from "../../transactions/transactionHelper";
+import { getUrlParameter } from "../../regex/urlUtilities";
+import { TransactionStatusEnum } from "../../../../generated/definitions/payment-ecommerce/TransactionStatus";
+
+const SOME_TRANSACTION = {
+  transactionId: "test-id",
+  authToken: "test-token",
+};
+
 describe("callServices", () => {
-  const mockHandleFinalStatusResult = jest.fn();
+  const mockHandleOutcome = jest.fn();
 
   beforeEach(() => {
     jest.resetModules();
     jest.clearAllMocks();
   });
 
-  it("should handle missing transaction id and track mixpanel error event", async () => {
-    (getSessionItem as jest.Mock).mockReturnValue(O.none);
+  it("should handle missing transaction id and track mixpanel error", async () => {
+    (getSessionItem as jest.Mock).mockReturnValue(undefined);
     (getUrlParameter as jest.Mock).mockReturnValue("");
-    (ecommerceTransaction as jest.Mock).mockReturnValue(
+    (ecommerceTransactionOutcome as jest.Mock).mockReturnValue(
       TE.left(new Error("Invalid transaction ID"))
     );
 
-    await callServices(mockHandleFinalStatusResult);
+    await callServices(mockHandleOutcome);
 
     expect(mixpanel.track).toHaveBeenCalledWith(
       expect.stringContaining("THREEDSMETHODURL_STEP1_RESP_ERR"),
       expect.any(Object)
     );
-    expect(mockHandleFinalStatusResult).toBeCalledTimes(1);
+    expect(mockHandleOutcome).toHaveBeenCalledTimes(1);
+    expect(mockHandleOutcome).toHaveBeenCalledWith();
   });
 
-  it("should handle a valid transaction and call final status result handler", async () => {
-    const mockTransaction = {
-      transactionId: "test-id",
-      authToken: "test-token",
-    };
-    (getSessionItem as jest.Mock).mockReturnValue(O.some(mockTransaction));
+  it("should process a successful transaction and forward data", async () => {
+    (getSessionItem as jest.Mock).mockReturnValue(SOME_TRANSACTION);
     (getUrlParameter as jest.Mock).mockReturnValue("encoded-id");
-    (ecommerceTransaction as jest.Mock).mockReturnValue(
+    (ecommerceTransactionOutcome as jest.Mock).mockReturnValue(
       TE.right({
         status: TransactionStatusEnum.NOTIFIED_OK,
+        isFinalStatus: true,
+        totalAmount: 1_000,
+        fees: 100,
         nodeInfo: { someData: "node" },
         gatewayInfo: { someData: "gateway" },
       })
     );
 
-    await callServices(mockHandleFinalStatusResult);
+    await callServices(mockHandleOutcome);
 
     expect(mixpanel.track).toHaveBeenCalledWith(
       expect.stringContaining("THREEDSACSCHALLENGEURL_STEP2_SUCCESS"),
       expect.any(Object)
     );
-    expect(mockHandleFinalStatusResult).toHaveBeenCalledWith(
-      TransactionStatusEnum.NOTIFIED_OK,
-      { someData: "node" },
-      { someData: "gateway" }
-    );
+    expect(mockHandleOutcome).toHaveBeenCalledWith({
+      status: TransactionStatusEnum.NOTIFIED_OK,
+      isFinalStatus: true,
+      totalAmount: 1_000,
+      fees: 100,
+      nodeInfo: { someData: "node" },
+      gatewayInfo: { someData: "gateway" },
+    });
   });
 
-  it("should handle transaction failure and not call final status result handler", async () => {
-    const mockTransaction = {
-      transactionId: "test-id",
-      authToken: "test-token",
-    };
-    (getSessionItem as jest.Mock).mockReturnValue(O.some(mockTransaction));
+  it("should handle a transaction failure and still call outcome once", async () => {
+    (getSessionItem as jest.Mock).mockReturnValue(SOME_TRANSACTION);
     (getUrlParameter as jest.Mock).mockReturnValue("encoded-id");
-    (ecommerceTransaction as jest.Mock).mockReturnValue(
+    (ecommerceTransactionOutcome as jest.Mock).mockReturnValue(
       TE.left(new Error("Transaction failed"))
     );
 
-    await callServices(mockHandleFinalStatusResult);
+    await callServices(mockHandleOutcome);
 
-    expect(mockHandleFinalStatusResult).toBeCalledTimes(1);
+    expect(mixpanel.track).toHaveBeenCalledTimes(1);
+    expect(mixpanel.track).toHaveBeenCalledWith(
+      expect.stringContaining("THREEDSACSCHALLENGEURL_STEP2_RESP_ERR"),
+      expect.any(Object)
+    );
+    expect(mockHandleOutcome).toHaveBeenCalledTimes(1);
+    expect(mockHandleOutcome).toHaveBeenCalledWith();
   });
 
-  it("should handle transaction with missing authorization status", async () => {
-    const mockTransaction = {
-      transactionId: "test-id",
-      authToken: "test-token",
-    };
-    (getSessionItem as jest.Mock).mockReturnValue(O.some(mockTransaction));
+  it("should handle malformed success payload gracefully", async () => {
+    (getSessionItem as jest.Mock).mockReturnValue(SOME_TRANSACTION);
     (getUrlParameter as jest.Mock).mockReturnValue("encoded-id");
-    (ecommerceTransaction as jest.Mock).mockReturnValue(
+    (ecommerceTransactionOutcome as jest.Mock).mockReturnValue(
       TE.right({
-        status: TransactionStatusEnum.NOTIFIED_OK,
-        nodeInfo: { someData: "node" },
-        gatewayInfo: { authorizationStatus: undefined },
+        isFinalStatus: true,
+        totalAmount: 500,
+        fees: 0,
       })
     );
 
-    await callServices(mockHandleFinalStatusResult);
+    await callServices(mockHandleOutcome);
 
-    expect(mockHandleFinalStatusResult).toBeCalledTimes(1);
+    expect(mockHandleOutcome).toHaveBeenCalledTimes(1);
   });
 });
