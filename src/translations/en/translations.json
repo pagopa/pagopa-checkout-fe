@@ -321,7 +321,7 @@
     "disclaimer": {
       "cheaper": "Suggested because least expensive",
       "yourCard": "Suggested because you are already a customer",
-      "psp":"By proceeding, you accept the <a href='{{terminiLink}}' target='_blank' rel='noopener noreferrer'>Terms and Conditions of Use</a> and declare that you have read the <a href='{{privacyLink}}' target='_blank' rel='noopener noreferrer'>Privacy Policy</a> of <b>{{pspNome}}</b>"
+      "psp":"By continuing, you accept the <a href='{{terminiLink}}' target='_blank' rel='noopener noreferrer'>Terms and Conditions of Use</a> and confirm that you have read the <a href='{{privacyLink}}' target='_blank' rel='noopener noreferrer'>Privacy Policy</a> of <b>{{pspNome}}</b>"
     },
     "drawer": {
       "body": "This list contains all the operators compatible with your method, even if you are not their customer.",

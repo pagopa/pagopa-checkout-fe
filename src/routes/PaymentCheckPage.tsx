@@ -58,8 +58,8 @@ import { CalculateFeeResponse } from "../../generated/definitions/payment-ecomme
 import { SessionPaymentMethodResponse } from "../../generated/definitions/payment-ecommerce/SessionPaymentMethodResponse";
 import { ImageComponent } from "../features/payment/components/PaymentChoice/PaymentMethodImage";
 import { removeLoggedUser } from "../redux/slices/loggedUser";
+import PspPrivacyInfo from "../components/PrivacyPolicy/PspPrivacyInfo";
 import { CheckoutRoutes } from "./models/routeModel";
-import DisclaimerField from "../components/TextFormField/DisclaimerField";
 
 const defaultStyle = {
   display: "flex",
@@ -395,11 +395,12 @@ export default function PaymentCheckPage() {
         itemSx={{ pl: 2, pr: 0, gap: 2 }}
         variant="body2"
       />
-      
-      <DisclaimerField 
+
+      <PspPrivacyInfo
         terminiLink=""
         privacyLink=""
-        pspNome={pspSelected?.pspBusinessName}/>
+        pspNome={pspSelected?.pspBusinessName}
+      />
 
       <FormButtons
         loadingSubmit={payLoading}
@@ -416,8 +417,6 @@ export default function PaymentCheckPage() {
         idCancel="paymentCheckPageButtonCancel"
       />
 
-      
-    
       <InformationModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
@@ -459,64 +458,60 @@ export default function PaymentCheckPage() {
         loading={pspEditLoading}
         onSelect={updatePSP}
       />
-      {
-    !!error && (
-      <ErrorModal
-        error={error}
-        open={errorModalOpen}
-        titleId="idTitleErrorModalPaymentCheckPage"
-        onClose={() => {
-          setErrorModalOpen(false);
-          if (userCancelRedirect) {
-            navigate(errorKOPage);
-          }
-        }}
-      />
-    )
-  }
-  {
-    !!pspNotFoundModal && (
-      <InformationModal
-        open={pspNotFoundModal}
-        onClose={() => {
-          setPspNotFoundModalOpen(false);
-          navigate(`/${CheckoutRoutes.SCEGLI_METODO}`, { replace: true });
-        }}
-        maxWidth="sm"
-        hideIcon={true}
-      >
-        <Typography
-          variant="h6"
-          component={"div"}
-          sx={{ pb: 2 }}
-          id="pspNotFoundTitleId"
+      {!!error && (
+        <ErrorModal
+          error={error}
+          open={errorModalOpen}
+          titleId="idTitleErrorModalPaymentCheckPage"
+          onClose={() => {
+            setErrorModalOpen(false);
+            if (userCancelRedirect) {
+              navigate(errorKOPage);
+            }
+          }}
+        />
+      )}
+      {!!pspNotFoundModal && (
+        <InformationModal
+          open={pspNotFoundModal}
+          onClose={() => {
+            setPspNotFoundModalOpen(false);
+            navigate(`/${CheckoutRoutes.SCEGLI_METODO}`, { replace: true });
+          }}
+          maxWidth="sm"
+          hideIcon={true}
         >
-          {t("pspUnavailable.title")}
-        </Typography>
-        <Typography
-          variant="body1"
-          component={"div"}
-          sx={{ whiteSpace: "pre-line" }}
-          id="pspNotFoundBodyId"
-        >
-          {t("pspUnavailable.body")}
-        </Typography>
-        <Box display="flex" justifyContent="flex-end" sx={{ mt: 3 }}>
-          <Button
-            variant="contained"
-            onClick={() => {
-              setPspNotFoundModalOpen(false);
-              navigate(`/${CheckoutRoutes.SCEGLI_METODO}`, { replace: true });
-            }}
-            id="pspNotFoundCtaId"
+          <Typography
+            variant="h6"
+            component={"div"}
+            sx={{ pb: 2 }}
+            id="pspNotFoundTitleId"
           >
-            {t("pspUnavailable.cta.primary")}
-          </Button>
-        </Box>
-      </InformationModal>
-    )
-  }
-    </PageContainer >
+            {t("pspUnavailable.title")}
+          </Typography>
+          <Typography
+            variant="body1"
+            component={"div"}
+            sx={{ whiteSpace: "pre-line" }}
+            id="pspNotFoundBodyId"
+          >
+            {t("pspUnavailable.body")}
+          </Typography>
+          <Box display="flex" justifyContent="flex-end" sx={{ mt: 3 }}>
+            <Button
+              variant="contained"
+              onClick={() => {
+                setPspNotFoundModalOpen(false);
+                navigate(`/${CheckoutRoutes.SCEGLI_METODO}`, { replace: true });
+              }}
+              id="pspNotFoundCtaId"
+            >
+              {t("pspUnavailable.cta.primary")}
+            </Button>
+          </Box>
+        </InformationModal>
+      )}
+    </PageContainer>
   );
 }
 
