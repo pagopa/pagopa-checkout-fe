@@ -175,7 +175,7 @@
     "title": "I dati dell'avviso non sono corretti"
   },
   "PAYMENT_DUPLICATED": {
-    "body": "Se hai pagato su questo sito, la ricevuta è stata inviata all'indirizzo email che hai indicato durante il pagamento.",
+    "body": "Se hai pagato su questo sito, la conferma è stata inviata all'indirizzo email che hai indicato durante il pagamento.",
     "title": "Questo avviso è stato già pagato!"
   },
   "PAYMENT_EXPIRED": {
@@ -232,7 +232,7 @@
   },
   "paymentResponsePage": {
     "0": {
-      "body": "Abbiamo inviato la ricevuta del pagamento a {{useremail}}",
+      "body": "Abbiamo inviato la conferma del pagamento a {{useremail}}",
       "title": "Hai pagato {{amount}}"
     },
     "1": {
