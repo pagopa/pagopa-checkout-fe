@@ -397,9 +397,9 @@ export default function PaymentCheckPage() {
       />
 
       <PspPrivacyInfo
-        terminiLink=""
-        privacyLink=""
-        pspNome={pspSelected?.pspBusinessName}
+        termsLink="https://www.pagopa.gov.it/it/prestatori-servizi-di-pagamento/elenco-PSP-attivi/"
+        privacyLink="https://www.pagopa.gov.it/it/prestatori-servizi-di-pagamento/elenco-PSP-attivi/"
+        pspName={pspSelected?.pspBusinessName}
       />
 
       <FormButtons

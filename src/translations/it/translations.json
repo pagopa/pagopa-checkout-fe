@@ -323,7 +323,7 @@
     "disclaimer": {
       "cheaper": "Suggerito perché il più economico",
       "yourCard": "Suggerito perché sei già cliente",
-      "psp":"Proseguendo accetti i <a href='{{terminiLink}}' target='_blank' rel='noopener noreferrer'>Termini e condizioni d'uso</a> e dichiari di aver letto l'<a href='{{privacyLink}}' target='_blank' rel='noopener noreferrer'>informativa Privacy</a> di <b>{{pspNome}}</b>"
+      "psp":"Proseguendo accetti i <a href='{{termsLink}}' target='_blank' rel='noopener noreferrer'>Termini e condizioni d'uso</a> e dichiari di aver letto l'<a href='{{privacyLink}}' target='_blank' rel='noopener noreferrer'>informativa Privacy</a> di <b>{{pspNome}}</b>"
     },
     "drawer": {
       "body": "In questa lista trovi tutti i gestori compatibili con il tuo metodo, anche se non sei loro cliente.",

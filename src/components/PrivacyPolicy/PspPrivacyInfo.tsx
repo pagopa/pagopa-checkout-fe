@@ -2,19 +2,19 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 interface PspPrivacyInfoProps {
-  terminiLink: string;
+  termsLink: string;
   privacyLink: string;
-  pspNome?: string;
+  pspName?: string;
 }
 
 const PspPrivacyInfo = (props: PspPrivacyInfoProps) => {
   const { t } = useTranslation();
-  const { terminiLink, privacyLink, pspNome } = props;
+  const { termsLink, privacyLink, pspName } = props;
 
   const message = t("paymentCheckPage.disclaimer.psp", {
-    terminiLink,
+    termsLink,
     privacyLink,
-    pspNome,
+    pspName,
   });
   return <p dangerouslySetInnerHTML={{ __html: message }} />;
 };
