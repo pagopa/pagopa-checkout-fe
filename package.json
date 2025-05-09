@@ -15,7 +15,7 @@
     "build": "rimraf .cache && rimraf dist && parcel build src/index.html && shx mkdir -p dist/assets && cp -R src/assets/creditcard dist/assets && cp -R src/assets/logos dist/assets && cp -R static/* dist/",
     "dev": "rimraf .cache && rimraf dist && npm-run-all generate type-check dev:env dev:server",
     "proxy": "npm-run-all generate type-check dev:env dev:proxy",
-    "dev:env": "export $(grep -v '^#' .env.development | xargs) && chmod +x env.sh && ./env.sh",
+    "dev:env": "bash -c \"export $(grep -v '^#' .env.development | xargs) && chmod +x env.sh && ./env.sh\"",
     "dev:server": "parcel src/index.html &",
     "dev:proxy": "parcel src/index.html",
     "test": "jest --config=jest.config.js",
