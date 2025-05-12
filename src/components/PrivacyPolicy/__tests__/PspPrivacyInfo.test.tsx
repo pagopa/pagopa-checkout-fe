@@ -7,7 +7,7 @@ jest.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string, options?: any) => {
       if (key === "paymentCheckPage.disclaimer.psp") {
-        return `Proseguendo accetti i <a href='${options.termsLink}' target='_blank' rel='noopener noreferrer'>Termini e condizioni d'uso</a> e dichiari di aver letto l'<a href='${options.privacyLink}' target='_blank' rel='noopener noreferrer'>informativa Privacy</a> di <b>${options.pspNome}</b>`;
+        return `Proseguendo accetti i <a href='${options.termsLink}' target='_blank' rel='noopener noreferrer'>Termini e condizioni d'uso</a> e dichiari di aver letto l'<a href='${options.privacyLink}' target='_blank' rel='noopener noreferrer'>informativa Privacy</a> di <b>${options.pspName}</b>`;
       }
       return key;
     },

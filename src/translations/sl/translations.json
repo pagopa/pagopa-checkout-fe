@@ -321,7 +321,7 @@
     "disclaimer": {
       "cheaper": "Priporočeno, ker je najcenejše",
       "yourCard": "Priporočeno, ker ste že stranka",
-      "psp":"Z nadaljevanjem sprejemate <a href='{{termsLink}}' target='_blank' rel='noopener noreferrer'>Pogoje uporabe</a> in potrjujete, da ste prebrali <a href='{{privacyLink}}' target='_blank' rel='noopener noreferrer'>Politiko zasebnosti družbe</a> <b>{{pspNome}}</b>"
+      "psp":"Z nadaljevanjem sprejemate <a href='{{termsLink}}' target='_blank' rel='noopener noreferrer'>Pogoje uporabe</a> in potrjujete, da ste prebrali <a href='{{privacyLink}}' target='_blank' rel='noopener noreferrer'>Politiko zasebnosti družbe</a> <b>{{pspName}}</b>"
 
     },
     "drawer": {
