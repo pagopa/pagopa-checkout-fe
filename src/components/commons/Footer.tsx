@@ -5,10 +5,12 @@ import { useLocation } from "react-router-dom";
 import pagopaLogo from "../../assets/images/logo-pagopa-spa.svg";
 import LanguageFooterMenu from "../LanguageMenu/LanguageNativeSelect";
 import lang, { langSelectVisibleOnPages } from "../../translations/lang";
+// import { ThemeSwitch } from "./../../components/themeContextProvider/themeSwitch";
 
 export default function Footer(props: { fixedPages: Array<string> }) {
   const { t } = useTranslation();
   const theme = useTheme();
+  const isDarkMode = theme.palette.mode !== "light";
   const location = useLocation();
   const path = location.pathname.split("/").slice(-1)[0];
   const isFixed = () => props.fixedPages.includes(path);
@@ -31,8 +33,10 @@ export default function Footer(props: { fixedPages: Array<string> }) {
         sm: 0,
       }}
       bgcolor={{
-        ...(isFixed() ? { xs: "#f2f2f2" } : { xs: "background.default" }),
-        sm: "#f2f2f2",
+        ...(isFixed()
+          ? { xs: isDarkMode ? "#424242" : "#f2f2f2" }
+          : { xs: "background.default" }),
+        sm: isDarkMode ? "#424242" : "#f2f2f2",
       }}
     >
       <Typography variant="caption" component={"div"}>
@@ -103,6 +107,8 @@ export default function Footer(props: { fixedPages: Array<string> }) {
           )}
         </Box>
       </Typography>
+      {/* <Box display={"flex"} gap="3em" alignItems={"center"}>
+        <ThemeSwitch /> */}
       <Link
         href="https://www.pagopa.it/it/"
         target="_blank"
@@ -117,6 +123,7 @@ export default function Footer(props: { fixedPages: Array<string> }) {
           aria-hidden="true"
         />
       </Link>
+      {/* </Box> */}
     </Box>
   );
 }
