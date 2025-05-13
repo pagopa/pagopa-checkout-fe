@@ -1,4 +1,4 @@
-# IO Pay Portal - frontend
+# checkout pagoPA
 
 The repository contains the code implementing IO Pay Portal frontend.
 
