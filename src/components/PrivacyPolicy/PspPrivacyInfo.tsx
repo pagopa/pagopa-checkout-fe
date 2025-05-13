@@ -1,5 +1,24 @@
 import React from "react";
-import { useTranslation } from "react-i18next";
+import { Link, Typography } from "@mui/material";
+import { Trans } from "react-i18next";
+
+const PrivacyLink = (props: {
+  href: string;
+  children?: string;
+  rel?: string;
+}) => {
+  const { href, children, rel = "noreferrer" } = props;
+  return (
+    <Link
+      href={href}
+      target="_blank"
+      rel={rel}
+      style={{ fontWeight: 600, textDecoration: "none" }}
+    >
+      {children}
+    </Link>
+  );
+};
 
 interface PspPrivacyInfoProps {
   termsLink: string;
@@ -8,15 +27,22 @@ interface PspPrivacyInfoProps {
 }
 
 const PspPrivacyInfo = (props: PspPrivacyInfoProps) => {
-  const { t } = useTranslation();
+
   const { termsLink, privacyLink, pspName } = props;
 
-  const message = t("paymentCheckPage.disclaimer.psp", {
-    termsLink,
-    privacyLink,
-    pspName,
-  });
-  return <p dangerouslySetInnerHTML={{ __html: message }} />;
+  return <Typography variant="caption" component={"div"}>
+    <Trans
+      i18nKey="paymentCheckPage.disclaimer.psp"
+      values={{ pspName }}     
+      components={{
+        privacy: (
+          <PrivacyLink href={privacyLink} />
+        ),
+        terms: (<PrivacyLink href={termsLink} />),
+        psp: <b />
+      }}
+    />
+  </Typography>
 };
 
 export default PspPrivacyInfo;

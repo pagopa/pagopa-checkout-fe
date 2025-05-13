@@ -321,7 +321,7 @@
     "disclaimer": {
       "cheaper": "Vorgeschlagen, weil kostengünstigste Möglichkeit",
       "yourCard": "Vorgeschlagen, weil du bereits Kunde bist",
-      "psp":"Mit dem Fortfahren akzeptieren <a href='{{termsLink}}' target='_blank' rel='noopener noreferrer'>Sie die Nutzungsbedingungen und bestätigen,</a> die <a href='{{privacyLink}}' target='_blank' rel='noopener noreferrer'>Datenschutzerklärung</a> von <b>{{pspName}} gelesen zu haben.</b>"
+      "psp":"Mit dem Fortfahren akzeptieren <terms>Sie die Nutzungsbedingungen und bestätigen</terms> die <privacy>Datenschutzerklärung</> von <psp>{{pspName}}</psp> gelesen zu haben."
     },
     "drawer": {
       "body": "Hier sind alle mit deiner Methode kompatiblen Anbieter aufgelistet, auch wenn du nicht Kunde bei ihnen bist.",
