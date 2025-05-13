@@ -1,11 +1,12 @@
-import { Box, Button, Typography } from "@mui/material";
+import {Alert, AlertTitle, Box, Button, Typography } from "@mui/material";
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useNavigate } from "react-router-dom";
 import { pipe } from "fp-ts/lib/function";
 import * as O from "fp-ts/Option";
 import { useTranslation } from "react-i18next";
-import { ButtonNaked } from "@pagopa/mui-italia";
+import { ButtonNaked} from "@pagopa/mui-italia";
 import { PspOrderingModel, sortBy } from "../utils/SortUtil";
 import { PaymentPspListSortingDrawer } from "../features/payment/components/PaymentPspList/PaymentPspListSortingDrawer";
 import { PaymentPSPListGrid } from "../features/payment/components/PaymentPspList/PaymentPspListGrid";
@@ -53,6 +54,8 @@ export default function PaymentPspListPage() {
   const [pspSelected, setPspSelected] = React.useState<Bundle | undefined>(
     getSessionItem(SessionItems.pspSelected) as Bundle | undefined
   );
+
+  const [showAlert, setShowAlert] = React.useState(true);
 
   const updatePspSorting = (sortingModel: PspOrderingModel | null) => {
     if (sortingModel === null) {
@@ -146,6 +149,31 @@ export default function PaymentPspListPage() {
   return (
     <>
       {paymentMethod && loading && <CheckoutLoader />}
+      {paymentMethod?.paymentTypeCode == "MYBK" && showAlert &&
+        (<Box borderLeft={5} borderColor={"#6bcffb"} borderRadius={1} boxShadow={"0.8px 0.8px 3px #d8dee4"}>
+          <Alert
+            icon={<InfoOutlinedIcon 
+            sx={{ mt:1.5, fontSize: 22}}/>}
+            action={
+              <Button 
+                size="small"  
+                onClick={() => {setShowAlert(false);}}
+                sx={{ fontWeight: 600, mt:1, fontSize: 18 }}>
+                  Chiudi
+              </Button>}
+            severity="info"
+            variant="standard"
+            sx={{backgroundColor: "white"}}
+          >
+            <React.Fragment key=".0">
+              <AlertTitle 
+              sx={{ fontWeight: 700, fontSize: '0.95rem' }}>
+                Non trovi la tua banca?
+              </AlertTitle>
+                Non preoccuparti: dovrai selezionarla nei passaggi successibi.
+            </React.Fragment>
+          </Alert>
+        </Box>)}
       <PageContainer
         title="paymentPspListPage.title"
         description="paymentPspListPage.description"
