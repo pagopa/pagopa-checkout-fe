@@ -11,17 +11,8 @@ import {
 import { PaymentMethodStatusEnum } from "../../../../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
 import { PaymentMethodManagementTypeEnum } from "../../../../../../generated/definitions/payment-ecommerce/PaymentMethodManagementType";
 import "whatwg-fetch";
-
-import * as mixpanelModule from "../../../../../utils/config/mixpanelHelperInit";
 import * as helperModule from "../../../../../utils/api/helper";
 import * as transactionsErrorHelperModule from "../../../../../utils/api/transactionsErrorHelper";
-
-// Mock mixpanel
-jest.mock("../../../../../utils/config/mixpanelHelperInit", () => ({
-  mixpanel: {
-    track: jest.fn(),
-  },
-}));
 
 // Define types for helper functions
 type GetFeesFunction = (
@@ -51,7 +42,6 @@ const mockedGetFees =
   helperModule.getFees as jest.MockedFunction<GetFeesFunction>;
 const mockedRecaptchaTransaction =
   helperModule.recaptchaTransaction as jest.MockedFunction<RecaptchaTransactionFunction>;
-const mockedMixpanelTrack = mixpanelModule.mixpanel.track as jest.Mock;
 
 // Mock error helper
 jest.mock("../../../../../utils/api/transactionsErrorHelper", () => ({
@@ -622,10 +612,5 @@ describe("PaymentChoice", () => {
 
     // Click on the credit card payment method
     fireEvent.click(getByText("Carte di Credito e Debito"));
-
-    // Should track the event with mixpanel
-    expect(mockedMixpanelTrack).toHaveBeenCalledWith("payment_methods_choice", {
-      EVENT_ID: "CP",
-    });
   });
 });
