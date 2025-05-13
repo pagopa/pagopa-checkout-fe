@@ -328,7 +328,9 @@ describe("PaymentPspListPage", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("paymentPspListPage.myBankAlertBody")).toBeInTheDocument();
+      expect(
+        screen.getByText("paymentPspListPage.myBankAlertBody")
+      ).toBeInTheDocument();
     });
   });
 });
