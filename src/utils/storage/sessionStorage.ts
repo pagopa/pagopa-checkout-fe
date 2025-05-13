@@ -21,6 +21,7 @@ export enum SessionItems {
   noticeInfo = "rptId",
   useremail = "useremail",
   enableAuthentication = "enableAuthentication",
+  enablePspPage = "enablePspPage",
   paymentMethod = "paymentMethod",
   pspSelected = "pspSelected",
   sessionToken = "sessionToken",
@@ -130,6 +131,33 @@ export const clearStorageAndMaintainAuthData = () => {
     setSessionItem(SessionItems.enableAuthentication, enableAuthentication);
   }
 };
+
+export const getRptIdsFromSession = () =>
+  pipe(
+    // use cart if present
+    getSessionItem(SessionItems.cart) as Cart,
+    O.fromNullable,
+    O.fold(
+      // use rptId value if cart not present
+      () =>
+        pipe(
+          getSessionItem(SessionItems.noticeInfo) as PaymentFormFields,
+          O.fromNullable,
+          O.map((noticeInfo) => `${noticeInfo?.cf}${noticeInfo?.billCode}`)
+        ),
+      (cart) =>
+        pipe(
+          cart.paymentNotices,
+          O.fromNullable,
+          O.map((paymentNotices) =>
+            paymentNotices
+              .map((notice) => `${notice.fiscalCode}${notice.noticeNumber}`)
+              .join(",")
+          )
+        )
+    ),
+    O.getOrElse(() => "")
+  );
 
 export function getReCaptchaKey() {
   return getConfigOrThrow().CHECKOUT_RECAPTCHA_SITE_KEY;

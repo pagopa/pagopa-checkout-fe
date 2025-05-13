@@ -12,10 +12,28 @@ import {
 import LoginHeader from "../LoginHeader";
 import "jest-location-mock";
 import { UserInfoResponse } from "../../../../generated/definitions/checkout-auth-service-v1/UserInfoResponse";
-import { renderWithReduxProvider } from "../../../utils/testRenderProviders";
+import { renderWithReduxProvider } from "../../../utils/testing/testRenderProviders";
 
 jest.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
+  useTranslation: () => ({
+    t: (key: string) => {
+      // Simple mock translation function
+      const translations: Record<string, string> = {
+        "mainPage.header.logout": "Esci",
+        "mainPage.footer.pagoPA": "PagoPA S.p.A.",
+        "ariaLabels.assistance": "Assistenza",
+      };
+      return translations[key] || key;
+    },
+  }),
+  Trans: ({
+    i18nKey,
+  }: {
+    i18nKey?: string;
+    values?: Record<string, any>;
+    components?: Array<any>;
+    children?: React.ReactNode;
+  }) => <span data-testid="mocked-trans">{i18nKey || "no-key"}</span>,
 }));
 
 jest.mock("react-google-recaptcha", () => ({
@@ -35,6 +53,7 @@ jest.mock("react-google-recaptcha", () => ({
 jest.mock("../../../utils/api/helper", () => ({
   proceedToLogin: jest.fn(),
   retrieveUserInfo: jest.fn(),
+  logoutUser: jest.fn(),
 }));
 
 jest.mock("../../../utils/storage/sessionStorage", () => ({
@@ -69,7 +88,7 @@ jest.mock("../../../utils/eventListeners", () => ({
 const getById = queryByAttribute.bind(null, "id");
 
 describe("LoginHeader", () => {
-  test("Renders loading header", () => {
+  it("Renders loading header", () => {
     renderWithReduxProvider(
       <MemoryRouter>
         <LoginHeader />
@@ -79,7 +98,7 @@ describe("LoginHeader", () => {
     expect(screen.getByTitle(/Accedi/i)).toBeInTheDocument();
   });
 
-  test("Call login api after button click", async () => {
+  it("Call login api after button click", async () => {
     const redirectUrl = "http://checkout-login/";
     (proceedToLogin as jest.Mock).mockImplementation(({ onResponse }) => {
       onResponse(redirectUrl);
@@ -98,7 +117,7 @@ describe("LoginHeader", () => {
     });
   });
 
-  test("Shows error modal if proceedToLogin fails", async () => {
+  it("Shows error modal if proceedToLogin fails", async () => {
     (proceedToLogin as jest.Mock).mockImplementation(({ onError }) => {
       onError("Error on get login");
     });
@@ -118,7 +137,7 @@ describe("LoginHeader", () => {
     });
   });
 
-  test("Shows name-surname of logged user", async () => {
+  it("Shows name-surname of logged user", async () => {
     const userInfo: UserInfoResponse = {
       familyName: "Rossi",
       name: "Mario",
@@ -140,37 +159,54 @@ describe("LoginHeader", () => {
     });
   });
 
-  test.skip("Logout user", async () => {
+  it("Logout user for transaction not activated yet", async () => {
     const userInfo: UserInfoResponse = {
       familyName: "Rossi",
       name: "Mario",
     };
-    (getSessionItem as jest.Mock).mockReturnValue(true);
+    (getSessionItem as jest.Mock).mockImplementation((item) => {
+      switch (item) {
+        case "authToken":
+          return "authToken";
+        case "transaction":
+          return undefined; // no transaction activated, transaction in session storage is null
+        default:
+          return undefined;
+      }
+    });
     (retrieveUserInfo as jest.Mock).mockImplementation(({ onResponse }) => {
       onResponse(userInfo);
     });
     (logoutUser as jest.Mock).mockImplementation(({ onResponse }) => {
       onResponse();
     });
-    renderWithReduxProvider(
+    const { baseElement } = renderWithReduxProvider(
       <MemoryRouter>
         <LoginHeader />
       </MemoryRouter>
     );
-    await waitFor(() => {
-      expect(retrieveUserInfo).toHaveBeenCalled();
-      expect(
-        screen.getByText(`${userInfo.name} ${userInfo.familyName}`)
-      ).toBeInTheDocument();
-      const userButton = screen.getByTitle(
-        `${userInfo.name} ${userInfo.familyName}`
-      );
-      expect(userButton).toBeInTheDocument();
-      fireEvent.click(userButton);
-      const logoutButton = screen.getByTitle(/Esci/i);
-      expect(logoutButton).toBeInTheDocument();
-      fireEvent.click(logoutButton);
-      expect(logoutUser).toHaveBeenCalled();
-    });
+    await new Promise((r) => setTimeout(r, 250));
+    expect(retrieveUserInfo).toHaveBeenCalled();
+    const userButton = screen.getByText(
+      `${userInfo.name} ${userInfo.familyName}`
+    );
+    expect(userButton).toBeVisible();
+    fireEvent.click(userButton);
+    const logoutButton = screen.getByTestId("LogoutIcon");
+    expect(logoutButton).toBeVisible();
+    fireEvent.click(logoutButton);
+    await new Promise((r) => setTimeout(r, 250));
+    expect(screen.getByText("userSession.logoutModal.title")).toBeVisible();
+    expect(screen.getByText("userSession.logoutModal.body")).toBeVisible();
+    const logoutConfirmButton = getById(
+      baseElement,
+      "logoutModalConfirmButton"
+    );
+    if (!logoutConfirmButton) {
+      throw Error("Cannot find logout confirm button");
+    }
+    expect(logoutConfirmButton).toBeVisible();
+    fireEvent.click(logoutConfirmButton);
+    expect(logoutUser).toHaveBeenCalled();
   });
 });

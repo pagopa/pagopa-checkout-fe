@@ -63,7 +63,7 @@ const delay: number = config.CHECKOUT_API_RETRY_DELAY;
 const timeout: Millisecond = config.CHECKOUT_API_TIMEOUT as Millisecond;
 
 const hexToUuid = require("hex-to-uuid");
-const decodeToUUID = (base64: string) => {
+export const decodeToUUID = (base64: string) => {
   const bytes = Buffer.from(base64, "base64");
   bytes[6] &= 0x0f;
   bytes[6] |= 0x40;

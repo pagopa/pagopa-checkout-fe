@@ -104,7 +104,12 @@ export default function IframeCardForm(props: Props) {
 
   const onSuccess = (belowThreshold: boolean) => {
     dispatch(setThreshold({ belowThreshold }));
-    navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
+
+    if (localStorage.getItem(SessionItems.enablePspPage) === "true") {
+      navigate(`/${CheckoutRoutes.LISTA_PSP}`);
+    } else {
+      navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
+    }
   };
 
   const onPspNotFound = () => {
@@ -280,6 +285,8 @@ export default function IframeCardForm(props: Props) {
           </Box>
         </Box>
         <FormButtons
+          idCancel="cancel"
+          idSubmit="submit"
           loadingSubmit={loading}
           type="submit"
           submitTitle="paymentNoticePage.formButtons.submit"

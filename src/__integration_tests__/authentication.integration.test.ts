@@ -3,7 +3,7 @@ import deTranslation from "../translations/de/translations.json";
 import enTranslation from "../translations/en/translations.json";
 import frTranslation from "../translations/fr/translations.json";
 import slTranslation from "../translations/sl/translations.json";
-import { cancelPaymentKO, cancelPaymentOK, checkErrorOnCardDataFormSubmit, clickLoginButton, fillAndSubmitCardDataForm, fillPaymentNotificationForm, getUserButton, payNotice, selectLanguage , tryLoginWithAuthCallbackError, choosePaymentMethod, verifyPaymentMethods } from "./utils/helpers";
+import { cancelPaymentKO, cancelPaymentOK, checkErrorOnCardDataFormSubmit, clickLoginButton, tryHandlePspPickerPage, fillAndSubmitCardDataForm, fillPaymentNotificationForm, getUserButton, payNotice, selectLanguage , tryLoginWithAuthCallbackError, choosePaymentMethod, verifyPaymentMethods } from "./utils/helpers";
 /**
  * Test input and configuration
  */
@@ -247,7 +247,6 @@ describe("Checkout authentication tests", () => {
 
     const currentUrl = await page.evaluate(() => location.href);
 
-
     expect(first504Response).toBe(true);
     expect(tokenCalls).toBe(2);
     expect(currentUrl).toBe(BASE_CALLBACK_URL_PAYMENT_DATA);
@@ -486,6 +485,120 @@ describe("Checkout authentication tests", () => {
     expect(authCallbackError.title).toContain(translation.authCallbackPage.title);
     expect(authCallbackError.body).toContain(translation.authCallbackPage.body);
   });
+
+  it("Should invoke auth-service api with x-rpt-id header", async () => {
+    let expectedCount = 4; // login - authToken - getUser - logout
+    let apiContainsXRptIdCount = 0;
+    
+    page.on("request", async (request) => {
+      const url = request.url();
+      if (url.includes("auth-service/v1")) {
+        const headers = await request.headers();
+        if(headers['x-rpt-id'] != null)
+          apiContainsXRptIdCount ++
+      }
+    });
+
+    //Insert valid rptId
+    await fillPaymentNotificationForm(VALID_RPTID, VALID_FISCAL_CODE);
+    await page.waitForNavigation();
+
+    //Login
+    await clickLoginButton();
+
+    //Wait auth-callback page
+    await page.waitForNavigation();
+    //Wait return to main page
+    await page.waitForNavigation();
+    console.log("Login completed");
+
+    //Logout
+    const userButton = await getUserButton();
+    await userButton.click();
+    const logoutIconButton = await page.waitForSelector('[data-testid="LogoutIcon"]');
+    const logoutButton = await logoutIconButton.getProperty('parentNode');
+    console.log("wait for logout button");
+    await logoutButton.click();
+    const confirmButton = await page.waitForSelector("#logoutModalConfirmButton");
+    await confirmButton.click();
+    await new Promise((r) => setTimeout(r, 500));
+    console.log("Logout completed");
+        
+    expect(apiContainsXRptIdCount).toBe(expectedCount);
+  });
+
+  it("Should invoke auth-service api without x-rpt-id if not present", async () => {
+    let expectedCount = 4; // login - authToken - getUser - logout
+    let apiNotContainsXRptIdCount = 0;
+    
+    page.on("request", async (request) => {
+      const url = request.url();
+      if (url.includes("auth-service/v1")) {
+        const headers = await request.headers();
+        if(headers['x-rpt-id'] == '') {
+          apiNotContainsXRptIdCount ++
+        }
+      }
+    });
+
+    //Login
+    await clickLoginButton();
+
+    //Wait auth-callback page
+    await page.waitForNavigation();
+    //Wait return to main page
+    await page.waitForNavigation();
+    console.log("Login completed");
+
+    //Logout
+    const userButton = await getUserButton();
+    await userButton.click();
+    const logoutIconButton = await page.waitForSelector('[data-testid="LogoutIcon"]');
+    const logoutButton = await logoutIconButton.getProperty('parentNode');
+    console.log("wait for logout button");
+    await logoutButton.click();
+    const confirmButton = await page.waitForSelector("#logoutModalConfirmButton");
+    await confirmButton.click();
+    await new Promise((r) => setTimeout(r, 500));
+    console.log("Logout completed");
+        
+    expect(apiNotContainsXRptIdCount).toBe(expectedCount);
+  });
+
+  it("Should invoke checkout v3 api with x-rpt-id header", async () => {
+    let expectedCount = 3; // payment-methods - sessions - transaction
+    let apiContainsXRptIdCount = 0;
+    
+    page.on("request", async (request) => {
+      const url = request.url();
+      if (url.includes("checkout/v3")) {
+        const headers = await request.headers();
+        if(headers['x-rpt-id'] != null)
+          apiContainsXRptIdCount ++
+      }
+    });
+
+    // Login
+    await clickLoginButton();
+
+    //Wait auth-callback page
+    await page.waitForNavigation();
+    //Wait return to main page
+    await page.waitForNavigation();
+    console.log("Login completed");
+
+    // Complete authenticated payment
+    await payNotice(
+          VALID_NOTICE_CODE,
+          VALID_FISCAL_CODE,
+          EMAIL,
+          VALID_CARD_DATA,
+          CHECKOUT_URL_AFTER_AUTHORIZATION
+    );
+        
+    expect(apiContainsXRptIdCount).toBe(expectedCount);
+  });
+
 });
 
 describe("Logout tests", () => {
@@ -515,11 +628,13 @@ describe("Logout tests", () => {
     const logoutButton = await page.waitForXPath('/html/body/div[3]/div[3]/ul/li');
     console.log("wait for logout button");
     await logoutButton.click();
+    const confirmButton = await page.waitForSelector("#logoutModalConfirmButton");
+    await confirmButton.click();
     await new Promise((r) => setTimeout(r, 500));
     expect(logout204).toBe(true);
   });
 
-  it("Should invoke logout with 4xx error and only one temptative", async () => {
+  it("Should invoke logout with 4xx error and only try one attempt", async () => {
     await selectLanguage("it");
     let logout400 = false;
     let logutCount=0;
@@ -546,9 +661,11 @@ describe("Logout tests", () => {
     await page.waitForNavigation();
     const userButton = await getUserButton();
     await userButton.click();
-    const logoutButton = await page.waitForXPath('/html/body/div[5]/div[3]/ul/li');
-    console.log("wait for logout button");
+    const logoutButtonIcon = await page.waitForSelector("#logout-button-icon");
+    const logoutButton = await logoutButtonIcon.getProperty('parentNode');
     await logoutButton.click();
+    const confirmButton = await page.waitForSelector("#logoutModalConfirmButton");
+    await confirmButton.click();
     console.log("Search login button");
     await new Promise((r) => setTimeout(r, 500));
     const loginHeader = await page.waitForSelector("#login-header");
@@ -588,9 +705,12 @@ describe("Logout tests", () => {
     await page.waitForNavigation();
     const userButton = await getUserButton();
     await userButton.click();
-    const logoutButton = await page.waitForXPath('/html/body/div[5]/div[3]/ul/li');
     console.log("wait for logout button");
+    const logoutButtonIcon = await page.waitForSelector("#logout-button-icon");
+    const logoutButton = await logoutButtonIcon.getProperty('parentNode');
     await logoutButton.click();
+    const confirmButton = await page.waitForSelector("#logoutModalConfirmButton");
+    await confirmButton.click();
     await new Promise((r) => setTimeout(r, 3100));
     console.log("Search login button")
     const loginHeader = await page.waitForSelector("#login-header");
@@ -738,7 +858,6 @@ describe("Logout tests", () => {
     await page.waitForNavigation();
     console.log("Login completed");
     await fillAndSubmitCardDataForm(FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA, VALID_FISCAL_CODE, EMAIL, VALID_CARD_DATA);
-    await page.waitForNavigation();
     expect(page.url()).toContain("/sessione-scaduta");
     await new Promise((r) => setTimeout(r, 500));
     expect(logout204).toBe(true);
@@ -782,5 +901,42 @@ describe("Logout tests", () => {
 
     await new Promise((r) => setTimeout(r, 500));
     expect(logout204).toBe(true);
+  });
+  
+  it.each([
+    ["it", itTranslation],
+    ["en", enTranslation],
+    ["fr", frTranslation],
+    ["de", deTranslation],
+    ["sl", slTranslation]
+  ])
+  ("Should remain on the same page in case of logout for no active transaction [%s]", async (lang, translation) => {
+    await selectLanguage(lang);
+    //Insert valid rptId and remain on payment form page
+    await fillPaymentNotificationForm(VALID_RPTID, VALID_FISCAL_CODE, false);
+
+    //Login
+    await clickLoginButton();
+
+    //Wait auth-callback page
+    await page.waitForNavigation();
+    //Wait return to main page
+    await page.waitForNavigation();
+    console.log("Login completed");
+
+    //Logout
+    const userButton = await getUserButton();
+    await userButton.click();
+    const logoutIconButton = await page.waitForSelector('[data-testid="LogoutIcon"]');
+    const logoutButton = await logoutIconButton.getProperty('parentNode');
+    await logoutButton.click();
+    console.log("logout button clicked");
+    await new Promise(r => setTimeout(r, 1000));
+    const logoutUserModalTitleElement = await page.waitForSelector("#logoutModalTitle");
+    const logoutModalTitle = await logoutUserModalTitleElement.evaluate((el) => el.textContent);
+    expect(logoutModalTitle).toBe(translation.userSession.logoutModal.title);
+    const confirmButton = await page.waitForSelector("#logoutModalConfirmButton");
+    await confirmButton.click();
+
   });
 });

@@ -334,9 +334,9 @@
     "email": "Sende Bestätigung an:",
     "modal": {
       "body": "Jeder Geldtransfer (Bargeld oder elektronisches Geld) ist mit Kosten verbunden, die gewährleisten, dass die Zahlung sicher und erfolgreich ist.\nJeder Anbieter (oder PSP, Payment Service Provider) erhebt Kosten, die von seiner eigenen Geschäftspolitik und seinen Vertragsbedingungen abhängen.\nMit pagoPA sind diese Kosten transparent und der Bürger kann die bequemste und günstigste Option frei wählen. Weitere Informationen findest du auf der Seite ",
-      "cancelBody": "Alle Eingaben gehen verloren.",
+      "cancelBody": "Wenn du dich jetzt beendest, gehen alle bisher eingegebenen Daten verloren und du musst von vorne anfangen.",
       "cancelButton": "Nein, ich habe es mir anders überlegt",
-      "cancelTitle": "Aktuelle Zahlung beenden?",
+      "cancelTitle": "Deine Zahlung ist in Bearbeitung. Bist du sicher, dass du dich beenden möchtest?",
       "link": "Kostentransparenz",
       "submitButton": "Beenden",
       "title": "Weshalb fallen Gebühren an?"
@@ -392,6 +392,25 @@
     "helpLink": "Beispiel anzeigen",
     "title": "Was musst du bezahlen?"
   },
+  "paymentPspListPage": {
+    "title": "Wählen Sie, wer die Zahlung verwalten wird",
+    "description": "Jeder Anbieter erhebt eine Gebühr. In dieser Liste finden Sie alle kompatiblen Anbieter, <strong>auch wenn Sie kein Kunde von ihnen sind</strong>.",
+    "operator": "Anbieter",
+    "alreadyClient": "Sie bereits Kunde",
+    "formButtons": {
+      "back": "Zurück",
+      "submit": "Weiter"
+    },
+    "sort": "Sortieren",
+    "drawer": {
+      "sorting": {
+        "default": "Standard",
+        "name": "Nach Name",
+        "amount": "Nach Betrag"
+      },
+      "showResults": "Ergebnisse anzeigen"
+    }
+  },
   "paymentQrPage": {
     "camBlocked": "Wir benötigen deine Erlaubnis zum Zugriff auf die Kamera. In den Datenschutzeinstellungen deines Internetbrowsers kannst du die Auswahl ändern",
     "description": "Achte auf gute Beleuchtung. Wenn der Code unscharf ist, halte ihn etwas weiter vom Bildschirm weg.",
@@ -412,10 +431,10 @@
     "causal": "Verwendungszweck",
     "cf": "Steuernummer des Empfängers",
     "creditor": "Zahlungsempfänger",
-    "description": "pagoPA aktualisiert automatisch den Betrag, damit du sicher den zu zahlenden Betrag begleichst und Verzugsgebühren oder Zinsen vermeidest",
+    "description": "Wenn sich der Betrag ändert, bedeutet das, dass er automatisch aktualisiert wurde. Falls er höher ist, können Zinsen, Strafen oder Benachrichtigungskosten anfallen.\n\nHandelt es sich bei der pagoPA-Mitteilung um eine rechtlich relevante Kommunikation, kann die Erhöhung des zu zahlenden Betrags verschiedene Gründe haben, zum Beispiel:\n• wenn du die Mitteilung per Einschreiben erhalten hast (die Druck- und Versandkosten können zu deinen Lasten gehen);\n• die Anzahl der Zustellversuche.\n\nFür weitere Details wende dich bitte an die Gläubigerinstitution.",
     "dialog": {
-      "description": "pagoPA aktualisiert automatisch den Betrag, damit du sicher den zu zahlenden Betrag begleichst und Verzugsgebühren oder Zinsen vermeidest.",
-      "title": "Siehst du einen anderen Betrag?"
+      "description": "Wenn sich der Betrag ändert, bedeutet das, dass er automatisch aktualisiert wurde. Falls er höher ist, können Zinsen, Strafen oder Benachrichtigungskosten anfallen.\n\nHandelt es sich bei der pagoPA-Mitteilung um eine rechtlich relevante Kommunikation, kann die Erhöhung des zu zahlenden Betrags verschiedene Gründe haben, zum Beispiel:\n• wenn du die Mitteilung per Einschreiben erhalten hast (die Druck- und Versandkosten können zu deinen Lasten gehen);\n• die Anzahl der Zustellversuche.\n\nFür weitere Details wende dich bitte an die Gläubigerinstitution.",
+      "title": "Ist der Betrag anders als auf der pagoPA-Benachrichtigung?"
     },
     "iuv": "IUV-Code",
     "title": "Zahlungsdaten"
@@ -446,6 +465,14 @@
     "HF0006": "MM/JJ eingeben",
     "HF0007": "Genau wie auf der Karte eingeben",
     "HF0009": "3DS-Überprüfung fehlgeschlagen"
+  },
+  "userSession": {
+    "logoutModal": {
+      "title": "Bist du sicher, dass du dich abmelden möchtest?",
+      "body": "Du kannst trotzdem bezahlen, auch wenn du nicht eingeloggt bist.",
+      "submitButton": "Abmelden",
+      "cancelButton": "Abbrechen"
+    }
   },
   "__variant-name": "Tedesco",
   "__variant-description": ""

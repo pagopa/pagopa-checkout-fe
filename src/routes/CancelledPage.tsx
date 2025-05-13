@@ -36,14 +36,18 @@ export default function CancelledPage() {
     );
   };
 
-  React.useEffect(() => {
-    checkLogout(() => {
+  const checkLogoutAndClearStorage = async () => {
+    await checkLogout(() => {
       dispatch(removeLoggedUser());
       clearSessionItem(SessionItems.authToken);
     });
+    clearStorage();
+  };
+
+  React.useEffect(() => {
+    void checkLogoutAndClearStorage();
     dispatch(resetThreshold());
     window.removeEventListener("beforeunload", onBrowserUnload);
-    clearStorage();
 
     const pageTitle = t("cancelledPage.body");
     (document.title as any) = pageTitle + " - pagoPA";
@@ -69,6 +73,7 @@ export default function CancelledPage() {
         </Box>
         <Box pr={8} pl={8} sx={{ width: "100%", height: "100%" }}>
           <Button
+            id="redirect-button"
             type="button"
             variant="outlined"
             onClick={performRedirect}
