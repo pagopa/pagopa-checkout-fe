@@ -11,11 +11,6 @@ import {
   apiPaymentEcommerceClientWithRetryV3,
 } from "../../../../utils/api/client";
 import { ErrorsType } from "../../../../utils/errors/checkErrorsModel";
-import { mixpanel } from "../../../../utils/config/mixpanelHelperInit";
-import {
-  NPG_NET_ERR,
-  NPG_RESP_ERROR,
-} from "../../../../utils/config/mixpanelDefs";
 import {
   PaymentInstrumentsType,
   PaymentMethod,
@@ -297,8 +292,8 @@ export const npgSessionsFields = async (
         );
       },
       () => {
-        onError(NPG_NET_ERR.value);
-        return NPG_NET_ERR.value;
+        onError("NPG_NET_ERR");
+        return "NPG_NET_ERR";
       }
     ),
     TE.fold(
@@ -315,7 +310,7 @@ export const npgSessionsFields = async (
                     myRes.value.paymentMethodData.form,
                     validateSessionWalletCardFormFields,
                     O.match(
-                      () => onError(NPG_RESP_ERROR.value),
+                      () => onError("NPG_RESP_ERROR"),
                       () => onResponse(myRes.value)
                     )
                   );

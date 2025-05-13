@@ -5,7 +5,6 @@ import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
 import { flow, pipe } from "fp-ts/lib/function";
 import ReCAPTCHA from "react-google-recaptcha";
-import { mixpanel } from "../../../../utils/config/mixpanelHelperInit";
 import {
   Cart,
   PaymentFormFields,
@@ -18,11 +17,6 @@ import {
   setSessionItem,
 } from "../../../../utils/storage/sessionStorage";
 import { ErrorsType } from "../../../../utils/errors/checkErrorsModel";
-import {
-  PAYMENT_ACTION_DELETE_RESP_ERR,
-  PAYMENT_ACTIVATE_RESP_ERR,
-  PAYMENT_ACTIVATE_SUCCESS,
-} from "../../../../utils/config/mixpanelDefs";
 import {
   apiPaymentEcommerceClient,
   apiPaymentEcommerceClientV2,
@@ -188,9 +182,7 @@ const activePaymentTask = (
             () =>
               TE.left({ faultCodeCategory: FaultCategoryEnum.GENERIC_ERROR }),
             (responseType) => {
-              let reason;
               if (responseType.status === 200) {
-                reason = "";
                 const cartInfo = getSessionItem(SessionItems.cart) as
                   | Cart
                   | undefined;
@@ -239,18 +231,6 @@ const activePaymentTask = (
                   });
                 }
               }
-              if (responseType.status === 200) {
-                reason = "";
-              } else if (responseType.status === 400) {
-                reason = responseType.value?.title;
-              } else {
-                reason = responseType.value?.faultCodeDetail;
-              }
-              const EVENT_ID: string =
-                responseType.status === 200
-                  ? PAYMENT_ACTIVATE_SUCCESS.value
-                  : PAYMENT_ACTIVATE_RESP_ERR.value;
-              mixpanel.track(EVENT_ID, { EVENT_ID, reason });
 
               if (responseType.status === 401) {
                 return TE.left({
@@ -499,22 +479,16 @@ export const cancelPayment = async (
               pipe(
                 myResExt,
                 E.fold(
-                  () => PAYMENT_ACTION_DELETE_RESP_ERR.value,
+                  () => "PAYMENT_ACTION_DELETE_RESP_ERR",
                   (myRes) => {
                     if (myRes?.status === 202) {
                       onResponse();
                       return myRes?.value;
                     } else if (myRes.status >= 400 && myRes.status < 500) {
                       onError(ErrorsType.GENERIC_ERROR, true);
-                      mixpanel.track(PAYMENT_ACTION_DELETE_RESP_ERR.value, {
-                        EVENT_ID: PAYMENT_ACTION_DELETE_RESP_ERR.value,
-                      });
                       return {};
                     } else {
                       onError(ErrorsType.GENERIC_ERROR, false);
-                      mixpanel.track(PAYMENT_ACTION_DELETE_RESP_ERR.value, {
-                        EVENT_ID: PAYMENT_ACTION_DELETE_RESP_ERR.value,
-                      });
                       return {};
                     }
                   }
