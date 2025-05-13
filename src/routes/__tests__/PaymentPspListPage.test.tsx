@@ -284,6 +284,50 @@ describe("PaymentPspListPage", () => {
       });
     });
   });
+  test("should render PaymentPspListPage and display payment method name MyBank", async () => {
+    const mockPaymentMethod = { code: "MYBK", name: "MyBank" };
+    const mockPaymentMethodInfo = { title: "MyBank" };
+
+    (getSessionItem as jest.Mock).mockImplementation((item: SessionItems) => {
+      switch (item) {
+        case "paymentMethod":
+          return mockPaymentMethod;
+        case "paymentMethodInfo":
+          return mockPaymentMethodInfo;
+        case "transaction":
+          return transaction;
+        case "useremail":
+          return "test@pagopa.it";
+        case "paymentInfo":
+          return paymentInfo;
+        case "sessionPayment":
+          return sessionPayment;
+        default:
+          return undefined;
+      }
+    });
+
+    (
+      apiPaymentEcommerceClientWithRetryV2.calculateFees as jest.Mock
+    ).mockReturnValue(
+      Promise.resolve({
+        right: {
+          status: 200,
+          value: calculateFeeResponse,
+        },
+      })
+    );
+
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentPspListPage />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText("Non trovi la tua banca?")).toBeInTheDocument();
+    });
+  });
 });
 
 describe("PaymentPspListPage - session missing values", () => {

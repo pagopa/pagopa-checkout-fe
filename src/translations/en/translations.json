@@ -408,7 +408,9 @@
         "amount": "By amount"
       },
       "showResults": "Show results"
-    }
+    },
+    "myBankAlertTitle": "Can't find your bank?",
+    "myBankAlertBody": "Don't worry: you will have to select it in the next steps."
   },
   "paymentQrPage": {
     "camBlocked": "We need your consent to use the camera. To change your selection, go to your browser’s privacy settings",
