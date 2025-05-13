@@ -19,19 +19,9 @@ import {
 } from "../../../../utils/storage/sessionStorage";
 import { ErrorsType } from "../../../../utils/errors/checkErrorsModel";
 import {
-  PAYMENT_ACTION_DELETE_INIT,
-  PAYMENT_ACTION_DELETE_NET_ERR,
   PAYMENT_ACTION_DELETE_RESP_ERR,
-  PAYMENT_ACTION_DELETE_SUCCESS,
-  PAYMENT_ACTION_DELETE_SVR_ERR,
-  PAYMENT_ACTIVATE_INIT,
-  PAYMENT_ACTIVATE_NET_ERR,
   PAYMENT_ACTIVATE_RESP_ERR,
   PAYMENT_ACTIVATE_SUCCESS,
-  PAYMENT_ACTIVATE_SVR_ERR,
-  TRANSACTION_AUTH_INIT,
-  TRANSACTION_AUTH_RESP_ERROR,
-  TRANSACTION_AUTH_SUCCES,
 } from "../../../../utils/config/mixpanelDefs";
 import {
   apiPaymentEcommerceClient,
@@ -151,10 +141,6 @@ const activePaymentTask = (
   pipe(
     TE.tryCatch(
       () => {
-        mixpanel.track(PAYMENT_ACTIVATE_INIT.value, {
-          EVENT_ID: PAYMENT_ACTIVATE_INIT.value,
-        });
-
         // base payload shared between both auth and non-auth APIs
         const payload = {
           "x-correlation-id": correlationId,
@@ -191,20 +177,10 @@ const activePaymentTask = (
           )
         );
       },
-      () => {
-        mixpanel.track(PAYMENT_ACTIVATE_NET_ERR.value, {
-          EVENT_ID: PAYMENT_ACTIVATE_NET_ERR.value,
-        });
-        return "Errore attivazione pagamento";
-      }
+      () => "Errore attivazione pagamento"
     ),
     TE.fold(
-      () => {
-        mixpanel.track(PAYMENT_ACTIVATE_SVR_ERR.value, {
-          EVENT_ID: PAYMENT_ACTIVATE_SVR_ERR.value,
-        });
-        return TE.left({ faultCodeCategory: FaultCategoryEnum.GENERIC_ERROR });
-      },
+      () => TE.left({ faultCodeCategory: FaultCategoryEnum.GENERIC_ERROR }),
       (errorOrResponse) =>
         pipe(
           errorOrResponse,
@@ -333,10 +309,6 @@ export const proceedToPayment = async (
   onError: (e: string) => void,
   onResponse: (authUrl: string) => void
 ) => {
-  mixpanel.track(TRANSACTION_AUTH_INIT.value, {
-    EVENT_ID: TRANSACTION_AUTH_INIT.value,
-  });
-
   const transactionId = pipe(
     transaction,
     O.fromNullable,
@@ -448,15 +420,9 @@ export const proceedToPayment = async (
     ),
     TE.map((response) => {
       if (response.status === 200) {
-        mixpanel.track(TRANSACTION_AUTH_SUCCES.value, {
-          EVENT_ID: TRANSACTION_AUTH_SUCCES.value,
-        });
         const { authorizationUrl } = response.value;
         onResponse(authorizationUrl);
       } else {
-        mixpanel.track(TRANSACTION_AUTH_RESP_ERROR.value, {
-          EVENT_ID: TRANSACTION_AUTH_RESP_ERROR.value,
-        });
         onError(ErrorsType.CONNECTION);
       }
     })
@@ -487,10 +453,6 @@ export const cancelPayment = async (
   onError: (e: string, userCancelRedirect: boolean) => void,
   onResponse: () => void
 ) => {
-  mixpanel.track(PAYMENT_ACTION_DELETE_INIT.value, {
-    EVENT_ID: PAYMENT_ACTION_DELETE_INIT.value,
-  });
-
   const transactionId = pipe(
     getSessionItem(SessionItems.transaction) as NewTransactionResponse,
     O.fromNullable,
@@ -525,18 +487,12 @@ export const cancelPayment = async (
               }),
             () => {
               onError(ErrorsType.CONNECTION, false);
-              mixpanel.track(PAYMENT_ACTION_DELETE_NET_ERR.value, {
-                EVENT_ID: PAYMENT_ACTION_DELETE_NET_ERR.value,
-              });
               return E.toError;
             }
           ),
           TE.fold(
             () => async () => {
               onError(ErrorsType.SERVER, false);
-              mixpanel.track(PAYMENT_ACTION_DELETE_SVR_ERR.value, {
-                EVENT_ID: PAYMENT_ACTION_DELETE_SVR_ERR.value,
-              });
               return {};
             },
             (myResExt) => async () =>
@@ -547,9 +503,6 @@ export const cancelPayment = async (
                   (myRes) => {
                     if (myRes?.status === 202) {
                       onResponse();
-                      mixpanel.track(PAYMENT_ACTION_DELETE_SUCCESS.value, {
-                        EVENT_ID: PAYMENT_ACTION_DELETE_SUCCESS.value,
-                      });
                       return myRes?.value;
                     } else if (myRes.status >= 400 && myRes.status < 500) {
                       onError(ErrorsType.GENERIC_ERROR, true);

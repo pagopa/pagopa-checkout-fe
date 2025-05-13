@@ -3,19 +3,12 @@ import { Typography, Alert, AlertTitle, Link, Box } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { ThemeProvider } from "@mui/material";
 import { theme } from "@pagopa/mui-italia";
-import { VOC_USER_EXIT } from "../../utils/config/mixpanelDefs";
-import { mixpanel } from "../../utils/config/mixpanelHelperInit";
 
 const SurveyLink = () => {
   const { t } = useTranslation();
 
   const onClick = () => {
-    mixpanel.track(VOC_USER_EXIT.value, {
-      EVENT_ID: VOC_USER_EXIT.value,
-      event_category: "UX",
-      event_type: "exit",
-      screen_name: "payment response page",
-    });
+    // ??
   };
 
   return (

@@ -1,4 +1,4 @@
-import * as t from "io-ts";
+/* import * as t from "io-ts";
 export const PAYMENT_CHECK_INIT = t.literal("PAYMENT_CHECK_INIT");
 export type PAYMENT_CHECK_INIT = t.TypeOf<typeof PAYMENT_CHECK_INIT>;
 export const PAYMENT_CHECK_NET_ERR = t.literal("PAYMENT_CHECK_NET_ERR");
@@ -479,3 +479,4 @@ export const NPG_RESP_ERROR = t.literal("NPG_RESP_ERROR");
 export type NPG_RESP_ERROR = t.TypeOf<typeof NPG_RESP_ERROR>;
 export const NPG_SUCCESS = t.literal("NPG_SUCCESS");
 export type NPG_SUCCESS = t.TypeOf<typeof NPG_SUCCESS>;
+*/
