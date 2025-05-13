@@ -98,11 +98,6 @@ jest.mock("react-google-recaptcha", () => ({
   }),
 }));
 
-// Mock mixpanel definitions
-jest.mock("../../../../../utils/config/mixpanelDefs", () => ({
-  PAYMENT_METHODS_CHOICE: { value: "payment_methods_choice" },
-}));
-
 // Mock route models
 jest.mock("../../../../../routes/models/paymentMethodRoutes", () => ({
   PaymentMethodRoutes: {

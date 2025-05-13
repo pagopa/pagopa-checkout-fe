@@ -4,10 +4,6 @@ import "@testing-library/jest-dom";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import SurveyLink from "../SurveyLink";
 
-jest.mock("../../../utils/config/mixpanelDefs", () => ({
-  VOC_USER_EXIT: { value: "voc_user_exit" },
-}));
-
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string) => {
