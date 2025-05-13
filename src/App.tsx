@@ -34,36 +34,6 @@ import AuthExpiredPage from "./routes/AuthExpiredPage";
 import { ThemeContextProvider } from "./components/themeContextProvider/themeContextProvider";
 import PaymentPspListPage from "./routes/PaymentPspListPage";
 
-const checkoutTheme = createTheme({
-  ...theme,
-  palette: {
-    ...theme.palette,
-    background: {
-      default: theme.palette.background.paper,
-    },
-  },
-  components: {
-    ...theme.components,
-    MuiFormHelperText: {
-      styleOverrides: {
-        root: {
-          marginTop: 0,
-          height: 0,
-        },
-      },
-    },
-    MuiAlert: {
-      styleOverrides: {
-        message: {
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-        },
-      },
-    },
-  },
-});
-
 export function App() {
   const { t } = useTranslation();
   const fixedFooterPages = [
