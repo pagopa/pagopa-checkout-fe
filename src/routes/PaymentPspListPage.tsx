@@ -1,4 +1,4 @@
-import {Alert, AlertTitle, Box, Button, Typography } from "@mui/material";
+import { Alert, AlertTitle, Box, Button, Typography } from "@mui/material";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { pipe } from "fp-ts/lib/function";
 import * as O from "fp-ts/Option";
 import { useTranslation } from "react-i18next";
-import { ButtonNaked} from "@pagopa/mui-italia";
+import { ButtonNaked } from "@pagopa/mui-italia";
 import { PspOrderingModel, sortBy } from "../utils/SortUtil";
 import { PaymentPspListSortingDrawer } from "../features/payment/components/PaymentPspList/PaymentPspListSortingDrawer";
 import { PaymentPSPListGrid } from "../features/payment/components/PaymentPspList/PaymentPspListGrid";
@@ -172,13 +172,12 @@ export default function PaymentPspListPage() {
             severity="info"
             variant="standard"
             sx={{ backgroundColor: "white" }}
-
           >
             <React.Fragment key=".0">
               <AlertTitle sx={{ fontWeight: 700, fontSize: "0.95rem" }}>
                 {t("paymentPspListPage.myBankAlertTitle")}
               </AlertTitle>
-                {t("paymentPspListPage.myBankAlertBody")}
+              {t("paymentPspListPage.myBankAlertBody")}
             </React.Fragment>
           </Alert>
         </Box>

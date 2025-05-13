@@ -285,7 +285,10 @@ describe("PaymentPspListPage", () => {
     });
   });
   test("should render PaymentPspListPage and display payment method name MyBank", async () => {
-    const mockPaymentMethod = { code: "MYBK", name: "MyBank" };
+    const mockPaymentMethod = {
+      paymentTypeCode: "MYBK",
+      paymentMethodId: "2c61e6ed-f874-4b30-97ef-bdf89d488ee4",
+    };
     const mockPaymentMethodInfo = { title: "MyBank" };
 
     (getSessionItem as jest.Mock).mockImplementation((item: SessionItems) => {
@@ -325,7 +328,7 @@ describe("PaymentPspListPage", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Non trovi la tua banca?")).toBeInTheDocument();
+      expect(screen.getByText("paymentPspListPage.myBankAlertBody")).toBeInTheDocument();
     });
   });
 });
