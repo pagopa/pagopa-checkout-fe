@@ -4,7 +4,8 @@
     "title": "In attesa di risposta dalla tua banca…"
   },
   "app": {
-    "title": "Paga un avviso - pagoPA"
+    "title": "Paga un avviso - pagoPA",    
+    "darkMode": "Dark Mode (Preview)"
   },
   "ariaLabels": {
     "appLanguage": "Imposta lingua",

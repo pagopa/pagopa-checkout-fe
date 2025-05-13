@@ -17,6 +17,7 @@ import { getConfigOrThrow } from "../config/config";
 
 export enum SessionItems {
   paymentInfo = "paymentInfo",
+  activeTheme = "activeTheme",
   noticeInfo = "rptId",
   useremail = "useremail",
   enableAuthentication = "enableAuthentication",

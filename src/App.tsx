@@ -1,6 +1,4 @@
-import { createTheme, ThemeProvider } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
-import { theme } from "@pagopa/mui-italia";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
@@ -33,37 +31,8 @@ import { SessionItems } from "./utils/storage/sessionStorage";
 import SessionExpiredPage from "./routes/SessionExpiredPage";
 import AuthCallback from "./routes/AuthCallbackPage";
 import AuthExpiredPage from "./routes/AuthExpiredPage";
+import { ThemeContextProvider } from "./components/themeContextProvider/themeContextProvider";
 import PaymentPspListPage from "./routes/PaymentPspListPage";
-
-const checkoutTheme = createTheme({
-  ...theme,
-  palette: {
-    ...theme.palette,
-    background: {
-      default: theme.palette.background.paper,
-    },
-  },
-  components: {
-    ...theme.components,
-    MuiFormHelperText: {
-      styleOverrides: {
-        root: {
-          marginTop: 0,
-          height: 0,
-        },
-      },
-    },
-    MuiAlert: {
-      styleOverrides: {
-        message: {
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-        },
-      },
-    },
-  },
-});
 
 export function App() {
   const { t } = useTranslation();
@@ -114,7 +83,7 @@ export function App() {
   };
 
   return (
-    <ThemeProvider theme={checkoutTheme}>
+    <ThemeContextProvider>
       <CssBaseline />
       <BrowserRouter
         future={{
@@ -248,6 +217,6 @@ export function App() {
           </Routes>
         </Layout>
       </BrowserRouter>
-    </ThemeProvider>
+    </ThemeContextProvider>
   );
 }
