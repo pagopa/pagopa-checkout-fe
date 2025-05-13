@@ -27,22 +27,21 @@ interface PspPrivacyInfoProps {
 }
 
 const PspPrivacyInfo = (props: PspPrivacyInfoProps) => {
-
   const { termsLink, privacyLink, pspName } = props;
 
-  return <Typography variant="caption" component={"div"}>
-    <Trans
-      i18nKey="paymentCheckPage.disclaimer.psp"
-      values={{ pspName }}     
-      components={{
-        privacy: (
-          <PrivacyLink href={privacyLink} />
-        ),
-        terms: (<PrivacyLink href={termsLink} />),
-        psp: <b />
-      }}
-    />
-  </Typography>
+  return (
+    <Typography variant="caption" component={"div"}>
+      <Trans
+        i18nKey="paymentCheckPage.disclaimer.psp"
+        values={{ pspName }}
+        components={{
+          privacy: <PrivacyLink href={privacyLink} />,
+          terms: <PrivacyLink href={termsLink} />,
+          psp: <b />,
+        }}
+      />
+    </Typography>
+  );
 };
 
 export default PspPrivacyInfo;
