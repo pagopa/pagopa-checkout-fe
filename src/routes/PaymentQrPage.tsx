@@ -20,8 +20,6 @@ export default function PaymentQrPage() {
   const [loading, setLoading] = React.useState(false);
   const [camBlocked, setCamBlocked] = React.useState(false);
 
-  React.useEffect(() => {}, []);
-
   const onError = React.useCallback((m: string) => {
     setError(m);
     setErrorModalOpen(true);
