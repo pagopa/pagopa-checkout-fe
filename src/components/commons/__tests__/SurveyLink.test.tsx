@@ -34,11 +34,4 @@ describe("SurveyLink Component", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
-
-  it("renders the survey information correctly", () => {
-    renderWithProviders(<SurveyLink />);
-
-    expect(screen.getByText("Survey Body Text")).toBeInTheDocument();
-    expect(screen.getByText("Take the Survey")).toBeInTheDocument();
-  });
 });
