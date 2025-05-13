@@ -19,7 +19,6 @@
     "dev:server": "parcel src/index.html &",
     "dev:proxy": "parcel src/index.html",
     "test": "jest --config=jest.config.js",
-    "test:final-status-integration": "jest --config=jest.final-status.integration.config.js",
     "test:payment-flow-integration": "jest --config=jest.payment-flow.integration.config.js",
     "test:authentication-integration": "jest --config=jest.authentication.integration.config.js",
     "test:outcomes-integration": "jest --config=jest.outcomes.integration.config.js",
