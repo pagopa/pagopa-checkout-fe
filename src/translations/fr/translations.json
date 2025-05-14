@@ -173,7 +173,7 @@
     "title": "Les données de l’avis ne sont pas correctes"
   },
   "PAYMENT_DUPLICATED": {
-    "body": "Si vous avez payé sur ce site, le reçu vous sera envoyé à l’adresse e-mail que vous avez donnée pendant l’opération.",
+    "body": "Si vous avez payé sur ce site, la confirmation vous sera envoyé à l’adresse e-mail que vous avez donnée pendant l’opération.",
     "title": "Cet avis a déjà été payé !"
   },
   "PAYMENT_EXPIRED": {
@@ -230,7 +230,7 @@
   },
   "paymentResponsePage": {
     "0": {
-      "body": "Nous avons envoyé le reçu du paiement à {{useremail}}",
+      "body": "Nous avons envoyé la confirmation du paiement à {{useremail}}",
       "title": "Vous avez payé {{amount}}"
     },
     "1": {
