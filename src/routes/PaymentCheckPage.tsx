@@ -396,11 +396,13 @@ export default function PaymentCheckPage() {
         variant="body2"
       />
 
-      {!!pspSelected && <PspPrivacyInfo
-        termsLink="https://www.pagopa.gov.it/it/prestatori-servizi-di-pagamento/elenco-PSP-attivi/"
-        privacyLink="https://www.pagopa.gov.it/it/prestatori-servizi-di-pagamento/elenco-PSP-attivi/"
-        pspName={pspSelected.pspBusinessName || ''}
-      />}
+      {!!pspSelected && (
+        <PspPrivacyInfo
+          termsLink="https://www.pagopa.gov.it/it/prestatori-servizi-di-pagamento/elenco-PSP-attivi/"
+          privacyLink="https://www.pagopa.gov.it/it/prestatori-servizi-di-pagamento/elenco-PSP-attivi/"
+          pspName={pspSelected.pspBusinessName || ""}
+        />
+      )}
 
       <FormButtons
         loadingSubmit={payLoading}

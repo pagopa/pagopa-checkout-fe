@@ -37,7 +37,7 @@ const PspPrivacyInfo = (props: PspPrivacyInfoProps) => {
         components={{
           privacy: <PrivacyLink href={privacyLink} />,
           terms: <PrivacyLink href={termsLink} />,
-          psp: <div/>,
+          psp: <div />,
         }}
       />
     </Typography>
