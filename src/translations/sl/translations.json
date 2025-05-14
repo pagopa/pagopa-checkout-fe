@@ -320,7 +320,9 @@
     "creditCard": "Plačajte z",
     "disclaimer": {
       "cheaper": "Priporočeno, ker je najcenejše",
-      "yourCard": "Priporočeno, ker ste že stranka"
+      "yourCard": "Priporočeno, ker ste že stranka",
+      "psp":"Z nadaljevanjem sprejemate <terms>Pogoje uporabe</terms> in potrjujete, da ste prebrali <privacy>Politiko zasebnosti družbe</privacy> <psp>{{pspName}}</psp>"
+
     },
     "drawer": {
       "body": "Na tem seznamu boste našli vse ponudnike, ki so združljivi z vašim načinom, tudi če niste njihova stranka.",
