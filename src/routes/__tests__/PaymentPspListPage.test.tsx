@@ -334,13 +334,12 @@ describe("PaymentPspListPage", () => {
     });
 
     fireEvent.click(screen.getByText("Chiudi"));
-    
+
     await waitFor(() => {
       expect(
         screen.queryByText("paymentPspListPage.myBankAlertBody")
       ).not.toBeInTheDocument();
     });
-
   });
 });
 
