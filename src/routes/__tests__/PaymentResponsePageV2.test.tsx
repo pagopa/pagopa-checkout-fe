@@ -16,6 +16,7 @@ import * as reduxHooks from "../../redux/hooks/hooks";
 import { removeLoggedUser } from "../../redux/slices/loggedUser";
 import { resetThreshold } from "../../redux/slices/threshold";
 import { moneyFormat } from "../../utils/form/formatters";
+import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce-v3/NewTransactionResponse";
 import {
   cart as mockCart,
   transaction as mockTransactionOutcomeInfoData,
@@ -54,6 +55,12 @@ jest.mock("../../utils/storage/sessionStorage", () => ({
     useremail: "useremail",
     authToken: "authToken",
   },
+}));
+
+const mockGetFragments = jest.fn();
+
+jest.mock("../../utils/regex/urlUtilities", () => ({
+  getFragments: () => mockGetFragments(),
 }));
 
 jest.mock("../../utils/eventListeners", () => ({
@@ -120,7 +127,7 @@ describe("PaymentResponsePageV2", () => {
     mockGetSessionItem.mockImplementation((item: SessionItems) => {
       switch (item) {
         case SessionItems.transaction:
-          return undefined;
+          return { transactionId: "testId" } as NewTransactionResponse;
         case SessionItems.cart:
           return undefined;
         case SessionItems.pspSelected:
@@ -279,7 +286,7 @@ describe("PaymentResponsePageV2", () => {
           return "test@example.com";
         }
         if (item === SessionItems.transaction) {
-          return undefined;
+          return { transactionId: "testId" } as NewTransactionResponse;
         }
         if (item === SessionItems.pspSelected) {
           return undefined;
@@ -306,8 +313,12 @@ describe("PaymentResponsePageV2", () => {
     ])(
       "should show payment outcome %s message and redirect on continue",
       async (outcomeVal) => {
-        (getFragmentParameter as jest.Mock).mockReturnValue(outcomeVal); // outcomeVal is already string
-
+        mockGetFragments.mockReturnValue({
+          outcome: outcomeVal,
+          totalAmount: "12000",
+          fees: "15",
+          transactionId: "testId",
+        });
         renderComponent();
 
         const expectedTitleStart = `paymentResponsePage.${outcomeVal}.title`;

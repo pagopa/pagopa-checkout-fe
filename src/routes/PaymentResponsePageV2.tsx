@@ -7,7 +7,7 @@ import * as O from "fp-ts/Option";
 import { removeLoggedUser } from "../redux/slices/loggedUser";
 import { checkLogout } from "../utils/api/helper";
 import FindOutMoreModal from "../components/modals/FindOutMoreModal";
-import { getFragmentParameter } from "../utils/regex/urlUtilities";
+import { getFragments } from "../utils/regex/urlUtilities";
 import { getConfigOrThrow } from "../utils/config/config";
 import SurveyLink from "../components/commons/SurveyLink";
 import PageContainer from "../components/PageContent/PageContainer";
@@ -40,34 +40,26 @@ type CartInformation = {
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export default function PaymentResponsePageV2() {
   const navigate = useNavigate();
-  // eslint-disable-next-line functional/no-let
-  let totalAmount: number;
-  // eslint-disable-next-line functional/no-let
-  let fees: number;
-  const transactionId = getFragmentParameter(
-    window.location.href,
+
+  const {
+    transactionId,
+    outcome: outcomeFragment,
+    totalAmount: totalAmountFragment,
+    fees: feesFragment,
+  } = getFragments(
     ROUTE_FRAGMENT.TRANSACTION_ID,
-    false
-  );
-  const outcome = (getFragmentParameter(
-    window.location.href,
     ROUTE_FRAGMENT.OUTCOME,
-    false
-  ) || ViewOutcomeEnum.GENERIC_ERROR) as ViewOutcomeEnum;
-  if (outcome === ViewOutcomeEnum.SUCCESS) {
-    totalAmount = Number.parseInt(
-      getFragmentParameter(
-        window.location.href,
-        ROUTE_FRAGMENT.TOTAL_AMOUNT,
-        false
-      ),
-      10
-    );
-    fees = Number.parseInt(
-      getFragmentParameter(window.location.href, ROUTE_FRAGMENT.FEES, false),
-      10
-    );
-  }
+    ROUTE_FRAGMENT.TOTAL_AMOUNT,
+    ROUTE_FRAGMENT.FEES
+  );
+
+  const outcome = (outcomeFragment ||
+    ViewOutcomeEnum.GENERIC_ERROR) as ViewOutcomeEnum;
+  const totalAmount = totalAmountFragment
+    ? Number.parseInt(totalAmountFragment, 10)
+    : 0;
+  const fees = feesFragment ? Number.parseInt(feesFragment, 10) : undefined;
+
   const conf = getConfigOrThrow();
 
   const transactionData = getSessionItem(SessionItems.transaction) as
