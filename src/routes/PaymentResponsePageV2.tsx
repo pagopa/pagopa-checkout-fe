@@ -7,7 +7,7 @@ import * as O from "fp-ts/Option";
 import { removeLoggedUser } from "../redux/slices/loggedUser";
 import { checkLogout } from "../utils/api/helper";
 import FindOutMoreModal from "../components/modals/FindOutMoreModal";
-import { getFragmentParameter } from "../utils/regex/urlUtilities";
+import { getFragments } from "../utils/regex/urlUtilities";
 import { getConfigOrThrow } from "../utils/config/config";
 import SurveyLink from "../components/commons/SurveyLink";
 import PageContainer from "../components/PageContent/PageContainer";
@@ -25,8 +25,6 @@ import { ViewOutcomeEnum } from "../utils/transactions/TransactionResultUtil";
 import { Cart } from "../features/payment/models/paymentModel";
 import { NewTransactionResponse } from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { resetThreshold } from "../redux/slices/threshold";
-import { Bundle } from "../../generated/definitions/payment-ecommerce/Bundle";
-import { TransactionOutcomeInfo } from "../../generated/definitions/payment-ecommerce/TransactionOutcomeInfo";
 import { ROUTE_FRAGMENT } from "./models/routeModel";
 
 type PrintData = {
@@ -43,17 +41,35 @@ type CartInformation = {
 export default function PaymentResponsePageV2() {
   const navigate = useNavigate();
 
-  const transactionOutcomeInfo = getSessionItem(SessionItems.transaction) as
-    | TransactionOutcomeInfo
-    | undefined;
+  const {
+    transactionId,
+    outcome: outcomeFragment,
+    totalAmount: totalAmountFragment,
+    fees: feesFragment,
+  } = getFragments(
+    ROUTE_FRAGMENT.TRANSACTION_ID,
+    ROUTE_FRAGMENT.OUTCOME,
+    ROUTE_FRAGMENT.TOTAL_AMOUNT,
+    ROUTE_FRAGMENT.FEES
+  );
 
-  const outcome = (transactionOutcomeInfo?.outcome?.toString() ??
-    getFragmentParameter(window.location.href, ROUTE_FRAGMENT.OUTCOME, false) ?? // fallback
+  const outcome = (outcomeFragment ||
     ViewOutcomeEnum.GENERIC_ERROR) as ViewOutcomeEnum;
+  const totalAmount = totalAmountFragment
+    ? Number.parseInt(totalAmountFragment, 10)
+    : undefined;
+  const fees = feesFragment ? Number.parseInt(feesFragment, 10) : undefined;
 
   const conf = getConfigOrThrow();
 
-  const outcomeMessage = responseOutcome[outcome];
+  const transactionData = getSessionItem(SessionItems.transaction) as
+    | NewTransactionResponse
+    | undefined;
+
+  const checkTransactionId = transactionData?.transactionId === transactionId;
+  const outcomeMessage = checkTransactionId
+    ? responseOutcome[outcome]
+    : responseOutcome[ViewOutcomeEnum.GENERIC_ERROR];
   const [findOutMoreOpen, setFindOutMoreOpen] = useState<boolean>(false);
 
   const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
@@ -71,45 +87,14 @@ export default function PaymentResponsePageV2() {
     getCartReturnUrl(outcome)
   );
 
-  const transactionData = getSessionItem(SessionItems.transaction) as
-    | NewTransactionResponse
-    | undefined;
-
-  const pspSelected = getSessionItem(SessionItems.pspSelected) as
-    | Bundle
-    | undefined;
-
   const email = getSessionItem(SessionItems.useremail) as string | undefined;
 
-  const calculateTotalAmount = (): number => {
-    if (
-      transactionOutcomeInfo &&
-      (transactionOutcomeInfo.totalAmount !== undefined ||
-        transactionOutcomeInfo.fees !== undefined)
-    ) {
-      const baseAmount = Number(transactionOutcomeInfo.totalAmount ?? 0);
-      const feesAmount = Number(transactionOutcomeInfo.fees ?? 0);
-      return baseAmount + feesAmount;
-    }
-
-    // fallback if transactionOutcomeInfo is not present
-    if (transactionData) {
-      return (
-        Number(
-          // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-          transactionData.payments.reduce((sum, { amount }) => sum + amount, 0)
-        ) + Number(pspSelected?.taxPayerFee)
-      );
-    }
-
-    return 0;
-  };
-
-  const totalAmount = calculateTotalAmount();
+  const grandTotalAmount =
+    totalAmount && fees ? Number(totalAmount) + Number(fees) : null;
 
   const usefulPrintData: PrintData = {
     useremail: email || "",
-    amount: moneyFormat(totalAmount),
+    amount: moneyFormat(grandTotalAmount!),
   };
 
   const dispatch = useAppDispatch();
