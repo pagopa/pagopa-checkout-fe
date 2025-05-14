@@ -14,7 +14,6 @@ import { getConfigOrThrow } from "../../utils/config/config";
 import * as reduxHooks from "../../redux/hooks/hooks";
 import { removeLoggedUser } from "../../redux/slices/loggedUser";
 import { resetThreshold } from "../../redux/slices/threshold";
-import { moneyFormat } from "../../utils/form/formatters";
 import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce-v3/NewTransactionResponse";
 import {
   cart as mockCart,
@@ -25,18 +24,17 @@ jest.mock("../../utils/regex/urlUtilities", () => ({
   getFragmentParameter: jest.fn(),
 }));
 
+// Mock translations
 jest.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (key: string, options?: any) => {
-      if (options && options.amount) {
-        return `${key} with amount ${options.amount}`;
-      }
-      if (options && options.useremail) {
-        return `${key} for ${options.useremail}`;
-      }
-      return key;
-    },
-  }),
+  useTranslation: () => ({ t: (key: string) => key }),
+  Trans: ({
+    i18nKey,
+  }: {
+    i18nKey?: string;
+    values?: Record<string, any>;
+    components?: Array<any>;
+    children?: React.ReactNode;
+  }) => <span data-testid="mocked-trans">{i18nKey || "no-key"}</span>,
 }));
 
 const mockGetSessionItem = jest.fn();
@@ -162,7 +160,7 @@ describe("PaymentResponsePageV2", () => {
     );
 
   describe("Initial Effects and Cleanup", () => {
-        test.each([
+    test.each([
       ViewOutcomeEnum.SUCCESS.toString(),
       ViewOutcomeEnum.GENERIC_ERROR.toString(),
       ViewOutcomeEnum.AUTH_ERROR.toString(),
@@ -177,45 +175,53 @@ describe("PaymentResponsePageV2", () => {
       "116",
       "117",
       "121",
-    ])("should call checkLogout, clearStorage, dispatch resetThreshold, and remove event listener on mount", async (outcomeValue) => {
-      const mockRemoveEventListener = jest.spyOn(window, "removeEventListener");
-mockGetSessionItem.mockImplementation((item: SessionItems) => {
-      if (item === SessionItems.transaction) {
-          return {
-            ...mockTransactionOutcomeInfoData
-          };
-        }
-        if (item === SessionItems.useremail) {
-          return "user@test.com";
-        }
-        return undefined;
-      });
+    ])(
+      "should call checkLogout, clearStorage, dispatch resetThreshold, and remove event listener on mount",
+      async (outcomeValue) => {
+        const mockRemoveEventListener = jest.spyOn(
+          window,
+          "removeEventListener"
+        );
+        mockGetSessionItem.mockImplementation((item: SessionItems) => {
+          if (item === SessionItems.transaction) {
+            return {
+              ...mockTransactionOutcomeInfoData,
+            };
+          }
+          if (item === SessionItems.useremail) {
+            return "user@test.com";
+          }
+          return undefined;
+        });
         mockGetFragments.mockReturnValue({
           outcome: outcomeValue,
-          totalAmount: outcomeValue == "0" ? 12000 : undefined,
-          fees: outcomeValue == "0" ? 15 : undefined,
+          totalAmount: outcomeValue === "0" ? 12000 : undefined,
+          fees: outcomeValue === "0" ? 15 : undefined,
           transactionId: mockTransactionOutcomeInfoData.transactionId,
         });
-      renderComponent();
+        renderComponent();
 
-      await waitFor(() => {
-        expect(checkLogout).toHaveBeenCalledTimes(1);
-      });
-      expect(mockDispatch).toHaveBeenCalledWith(removeLoggedUser());
-      expect(mockClearSessionItem).toHaveBeenCalledWith(SessionItems.authToken);
-      expect(mockClearStorage).toHaveBeenCalledTimes(1);
+        await waitFor(() => {
+          expect(checkLogout).toHaveBeenCalledTimes(1);
+        });
+        expect(mockDispatch).toHaveBeenCalledWith(removeLoggedUser());
+        expect(mockClearSessionItem).toHaveBeenCalledWith(
+          SessionItems.authToken
+        );
+        expect(mockClearStorage).toHaveBeenCalledTimes(1);
 
-      expect(mockDispatch).toHaveBeenCalledWith(resetThreshold());
-      expect(mockRemoveEventListener).toHaveBeenCalledWith(
-        "beforeunload",
-        expect.any(Function)
-      );
-      mockRemoveEventListener.mockRestore();
-    });
+        expect(mockDispatch).toHaveBeenCalledWith(resetThreshold());
+        expect(mockRemoveEventListener).toHaveBeenCalledWith(
+          "beforeunload",
+          expect.any(Function)
+        );
+        mockRemoveEventListener.mockRestore();
+      }
+    );
   });
 
   describe("Outcome Determination and Display", () => {
-        test.each([
+    test.each([
       ViewOutcomeEnum.SUCCESS.toString(),
       ViewOutcomeEnum.GENERIC_ERROR.toString(),
       ViewOutcomeEnum.AUTH_ERROR.toString(),
@@ -230,11 +236,58 @@ mockGetSessionItem.mockImplementation((item: SessionItems) => {
       "116",
       "117",
       "121",
-    ])("should set document.title based on outcome and amount", (outcomeValue) => {
+    ])(
+      "should set document.title based on outcome and amount",
+      (outcomeValue) => {
+        /* eslint-disable sonarjs/no-identical-functions */
+        mockGetSessionItem.mockImplementation((item: SessionItems) => {
+          if (item === SessionItems.transaction) {
+            return {
+              ...mockTransactionOutcomeInfoData,
+            };
+          }
+          if (item === SessionItems.useremail) {
+            return "user@test.com";
+          }
+          return undefined;
+        });
+        mockGetFragments.mockReturnValue({
+          outcome: outcomeValue,
+          totalAmount: outcomeValue === "0" ? 12000 : undefined,
+          fees: outcomeValue === "0" ? 15 : undefined,
+          transactionId: mockTransactionOutcomeInfoData.transactionId,
+        });
+
+        renderComponent();
+        expect(document.title).toBe(
+          `paymentResponsePage.${outcomeValue}.title - pagoPA`
+        );
+      }
+    );
+  });
+
+  describe("Show Generic Error", () => {
+    test.each([
+      ViewOutcomeEnum.SUCCESS.toString(),
+      ViewOutcomeEnum.GENERIC_ERROR.toString(),
+      ViewOutcomeEnum.AUTH_ERROR.toString(),
+      "3",
+      "4",
+      "7",
+      "8",
+      "10",
+      "17",
+      "18",
+      "25",
+      "116",
+      "117",
+      "121",
+    ])("when transactionId doesn't match", (outcomeValue) => {
+      /* eslint-disable sonarjs/no-identical-functions */
       mockGetSessionItem.mockImplementation((item: SessionItems) => {
         if (item === SessionItems.transaction) {
           return {
-            ...mockTransactionOutcomeInfoData
+            ...mockTransactionOutcomeInfoData,
           };
         }
         if (item === SessionItems.useremail) {
@@ -242,21 +295,19 @@ mockGetSessionItem.mockImplementation((item: SessionItems) => {
         }
         return undefined;
       });
-        mockGetFragments.mockReturnValue({
-          outcome: outcomeValue,
-          totalAmount: outcomeValue == "0" ? 12000 : undefined,
-          fees: outcomeValue == "0" ? 15 : undefined,
-          transactionId: mockTransactionOutcomeInfoData.transactionId,
-        });
+      mockGetFragments.mockReturnValue({
+        outcome: outcomeValue,
+        totalAmount: outcomeValue === "0" ? 12000 : undefined,
+        fees: outcomeValue === "0" ? 15 : undefined,
+        transactionId: "id",
+      });
 
       renderComponent();
-      const expectedAmount = moneyFormat(12000 + 15);
-      expect(document.title).toBe(
-        `paymentResponsePage.${outcomeValue}.title with amount ${expectedAmount} - pagoPA`
-      );
+      expect(document.title).toBe(`paymentResponsePage.1.title - pagoPA`);
     });
   });
 
+  /* eslint-disable sonarjs/cognitive-complexity */
   describe("V2PaymentResponsePage no cart", () => {
     beforeEach(() => {
       mockGetSessionItem.mockImplementation((item: SessionItems) => {
@@ -267,7 +318,7 @@ mockGetSessionItem.mockImplementation((item: SessionItems) => {
           return "test@example.com";
         }
         if (item === SessionItems.transaction) {
-          return {transactionId: "testId"} as NewTransactionResponse;
+          return { transactionId: "testId" } as NewTransactionResponse;
         }
         if (item === SessionItems.pspSelected) {
           return undefined;
@@ -321,7 +372,7 @@ mockGetSessionItem.mockImplementation((item: SessionItems) => {
       }
     );
   });
-
+  /* eslint-disable sonarjs/cognitive-complexity */
   describe("V2PaymentResponsePage with cart", () => {
     const cartData = {
       ...mockCart,

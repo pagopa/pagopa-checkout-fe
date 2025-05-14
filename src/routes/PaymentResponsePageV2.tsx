@@ -89,11 +89,12 @@ export default function PaymentResponsePageV2() {
 
   const email = getSessionItem(SessionItems.useremail) as string | undefined;
 
-  const grandTotalAmount = totalAmount && fees ? totalAmount + fees : undefined
+  const grandTotalAmount =
+    totalAmount && fees ? Number(totalAmount) + Number(fees) : null;
 
   const usefulPrintData: PrintData = {
     useremail: email || "",
-    amount: moneyFormat(grandTotalAmount!!),
+    amount: moneyFormat(grandTotalAmount!),
   };
 
   const dispatch = useAppDispatch();
