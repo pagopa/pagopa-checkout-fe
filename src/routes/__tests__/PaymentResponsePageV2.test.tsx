@@ -8,7 +8,6 @@ import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders
 import { SessionItems } from "../../utils/storage/sessionStorage";
 import PaymentResponsePageV2 from "../../routes/PaymentResponsePageV2";
 import "jest-location-mock";
-import { getFragmentParameter } from "../../utils/regex/urlUtilities";
 import { checkLogout } from "../../utils/api/helper";
 import { ViewOutcomeEnum } from "../../utils/transactions/TransactionResultUtil";
 import { getConfigOrThrow } from "../../utils/config/config";
@@ -163,8 +162,40 @@ describe("PaymentResponsePageV2", () => {
     );
 
   describe("Initial Effects and Cleanup", () => {
-    it("should call checkLogout, clearStorage, dispatch resetThreshold, and remove event listener on mount", async () => {
+        test.each([
+      ViewOutcomeEnum.SUCCESS.toString(),
+      ViewOutcomeEnum.GENERIC_ERROR.toString(),
+      ViewOutcomeEnum.AUTH_ERROR.toString(),
+      "3",
+      "4",
+      "7",
+      "8",
+      "10",
+      "17",
+      "18",
+      "25",
+      "116",
+      "117",
+      "121",
+    ])("should call checkLogout, clearStorage, dispatch resetThreshold, and remove event listener on mount", async (outcomeValue) => {
       const mockRemoveEventListener = jest.spyOn(window, "removeEventListener");
+mockGetSessionItem.mockImplementation((item: SessionItems) => {
+      if (item === SessionItems.transaction) {
+          return {
+            ...mockTransactionOutcomeInfoData
+          };
+        }
+        if (item === SessionItems.useremail) {
+          return "user@test.com";
+        }
+        return undefined;
+      });
+        mockGetFragments.mockReturnValue({
+          outcome: outcomeValue,
+          totalAmount: outcomeValue == "0" ? 12000 : undefined,
+          fees: outcomeValue == "0" ? 15 : undefined,
+          transactionId: mockTransactionOutcomeInfoData.transactionId,
+        });
       renderComponent();
 
       await waitFor(() => {
@@ -184,14 +215,26 @@ describe("PaymentResponsePageV2", () => {
   });
 
   describe("Outcome Determination and Display", () => {
-    it("should set document.title based on outcome and amount", () => {
+        test.each([
+      ViewOutcomeEnum.SUCCESS.toString(),
+      ViewOutcomeEnum.GENERIC_ERROR.toString(),
+      ViewOutcomeEnum.AUTH_ERROR.toString(),
+      "3",
+      "4",
+      "7",
+      "8",
+      "10",
+      "17",
+      "18",
+      "25",
+      "116",
+      "117",
+      "121",
+    ])("should set document.title based on outcome and amount", (outcomeValue) => {
       mockGetSessionItem.mockImplementation((item: SessionItems) => {
         if (item === SessionItems.transaction) {
           return {
-            ...mockTransactionOutcomeInfoData,
-            outcome: ViewOutcomeEnum.SUCCESS,
-            totalAmount: 1234,
-            fees: 50,
+            ...mockTransactionOutcomeInfoData
           };
         }
         if (item === SessionItems.useremail) {
@@ -199,12 +242,17 @@ describe("PaymentResponsePageV2", () => {
         }
         return undefined;
       });
-      (getFragmentParameter as jest.Mock).mockReturnValue(null);
+        mockGetFragments.mockReturnValue({
+          outcome: outcomeValue,
+          totalAmount: outcomeValue == "0" ? 12000 : undefined,
+          fees: outcomeValue == "0" ? 15 : undefined,
+          transactionId: mockTransactionOutcomeInfoData.transactionId,
+        });
 
       renderComponent();
-      const expectedAmount = moneyFormat(1234 + 50);
+      const expectedAmount = moneyFormat(12000 + 15);
       expect(document.title).toBe(
-        `paymentResponsePage.${ViewOutcomeEnum.SUCCESS}.title with amount ${expectedAmount} - pagoPA`
+        `paymentResponsePage.${outcomeValue}.title with amount ${expectedAmount} - pagoPA`
       );
     });
   });
@@ -219,7 +267,7 @@ describe("PaymentResponsePageV2", () => {
           return "test@example.com";
         }
         if (item === SessionItems.transaction) {
-          return undefined;
+          return {transactionId: "testId"} as NewTransactionResponse;
         }
         if (item === SessionItems.pspSelected) {
           return undefined;
@@ -227,6 +275,7 @@ describe("PaymentResponsePageV2", () => {
         return undefined;
       });
     });
+
     // TEST WITHOUT CART
     test.each([
       ViewOutcomeEnum.SUCCESS.toString(),
@@ -246,7 +295,12 @@ describe("PaymentResponsePageV2", () => {
     ])(
       "should show payment outcome %s message and navigate to / on close",
       async (outcomeVal) => {
-        (getFragmentParameter as jest.Mock).mockReturnValue(outcomeVal);
+        mockGetFragments.mockReturnValue({
+          outcome: outcomeVal,
+          totalAmount: outcomeVal === "0" ? "12000" : undefined,
+          fees: outcomeVal === "0" ? "15" : undefined,
+          transactionId: "testId",
+        });
 
         renderComponent();
 
@@ -315,8 +369,8 @@ describe("PaymentResponsePageV2", () => {
       async (outcomeVal) => {
         mockGetFragments.mockReturnValue({
           outcome: outcomeVal,
-          totalAmount: "12000",
-          fees: "15",
+          totalAmount: outcomeVal === "0" ? "12000" : undefined,
+          fees: outcomeVal === "0" ? "15" : undefined,
           transactionId: "testId",
         });
         renderComponent();

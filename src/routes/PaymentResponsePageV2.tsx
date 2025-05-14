@@ -57,7 +57,7 @@ export default function PaymentResponsePageV2() {
     ViewOutcomeEnum.GENERIC_ERROR) as ViewOutcomeEnum;
   const totalAmount = totalAmountFragment
     ? Number.parseInt(totalAmountFragment, 10)
-    : 0;
+    : undefined;
   const fees = feesFragment ? Number.parseInt(feesFragment, 10) : undefined;
 
   const conf = getConfigOrThrow();
@@ -89,20 +89,11 @@ export default function PaymentResponsePageV2() {
 
   const email = getSessionItem(SessionItems.useremail) as string | undefined;
 
-  const calculateTotalAmount = (): number => {
-    if (totalAmount !== undefined || fees !== undefined) {
-      const baseAmount = Number(totalAmount ?? 0);
-      const feesAmount = Number(fees ?? 0);
-      return baseAmount + feesAmount;
-    }
-    return 0;
-  };
-
-  const grandTotalAmount = calculateTotalAmount();
+  const grandTotalAmount = totalAmount && fees ? totalAmount + fees : undefined
 
   const usefulPrintData: PrintData = {
     useremail: email || "",
-    amount: moneyFormat(grandTotalAmount),
+    amount: moneyFormat(grandTotalAmount!!),
   };
 
   const dispatch = useAppDispatch();
