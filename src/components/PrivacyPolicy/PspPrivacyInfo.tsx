@@ -23,7 +23,7 @@ const PrivacyLink = (props: {
 interface PspPrivacyInfoProps {
   termsLink: string;
   privacyLink: string;
-  pspName?: string;
+  pspName: string;
 }
 
 const PspPrivacyInfo = (props: PspPrivacyInfoProps) => {
