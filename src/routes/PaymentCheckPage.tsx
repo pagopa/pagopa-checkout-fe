@@ -399,7 +399,7 @@ export default function PaymentCheckPage() {
       {!!pspSelected && <PspPrivacyInfo
         termsLink="https://www.pagopa.gov.it/it/prestatori-servizi-di-pagamento/elenco-PSP-attivi/"
         privacyLink="https://www.pagopa.gov.it/it/prestatori-servizi-di-pagamento/elenco-PSP-attivi/"
-        pspName={pspSelected?.pspBusinessName}
+        pspName={pspSelected.pspBusinessName || ''}
       />}
 
       <FormButtons
