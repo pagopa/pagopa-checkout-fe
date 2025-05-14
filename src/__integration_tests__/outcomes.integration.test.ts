@@ -69,7 +69,7 @@ describe("Transaction outcome success tests", () => {
         ["de", deTranslation],
         ["sl", slTranslation]
     ])("should show success outcome in %s", async (lang, translation) => {
-        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_SUCCESS}`);
+        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_SUCCESS} and language: ${lang}`);
         await selectLanguage(lang);
         const resultMessage = await payNotice(
             VALID_NOTICE_CODE,
@@ -90,7 +90,7 @@ describe("Transaction outcome generic-error tests", () => {
         ["de", deTranslation],
         ["sl", slTranslation]
     ])("should show generic-error outcome in %s", async (lang, translation) => {
-        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_GENERIC_ERROR}`);
+        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_GENERIC_ERROR} and language: ${lang}`);
         await selectLanguage(lang);
         const resultMessage = await payNotice(
             VALID_NOTICE_CODE,
@@ -111,7 +111,7 @@ describe("Transaction outcome authorization-error tests", () => {
         ["de", deTranslation],
         ["sl", slTranslation]
     ])("should show authorization-error outcome in %s", async (lang, translation) => {
-        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_AUTHORIZATION_ERROR}`);
+        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_AUTHORIZATION_ERROR} and language: ${lang}`);
         await selectLanguage(lang);
         const resultMessage = await payNotice(
             VALID_NOTICE_CODE,
@@ -133,7 +133,7 @@ describe("Transaction outcome invalid-data tests", () => {
         ["de", deTranslation],
         ["sl", slTranslation]
     ])("should show invalid-data outcome in %s", async (lang, translation) => {
-        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_INVALID_DATA}`);
+        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_INVALID_DATA} and language: ${lang}`);
         await selectLanguage(lang);
         const resultMessage = await payNotice(
             VALID_NOTICE_CODE,
@@ -154,7 +154,7 @@ describe("Transaction outcome timeout tests", () => {
         ["de", deTranslation],
         ["sl", slTranslation]
     ])("should show timeout outcome in %s", async (lang, translation) => {
-        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_TIMEOUT}`);
+        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_TIMEOUT} and language: ${lang}`);
         await selectLanguage(lang);
         const resultMessage = await payNotice(
             VALID_NOTICE_CODE,
@@ -175,7 +175,7 @@ describe("Transaction outcome invalid-card tests", () => {
         ["de", deTranslation],
         ["sl", slTranslation]
     ])("should show invalid-card outcome in %s", async (lang, translation) => {
-        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_INVALID_CARD}`);
+        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_INVALID_CARD} and language: ${lang}`);
         await selectLanguage(lang);
         const resultMessage = await payNotice(
             VALID_NOTICE_CODE,
@@ -196,7 +196,7 @@ describe("Transaction outcome cancelled-by-user tests", () => {
         ["de", deTranslation],
         ["sl", slTranslation]
     ])("should show cancelled-by-user outcome in %s", async (lang, translation) => {
-        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_CANCELLED_BY_USER}`);
+        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_CANCELLED_BY_USER} and language: ${lang}`);
         await selectLanguage(lang);
         const resultMessage = await payNotice(
             VALID_NOTICE_CODE,
@@ -218,7 +218,7 @@ describe("Transaction outcome excessive-amount tests", () => {
         ["de", deTranslation],
         ["sl", slTranslation]
     ])("should show excessive-amount outcome in %s", async (lang, translation) => {
-        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_EXCESSIVE_AMOUNT}`);
+        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_EXCESSIVE_AMOUNT} and language: ${lang}`);
         await selectLanguage(lang);
         const resultMessage = await payNotice(
             VALID_NOTICE_CODE,
@@ -240,7 +240,7 @@ describe("Transaction outcome taken-in-charge tests", () => {
         ["de", deTranslation],
         ["sl", slTranslation]
     ])("should show taken-in-charge outcome in %s", async (lang, translation) => {
-        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_TAKEN_IN_CHARGE}`);
+        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_TAKEN_IN_CHARGE} and language: ${lang}`);
         await selectLanguage(lang);
         const resultMessage = await payNotice(
             VALID_NOTICE_CODE,
@@ -262,7 +262,7 @@ describe("Transaction outcome refunded tests", () => {
         ["de", deTranslation],
         ["sl", slTranslation]
     ])("should show refunded outcome in %s", async (lang, translation) => {
-        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_REFUNDED}`);
+        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_REFUNDED} and language: ${lang}`);
         await selectLanguage(lang);
         const resultMessage = await payNotice(
             VALID_NOTICE_CODE,
@@ -283,7 +283,7 @@ describe("Transaction outcome psp-error tests", () => {
         ["de", deTranslation],
         ["sl", slTranslation]
     ])("should show psp-error outcome in %s", async (lang, translation) => {
-        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_PSP_ERROR}`);
+        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_PSP_ERROR} and language: ${lang}`);
         await selectLanguage(lang);
         const resultMessage = await payNotice(
             VALID_NOTICE_CODE,
@@ -304,7 +304,7 @@ describe("Transaction outcome balance-not-available tests", () => {
         ["de", deTranslation],
         ["sl", slTranslation]
     ])("should show balance-not-available outcome in %s", async (lang, translation) => {
-        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_BALANCE_NOT_AVAILABLE}`);
+        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_BALANCE_NOT_AVAILABLE} and language: ${lang}`);
         await selectLanguage(lang);
         const resultMessage = await payNotice(
             VALID_NOTICE_CODE,
@@ -326,7 +326,7 @@ describe("Transaction outcome cvv-error tests", () => {
         ["de", deTranslation],
         ["sl", slTranslation]
     ])("should show cvv-error outcome in %s", async (lang, translation) => {
-        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_CVV_ERROR}`);
+        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_CVV_ERROR} and language: ${lang}`);
         await selectLanguage(lang);
         const resultMessage = await payNotice(
             VALID_NOTICE_CODE,
@@ -347,7 +347,7 @@ describe("Transaction outcome limit-exceeded tests", () => {
         ["de", deTranslation],
         ["sl", slTranslation]
     ])("should show limit-exceeded outcome in %s", async (lang, translation) => {
-        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_LIMIT_EXCEEDED}`);
+        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_LIMIT_EXCEEDED} and language: ${lang}`);
         await selectLanguage(lang);
         const resultMessage = await payNotice(
             VALID_NOTICE_CODE,
@@ -369,7 +369,7 @@ describe("Transaction outcome fallback tests", () => {
         ["de", deTranslation],
         ["sl", slTranslation]
     ])("should fallback to success for unmapped code in %s", async (lang, translation) => {
-        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_DEFAULT}`);
+        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_DEFAULT} and language: ${lang}`);
         await selectLanguage(lang);
         const resultMessage = await payNotice(
             VALID_NOTICE_CODE,
