@@ -1,11 +1,15 @@
 import { default as React } from "react";
-import { Typography, Alert, AlertTitle, Box } from "@mui/material";
+import { Typography, Alert, AlertTitle, Link, Box } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { ThemeProvider } from "@mui/material";
 import { theme } from "@pagopa/mui-italia";
 
 const SurveyLink = () => {
   const { t } = useTranslation();
+
+  const onClick = () => {
+    alert("click");
+  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -19,6 +23,16 @@ const SurveyLink = () => {
           <Typography variant="body1" mb={2}>
             {t("paymentResponsePage.survey.body")}
           </Typography>
+          <Link
+            onClick={onClick}
+            variant="body1"
+            target="_blank"
+            rel="nofollow"
+            href={t("paymentResponsePage.survey.link.href")}
+            sx={{ textDecoration: "none", fontWeight: 700 }}
+          >
+            {t("paymentResponsePage.survey.link.text")}
+          </Link>
         </Box>
       </Alert>
     </ThemeProvider>
