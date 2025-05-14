@@ -10,12 +10,9 @@ export const payNotice = async (
   await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
   const payBtn = await page.waitForSelector(payBtnSelector);
   await payBtn.click();
-  await page.waitForNavigation({ timeout: 15000, waitUntil: "networkidle2" });
-  const current = await page.evaluate(() => location.href);
-  if (!current.includes(checkoutUrlAfterAuth)) {
-    await page.goto(checkoutUrlAfterAuth, { waitUntil: "networkidle2" });
-  }
-  const message = await page.waitForSelector(resultTitleSelector, { visible: true });
+  await page.waitForNavigation();
+  await page.goto(checkoutUrlAfterAuth);
+  const message = await page.waitForSelector(resultTitleSelector);
   return await message.evaluate((el) => el.textContent);
 };
 
