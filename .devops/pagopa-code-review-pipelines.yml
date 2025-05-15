@@ -36,6 +36,11 @@ parameters:
     type: boolean
     default: true
 
+  - name: 'PAYMENT_RESPONSE_PAGE_V2_TEST'
+    displayName: 'PaymentResponsePageV2 flow integration tests'
+    type: boolean
+    default: true
+
 variables:
   NODE_VERSION: '14.16.0'
   YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
@@ -350,7 +355,7 @@ stages:
             failTaskOnFailedTests: true
 
   - stage: Integration_Tests_PaymentResponsePageV2
-    condition: and(succeeded(), eq('${{parameters.AUTHENTICATION_TESTS}}', true))
+    condition: and(succeeded(), eq('${{parameters.PAYMENT_RESPONSE_PAGE_V2_TEST}}', true))
     pool:
       vmImage: 'ubuntu-latest'
     dependsOn: []
