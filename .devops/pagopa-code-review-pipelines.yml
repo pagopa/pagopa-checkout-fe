@@ -58,7 +58,7 @@ resources:
     - repository: checkout-be-mock
       type: github
       name: pagopa/pagopa-checkout-be-mock
-      ref: master
+      ref: CHK-4119-implements-outcome-info-api
       endpoint: 'io-azure-devops-github-ro'
 
 stages:
