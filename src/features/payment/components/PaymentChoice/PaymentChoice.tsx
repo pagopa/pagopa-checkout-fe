@@ -13,8 +13,6 @@ import ClickableFieldContainer from "../../../../components/TextFormField/Clicka
 import { useAppDispatch } from "../../../../redux/hooks/hooks";
 import { PaymentMethodRoutes } from "../../../../routes/models/paymentMethodRoutes";
 import { getFees, recaptchaTransaction } from "../../../../utils/api/helper";
-import { PAYMENT_METHODS_CHOICE } from "../../../../utils/config/mixpanelDefs";
-import { mixpanel } from "../../../../utils/config/mixpanelHelperInit";
 import {
   SessionItems,
   getReCaptchaKey,
@@ -69,9 +67,6 @@ export function PaymentChoice(props: {
     belowThreshold?: boolean
   ) => {
     const route: string = PaymentMethodRoutes[paymentTypeCode]?.route;
-    mixpanel.track(PAYMENT_METHODS_CHOICE.value, {
-      EVENT_ID: paymentTypeCode,
-    });
 
     if (belowThreshold !== undefined) {
       dispatch(setThreshold({ belowThreshold }));

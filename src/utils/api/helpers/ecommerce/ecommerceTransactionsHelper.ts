@@ -5,7 +5,6 @@ import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
 import { flow, pipe } from "fp-ts/lib/function";
 import ReCAPTCHA from "react-google-recaptcha";
-import { mixpanel } from "../../../../utils/config/mixpanelHelperInit";
 import {
   Cart,
   PaymentFormFields,
@@ -18,21 +17,6 @@ import {
   setSessionItem,
 } from "../../../../utils/storage/sessionStorage";
 import { ErrorsType } from "../../../../utils/errors/checkErrorsModel";
-import {
-  PAYMENT_ACTION_DELETE_INIT,
-  PAYMENT_ACTION_DELETE_NET_ERR,
-  PAYMENT_ACTION_DELETE_RESP_ERR,
-  PAYMENT_ACTION_DELETE_SUCCESS,
-  PAYMENT_ACTION_DELETE_SVR_ERR,
-  PAYMENT_ACTIVATE_INIT,
-  PAYMENT_ACTIVATE_NET_ERR,
-  PAYMENT_ACTIVATE_RESP_ERR,
-  PAYMENT_ACTIVATE_SUCCESS,
-  PAYMENT_ACTIVATE_SVR_ERR,
-  TRANSACTION_AUTH_INIT,
-  TRANSACTION_AUTH_RESP_ERROR,
-  TRANSACTION_AUTH_SUCCES,
-} from "../../../../utils/config/mixpanelDefs";
 import {
   apiPaymentEcommerceClient,
   apiPaymentEcommerceClientV2,
@@ -151,10 +135,6 @@ const activePaymentTask = (
   pipe(
     TE.tryCatch(
       () => {
-        mixpanel.track(PAYMENT_ACTIVATE_INIT.value, {
-          EVENT_ID: PAYMENT_ACTIVATE_INIT.value,
-        });
-
         // base payload shared between both auth and non-auth APIs
         const payload = {
           "x-correlation-id": correlationId,
@@ -191,20 +171,10 @@ const activePaymentTask = (
           )
         );
       },
-      () => {
-        mixpanel.track(PAYMENT_ACTIVATE_NET_ERR.value, {
-          EVENT_ID: PAYMENT_ACTIVATE_NET_ERR.value,
-        });
-        return "Errore attivazione pagamento";
-      }
+      () => "Errore attivazione pagamento"
     ),
     TE.fold(
-      () => {
-        mixpanel.track(PAYMENT_ACTIVATE_SVR_ERR.value, {
-          EVENT_ID: PAYMENT_ACTIVATE_SVR_ERR.value,
-        });
-        return TE.left({ faultCodeCategory: FaultCategoryEnum.GENERIC_ERROR });
-      },
+      () => TE.left({ faultCodeCategory: FaultCategoryEnum.GENERIC_ERROR }),
       (errorOrResponse) =>
         pipe(
           errorOrResponse,
@@ -212,9 +182,7 @@ const activePaymentTask = (
             () =>
               TE.left({ faultCodeCategory: FaultCategoryEnum.GENERIC_ERROR }),
             (responseType) => {
-              let reason;
               if (responseType.status === 200) {
-                reason = "";
                 const cartInfo = getSessionItem(SessionItems.cart) as
                   | Cart
                   | undefined;
@@ -263,18 +231,6 @@ const activePaymentTask = (
                   });
                 }
               }
-              if (responseType.status === 200) {
-                reason = "";
-              } else if (responseType.status === 400) {
-                reason = responseType.value?.title;
-              } else {
-                reason = responseType.value?.faultCodeDetail;
-              }
-              const EVENT_ID: string =
-                responseType.status === 200
-                  ? PAYMENT_ACTIVATE_SUCCESS.value
-                  : PAYMENT_ACTIVATE_RESP_ERR.value;
-              mixpanel.track(EVENT_ID, { EVENT_ID, reason });
 
               if (responseType.status === 401) {
                 return TE.left({
@@ -333,10 +289,6 @@ export const proceedToPayment = async (
   onError: (e: string) => void,
   onResponse: (authUrl: string) => void
 ) => {
-  mixpanel.track(TRANSACTION_AUTH_INIT.value, {
-    EVENT_ID: TRANSACTION_AUTH_INIT.value,
-  });
-
   const transactionId = pipe(
     transaction,
     O.fromNullable,
@@ -448,15 +400,9 @@ export const proceedToPayment = async (
     ),
     TE.map((response) => {
       if (response.status === 200) {
-        mixpanel.track(TRANSACTION_AUTH_SUCCES.value, {
-          EVENT_ID: TRANSACTION_AUTH_SUCCES.value,
-        });
         const { authorizationUrl } = response.value;
         onResponse(authorizationUrl);
       } else {
-        mixpanel.track(TRANSACTION_AUTH_RESP_ERROR.value, {
-          EVENT_ID: TRANSACTION_AUTH_RESP_ERROR.value,
-        });
         onError(ErrorsType.CONNECTION);
       }
     })
@@ -487,10 +433,6 @@ export const cancelPayment = async (
   onError: (e: string, userCancelRedirect: boolean) => void,
   onResponse: () => void
 ) => {
-  mixpanel.track(PAYMENT_ACTION_DELETE_INIT.value, {
-    EVENT_ID: PAYMENT_ACTION_DELETE_INIT.value,
-  });
-
   const transactionId = pipe(
     getSessionItem(SessionItems.transaction) as NewTransactionResponse,
     O.fromNullable,
@@ -525,43 +467,28 @@ export const cancelPayment = async (
               }),
             () => {
               onError(ErrorsType.CONNECTION, false);
-              mixpanel.track(PAYMENT_ACTION_DELETE_NET_ERR.value, {
-                EVENT_ID: PAYMENT_ACTION_DELETE_NET_ERR.value,
-              });
               return E.toError;
             }
           ),
           TE.fold(
             () => async () => {
               onError(ErrorsType.SERVER, false);
-              mixpanel.track(PAYMENT_ACTION_DELETE_SVR_ERR.value, {
-                EVENT_ID: PAYMENT_ACTION_DELETE_SVR_ERR.value,
-              });
               return {};
             },
             (myResExt) => async () =>
               pipe(
                 myResExt,
                 E.fold(
-                  () => PAYMENT_ACTION_DELETE_RESP_ERR.value,
+                  () => "PAYMENT_ACTION_DELETE_RESP_ERR",
                   (myRes) => {
                     if (myRes?.status === 202) {
                       onResponse();
-                      mixpanel.track(PAYMENT_ACTION_DELETE_SUCCESS.value, {
-                        EVENT_ID: PAYMENT_ACTION_DELETE_SUCCESS.value,
-                      });
                       return myRes?.value;
                     } else if (myRes.status >= 400 && myRes.status < 500) {
                       onError(ErrorsType.GENERIC_ERROR, true);
-                      mixpanel.track(PAYMENT_ACTION_DELETE_RESP_ERR.value, {
-                        EVENT_ID: PAYMENT_ACTION_DELETE_RESP_ERR.value,
-                      });
                       return {};
                     } else {
                       onError(ErrorsType.GENERIC_ERROR, false);
-                      mixpanel.track(PAYMENT_ACTION_DELETE_RESP_ERR.value, {
-                        EVENT_ID: PAYMENT_ACTION_DELETE_RESP_ERR.value,
-                      });
                       return {};
                     }
                   }

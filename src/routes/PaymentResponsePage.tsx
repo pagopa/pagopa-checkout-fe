@@ -18,8 +18,6 @@ import {
 } from "../features/payment/models/responseOutcome";
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { callServices } from "../utils/api/response";
-import { PAYMENT_OUTCOME_CODE } from "../utils/config/mixpanelDefs";
-import { mixpanel } from "../utils/config/mixpanelHelperInit";
 import { onBrowserUnload } from "../utils/eventListeners";
 import { moneyFormat } from "../utils/form/formatters";
 import {
@@ -109,11 +107,6 @@ export default function PaymentResponsePage() {
       nodeInfo,
       gatewayInfo
     );
-    mixpanel.track(PAYMENT_OUTCOME_CODE.value, {
-      EVENT_ID: PAYMENT_OUTCOME_CODE.value,
-      idStatus,
-      outcome,
-    });
 
     setOutcome(outcome);
     showFinalResult(outcome);

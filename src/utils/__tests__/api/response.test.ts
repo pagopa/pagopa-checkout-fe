@@ -20,7 +20,6 @@ import * as TE from "fp-ts/TaskEither";
 import * as O from "fp-ts/Option";
 import { callServices } from "../../api/response";
 import { getSessionItem } from "../../storage/sessionStorage";
-import { mixpanel } from "../../config/mixpanelHelperInit";
 import { ecommerceTransaction } from "../../transactions/transactionHelper";
 import { getUrlParameter } from "../../regex/urlUtilities";
 import { TransactionStatusEnum } from "../../../../generated/definitions/payment-ecommerce/TransactionStatus";
@@ -47,10 +46,6 @@ describe("callServices", () => {
 
     await callServices(mockHandleFinalStatusResult);
 
-    expect(mixpanel.track).toHaveBeenCalledWith(
-      expect.stringContaining("THREEDSMETHODURL_STEP1_RESP_ERR"),
-      expect.any(Object)
-    );
     expect(mockHandleFinalStatusResult).toBeCalledTimes(1);
   });
 
@@ -71,10 +66,6 @@ describe("callServices", () => {
 
     await callServices(mockHandleFinalStatusResult);
 
-    expect(mixpanel.track).toHaveBeenCalledWith(
-      expect.stringContaining("THREEDSACSCHALLENGEURL_STEP2_SUCCESS"),
-      expect.any(Object)
-    );
     expect(mockHandleFinalStatusResult).toHaveBeenCalledWith(
       TransactionStatusEnum.NOTIFIED_OK,
       { someData: "node" },

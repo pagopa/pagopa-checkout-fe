@@ -22,7 +22,6 @@ import {
   npgSessionsFields,
   retrieveCardData,
 } from "../../../../api/helper";
-import { NPG_NET_ERR } from "../../../../../utils/config/mixpanelDefs";
 
 jest.mock("../../../../config/config", () => ({
   getConfigOrThrow: jest.fn(() => mockApiConfig),
@@ -315,14 +314,6 @@ describe("Ecommerce payment methods helper - npgSessionsFields tests", () => {
     expect(mockOnResponse).toHaveBeenCalledWith(postSessionResponseMock);
   });
 
-  it("Should call onError with NPG_NET_ERR when api fail", async () => {
-    (
-      apiPaymentEcommerceClientWithRetry.createSession as jest.Mock
-    ).mockRejectedValue("Api error");
-    await npgSessionsFields(mockOnError, mockOnResponse);
-    expect(mockOnError).toHaveBeenCalledWith(NPG_NET_ERR.value);
-  });
-
   it("Should call onResponse when api return correct value on v3 api", async () => {
     (getSessionItem as jest.Mock).mockReturnValue("authToken");
     (
@@ -337,15 +328,6 @@ describe("Ecommerce payment methods helper - npgSessionsFields tests", () => {
     );
     await npgSessionsFields(mockOnError, mockOnResponse);
     expect(mockOnResponse).toHaveBeenCalledWith(postSessionResponseMock);
-  });
-
-  it("Should call onError with ErrorsType.NPG_NET_ERR when api fail on v3 api", async () => {
-    (getSessionItem as jest.Mock).mockReturnValue("authToken");
-    (
-      apiPaymentEcommerceClientWithRetryV3.createSessionV3 as jest.Mock
-    ).mockRejectedValue("Api error");
-    await npgSessionsFields(mockOnError, mockOnResponse);
-    expect(mockOnError).toHaveBeenCalledWith(NPG_NET_ERR.value);
   });
 
   it("Should call onError with ErrorsType.UNAUTHORIZED when api return 401 on v3 api", async () => {

@@ -1,17 +1,9 @@
 import * as E from "fp-ts/Either";
 import { UNKNOWN } from "../../transactions/TransactionStatesTypes";
 import { TransactionInfo } from "../../../../generated/definitions/payment-ecommerce-v2/TransactionInfo";
-import {
-  TRANSACTION_POLLING_CHECK_INIT,
-  TRANSACTION_POLLING_CHECK_SUCCESS,
-  TRANSACTION_POLLING_CHECK_RESP_ERR,
-  TRANSACTION_POLLING_CHECK_NET_ERR,
-  TRANSACTION_POLLING_CHECK_SVR_ERR,
-} from "../../config/mixpanelDefs";
 import { ecommerceTransaction } from "../../transactions/transactionHelper";
 import { Client } from "../../../../generated/definitions/payment-ecommerce-v2/client";
 import { TransactionStatusEnum } from "../../../../generated/definitions/payment-ecommerce-v3/TransactionStatus";
-import { mixpanel } from "../../config/mixpanelHelperInit";
 
 jest.mock("../../config/mixpanelHelperInit", () => ({
   mixpanel: {
@@ -65,14 +57,6 @@ describe("ecommerceTransaction", () => {
     )();
 
     expect(result).toEqual(E.right(fakeTransactionInfo));
-    expect(mixpanel.track).toHaveBeenCalledWith(
-      TRANSACTION_POLLING_CHECK_INIT.value,
-      expect.any(Object)
-    );
-    expect(mixpanel.track).toHaveBeenCalledWith(
-      TRANSACTION_POLLING_CHECK_SUCCESS.value,
-      expect.any(Object)
-    );
   });
 
   it("should fail when response status !== 200", async () => {
@@ -93,10 +77,6 @@ describe("ecommerceTransaction", () => {
     )();
 
     expect(result).toEqual(E.left(UNKNOWN.value));
-    expect(mixpanel.track).toHaveBeenCalledWith(
-      TRANSACTION_POLLING_CHECK_RESP_ERR.value,
-      expect.any(Object)
-    );
   });
 
   it("should fail when getTransactionInfo returns Left", async () => {
@@ -114,10 +94,6 @@ describe("ecommerceTransaction", () => {
     )();
 
     expect(result).toEqual(E.left(UNKNOWN.value));
-    expect(mixpanel.track).toHaveBeenCalledWith(
-      TRANSACTION_POLLING_CHECK_RESP_ERR.value,
-      expect.any(Object)
-    );
   });
 
   it("should fail when response is Right(Left(error))", async () => {
@@ -136,10 +112,6 @@ describe("ecommerceTransaction", () => {
     )();
 
     expect(result).toEqual(E.left(UNKNOWN.value));
-    expect(mixpanel.track).toHaveBeenCalledWith(
-      TRANSACTION_POLLING_CHECK_RESP_ERR.value,
-      expect.any(Object)
-    );
   });
 
   it("should handle exception thrown by getTransactionInfo and track NET_ERR", async () => {
@@ -158,15 +130,5 @@ describe("ecommerceTransaction", () => {
     )();
 
     expect(result).toEqual(E.left(UNKNOWN.value));
-    expect(mixpanel.track).toHaveBeenCalledWith(
-      TRANSACTION_POLLING_CHECK_NET_ERR.value,
-      expect.objectContaining({
-        EVENT_ID: TRANSACTION_POLLING_CHECK_NET_ERR.value,
-      })
-    );
-    expect(mixpanel.track).toHaveBeenCalledWith(
-      TRANSACTION_POLLING_CHECK_SVR_ERR.value,
-      expect.any(Object)
-    );
   });
 });
