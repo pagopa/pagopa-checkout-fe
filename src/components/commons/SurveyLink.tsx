@@ -8,6 +8,7 @@ const SurveyLink = () => {
   const { t } = useTranslation();
 
   const onClick = () => {
+    // eslint-disable-next-line no-console
     console.log("click");
   };
 
