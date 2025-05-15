@@ -1,11 +1,4 @@
-import {
-  Alert,
-  AlertTitle,
-  Box,
-  Button,
-  Typography,
-  useTheme,
-} from "@mui/material";
+import { Alert, AlertTitle, Box, Button, Typography } from "@mui/material";
 import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useNavigate } from "react-router-dom";
@@ -44,7 +37,6 @@ export default function PaymentPspListPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const theme = useTheme();
 
   const ref = React.useRef<ReCAPTCHA>(null);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
@@ -161,38 +153,30 @@ export default function PaymentPspListPage() {
       {paymentMethod && loading && <CheckoutLoader />}
       {paymentMethod?.paymentTypeCode === PaymentCodeTypeEnum.MYBK &&
         isAlertVisible && (
-          <Box
-            borderLeft={5}
-            borderColor={theme.palette.info.main}
-            borderRadius={2}
-            boxShadow={"1px 1px 5px #d8dee4"}
-            data-testid="MYBKParentComponent"
+          <Alert
+            severity="info"
+            variant="outlined"
+            action={
+              <Button
+                size="small"
+                onClick={() => {
+                  setIsAlertVisible(false);
+                }}
+              >
+                Chiudi
+              </Button>
+            }
+            sx={{
+              alignItems: "center",
+            }}
           >
-            <Alert
-              severity="info"
-              variant="outlined"
-              action={
-                <Button
-                  size="small"
-                  onClick={() => {
-                    setIsAlertVisible(false);
-                  }}
-                >
-                  Chiudi
-                </Button>
-              }
-              sx={{
-                alignItems: "center",
-              }}
-            >
-              <React.Fragment key=".0">
-                <AlertTitle>
-                  {t("paymentPspListPage.myBankAlertTitle")}
-                </AlertTitle>
-                {t("paymentPspListPage.myBankAlertBody")}
-              </React.Fragment>
-            </Alert>
-          </Box>
+            <React.Fragment key=".0">
+              <AlertTitle>
+                {t("paymentPspListPage.myBankAlertTitle")}
+              </AlertTitle>
+              {t("paymentPspListPage.myBankAlertBody")}
+            </React.Fragment>
+          </Alert>
         )}
       <PageContainer
         title="paymentPspListPage.title"
