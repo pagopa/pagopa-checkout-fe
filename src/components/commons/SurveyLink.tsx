@@ -8,7 +8,7 @@ const SurveyLink = () => {
   const { t } = useTranslation();
 
   const onClick = () => {
-    alert("click");
+    console.log("click");
   };
 
   return (
