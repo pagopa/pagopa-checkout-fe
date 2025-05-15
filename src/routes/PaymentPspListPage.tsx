@@ -1,5 +1,11 @@
-import { Alert, AlertTitle, Box, Button, Typography } from "@mui/material";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import {
+  Alert,
+  AlertTitle,
+  Box,
+  Button,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useNavigate } from "react-router-dom";
@@ -15,7 +21,10 @@ import { ErrorsType } from "../utils/errors/checkErrorsModel";
 import ErrorModal from "../components/modals/ErrorModal";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
 import PageContainer from "../components/PageContent/PageContainer";
-import { PaymentMethod } from "../features/payment/models/paymentModel";
+import {
+  PaymentCodeTypeEnum,
+  PaymentMethod,
+} from "../features/payment/models/paymentModel";
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { setThreshold } from "../redux/slices/threshold";
 import {
@@ -35,6 +44,7 @@ export default function PaymentPspListPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const theme = useTheme();
 
   const ref = React.useRef<ReCAPTCHA>(null);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
@@ -55,7 +65,7 @@ export default function PaymentPspListPage() {
     getSessionItem(SessionItems.pspSelected) as Bundle | undefined
   );
 
-  const [showAlert, setShowAlert] = React.useState(true);
+  const [isAlertVisible, setIsAlertVisible] = React.useState(true);
 
   const updatePspSorting = (sortingModel: PspOrderingModel | null) => {
     if (sortingModel === null) {
@@ -149,39 +159,41 @@ export default function PaymentPspListPage() {
   return (
     <>
       {paymentMethod && loading && <CheckoutLoader />}
-      {paymentMethod?.paymentTypeCode === "MYBK" && showAlert && (
-        <Box
-          borderLeft={5}
-          borderColor={"#6bcffb"}
-          borderRadius={1}
-          boxShadow={"0.8px 0.8px 3px #d8dee4"}
-        >
-          <Alert
-            icon={<InfoOutlinedIcon sx={{ mt: 1.5, fontSize: 22 }} />}
-            action={
-              <Button
-                size="small"
-                onClick={() => {
-                  setShowAlert(false);
-                }}
-                sx={{ fontWeight: 600, mt: 1, fontSize: 18 }}
-              >
-                Chiudi
-              </Button>
-            }
-            severity="info"
-            variant="standard"
-            sx={{ backgroundColor: "white" }}
+      {paymentMethod?.paymentTypeCode === PaymentCodeTypeEnum.MYBK &&
+        isAlertVisible && (
+          <Box
+            borderLeft={5}
+            borderColor={theme.palette.info.main}
+            borderRadius={2}
+            boxShadow={"1px 1px 5px #d8dee4"}
+            data-testid="MYBKParentComponent"
           >
-            <React.Fragment key=".0">
-              <AlertTitle sx={{ fontWeight: 700, fontSize: "0.95rem" }}>
-                {t("paymentPspListPage.myBankAlertTitle")}
-              </AlertTitle>
-              {t("paymentPspListPage.myBankAlertBody")}
-            </React.Fragment>
-          </Alert>
-        </Box>
-      )}
+            <Alert
+              severity="info"
+              variant="outlined"
+              action={
+                <Button
+                  size="small"
+                  onClick={() => {
+                    setIsAlertVisible(false);
+                  }}
+                >
+                  Chiudi
+                </Button>
+              }
+              sx={{
+                alignItems: "center",
+              }}
+            >
+              <React.Fragment key=".0">
+                <AlertTitle>
+                  {t("paymentPspListPage.myBankAlertTitle")}
+                </AlertTitle>
+                {t("paymentPspListPage.myBankAlertBody")}
+              </React.Fragment>
+            </Alert>
+          </Box>
+        )}
       <PageContainer
         title="paymentPspListPage.title"
         description="paymentPspListPage.description"
