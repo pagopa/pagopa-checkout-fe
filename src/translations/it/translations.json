@@ -322,7 +322,8 @@
     "creditCard": "Paga con",
     "disclaimer": {
       "cheaper": "Suggerito perché il più economico",
-      "yourCard": "Suggerito perché sei già cliente"
+      "yourCard": "Suggerito perché sei già cliente",
+      "psp":"Proseguendo accetti i <terms>Termini e condizioni d'uso</terms> e dichiari di aver letto l'<privacy>Informativa Privacy</privacy> di <psp>{{pspName}}</psp>"
     },
     "drawer": {
       "body": "In questa lista trovi tutti i gestori compatibili con il tuo metodo, anche se non sei loro cliente.",

@@ -320,7 +320,8 @@
     "creditCard": "Pay with",
     "disclaimer": {
       "cheaper": "Suggested because least expensive",
-      "yourCard": "Suggested because you are already a customer"
+      "yourCard": "Suggested because you are already a customer",
+      "psp":"By continuing, you accept the <terms>Terms and Conditions of Use</terms> and confirm that you have read the <privacy>Privacy Policy</privacy> of <psp>{{pspName}}</psp>"
     },
     "drawer": {
       "body": "This list contains all the operators compatible with your method, even if you are not their customer.",
