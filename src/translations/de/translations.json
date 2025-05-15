@@ -410,8 +410,8 @@
       },
       "showResults": "Ergebnisse anzeigen"
     },
-    "myBankAlertTitle": "Sie können Ihre Bank nicht finden?",
-    "myBankAlertBody": "Keine Sorge: Sie müssen sie in den folgenden Schritten auswählen."
+    "myBankAlertTitle": "Non trovi la tua banca?",
+    "myBankAlertBody": "Non preoccuparti: dovrai selezionarla nei passaggi successivi."
   },
   "paymentQrPage": {
     "camBlocked": "Wir benötigen deine Erlaubnis zum Zugriff auf die Kamera. In den Datenschutzeinstellungen deines Internetbrowsers kannst du die Auswahl ändern",

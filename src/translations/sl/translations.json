@@ -411,8 +411,8 @@
       },
       "showResults": "Prikaži rezultate"
     },
-    "myBankAlertTitle": "Ne najdete svoje banke?",
-    "myBankAlertBody": "Ne skrbite: v naslednjih korakih ga boste morali izbrati."
+    "myBankAlertTitle": "Non trovi la tua banca?",
+    "myBankAlertBody": "Non preoccuparti: dovrai selezionarla nei passaggi successivi."
   },
   "paymentQrPage": {
     "camBlocked": "Za uporabo kamere potrebujemo vaše soglasje. Če želite spremeniti svojo izbiro, pojdite na nastavitve zasebnosti v svojem brskalniku",
