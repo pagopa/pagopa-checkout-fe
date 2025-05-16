@@ -42,7 +42,7 @@ export function getFragmentParameter(
  * The object values are set to empty string if its fragment is not found
  * or the parameter can't be found
  */
-export function getFragments(
+export function getUriFragments(
   ...fragments: Array<ROUTE_FRAGMENT>
 ): Record<ROUTE_FRAGMENT, string> {
   const uri = window.location.href;
