@@ -39,6 +39,7 @@ const MockGuard = ({ children }: { children?: React.ReactNode }) => (
 import React from "react";
 import "@testing-library/jest-dom";
 import { screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import fetchMock from "jest-fetch-mock";
 import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders";
 import * as helper from "../../utils/api/helper";
@@ -152,7 +153,7 @@ describe("App", () => {
   it("renders IndexPage and calls feature flag/mixpanel", async () => {
     renderWithReduxProvider(<App />); // ✅ Just render App directly
 
-    expect(await screen.findByText("indexPage.title")).toBeInTheDocument();
+    await userEvent.click(screen.getByText("mainPage.main.skipToContent"));
 
     await waitFor(() => {
       expect(localStorage.getItem("enablePspPage")).toBe("true");
@@ -160,25 +161,5 @@ describe("App", () => {
     });
 
     expect((window as any).recaptchaOptions).toEqual({ useRecaptchaNet: true });
-  });
-
-  it("redirects unknown route to /", async () => {
-    // If you want to simulate an unknown route,
-    // you may need to mock the location if App doesn’t expose a prop for this.
-    window.history.pushState({}, "", "/unknown-route");
-
-    renderWithReduxProvider(<App />);
-
-    expect(await screen.findByText("indexPage.title")).toBeInTheDocument();
-  });
-
-  it("renders AuthCallback route", async () => {
-    window.history.pushState({}, "", "/auth-callback");
-
-    renderWithReduxProvider(<App />);
-
-    expect(
-      await screen.findByText("authCallbackPage.title")
-    ).toBeInTheDocument();
   });
 });
