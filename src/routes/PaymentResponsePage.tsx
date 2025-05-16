@@ -85,10 +85,10 @@ export default function PaymentResponsePage() {
       ViewOutcomeEnum.GENERIC_ERROR;
 
     if (transactionOutcomeInfo) {
-      const amountAndFees =
+      const grandTotal =
         (transactionOutcomeInfo.totalAmount ?? 0) +
         (transactionOutcomeInfo.fees ?? 0);
-      setTotalAmount(amountAndFees);
+      setTotalAmount(grandTotal);
     }
 
     mixpanel.track(PAYMENT_OUTCOME_CODE.value, {

@@ -7,7 +7,7 @@ import * as O from "fp-ts/Option";
 import { removeLoggedUser } from "../redux/slices/loggedUser";
 import { checkLogout } from "../utils/api/helper";
 import FindOutMoreModal from "../components/modals/FindOutMoreModal";
-import { getFragments } from "../utils/regex/urlUtilities";
+import { getUriFragments } from "../utils/regex/urlUtilities";
 import { getConfigOrThrow } from "../utils/config/config";
 import SurveyLink from "../components/commons/SurveyLink";
 import PageContainer from "../components/PageContent/PageContainer";
@@ -46,7 +46,7 @@ export default function PaymentResponsePageV2() {
     outcome: outcomeFragment,
     totalAmount: totalAmountFragment,
     fees: feesFragment,
-  } = getFragments(
+  } = getUriFragments(
     ROUTE_FRAGMENT.TRANSACTION_ID,
     ROUTE_FRAGMENT.OUTCOME,
     ROUTE_FRAGMENT.TOTAL_AMOUNT,
@@ -66,8 +66,9 @@ export default function PaymentResponsePageV2() {
     | NewTransactionResponse
     | undefined;
 
-  const checkTransactionId = transactionData?.transactionId === transactionId;
-  const outcomeMessage = checkTransactionId
+  const isExpectedTransaction =
+    transactionData?.transactionId === transactionId;
+  const outcomeMessage = isExpectedTransaction
     ? responseOutcome[outcome]
     : responseOutcome[ViewOutcomeEnum.GENERIC_ERROR];
   const [findOutMoreOpen, setFindOutMoreOpen] = useState<boolean>(false);
@@ -90,7 +91,9 @@ export default function PaymentResponsePageV2() {
   const email = getSessionItem(SessionItems.useremail) as string | undefined;
 
   const grandTotalAmount =
-    totalAmount && fees ? Number(totalAmount) + Number(fees) : null;
+    totalAmount != null && fees != null
+      ? Number(totalAmount) + Number(fees)
+      : null;
 
   const usefulPrintData: PrintData = {
     useremail: email || "",
