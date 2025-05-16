@@ -175,7 +175,7 @@ stages:
     dependsOn: []
     jobs:
       - job: prepare_for_integration_test
-        timeoutInMinutes: 10
+        timeoutInMinutes: 20
 
         steps:
 
