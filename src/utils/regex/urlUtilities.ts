@@ -37,6 +37,26 @@ export function getFragmentParameter(
 }
 
 /**
+ * This function requires a valid URI with a query strings as the fragment URI
+ * example: http://dev.checkout.it/gdi-check#param1=value1&param2=value2.
+ * The function return an empty string if the uri parameter is not valid
+ * or the parameter can't be found
+ */
+function getFragmentParameterFromUri(uri: string, name: string): string {
+  try {
+    const fragment = new URL(uri).hash.substring(1);
+    const urlParams = new URLSearchParams(fragment);
+    const gdiFragmentUrl = urlParams.get(name);
+    if (gdiFragmentUrl === null) {
+      return "";
+    }
+    return urlParams.get(name) || "";
+  } catch (e) {
+    return "";
+  }
+}
+
+/**
  * returns all requested fragments in an object using the fragments as keys
  * example: http://dev.checkout.it/gdi-check#param1=value1&param2=value2&param3&....
  * The object values are set to empty string if its fragment is not found
@@ -49,7 +69,7 @@ export function getUriFragments(
   return fragments.reduce<Record<string, string>>(
     (acc, fragment) => ({
       ...acc,
-      [fragment]: getFragmentParameter(uri, fragment),
+      [fragment]: getFragmentParameterFromUri(uri, fragment),
     }),
     {}
   );
