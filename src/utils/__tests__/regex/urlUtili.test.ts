@@ -2,7 +2,7 @@
 import { ROUTE_FRAGMENT } from "../../../routes/models/routeModel";
 import {
   getFragmentParameter,
-  getFragments,
+  getUriFragments,
   getUrlParameter,
 } from "../../../utils/regex/urlUtilities";
 
@@ -69,11 +69,11 @@ describe("urlUtilities tests", () => {
     });
   });
 
-  describe("getFragments", () => {
+  describe("getUriFragments", () => {
     it("returns an object mapping fragments", () => {
       // eslint-disable-next-line functional/immutable-data
       mockLocation.href = "http://example.com#param1=one&param2=two";
-      const fragments = getFragments("param1" as any, "param2" as any);
+      const fragments = getUriFragments("param1" as any, "param2" as any);
       expect(fragments).toEqual({ param1: "one", param2: "two" });
     });
   });
