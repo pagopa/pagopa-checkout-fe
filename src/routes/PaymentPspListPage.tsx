@@ -1,4 +1,4 @@
-import { Box, Button, Typography } from "@mui/material";
+import { Alert, AlertTitle, Box, Button, Typography } from "@mui/material";
 import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useNavigate } from "react-router-dom";
@@ -14,7 +14,10 @@ import { ErrorsType } from "../utils/errors/checkErrorsModel";
 import ErrorModal from "../components/modals/ErrorModal";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
 import PageContainer from "../components/PageContent/PageContainer";
-import { PaymentMethod } from "../features/payment/models/paymentModel";
+import {
+  PaymentCodeTypeEnum,
+  PaymentMethod,
+} from "../features/payment/models/paymentModel";
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { setThreshold } from "../redux/slices/threshold";
 import {
@@ -53,6 +56,8 @@ export default function PaymentPspListPage() {
   const [pspSelected, setPspSelected] = React.useState<Bundle | undefined>(
     getSessionItem(SessionItems.pspSelected) as Bundle | undefined
   );
+
+  const [isAlertVisible, setIsAlertVisible] = React.useState(true);
 
   const updatePspSorting = (sortingModel: PspOrderingModel | null) => {
     if (sortingModel === null) {
@@ -146,6 +151,33 @@ export default function PaymentPspListPage() {
   return (
     <>
       {paymentMethod && loading && <CheckoutLoader />}
+      {paymentMethod?.paymentTypeCode === PaymentCodeTypeEnum.MYBK &&
+        isAlertVisible && (
+          <Alert
+            severity="info"
+            variant="outlined"
+            action={
+              <Button
+                size="small"
+                onClick={() => {
+                  setIsAlertVisible(false);
+                }}
+              >
+                Chiudi
+              </Button>
+            }
+            sx={{
+              alignItems: "center",
+            }}
+          >
+            <React.Fragment key=".0">
+              <AlertTitle>
+                {t("paymentPspListPage.myBankAlertTitle")}
+              </AlertTitle>
+              {t("paymentPspListPage.myBankAlertBody")}
+            </React.Fragment>
+          </Alert>
+        )}
       <PageContainer
         title="paymentPspListPage.title"
         description="paymentPspListPage.description"
