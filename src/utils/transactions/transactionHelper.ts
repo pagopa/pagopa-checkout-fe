@@ -1,7 +1,8 @@
+/* eslint-disable sonarjs/no-identical-functions */
 import * as E from "fp-ts/Either";
 import * as TE from "fp-ts/TaskEither";
 import { pipe } from "fp-ts/function";
-import { Client as EcommerceClient } from "../../../generated/definitions/payment-ecommerce-v2/client";
+import { Client as EcommerceClientV1 } from "../../../generated/definitions/payment-ecommerce/client";
 import {
   TRANSACTION_POLLING_CHECK_INIT,
   TRANSACTION_POLLING_CHECK_NET_ERR,
@@ -10,21 +11,21 @@ import {
   TRANSACTION_POLLING_CHECK_RESP_ERR,
 } from "../config/mixpanelDefs";
 import { mixpanel } from "../config/mixpanelHelperInit";
-import { TransactionInfo } from "../../../generated/definitions/payment-ecommerce-v2/TransactionInfo";
+import { TransactionOutcomeInfo } from "../../../generated/definitions/payment-ecommerce/TransactionOutcomeInfo";
 import { UNKNOWN } from "./TransactionStatesTypes";
 
-export const ecommerceTransaction = (
+export const ecommerceTransactionOutcome = (
   transactionId: string,
   bearerAuth: string,
-  ecommerceClient: EcommerceClient
-): TE.TaskEither<UNKNOWN, TransactionInfo> => {
+  ecommerceClient: EcommerceClientV1
+): TE.TaskEither<UNKNOWN, TransactionOutcomeInfo> => {
   mixpanel.track(TRANSACTION_POLLING_CHECK_INIT.value, {
     EVENT_ID: TRANSACTION_POLLING_CHECK_INIT.value,
   });
   return pipe(
     TE.tryCatch(
       () =>
-        ecommerceClient.getTransactionInfo({
+        ecommerceClient.getTransactionOutcomes({
           bearerAuth,
           transactionId,
         }),

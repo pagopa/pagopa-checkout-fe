@@ -2,8 +2,32 @@
 import { ROUTE_FRAGMENT } from "../../../routes/models/routeModel";
 import {
   getFragmentParameter,
+  getUriFragments,
   getUrlParameter,
 } from "../../../utils/regex/urlUtilities";
+
+const originalLocation = window.location;
+const mockLocation: Partial<Location> = {
+  search: "",
+  href: "",
+  replace: jest.fn(),
+};
+
+beforeAll(() => {
+  // eslint-disable-next-line functional/immutable-data
+  Object.defineProperty(window, "location", {
+    value: mockLocation,
+    writable: true,
+  });
+});
+
+afterAll(() => {
+  // eslint-disable-next-line functional/immutable-data
+  Object.defineProperty(window, "location", {
+    value: originalLocation,
+    writable: true,
+  });
+});
 
 describe("urlUtilities tests", () => {
   describe("getFragmentParameter function", () => {
@@ -42,6 +66,15 @@ describe("urlUtilities tests", () => {
       expect(
         getFragmentParameter("invalidUrl", ROUTE_FRAGMENT.GDI_IFRAME_URL)
       ).toEqual("");
+    });
+  });
+
+  describe("getUriFragments", () => {
+    it("returns an object mapping fragments", () => {
+      // eslint-disable-next-line functional/immutable-data
+      mockLocation.href = "http://example.com#param1=one&param2=two";
+      const fragments = getUriFragments("param1" as any, "param2" as any);
+      expect(fragments).toEqual({ param1: "one", param2: "two" });
     });
   });
 

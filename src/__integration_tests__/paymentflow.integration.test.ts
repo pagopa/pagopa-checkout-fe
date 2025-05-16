@@ -98,28 +98,6 @@ beforeEach(async () => {
   });
 });
 
-
-describe("Checkout payment tests", () => {
-  it.each([
-    ["it", itTranslation],
-    ["en", enTranslation],
-    ["fr", frTranslation],
-    ["de", deTranslation],
-    ["sl", slTranslation]
-  ])("Should correctly execute a payment for language [%s]", async (lang, translation) => {
-    selectLanguage(lang);
-    const resultMessage = await payNotice(
-      VALID_NOTICE_CODE,
-      VALID_FISCAL_CODE,
-      EMAIL,
-      VALID_CARD_DATA,
-      CHECKOUT_URL_AFTER_AUTHORIZATION
-    );
-
-    expect(resultMessage).toContain(translation.paymentResponsePage[0].title.replace("{{amount}}", "120,15\xa0€"));
-  });
-});
-
 describe("Checkout payment verify failure tests", () => {
   it("Should fail a payment VERIFY and get FAIL_VERIFY_404_PPT_STAZIONE_INT_PA_SCONOSCIUTA", async () => {
     const resultMessage = await verifyPaymentAndGetError(

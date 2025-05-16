@@ -15,44 +15,17 @@ import {
   THREEDSMETHODURL_STEP1_RESP_ERR,
 } from "../config/mixpanelDefs";
 import { mixpanel } from "../config/mixpanelHelperInit";
-import { ecommerceTransaction } from "../transactions/transactionHelper";
+import { ecommerceTransactionOutcome } from "../transactions/transactionHelper";
 import { constantPollingWithPromisePredicateFetch } from "../config/fetch";
 import { getUrlParameter } from "../regex/urlUtilities";
 import { getConfigOrThrow } from "../config/config";
 import { getSessionItem, SessionItems } from "../storage/sessionStorage";
-import {
-  EcommerceInterruptStatusCodeEnumType,
-  EcommerceMaybeInterruptStatusCodeEnumType,
-  NpgAuthorizationStatus,
-} from "../transactions/TransactionResultUtil";
 import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
-import { TransactionStatusEnum } from "../../../generated/definitions/payment-ecommerce/TransactionStatus";
 import {
-  TransactionInfo,
-  TransactionInfoGatewayInfo,
-  TransactionInfoNodeInfo,
-} from "../../../generated/definitions/payment-ecommerce-v2/TransactionInfo";
-import {
-  createClient,
-  Client as EcommerceClient,
-} from "../../../generated/definitions/payment-ecommerce-v2/client";
-
-/** This function return true when polling on GET transaction must be interrupted */
-const interruptTransactionPolling = (
-  transactionStaus: TransactionInfo["status"],
-  gatewayInfo?: TransactionInfoGatewayInfo,
-  nodeInfo?: TransactionInfoNodeInfo
-) =>
-  pipe(
-    EcommerceInterruptStatusCodeEnumType.decode(transactionStaus),
-    E.isRight
-  ) ||
-  nodeInfo?.closePaymentResultError?.statusCode?.toString().startsWith("4") ||
-  (pipe(
-    EcommerceMaybeInterruptStatusCodeEnumType.decode(transactionStaus),
-    E.isRight
-  ) &&
-    gatewayInfo?.authorizationStatus !== NpgAuthorizationStatus.EXECUTED);
+  createClient as createClientV1,
+  Client as EcommerceClientV1,
+} from "../../../generated/definitions/payment-ecommerce/client";
+import { TransactionOutcomeInfo } from "../../../generated/definitions/payment-ecommerce/TransactionOutcomeInfo";
 
 const config = getConfigOrThrow();
 /**
@@ -73,7 +46,8 @@ export const decodeToUUID = (base64: string) => {
 };
 
 const counter = createCounter();
-const ecommerceClientWithPolling: EcommerceClient = createClient({
+
+const ecommerceClientWithPollingV1: EcommerceClientV1 = createClientV1({
   baseUrl: config.CHECKOUT_PAGOPA_APIM_HOST,
   fetchApi: constantPollingWithPromisePredicateFetch(
     DeferredPromise<boolean>().e1,
@@ -86,24 +60,17 @@ const ecommerceClientWithPolling: EcommerceClient = createClient({
         counter.reset();
         return false;
       }
-      const { status, gatewayInfo, nodeInfo } = (await r
+      const { isFinalStatus } = (await r
         .clone()
-        .json()) as TransactionInfo;
-      return !(
-        r.status === 200 &&
-        interruptTransactionPolling(status, gatewayInfo, nodeInfo)
-      );
+        .json()) as TransactionOutcomeInfo;
+      return !(r.status === 200 && isFinalStatus);
     }
   ),
-  basePath: config.CHECKOUT_API_ECOMMERCE_BASEPATH_V2,
+  basePath: config.CHECKOUT_API_ECOMMERCE_BASEPATH,
 });
 
 export const callServices = async (
-  handleFinalStatusResult: (
-    status?: TransactionStatusEnum,
-    nodeInfo?: TransactionInfoNodeInfo,
-    gatewayInfo?: TransactionInfoGatewayInfo
-  ) => void
+  handleOutcome: (transactionOutcomeInfo?: TransactionOutcomeInfo) => void
 ) => {
   const transaction = pipe(
     getSessionItem(SessionItems.transaction),
@@ -151,22 +118,18 @@ export const callServices = async (
     T.chain(
       (transactionId) => async () =>
         await pipe(
-          ecommerceTransaction(
+          ecommerceTransactionOutcome(
             transactionId,
             bearerAuth,
-            ecommerceClientWithPolling
+            ecommerceClientWithPollingV1
           ),
           TE.fold(
-            () => async () => handleFinalStatusResult(),
-            (transactionInfo) => async () => {
+            () => async () => handleOutcome(),
+            (transactionOutcomeInfo) => async () => {
               mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value, {
                 EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value,
               });
-              handleFinalStatusResult(
-                transactionInfo.status,
-                transactionInfo.nodeInfo,
-                transactionInfo.gatewayInfo
-              );
+              handleOutcome(transactionOutcomeInfo);
             }
           )
         )()
