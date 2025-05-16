@@ -90,7 +90,9 @@ export default function PaymentResponsePageV2() {
   const email = getSessionItem(SessionItems.useremail) as string | undefined;
 
   const grandTotalAmount =
-    totalAmount && fees ? Number(totalAmount) + Number(fees) : null;
+    totalAmount != null && fees != null
+? Number(totalAmount) + Number(fees)
+: null;
 
   const usefulPrintData: PrintData = {
     useremail: email || "",
