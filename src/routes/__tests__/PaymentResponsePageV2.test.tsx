@@ -54,10 +54,10 @@ jest.mock("../../utils/storage/sessionStorage", () => ({
   },
 }));
 
-const mockGetFragments = jest.fn();
+const mockGetUriFragments = jest.fn();
 
 jest.mock("../../utils/regex/urlUtilities", () => ({
-  getFragments: () => mockGetFragments(),
+  getUriFragments: () => mockGetUriFragments(),
 }));
 
 jest.mock("../../utils/eventListeners", () => ({
@@ -193,7 +193,7 @@ describe("PaymentResponsePageV2", () => {
           }
           return undefined;
         });
-        mockGetFragments.mockReturnValue({
+        mockGetUriFragments.mockReturnValue({
           outcome: outcomeValue,
           totalAmount: outcomeValue === "0" ? 12000 : undefined,
           fees: outcomeValue === "0" ? 15 : undefined,
@@ -251,7 +251,7 @@ describe("PaymentResponsePageV2", () => {
           }
           return undefined;
         });
-        mockGetFragments.mockReturnValue({
+        mockGetUriFragments.mockReturnValue({
           outcome: outcomeValue,
           totalAmount: outcomeValue === "0" ? 12000 : undefined,
           fees: outcomeValue === "0" ? 15 : undefined,
@@ -295,7 +295,7 @@ describe("PaymentResponsePageV2", () => {
         }
         return undefined;
       });
-      mockGetFragments.mockReturnValue({
+      mockGetUriFragments.mockReturnValue({
         outcome: outcomeValue,
         totalAmount: outcomeValue === "0" ? 12000 : undefined,
         fees: outcomeValue === "0" ? 15 : undefined,
@@ -346,7 +346,7 @@ describe("PaymentResponsePageV2", () => {
     ])(
       "should show payment outcome %s message and navigate to / on close",
       async (outcomeVal) => {
-        mockGetFragments.mockReturnValue({
+        mockGetUriFragments.mockReturnValue({
           outcome: outcomeVal,
           totalAmount: outcomeVal === "0" ? "12000" : undefined,
           fees: outcomeVal === "0" ? "15" : undefined,
@@ -418,7 +418,7 @@ describe("PaymentResponsePageV2", () => {
     ])(
       "should show payment outcome %s message and redirect on continue",
       async (outcomeVal) => {
-        mockGetFragments.mockReturnValue({
+        mockGetUriFragments.mockReturnValue({
           outcome: outcomeVal,
           totalAmount: outcomeVal === "0" ? "12000" : undefined,
           fees: outcomeVal === "0" ? "15" : undefined,
