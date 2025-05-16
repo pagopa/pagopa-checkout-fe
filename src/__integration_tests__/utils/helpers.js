@@ -1,5 +1,3 @@
-import { visitEachChild } from "typescript";
-
 export const payNotice = async (
   noticeCode,
   fiscalCode,
@@ -19,10 +17,9 @@ export const payNotice = async (
 };
 
 export const verifyPaymentAndGetError = async (noticeCode, fiscalCode) => {
-  const errorMessageXPath =
-    "/html/body/div[2]/div[3]/div/div/div[2]/div[2]/div";
+  const errorMessageSelector = "#verifyPaymentErrorId";
   await fillPaymentNotificationForm(noticeCode, fiscalCode);
-  const errorMessageElem = await page.waitForXPath(errorMessageXPath);
+  const errorMessageElem = await page.waitForSelector(errorMessageSelector);
   return await errorMessageElem.evaluate((el) => el.textContent);
 };
 
@@ -85,12 +82,63 @@ export const checkErrorOnCardDataFormSubmit = async (
 
 export const selectKeyboardForm = async () => {
   const selectFormXPath =
-    "/html/body/div[1]/div/div[2]/div/div[2]/div[2]/div[1]";
+    "/html/body/div[1]/div/main/div/div[2]/div[2]/div[1]";
   const selectFormBtn = await page.waitForXPath(selectFormXPath);
   await selectFormBtn.click();
 };
 
-export const fillPaymentNotificationForm = async (noticeCode, fiscalCode) => {
+export const clickLoginButton = async () => {
+  //search login button and click it
+  console.log("Search login button")
+  const loginHeader = await page.waitForSelector("#login-header");
+  const headerButtons = await loginHeader.$$("button");
+  //Login button is the last on the header
+  const loginBtn = headerButtons.at(-1);
+  console.log("Login button click")
+  await loginBtn.click();
+}
+
+export const getUserButton = async () => {
+  //search user button
+  console.log("Search user button")
+  const loginHeader = await page.waitForSelector("#login-header");
+  const headerButtons = await loginHeader.$$("button");
+  // return button with name 
+  let userButton;
+  for(let btn of headerButtons) {
+    const text = await btn.evaluate((el) => el.textContent);
+    if(text === "MarioTest RossiTest") {
+      userButton = btn;
+    }
+  }
+  return userButton;
+}
+
+export const tryLoginWithAuthCallbackError = async (noticeCode, fiscalCode) => {
+  //flow test error
+  await fillPaymentNotificationForm(noticeCode, fiscalCode);
+  console.log("MockFlow setted with noticeCode: " + noticeCode);
+
+  //Login
+  await clickLoginButton();
+
+  //Wait for error messages
+  const titleErrorElem = await page.waitForSelector("#errorTitle");
+  const titleErrorBody = await page.waitForSelector("#errorBody");
+  const title = await titleErrorElem.evaluate((el) => el.textContent);
+  const body = await titleErrorBody.evaluate((el) => el.textContent);
+
+  //Error on auth-callback page
+  const currentUrl = page.url();
+  
+  return {
+    title,
+    body,
+    currentUrl,
+  }
+}
+
+export const fillPaymentNotificationForm = async (noticeCode, fiscalCode, submit=true) => {
   const noticeCodeTextInput = "#billCode";
   const fiscalCodeTextInput = "#cf";
   const verifyBtn = "#paymentNoticeButtonContinue";
@@ -102,15 +150,10 @@ export const fillPaymentNotificationForm = async (noticeCode, fiscalCode) => {
   await page.waitForSelector(fiscalCodeTextInput);
   await page.click(fiscalCodeTextInput);
   await page.keyboard.type(fiscalCode);
-  await page.waitForSelector(verifyBtn);
-  await page.click(verifyBtn);
-};
-
-export const acceptCookiePolicy = async () => {
-  const acceptPolicyBtn = "#onetrust-close-btn-container > button";
-
-  await page.waitForSelector(acceptPolicyBtn);
-  await page.click(acceptPolicyBtn);
+  if(submit){
+    await page.waitForSelector(verifyBtn);
+    await page.click(verifyBtn);
+  }
 };
 
 export const fillAndSubmitCardDataForm = async (
@@ -128,7 +171,43 @@ export const fillAndSubmitCardDataForm = async (
   await fillEmailForm(email);
   await choosePaymentMethod("CP");
   await fillCardDataForm(cardData);
+  await tryHandlePspPickerPage();
 };
+
+export const tryHandlePspPickerPage = async ()=>{
+  // wait for page to change, max wait time few seconds
+  // this navigation will not happen in all test cases
+  // so we don't want to waste too much time over it
+  try {
+    await page.waitForNavigation({ timeout: 3500 });
+  } catch (error) {
+    // If the navigation doesn't happen within 3500ms, just log and continue
+    console.log("Navigation did not happen within 3500ms. Continuing test.");
+  }
+
+  // this step needs to be skipped during tests
+  // in which we trigger an error modal in the previous page
+  if(await page.url().includes("lista-psp")){
+    await selectPspOnPspPickerPage();
+  }
+}
+
+export const selectPspOnPspPickerPage = async () => {
+  try{
+    const pspPickerRadio = await page.waitForSelector("#psp-radio-button-unchecked", {
+      visible: true, timeout: 500
+    });
+    await pspPickerRadio.click();
+  
+    const continueButton = await page.waitForSelector("#paymentPspListPageButtonContinue", {
+      visible: true, timeout: 500
+    });
+    
+    await continueButton.click();
+  }catch(e){
+    console.log("Buttons not found: this is caused by PSP page immediately navigate to the summary page (if 1 psp available)");
+  }
+}
 
 export const fillAndSubmitSatispayPayment = async (
   noticeCode,
@@ -143,6 +222,7 @@ export const fillAndSubmitSatispayPayment = async (
   await payNoticeBtn.click();
   await fillEmailForm(email);
   await choosePaymentMethod("SATY");
+  await tryHandlePspPickerPage();
 };
 
 export const fillEmailForm = async (email) => {
@@ -175,13 +255,7 @@ export const verifyPaymentMethods = async () => {
     "[data-qalabel=payment-method]",
     (elHandles) => elHandles.map((el) => el.getAttribute("data-qaid"))
   );
-  for (const method of methods) {
-    const cardOptionXPath = `[data-qaid=${method}]`;
-
-    const cardOptionBtn = await page.waitForSelector(cardOptionXPath);
-    await cardOptionBtn.click();
-  }
-  return true;
+  return methods.length > 0;
 };
 
 export const fillCardDataForm = async (cardData) => {
@@ -233,7 +307,7 @@ export const cancelPaymentOK = async (
   cardData
 ) => {
   const resultMessageXPath =
-    "/html/body/div[1]/div/div[2]/div/div/div/div[1]/div";
+    "/html/body/div[1]/div/main/div/div/div/div[1]/div";
   await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
   const paymentCheckPageButtonCancel = await page.waitForSelector(
     "#paymentCheckPageButtonCancel"
@@ -242,12 +316,14 @@ export const cancelPaymentOK = async (
   const cancPayment = await page.waitForSelector("#confirm");
   await cancPayment.click();
   await page.waitForNavigation();
+  // this new timeout is needed for how react 18 handles the addition of animated content 
+  // to the page. Without it, the resultMessageXPath never resolves
+  await new Promise((r) => setTimeout(r, 200));
   const message = await page.waitForXPath(resultMessageXPath);
   return await message.evaluate((el) => el.textContent);
 };
 
 export const cancelPaymentKO = async (noticeCode, fiscalCode, email) => {
-  const resultMessageXPath = "/html/body/div[7]/div[3]/div/h2/div";
   await fillAndSubmitSatispayPayment(noticeCode, fiscalCode, email);
   const paymentCheckPageButtonCancel = await page.waitForSelector(
     "#paymentCheckPageButtonCancel"

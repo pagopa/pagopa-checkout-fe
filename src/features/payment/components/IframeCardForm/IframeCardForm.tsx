@@ -1,5 +1,6 @@
 import { Box } from "@mui/material";
 import * as O from "fp-ts/Option";
+import * as B from "fp-ts/boolean";
 import { pipe } from "fp-ts/function";
 import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
@@ -83,11 +84,32 @@ export default function IframeCardForm(props: Props) {
     ref.current?.reset();
   };
 
+  const onNpgSessionsError = (m: string) => {
+    pipe(
+      m !== ErrorsType.UNAUTHORIZED,
+      B.fold(
+        () => {
+          setSessionItem(
+            SessionItems.loginOriginPage,
+            `${location.pathname}${location.search}`
+          );
+          navigate(`/${CheckoutRoutes.AUTH_EXPIRED}`);
+        },
+        () => onError(m)
+      )
+    );
+  };
+
   const navigate = useNavigate();
 
   const onSuccess = (belowThreshold: boolean) => {
     dispatch(setThreshold({ belowThreshold }));
-    navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
+
+    if (localStorage.getItem(SessionItems.enablePspPage) === "true") {
+      navigate(`/${CheckoutRoutes.LISTA_PSP}`);
+    } else {
+      navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
+    }
   };
 
   const onPspNotFound = () => {
@@ -149,7 +171,7 @@ export default function IframeCardForm(props: Props) {
 
         const onPaymentComplete = () => {
           clearNavigationEvents();
-          window.location.replace(`/${CheckoutRoutes.ESITO}`);
+          navigate(`/${CheckoutRoutes.ESITO}`, { replace: true });
         };
 
         const onPaymentRedirect = (urlredirect: string) => {
@@ -159,7 +181,7 @@ export default function IframeCardForm(props: Props) {
 
         const onBuildError = () => {
           setLoading(false);
-          window.location.replace(`/${CheckoutRoutes.ERRORE}`);
+          navigate(`/${CheckoutRoutes.ERRORE}`, { replace: true });
         };
 
         const onAllFieldsLoaded = () => {
@@ -185,7 +207,7 @@ export default function IframeCardForm(props: Props) {
       };
 
       void (async () => {
-        void npgSessionsFields(onError, onResponse);
+        void npgSessionsFields(onNpgSessionsError, onResponse);
       })();
     }
   }, [form?.orderId]);
@@ -263,6 +285,8 @@ export default function IframeCardForm(props: Props) {
           </Box>
         </Box>
         <FormButtons
+          idCancel="cancel"
+          idSubmit="submit"
           loadingSubmit={loading}
           type="submit"
           submitTitle="paymentNoticePage.formButtons.submit"
@@ -286,7 +310,7 @@ export default function IframeCardForm(props: Props) {
           open={errorModalOpen}
           onClose={() => {
             setErrorModalOpen(false);
-            window.location.replace(`/${CheckoutRoutes.ERRORE}`);
+            navigate(`/${CheckoutRoutes.ERRORE}`, { replace: true });
           }}
           titleId="iframeCardFormErrorTitleId"
           errorId="iframeCardFormErrorId"
@@ -298,7 +322,7 @@ export default function IframeCardForm(props: Props) {
           open={pspNotFoundModal}
           onClose={() => {
             setPspNotFoundModalOpen(false);
-            window.location.replace(`/${CheckoutRoutes.SCEGLI_METODO}`);
+            navigate(`/${CheckoutRoutes.SCEGLI_METODO}`, { replace: true });
           }}
           maxWidth="sm"
           hideIcon={true}
@@ -324,7 +348,7 @@ export default function IframeCardForm(props: Props) {
               variant="contained"
               onClick={() => {
                 setPspNotFoundModalOpen(false);
-                window.location.replace(`/${CheckoutRoutes.SCEGLI_METODO}`);
+                navigate(`/${CheckoutRoutes.SCEGLI_METODO}`, { replace: true });
               }}
               id="pspNotFoundCtaId"
             >

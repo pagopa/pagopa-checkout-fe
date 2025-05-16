@@ -78,7 +78,17 @@ export function PaymentChoice(props: {
     }
 
     setLoading(false);
-    navigate(`/${route || CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
+
+    const navigateToRoute = route || CheckoutRoutes.RIEPILOGO_PAGAMENTO;
+
+    if (
+      navigateToRoute === CheckoutRoutes.RIEPILOGO_PAGAMENTO &&
+      localStorage.getItem(SessionItems.enablePspPage) === "true"
+    ) {
+      navigate(`/${CheckoutRoutes.LISTA_PSP}`);
+    } else {
+      navigate(`/${navigateToRoute}`);
+    }
   };
 
   const onApmChoice = async (
@@ -160,7 +170,7 @@ export function PaymentChoice(props: {
           open={errorModalOpen}
           onClose={() => {
             setErrorModalOpen(false);
-            window.location.replace(`/${CheckoutRoutes.ERRORE}`);
+            navigate(`/${CheckoutRoutes.ERRORE}`, { replace: true });
           }}
           titleId="iframeCardFormErrorTitleId"
           errorId="iframeCardFormErrorId"

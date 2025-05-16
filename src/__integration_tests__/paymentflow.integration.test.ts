@@ -10,6 +10,7 @@ import {
   cancelPaymentKO,
   selectLanguage,
   fillAndSubmitCardDataForm,
+  tryHandlePspPickerPage,
   fillAndSubmitSatispayPayment,
   checkPspListNames,
   checkPspListFees,
@@ -26,6 +27,8 @@ import slTranslation from "../translations/sl/translations.json";
 
 const CHECKOUT_URL = `http://localhost:1234`;
 const CHECKOUT_URL_AFTER_AUTHORIZATION = `http://localhost:1234/esito`;
+const CHECKOUT_URL_PAYMENT_SUMMARY = `http://localhost:1234/riepilogo-pagamento`;
+const CHECKOUT_URL_PSP_LIST = `http://localhost:1234/lista-psp`;
 const VALID_FISCAL_CODE = "77777777777";
 const EMAIL = "mario.rossi@email.com";
 const VALID_CARD_DATA = {
@@ -69,10 +72,10 @@ const PSP_NOT_FOUND_FAIL = "302016723749670076";
  * Increase default test timeout (120000ms)
  * to support entire payment flow
  */
-jest.setTimeout(80000);
+jest.setTimeout(30000);
 jest.retryTimes(3);
-page.setDefaultNavigationTimeout(80000);
-page.setDefaultTimeout(80000);
+page.setDefaultNavigationTimeout(30000);
+page.setDefaultTimeout(30000);
 
 beforeAll(async () => {
   await page.goto(CHECKOUT_URL);
@@ -81,7 +84,20 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await page.goto(CHECKOUT_URL);
+  // Listen for dialog events and automatically accept them after a delay
+  page.on('dialog', async dialog => {
+    if (dialog.type() === 'beforeunload') {
+      try {
+        // Wait for few seconds before accepting the dialog
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        await dialog.accept();
+      } catch (error) {
+        console.log('Dialog is already accepted.');
+      }
+    }
+  });
 });
+
 
 describe("Checkout payment tests", () => {
   it.each([
@@ -91,9 +107,6 @@ describe("Checkout payment tests", () => {
     ["de", deTranslation],
     ["sl", slTranslation]
   ])("Should correctly execute a payment for language [%s]", async (lang, translation) => {
-    /*
-     * 1. Payment with valid notice code
-    */
     selectLanguage(lang);
     const resultMessage = await payNotice(
       VALID_NOTICE_CODE,
@@ -109,10 +122,6 @@ describe("Checkout payment tests", () => {
 
 describe("Checkout payment verify failure tests", () => {
   it("Should fail a payment VERIFY and get FAIL_VERIFY_404_PPT_STAZIONE_INT_PA_SCONOSCIUTA", async () => {
-    /*
-     * 2. Payment with notice code that fails on verify and get PPT_STAZIONE_INT_PA_SCONOSCIUTA
-     * No need for testing other languages
-     */
     const resultMessage = await verifyPaymentAndGetError(
       FAIL_VERIFY_404_PPT_STAZIONE_INT_PA_SCONOSCIUTA,
       VALID_FISCAL_CODE
@@ -122,10 +131,6 @@ describe("Checkout payment verify failure tests", () => {
   });
 
   it("Should fail a payment VERIFY and get FAIL_VERIFY_503_PPT_STAZIONE_INT_PA_TIMEOUT", async () => {
-    /*
-     * 2. Payment with notice code that fails on verify and get FAIL_VERIFY_503_PPT_STAZIONE_INT_PA_TIMEOUT
-     * No need for testing other languages
-     */
     const resultMessage = await verifyPaymentAndGetError(
       FAIL_VERIFY_503_PPT_STAZIONE_INT_PA_TIMEOUT,
       VALID_FISCAL_CODE
@@ -135,10 +140,6 @@ describe("Checkout payment verify failure tests", () => {
   });
 
   it("Should fail a payment VERIFY and get FAIL_VERIFY_502_PPT_PSP_SCONOSCIUTO", async () => {
-    /*
-     * 2. Payment with notice code that fails on verify and get FAIL_VERIFY_502_PPT_PSP_SCONOSCIUTO
-     * No need for testing other languages
-     */
     const resultMessage = await verifyPaymentAndGetError(
       FAIL_VERIFY_502_PPT_PSP_SCONOSCIUTO,
       VALID_FISCAL_CODE
@@ -158,9 +159,6 @@ describe("Checkout payment ongoing failure tests", () => {
   ])(
     "Should fail a payment ACTIVATION and get PPT_PAGAMENTO_IN_CORSO for language [%s]",
     async (lang, translation) => {
-      /*
-       * 2. Payment with notice code that fails on activation and get PPT_PAGAMENTO_IN_CORSO
-       */
       selectLanguage(lang);
       const ErrorTitleID = "#iframeCardFormErrorTitleId";
       const resultMessage = await activatePaymentAndGetError(
@@ -178,9 +176,6 @@ describe("Checkout payment ongoing failure tests", () => {
 
 describe("Checkout payment activation failure tests", () => {
   it("Should fail a payment ACTIVATION and get PPT_STAZIONE_INT_PA_TIMEOUT", async () => {
-    /*
-     * 2. Payment with notice code that fails on activation and get PPT_STAZIONE_INT_PA_TIMEOUT
-     */
     const errorID = "#iframeCardFormErrorId";
     const resultMessage = await activatePaymentAndGetError(
       FAIL_ACTIVATE_PPT_STAZIONE_INT_PA_TIMEOUT,
@@ -194,9 +189,6 @@ describe("Checkout payment activation failure tests", () => {
   });
 
   it("Should fail a payment ACTIVATION and get PPT_PSP_SCONOSCIUTO", async () => {
-    /*
-     * 2. Payment with notice code that fails on activation and get PPT_PSP_SCONOSCIUTO
-     */
     const errorID = "#iframeCardFormErrorId";
     const resultMessage = await activatePaymentAndGetError(
       FAIL_ACTIVATE_502_PPT_PSP_SCONOSCIUTO,
@@ -216,10 +208,6 @@ describe("Checkout payment activation failure tests", () => {
     ["de", deTranslation],
     ["sl", slTranslation]
   ])("Should fail a satispay payment ACTIVATION and get PPT_WISP_SESSIONE_SCONOSCIUTA", async (lang, translation) => {
-    /*
-     * Satispay payment with notice code that fails on activation and get PPT_WISP_SESSIONE_SCONOSCIUTA
-     * and redirect to expired session page
-     */
     selectLanguage(lang);
     await fillAndSubmitSatispayPayment(FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA, VALID_FISCAL_CODE, EMAIL);
     const titleElem = await page.waitForSelector("#sessionExpiredMessageTitle")
@@ -239,10 +227,6 @@ describe("Checkout payment activation failure tests", () => {
     ["de", deTranslation],
     ["sl", slTranslation]
   ])("Should fail a card payment ACTIVATION and get PPT_WISP_SESSIONE_SCONOSCIUTA", async (lang, translation) => {
-    /*
-     * Card payment with notice code that fails on activation and get PPT_WISP_SESSIONE_SCONOSCIUTA 
-     * and redirect to expired session page
-     */
     selectLanguage(lang);
     await fillAndSubmitCardDataForm(FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA, VALID_FISCAL_CODE, EMAIL, VALID_CARD_DATA);
     const titleElem = await page.waitForSelector("#sessionExpiredMessageTitle")
@@ -254,41 +238,39 @@ describe("Checkout payment activation failure tests", () => {
     expect(title).toContain(translation.paymentResponsePage[4].title);
     expect(body).toContain(translation.paymentResponsePage[4].body);
   });
+});
 
-  describe("Auth request failure tests", () => {
-    it.each([
-      ["it", itTranslation],
-      ["en", enTranslation],
-      ["fr", frTranslation],
-      ["de", deTranslation],
-      ["sl", slTranslation],
-    ])(
-      "Should fail a payment AUTHORIZATION REQUEST and get FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND for language [%s]",
-      async (lang, translation) => {
-        /*
-         * 2. Payment with notice code that fails on activation and get FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND
-         */
-        selectLanguage(lang);
-        page.on("dialog", async (dialog) => {
-          await dialog.accept();
-        });
-
-        const errorMessageTitleSelector = "#idTitleErrorModalPaymentCheckPage";
-        const resultMessage = await authorizePaymentAndGetError(
-          FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND,
-          VALID_FISCAL_CODE,
-          EMAIL,
-          VALID_CARD_DATA,
-          errorMessageTitleSelector
-        );
-
-        expect(resultMessage).toContain(translation.GENERIC_ERROR.title);
-
-        const closeErrorButton = await page.waitForSelector("#closeError");
-        await closeErrorButton.click();
-      }
-    );
-  });
+describe("Auth request failure tests", () => {
+  it.each([
+    ["it", itTranslation],
+    ["en", enTranslation],
+    ["fr", frTranslation],
+    ["de", deTranslation],
+    ["sl", slTranslation],
+  ])(
+    "Should fail a payment AUTHORIZATION REQUEST and get FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND for language [%s]",
+    async (lang, translation) => {
+      selectLanguage(lang);
+      const errorMessageTitleSelector = "#idTitleErrorModalPaymentCheckPage";
+      const resultMessage = await authorizePaymentAndGetError(
+        FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND,
+        VALID_FISCAL_CODE,
+        EMAIL,
+        VALID_CARD_DATA,
+        errorMessageTitleSelector
+      );
+      const closeErrorButton = await page.waitForSelector("#closeError");
+      await closeErrorButton.click();
+      await new Promise((r) => setTimeout(r, 1000));
+      const paymentCheckPageButtonCancel = await page.waitForSelector("#paymentCheckPageButtonCancel");
+      await paymentCheckPageButtonCancel.click();
+      const cancPayment = await page.waitForSelector("#confirm", {visible: true});
+      await cancPayment.click();
+      await page.waitForNavigation();
+      expect(resultMessage).toContain(translation.GENERIC_ERROR.title);
+      //await cancelPaymentAction();
+    }
+  );
 });
 
 describe("PSP disclaimer tests", () => {
@@ -301,9 +283,6 @@ describe("PSP disclaimer tests", () => {
   ])(
     "Should show up threshold disclaimer (why manage creditcard) for language [%s]",
     async (lang, translation) => {
-      /*
-       * Credit card manage psp
-       */
       selectLanguage(lang);
       const resultMessage = await checkPspDisclaimerBeforeAuthorizePayment(
         PSP_ABOVETHRESHOLD,
@@ -329,9 +308,6 @@ describe("PSP disclaimer tests", () => {
   ])(
     "Should show below threshold disclaimer (why is cheaper) for language [%s]",
     async (lang, translation) => {
-      /*
-       * Cheaper psp
-       */
       selectLanguage(lang);
       const resultMessage = await checkPspDisclaimerBeforeAuthorizePayment(
         PSP_BELOWTHRESHOLD,
@@ -359,9 +335,6 @@ describe("Checkout fails to calculate fee", () => {
   ])(
     "Should fails calculate fee for language [%s]",
     async (lang, translation) => {
-      /*
-       * Calculate fee fails
-       */
       selectLanguage(lang);
       const resultMessage = await checkErrorOnCardDataFormSubmit(
         PSP_FAIL,
@@ -374,7 +347,7 @@ describe("Checkout fails to calculate fee", () => {
       await page.waitForSelector(closeErrorModalButton);
       await page.click(closeErrorModalButton);
       const errorDescriptionXpath =
-        '//*[@id="root"]/div/div[2]/div/div/div/div[1]/div[1]';
+        '//*[@id="root"]/div/main/div/div/div/div[1]/div[1]';
       const errorMessageElem = await page.waitForXPath(errorDescriptionXpath);
       const errorMessage = await errorMessageElem.evaluate(
         (el) => el.textContent
@@ -392,9 +365,6 @@ describe("Checkout fails to calculate fee", () => {
   ])(
     "Should fails calculate fee with 404 for CARDS and language [%s]",
     async (lang, translation) => {
-      /*
-       * Calculate fee fails
-       */
       selectLanguage(lang);
 
       await fillAndSubmitCardDataForm(
@@ -432,7 +402,6 @@ describe("Checkout fails to calculate fee", () => {
       expect(errorDescriptionText).toContain(translation.pspUnavailable.body);
 
       await pspNotFoundCtaElem.click();
-      await page.waitForNavigation();
 
       const currentUrl = await page.evaluate(() => location.href);
       expect(currentUrl).toContain("/scegli-metodo");
@@ -448,9 +417,6 @@ describe("Checkout fails to calculate fee", () => {
   ])(
     "Should fails calculate fee with 404 for SATISPAY and language [%s]",
     async (lang, translation) => {
-      /*
-       * Calculate fee fails
-       */
       selectLanguage(lang);
 
       await fillAndSubmitSatispayPayment(
@@ -504,9 +470,6 @@ describe("Cancel payment tests", () => {
   ])(
     "Should correctly execute CANCEL PAYMENT by user for language [%s]",
     async (lang, translation) => {
-      /*
-       * Cancel payment OK
-       */
       selectLanguage(lang);
       const resultMessage = await cancelPaymentOK(
         CANCEL_PAYMENT_OK,
@@ -529,9 +492,6 @@ describe("Cancel payment failure tests (satispay)", () => {
   ])(
     "Should fail a CANCEL PAYMENT by user for language [%s]",
     async (lang, translation) => {
-      /*
-       * Cancel payment KO
-       */
       selectLanguage(lang);
       const resultMessage = await cancelPaymentKO(
         CANCEL_PAYMENT_KO,
@@ -544,8 +504,6 @@ describe("Cancel payment failure tests (satispay)", () => {
     }
   );
 });
-
-
 
 describe("PSP list tests", () => {
   it("Should sort psp by fees", async () => {
@@ -581,4 +539,74 @@ describe("PSP list tests", () => {
     await new Promise((r) => setTimeout(r, 500));
     await cancelPaymentAction();
   });
+});
+
+describe("Checkout Payment - PSP Selection Flow", () => {
+    it("Should fill form, select PSP, and proceed with payment (IT)", async () => {
+        selectLanguage("it");
+        await fillAndSubmitCardDataForm(VALID_NOTICE_CODE, VALID_FISCAL_CODE, EMAIL, VALID_CARD_DATA);
+
+        expect(await page.url()).toContain(CHECKOUT_URL_PAYMENT_SUMMARY);
+    });
+
+    it("Should mock PSP list with one PSP and proceed with selection", async () => {
+        selectLanguage("it");
+
+        await page.setRequestInterception(true);
+
+        page.on('request', request => {
+            if (request.isInterceptResolutionHandled()) return;
+            const url = request.url();
+
+            if (url.includes('/ecommerce/checkout/v2/payment-methods/') && url.includes('/fees')) {
+                request.respond({
+                    status: 200,
+                    contentType: 'application/json',
+                    body: JSON.stringify({
+                        asset: "https://assets.cdn.platform.pagopa.it/creditcard/generic.png",
+                        belowThreshold: true,
+                        brandAssets: {
+                            AMEX: "https://assets.cdn.platform.pagopa.it/creditcard/amex.png",
+                            DINERS: "https://assets.cdn.platform.pagopa.it/creditcard/diners.png",
+                            MAESTRO: "https://assets.cdn.platform.pagopa.it/creditcard/maestro.png",
+                            MASTERCARD: "https://assets.cdn.platform.pagopa.it/creditcard/mastercard.png",
+                            MC: "https://assets.cdn.platform.pagopa.it/creditcard/mastercard.png",
+                            VISA: "https://assets.cdn.platform.pagopa.it/creditcard/visa.png"
+                        },
+                        bundles: [
+                            {
+                                abi: "33111",
+                                bundleDescription: "Pagamenti con carte",
+                                bundleName: "Worldline Merchant Services Italia S.p.A.",
+                                idBrokerPsp: "05963231005",
+                                idBundle: "98d24e9a-ab8b-48e3-ae84-f0c16c64db3b",
+                                idChannel: "05963231005_01",
+                                idPsp: "BNLIITRR",
+                                onUs: true,
+                                paymentMethod: "CP",
+                                pspBusinessName: "Worldline Merchant Services Italia S.p.A.",
+                                taxPayerFee: 15,
+                                touchpoint: "CHECKOUT"
+                            },
+                        ],
+                        paymentMethodDescription: "payment method description (v2)",
+                        paymentMethodName: "test",
+                        paymentMethodStatus: "ENABLED"
+                    }),
+                });
+            } else {
+                request.continue();
+            }
+        });
+
+        await fillAndSubmitCardDataForm(
+            VALID_NOTICE_CODE,
+            VALID_FISCAL_CODE,
+            EMAIL,
+            VALID_CARD_DATA
+        );
+
+        expect(await page.url()).toContain(CHECKOUT_URL_PAYMENT_SUMMARY);
+    });
+
 });

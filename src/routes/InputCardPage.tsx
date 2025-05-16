@@ -98,7 +98,12 @@ export default function InputCardPage() {
 
               setSessionItem(SessionItems.pspSelected, firstPsp);
               setLoading(false);
-              navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
+
+              if (localStorage.getItem(SessionItems.enablePspPage) === "true") {
+                navigate(`/${CheckoutRoutes.LISTA_PSP}`);
+              } else {
+                navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
+              }
             }
           )
         );
@@ -182,7 +187,7 @@ export default function InputCardPage() {
           open={pspNotFoundModal}
           onClose={() => {
             setPspNotFoundModalOpen(false);
-            window.location.replace(`/${CheckoutRoutes.SCEGLI_METODO}`);
+            navigate(`/${CheckoutRoutes.SCEGLI_METODO}`, { replace: true });
           }}
           maxWidth="sm"
           hideIcon={true}
@@ -208,7 +213,7 @@ export default function InputCardPage() {
               variant="contained"
               onClick={() => {
                 setPspNotFoundModalOpen(false);
-                window.location.replace(`/${CheckoutRoutes.SCEGLI_METODO}`);
+                navigate(`/${CheckoutRoutes.SCEGLI_METODO}`, { replace: true });
               }}
               id="pspNotFoundCtaId"
             >

@@ -21,6 +21,22 @@
     "body": "L'opération a été annulée",
     "button": "Fermer"
   },
+  "authCallbackPage": {
+    "title": "Non è stato possibile accedere",
+    "body": "Si è verificato un problema durante l'accesso. Riprova tra qualche minuto.",
+    "buttons": {
+      "retry": "Riprova",
+      "continueWithoutLogin": "Continua senza login"
+    }
+  },
+  "authExpiredPage": {
+    "title": "La tua sessione è scaduta",
+    "body": "Accedi per riprendere la sessione, oppure prosegui senza effettuare il login ",
+    "buttons": {
+      "login": "Accedi",
+      "continueWithoutLogin": "Continua senza login."
+    }
+  },
   "cartDetail": {
     "amount": "Montant",
     "companyName": "Organisme créancier",
@@ -92,7 +108,8 @@
       "cvv": "CVV",
       "expirationDate": "Date d’expiration",
       "name": "Titulaire carte",
-      "number": "Numéro carte"
+      "number": "Numéro carte",
+      "required": "Champ obligatoire"
     },
     "helpLink": "Où se trouve le code de sécurité ?",
     "modal": {
@@ -130,6 +147,7 @@
     },
     "header": {
       "detail": {
+        "detailButton": "Apri riepilogo pagamento",
         "detailFC": "Code fiscal organisme créancier",
         "detailIUV": "Code IUV",
         "detailAmount": "Total partiel",
@@ -138,6 +156,9 @@
         "detailTitle": "Détail avis"
       },
       "disclaimer": "Le montant est mis à jour automatiquement : vous payez toujours à temps, sans pénalités ni intérêts de retard."
+    },
+    "main":{
+      "skipToContent": "Aller au contenu"
     }
   },
   "NOTLISTED": {
@@ -194,6 +215,19 @@
     },
     "title": "Saisir votre e-mail"
   },
+  "findOutMoreModal":{
+    "title": "Cosa fare se il pagamento non va a buon fine?",
+    "section1Title": "1. Paga l'avviso",
+    "section1ContentRow1": "Ricorda di pagare l'avviso entro le scadenze previste dall'ente.",
+    "section1ContentRow2": "Se non riesci tramite questo sito, ",
+    "section1ContentRow2Link": "scopri gli altri canali abilitati a pagoPA.",
+    "section2Title": "2. Attendi il rimborso",
+    "section2ContentRow1": "Di solito l'importo viene riaccreditato entro pochi minuti.",
+    "section2ContentRow2": "In altri casi, il trasferimento di denaro sul tuo conto o carta potrebbe richiedere più tempo.",
+    "section3Title": "3. Contatta l'assistenza",
+    "section3ContentRow1": "Se dopo 5 giorni lavorativi non hai ancora ricevuto il rimborso, ",
+    "section3ContentRow2Link": "contatta l'assistenza."
+  },
   "paymentResponsePage": {
     "0": {
       "body": "Nous avons envoyé le reçu du paiement à {{useremail}}",
@@ -240,12 +274,33 @@
       "body": "Vous recevrez le résultat du paiement à l’adresse {{useremail}}.",
       "title": "Attendez de recevoir la validation du paiement"
     },
+    "18": {
+      "body": "L’importo autorizzato è stato rimborsato sul tuo metodo di pagamento. Il trasferimento di denaro potrebbe richiedere del tempo.",
+      "title": "Il pagamento non è andato a buon fine"
+    },
+    "25": {
+      "body": "Non è stato addebitato alcun importo.\n Se il problema persiste, prova a usare un altro metodo o gestore del pagamento.",
+      "title": "Il pagamento non è andato a buon fine"
+    },
+    "116": {
+      "body": "Non è stato addebitato alcun importo. Prima di riprovare, aggiungi fondi alla carta o usa un altro metodo di pagamento.",
+      "title": "Il saldo della tua carta è insufficiente"
+    },
+    "117": {
+      "body": "Non è stato addebitato alcun importo. Il codice (CVV o CVC) ha 3 cifre ed è riportato sul retro della carta. Se usi American Express, il codice (CID) ha 4 cifre ed è sul fronte.",
+      "title": "Il codice di sicurezza inserito è errato"
+    },
+    "121": {
+      "body": "Non è stato addebitato alcun importo. Prima di riprovare, modifica il limite di spesa o usa un altro metodo di pagamento.",
+      "title": "Hai superato il limite di spesa della tua carta"
+    },
     "3dsNotInitiated": {
       "body": "Aucun débit n’a été effectué.\nSi le problème persiste, contactez l’opérateur de votre moyen de paiement, votre banque par exemple.",
       "title": "Nous avons rencontré un problème avec l’opérateur de votre moyen de paiement"
     },
     "buttons": {
-      "continue": "Continuer"
+      "continue": "Continuer",
+      "findOutMode": "Scopri di più"
     },
     "survey": {
       "body": "Faites-nous part de votre expérience et aidez-nous à l’améliorer.",
@@ -265,7 +320,8 @@
     "creditCard": "Payer avec",
     "disclaimer": {
       "cheaper": "Conseillé comme le moins cher",
-      "yourCard": "Conseillé aux clients déjà inscrits"
+      "yourCard": "Conseillé aux clients déjà inscrits",
+      "psp":"En continuant, vous acceptez les  <terms>Conditions générales d'utilisation</terms> et vous confirmez avoir lu la <privacy>Politique de confidentialité</privacy> de <psp>{{pspName}}</psp>"
     },
     "drawer": {
       "body": "Cette liste vous indique tous les opérateur compatibles avec votre moyen de paiement, même si vous ne faites pas partie de leurs clients.",
@@ -278,9 +334,9 @@
     "email": "Envoyer le résultat à:",
     "modal": {
       "body": "Les opérations de transfert d’argent (en comptant ou en monnaie électronique) ont un coût qui permet de garantir un paiement sûr et vérifié.\nChaque opérateur (ou PSP, Prestataire de service de paiement) chiffre ses frais en fonction de ses stratégies commerciales et de ses conditions contractuelles.\nAvec pagoPA, ces frais sont transparents et le client peut choisir librement l’option qui lui convient. Pour en savoir plus, consulter la page  ",
-      "cancelBody": "Toutes les données saisies seront effacées.",
-      "cancelButton": "J’ai changé d’avis",
-      "cancelTitle": "Sortir du paiement en cours ?",
+      "cancelBody": "Si vous quittez maintenant, les informations saisies seront perdues et vous devrez recommencer l'opération.",
+      "cancelButton": "Non, J'ai changé d'avis",
+      "cancelTitle": "Votre paiement est en cours, voulez-vous vraiment quitter ?",
       "link": "Transparence des frais facturés",
       "submitButton": "Sortir",
       "title": "Pourquoi y-a-t-il de frais?"
@@ -318,6 +374,8 @@
   },
   "paymentNoticePage": {
     "description": "Saisir les données qui figurent sur l’avis de paiement.",
+    "exampleModalAltText": "Avviso di pagamento pagoPA, con evidenziata la parte in cui sono presenti il codice avviso e il codice fiscale dell’ente creditore",
+    "exampleModalTitle": "Esempio di avviso pagoPA",
     "formButtons": {
       "cancel": "Retour",
       "submit": "Continuer"
@@ -334,12 +392,33 @@
     "helpLink": "Voir un exemple",
     "title": "Que devez-vous payer?"
   },
+  "paymentPspListPage": {
+    "title": "Choisissez qui gérera le paiement",
+    "description": "Chaque opérateur propose une commission. Dans cette liste, vous trouverez tous les opérateurs compatibles, <strong>même si vous n'êtes pas leur client</strong>.",
+    "operator": "Opérateur",
+    "alreadyClient": "Vous êtes déjà client",
+    "formButtons": {
+      "back": "Retour",
+      "submit": "Continuer"
+    },
+    "sort": "Trier",
+    "drawer": {
+      "sorting": {
+        "default": "Par défaut",
+        "name": "Par nom",
+        "amount": "Par montant"
+      },
+      "showResults": "Afficher les résultats"
+    }
+  },
   "paymentQrPage": {
     "camBlocked": "Nous avons besoin de votre autorisation pour utiliser l’appareil photo. Pour modifier votre choix, visitez les paramètre Confidentialité de votre navigateur",
     "description": "Vérifier votre éclairage. Si le code n’est pas mis au point, éloignez-vous légèrement de l’écran.",
     "navigate": "L’opération a échoué ? Saisir les données manuellement",
     "reloadPage": "Recharger la page",
-    "title": "Scanner le code QR"
+    "title": "Scanner le code QR",
+    "usageHintPc": "Questa pagina richiede l'uso del lettore di codici QR. Per scansionare il codice QR, consenti al browser l'accesso alla fotocamera quando richiesto. Potresti dover utilizzare una webcam esterna o integrata. Il codice QR deve essere ben inquadrato e ben illuminato per facilitarne la lettura.",
+    "usageHintMobile": "Questa pagina richiede l'uso del lettore di codici QR. Per scansionare il codice QR, consenti al browser l'accesso alla fotocamera quando richiesto. Utilizza la fotocamera posteriore del tuo smartphone e orientala verso il codice QR. Il codice QR deve essere ben inquadrato e ben illuminato per facilitarne la lettura."
   },
   "paymentSummaryPage": {
     "amount": "Montant mis à jour",
@@ -352,10 +431,10 @@
     "causal": "Objet du paiement",
     "cf": "Code fiscal organisme créancier",
     "creditor": "Organisme créancier",
-    "description": "pagoPA met à jour le montant automatiquement : vous payez exactement ce que vous devez, sans pénalité ni intérêt de retard",
+    "description": "Lorsque le montant change, cela signifie qu'il a été mis à jour automatiquement. S'il est plus élevé, il peut inclure des intérêts, des pénalités ou des frais de notification.\n\nSi l'avis pagoPA concerne une communication ayant une valeur juridique, l'augmentation du montant à payer peut dépendre de plusieurs facteurs, par exemple :\n• si vous avez reçu la communication par courrier recommandé (les frais d'impression et d'envoi pouvant être à la charge du destinataire) ;\n• le nombre de tentatives de livraison.\n\nPour plus de détails, contactez l'organisme créancier.",
     "dialog": {
-      "description": "pagoPA met à jour le montant automatiquement : vous payez exactement ce que vous devez, sans pénalité ni intérêt de retard.",
-      "title": "Vous voyez un montant différent ?"
+      "description": "Lorsque le montant change, cela signifie qu'il a été mis à jour automatiquement. S'il est plus élevé, il peut inclure des intérêts, des pénalités ou des frais de notification.\n\nSi l'avis pagoPA concerne une communication ayant une valeur juridique, l'augmentation du montant à payer peut dépendre de plusieurs facteurs, par exemple :\n• si vous avez reçu la communication par courrier recommandé (les frais d'impression et d'envoi pouvant être à la charge du destinataire) ;\n• le nombre de tentatives de livraison.\n\nPour plus de détails, contactez l'organisme créancier.",
+      "title": "Le montant est-il différent de celui indiqué sur l'avis pagoPA ?"
     },
     "iuv": "Code IUV",
     "title": "Données du paiement"
@@ -386,6 +465,14 @@
     "HF0006": "Saisir mm/aa",
     "HF0007": "Saisir les informations inscrites sur la carte",
     "HF0009": "Vérification 3DS échouée"
+  },
+  "userSession": {
+    "logoutModal": {
+      "title": "Voulez-vous vraiment vous deconnecter?",
+      "body": "Vous pourrez toujours effectuer le paiement sans vous connecter.",
+      "submitButton": "Se déconnecter",
+      "cancelButton": "Non, rester connecté"
+    }
   },
   "__variant-name": "Francese",
   "__variant-description": ""

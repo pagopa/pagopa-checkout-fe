@@ -19,37 +19,40 @@ import { ecommerceTransaction } from "../transactions/transactionHelper";
 import { constantPollingWithPromisePredicateFetch } from "../config/fetch";
 import { getUrlParameter } from "../regex/urlUtilities";
 import { getConfigOrThrow } from "../config/config";
-import {
-  createClient,
-  Client as EcommerceClient,
-} from "../../../generated/definitions/payment-ecommerce/client";
 import { getSessionItem, SessionItems } from "../storage/sessionStorage";
 import {
   EcommerceInterruptStatusCodeEnumType,
   EcommerceMaybeInterruptStatusCodeEnumType,
   NpgAuthorizationStatus,
 } from "../transactions/TransactionResultUtil";
-import {
-  NewTransactionResponse,
-  SendPaymentResultOutcomeEnum,
-} from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
-import { TransactionInfo } from "../../../generated/definitions/payment-ecommerce/TransactionInfo";
+import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { TransactionStatusEnum } from "../../../generated/definitions/payment-ecommerce/TransactionStatus";
+import {
+  TransactionInfo,
+  TransactionInfoGatewayInfo,
+  TransactionInfoNodeInfo,
+} from "../../../generated/definitions/payment-ecommerce-v2/TransactionInfo";
+import {
+  createClient,
+  Client as EcommerceClient,
+} from "../../../generated/definitions/payment-ecommerce-v2/client";
 
 /** This function return true when polling on GET transaction must be interrupted */
 const interruptTransactionPolling = (
   transactionStaus: TransactionInfo["status"],
-  gatewayStaus: TransactionInfo["gatewayAuthorizationStatus"]
+  gatewayInfo?: TransactionInfoGatewayInfo,
+  nodeInfo?: TransactionInfoNodeInfo
 ) =>
   pipe(
     EcommerceInterruptStatusCodeEnumType.decode(transactionStaus),
     E.isRight
   ) ||
+  nodeInfo?.closePaymentResultError?.statusCode?.toString().startsWith("4") ||
   (pipe(
     EcommerceMaybeInterruptStatusCodeEnumType.decode(transactionStaus),
     E.isRight
   ) &&
-    gatewayStaus !== NpgAuthorizationStatus.EXECUTED);
+    gatewayInfo?.authorizationStatus !== NpgAuthorizationStatus.EXECUTED);
 
 const config = getConfigOrThrow();
 /**
@@ -60,7 +63,7 @@ const delay: number = config.CHECKOUT_API_RETRY_DELAY;
 const timeout: Millisecond = config.CHECKOUT_API_TIMEOUT as Millisecond;
 
 const hexToUuid = require("hex-to-uuid");
-const decodeToUUID = (base64: string) => {
+export const decodeToUUID = (base64: string) => {
   const bytes = Buffer.from(base64, "base64");
   bytes[6] &= 0x0f;
   bytes[6] |= 0x40;
@@ -71,7 +74,7 @@ const decodeToUUID = (base64: string) => {
 
 const counter = createCounter();
 const ecommerceClientWithPolling: EcommerceClient = createClient({
-  baseUrl: config.CHECKOUT_ECOMMERCE_HOST,
+  baseUrl: config.CHECKOUT_PAGOPA_APIM_HOST,
   fetchApi: constantPollingWithPromisePredicateFetch(
     DeferredPromise<boolean>().e1,
     retries,
@@ -83,25 +86,23 @@ const ecommerceClientWithPolling: EcommerceClient = createClient({
         counter.reset();
         return false;
       }
-      const { status, gatewayAuthorizationStatus } = (await r
+      const { status, gatewayInfo, nodeInfo } = (await r
         .clone()
         .json()) as TransactionInfo;
       return !(
         r.status === 200 &&
-        interruptTransactionPolling(status, gatewayAuthorizationStatus)
+        interruptTransactionPolling(status, gatewayInfo, nodeInfo)
       );
     }
   ),
-  basePath: config.CHECKOUT_API_ECOMMERCE_BASEPATH,
+  basePath: config.CHECKOUT_API_ECOMMERCE_BASEPATH_V2,
 });
 
 export const callServices = async (
   handleFinalStatusResult: (
     status?: TransactionStatusEnum,
-    sendPaymentResultOutcome?: SendPaymentResultOutcomeEnum,
-    gateway?: string,
-    errorCode?: string,
-    gatewayAuthorizationStatus?: string
+    nodeInfo?: TransactionInfoNodeInfo,
+    gatewayInfo?: TransactionInfoGatewayInfo
   ) => void
 ) => {
   const transaction = pipe(
@@ -163,10 +164,8 @@ export const callServices = async (
               });
               handleFinalStatusResult(
                 transactionInfo.status,
-                transactionInfo.sendPaymentResultOutcome,
-                transactionInfo.gateway,
-                transactionInfo.errorCode,
-                transactionInfo.gatewayAuthorizationStatus
+                transactionInfo.nodeInfo,
+                transactionInfo.gatewayInfo
               );
             }
           )

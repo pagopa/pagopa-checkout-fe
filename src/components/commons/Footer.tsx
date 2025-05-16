@@ -22,6 +22,7 @@ export default function Footer(props: { fixedPages: Array<string> }) {
       display={"flex"}
       justifyContent={"space-between"}
       alignItems={"center"}
+      component="footer"
       pb={{ ...(isFixed() ? {} : { xs: 16 }), sm: 0 }}
       pl={{ xs: 3, sm: 6 }}
       pr={{ xs: 3, sm: 6 }}
@@ -30,10 +31,8 @@ export default function Footer(props: { fixedPages: Array<string> }) {
         sm: 0,
       }}
       bgcolor={{
-        ...(isFixed()
-          ? { xs: "background.paper" }
-          : { xs: "background.default" }),
-        sm: "background.paper",
+        ...(isFixed() ? { xs: "#f2f2f2" } : { xs: "background.default" }),
+        sm: "#f2f2f2",
       }}
     >
       <Typography variant="caption" component={"div"}>
@@ -44,7 +43,7 @@ export default function Footer(props: { fixedPages: Array<string> }) {
           flexWrap={"wrap"}
         >
           <Link
-            href="https://form.agid.gov.it/view/3588af90-773f-11ef-b8bf-4f02c3f2bc4b/"
+            href="https://form.agid.gov.it/view/db845560-df2d-11ef-8637-9f856ac3da10"
             target="_blank"
             rel="noopener noreferrer"
             style={{
@@ -70,7 +69,7 @@ export default function Footer(props: { fixedPages: Array<string> }) {
           </Link>
           <p aria-hidden="true">·</p>
           <Link
-            href="https://checkout.pagopa.it/privacypolicy/it.html"
+            href="https://checkout.pagopa.it/privacypolicy/it.html#termini-e-condizioni-di-uso"
             target="_blank"
             rel="noopener noreferrer"
             style={{
@@ -83,7 +82,7 @@ export default function Footer(props: { fixedPages: Array<string> }) {
           </Link>
           <p aria-hidden="true">·</p>
           <Link
-            href="https://checkout.pagopa.it/privacypolicy/it.html#termini-e-condizioni-di-uso"
+            href="https://checkout.pagopa.it/termini-di-servizio"
             target="_blank"
             rel="noopener noreferrer"
             style={{

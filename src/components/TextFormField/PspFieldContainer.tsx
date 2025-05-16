@@ -28,12 +28,12 @@ function PspFieldContainer(props: {
       onClick={props.onClick}
       onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
         if (e.key === "Enter") {
+          e.preventDefault();
           // eslint-disable-next-line @typescript-eslint/no-unused-expressions
           !!props.onClick && props.onClick();
         }
       }}
       tabIndex={0}
-      role="psp"
     >
       <Box
         sx={{
@@ -51,12 +51,12 @@ function PspFieldContainer(props: {
             flexDirection: props.flexDirection,
           }}
         >
-          <Box sx={{ width: "80%" }}>
+          <Box sx={{ paddingRight: "10px" }}>
             <img
               alt={`Logo ${props.body}`}
               aria-hidden="true"
               src={props.image}
-              style={{ maxHeight: "32px", width: "auto" }}
+              style={{ maxHeight: "20px", width: "auto", maxWidth: "100%" }}
             />
           </Box>
           <Typography
@@ -64,6 +64,7 @@ function PspFieldContainer(props: {
             variant={props.bodyVariant}
             component={"div"}
             sx={{ mt: 1 }}
+            style={{ marginRight: "8px" }}
           >
             {props.body}
           </Typography>

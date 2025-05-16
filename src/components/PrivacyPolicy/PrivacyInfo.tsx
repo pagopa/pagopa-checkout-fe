@@ -31,9 +31,7 @@ export default function PrivacyInfo(props: { showDonationPrivacy?: boolean }) {
               privacy: (
                 <PrivacyLink href="/privacypolicy/it.html#informativa-sul-trattamento-dei-dati-personali" />
               ),
-              terms: (
-                <PrivacyLink href="/privacypolicy/it.html#termini-e-condizioni-di-uso" />
-              ),
+              terms: <PrivacyLink href="/termini-di-servizio" />,
             }}
           />
           {props.showDonationPrivacy ? (

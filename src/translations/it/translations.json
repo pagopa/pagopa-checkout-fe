@@ -21,6 +21,22 @@
     "body": "L'operazione è stata annullata",
     "button": "Chiudi"
   },
+  "authCallbackPage": {
+    "title": "Non è stato possibile accedere",
+    "body": "Si è verificato un problema durante l'accesso. Riprova tra qualche minuto.",
+    "buttons": {
+      "retry": "Riprova",
+      "continueWithoutLogin": "Continua senza login"
+    }
+  },
+  "authExpiredPage": {
+    "title": "La tua sessione è scaduta",
+    "body": "Accedi per riprendere la sessione, oppure prosegui senza effettuare il login ",
+    "buttons": {
+      "login": "Accedi",
+      "continueWithoutLogin": "Continua senza login."
+    }
+  },
   "cartDetail": {
     "amount": "Importo",
     "companyName": "Ente Creditore",
@@ -92,7 +108,8 @@
       "cvv": "CVV",
       "expirationDate": "Scadenza",
       "name": "Intestata a",
-      "number": "Numero carta"
+      "number": "Numero carta",
+      "required": "Campo obbligatorio"
     },
     "helpLink": "Dove trovo il codice di sicurezza?",
     "modal": {
@@ -130,7 +147,9 @@
       "pagoPA": "Visita il sito pagoPA"
     },
     "header": {
+      "logout": "Esci",
       "detail": {
+        "detailButton": "Apri riepilogo pagamento",
         "detailFC": "Codice Fiscale Ente Creditore",
         "detailIUV": "Codice IUV",
         "detailAmount": "Totale parziale",
@@ -139,6 +158,9 @@
         "detailTitle": "Dettaglio avviso"
       },
       "disclaimer": "L’importo è aggiornato in automatico, così paghi sempre quanto dovuto ed eviti more o altri interessi."
+    },
+    "main":{
+      "skipToContent": "Vai ai contenuti"
     }
   },
   "NOTLISTED": {
@@ -195,6 +217,19 @@
     },
     "title": "Inserisci la tua email"
   },
+  "findOutMoreModal":{
+    "title": "Cosa fare se il pagamento non va a buon fine?",
+    "section1Title": "1. Paga l'avviso",
+    "section1ContentRow1": "Ricorda di pagare l'avviso entro le scadenze previste dall'ente.",
+    "section1ContentRow2": "Se non riesci tramite questo sito, ",
+    "section1ContentRow2Link": "scopri gli altri canali abilitati a pagoPA.",
+    "section2Title": "2. Attendi il rimborso",
+    "section2ContentRow1": "Di solito l'importo viene riaccreditato entro pochi minuti.",
+    "section2ContentRow2": "In altri casi, il trasferimento di denaro sul tuo conto o carta potrebbe richiedere più tempo.",
+    "section3Title": "3. Contatta l'assistenza",
+    "section3ContentRow1": "Se dopo 5 giorni lavorativi non hai ancora ricevuto il rimborso, ",
+    "section3ContentRow2Link": "contatta l'assistenza."
+  },
   "paymentResponsePage": {
     "0": {
       "body": "Abbiamo inviato la ricevuta del pagamento a {{useremail}}",
@@ -238,27 +273,36 @@
       "title": "Il metodo di pagamento non è supportato"
     },
     "17": {
-      "body": "Il pagamento non si è ancora concluso: riceverai a breve l’esito all'indirizzo {{useremail}}. L’operazione può richiedere fino a 15 minuti.",
+      "body": "Il pagamento non si è ancora concluso: se non ricevi l'esito positivo entro 15 minuti all'indirizzo {{useremail}} riprova di nuovo.",
       "title": "Attendi la conferma del pagamento"
+    },
+    "18": {
+      "body": "L’importo autorizzato è stato rimborsato sul tuo metodo di pagamento. Il trasferimento di denaro potrebbe richiedere del tempo.",
+      "title": "Il pagamento non è andato a buon fine"
+    },
+    "25": {
+      "body": "Non è stato addebitato alcun importo.\n Se il problema persiste, prova a usare un altro metodo o gestore del pagamento.",
+      "title": "Il pagamento non è andato a buon fine"
+    },
+    "116": {
+      "body": "Non è stato addebitato alcun importo. Prima di riprovare, aggiungi fondi alla carta o usa un altro metodo di pagamento.",
+      "title": "Il saldo della tua carta è insufficiente"
+    },
+    "117": {
+      "body": "Non è stato addebitato alcun importo. Il codice (CVV o CVC) ha 3 cifre ed è riportato sul retro della carta. Se usi American Express, il codice (CID) ha 4 cifre ed è sul fronte.",
+      "title": "Il codice di sicurezza inserito è errato"
+    },
+    "121": {
+      "body": "Non è stato addebitato alcun importo. Prima di riprovare, modifica il limite di spesa o usa un altro metodo di pagamento.",
+      "title": "Hai superato il limite di spesa della tua carta"
     },
     "3dsNotInitiated": {
       "body": "Non è stato addebitato alcun importo.\nSe il problema persiste, contatta il gestore del metodo di pagamento, per esempio la tua banca.",
       "title": "C’è stato un problema con il gestore del tuo metodo di pagamento"
     },
     "buttons": {
-      "continue": "Continua"
-    },
-    "cvvError": {
-      "body": "Non è stato addebitato alcun importo. Il codice (CVV o CVC) ha 3 cifre ed è riportato sul retro della carta. Se usi American Express, il codice (CID) ha 4 cifre ed è sul fronte.",
-      "title": "Il codice di sicurezza inserito è errato"
-    },
-    "exceededLimit": {
-      "body": "Non è stato addebitato alcun importo. Prima di riprovare, modifica il limite di spesa o usa un altro metodo di pagamento.",
-      "title": "Hai superato il limite di spesa"
-    },
-    "notSufficientFunds": {
-      "body": "Non è stato addebitato alcun importo. Prima di riprovare, aggiungi fondi alla o usa un altro metodo di pagamento.",
-      "title": "Il saldo è insufficiente"
+      "continue": "Continua",
+      "findOutMode": "Scopri di più"
     },
     "survey": {
       "body": "Raccontaci la tua esperienza con il pagamento e aiutaci a migliorare.",
@@ -278,7 +322,8 @@
     "creditCard": "Paga con",
     "disclaimer": {
       "cheaper": "Suggerito perché il più economico",
-      "yourCard": "Suggerito perché sei già cliente"
+      "yourCard": "Suggerito perché sei già cliente",
+      "psp":"Proseguendo accetti i <terms>Termini e condizioni d'uso</terms> e dichiari di aver letto l'<privacy>Informativa Privacy</privacy> di <psp>{{pspName}}</psp>"
     },
     "drawer": {
       "body": "In questa lista trovi tutti i gestori compatibili con il tuo metodo, anche se non sei loro cliente.",
@@ -291,9 +336,9 @@
     "email": "Invia esito a:",
     "modal": {
       "body": "Qualsiasi operazione di trasferimento di denaro (in contanti o in moneta elettronica) ha un costo, che serve a garantirti che quel pagamento sia sicuro e arrivi a buon fine.\nOgni gestore (o PSP, Prestatore di Servizi di Pagamento) propone un costo, a seconda delle proprie politiche commerciali e condizioni contrattuali.\nCon pagoPA, questi costi sono trasparenti e il cittadino può scegliere liberamente l'opzione più comoda e conveniente. Per saperne di più, consulta la pagina ",
-      "cancelBody": "Tutti i dati inseriti andranno persi.",
+      "cancelBody": "Se esci, tutti i dati inseriti fino ad ora verranno cancellati e dovrai ricominciare da capo",
       "cancelButton": "No, ho cambiato idea",
-      "cancelTitle": "Uscire dal pagamento in corso?",
+      "cancelTitle": "Il tuo pagamento è in corso, vuoi davvero uscire?",
       "link": "Trasparenza Costi",
       "submitButton": "Esci",
       "title": "Perché c'è un costo di commissione?"
@@ -331,6 +376,8 @@
   },
   "paymentNoticePage": {
     "description": "Inserisci i dati come riportato sull’avviso di pagamento.",
+    "exampleModalAltText": "Avviso di pagamento pagoPA, con evidenziata la parte in cui sono presenti il codice avviso e il codice fiscale dell’ente creditore",
+    "exampleModalTitle": "Esempio di avviso pagoPA",
     "formButtons": {
       "cancel": "Indietro",
       "submit": "Continua"
@@ -347,12 +394,33 @@
     "helpLink": "Vedi un esempio",
     "title": "Cosa devi pagare?"
   },
+  "paymentPspListPage": {
+    "title": "Scegli chi gestirà il pagamento",
+    "description": "Ogni gestore propone una commissione. In questa lista trovi tutti i gestori compatibili, <strong>anche se non sei loro cliente</strong>.",
+    "operator": "Gestore",
+    "alreadyClient": "Sei già cliente",
+    "formButtons": {
+      "back": "Indietro",
+      "submit": "Continua"
+    },
+    "sort": "Ordina",
+    "drawer": {
+      "sorting": {
+        "default": "Default",
+        "name": "Per nome",
+        "amount": "Per importo"
+      },
+      "showResults": "Mostra risultati"
+    }
+  },
   "paymentQrPage": {
     "camBlocked": "Abbiamo bisogno del tuo consenso per utilizzare la fotocamera. Per modificare la tua scelta, visita le impostazioni Privacy del tuo browser",
     "description": "Assicurati di avere una buona illuminazione. Se il codice non è a fuoco, prova ad allontanarlo leggermente dallo schermo.",
     "navigate": "Non funziona? Inserisci manualmente",
     "reloadPage": "Ricarica la pagina",
-    "title": "Inquadra il codice QR"
+    "title": "Inquadra il codice QR",
+    "usageHintPc": "Questa pagina richiede l'uso del lettore di codici QR. Per scansionare il codice QR, consenti al browser l'accesso alla fotocamera quando richiesto. Potresti dover utilizzare una webcam esterna o integrata. Il codice QR deve essere ben inquadrato e ben illuminato per facilitarne la lettura.",
+    "usageHintMobile": "Questa pagina richiede l'uso del lettore di codici QR. Per scansionare il codice QR, consenti al browser l'accesso alla fotocamera quando richiesto. Utilizza la fotocamera posteriore del tuo smartphone e orientala verso il codice QR. Il codice QR deve essere ben inquadrato e ben illuminato per facilitarne la lettura."
   },
   "paymentSummaryPage": {
     "amount": "Importo aggiornato",
@@ -365,10 +433,10 @@
     "causal": "Oggetto del pagamento",
     "cf": "Codice Fiscale Ente Creditore",
     "creditor": "Ente Creditore",
-    "description": "pagoPA aggiorna automaticamente l'importo per assicurarti di aver pagato esattamente quanto dovuto ed evitarsi così more o altri interessi",
+    "description": "Quando l'importo cambia, significa che è stato aggiornato automaticamente. Se è più alto, potrebbero esserci interessi, sanzioni o costi di notifica.\n\nSe l'avviso pagoPA riguarda una comunicazione a valore legale, l'aumento dell'importo da pagare può dipendere da diversi fattori, per esempio:\n• se hai ricevuto la comunicazione tramite raccomandata (i cui costi di stampa e invio possono essere a carico del destinatario);\n• il numero di tentativi di recapito.\n\nPer ulteriori dettagli contatta l'ente creditore.",
     "dialog": {
-      "description": "pagoPA aggiorna automaticamente l'importo per assicurarti di aver pagato esattamente quanto dovuto ed evitarti così more o altri interessi.",
-      "title": "Vedi un importo diverso?"
+      "description": "Quando l'importo cambia, significa che è stato aggiornato automaticamente. Se è più alto, potrebbero esserci interessi, sanzioni o costi di notifica.\n\nSe l'avviso pagoPA riguarda una comunicazione a valore legale, l'aumento dell'importo da pagare può dipendere da diversi fattori, per esempio:\n• se hai ricevuto la comunicazione tramite raccomandata (i cui costi di stampa e invio possono essere a carico del destinatario);\n• il numero di tentativi di recapito.\n\nPer ulteriori dettagli contatta l'ente creditore.",
+      "title": "L'importo è diverso da quello riportato sull'avviso pagoPA?"
     },
     "iuv": "Codice IUV",
     "title": "Dati del pagamento"
@@ -399,5 +467,13 @@
     "HF0006": "Inserisci mm/aa",
     "HF0007": "Inserisci come riportato sulla carta",
     "HF0009": "Verifica 3DS fallita"
+  },
+  "userSession": {
+    "logoutModal": {
+      "title": "Vuoi davvero uscire?",
+      "body": "Potrai comunque pagare anche senza accedere.",
+      "submitButton": "Esci",
+      "cancelButton": "Annulla"
+    }
   }
 }

@@ -5,6 +5,9 @@
 import { Box, Button, Typography } from "@mui/material";
 import { default as React, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import * as O from "fp-ts/Option";
+import { pipe } from "fp-ts/lib/function";
 import { getConfigOrThrow } from "../utils/config/config";
 import SurveyLink from "../components/commons/SurveyLink";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
@@ -20,6 +23,7 @@ import { mixpanel } from "../utils/config/mixpanelHelperInit";
 import { onBrowserUnload } from "../utils/eventListeners";
 import { moneyFormat } from "../utils/form/formatters";
 import {
+  clearSessionItem,
   clearStorage,
   getSessionItem,
   SessionItems,
@@ -29,29 +33,40 @@ import {
   ViewOutcomeEnum,
 } from "../utils/transactions/TransactionResultUtil";
 import { Cart } from "../features/payment/models/paymentModel";
-import {
-  NewTransactionResponse,
-  SendPaymentResultOutcomeEnum,
-} from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
+import { NewTransactionResponse } from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { resetThreshold } from "../redux/slices/threshold";
 import { Bundle } from "../../generated/definitions/payment-ecommerce/Bundle";
 import { TransactionStatusEnum } from "../../generated/definitions/payment-ecommerce/TransactionStatus";
-import { TransactionInfo } from "../../generated/definitions/payment-ecommerce/TransactionInfo";
+import {
+  TransactionInfoGatewayInfo,
+  TransactionInfoNodeInfo,
+} from "../../generated/definitions/payment-ecommerce-v2/TransactionInfo";
+import { removeLoggedUser } from "../redux/slices/loggedUser";
+import { checkLogout } from "../utils/api/helper";
+import FindOutMoreModal from "./../components/modals/FindOutMoreModal";
 
 type PrintData = {
   useremail: string;
   amount: string;
 };
 
+type CartInformation = {
+  redirectUrl: string;
+  isCart: boolean;
+};
+
 export default function PaymentResponsePage() {
   const conf = getConfigOrThrow();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [findOutMoreOpen, setFindOutMoreOpen] = useState<boolean>(false);
   const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
   const [outcome, setOutcome] = useState<ViewOutcomeEnum>();
   const [outcomeMessage, setOutcomeMessage] = useState<responseMessage>();
-  const [redirectUrl, setRedirectUrl] = useState<string>(
-    cart ? cart.returnUrls.returnOkUrl : "/"
-  );
+  const [cartInformation, setCartInformation] = useState<CartInformation>({
+    redirectUrl: cart ? cart.returnUrls.returnOkUrl : "/",
+    isCart: cart != null,
+  });
   const transactionData = getSessionItem(SessionItems.transaction) as
     | NewTransactionResponse
     | undefined;
@@ -73,55 +88,89 @@ export default function PaymentResponsePage() {
 
   const dispatch = useAppDispatch();
 
+  const performRedirect = () => {
+    pipe(
+      cart,
+      O.fromNullable,
+      O.fold(
+        () => navigate(cartInformation.redirectUrl, { replace: true }),
+        () => window.location.replace(cartInformation.redirectUrl)
+      )
+    );
+  };
+
+  const handleFinalStatusResult = (
+    idStatus?: TransactionStatusEnum,
+    nodeInfo?: TransactionInfoNodeInfo,
+    gatewayInfo?: TransactionInfoGatewayInfo
+  ) => {
+    const outcome: ViewOutcomeEnum = getViewOutcomeFromEcommerceResultCode(
+      idStatus,
+      nodeInfo,
+      gatewayInfo
+    );
+    mixpanel.track(PAYMENT_OUTCOME_CODE.value, {
+      EVENT_ID: PAYMENT_OUTCOME_CODE.value,
+      idStatus,
+      outcome,
+    });
+
+    setOutcome(outcome);
+    showFinalResult(outcome);
+  };
+
+  const showFinalResult = (outcome: ViewOutcomeEnum) => {
+    const message = responseOutcome[outcome];
+    const redirectTo =
+      outcome === "0"
+        ? cart
+          ? cart.returnUrls.returnOkUrl
+          : "/"
+        : cart
+        ? cart.returnUrls.returnErrorUrl
+        : "/";
+    setOutcomeMessage(message);
+    setCartInformation({
+      redirectUrl: redirectTo,
+      isCart: cart != null,
+    });
+    setLoading(false);
+    window.removeEventListener("beforeunload", onBrowserUnload);
+  };
+
+  const performCallsAndClearStorage = async () => {
+    await callServices(handleFinalStatusResult);
+
+    await checkLogout(() => {
+      dispatch(removeLoggedUser());
+      clearSessionItem(SessionItems.authToken);
+    });
+    clearStorage();
+  };
+
   useEffect(() => {
     dispatch(resetThreshold());
-
-    const handleFinalStatusResult = (
-      idStatus?: TransactionStatusEnum,
-      sendPaymentResultOutcome?: SendPaymentResultOutcomeEnum,
-      gateway?: string,
-      errorCode?: string,
-      gatewayAuthorizationStatus?: TransactionInfo["gatewayAuthorizationStatus"]
-    ) => {
-      const outcome: ViewOutcomeEnum = getViewOutcomeFromEcommerceResultCode(
-        idStatus,
-        sendPaymentResultOutcome,
-        gateway,
-        errorCode,
-        gatewayAuthorizationStatus
-      );
-      mixpanel.track(PAYMENT_OUTCOME_CODE.value, {
-        EVENT_ID: PAYMENT_OUTCOME_CODE.value,
-        idStatus,
-        outcome,
-      });
-      setOutcome(outcome);
-      showFinalResult(outcome);
-    };
-
-    const showFinalResult = (outcome: ViewOutcomeEnum) => {
-      const message = responseOutcome[outcome];
-      const redirectTo =
-        outcome === "0"
-          ? cart
-            ? cart.returnUrls.returnOkUrl
-            : "/"
-          : cart
-          ? cart.returnUrls.returnErrorUrl
-          : "/";
-      setOutcomeMessage(message);
-      setRedirectUrl(redirectTo || "");
-      setLoading(false);
-      window.removeEventListener("beforeunload", onBrowserUnload);
-      clearStorage();
-    };
-    void callServices(handleFinalStatusResult);
+    void performCallsAndClearStorage();
   }, []);
+
+  useEffect(() => {
+    if (outcomeMessage && outcomeMessage.title) {
+      const pageTitle = t(outcomeMessage.title, usefulPrintData);
+      (document.title as any) = pageTitle + " - pagoPA";
+    }
+  }, [outcomeMessage]);
 
   const { t } = useTranslation();
 
   return (
     <PageContainer>
+      <FindOutMoreModal
+        maxWidth="lg"
+        open={findOutMoreOpen}
+        onClose={() => {
+          setFindOutMoreOpen(false);
+        }}
+      />
       <Box
         sx={{
           display: "flex",
@@ -138,6 +187,7 @@ export default function PaymentResponsePage() {
               width: "100%",
               flexDirection: "column",
               alignItems: "center",
+              whiteSpace: "pre-line",
             }}
           >
             <img
@@ -162,19 +212,33 @@ export default function PaymentResponsePage() {
                 ? t(outcomeMessage.body, usefulPrintData)
                 : ""}
             </Typography>
-            <Box px={8} sx={{ width: "100%", height: "100%" }}>
+            <Box px={8} my={3} sx={{ width: "100%", height: "100%" }}>
+              {outcome === ViewOutcomeEnum.REFUNDED && (
+                <Button
+                  variant="contained"
+                  onClick={() => {
+                    setFindOutMoreOpen(true);
+                  }}
+                  sx={{
+                    width: "100%",
+                    minHeight: 45,
+                  }}
+                >
+                  {t("paymentResponsePage.buttons.findOutMode")}
+                </Button>
+              )}
               <Button
-                variant="outlined"
-                onClick={() => {
-                  window.location.replace(redirectUrl);
-                }}
+                variant={
+                  outcome === ViewOutcomeEnum.REFUNDED ? "text" : "outlined"
+                }
+                onClick={performRedirect}
                 sx={{
                   width: "100%",
                   minHeight: 45,
-                  my: 4,
+                  my: 1,
                 }}
               >
-                {cart != null
+                {cartInformation.isCart
                   ? t("paymentResponsePage.buttons.continue")
                   : t("errorButton.close")}
               </Button>

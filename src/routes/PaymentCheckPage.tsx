@@ -8,6 +8,7 @@ import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import {
   Box,
   Button,
+  IconButton,
   Link,
   Skeleton,
   SvgIcon,
@@ -34,15 +35,17 @@ import {
   PaymentMethod,
   PaymentMethodInfo,
 } from "../features/payment/models/paymentModel";
-import { useAppSelector } from "../redux/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "../redux/hooks/hooks";
 import {
   cancelPayment,
   calculateFees,
   proceedToPayment,
+  checkLogout,
 } from "../utils/api/helper";
 import { onBrowserUnload, onBrowserBackEvent } from "../utils/eventListeners";
 import { moneyFormat } from "../utils/form/formatters";
 import {
+  clearSessionItem,
   getSessionItem,
   SessionItems,
   setSessionItem,
@@ -54,6 +57,8 @@ import { Bundle } from "../../generated/definitions/payment-ecommerce/Bundle";
 import { CalculateFeeResponse } from "../../generated/definitions/payment-ecommerce/CalculateFeeResponse";
 import { SessionPaymentMethodResponse } from "../../generated/definitions/payment-ecommerce/SessionPaymentMethodResponse";
 import { ImageComponent } from "../features/payment/components/PaymentChoice/PaymentMethodImage";
+import { removeLoggedUser } from "../redux/slices/loggedUser";
+import PspPrivacyInfo from "../components/PrivacyPolicy/PspPrivacyInfo";
 import { CheckoutRoutes } from "./models/routeModel";
 
 const defaultStyle = {
@@ -69,6 +74,7 @@ const defaultStyle = {
 export default function PaymentCheckPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [modalOpen, setModalOpen] = React.useState(false);
   const [showDisclaimer, setShowDisclaimer] = React.useState(true);
   const [cancelModalOpen, setCancelModalOpen] = React.useState(false);
@@ -119,6 +125,10 @@ export default function PaymentCheckPage() {
       onBrowserBackEvent(e);
       setCancelModalOpen(true);
     };
+
+    const pageTitle = t("paymentCheckPage.total");
+    (document.title as any) = pageTitle + " - pagoPA";
+
     window.addEventListener("beforeunload", onBrowserUnload);
     window.history.pushState(null, "", window.location.pathname);
     window.addEventListener("popstate", onBack);
@@ -132,6 +142,10 @@ export default function PaymentCheckPage() {
     setPspUpdateLoading(false);
     setError(m);
     setErrorModalOpen(true);
+    void checkLogout(() => {
+      dispatch(removeLoggedUser());
+      clearSessionItem(SessionItems.authToken);
+    });
     if (userCancelRedirect !== undefined) {
       setUserCancelRedirect(
         userCancelRedirect === undefined ? false : userCancelRedirect
@@ -241,8 +255,7 @@ export default function PaymentCheckPage() {
     setPspUpdateLoading(false);
   };
 
-  const isDisabled = () =>
-    pspEditLoading || payLoading || cancelLoading || pspUpdateLoading;
+  const isDisabled = () => payLoading || cancelLoading || pspUpdateLoading;
 
   const isDisabledSubmit = () =>
     isDisabled() || pspSelected?.idPsp === "" || missingThreshold();
@@ -298,6 +311,7 @@ export default function PaymentCheckPage() {
         }}
         endAdornment={
           <Button
+            id="cardEdit"
             variant="text"
             onClick={onCardEdit}
             startIcon={<EditIcon />}
@@ -315,9 +329,8 @@ export default function PaymentCheckPage() {
         sx={{ borderBottom: "", mt: 2 }}
         itemSx={{ pl: 0, pr: 0, gap: 2 }}
         endAdornment={
-          <InfoOutlinedIcon
-            sx={{ color: "primary.main", cursor: "pointer" }}
-            fontSize="medium"
+          <IconButton
+            sx={{ color: "primary.main" }}
             onClick={() => {
               setModalOpen(true);
             }}
@@ -326,10 +339,10 @@ export default function PaymentCheckPage() {
                 setModalOpen(true);
               }
             }}
-            tabIndex={0}
             aria-label={t("ariaLabels.informationDialog")}
-            role="dialog"
-          />
+          >
+            <InfoOutlinedIcon fontSize="medium" />
+          </IconButton>
         }
       />
       <FieldContainer
@@ -382,6 +395,15 @@ export default function PaymentCheckPage() {
         itemSx={{ pl: 2, pr: 0, gap: 2 }}
         variant="body2"
       />
+
+      {!!pspSelected && (
+        <PspPrivacyInfo
+          termsLink="https://www.pagopa.gov.it/it/prestatori-servizi-di-pagamento/elenco-PSP-attivi/"
+          privacyLink="https://www.pagopa.gov.it/it/prestatori-servizi-di-pagamento/elenco-PSP-attivi/"
+          pspName={pspSelected.pspBusinessName || ""}
+        />
+      )}
+
       <FormButtons
         loadingSubmit={payLoading}
         loadingCancel={cancelLoading}
@@ -396,15 +418,14 @@ export default function PaymentCheckPage() {
         idSubmit="paymentCheckPageButtonPay"
         idCancel="paymentCheckPageButtonCancel"
       />
+
       <InformationModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         maxWidth="sm"
+        title={t("paymentCheckPage.modal.title")}
         hideIcon={true}
       >
-        <Typography variant="h6" component={"div"} sx={{ pb: 2 }}>
-          {t("paymentCheckPage.modal.title")}
-        </Typography>
         <Typography
           variant="body1"
           component={"div"}
@@ -457,7 +478,7 @@ export default function PaymentCheckPage() {
           open={pspNotFoundModal}
           onClose={() => {
             setPspNotFoundModalOpen(false);
-            window.location.replace(`/${CheckoutRoutes.SCEGLI_METODO}`);
+            navigate(`/${CheckoutRoutes.SCEGLI_METODO}`, { replace: true });
           }}
           maxWidth="sm"
           hideIcon={true}
@@ -483,7 +504,7 @@ export default function PaymentCheckPage() {
               variant="contained"
               onClick={() => {
                 setPspNotFoundModalOpen(false);
-                window.location.replace(`/${CheckoutRoutes.SCEGLI_METODO}`);
+                navigate(`/${CheckoutRoutes.SCEGLI_METODO}`, { replace: true });
               }}
               id="pspNotFoundCtaId"
             >

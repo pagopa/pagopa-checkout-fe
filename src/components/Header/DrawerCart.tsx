@@ -111,7 +111,12 @@ export default function DrawerCart(props: Props) {
             >
               {t("cartDetail.description")}
             </Typography>
-            <Typography component="div" typography="sidenav" display="block">
+            <Typography
+              component="div"
+              typography="sidenav"
+              display="block"
+              style={{ overflowWrap: "break-word" }}
+            >
               {el.description}
             </Typography>
             <Typography
@@ -123,7 +128,12 @@ export default function DrawerCart(props: Props) {
             >
               {t("cartDetail.companyName")}
             </Typography>
-            <Typography component="div" typography="sidenav" display="block">
+            <Typography
+              component="div"
+              typography="sidenav"
+              display="block"
+              style={{ overflowWrap: "break-word" }}
+            >
               {el.companyName}
             </Typography>
             {showPaymentNoticeAndFiscalCode && (
@@ -135,7 +145,9 @@ export default function DrawerCart(props: Props) {
                   mt={2}
                   color="action.active"
                 >
-                  {t("cartDetail.noticeNumber")}
+                  {el.creditorReferenceId
+                    ? t("cartDetail.iuv")
+                    : t("cartDetail.noticeNumber")}
                 </Typography>
                 <Typography
                   component="div"

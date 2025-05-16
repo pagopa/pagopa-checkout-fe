@@ -1,31 +1,63 @@
 import { Box, Button, Typography } from "@mui/material";
 import { default as React, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { pipe } from "fp-ts/lib/function";
+import * as O from "fp-ts/Option";
+import { useNavigate } from "react-router-dom";
 import PageContainer from "../components/PageContent/PageContainer";
 import { responseOutcome } from "../features/payment/models/responseOutcome";
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { onBrowserUnload } from "../utils/eventListeners";
 import {
+  clearSessionItem,
   clearStorage,
   getSessionItem,
   SessionItems,
 } from "../utils/storage/sessionStorage";
 import { Cart } from "../features/payment/models/paymentModel";
 import { resetThreshold } from "../redux/slices/threshold";
+import { checkLogout } from "../utils/api/helper";
+import { removeLoggedUser } from "../redux/slices/loggedUser";
 
 export default function SessionExpiredPage() {
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
   const outcomeMessage = responseOutcome[4];
   const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
-  const redirectUrl = cart?.returnUrls.returnErrorUrl || "/";
+
+  const performRedirect = () => {
+    pipe(
+      cart?.returnUrls.returnErrorUrl,
+      O.fromNullable,
+      O.fold(
+        () => navigate("/", { replace: true }),
+        (cartUrl: string) => window.location.replace(cartUrl)
+      )
+    );
+  };
+
+  const checkLogoutAndClearStorage = async () => {
+    await checkLogout(() => {
+      dispatch(removeLoggedUser());
+      clearSessionItem(SessionItems.authToken);
+    });
+    clearStorage();
+  };
 
   useEffect(() => {
+    void checkLogoutAndClearStorage();
     dispatch(resetThreshold());
     window.removeEventListener("beforeunload", onBrowserUnload);
-    clearStorage();
   }, []);
+
+  useEffect(() => {
+    if (outcomeMessage && outcomeMessage.title) {
+      const pageTitle = t(outcomeMessage.title);
+      (document.title as any) = pageTitle + " - pagoPA";
+    }
+  }, [outcomeMessage]);
 
   return (
     <PageContainer>
@@ -69,9 +101,7 @@ export default function SessionExpiredPage() {
           <Box px={8} sx={{ width: "100%", height: "100%" }}>
             <Button
               variant="outlined"
-              onClick={() => {
-                window.location.replace(redirectUrl);
-              }}
+              onClick={performRedirect}
               sx={{
                 width: "100%",
                 minHeight: 45,

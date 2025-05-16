@@ -1,6 +1,12 @@
 import { Box, Button, Typography } from "@mui/material";
-import { default as React, useEffect } from "react";
+import { default as React, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import { pipe } from "fp-ts/lib/function";
+import * as O from "fp-ts/Option";
+import { removeLoggedUser } from "../redux/slices/loggedUser";
+import { checkLogout } from "../utils/api/helper";
+import FindOutMoreModal from "../components/modals/FindOutMoreModal";
 import { getFragmentParameter } from "../utils/regex/urlUtilities";
 import { getConfigOrThrow } from "../utils/config/config";
 import SurveyLink from "../components/commons/SurveyLink";
@@ -10,6 +16,7 @@ import { useAppDispatch } from "../redux/hooks/hooks";
 import { onBrowserUnload } from "../utils/eventListeners";
 import { moneyFormat } from "../utils/form/formatters";
 import {
+  clearSessionItem,
   clearStorage,
   getSessionItem,
   SessionItems,
@@ -26,7 +33,13 @@ type PrintData = {
   amount: string;
 };
 
+type CartInformation = {
+  redirectUrl: string;
+  isCart: boolean;
+};
+
 export default function PaymentResponsePageV2() {
+  const navigate = useNavigate();
   const outcome = getFragmentParameter(
     window.location.href,
     ROUTE_FRAGMENT.OUTCOME,
@@ -36,13 +49,22 @@ export default function PaymentResponsePageV2() {
   const conf = getConfigOrThrow();
 
   const outcomeMessage = responseOutcome[outcome];
+  const [findOutMoreOpen, setFindOutMoreOpen] = useState<boolean>(false);
 
   const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
 
-  const redirectUrl =
-    outcome === ViewOutcomeEnum.SUCCESS
-      ? cart?.returnUrls.returnOkUrl || "/"
-      : cart?.returnUrls.returnErrorUrl || "/";
+  const getCartReturnUrl = (outcome: ViewOutcomeEnum) =>
+    ({
+      redirectUrl:
+        outcome === ViewOutcomeEnum.SUCCESS
+          ? cart?.returnUrls.returnOkUrl || "/"
+          : cart?.returnUrls.returnErrorUrl || "/",
+      isCart: cart != null,
+    } as CartInformation);
+
+  const [cartInformation] = useState<CartInformation>(
+    getCartReturnUrl(outcome)
+  );
 
   const transactionData = getSessionItem(SessionItems.transaction) as
     | NewTransactionResponse
@@ -67,16 +89,49 @@ export default function PaymentResponsePageV2() {
 
   const dispatch = useAppDispatch();
 
+  const performRedirect = () => {
+    pipe(
+      cart,
+      O.fromNullable,
+      O.fold(
+        () => navigate(cartInformation.redirectUrl, { replace: true }),
+        () => window.location.replace(cartInformation.redirectUrl)
+      )
+    );
+  };
+
+  const checkLogoutAndClearStorage = async () => {
+    await checkLogout(() => {
+      dispatch(removeLoggedUser());
+      clearSessionItem(SessionItems.authToken);
+    });
+    clearStorage();
+  };
+
   useEffect(() => {
+    void checkLogoutAndClearStorage();
     dispatch(resetThreshold());
     window.removeEventListener("beforeunload", onBrowserUnload);
-    clearStorage();
   }, []);
 
   const { t } = useTranslation();
 
+  useEffect(() => {
+    if (outcomeMessage && outcomeMessage.title) {
+      const pageTitle = t(outcomeMessage.title, usefulPrintData);
+      (document.title as any) = pageTitle + " - pagoPA";
+    }
+  }, [outcomeMessage]);
+
   return (
     <PageContainer>
+      <FindOutMoreModal
+        maxWidth="lg"
+        open={findOutMoreOpen}
+        onClose={() => {
+          setFindOutMoreOpen(false);
+        }}
+      />
       <Box
         sx={{
           display: "flex",
@@ -92,6 +147,7 @@ export default function PaymentResponsePageV2() {
             width: "100%",
             flexDirection: "column",
             alignItems: "center",
+            whiteSpace: "pre-line",
           }}
         >
           <img
@@ -116,19 +172,31 @@ export default function PaymentResponsePageV2() {
               ? t(outcomeMessage.body, usefulPrintData)
               : ""}
           </Typography>
-          <Box px={8} sx={{ width: "100%", height: "100%" }}>
+          <Box px={8} my={3} sx={{ width: "100%", height: "100%" }}>
+            {outcome === ViewOutcomeEnum.REFUNDED && (
+              <Button
+                variant="contained"
+                onClick={() => {
+                  setFindOutMoreOpen(true);
+                }}
+                sx={{
+                  width: "100%",
+                  minHeight: 45,
+                }}
+              >
+                {t("paymentResponsePage.buttons.findOutMode")}
+              </Button>
+            )}
             <Button
               variant="outlined"
-              onClick={() => {
-                window.location.replace(redirectUrl);
-              }}
+              onClick={performRedirect}
               sx={{
                 width: "100%",
                 minHeight: 45,
-                my: 4,
+                my: 1,
               }}
             >
-              {cart != null
+              {cartInformation.isCart
                 ? t("paymentResponsePage.buttons.continue")
                 : t("errorButton.close")}
             </Button>

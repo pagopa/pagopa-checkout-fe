@@ -37,10 +37,21 @@ export default function PaymentNoticePage() {
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
 
-  const onError = (error: string) => {
-    setLoading(false);
+  const onError = (
+    faultCodeCategory: string,
+    faultCodeDetail: string | undefined
+  ) => {
+    // 401 on secured api means session is expired
+    if (
+      faultCodeCategory === "SESSION_EXPIRED" &&
+      faultCodeDetail === "Unauthorized"
+    ) {
+      navigate(`/${CheckoutRoutes.AUTH_EXPIRED}`);
+      return;
+    }
 
-    setError(error);
+    setLoading(false);
+    setError(`${faultCodeCategory}-${faultCodeDetail}`);
     setErrorModalOpen(true);
     ref.current?.reset();
   };
@@ -54,7 +65,7 @@ export default function PaymentNoticePage() {
       await pipe(
         getEcommercePaymentInfoTask(rptId, token || ""),
         TE.mapLeft((err) =>
-          onError(`${err.faultCodeCategory}-${err.faultCodeDetail}`)
+          onError(err.faultCodeCategory, err.faultCodeDetail)
         ),
         TE.map((paymentInfo) => {
           setSessionItem(SessionItems.paymentInfo, paymentInfo);
@@ -89,13 +100,7 @@ export default function PaymentNoticePage() {
         title="paymentNoticePage.title"
         description="paymentNoticePage.description"
       >
-        <Button
-          variant="text"
-          onClick={() => setModalOpen(true)}
-          sx={{ p: 0 }}
-          aria-hidden="true"
-          tabIndex={-1}
-        >
+        <Button variant="text" onClick={() => setModalOpen(true)} sx={{ p: 0 }}>
           {t("paymentNoticePage.helpLink")}
         </Button>
         <Box sx={{ mt: 6 }}>
@@ -108,6 +113,7 @@ export default function PaymentNoticePage() {
         </Box>
 
         <InformationModal
+          title={t("paymentNoticePage.exampleModalTitle")}
           open={modalOpen}
           onClose={() => {
             setModalOpen(false);
@@ -115,7 +121,7 @@ export default function PaymentNoticePage() {
         >
           <img
             src={notification}
-            alt="facsimile"
+            alt={t("paymentNoticePage.exampleModalAltText")}
             style={useSmallDevice() ? { width: "100%" } : { height: "80vh" }}
           />
         </InformationModal>
@@ -127,6 +133,7 @@ export default function PaymentNoticePage() {
           }}
           titleId="verifyPaymentTitleError"
           bodyId="verifyPaymentBodyError"
+          errorId="verifyPaymentErrorId"
         />
       </PageContainer>
       <Box display="none">

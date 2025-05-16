@@ -34,12 +34,29 @@ interface Translation {
     body: string;
     button: string;
   };
+  authCallbackPage: {
+    title: string;
+    body: string;
+    buttons: {
+      retry: string;
+      continueWithoutLogin: string;
+    };
+  };
+  authExpiredPage: {
+    title: string;
+    body: string;
+    buttons: {
+      login: string;
+      continueWithoutLogin: string;
+    };
+  };
   cartDetail: {
     amount: string;
     companyName: string;
     description: string;
     fiscalCode: string;
     noticeNumber: string;
+    iuv: string;
   };
   clipboard: {
     copied: string;
@@ -151,6 +168,9 @@ interface Translation {
       };
       disclaimer: string;
     };
+    main: {
+      skipToContent: string;
+    };
   };
   NOTLISTED: {
     body: string;
@@ -199,6 +219,19 @@ interface Translation {
     };
     title: string;
   };
+  findOutMoreModal: {
+    title: string;
+    section1Title: string;
+    section1ContentRow1: string;
+    section1ContentRow2: string;
+    section1ContentRow2Link: string;
+    section2Title: string;
+    section2ContentRow1: string;
+    section2ContentRow2: string;
+    section3Title: string;
+    section3ContentRow1: string;
+    section3ContentRow2Link: string;
+  };
   paymentResponsePage: {
     0: {
       body: string;
@@ -245,9 +278,29 @@ interface Translation {
       body: string;
       title: string;
     };
+    25: {
+      body: string;
+      title: string;
+    };
+    116: {
+      body: string;
+      title: string;
+    };
+    117: {
+      body: string;
+      title: string;
+    };
+    121: {
+      body: string;
+      title: string;
+    };
     "3dsNotInitiated": {
       body: string;
       title: string;
+    };
+    buttons: {
+      continue: string;
+      findOutMode: string;
     };
     survey: {
       body: string;
@@ -320,6 +373,8 @@ interface Translation {
   };
   paymentNoticePage: {
     description: string;
+    exampleModalAltText: string;
+    exampleModalTitle: string;
     formButtons: {
       cancel: string;
       submit: string;
@@ -336,12 +391,33 @@ interface Translation {
     helpLink: string;
     title: string;
   };
+  paymentPspListPage: {
+    description: string;
+    title: string;
+    operator: string;
+    alreadyClient: string;
+    formButtons: {
+      back: string;
+      submit: string;
+    };
+    sort: string;
+    drawer: {
+      sorting: {
+        default: string;
+        name: string;
+        amount: string;
+      };
+      showResults: string;
+    };
+  };
   paymentQrPage: {
     camBlocked: string;
     description: string;
     navigate: string;
     reloadPage: string;
     title: string;
+    usageHintPc: string;
+    usageHintMobile: string;
   };
   paymentSummaryPage: {
     amount: string;
@@ -388,5 +464,13 @@ interface Translation {
     HF0007: string;
     HF0009: string;
     HF0001: string;
+  };
+  userSession: {
+    logoutModal: {
+      title: string;
+      body: string;
+      submitButton: string;
+      cancelButton: string;
+    };
   };
 }

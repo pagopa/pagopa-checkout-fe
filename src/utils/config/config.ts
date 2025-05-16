@@ -14,10 +14,11 @@ import { readableReport } from "@pagopa/ts-commons/lib/reporters";
 export type IConfig = t.TypeOf<typeof IConfig>;
 export const IConfig = t.interface({
   CHECKOUT_PM_HOST: NonEmptyString,
-  CHECKOUT_ECOMMERCE_HOST: NonEmptyString,
   CHECKOUT_PM_API_BASEPATH: NonEmptyString,
   CHECKOUT_API_ECOMMERCE_BASEPATH: NonEmptyString,
   CHECKOUT_API_ECOMMERCE_BASEPATH_V2: NonEmptyString,
+  CHECKOUT_API_ECOMMERCE_BASEPATH_V3: NonEmptyString,
+  CHECKOUT_API_FEATURE_FLAGS_BASEPATH: NonEmptyString,
   CHECKOUT_API_TIMEOUT: t.number,
   CHECKOUT_ENV: NonEmptyString,
   CHECKOUT_PAGOPA_APIM_HOST: NonEmptyString,
@@ -33,6 +34,8 @@ export const IConfig = t.interface({
   CHECKOUT_NPG_SDK_URL: NonEmptyString,
   CHECKOUT_API_RETRY_NUMBERS: t.number,
   CHECKOUT_API_RETRY_DELAY: t.number,
+  CHECKOUT_GDI_CHECK_TIMEOUT: t.number,
+  CHECKOUT_API_AUTH_SERVICE_BASEPATH_V1: NonEmptyString,
 });
 
 // No need to re-evaluate this object for each call
@@ -75,6 +78,11 @@ const errorOrConfig: t.Validation<IConfig> = IConfig.decode({
         10
       )
     : 3000,
+  CHECKOUT_GDI_CHECK_TIMEOUT: parseInt(
+    // eslint-disable-next-line no-underscore-dangle
+    (window as any)._env_.CHECKOUT_GDI_CHECK_TIMEOUT,
+    10
+  ),
 });
 
 /**

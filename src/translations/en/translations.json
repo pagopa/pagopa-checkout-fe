@@ -21,6 +21,22 @@
     "body": "The operation was canceled",
     "button": "Close"
   },
+  "authCallbackPage": {
+    "title": "Non è stato possibile accedere",
+    "body": "Si è verificato un problema durante l'accesso. Riprova tra qualche minuto.",
+    "buttons": {
+      "retry": "Riprova",
+      "continueWithoutLogin": "Continua senza login"
+    }
+  },
+  "authExpiredPage": {
+    "title": "La tua sessione è scaduta",
+    "body": "Accedi per riprendere la sessione, oppure prosegui senza effettuare il login ",
+    "buttons": {
+      "login": "Accedi",
+      "continueWithoutLogin": "Continua senza login."
+    }
+  },
   "cartDetail": {
     "amount": "Amount",
     "companyName": "Payee",
@@ -92,7 +108,8 @@
       "cvv": "CVV",
       "expirationDate": "Expiration date",
       "name": "Card holder",
-      "number": "Card number"
+      "number": "Card number",
+      "required": "Required"
     },
     "helpLink": "Where can I find the security code?",
     "modal": {
@@ -130,6 +147,7 @@
     },
     "header": {
       "detail": {
+        "detailButton": "Apri riepilogo pagamento",
         "detailFC": "Payee tax code",
         "detailIUV": "IUV code",
         "detailAmount": "Subtotal",
@@ -138,6 +156,9 @@
         "detailTitle": "Notice detail"
       },
       "disclaimer": "The amount is updated automatically, therefore you will always pay what is due and avoid arrears or other interest."
+    },
+    "main":{
+      "skipToContent": "Go to content"
     }
   },
   "NOTLISTED": {
@@ -194,6 +215,19 @@
     },
     "title": "Enter your email"
   },
+  "findOutMoreModal":{
+    "title": "Cosa fare se il pagamento non va a buon fine?",
+    "section1Title": "1. Paga l'avviso",
+    "section1ContentRow1": "Ricorda di pagare l'avviso entro le scadenze previste dall'ente.",
+    "section1ContentRow2": "Se non riesci tramite questo sito, ",
+    "section1ContentRow2Link": "scopri gli altri canali abilitati a pagoPA.",
+    "section2Title": "2. Attendi il rimborso",
+    "section2ContentRow1": "Di solito l'importo viene riaccreditato entro pochi minuti.",
+    "section2ContentRow2": "In altri casi, il trasferimento di denaro sul tuo conto o carta potrebbe richiedere più tempo.",
+    "section3Title": "3. Contatta l'assistenza",
+    "section3ContentRow1": "Se dopo 5 giorni lavorativi non hai ancora ricevuto il rimborso, ",
+    "section3ContentRow2Link": "contatta l'assistenza."
+  },
   "paymentResponsePage": {
     "0": {
       "body": "We have sent the payment receipt to {{useremail}}",
@@ -240,12 +274,33 @@
       "body": "You will receive the payment result at the address {{useremail}}.",
       "title": "Wait for payment confirmation"
     },
+    "18": {
+      "body": "L’importo autorizzato è stato rimborsato sul tuo metodo di pagamento. Il trasferimento di denaro potrebbe richiedere del tempo.",
+      "title": "Il pagamento non è andato a buon fine"
+    },
+    "25": {
+      "body": "Non è stato addebitato alcun importo.\n Se il problema persiste, prova a usare un altro metodo o gestore del pagamento.",
+      "title": "Il pagamento non è andato a buon fine"
+    },
+    "116": {
+      "body": "Non è stato addebitato alcun importo. Prima di riprovare, aggiungi fondi alla carta o usa un altro metodo di pagamento.",
+      "title": "Il saldo della tua carta è insufficiente"
+    },
+    "117": {
+      "body": "Non è stato addebitato alcun importo. Il codice (CVV o CVC) ha 3 cifre ed è riportato sul retro della carta. Se usi American Express, il codice (CID) ha 4 cifre ed è sul fronte.",
+      "title": "Il codice di sicurezza inserito è errato"
+    },
+    "121": {
+      "body": "Non è stato addebitato alcun importo. Prima di riprovare, modifica il limite di spesa o usa un altro metodo di pagamento.",
+      "title": "Hai superato il limite di spesa della tua carta"
+    },
     "3dsNotInitiated": {
       "body": "No amount was charged.\nIf the problem continues, contact the operator of the payment method, your bank for example.",
       "title": "There was a problem with the operator of your payment method"
     },
     "buttons": {
-      "continue": "Continue"
+      "continue": "Continue",
+      "findOutMode": "Scopri di più"
     },
     "survey": {
       "body": "Tell us about your experience with the payment and help us improve.",
@@ -265,7 +320,8 @@
     "creditCard": "Pay with",
     "disclaimer": {
       "cheaper": "Suggested because least expensive",
-      "yourCard": "Suggested because you are already a customer"
+      "yourCard": "Suggested because you are already a customer",
+      "psp":"By continuing, you accept the <terms>Terms and Conditions of Use</terms> and confirm that you have read the <privacy>Privacy Policy</privacy> of <psp>{{pspName}}</psp>"
     },
     "drawer": {
       "body": "This list contains all the operators compatible with your method, even if you are not their customer.",
@@ -278,9 +334,9 @@
     "email": "Send the result to:",
     "modal": {
       "body": "All money transfer operations (cash or electronic currency) have a cost that is used to guarantee that the payment is safe and successful.\nEvery operator (or PSP, Payment Service Provider) indicates a cost, according to their commercial policies and contractual conditions.\nWith pagoPA, these costs are transparent and the citizen can freely select the most convenient and affordable option. To learn more, consult the page ",
-      "cancelBody": "All the data will be lost.",
-      "cancelButton": "No, I’ve changed my mind",
-      "cancelTitle": "Do you want to cancel the payment in progress?",
+      "cancelBody": "If you quit, any data you have entered will be deleted and you will have to start again.",
+      "cancelButton": "No, I changed my mind",
+      "cancelTitle": "Your payment is pending, do you want to exit?",
       "link": "Cost transparency",
       "submitButton": "Exit",
       "title": "Why is there a fee?"
@@ -318,6 +374,8 @@
   },
   "paymentNoticePage": {
     "description": "Enter the data as show on the payment notice.",
+    "exampleModalAltText": "Avviso di pagamento pagoPA, con evidenziata la parte in cui sono presenti il codice avviso e il codice fiscale dell’ente creditore",
+    "exampleModalTitle": "Esempio di avviso pagoPA",
     "formButtons": {
       "cancel": "Back",
       "submit": "Continue"
@@ -334,12 +392,33 @@
     "helpLink": "View an example",
     "title": "What do you have to pay?"
   },
+  "paymentPspListPage": {
+    "title": "Choose who will handle the payment",
+    "description": "Each provider offers a fee. In this list, you will find all compatible providers, <strong>even if you are not their customer</strong>.",
+    "operator": "Provider",
+    "alreadyClient": "Client already",
+    "formButtons": {
+      "back": "Back",
+      "submit": "Continue"
+    },
+    "sort": "Sort",
+    "drawer": {
+      "sorting": {
+        "default": "Default",
+        "name": "By name",
+        "amount": "By amount"
+      },
+      "showResults": "Show results"
+    }
+  },
   "paymentQrPage": {
     "camBlocked": "We need your consent to use the camera. To change your selection, go to your browser’s privacy settings",
     "description": "Make sure to have good lighting. If the code is not in focus, try to move it away slightly from the screen.",
     "navigate": "Not working? Enter it manually",
     "reloadPage": "Reload the page",
-    "title": "Scan the QR code"
+    "title": "Scan the QR code",
+    "usageHintPc": "Questa pagina richiede l'uso del lettore di codici QR. Per scansionare il codice QR, consenti al browser l'accesso alla fotocamera quando richiesto. Potresti dover utilizzare una webcam esterna o integrata. Il codice QR deve essere ben inquadrato e ben illuminato per facilitarne la lettura.",
+    "usageHintMobile": "Questa pagina richiede l'uso del lettore di codici QR. Per scansionare il codice QR, consenti al browser l'accesso alla fotocamera quando richiesto. Utilizza la fotocamera posteriore del tuo smartphone e orientala verso il codice QR. Il codice QR deve essere ben inquadrato e ben illuminato per facilitarne la lettura."
   },
   "paymentSummaryPage": {
     "amount": "Amount updated",
@@ -352,10 +431,10 @@
     "causal": "Payment description",
     "cf": "Payee tax code",
     "creditor": "Payee",
-    "description": "pagoPA updates the amount automatically to make sure you have paid exactly what is due and avoid arrears or other interest",
+    "description": "When the amount changes, it means it has been updated automatically. If it is higher, there may be interest, penalties, or notification costs.\n\nIf the pagoPA notice concerns a legally significant communication, the increase in the amount to be paid may depend on various factors, such as:\n• receiving the communication via registered mail (as printing and delivery costs may be charged to the recipient);\n• the number of delivery attempts.\n\nFor further details, contact the Payee.",
     "dialog": {
-      "description": "pagoPA updates the amount automatically to make sure you have paid exactly what is due and avoid arrears or other interest.",
-      "title": "Do you see a different amount?"
+      "description": "When the amount changes, it means it has been updated automatically. If it is higher, there may be interest, penalties, or notification costs.\n\nIf the pagoPA notice concerns a legally significant communication, the increase in the amount to be paid may depend on various factors, such as:\n• receiving the communication via registered mail (as printing and delivery costs may be charged to the recipient);\n• the number of delivery attempts.\n\nFor further details, contact the Payee.",
+      "title": "Is the amount different from the one on the pagoPA notice?"
     },
     "iuv": "IUV code",
     "title": "Payment data"
@@ -386,6 +465,14 @@
     "HF0006": "Enter mm/yy",
     "HF0007": "Enter name as shown on the card",
     "HF0009": "3DS verification failed"
+  },
+  "userSession": {
+    "logoutModal": {
+      "title": "Are you sure you want to log out?",
+      "body": "You can still pay even when you're not logged in.",
+      "submitButton": "Log out",
+      "cancelButton": "Cancel"
+    }
   },
   "__variant-name": "Inglese",
   "__variant-description": ""

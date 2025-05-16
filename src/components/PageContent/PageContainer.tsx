@@ -1,7 +1,7 @@
 import { Box, Typography } from "@mui/material";
 import { CSSProperties } from "@mui/material/styles/createTypography";
-import React from "react";
-import { useTranslation } from "react-i18next";
+import React, { useEffect } from "react";
+import { Trans, useTranslation } from "react-i18next";
 
 export default function PageContainer(props: {
   title?: string;
@@ -12,6 +12,12 @@ export default function PageContainer(props: {
 }) {
   const { t } = useTranslation();
 
+  useEffect(() => {
+    if (props.title) {
+      (document.title as any) = t(props.title) + " - pagoPA";
+    }
+  }, [props.title]);
+
   return (
     <Box mt={3} mb={6} aria-live="polite">
       {!!props.title && (
@@ -21,7 +27,7 @@ export default function PageContainer(props: {
       )}
       {!!props.description && (
         <Typography variant="body2" sx={{ mt: 1, mb: 1 }}>
-          {t(props.description)}
+          <Trans i18nKey={props.description} />
           {!!props.link && props.link}
         </Typography>
       )}

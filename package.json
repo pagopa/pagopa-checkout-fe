@@ -1,12 +1,14 @@
 {
   "name": "io-pay-portal-frontend",
-  "version": "4.3.0",
+  "version": "4.15.0",
   "scripts": {
     "type-check": "tsc",
     "generate": "npm-run-all generate:*",
-    "generate:payment-transactions-api": "rimraf generated/definitions/payment-transactions-api && shx mkdir -p generated/definitions/payment-transactions-api && gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/pagopa-functions-checkout/v1.1.2/openapi/index.yaml --no-strict --out-dir ./generated/definitions/payment-transactions-api --request-types --response-decoders --client",
-    "generate:payment-ecommerce-v1": "rimraf generated/definitions/payment-ecommerce && shx mkdir -p generated/definitions/payment-ecommerce && gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/pagopa-infra/v1.256.0/src/domains/ecommerce-app/api/ecommerce-checkout/v1/_openapi.json.tpl --no-strict --out-dir ./generated/definitions/payment-ecommerce --request-types --response-decoders --client",
-    "generate:payment-ecommerce-v2": "rimraf generated/definitions/payment-ecommerce-v2 && shx mkdir -p generated/definitions/payment-ecommerce-v2 && gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/pagopa-infra/v1.256.0/src/domains/ecommerce-app/api/ecommerce-checkout/v2/_openapi.json.tpl --no-strict --out-dir ./generated/definitions/payment-ecommerce-v2 --request-types --response-decoders --client",
+    "generate:payment-ecommerce-v1": "rimraf generated/definitions/payment-ecommerce && shx mkdir -p generated/definitions/payment-ecommerce && gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/pagopa-infra/v1.431.0/src/domains/ecommerce-app/api/ecommerce-checkout/v1/_openapi.json.tpl --no-strict --out-dir ./generated/definitions/payment-ecommerce --request-types --response-decoders --client",
+    "generate:payment-ecommerce-v2": "rimraf generated/definitions/payment-ecommerce-v2 && shx mkdir -p generated/definitions/payment-ecommerce-v2 && gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/pagopa-infra/v1.431.0/src/domains/ecommerce-app/api/ecommerce-checkout/v2/_openapi.json.tpl --no-strict --out-dir ./generated/definitions/payment-ecommerce-v2 --request-types --response-decoders --client",
+    "generate:payment-ecommerce-v3": "rimraf generated/definitions/payment-ecommerce-v3 && shx mkdir -p generated/definitions/payment-ecommerce-v3 && gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/pagopa-infra/v1.461.0/src/domains/ecommerce-app/api/ecommerce-checkout/v3/_openapi.json.tpl --no-strict --out-dir ./generated/definitions/payment-ecommerce-v3 --request-types --response-decoders --client",
+    "generate:checkout-auth-service-v1": "rimraf generated/definitions/checkout-auth-service-v1 && shx mkdir -p generated/definitions/checkout-auth-service-v1 && gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/pagopa-infra/v1.461.0/src/domains/checkout-app/api/checkout/checkout_auth_service/v1/_openapi.json.tpl --no-strict --out-dir ./generated/definitions/checkout-auth-service-v1 --request-types --response-decoders --client",
+    "generate:checkout-feature-flags": "rimraf generated/definitions/checkout-feature-flags && shx mkdir -p generated/definitions/checkout-feature-flags && gen-api-models --api-spec https://raw.githubusercontent.com/pagopa/pagopa-infra/v1.431.0/src/domains/checkout-app/api/checkout/checkout_feature_flags/v1/_openapi.json.tpl --no-strict --out-dir ./generated/definitions/checkout-feature-flags --request-types --response-decoders --client",
     "lint": "eslint . -c .eslintrc.js --ext .ts,.tsx",
     "lint-autofix": "eslint . -c .eslintrc.js --ext .ts,.tsx --fix",
     "prebuild": "npm-run-all generate type-check lint",
@@ -19,7 +21,8 @@
     "test": "jest --config=jest.config.js",
     "test:final-status-integration": "jest --config=jest.final-status.integration.config.js",
     "test:payment-flow-integration": "jest --config=jest.payment-flow.integration.config.js",
-    "test:coverage": "jest --coverage --passWithNoTests --config=package.json",
+    "test:authentication-integration": "jest --config=jest.authentication.integration.config.js",
+    "test:coverage": "jest --coverage --passWithNoTests --config=jest.config.js",
     "preversion": "auto-changelog  --config .auto-changelog.json --unreleased --commit-limit false --stdout --template preview.hbs",
     "version": "auto-changelog -p --config .auto-changelog.json --unreleased && git add CHANGELOG.md",
     "prestart-mock": "export $(grep -v '^#' .env.development | xargs) && chmod +x env.sh && source env.sh",
@@ -30,8 +33,8 @@
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.14.3",
     "@mui/lab": "^5.0.0-alpha.140",
-    "@mui/material": "^5.14.5",
-    "@pagopa/mui-italia": "1.4.0",
+    "@mui/material": "^5.16.14",
+    "@pagopa/mui-italia": "1.5.2",
     "@pagopa/openapi-codegen-ts": "^13.2.0",
     "@reduxjs/toolkit": "^1.7.2",
     "@types/dotenv": "^8.2.0",
@@ -41,31 +44,34 @@
     "formik": "^2.2.9",
     "hex-to-uuid": "^1.1.1",
     "history": "5",
-    "i18next": "^21.6.5",
+    "i18next": "^22.5.1",
     "i18next-browser-languagedetector": "^6.1.2",
     "lodash": "^4.17.21",
     "mixpanel-browser": "^2.41.0",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-google-recaptcha": "^2.1.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-google-recaptcha": "^3.1.0",
     "react-i18next": "^11.15.3",
     "react-qr-code": "^2.0.3",
     "react-qr-reader": "^2.2.1",
-    "react-redux": "^7.2.6",
-    "react-router-dom": "6",
+    "react-redux": "^9.2.0",
+    "react-router-dom": "^6.29.0",
     "set-value": "^4.0.1",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.17.7",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
     "@types/express": "^4.17.9",
-    "@types/jest": "^25.2.1",
+    "@types/jest": "^29.5.14",
     "@types/node-fetch": "^2.5.7",
     "@types/puppeteer": "5.4.2",
-    "@types/react": "^17.0.37",
-    "@types/react-dom": "^17.0.11",
-    "@types/react-google-recaptcha": "^2.1.4",
-    "@types/react-qr-reader": "^2.1.4",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@types/react-google-recaptcha": "^2.1.9",
+    "@types/react-qr-reader": "^2.1.7",
     "@types/uuid": "^9.0.8",
     "@typescript-eslint/eslint-plugin": "^4.8.2",
     "@typescript-eslint/parser": "^4.8.2",
@@ -85,9 +91,12 @@
     "http-proxy-middleware": "^1.0.6",
     "italia-tslint-rules": "^1.1.3",
     "jest": "^29.7.0",
+    "jest-sonar-reporter": "^2.0.0",
     "jest-environment-jsdom": "^29.7.0",
     "jest-junit": "^16.0.0",
+    "jest-location-mock": "^2.0.0",
     "jest-puppeteer": "^6.1.0",
+    "jest-transform-stub": "^2.0.0",
     "jsdom": "^24.0.0",
     "npm-run-all": "^4.1.5",
     "parcel": "^2.3.2",
@@ -112,30 +121,5 @@
     "lodash": "^4.17.21",
     "glob-parent": "^5.1.2",
     "source-map": "^0.8.0-beta.0"
-  },
-  "jest": {
-    "testEnvironment": "node",
-    "moduleFileExtensions": [
-      "tsx",
-      "ts",
-      "js",
-      "node"
-    ],
-    "transform": {
-      "^.+\\.(ts|tsx)$": "ts-jest"
-    },
-    "testMatch": [
-      "**/__tests__/*.ts"
-    ],
-    "reporters": [
-      "default",
-      [
-        "jest-junit",
-        {
-          "outputDirectory": "./test_reports",
-          "outputName": "checkout-unit-TEST.xml"
-        }
-      ]
-    ]
   }
 }
