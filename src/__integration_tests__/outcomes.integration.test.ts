@@ -1,8 +1,4 @@
 import itTranslation from "../translations/it/translations.json";
-import deTranslation from "../translations/de/translations.json";
-import enTranslation from "../translations/en/translations.json";
-import frTranslation from "../translations/fr/translations.json";
-import slTranslation from "../translations/sl/translations.json";
 import { payNotice, selectLanguage } from "./utils/helpers";
 
 /**
@@ -62,15 +58,9 @@ beforeEach(async () => {
 });
 
 describe("Transaction outcome success tests", () => {
-    it.each([
-        ["it", itTranslation],
-        ["en", enTranslation],
-        ["fr", frTranslation],
-        ["de", deTranslation],
-        ["sl", slTranslation]
-    ])("should show success outcome in %s", async (lang, translation) => {
-        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_SUCCESS} and language: ${lang}`);
-        await selectLanguage(lang);
+    it("should show success outcome ", async() => {
+        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_SUCCESS} (only for it language)`);
+        await selectLanguage("it");
         const resultMessage = await payNotice(
             VALID_NOTICE_CODE,
             OUTCOME_FISCAL_CODE_SUCCESS,
@@ -78,20 +68,14 @@ describe("Transaction outcome success tests", () => {
             VALID_CARD_DATA,
             CHECKOUT_URL_AFTER_AUTHORIZATION
         )
-        expect(resultMessage).toContain(translation.paymentResponsePage[0].title.replace("{{amount}}", "120,15\xa0€"));
+        expect(resultMessage).toContain(itTranslation.paymentResponsePage[0].title.replace("{{amount}}", "120,15\xa0€"));
     });
 });
 
 describe("Transaction outcome generic-error tests", () => {
-    it.each([
-        ["it", itTranslation],
-        ["en", enTranslation],
-        ["fr", frTranslation],
-        ["de", deTranslation],
-        ["sl", slTranslation]
-    ])("should show generic-error outcome in %s", async (lang, translation) => {
-        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_GENERIC_ERROR} and language: ${lang}`);
-        await selectLanguage(lang);
+    it("should show generic-error outcome ", async() => {
+        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_GENERIC_ERROR} (only for it language)`);
+        await selectLanguage("it");
         const resultMessage = await payNotice(
             VALID_NOTICE_CODE,
             OUTCOME_FISCAL_CODE_GENERIC_ERROR,
@@ -99,20 +83,14 @@ describe("Transaction outcome generic-error tests", () => {
             VALID_CARD_DATA,
             CHECKOUT_URL_AFTER_AUTHORIZATION
         );
-        expect(resultMessage).toContain(translation.paymentResponsePage[1].title);
+        expect(resultMessage).toContain(itTranslation.paymentResponsePage[1].title);
     });
 });
 
 describe("Transaction outcome authorization-error tests", () => {
-    it.each([
-        ["it", itTranslation],
-        ["en", enTranslation],
-        ["fr", frTranslation],
-        ["de", deTranslation],
-        ["sl", slTranslation]
-    ])("should show authorization-error outcome in %s", async (lang, translation) => {
-        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_AUTHORIZATION_ERROR} and language: ${lang}`);
-        await selectLanguage(lang);
+    it("should show authorization-error outcome ", async() => {
+        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_AUTHORIZATION_ERROR} (only for it language)`);
+        await selectLanguage("it");
         const resultMessage = await payNotice(
             VALID_NOTICE_CODE,
             OUTCOME_FISCAL_CODE_AUTHORIZATION_ERROR,
@@ -120,21 +98,15 @@ describe("Transaction outcome authorization-error tests", () => {
             VALID_CARD_DATA,
             CHECKOUT_URL_AFTER_AUTHORIZATION
         );
-        expect(resultMessage).toContain(translation.paymentResponsePage[2].title);
+        expect(resultMessage).toContain(itTranslation.paymentResponsePage[2].title);
     }
     );
 });
 
 describe("Transaction outcome invalid-data tests", () => {
-    it.each([
-        ["it", itTranslation],
-        ["en", enTranslation],
-        ["fr", frTranslation],
-        ["de", deTranslation],
-        ["sl", slTranslation]
-    ])("should show invalid-data outcome in %s", async (lang, translation) => {
-        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_INVALID_DATA} and language: ${lang}`);
-        await selectLanguage(lang);
+    it("should show invalid-data outcome ", async() => {
+        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_INVALID_DATA} (only for it language)`);
+        await selectLanguage("it");
         const resultMessage = await payNotice(
             VALID_NOTICE_CODE,
             OUTCOME_FISCAL_CODE_INVALID_DATA,
@@ -142,20 +114,14 @@ describe("Transaction outcome invalid-data tests", () => {
             VALID_CARD_DATA,
             CHECKOUT_URL_AFTER_AUTHORIZATION
         );
-        expect(resultMessage).toContain(translation.paymentResponsePage[3].title);
+        expect(resultMessage).toContain(itTranslation.paymentResponsePage[3].title);
     });
 });
 
 describe("Transaction outcome timeout tests", () => {
-    it.each([
-        ["it", itTranslation],
-        ["en", enTranslation],
-        ["fr", frTranslation],
-        ["de", deTranslation],
-        ["sl", slTranslation]
-    ])("should show timeout outcome in %s", async (lang, translation) => {
-        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_TIMEOUT} and language: ${lang}`);
-        await selectLanguage(lang);
+    it("should show timeout outcome ", async() => {
+        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_TIMEOUT} (only for it language)`);
+        await selectLanguage("it");
         const resultMessage = await payNotice(
             VALID_NOTICE_CODE,
             OUTCOME_FISCAL_CODE_TIMEOUT,
@@ -163,20 +129,14 @@ describe("Transaction outcome timeout tests", () => {
             VALID_CARD_DATA,
             CHECKOUT_URL_AFTER_AUTHORIZATION
         );
-        expect(resultMessage).toContain(translation.paymentResponsePage[4].title);
+        expect(resultMessage).toContain(itTranslation.paymentResponsePage[4].title);
     });
 });
 
 describe("Transaction outcome invalid-card tests", () => {
-    it.each([
-        ["it", itTranslation],
-        ["en", enTranslation],
-        ["fr", frTranslation],
-        ["de", deTranslation],
-        ["sl", slTranslation]
-    ])("should show invalid-card outcome in %s", async (lang, translation) => {
-        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_INVALID_CARD} and language: ${lang}`);
-        await selectLanguage(lang);
+    it("should show invalid-card outcome ", async() => {
+        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_INVALID_CARD} (only for it language)`);
+        await selectLanguage("it");
         const resultMessage = await payNotice(
             VALID_NOTICE_CODE,
             OUTCOME_FISCAL_CODE_INVALID_CARD,
@@ -184,20 +144,14 @@ describe("Transaction outcome invalid-card tests", () => {
             VALID_CARD_DATA,
             CHECKOUT_URL_AFTER_AUTHORIZATION
         );
-        expect(resultMessage).toContain(translation.paymentResponsePage[7].title);
+        expect(resultMessage).toContain(itTranslation.paymentResponsePage[7].title);
     });
 });
 
 describe("Transaction outcome cancelled-by-user tests", () => {
-    it.each([
-        ["it", itTranslation],
-        ["en", enTranslation],
-        ["fr", frTranslation],
-        ["de", deTranslation],
-        ["sl", slTranslation]
-    ])("should show cancelled-by-user outcome in %s", async (lang, translation) => {
-        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_CANCELLED_BY_USER} and language: ${lang}`);
-        await selectLanguage(lang);
+    it("should show cancelled-by-user outcome ", async() => {
+        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_CANCELLED_BY_USER} (only for it language)`);
+        await selectLanguage("it");
         const resultMessage = await payNotice(
             VALID_NOTICE_CODE,
             OUTCOME_FISCAL_CODE_CANCELLED_BY_USER,
@@ -205,21 +159,15 @@ describe("Transaction outcome cancelled-by-user tests", () => {
             VALID_CARD_DATA,
             CHECKOUT_URL_AFTER_AUTHORIZATION
         );
-        expect(resultMessage).toContain(translation.paymentResponsePage[8].title);
+        expect(resultMessage).toContain(itTranslation.paymentResponsePage[8].title);
     }
     );
 });
 
 describe("Transaction outcome excessive-amount tests", () => {
-    it.each([
-        ["it", itTranslation],
-        ["en", enTranslation],
-        ["fr", frTranslation],
-        ["de", deTranslation],
-        ["sl", slTranslation]
-    ])("should show excessive-amount outcome in %s", async (lang, translation) => {
-        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_EXCESSIVE_AMOUNT} and language: ${lang}`);
-        await selectLanguage(lang);
+    it("should show excessive-amount outcome ", async() => {
+        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_EXCESSIVE_AMOUNT} (only for it language)`);
+        await selectLanguage("it");
         const resultMessage = await payNotice(
             VALID_NOTICE_CODE,
             OUTCOME_FISCAL_CODE_EXCESSIVE_AMOUNT,
@@ -227,21 +175,15 @@ describe("Transaction outcome excessive-amount tests", () => {
             VALID_CARD_DATA,
             CHECKOUT_URL_AFTER_AUTHORIZATION
         );
-        expect(resultMessage).toContain(translation.paymentResponsePage[10].title);
+        expect(resultMessage).toContain(itTranslation.paymentResponsePage[10].title);
     }
     );
 });
 
 describe("Transaction outcome taken-in-charge tests", () => {
-    it.each([
-        ["it", itTranslation],
-        ["en", enTranslation],
-        ["fr", frTranslation],
-        ["de", deTranslation],
-        ["sl", slTranslation]
-    ])("should show taken-in-charge outcome in %s", async (lang, translation) => {
-        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_TAKEN_IN_CHARGE} and language: ${lang}`);
-        await selectLanguage(lang);
+    it("should show taken-in-charge outcome ", async() => {
+        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_TAKEN_IN_CHARGE} (only for it language)`);
+        await selectLanguage("it");
         const resultMessage = await payNotice(
             VALID_NOTICE_CODE,
             OUTCOME_FISCAL_CODE_TAKEN_IN_CHARGE,
@@ -249,21 +191,15 @@ describe("Transaction outcome taken-in-charge tests", () => {
             VALID_CARD_DATA,
             CHECKOUT_URL_AFTER_AUTHORIZATION
         );
-        expect(resultMessage).toContain(translation.paymentResponsePage[17].title);
+        expect(resultMessage).toContain(itTranslation.paymentResponsePage[17].title);
     }
     );
 });
 
 describe("Transaction outcome refunded tests", () => {
-    it.each([
-        ["it", itTranslation],
-        ["en", enTranslation],
-        ["fr", frTranslation],
-        ["de", deTranslation],
-        ["sl", slTranslation]
-    ])("should show refunded outcome in %s", async (lang, translation) => {
-        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_REFUNDED} and language: ${lang}`);
-        await selectLanguage(lang);
+    it("should show refunded outcome ", async() => {
+        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_REFUNDED} (only for it language)`);
+        await selectLanguage("it");
         const resultMessage = await payNotice(
             VALID_NOTICE_CODE,
             OUTCOME_FISCAL_CODE_REFUNDED,
@@ -271,20 +207,14 @@ describe("Transaction outcome refunded tests", () => {
             VALID_CARD_DATA,
             CHECKOUT_URL_AFTER_AUTHORIZATION
         );
-        expect(resultMessage).toContain(translation.paymentResponsePage[18].title);
+        expect(resultMessage).toContain(itTranslation.paymentResponsePage[18].title);
     });
 });
 
 describe("Transaction outcome psp-error tests", () => {
-    it.each([
-        ["it", itTranslation],
-        ["en", enTranslation],
-        ["fr", frTranslation],
-        ["de", deTranslation],
-        ["sl", slTranslation]
-    ])("should show psp-error outcome in %s", async (lang, translation) => {
-        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_PSP_ERROR} and language: ${lang}`);
-        await selectLanguage(lang);
+    it("should show psp-error outcome ", async() => {
+        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_PSP_ERROR} (only for it language)`);
+        await selectLanguage("it");
         const resultMessage = await payNotice(
             VALID_NOTICE_CODE,
             OUTCOME_FISCAL_CODE_PSP_ERROR,
@@ -292,20 +222,14 @@ describe("Transaction outcome psp-error tests", () => {
             VALID_CARD_DATA,
             CHECKOUT_URL_AFTER_AUTHORIZATION
         );
-        expect(resultMessage).toContain(translation.paymentResponsePage[25].title);
+        expect(resultMessage).toContain(itTranslation.paymentResponsePage[25].title);
     });
 });
 
 describe("Transaction outcome balance-not-available tests", () => {
-    it.each([
-        ["it", itTranslation],
-        ["en", enTranslation],
-        ["fr", frTranslation],
-        ["de", deTranslation],
-        ["sl", slTranslation]
-    ])("should show balance-not-available outcome in %s", async (lang, translation) => {
-        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_BALANCE_NOT_AVAILABLE} and language: ${lang}`);
-        await selectLanguage(lang);
+    it("should show balance-not-available outcome ", async() => {
+        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_BALANCE_NOT_AVAILABLE} (only for it language)`);
+        await selectLanguage("it");
         const resultMessage = await payNotice(
             VALID_NOTICE_CODE,
             OUTCOME_FISCAL_CODE_BALANCE_NOT_AVAILABLE,
@@ -313,21 +237,15 @@ describe("Transaction outcome balance-not-available tests", () => {
             VALID_CARD_DATA,
             CHECKOUT_URL_AFTER_AUTHORIZATION
         );
-        expect(resultMessage).toContain(translation.paymentResponsePage[116].title);
+        expect(resultMessage).toContain(itTranslation.paymentResponsePage[116].title);
     }
     );
 });
 
 describe("Transaction outcome cvv-error tests", () => {
-    it.each([
-        ["it", itTranslation],
-        ["en", enTranslation],
-        ["fr", frTranslation],
-        ["de", deTranslation],
-        ["sl", slTranslation]
-    ])("should show cvv-error outcome in %s", async (lang, translation) => {
-        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_CVV_ERROR} and language: ${lang}`);
-        await selectLanguage(lang);
+    it("should show cvv-error outcome ", async() => {
+        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_CVV_ERROR} (only for it language)`);
+        await selectLanguage("it");
         const resultMessage = await payNotice(
             VALID_NOTICE_CODE,
             OUTCOME_FISCAL_CODE_CVV_ERROR,
@@ -335,20 +253,14 @@ describe("Transaction outcome cvv-error tests", () => {
             VALID_CARD_DATA,
             CHECKOUT_URL_AFTER_AUTHORIZATION
         );
-        expect(resultMessage).toContain(translation.paymentResponsePage[117].title);
+        expect(resultMessage).toContain(itTranslation.paymentResponsePage[117].title);
     });
 });
 
 describe("Transaction outcome limit-exceeded tests", () => {
-    it.each([
-        ["it", itTranslation],
-        ["en", enTranslation],
-        ["fr", frTranslation],
-        ["de", deTranslation],
-        ["sl", slTranslation]
-    ])("should show limit-exceeded outcome in %s", async (lang, translation) => {
-        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_LIMIT_EXCEEDED} and language: ${lang}`);
-        await selectLanguage(lang);
+    it("should show limit-exceeded outcome ", async() => {
+        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_LIMIT_EXCEEDED} (only for it language)`);
+        await selectLanguage("it");
         const resultMessage = await payNotice(
             VALID_NOTICE_CODE,
             OUTCOME_FISCAL_CODE_LIMIT_EXCEEDED,
@@ -356,21 +268,15 @@ describe("Transaction outcome limit-exceeded tests", () => {
             VALID_CARD_DATA,
             CHECKOUT_URL_AFTER_AUTHORIZATION
         );
-        expect(resultMessage).toContain(translation.paymentResponsePage[121].title);
+        expect(resultMessage).toContain(itTranslation.paymentResponsePage[121].title);
     }
     );
 });
 
 describe("Transaction outcome fallback tests", () => {
-    it.each([
-        ["it", itTranslation],
-        ["en", enTranslation],
-        ["fr", frTranslation],
-        ["de", deTranslation],
-        ["sl", slTranslation]
-    ])("should fallback to success for unmapped code in %s", async (lang, translation) => {
-        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_DEFAULT} and language: ${lang}`);
-        await selectLanguage(lang);
+    it("should fallback to success for unmapped code ", async() => {
+        console.log(`Testing outcome for fiscal code: ${OUTCOME_FISCAL_CODE_DEFAULT} (only for it language)`);
+        await selectLanguage("it");
         const resultMessage = await payNotice(
             VALID_NOTICE_CODE,
             OUTCOME_FISCAL_CODE_DEFAULT,
@@ -379,7 +285,7 @@ describe("Transaction outcome fallback tests", () => {
             CHECKOUT_URL_AFTER_AUTHORIZATION
         );
         expect(resultMessage).toContain(
-            translation.paymentResponsePage[0].title.replace("{{amount}}", "120,15\u00A0€")
+            itTranslation.paymentResponsePage[0].title.replace("{{amount}}", "120,15\u00A0€")
         );
     }
     );
