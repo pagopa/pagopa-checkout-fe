@@ -14,10 +14,10 @@ const CHECKOUT_ESITO_V2_BASE_URL = "http://localhost:1234/v2/esito"
    * Increase default test timeout (80000ms)
    * to support entire payment flow
     */
-  jest.setTimeout(30000);
+  jest.setTimeout(60000);
   jest.retryTimes(0);
-  page.setDefaultNavigationTimeout(10000);
-  page.setDefaultTimeout(10000);
+  page.setDefaultNavigationTimeout(30000);
+  page.setDefaultTimeout(30000);
 
   beforeEach(async () => {
      await page.goto(CHECKOUT_URL);

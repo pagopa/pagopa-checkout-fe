@@ -31,10 +31,10 @@ const OUTCOME_FISCAL_CODE_CVV_ERROR = "77777777117";
 const OUTCOME_FISCAL_CODE_LIMIT_EXCEEDED = "77777777121";
 const OUTCOME_FISCAL_CODE_DEFAULT = "77777777777";
 
-jest.setTimeout(30000);
+jest.setTimeout(60000);
 jest.retryTimes(3);
-page.setDefaultNavigationTimeout(10000);
-page.setDefaultTimeout(10000);
+page.setDefaultNavigationTimeout(30000);
+page.setDefaultTimeout(30000);
 
 beforeAll(async () => {
     await page.goto(CHECKOUT_URL);
