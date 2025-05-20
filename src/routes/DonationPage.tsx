@@ -36,11 +36,6 @@ import {
 } from "../features/payment/models/donationModel";
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { getDonationEntityList } from "../utils/api/helper";
-import {
-  DONATION_APPIO_VISIT,
-  DONATION_URL_VISIT,
-} from "../utils/config/mixpanelDefs";
-import { mixpanel } from "../utils/config/mixpanelHelperInit";
 import { moneyFormat } from "../utils/form/formatters";
 
 export default function DonationPage() {
@@ -85,9 +80,6 @@ export default function DonationPage() {
   };
 
   const onAPPIO = React.useCallback(() => {
-    mixpanel.track(DONATION_APPIO_VISIT.value, {
-      EVENT_ID: DONATION_APPIO_VISIT.value,
-    });
     if (isMobileDevice) {
       window.open("https://io.italia.it/donazioni-ucraina/", "_blank")?.focus();
     } else {
@@ -136,10 +128,6 @@ export default function DonationPage() {
           title={`${t("ariaLabels.informationLink")} ${entity.companyName}`}
           onClick={(e) => {
             e.stopPropagation();
-            mixpanel.track(DONATION_URL_VISIT.value, {
-              orgCF: entity.cf,
-              orgUrl: entity.web_site,
-            });
           }}
         >
           <InfoOutlinedIcon

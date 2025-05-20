@@ -19,7 +19,6 @@ jest.mock("../../regex/urlUtilities");
 import * as TE from "fp-ts/TaskEither";
 import { callServices } from "../../api/response";
 import { getSessionItem } from "../../storage/sessionStorage";
-import { mixpanel } from "../../config/mixpanelHelperInit";
 import { ecommerceTransactionOutcome } from "../../transactions/transactionHelper";
 import { getUrlParameter } from "../../regex/urlUtilities";
 import { TransactionOutcomeInfo } from "../../../../generated/definitions/payment-ecommerce/TransactionOutcomeInfo";
@@ -50,10 +49,6 @@ describe("callServices", () => {
 
     await callServices(mockHandleOutcome);
 
-    expect(mixpanel.track).toHaveBeenCalledWith(
-      expect.stringContaining("THREEDSMETHODURL_STEP1_RESP_ERR"),
-      expect.any(Object)
-    );
     expect(mockHandleOutcome).toHaveBeenCalledTimes(1);
     expect(mockHandleOutcome).toHaveBeenCalledWith();
   });
@@ -67,10 +62,6 @@ describe("callServices", () => {
 
     await callServices(mockHandleOutcome);
 
-    expect(mixpanel.track).toHaveBeenCalledWith(
-      expect.stringContaining("THREEDSACSCHALLENGEURL_STEP2_SUCCESS"),
-      expect.any(Object)
-    );
     expect(mockHandleOutcome).toHaveBeenCalledWith(successPayload);
   });
 

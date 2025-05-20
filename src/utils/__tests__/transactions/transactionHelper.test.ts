@@ -9,21 +9,9 @@ jest.mock("../../config/fetch", () => ({
 
 import * as E from "fp-ts/Either";
 import { UNKNOWN } from "../../transactions/TransactionStatesTypes";
-
-import {
-  TRANSACTION_POLLING_CHECK_SUCCESS,
-  TRANSACTION_POLLING_CHECK_RESP_ERR,
-  TRANSACTION_POLLING_CHECK_NET_ERR,
-  TRANSACTION_POLLING_CHECK_SVR_ERR,
-} from "../../config/mixpanelDefs";
-
 import { ecommerceTransactionOutcome } from "../../transactions/transactionHelper";
-
 import { Client as ClientV1 } from "../../../../generated/definitions/payment-ecommerce/client";
-
 import { TransactionOutcomeInfo } from "../../../../generated/definitions/payment-ecommerce/TransactionOutcomeInfo";
-
-import { mixpanel } from "../../config/mixpanelHelperInit";
 
 const v1TransactionId = "123-v1";
 const bearerAuth = "Bearer token";
@@ -45,6 +33,7 @@ describe("ecommerceTransactionOutcome (v1)", () => {
         .mockResolvedValue(E.right({ status: 200, value: mockOutcomeInfo })),
     } as unknown as ClientV1;
 
+
     const res = await ecommerceTransactionOutcome(
       v1TransactionId,
       bearerAuth,
@@ -52,10 +41,6 @@ describe("ecommerceTransactionOutcome (v1)", () => {
     )();
 
     expect(res).toEqual(E.right(mockOutcomeInfo));
-    expect(mixpanel.track).toHaveBeenCalledWith(
-      TRANSACTION_POLLING_CHECK_SUCCESS.value,
-      expect.any(Object)
-    );
   });
 
   it("should fail when status !== 200", async () => {
@@ -72,10 +57,6 @@ describe("ecommerceTransactionOutcome (v1)", () => {
     )();
 
     expect(res).toEqual(E.left(UNKNOWN.value));
-    expect(mixpanel.track).toHaveBeenCalledWith(
-      TRANSACTION_POLLING_CHECK_RESP_ERR.value,
-      expect.any(Object)
-    );
   });
 
   it("should fail when getTransactionOutcomes returns a Left", async () => {
@@ -92,10 +73,7 @@ describe("ecommerceTransactionOutcome (v1)", () => {
     )();
 
     expect(res).toEqual(E.left(UNKNOWN.value));
-    expect(mixpanel.track).toHaveBeenCalledWith(
-      TRANSACTION_POLLING_CHECK_RESP_ERR.value,
-      expect.any(Object)
-    );
+
   });
 
   it("should handle network-level rejection (NET_ERR + SVR_ERR)", async () => {
@@ -110,13 +88,5 @@ describe("ecommerceTransactionOutcome (v1)", () => {
     )();
 
     expect(res).toEqual(E.left(UNKNOWN.value));
-    expect(mixpanel.track).toHaveBeenCalledWith(
-      TRANSACTION_POLLING_CHECK_NET_ERR.value,
-      expect.any(Object)
-    );
-    expect(mixpanel.track).toHaveBeenCalledWith(
-      TRANSACTION_POLLING_CHECK_SVR_ERR.value,
-      expect.any(Object)
-    );
   });
 });

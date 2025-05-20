@@ -8,12 +8,6 @@ import ErrorModal from "../components/modals/ErrorModal";
 import PageContainer from "../components/PageContent/PageContainer";
 import { QrCodeReader } from "../components/QrCodeReader/QrCodeReader";
 import { PaymentFormFields } from "../features/payment/models/paymentModel";
-import {
-  QRCODE_READER_ACCESS,
-  QRCODE_READ_ERROR,
-  QRCODE_READ_SUCCESS,
-} from "../utils/config/mixpanelDefs";
-import { mixpanel } from "../utils/config/mixpanelHelperInit";
 import { ErrorsType } from "../utils/errors/checkErrorsModel";
 import { qrCodeValidation } from "../utils/regex/validators";
 import { CheckoutRoutes } from "./models/routeModel";
@@ -26,25 +20,13 @@ export default function PaymentQrPage() {
   const [loading, setLoading] = React.useState(false);
   const [camBlocked, setCamBlocked] = React.useState(false);
 
-  React.useEffect(() => {
-    mixpanel.track(QRCODE_READER_ACCESS.value, {
-      EVENT_ID: QRCODE_READER_ACCESS.value,
-    });
-  }, []);
-
   const onError = React.useCallback((m: string) => {
     setError(m);
     setErrorModalOpen(true);
-    mixpanel.track(QRCODE_READ_ERROR.value, {
-      EVENT_ID: QRCODE_READ_ERROR.value,
-    });
   }, []);
 
   const onSubmit = React.useCallback(async (notice: PaymentFormFields) => {
     const rptId: RptId = `${notice.cf}${notice.billCode}` as RptId;
-    mixpanel.track(QRCODE_READ_SUCCESS.value, {
-      EVENT_ID: QRCODE_READ_SUCCESS.value,
-    });
     navigate(`/${rptId}`);
   }, []);
 

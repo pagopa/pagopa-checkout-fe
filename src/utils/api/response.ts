@@ -9,12 +9,6 @@ import { pipe } from "fp-ts/function";
 import { DeferredPromise } from "@pagopa/ts-commons//lib/promises";
 import { Millisecond } from "@pagopa/ts-commons//lib/units";
 import { createCounter } from "../../utils/counter";
-import {
-  THREEDSACSCHALLENGEURL_STEP2_RESP_ERR,
-  THREEDSACSCHALLENGEURL_STEP2_SUCCESS,
-  THREEDSMETHODURL_STEP1_RESP_ERR,
-} from "../config/mixpanelDefs";
-import { mixpanel } from "../config/mixpanelHelperInit";
 import { ecommerceTransactionOutcome } from "../transactions/transactionHelper";
 import { constantPollingWithPromisePredicateFetch } from "../config/fetch";
 import { getUrlParameter } from "../regex/urlUtilities";
@@ -102,18 +96,8 @@ export const callServices = async (
     )(getUrlParameter("id")),
 
     TE.fold(
-      (_) => async () => {
-        mixpanel.track(THREEDSMETHODURL_STEP1_RESP_ERR.value, {
-          EVENT_ID: THREEDSMETHODURL_STEP1_RESP_ERR.value,
-        });
-        return transactionId;
-      },
-      (idTransaction) => async () => {
-        mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_RESP_ERR.value, {
-          EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_RESP_ERR.value,
-        });
-        return decodeToUUID(idTransaction) as string;
-      }
+      (_) => async () => transactionId,
+      (idTransaction) => async () => decodeToUUID(idTransaction) as string
     ),
     T.chain(
       (transactionId) => async () =>
@@ -126,9 +110,6 @@ export const callServices = async (
           TE.fold(
             () => async () => handleOutcome(),
             (transactionOutcomeInfo) => async () => {
-              mixpanel.track(THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value, {
-                EVENT_ID: THREEDSACSCHALLENGEURL_STEP2_SUCCESS.value,
-              });
               handleOutcome(transactionOutcomeInfo);
             }
           )
