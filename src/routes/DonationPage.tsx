@@ -126,6 +126,9 @@ export default function DonationPage() {
           rel="noopener noreferrer"
           sx={{ display: "flex", mx: 1 }}
           title={`${t("ariaLabels.informationLink")} ${entity.companyName}`}
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
         >
           <InfoOutlinedIcon
             sx={{ color: "primary.main", cursor: "pointer" }}
