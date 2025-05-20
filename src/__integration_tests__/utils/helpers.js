@@ -16,6 +16,12 @@ export const payNotice = async (
   return await message.evaluate((el) => el.textContent);
 };
 
+export const clickButtonBySelector = async (selector) => {
+  const selectorButton = selector.startsWith("#") ? selector : "#" + selector;
+  const button = await page.waitForSelector(selectorButton);
+  await button.click();
+}
+
 export const verifyPaymentAndGetError = async (noticeCode, fiscalCode) => {
   const errorMessageSelector = "#verifyPaymentErrorId";
   await fillPaymentNotificationForm(noticeCode, fiscalCode);

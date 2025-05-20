@@ -212,6 +212,7 @@ export default function PaymentResponsePage() {
                 variant={
                   outcome === ViewOutcomeEnum.REFUNDED ? "text" : "outlined"
                 }
+                id="closeButton"
                 onClick={performRedirect}
                 sx={{
                   width: "100%",
