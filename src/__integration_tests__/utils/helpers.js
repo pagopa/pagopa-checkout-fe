@@ -95,18 +95,18 @@ export const selectKeyboardForm = async () => {
 
 export const clickLoginButton = async () => {
   //search login button and click it
-  console.log("Search login button")
+  //console.log("Search login button")
   const loginHeader = await page.waitForSelector("#login-header");
   const headerButtons = await loginHeader.$$("button");
   //Login button is the last on the header
   const loginBtn = headerButtons.at(-1);
-  console.log("Login button click")
+  //console.log("Login button click")
   await loginBtn.click();
 }
 
 export const getUserButton = async () => {
   //search user button
-  console.log("Search user button")
+  //console.log("Search user button")
   const loginHeader = await page.waitForSelector("#login-header");
   const headerButtons = await loginHeader.$$("button");
   // return button with name 
@@ -123,7 +123,7 @@ export const getUserButton = async () => {
 export const tryLoginWithAuthCallbackError = async (noticeCode, fiscalCode) => {
   //flow test error
   await fillPaymentNotificationForm(noticeCode, fiscalCode);
-  console.log("MockFlow setted with noticeCode: " + noticeCode);
+  //console.log("MockFlow setted with noticeCode: " + noticeCode);
 
   //Login
   await clickLoginButton();
@@ -185,10 +185,10 @@ export const tryHandlePspPickerPage = async ()=>{
   // this navigation will not happen in all test cases
   // so we don't want to waste too much time over it
   try {
-    await page.waitForNavigation({ timeout: 3500 });
+    await page.waitForNavigation({ timeout: 1000 });
   } catch (error) {
     // If the navigation doesn't happen within 3500ms, just log and continue
-    console.log("Navigation did not happen within 3500ms. Continuing test.");
+    //console.log("Navigation did not happen within 1000ms. Continuing test.");
   }
 
   // this step needs to be skipped during tests
@@ -211,7 +211,7 @@ export const selectPspOnPspPickerPage = async () => {
     
     await continueButton.click();
   }catch(e){
-    console.log("Buttons not found: this is caused by PSP page immediately navigate to the summary page (if 1 psp available)");
+    //console.log("Buttons not found: this is caused by PSP page immediately navigate to the summary page (if 1 psp available)");
   }
 }
 

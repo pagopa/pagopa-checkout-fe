@@ -84,18 +84,6 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await page.goto(CHECKOUT_URL);
-  // Listen for dialog events and automatically accept them after a delay
-  page.on('dialog', async dialog => {
-    if (dialog.type() === 'beforeunload') {
-      try {
-        // Wait for few seconds before accepting the dialog
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        await dialog.accept();
-      } catch (error) {
-        console.log('Dialog is already accepted.');
-      }
-    }
-  });
 });
 
 describe("Checkout payment verify failure tests", () => {
@@ -523,8 +511,8 @@ describe("Checkout Payment - PSP Selection Flow", () => {
     it("Should fill form, select PSP, and proceed with payment (IT)", async () => {
         selectLanguage("it");
         await fillAndSubmitCardDataForm(VALID_NOTICE_CODE, VALID_FISCAL_CODE, EMAIL, VALID_CARD_DATA);
-
         expect(await page.url()).toContain(CHECKOUT_URL_PAYMENT_SUMMARY);
+        await cancelPaymentAction();
     });
 
     it("Should mock PSP list with one PSP and proceed with selection", async () => {
