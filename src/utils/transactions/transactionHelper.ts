@@ -10,8 +10,8 @@ export const ecommerceTransactionOutcome = (
   transactionId: string,
   bearerAuth: string,
   ecommerceClient: EcommerceClientV1
-): TE.TaskEither<UNKNOWN, TransactionOutcomeInfo> => {
-  return pipe(
+): TE.TaskEither<UNKNOWN, TransactionOutcomeInfo> =>
+  pipe(
     TE.tryCatch(
       () =>
         ecommerceClient.getTransactionOutcomes({

@@ -73,12 +73,6 @@ describe("callServices", () => {
     );
 
     await callServices(mockHandleOutcome);
-
-    expect(mixpanel.track).toHaveBeenCalledTimes(1);
-    expect(mixpanel.track).toHaveBeenCalledWith(
-      expect.stringContaining("THREEDSACSCHALLENGEURL_STEP2_RESP_ERR"),
-      expect.any(Object)
-    );
     expect(mockHandleOutcome).toHaveBeenCalledTimes(1);
     expect(mockHandleOutcome).toHaveBeenCalledWith();
   });

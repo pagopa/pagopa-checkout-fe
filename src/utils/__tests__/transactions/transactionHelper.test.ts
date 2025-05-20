@@ -33,7 +33,6 @@ describe("ecommerceTransactionOutcome (v1)", () => {
         .mockResolvedValue(E.right({ status: 200, value: mockOutcomeInfo })),
     } as unknown as ClientV1;
 
-
     const res = await ecommerceTransactionOutcome(
       v1TransactionId,
       bearerAuth,
@@ -73,7 +72,6 @@ describe("ecommerceTransactionOutcome (v1)", () => {
     )();
 
     expect(res).toEqual(E.left(UNKNOWN.value));
-
   });
 
   it("should handle network-level rejection (NET_ERR + SVR_ERR)", async () => {
