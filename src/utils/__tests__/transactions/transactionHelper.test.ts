@@ -1,134 +1,90 @@
-import * as E from "fp-ts/Either";
-import { UNKNOWN } from "../../transactions/TransactionStatesTypes";
-import { TransactionInfo } from "../../../../generated/definitions/payment-ecommerce-v2/TransactionInfo";
-import { ecommerceTransaction } from "../../transactions/transactionHelper";
-import { Client } from "../../../../generated/definitions/payment-ecommerce-v2/client";
-import { TransactionStatusEnum } from "../../../../generated/definitions/payment-ecommerce-v3/TransactionStatus";
-
 jest.mock("../../config/mixpanelHelperInit", () => ({
-  mixpanel: {
-    track: jest.fn(),
-  },
+  mixpanel: { track: jest.fn() },
 }));
 
-describe("ecommerceTransaction", () => {
-  const transactionId = "123";
-  const bearerAuth = "Bearer token";
+jest.mock("../../config/fetch", () => ({
+  retryingFetch: jest.fn(() => jest.fn()),
+  constantPollingWithPromisePredicateFetch: jest.fn(() => jest.fn()),
+}));
 
-  const fakeTransactionInfo: TransactionInfo = {
-    transactionId: "123",
-    status: TransactionStatusEnum.NOTIFIED_OK,
-    payments: [
-      {
-        rptId: "ABC1234567890" as any,
-        amount: 1000 as any,
-        isAllCCP: true,
-        transferList: [
-          {
-            paFiscalCode: "AAAAAA00A00A000A",
-            digitalStamp: true,
-            transferAmount: 1000 as any,
-          },
-        ],
-      },
-    ],
-  };
+import * as E from "fp-ts/Either";
+import { UNKNOWN } from "../../transactions/TransactionStatesTypes";
+import { ecommerceTransactionOutcome } from "../../transactions/transactionHelper";
+import { Client as ClientV1 } from "../../../../generated/definitions/payment-ecommerce/client";
+import { TransactionOutcomeInfo } from "../../../../generated/definitions/payment-ecommerce/TransactionOutcomeInfo";
 
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
+const v1TransactionId = "123-v1";
+const bearerAuth = "Bearer token";
 
-  it("should succeed and return transaction info on status 200", async () => {
-    const client = {
-      getTransactionInfo: jest.fn().mockResolvedValue(
-        E.right({
-          status: 200,
-          value: fakeTransactionInfo,
-        })
-      ),
-      newTransaction: jest.fn(),
-      calculateFees: jest.fn(),
-    } as Client;
+const mockOutcomeInfo: TransactionOutcomeInfo = {
+  outcome: 0,
+  isFinalStatus: true,
+  totalAmount: 1000 as any,
+  fees: 100 as any,
+};
 
-    const result = await ecommerceTransaction(
-      transactionId,
-      bearerAuth,
-      client
-    )();
+describe("ecommerceTransactionOutcome (v1)", () => {
+  afterEach(() => jest.clearAllMocks());
 
-    expect(result).toEqual(E.right(fakeTransactionInfo));
-  });
-
-  it("should fail when response status !== 200", async () => {
-    const client = {
-      getTransactionInfo: jest.fn().mockResolvedValue(
-        E.left({
-          status: 502,
-        })
-      ),
-      newTransaction: jest.fn(),
-      calculateFees: jest.fn(),
-    } as Client;
-
-    const result = await ecommerceTransaction(
-      transactionId,
-      bearerAuth,
-      client
-    )();
-
-    expect(result).toEqual(E.left(UNKNOWN.value));
-  });
-
-  it("should fail when getTransactionInfo returns Left", async () => {
-    const client = {
-      getTransactionInfo: jest
+  it("should succeed and return TransactionOutcomeInfo on 200", async () => {
+    const client: ClientV1 = {
+      getTransactionOutcomes: jest
         .fn()
-        .mockResolvedValue(Promise.resolve(E.left(new Error("API error")))),
-      newTransaction: jest.fn(),
-      calculateFees: jest.fn(),
-    } as Client;
-    const result = await ecommerceTransaction(
-      transactionId,
+        .mockResolvedValue(E.right({ status: 200, value: mockOutcomeInfo })),
+    } as unknown as ClientV1;
+
+    const res = await ecommerceTransactionOutcome(
+      v1TransactionId,
       bearerAuth,
       client
     )();
 
-    expect(result).toEqual(E.left(UNKNOWN.value));
+    expect(res).toEqual(E.right(mockOutcomeInfo));
   });
 
-  it("should fail when response is Right(Left(error))", async () => {
+  it("should fail when status !== 200", async () => {
     const client = {
-      getTransactionInfo: jest
+      getTransactionOutcomes: jest
         .fn()
-        .mockResolvedValue(E.right(E.left(new Error("response logic error")))),
-      newTransaction: jest.fn(),
-      calculateFees: jest.fn(),
-    } as Client;
+        .mockResolvedValue(E.right({ status: 500, value: mockOutcomeInfo })),
+    } as unknown as ClientV1;
 
-    const result = await ecommerceTransaction(
-      transactionId,
+    const res = await ecommerceTransactionOutcome(
+      v1TransactionId,
       bearerAuth,
       client
     )();
 
-    expect(result).toEqual(E.left(UNKNOWN.value));
+    expect(res).toEqual(E.left(UNKNOWN.value));
   });
 
-  it("should handle exception thrown by getTransactionInfo and track NET_ERR", async () => {
+  it("should fail when getTransactionOutcomes returns a Left", async () => {
     const client = {
-      getTransactionInfo: jest
+      getTransactionOutcomes: jest
         .fn()
-        .mockImplementation(() => Promise.reject(new Error("network failure"))),
-      newTransaction: jest.fn(),
-      calculateFees: jest.fn(),
-    } as Client;
+        .mockResolvedValue(E.left(new Error("backend error"))),
+    } as unknown as ClientV1;
 
-    const result = await ecommerceTransaction(
-      transactionId,
+    const res = await ecommerceTransactionOutcome(
+      v1TransactionId,
       bearerAuth,
       client
     )();
 
-    expect(result).toEqual(E.left(UNKNOWN.value));
+    expect(res).toEqual(E.left(UNKNOWN.value));
+  });
+
+  it("should handle network-level rejection (NET_ERR + SVR_ERR)", async () => {
+    const client = {
+      getTransactionOutcomes: jest.fn().mockRejectedValue(new Error("timeout")),
+    } as unknown as ClientV1;
+
+    const res = await ecommerceTransactionOutcome(
+      v1TransactionId,
+      bearerAuth,
+      client
+    )();
+
+    expect(res).toEqual(E.left(UNKNOWN.value));
   });
 });

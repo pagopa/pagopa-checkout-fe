@@ -26,21 +26,12 @@ import {
   getSessionItem,
   SessionItems,
 } from "../utils/storage/sessionStorage";
-import {
-  getViewOutcomeFromEcommerceResultCode,
-  ViewOutcomeEnum,
-} from "../utils/transactions/TransactionResultUtil";
+import { ViewOutcomeEnum } from "../utils/transactions/TransactionResultUtil";
 import { Cart } from "../features/payment/models/paymentModel";
-import { NewTransactionResponse } from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { resetThreshold } from "../redux/slices/threshold";
-import { Bundle } from "../../generated/definitions/payment-ecommerce/Bundle";
-import { TransactionStatusEnum } from "../../generated/definitions/payment-ecommerce/TransactionStatus";
-import {
-  TransactionInfoGatewayInfo,
-  TransactionInfoNodeInfo,
-} from "../../generated/definitions/payment-ecommerce-v2/TransactionInfo";
 import { removeLoggedUser } from "../redux/slices/loggedUser";
 import { checkLogout } from "../utils/api/helper";
+import { TransactionOutcomeInfo } from "../../generated/definitions/payment-ecommerce/TransactionOutcomeInfo";
 import FindOutMoreModal from "./../components/modals/FindOutMoreModal";
 
 type PrintData = {
@@ -65,19 +56,8 @@ export default function PaymentResponsePage() {
     redirectUrl: cart ? cart.returnUrls.returnOkUrl : "/",
     isCart: cart != null,
   });
-  const transactionData = getSessionItem(SessionItems.transaction) as
-    | NewTransactionResponse
-    | undefined;
-  const pspSelected = getSessionItem(SessionItems.pspSelected) as
-    | Bundle
-    | undefined;
   const email = getSessionItem(SessionItems.useremail) as string | undefined;
-  const totalAmount =
-    Number(
-      transactionData?.payments
-        .map((p) => p.amount)
-        .reduce((sum, current) => sum + current, 0)
-    ) + Number(pspSelected?.taxPayerFee);
+  const [totalAmount, setTotalAmount] = useState<number>(0);
 
   const usefulPrintData: PrintData = {
     useremail: email || "",
@@ -97,16 +77,17 @@ export default function PaymentResponsePage() {
     );
   };
 
-  const handleFinalStatusResult = (
-    idStatus?: TransactionStatusEnum,
-    nodeInfo?: TransactionInfoNodeInfo,
-    gatewayInfo?: TransactionInfoGatewayInfo
-  ) => {
-    const outcome: ViewOutcomeEnum = getViewOutcomeFromEcommerceResultCode(
-      idStatus,
-      nodeInfo,
-      gatewayInfo
-    );
+  const handleOutcome = (transactionOutcomeInfo?: TransactionOutcomeInfo) => {
+    const outcome: ViewOutcomeEnum =
+      (transactionOutcomeInfo?.outcome.toString() as ViewOutcomeEnum) ||
+      ViewOutcomeEnum.GENERIC_ERROR;
+
+    if (transactionOutcomeInfo) {
+      const grandTotal =
+        (transactionOutcomeInfo.totalAmount ?? 0) +
+        (transactionOutcomeInfo.fees ?? 0);
+      setTotalAmount(grandTotal);
+    }
 
     setOutcome(outcome);
     showFinalResult(outcome);
@@ -132,7 +113,7 @@ export default function PaymentResponsePage() {
   };
 
   const performCallsAndClearStorage = async () => {
-    await callServices(handleFinalStatusResult);
+    await callServices(handleOutcome);
 
     await checkLogout(() => {
       dispatch(removeLoggedUser());
@@ -224,6 +205,7 @@ export default function PaymentResponsePage() {
                 variant={
                   outcome === ViewOutcomeEnum.REFUNDED ? "text" : "outlined"
                 }
+                id="closeButton"
                 onClick={performRedirect}
                 sx={{
                   width: "100%",
