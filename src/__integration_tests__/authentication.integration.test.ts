@@ -82,12 +82,12 @@ describe("Checkout authentication tests", () => {
     await page.goto(PAGE_LOGIN_COMEBACK_URL);
 
     //search login button and click it
-    //console.log("Search login button")
+    console.log("Search login button")
     const loginHeader = await page.waitForSelector("#login-header");
     const headerButtons = await loginHeader.$$("button");
     //Login button is the last on the header
     const loginBtn = headerButtons.at(-1);
-    //console.log("Login button click");
+    console.log("Login button click");
 
     await loginBtn.click();
     const urlAfterSuccessfullLogin = await page.evaluate(() => location.href);
@@ -101,11 +101,11 @@ describe("Checkout authentication tests", () => {
 
     // repeat login
     await retryButton.click();
-    //console.log("Retry button click");
+    console.log("Retry button click");
 
     // Wait return to main page so the login is done
     await page.waitForFunction("window.location.pathname == '/'");
-    //console.log("Login completed");
+    console.log("Login completed");
 
     // one from login button
     // one from navigating to the auth-callback page to retry
@@ -130,7 +130,7 @@ describe("Checkout authentication tests", () => {
     });
     await page.goto(CALLBACK_URL_NO_CODE);
     const currentUrl = await page.evaluate(() => location.href);
-    //console.log("Current url: " + currentUrl);
+    console.log("Current url: " + currentUrl);
 
     const titleErrorElem = await page.waitForSelector("#errorTitle");
     const titleErrorBody = await page.waitForSelector("#errorBody");
@@ -156,7 +156,7 @@ describe("Checkout authentication tests", () => {
     });
     await page.goto(CALLBACK_URL_NO_STATE);
     const currentUrl = await page.evaluate(() => location.href);
-    //console.log("Current url: " + currentUrl);
+    console.log("Current url: " + currentUrl);
 
     const titleErrorElem = await page.waitForSelector("#errorTitle");
     const titleErrorBody = await page.waitForSelector("#errorBody");
@@ -188,7 +188,7 @@ describe("Checkout authentication tests", () => {
     const currentUrl = await page.evaluate(() => location.href);
     expect(currentUrl.startsWith(BASE_CALLBACK_URL)).toBe(true);
 
-    //console.log("Search login button")
+    console.log("Search login button")
 
     const regex = new RegExp(BASE_CALLBACK_URL_REGEX);
     expect(regex.test(currentUrl)).toBe(true);
@@ -329,12 +329,12 @@ describe("Checkout authentication tests", () => {
     await page.waitForNavigation();
     //Wait return to main page
     await page.waitForNavigation();
-    //console.log("Login completed");
+    console.log("Login completed");
 
     //set flow error case
     await fillPaymentNotificationForm(FAIL_GET_USERS_401, VALID_FISCAL_CODE);
     await page.waitForNavigation();
-    //console.log("MockFlow setted with noticeCode: ", FAIL_GET_USERS_401);
+    console.log("MockFlow setted with noticeCode: ", FAIL_GET_USERS_401);
 
     //reload page in order to read authToken into sessionStorage
     await page.reload();
@@ -351,12 +351,12 @@ describe("Checkout authentication tests", () => {
     await page.waitForNavigation();
     //Wait return to main page
     await page.waitForNavigation();
-    //console.log("Login completed");
+    console.log("Login completed");
 
     //set flow error case
     await fillPaymentNotificationForm(FAIL_GET_USERS_500, VALID_FISCAL_CODE);
     await page.waitForNavigation();
-    //console.log("MockFlow setted with noticeCode: ", FAIL_GET_USERS_500);
+    console.log("MockFlow setted with noticeCode: ", FAIL_GET_USERS_500);
 
     //reload page in order to read authToken into sessionStorage
     await page.reload();
@@ -375,7 +375,7 @@ describe("Checkout authentication tests", () => {
     await page.waitForNavigation();
     //Wait return to main page
     await page.waitForNavigation();
-    //console.log("Login completed");
+    console.log("Login completed");
 
     //Check if user button is present into login header
     const userButton = await getUserButton();
@@ -510,19 +510,19 @@ describe("Checkout authentication tests", () => {
     await page.waitForNavigation();
     //Wait return to main page
     await page.waitForNavigation();
-    //console.log("Login completed");
+    console.log("Login completed");
 
     //Logout
     const userButton = await getUserButton();
     await userButton.click();
     const logoutIconButton = await page.waitForSelector('[data-testid="LogoutIcon"]');
     const logoutButton = await logoutIconButton.getProperty('parentNode');
-    //console.log("wait for logout button");
+    console.log("wait for logout button");
     await logoutButton.click();
     const confirmButton = await page.waitForSelector("#logoutModalConfirmButton");
     await confirmButton.click();
     await new Promise((r) => setTimeout(r, 500));
-    //console.log("Logout completed");
+    console.log("Logout completed");
         
     expect(apiContainsXRptIdCount).toBe(expectedCount);
   });
@@ -548,19 +548,19 @@ describe("Checkout authentication tests", () => {
     await page.waitForNavigation();
     //Wait return to main page
     await page.waitForNavigation();
-    //console.log("Login completed");
+    console.log("Login completed");
 
     //Logout
     const userButton = await getUserButton();
     await userButton.click();
     const logoutIconButton = await page.waitForSelector('[data-testid="LogoutIcon"]');
     const logoutButton = await logoutIconButton.getProperty('parentNode');
-    //console.log("wait for logout button");
+    console.log("wait for logout button");
     await logoutButton.click();
     const confirmButton = await page.waitForSelector("#logoutModalConfirmButton");
     await confirmButton.click();
     await new Promise((r) => setTimeout(r, 500));
-    //console.log("Logout completed");
+    console.log("Logout completed");
         
     expect(apiNotContainsXRptIdCount).toBe(expectedCount);
   });
@@ -585,7 +585,7 @@ describe("Checkout authentication tests", () => {
     await page.waitForNavigation();
     //Wait return to main page
     await page.waitForNavigation();
-    //console.log("Login completed");
+    console.log("Login completed");
 
     // Complete authenticated payment
     await payNotice(
@@ -622,11 +622,11 @@ describe("Logout tests", () => {
     await page.waitForNavigation();
     //Wait return to main page
     await page.waitForNavigation();
-    //console.log("Login completed");
+    console.log("Login completed");
     const userButton = await getUserButton();
     await userButton.click();
     const logoutButton = await page.waitForXPath('/html/body/div[3]/div[3]/ul/li');
-    //console.log("wait for logout button");
+    console.log("wait for logout button");
     await logoutButton.click();
     const confirmButton = await page.waitForSelector("#logoutModalConfirmButton");
     await confirmButton.click();
@@ -655,7 +655,7 @@ describe("Logout tests", () => {
     await page.waitForNavigation();
     //Wait return to main page
     await page.waitForNavigation();
-    //console.log("Login completed");
+    console.log("Login completed");
 
     await fillPaymentNotificationForm(FAIL_LOGIN_400, VALID_FISCAL_CODE);
     await page.waitForNavigation();
@@ -666,7 +666,7 @@ describe("Logout tests", () => {
     await logoutButton.click();
     const confirmButton = await page.waitForSelector("#logoutModalConfirmButton");
     await confirmButton.click();
-    //console.log("Search login button");
+    console.log("Search login button");
     await new Promise((r) => setTimeout(r, 500));
     const loginHeader = await page.waitForSelector("#login-header");
     const headerButtons = await loginHeader.$$("button");
@@ -699,20 +699,20 @@ describe("Logout tests", () => {
     await page.waitForNavigation();
     //Wait return to main page
     await page.waitForNavigation();
-    //console.log("Login completed");
+    console.log("Login completed");
 
     await fillPaymentNotificationForm(FAIL_LOGIN_500, VALID_FISCAL_CODE);
     await page.waitForNavigation();
     const userButton = await getUserButton();
     await userButton.click();
-    //console.log("wait for logout button");
+    console.log("wait for logout button");
     const logoutButtonIcon = await page.waitForSelector("#logout-button-icon");
     const logoutButton = await logoutButtonIcon.getProperty('parentNode');
     await logoutButton.click();
     const confirmButton = await page.waitForSelector("#logoutModalConfirmButton");
     await confirmButton.click();
     await new Promise((r) => setTimeout(r, 3100));
-    //console.log("Search login button")
+    console.log("Search login button")
     const loginHeader = await page.waitForSelector("#login-header");
     const headerButtons = await loginHeader.$$("button");
     //Login button is the last on the header
@@ -742,7 +742,7 @@ describe("Logout tests", () => {
     await page.waitForNavigation();
     //Wait return to main page
     await page.waitForNavigation();
-    //console.log("Login completed");
+    console.log("Login completed");
 
     const resultMessage = await payNotice(
       VALID_NOTICE_CODE,
@@ -781,7 +781,7 @@ describe("Logout tests", () => {
     await page.waitForNavigation();
     //Wait return to main page
     await page.waitForNavigation();
-    //console.log("Login completed");
+    console.log("Login completed");
 
     const resultMessage = await cancelPaymentOK(
       CANCEL_PAYMENT_OK,
@@ -819,7 +819,7 @@ describe("Logout tests", () => {
     await page.waitForNavigation();
     //Wait return to main page
     await page.waitForNavigation();
-    //console.log("Login completed");
+    console.log("Login completed");
 
     const resultMessage = await cancelPaymentKO(
             CANCEL_PAYMENT_KO,
@@ -856,7 +856,7 @@ describe("Logout tests", () => {
     await page.waitForNavigation();
     //Wait return to main page
     await page.waitForNavigation();
-    //console.log("Login completed");
+    console.log("Login completed");
     await fillAndSubmitCardDataForm(FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA, VALID_FISCAL_CODE, EMAIL, VALID_CARD_DATA);
     expect(page.url()).toContain("/sessione-scaduta");
     await new Promise((r) => setTimeout(r, 500));
@@ -887,7 +887,7 @@ describe("Logout tests", () => {
     await page.waitForNavigation();
     //Wait return to main page
     await page.waitForNavigation();
-    //console.log("Login completed");
+    console.log("Login completed");
     
     await checkErrorOnCardDataFormSubmit(
       PSP_FAIL,
@@ -922,7 +922,7 @@ describe("Logout tests", () => {
     await page.waitForNavigation();
     //Wait return to main page
     await page.waitForNavigation();
-    //console.log("Login completed");
+    console.log("Login completed");
 
     //Logout
     const userButton = await getUserButton();
@@ -930,7 +930,7 @@ describe("Logout tests", () => {
     const logoutIconButton = await page.waitForSelector('[data-testid="LogoutIcon"]');
     const logoutButton = await logoutIconButton.getProperty('parentNode');
     await logoutButton.click();
-    //console.log("logout button clicked");
+    console.log("logout button clicked");
     await new Promise(r => setTimeout(r, 1000));
     const logoutUserModalTitleElement = await page.waitForSelector("#logoutModalTitle");
     const logoutModalTitle = await logoutUserModalTitleElement.evaluate((el) => el.textContent);

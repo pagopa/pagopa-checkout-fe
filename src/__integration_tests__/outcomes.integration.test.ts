@@ -72,7 +72,7 @@ describe("Transaction outcome success tests", () => {
         [0, "SUCCESS", OUTCOME_FISCAL_CODE_DEFAULT],
     ])
     (`Testing outcome [%s]  for fiscal code: [%s] `, async(outcomeCode, expectedOutcome, fiscalCode) => {
-        //console.log(`Testing outcome ${expectedOutcome} for fiscal code: ${fiscalCode} (only for it language)`);
+        console.log(`Testing outcome ${expectedOutcome} for fiscal code: ${fiscalCode} (only for it language)`);
         await selectLanguage("it");
         const resultMessage = await payNotice(
             VALID_NOTICE_CODE,
