@@ -1,16 +1,18 @@
 import { default as React } from "react";
-import { Typography, Alert, AlertTitle, Link, Box } from "@mui/material";
+import {
+  Alert,
+  AlertTitle,
+  Box,
+  Link,
+  ThemeProvider,
+  Typography,
+} from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { ThemeProvider } from "@mui/material";
 import { theme } from "@pagopa/mui-italia";
+import { constVoid } from "fp-ts/function";
 
 const SurveyLink = () => {
   const { t } = useTranslation();
-
-  const onClick = () => {
-    // eslint-disable-next-line no-console
-    console.log("click");
-  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -25,7 +27,7 @@ const SurveyLink = () => {
             {t("paymentResponsePage.survey.body")}
           </Typography>
           <Link
-            onClick={onClick}
+            onClick={constVoid}
             variant="body1"
             target="_blank"
             rel="nofollow"
