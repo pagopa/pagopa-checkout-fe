@@ -35,3 +35,6 @@ yarn-error.log*
 
 test_reports/
 test-report.xml
+
+# IntelliJ IDEA
+.idea/
