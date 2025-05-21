@@ -320,7 +320,8 @@
     "creditCard": "Payer avec",
     "disclaimer": {
       "cheaper": "Conseillé comme le moins cher",
-      "yourCard": "Conseillé aux clients déjà inscrits"
+      "yourCard": "Conseillé aux clients déjà inscrits",
+      "psp":"En continuant, vous acceptez les  <terms>Conditions générales d'utilisation</terms> et vous confirmez avoir lu la <privacy>Politique de confidentialité</privacy> de <psp>{{pspName}}</psp>"
     },
     "drawer": {
       "body": "Cette liste vous indique tous les opérateur compatibles avec votre moyen de paiement, même si vous ne faites pas partie de leurs clients.",

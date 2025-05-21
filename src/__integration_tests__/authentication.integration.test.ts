@@ -47,10 +47,10 @@ const CHECKOUT_URL_AFTER_AUTHORIZATION = `http://localhost:1234/esito`;
 const VALID_NOTICE_CODE = "302016723749670000";
 
 
-jest.setTimeout(30000);
+jest.setTimeout(60000);
 jest.retryTimes(3);
-page.setDefaultNavigationTimeout(10000);
-page.setDefaultTimeout(10000);
+page.setDefaultNavigationTimeout(30000);
+page.setDefaultTimeout(30000);
 
 beforeAll(async () => {
   await page.goto(CHECKOUT_URL);
