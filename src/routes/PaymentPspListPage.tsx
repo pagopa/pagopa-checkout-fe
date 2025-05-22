@@ -1,4 +1,4 @@
-import { Alert, AlertTitle, Box, Button, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useNavigate } from "react-router-dom";
@@ -6,6 +6,7 @@ import { pipe } from "fp-ts/lib/function";
 import * as O from "fp-ts/Option";
 import { useTranslation } from "react-i18next";
 import { ButtonNaked } from "@pagopa/mui-italia";
+import { PaymentAlert } from "../features/payment/components/PaymentAlert/PaymentAlert";
 import { PspOrderingModel, sortBy } from "../utils/SortUtil";
 import { PaymentPspListSortingDrawer } from "../features/payment/components/PaymentPspList/PaymentPspListSortingDrawer";
 import { PaymentPSPListGrid } from "../features/payment/components/PaymentPspList/PaymentPspListGrid";
@@ -58,6 +59,12 @@ export default function PaymentPspListPage() {
   );
 
   const [isAlertVisible, setIsAlertVisible] = React.useState(true);
+
+  const shouldShowMyBankAlert = () =>
+    paymentMethod?.paymentTypeCode === PaymentCodeTypeEnum.MYBK &&
+    isAlertVisible;
+
+  const myBankAlertVisible = shouldShowMyBankAlert();
 
   const updatePspSorting = (sortingModel: PspOrderingModel | null) => {
     if (sortingModel === null) {
@@ -151,33 +158,13 @@ export default function PaymentPspListPage() {
   return (
     <>
       {paymentMethod && loading && <CheckoutLoader />}
-      {paymentMethod?.paymentTypeCode === PaymentCodeTypeEnum.MYBK &&
-        isAlertVisible && (
-          <Alert
-            severity="info"
-            variant="outlined"
-            action={
-              <Button
-                size="small"
-                onClick={() => {
-                  setIsAlertVisible(false);
-                }}
-              >
-                Chiudi
-              </Button>
-            }
-            sx={{
-              alignItems: "center",
-            }}
-          >
-            <React.Fragment key=".0">
-              <AlertTitle>
-                {t("paymentPspListPage.myBankAlertTitle")}
-              </AlertTitle>
-              {t("paymentPspListPage.myBankAlertBody")}
-            </React.Fragment>
-          </Alert>
-        )}
+      {myBankAlertVisible && (
+        <PaymentAlert
+          titleKey="paymentPspListPage.myBankAlertTitle"
+          bodyKey="paymentPspListPage.myBankAlertBody"
+          onClose={() => setIsAlertVisible(false)}
+        />
+      )}
       <PageContainer
         title="paymentPspListPage.title"
         description="paymentPspListPage.description"
