@@ -6,7 +6,7 @@ import { pipe } from "fp-ts/lib/function";
 import * as O from "fp-ts/Option";
 import { useTranslation } from "react-i18next";
 import { ButtonNaked } from "@pagopa/mui-italia";
-import { PaymentAlert } from "../features/payment/components/PaymentAlert/PaymentAlert";
+import { PaymentPspListAlert } from "../features/payment/components/PaymentAlert/PaymentPspListAlert";
 import { PspOrderingModel, sortBy } from "../utils/SortUtil";
 import { PaymentPspListSortingDrawer } from "../features/payment/components/PaymentPspList/PaymentPspListSortingDrawer";
 import { PaymentPSPListGrid } from "../features/payment/components/PaymentPspList/PaymentPspListGrid";
@@ -159,7 +159,7 @@ export default function PaymentPspListPage() {
     <>
       {paymentMethod && loading && <CheckoutLoader />}
       {myBankAlertVisible && (
-        <PaymentAlert
+        <PaymentPspListAlert
           titleKey="paymentPspListPage.myBankAlertTitle"
           bodyKey="paymentPspListPage.myBankAlertBody"
           onClose={() => setIsAlertVisible(false)}

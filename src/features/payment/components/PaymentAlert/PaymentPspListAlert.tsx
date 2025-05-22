@@ -1,7 +1,7 @@
 import React from "react";
 import { Alert, AlertTitle, Button } from "@mui/material";
 import { useTranslation } from "react-i18next";
-export function PaymentAlert(props: {
+export function PaymentPspListAlert(props: {
   onClose: () => void;
   titleKey: string;
   bodyKey: string;

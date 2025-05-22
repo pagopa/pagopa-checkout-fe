@@ -1,7 +1,7 @@
 import React from "react";
 import "@testing-library/jest-dom";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { PaymentAlert } from "../PaymentAlert";
+import { PaymentPspListAlert } from "../PaymentPspListAlert";
 
 // Mock MUI
 jest.mock("@mui/material", () => {
@@ -30,7 +30,7 @@ describe("PaymentAlert", () => {
 
   it("renders correctly with translation keys and triggers onClose", () => {
     render(
-      <PaymentAlert
+      <PaymentPspListAlert
         onClose={onCloseMock}
         titleKey="alert.title"
         bodyKey="alert.body"
