@@ -409,7 +409,9 @@
         "amount": "Nach Betrag"
       },
       "showResults": "Ergebnisse anzeigen"
-    }
+    },
+    "myBankAlertTitle": "Deine Bank ist nicht dabei?",
+    "myBankAlertBody": "Kein Problem: du kannst sie im nächsten Schritt auswählen."
   },
   "paymentQrPage": {
     "camBlocked": "Wir benötigen deine Erlaubnis zum Zugriff auf die Kamera. In den Datenschutzeinstellungen deines Internetbrowsers kannst du die Auswahl ändern",
