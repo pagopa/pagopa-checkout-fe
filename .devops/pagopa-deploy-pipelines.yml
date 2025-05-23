@@ -74,7 +74,7 @@ stages:
               #  ex: Build.SourceBranch=refs/tags/v1.2.3-RELEASE --> v1.2.3-RELEASE
               gitReference: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/tags/', ''), 'refs/heads/', '') }}
 
-          # Add a step to modify the meta robots tag in src/index.html
+          # Update the meta robots tag in src/index.html to prevent indexing in dev environment
           - script: |
               sed -i 's/<meta name="robots" content="index, follow">/<meta name="robots" content="noindex, nofollow">/' src/index.html
               echo "Modified robots meta tag in src/index.html"
@@ -211,13 +211,13 @@ stages:
               #  ex: Build.SourceBranch=refs/tags/v1.2.3-RELEASE --> v1.2.3-RELEASE
               gitReference: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/tags/', ''), 'refs/heads/', '') }}
 
-          # Add a step to modify the meta robots tag in src/index.html
+          # Update the meta robots tag in src/index.html to prevent indexing in uat environment
           - script: |
               sed -i 's/<meta name="robots" content="index, follow">/<meta name="robots" content="noindex, nofollow">/' src/index.html
               echo "Modified robots meta tag in src/index.html"
               grep -n "robots" src/index.html
             displayName: 'Update robots meta tag'
-            
+
           - template: azure-templates/setup-env.yml
             parameters:
               pagopa_apim_host: $(CHECKOUT_API_HOST_UAT)
