@@ -58,6 +58,7 @@ import { CalculateFeeResponse } from "../../generated/definitions/payment-ecomme
 import { SessionPaymentMethodResponse } from "../../generated/definitions/payment-ecommerce/SessionPaymentMethodResponse";
 import { ImageComponent } from "../features/payment/components/PaymentChoice/PaymentMethodImage";
 import { removeLoggedUser } from "../redux/slices/loggedUser";
+import PspPrivacyInfo from "../components/PrivacyPolicy/PspPrivacyInfo";
 import { CheckoutRoutes } from "./models/routeModel";
 
 const defaultStyle = {
@@ -394,6 +395,15 @@ export default function PaymentCheckPage() {
         itemSx={{ pl: 2, pr: 0, gap: 2 }}
         variant="body2"
       />
+
+      {!!pspSelected && (
+        <PspPrivacyInfo
+          termsLink="https://www.pagopa.gov.it/it/prestatori-servizi-di-pagamento/elenco-PSP-attivi/"
+          privacyLink="https://www.pagopa.gov.it/it/prestatori-servizi-di-pagamento/elenco-PSP-attivi/"
+          pspName={pspSelected.pspBusinessName || ""}
+        />
+      )}
+
       <FormButtons
         loadingSubmit={payLoading}
         loadingCancel={cancelLoading}
@@ -408,6 +418,7 @@ export default function PaymentCheckPage() {
         idSubmit="paymentCheckPageButtonPay"
         idCancel="paymentCheckPageButtonCancel"
       />
+
       <InformationModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}

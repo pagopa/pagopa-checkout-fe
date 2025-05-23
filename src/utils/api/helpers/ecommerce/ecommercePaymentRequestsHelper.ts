@@ -15,19 +15,6 @@ import {
   SessionItems,
   setSessionItem,
 } from "../../../../utils/storage/sessionStorage";
-import { mixpanel } from "../../../../utils/config/mixpanelHelperInit";
-import {
-  CART_REQUEST_ACCESS,
-  CART_REQUEST_NET_ERROR,
-  CART_REQUEST_RESP_ERROR,
-  CART_REQUEST_SUCCESS,
-  CART_REQUEST_SVR_ERROR,
-  PAYMENT_VERIFY_INIT,
-  PAYMENT_VERIFY_NET_ERR,
-  PAYMENT_VERIFY_RESP_ERR,
-  PAYMENT_VERIFY_SUCCESS,
-  PAYMENT_VERIFY_SVR_ERR,
-} from "../../../../utils/config/mixpanelDefs";
 import { PaymentRequestsGetResponse } from "../../../../../generated/definitions/payment-ecommerce/PaymentRequestsGetResponse";
 import { RptId } from "../../../../../generated/definitions/payment-ecommerce/RptId";
 import { FaultCategoryEnum } from "../../../../../generated/definitions/payment-ecommerce/FaultCategory";
@@ -39,12 +26,8 @@ export const getEcommercePaymentInfoTask = (
 ): TE.TaskEither<NodeFaultCode, PaymentRequestsGetResponse> =>
   pipe(
     TE.tryCatch(
-      () => {
-        mixpanel.track(PAYMENT_VERIFY_INIT.value, {
-          EVENT_ID: PAYMENT_VERIFY_INIT.value,
-        });
-
-        return pipe(
+      () =>
+        pipe(
           getSessionItem(SessionItems.authToken) as string,
           O.fromNullable,
           O.fold(
@@ -65,22 +48,11 @@ export const getEcommercePaymentInfoTask = (
               });
             }
           )
-        );
-      },
-      () => {
-        mixpanel.track(PAYMENT_VERIFY_NET_ERR.value, {
-          EVENT_ID: PAYMENT_VERIFY_NET_ERR.value,
-        });
-        return "Errore recupero pagamento";
-      }
+        ),
+      () => "Errore recupero pagamento"
     ),
     TE.fold(
-      (_) => {
-        mixpanel.track(PAYMENT_VERIFY_SVR_ERR.value, {
-          EVENT_ID: PAYMENT_VERIFY_SVR_ERR.value,
-        });
-        return TE.left({ faultCodeCategory: FaultCategoryEnum.GENERIC_ERROR });
-      },
+      (_) => TE.left({ faultCodeCategory: FaultCategoryEnum.GENERIC_ERROR }),
       (errorOrResponse) =>
         pipe(
           errorOrResponse,
@@ -88,21 +60,6 @@ export const getEcommercePaymentInfoTask = (
             () =>
               TE.left({ faultCodeCategory: FaultCategoryEnum.GENERIC_ERROR }),
             (responseType) => {
-              let reason;
-              if (responseType.status === 200) {
-                reason = "";
-              } else if (responseType.status === 400) {
-                reason = responseType.value.title;
-              } else {
-                reason = responseType.value?.faultCodeDetail;
-              }
-
-              const EVENT_ID: string =
-                responseType.status === 200
-                  ? PAYMENT_VERIFY_SUCCESS.value
-                  : PAYMENT_VERIFY_RESP_ERR.value;
-              mixpanel.track(EVENT_ID, { EVENT_ID, reason });
-
               if (responseType.status === 401) {
                 return TE.left({
                   faultCodeCategory: "SESSION_EXPIRED",
@@ -134,25 +91,16 @@ export const getCarts = async (
   onError: (e: string) => void,
   onResponse: (data: Cart) => void
 ) => {
-  mixpanel.track(CART_REQUEST_ACCESS.value, {
-    EVENT_ID: CART_REQUEST_ACCESS.value,
-  });
   await pipe(
     TE.tryCatch(
       () => apiPaymentEcommerceClient.GetCarts({ id_cart }),
       () => {
-        mixpanel.track(CART_REQUEST_NET_ERROR.value, {
-          EVENT_ID: CART_REQUEST_NET_ERROR.value,
-        });
         onError(ErrorsType.STATUS_ERROR);
         return E.toError;
       }
     ),
     TE.fold(
       () => async () => {
-        mixpanel.track(CART_REQUEST_SVR_ERROR.value, {
-          EVENT_ID: CART_REQUEST_SVR_ERROR.value,
-        });
         onError(ErrorsType.STATUS_ERROR);
         return {};
       },
@@ -161,23 +109,14 @@ export const getCarts = async (
           myResExt,
           E.fold(
             () => {
-              mixpanel.track(CART_REQUEST_RESP_ERROR.value, {
-                EVENT_ID: CART_REQUEST_RESP_ERROR.value,
-              });
               onError(ErrorsType.STATUS_ERROR);
               return {};
             },
             (myRes) => {
               if (myRes.status === 200) {
-                mixpanel.track(CART_REQUEST_SUCCESS.value, {
-                  EVENT_ID: CART_REQUEST_SUCCESS.value,
-                });
                 onResponse(myRes.value as any as Cart);
                 return myRes.value;
               } else {
-                mixpanel.track(CART_REQUEST_RESP_ERROR.value, {
-                  EVENT_ID: CART_REQUEST_RESP_ERROR.value,
-                });
                 onError(ErrorsType.STATUS_ERROR);
                 return {};
               }
