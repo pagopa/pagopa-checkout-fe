@@ -173,7 +173,7 @@
     "title": "The data entered are incorrect"
   },
   "PAYMENT_DUPLICATED": {
-    "body": "If you paid on this website, the receipt was sent to the email address you indicated during payment.",
+    "body": "If you paid on this website, the confirmation was sent to the email address you indicated during payment.",
     "title": "This notice was already paid!"
   },
   "PAYMENT_EXPIRED": {
@@ -230,7 +230,7 @@
   },
   "paymentResponsePage": {
     "0": {
-      "body": "We have sent the payment receipt to {{useremail}}",
+      "body": "We have sent the payment confirmation to {{useremail}}",
       "title": "You have paid {{amount}}"
     },
     "1": {
