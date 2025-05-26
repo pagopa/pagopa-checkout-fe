@@ -6,6 +6,7 @@ import { pipe } from "fp-ts/lib/function";
 import * as O from "fp-ts/Option";
 import { useTranslation } from "react-i18next";
 import { ButtonNaked } from "@pagopa/mui-italia";
+import { PaymentPspListAlert } from "../features/payment/components/PaymentAlert/PaymentPspListAlert";
 import { PspOrderingModel, sortBy } from "../utils/SortUtil";
 import { PaymentPspListSortingDrawer } from "../features/payment/components/PaymentPspList/PaymentPspListSortingDrawer";
 import { PaymentPSPListGrid } from "../features/payment/components/PaymentPspList/PaymentPspListGrid";
@@ -14,7 +15,10 @@ import { ErrorsType } from "../utils/errors/checkErrorsModel";
 import ErrorModal from "../components/modals/ErrorModal";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
 import PageContainer from "../components/PageContent/PageContainer";
-import { PaymentMethod } from "../features/payment/models/paymentModel";
+import {
+  PaymentCodeTypeEnum,
+  PaymentMethod,
+} from "../features/payment/models/paymentModel";
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { setThreshold } from "../redux/slices/threshold";
 import {
@@ -53,6 +57,14 @@ export default function PaymentPspListPage() {
   const [pspSelected, setPspSelected] = React.useState<Bundle | undefined>(
     getSessionItem(SessionItems.pspSelected) as Bundle | undefined
   );
+
+  const [isAlertVisible, setIsAlertVisible] = React.useState(true);
+
+  const shouldShowMyBankAlert = () =>
+    paymentMethod?.paymentTypeCode === PaymentCodeTypeEnum.MYBK &&
+    isAlertVisible;
+
+  const myBankAlertVisible = shouldShowMyBankAlert();
 
   const updatePspSorting = (sortingModel: PspOrderingModel | null) => {
     if (sortingModel === null) {
@@ -146,6 +158,13 @@ export default function PaymentPspListPage() {
   return (
     <>
       {paymentMethod && loading && <CheckoutLoader />}
+      {myBankAlertVisible && (
+        <PaymentPspListAlert
+          titleKey="paymentPspListPage.myBankAlertTitle"
+          bodyKey="paymentPspListPage.myBankAlertBody"
+          onClose={() => setIsAlertVisible(false)}
+        />
+      )}
       <PageContainer
         title="paymentPspListPage.title"
         description="paymentPspListPage.description"

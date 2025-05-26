@@ -284,6 +284,63 @@ describe("PaymentPspListPage", () => {
       });
     });
   });
+  test("should render PaymentPspListPage and display payment method name MyBank", async () => {
+    const mockPaymentMethod = {
+      paymentTypeCode: "MYBK",
+      paymentMethodId: "2c61e6ed-f874-4b30-97ef-bdf89d488ee4",
+    };
+    const mockPaymentMethodInfo = { title: "MyBank" };
+
+    (getSessionItem as jest.Mock).mockImplementation((item: SessionItems) => {
+      switch (item) {
+        case "paymentMethod":
+          return mockPaymentMethod;
+        case "paymentMethodInfo":
+          return mockPaymentMethodInfo;
+        case "transaction":
+          return transaction;
+        case "useremail":
+          return "test@pagopa.it";
+        case "paymentInfo":
+          return paymentInfo;
+        case "sessionPayment":
+          return sessionPayment;
+        default:
+          return undefined;
+      }
+    });
+
+    (
+      apiPaymentEcommerceClientWithRetryV2.calculateFees as jest.Mock
+    ).mockReturnValue(
+      Promise.resolve({
+        right: {
+          status: 200,
+          value: calculateFeeResponse,
+        },
+      })
+    );
+
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentPspListPage />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("paymentPspListPage.myBankAlertBody")
+      ).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText("Chiudi"));
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText("paymentPspListPage.myBankAlertBody")
+      ).not.toBeInTheDocument();
+    });
+  });
 });
 
 describe("PaymentPspListPage - session missing values", () => {

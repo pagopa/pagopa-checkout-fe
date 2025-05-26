@@ -60,6 +60,12 @@ const checkoutTheme = createTheme({
           overflow: "hidden",
           textOverflow: "ellipsis",
         },
+        outlined: {
+          ...(typeof theme.components?.MuiAlert?.styleOverrides?.outlined ===
+          "object"
+            ? theme.components.MuiAlert.styleOverrides.outlined
+            : {}),
+        },
       },
     },
   },

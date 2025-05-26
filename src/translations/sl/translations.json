@@ -410,7 +410,9 @@
         "amount": "Po znesku"
       },
       "showResults": "Prikaži rezultate"
-    }
+    },
+    "myBankAlertTitle": "Ne najdete svoje banke?",
+    "myBankAlertBody": "Ne skrbite: v naslednjih korakih jo boste morali izbrati."
   },
   "paymentQrPage": {
     "camBlocked": "Za uporabo kamere potrebujemo vaše soglasje. Če želite spremeniti svojo izbiro, pojdite na nastavitve zasebnosti v svojem brskalniku",
