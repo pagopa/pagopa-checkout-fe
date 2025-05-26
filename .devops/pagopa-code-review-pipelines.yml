@@ -24,20 +24,25 @@ parameters:
   - name: 'PAYMENT_INTEGRATION_TESTS'
     displayName: 'Payment flow integration tests'
     type: boolean
-    default: true
+    default: false
 
   - name: 'OUTCOMES_TESTS'
     displayName: 'Outcomes integration tests'
     type: boolean
-    default: true
+    default: false
 
   - name: 'AUTHENTICATION_TESTS'
     displayName: 'Authentication flow integration tests'
     type: boolean
-    default: true
+    default: false
 
   - name: 'PAYMENT_RESPONSE_PAGE_V2_TEST'
     displayName: 'PaymentResponsePageV2 flow integration tests'
+    type: boolean
+    default: false
+  
+  - name: 'PLAYWRIGHT_TEST'
+    displayName: 'Experimental integration tests with playwright'
     type: boolean
     default: true
 
@@ -413,4 +418,69 @@ stages:
             testResultsFiles: '**/*TEST.xml'
             searchFolder: '$(System.DefaultWorkingDirectory)'
             failTaskOnFailedTests: true
+
+  - stage: Playwright_Integration_Tests
+    condition: and(succeeded(), eq('${{parameters.PLAYWRIGHT_TEST}}', true))
+    pool:
+      vmImage: 'ubuntu-latest'
+    dependsOn: []
+    jobs:
+      - job: run_integration_tests
+        timeoutInMinutes: 30
+        steps:
+
+        - checkout: checkout-be-mock
+
+        - script: |
+            cp env.example .env
+            sed -i "s/^NPG_API_KEY=.*$/NPG_API_KEY=$(CHECKOUT-TEST-NPG-API-KEY)/" .env
+            sed -i "s/^PSP_API_KEY=.*$/PSP_API_KEY=$(CHECKOUT-TEST-NPG-API-KEY)/" .env
+          workingDirectory: pagopa-checkout-be-mock
+          displayName: 'Setup env for mock'
+
+        - script: yarn global add node-gyp && yarn install && yarn build
+          workingDirectory: pagopa-checkout-be-mock
+          displayName: 'Setup deps for mock'
+
+        - script: |
+            nohup yarn start &
+          displayName: 'Start backend mock'
+          workingDirectory: pagopa-checkout-be-mock
+
+        - checkout: self
+
+        - template: templates/node-job-setup/template.yaml@pagopaCommons
+          parameters:
+           projectDir: pagopa-checkout-fe
+
+        - script: |
+            export $(grep -v '^#' .env.development | xargs)
+          displayName: 'export envs from .env.development'
+          workingDirectory: pagopa-checkout-fe
+
+        - script: |
+            yarn dev &
+          displayName: 'Start checkout FE'
+          workingDirectory: pagopa-checkout-fe
+
+        - script: while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:1234)" != "200" ]]; do sleep 5; done
+          displayName: 'Wait for backend to be up and running'
+          workingDirectory: pagopa-checkout-fe
+        
+        - script: npx playwright install chromium --with-deps
+          displayName: 'Playwright install chrmoium'
+          workingDirectory: pagopa-checkout-fe
+
+        - script: yarn pwtest --workers=1 --max-failures=1 --project=chromium
+          displayName: 'Playwright integration tests exec'
+          workingDirectory: pagopa-checkout-fe
+
+        - task: PublishTestResults@2
+          displayName: 'Publish integration tests results from Jest tests'
+          inputs:
+            testResultsFormat: 'JUnit'
+            testResultsFiles: '**/*TEST.xml'
+            searchFolder: '$(System.DefaultWorkingDirectory)'
+            failTaskOnFailedTests: true
+
 

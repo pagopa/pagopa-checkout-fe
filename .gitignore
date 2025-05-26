@@ -33,6 +33,7 @@ yarn-error.log*
 # Parcel
 .parcel-cache
 
+test-results/
 test_reports/
 test-report.xml
 
