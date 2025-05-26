@@ -117,6 +117,7 @@ export function PaymentNoticeChoice() {
           >
             <KeyboardIcon sx={{ color: "primary.main" }} />
             <Box
+              id="insertDataBox"
               sx={{
                 ...defaultStyle,
                 flexDirection: "column",
@@ -140,6 +141,7 @@ export function PaymentNoticeChoice() {
           sx={{ display: "flex", justifyContent: "flex-end", pr: 2 }}
         >
           <ArrowForwardIosIcon
+            id="insertDataIcon"
             sx={{ color: "primary.main" }}
             fontSize="small"
           />
