@@ -466,8 +466,12 @@ stages:
         - script: while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:1234)" != "200" ]]; do sleep 5; done
           displayName: 'Wait for backend to be up and running'
           workingDirectory: pagopa-checkout-fe
+        
+        - script: npx playwright install chromium --with-deps
+          displayName: 'Playwright install chrmoium'
+          workingDirectory: pagopa-checkout-fe
 
-        - script: yarn pwtest
+        - script: yarn pwtest --workers=1 --max-failures=1 --project=chromium
           displayName: 'Playwright integration tests exec'
           workingDirectory: pagopa-checkout-fe
 
