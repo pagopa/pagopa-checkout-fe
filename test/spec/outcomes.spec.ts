@@ -1,7 +1,7 @@
 /* eslint-disable no-console, @typescript-eslint/restrict-plus-operands, @typescript-eslint/no-floating-promises */
 import { test, expect } from "@playwright/test";
 
-const VALID_RPTID = "302000100000009400"; 
+const VALID_RPTID = "302000100000009400";
 const VALID_FISCAL_CODE = "77777777777";
 const EMAIL = "mario.rossi@email.com";
 
@@ -20,16 +20,22 @@ test.describe("Firts Test", () => {
     await page.waitForSelector("#cf", { state: "visible" });
     await page.locator("#billCode").type(VALID_RPTID);
     await page.locator("#cf").type(VALID_FISCAL_CODE);
-    await page.waitForSelector("#paymentNoticeButtonContinue", { state: "visible" });
+    await page.waitForSelector("#paymentNoticeButtonContinue", {
+      state: "visible",
+    });
     await page.locator("#paymentNoticeButtonContinue").click();
     await page.waitForURL("http://localhost:1234/dati-pagamento");
-    await page.waitForSelector("#paymentSummaryButtonPay", { state: "visible" });
+    await page.waitForSelector("#paymentSummaryButtonPay", {
+      state: "visible",
+    });
     await page.locator("#paymentSummaryButtonPay").click();
     await page.waitForSelector("#email", { state: "visible" });
     await page.waitForSelector("#confirmEmail", { state: "visible" });
     await page.locator("#email").type(EMAIL);
     await page.locator("#confirmEmail").type(EMAIL);
-    await page.waitForSelector("#paymentEmailPageButtonContinue", { state: "visible" });
+    await page.waitForSelector("#paymentEmailPageButtonContinue", {
+      state: "visible",
+    });
     await page.locator("#paymentEmailPageButtonContinue").click();
     await page.waitForURL("http://localhost:1234/scegli-metodo");
     await page.locator('[data-qaid="CP"]').click();
@@ -49,14 +55,22 @@ test.describe("Firts Test", () => {
     await page.waitForSelector("#BNLIITRR", { state: "visible" });
     await page.locator("#BNLIITRR").isEnabled();
     await page.locator("#BNLIITRR").click();
-    await page.waitForSelector("#paymentPspListPageButtonContinue", { state: "visible" });
+    await page.waitForSelector("#paymentPspListPageButtonContinue", {
+      state: "visible",
+    });
     await page.locator("#paymentPspListPageButtonContinue").click();
-    await page.waitForSelector("#paymentCheckPageButtonPay", { state: "visible" });
+    await page.waitForSelector("#paymentCheckPageButtonPay", {
+      state: "visible",
+    });
     console.log(await page.locator("#paymentCheckPageButtonPay").textContent());
-    expect(await page.locator("#paymentCheckPageButtonPay").textContent()).toBe("Paga 120,15\xa0€");
-    await page.locator('#paymentCheckPageButtonPay').click();
+    expect(await page.locator("#paymentCheckPageButtonPay").textContent()).toBe(
+      "Paga 120,15\xa0€"
+    );
+    await page.locator("#paymentCheckPageButtonPay").click();
     await page.waitForURL("http://localhost:1234/esito");
-    expect(await page.locator('#responsePageMessageTitle').textContent()).toBe("Hai pagato 120,15\xa0€");
+    expect(await page.locator("#responsePageMessageTitle").textContent()).toBe(
+      "Hai pagato 120,15\xa0€"
+    );
     page.close();
   });
 });
