@@ -4,7 +4,6 @@ import { MemoryRouter } from "react-router-dom";
 import { fireEvent, screen, act } from "@testing-library/react";
 import * as router from "react-router";
 import mixpanel from "mixpanel-browser";
-import { CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY } from "utils/config/mixpanelDefs";
 import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders";
 import PaymentQrPage from "../PaymentQrPage";
 // Mock translations
@@ -47,7 +46,9 @@ jest.mock("../../utils/config/config", () =>
 );
 
 jest.mock("../../../utils/config/mixpanelDefs", () => ({
-  track: jest.fn(),
+  CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY: {
+    value: "CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY",
+  },
 }));
 
 // Create a Jest spy for navigation
@@ -84,9 +85,9 @@ describe("PaymentQrPage", () => {
     fireEvent.click(goToInserisciManualmente);
 
     expect(mixpanel.track).toHaveBeenCalledWith(
-      CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY.value,
+      "CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY",
       {
-        EVENT_ID: CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY.value,
+        EVENT_ID: "CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY",
       }
     );
 

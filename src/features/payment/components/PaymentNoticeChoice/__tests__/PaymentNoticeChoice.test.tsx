@@ -6,18 +6,17 @@ import { NavigateFunction } from "react-router";
 import mixpanel from "mixpanel-browser";
 import { PaymentNoticeChoice } from "../PaymentNoticeChoice";
 import { CheckoutRoutes } from "../../../../../routes/models/routeModel";
-import {
-  CHK_PAYMENT_NOTICE_DATA_ENTRY,
-  CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL,
-  CHK_PAYMENT_NOTICE_QRCODE_SCAN,
-} from "../../../../../utils/config/mixpanelDefs";
 
 jest.mock("react-router", () => ({
   useNavigate: jest.fn(),
 }));
 
 jest.mock("../../../utils/config/mixpanelDefs", () => ({
-  track: jest.fn(),
+  CHK_PAYMENT_NOTICE_DATA_ENTRY: { value: "CHK_PAYMENT_NOTICE_DATA_ENTRY" },
+  CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL: {
+    value: "CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL",
+  },
+  CHK_PAYMENT_NOTICE_QRCODE_SCAN: { value: "CHK_PAYMENT_NOTICE_QRCODE_SCAN" },
 }));
 
 jest.mock("react-i18next", () => ({
@@ -143,9 +142,9 @@ describe("PaymentNoticeChoice Component", () => {
   it("tracks the mixpanel event on mount", () => {
     render(<PaymentNoticeChoice />);
     expect(mixpanel.track).toHaveBeenCalledWith(
-      CHK_PAYMENT_NOTICE_DATA_ENTRY.value,
+      "CHK_PAYMENT_NOTICE_DATA_ENTRY",
       {
-        EVENT_ID: CHK_PAYMENT_NOTICE_DATA_ENTRY.value,
+        EVENT_ID: "CHK_PAYMENT_NOTICE_DATA_ENTRY",
       }
     );
   });
@@ -159,9 +158,9 @@ describe("PaymentNoticeChoice Component", () => {
     }
 
     expect(mixpanel.track).toHaveBeenCalledWith(
-      CHK_PAYMENT_NOTICE_QRCODE_SCAN.value,
+      "CHK_PAYMENT_NOTICE_QRCODE_SCAN",
       {
-        EVENT_ID: CHK_PAYMENT_NOTICE_QRCODE_SCAN.value,
+        EVENT_ID: "CHK_PAYMENT_NOTICE_QRCODE_SCAN",
         notice_code_data_entry: "qr_code",
       }
     );
@@ -180,9 +179,9 @@ describe("PaymentNoticeChoice Component", () => {
     }
 
     expect(mixpanel.track).toHaveBeenCalledWith(
-      CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL.value,
+      "CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL",
       {
-        EVENT_ID: CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL.value,
+        EVENT_ID: "CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL",
         notice_code_data_entry: "manual",
       }
     );

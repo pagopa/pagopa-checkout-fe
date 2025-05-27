@@ -12,7 +12,6 @@ import {
 import { getEcommercePaymentInfoTask } from "../../utils/api/helper";
 import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders";
 import PaymentNotice from "../PaymentNoticePage";
-import { CHK_PAYMENT_NOTICE_MANUAL_ENTRY } from "../../utils/config/mixpanelDefs";
 import { paymentInfo, rptId } from "./_model";
 
 // Mock translations and recaptcha
@@ -43,7 +42,7 @@ jest.mock("react-google-recaptcha", () => ({
 }));
 
 jest.mock("../../../utils/config/mixpanelDefs", () => ({
-  track: jest.fn(),
+  CHK_PAYMENT_NOTICE_MANUAL_ENTRY: { value: "CHK_PAYMENT_NOTICE_MANUAL_ENTRY" },
 }));
 
 // Create a Jest spy for navigation
@@ -247,9 +246,9 @@ describe("PaymentNotice", () => {
     );
 
     expect(mixpanel.track).toHaveBeenCalledWith(
-      CHK_PAYMENT_NOTICE_MANUAL_ENTRY.value,
+      "CHK_PAYMENT_NOTICE_MANUAL_ENTRY",
       {
-        EVENT_ID: CHK_PAYMENT_NOTICE_MANUAL_ENTRY.value,
+        EVENT_ID: "CHK_PAYMENT_NOTICE_MANUAL_ENTRY",
       }
     );
   });
