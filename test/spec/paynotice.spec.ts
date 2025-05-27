@@ -1,6 +1,5 @@
 /* eslint-disable no-console, @typescript-eslint/restrict-plus-operands, @typescript-eslint/no-floating-promises */
 import { test, expect, Page } from "@playwright/test";
-import { t } from "i18next";
 import itTranslation from "../../src/translations/it/translations.json";
 import enTranslation from "../../src/translations/en/translations.json";
 import deTranslation from "../../src/translations/de/translations.json";
