@@ -16,7 +16,7 @@ jest.mock("react-router", () => ({
   useNavigate: jest.fn(),
 }));
 
-jest.mock("mixpanel-browser", () => ({
+jest.mock("../../../utils/config/mixpanelDefs", () => ({
   track: jest.fn(),
 }));
 

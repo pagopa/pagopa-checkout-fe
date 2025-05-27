@@ -46,7 +46,7 @@ jest.mock("../../utils/config/config", () =>
   })
 );
 
-jest.mock("mixpanel-browser", () => ({
+jest.mock("../../../utils/config/mixpanelDefs", () => ({
   track: jest.fn(),
 }));
 
