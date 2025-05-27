@@ -2,19 +2,42 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import KeyboardIcon from "@mui/icons-material/Keyboard";
 import QrCodeScannerIcon from "@mui/icons-material/QrCodeScanner";
 import { Box, Grid, Typography } from "@mui/material";
+import mixpanel from "mixpanel-browser";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
+import {
+  CHK_PAYMENT_NOTICE_DATA_ENTRY,
+  CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL,
+  CHK_PAYMENT_NOTICE_QRCODE_SCAN,
+} from "utils/config/mixpanelDefs";
 import { CheckoutRoutes } from "../../../../routes/models/routeModel";
 
 export function PaymentNoticeChoice() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
+  React.useEffect(() => {
+    mixpanel.track(CHK_PAYMENT_NOTICE_DATA_ENTRY.value, {
+      EVENT_ID: CHK_PAYMENT_NOTICE_DATA_ENTRY.value,
+    });
+  }, []);
+
   const handleClickOnQR = React.useCallback(() => {
+    sessionStorage.setItem("notice_code_data_entry", "qr_code");
+    mixpanel.track(CHK_PAYMENT_NOTICE_QRCODE_SCAN.value, {
+      EVENT_ID: CHK_PAYMENT_NOTICE_QRCODE_SCAN.value,
+      notice_code_data_entry: "qr_code",
+    });
     navigate(`/${CheckoutRoutes.LEGGI_CODICE_QR}`);
   }, []);
+
   const handleClickOnForm = React.useCallback(() => {
+    sessionStorage.setItem("notice_code_data_entry", "manual");
+    mixpanel.track(CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL.value, {
+      EVENT_ID: CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL.value,
+      notice_code_data_entry: "manual",
+    });
     navigate(`/${CheckoutRoutes.INSERISCI_DATI_AVVISO}`);
   }, []);
 

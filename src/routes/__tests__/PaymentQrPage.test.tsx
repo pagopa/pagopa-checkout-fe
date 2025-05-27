@@ -3,6 +3,8 @@ import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { fireEvent, screen, act } from "@testing-library/react";
 import * as router from "react-router";
+import mixpanel from "mixpanel-browser";
+import { CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY } from "utils/config/mixpanelDefs";
 import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders";
 import PaymentQrPage from "../PaymentQrPage";
 // Mock translations
@@ -44,6 +46,10 @@ jest.mock("../../utils/config/config", () =>
   })
 );
 
+jest.mock("mixpanel-browser", () => ({
+  track: jest.fn(),
+}));
+
 // Create a Jest spy for navigation
 const navigate = jest.fn();
 // Error with definition of worker
@@ -64,6 +70,26 @@ describe("PaymentQrPage", () => {
       );
       fireEvent.click(goToInserisciManualmente);
     });
+    expect(navigate).toHaveBeenCalledWith("/inserisci-dati-avviso");
+  });
+
+  test("tracks event and navigates when clicking 'inserisci manualmente'", () => {
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentQrPage />
+      </MemoryRouter>
+    );
+
+    const goToInserisciManualmente = screen.getByText("paymentQrPage.navigate");
+    fireEvent.click(goToInserisciManualmente);
+
+    expect(mixpanel.track).toHaveBeenCalledWith(
+      CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY.value,
+      {
+        EVENT_ID: CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY.value,
+      }
+    );
+
     expect(navigate).toHaveBeenCalledWith("/inserisci-dati-avviso");
   });
 });

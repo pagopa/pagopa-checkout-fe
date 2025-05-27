@@ -5,6 +5,7 @@ import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
+import mixpanel from "mixpanel-browser";
 import { RptId } from "../../generated/definitions/payment-ecommerce/RptId";
 import notification from "../assets/images/payment-notice-pagopa.png";
 import ErrorModal from "../components/modals/ErrorModal";
@@ -21,6 +22,7 @@ import {
   SessionItems,
   setSessionItem,
 } from "../utils/storage/sessionStorage";
+import { CHK_PAYMENT_NOTICE_MANUAL_ENTRY } from "../utils/config/mixpanelDefs";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function PaymentNoticePage() {
@@ -83,6 +85,12 @@ export default function PaymentNoticePage() {
   const onCancel = () => {
     navigate(-1);
   };
+
+  React.useEffect(() => {
+    mixpanel.track(CHK_PAYMENT_NOTICE_MANUAL_ENTRY.value, {
+      EVENT_ID: CHK_PAYMENT_NOTICE_MANUAL_ENTRY.value,
+    });
+  }, []);
 
   React.useEffect(() => {
     if (rptid) {

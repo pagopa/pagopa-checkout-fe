@@ -3,6 +3,7 @@ import { Alert, Box, Button, Skeleton } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import mixpanel from "mixpanel-browser";
 import { RptId } from "../../generated/definitions/payment-ecommerce/RptId";
 import ErrorModal from "../components/modals/ErrorModal";
 import PageContainer from "../components/PageContent/PageContainer";
@@ -10,6 +11,10 @@ import { QrCodeReader } from "../components/QrCodeReader/QrCodeReader";
 import { PaymentFormFields } from "../features/payment/models/paymentModel";
 import { ErrorsType } from "../utils/errors/checkErrorsModel";
 import { qrCodeValidation } from "../utils/regex/validators";
+import {
+  CHK_QRCODE_SCAN_SCREEN,
+  CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY,
+} from "../utils/config/mixpanelDefs";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function PaymentQrPage() {
@@ -19,6 +24,12 @@ export default function PaymentQrPage() {
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const [camBlocked, setCamBlocked] = React.useState(false);
+
+  React.useEffect(() => {
+    mixpanel.track(CHK_QRCODE_SCAN_SCREEN.value, {
+      EVENT_ID: CHK_QRCODE_SCAN_SCREEN.value,
+    });
+  }, []);
 
   const onError = React.useCallback((m: string) => {
     setError(m);
@@ -114,7 +125,12 @@ export default function PaymentQrPage() {
         >
           <Button
             variant="text"
-            onClick={() => navigate(`/${CheckoutRoutes.INSERISCI_DATI_AVVISO}`)}
+            onClick={() => {
+              mixpanel.track(CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY.value, {
+                EVENT_ID: CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY.value,
+              });
+              navigate(`/${CheckoutRoutes.INSERISCI_DATI_AVVISO}`);
+            }}
           >
             {t("paymentQrPage.navigate")}
             <ArrowForwardIcon

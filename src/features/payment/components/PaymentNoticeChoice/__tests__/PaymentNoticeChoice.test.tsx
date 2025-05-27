@@ -3,11 +3,21 @@ import "@testing-library/jest-dom";
 import { render, screen, fireEvent } from "@testing-library/react";
 import * as router from "react-router";
 import { NavigateFunction } from "react-router";
+import mixpanel from "mixpanel-browser";
 import { PaymentNoticeChoice } from "../PaymentNoticeChoice";
 import { CheckoutRoutes } from "../../../../../routes/models/routeModel";
+import {
+  CHK_PAYMENT_NOTICE_DATA_ENTRY,
+  CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL,
+  CHK_PAYMENT_NOTICE_QRCODE_SCAN,
+} from "../../../../../utils/config/mixpanelDefs";
 
 jest.mock("react-router", () => ({
   useNavigate: jest.fn(),
+}));
+
+jest.mock("mixpanel-browser", () => ({
+  track: jest.fn(),
 }));
 
 jest.mock("react-i18next", () => ({
@@ -128,5 +138,55 @@ describe("PaymentNoticeChoice Component", () => {
     for (const option of options) {
       expect(option).toHaveAttribute("tabIndex", "0");
     }
+  });
+
+  it("tracks the mixpanel event on mount", () => {
+    render(<PaymentNoticeChoice />);
+    expect(mixpanel.track).toHaveBeenCalledWith(
+      CHK_PAYMENT_NOTICE_DATA_ENTRY.value,
+      {
+        EVENT_ID: CHK_PAYMENT_NOTICE_DATA_ENTRY.value,
+      }
+    );
+  });
+
+  it("tracks QR code scan event and sets sessionStorage when QR option is clicked", () => {
+    render(<PaymentNoticeChoice />);
+
+    const qrOption = screen.getByText("Scan QR Code").closest('[role="link"]');
+    if (qrOption) {
+      fireEvent.click(qrOption);
+    }
+
+    expect(mixpanel.track).toHaveBeenCalledWith(
+      CHK_PAYMENT_NOTICE_QRCODE_SCAN.value,
+      {
+        EVENT_ID: CHK_PAYMENT_NOTICE_QRCODE_SCAN.value,
+        notice_code_data_entry: "qr_code",
+      }
+    );
+
+    expect(sessionStorage.getItem("notice_code_data_entry")).toBe("qr_code");
+  });
+
+  it("tracks manual data entry event and sets sessionStorage when manual option is clicked", () => {
+    render(<PaymentNoticeChoice />);
+
+    const formOption = screen
+      .getByText("Enter Details Manually")
+      .closest('[role="link"]');
+    if (formOption) {
+      fireEvent.click(formOption);
+    }
+
+    expect(mixpanel.track).toHaveBeenCalledWith(
+      CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL.value,
+      {
+        EVENT_ID: CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL.value,
+        notice_code_data_entry: "manual",
+      }
+    );
+
+    expect(sessionStorage.getItem("notice_code_data_entry")).toBe("manual");
   });
 });
