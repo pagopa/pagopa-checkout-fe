@@ -173,7 +173,7 @@
     "title": "Die Daten der Zahlungsaufforderung sind falsch"
   },
   "PAYMENT_DUPLICATED": {
-    "body": "Wenn du über diese Website bezahlt hast, wurde der Beleg an die E-Mail-Adresse gesendet, die du bei der Zahlung angegeben hast.",
+    "body": "Wenn du über diese Website bezahlt hast, wurde die Bestätigung an die E-Mail-Adresse gesendet, die du bei der Zahlung angegeben hast.",
     "title": "Diese Zahlungsaufforderung wurde bereits beglichen!"
   },
   "PAYMENT_EXPIRED": {

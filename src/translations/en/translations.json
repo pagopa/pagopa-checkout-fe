@@ -22,16 +22,16 @@
     "button": "Close"
   },
   "authCallbackPage": {
-    "title": "It was not possible to access",
-    "body": "A problem occurred during access. Please try again in a few minutes.",
+    "title": "It was not possible to sign in",
+    "body": "A problem occurred during sign in. Please try again in a few minutes.",
     "buttons": {
       "retry": "Try again",
-      "continueWithoutLogin": "Continue without logging in"
+      "continueWithoutLogin": "Continue without signing in"
     }
   },
   "authExpiredPage": {
     "title": "Your session expired",
-    "body": "Log in to resume your session, or continue without logging in ",
+    "body": "Sign in to resume your session, or continue without signing in ",
     "buttons": {
       "login": "Sign in",
       "continueWithoutLogin": "Continue without signing in."
@@ -173,7 +173,7 @@
     "title": "The data entered are incorrect"
   },
   "PAYMENT_DUPLICATED": {
-    "body": "If you paid on this website, the receipt was sent to the email address you indicated during payment.",
+    "body": "If you paid on this website, the confirmation was sent to the email address you indicated during payment.",
     "title": "This notice was already paid!"
   },
   "PAYMENT_EXPIRED": {
@@ -300,7 +300,7 @@
     },
     "buttons": {
       "continue": "Continue",
-      "findOutMode": "Scopri di più"
+      "findOutMode": "Find out more"
     },
     "survey": {
       "body": "Tell us about your experience with the payment and help us improve.",
