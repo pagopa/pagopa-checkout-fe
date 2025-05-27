@@ -22,19 +22,19 @@
     "button": "Fermer"
   },
   "authCallbackPage": {
-    "title": "Non è stato possibile accedere",
-    "body": "Si è verificato un problema durante l'accesso. Riprova tra qualche minuto.",
+    "title": "L’accès n’a pas été possible",
+    "body": "Un problème est survenu lors de la connexion. Veuillez réessayer dans quelques minutes.",
     "buttons": {
-      "retry": "Riprova",
-      "continueWithoutLogin": "Continua senza login"
+      "retry": "Réessayer",
+      "continueWithoutLogin": "Continuer sans connexion"
     }
   },
   "authExpiredPage": {
     "title": "La tua sessione è scaduta",
-    "body": "Accedi per riprendere la sessione, oppure prosegui senza effettuare il login ",
+    "body": "Connectez-vous pour reprendre la session, ou continuez sans vous connecter ",
     "buttons": {
-      "login": "Accedi",
-      "continueWithoutLogin": "Continua senza login."
+      "login": "Connectez-vous",
+      "continueWithoutLogin": "Continuer sans connexion"
     }
   },
   "cartDetail": {
@@ -216,17 +216,17 @@
     "title": "Saisir votre e-mail"
   },
   "findOutMoreModal":{
-    "title": "Cosa fare se il pagamento non va a buon fine?",
-    "section1Title": "1. Paga l'avviso",
-    "section1ContentRow1": "Ricorda di pagare l'avviso entro le scadenze previste dall'ente.",
-    "section1ContentRow2": "Se non riesci tramite questo sito, ",
-    "section1ContentRow2Link": "scopri gli altri canali abilitati a pagoPA.",
-    "section2Title": "2. Attendi il rimborso",
-    "section2ContentRow1": "Di solito l'importo viene riaccreditato entro pochi minuti.",
-    "section2ContentRow2": "In altri casi, il trasferimento di denaro sul tuo conto o carta potrebbe richiedere più tempo.",
-    "section3Title": "3. Contatta l'assistenza",
-    "section3ContentRow1": "Se dopo 5 giorni lavorativi non hai ancora ricevuto il rimborso, ",
-    "section3ContentRow2Link": "contatta l'assistenza."
+    "title": "Que faire si le paiement échoue?",
+    "section1Title": "1. Payez l’avis",
+    "section1ContentRow1": "N’oubliez pas de payer l’avis avant les échéances fixées par l’organisme.",
+    "section1ContentRow2": "Si vous n’y parvenez pas via ce site, ",
+    "section1ContentRow2Link": "découvrez les autres canaux habilités à pagoPA.",
+    "section2Title": "2. Attendez le remboursement",
+    "section2ContentRow1": "En général, le montant est recrédité en quelques minutes.",
+    "section2ContentRow2": "Dans d’autres cas, le transfert d’argent sur votre compte ou carte peut prendre plus de temps.",
+    "section3Title": "3. Contacter l’assistance",
+    "section3ContentRow1": "Si vous n’avez pas encore reçu le remboursement après 5 jours ouvrables, ",
+    "section3ContentRow2Link": "contactez l’assistance."
   },
   "paymentResponsePage": {
     "0": {
@@ -275,24 +275,24 @@
       "title": "Attendez de recevoir la validation du paiement"
     },
     "18": {
-      "body": "L’importo autorizzato è stato rimborsato sul tuo metodo di pagamento. Il trasferimento di denaro potrebbe richiedere del tempo.",
-      "title": "Il pagamento non è andato a buon fine"
+      "body": "Le montant autorisé a été remboursé sur votre moyen de paiement. Le transfert d’argent peut prendre un certain temps.",
+      "title": "Le paiement n’a pas abouti"
     },
     "25": {
-      "body": "Non è stato addebitato alcun importo.\n Se il problema persiste, prova a usare un altro metodo o gestore del pagamento.",
-      "title": "Il pagamento non è andato a buon fine"
+      "body": "Aucun débit n’a été effectué.\n Si le problème persiste, essayez d’utiliser un autre moyen ou prestataire de paiement.",
+      "title": "Le paiement n’a pas abouti"
     },
     "116": {
-      "body": "Non è stato addebitato alcun importo. Prima di riprovare, aggiungi fondi alla carta o usa un altro metodo di pagamento.",
-      "title": "Il saldo della tua carta è insufficiente"
+      "body": "Aucun débit n’a été effectué. Avant de réessayer, ajoutez des fonds à votre carte ou utilisez un autre moyen de paiement.",
+      "title": "Le solde de votre carte est insuffisant"
     },
     "117": {
-      "body": "Non è stato addebitato alcun importo. Il codice (CVV o CVC) ha 3 cifre ed è riportato sul retro della carta. Se usi American Express, il codice (CID) ha 4 cifre ed è sul fronte.",
-      "title": "Il codice di sicurezza inserito è errato"
+      "body": "Aucun débit n’a été effectué. Le code (CVV ou CVC) comporte 3 chiffres et se trouve au verso de la carte. Si vous utilisez American Express, le code (CID) comporte 4 chiffres et se trouve au recto.",
+      "title": "Le code de sécurité saisi est incorrect"
     },
     "121": {
-      "body": "Non è stato addebitato alcun importo. Prima di riprovare, modifica il limite di spesa o usa un altro metodo di pagamento.",
-      "title": "Hai superato il limite di spesa della tua carta"
+      "body": "Aucun débit n’a été effectué. Avant de réessayer, modifiez votre limite de dépenses ou utilisez un autre moyen de paiement.",
+      "title": "Vous avez dépassé la limite de dépenses de votre carte"
     },
     "3dsNotInitiated": {
       "body": "Aucun débit n’a été effectué.\nSi le problème persiste, contactez l’opérateur de votre moyen de paiement, votre banque par exemple.",
@@ -300,7 +300,7 @@
     },
     "buttons": {
       "continue": "Continuer",
-      "findOutMode": "Scopri di più"
+      "findOutMode": "En savoir plus"
     },
     "survey": {
       "body": "Faites-nous part de votre expérience et aidez-nous à l’améliorer.",
@@ -374,8 +374,8 @@
   },
   "paymentNoticePage": {
     "description": "Saisir les données qui figurent sur l’avis de paiement.",
-    "exampleModalAltText": "Avviso di pagamento pagoPA, con evidenziata la parte in cui sono presenti il codice avviso e il codice fiscale dell’ente creditore",
-    "exampleModalTitle": "Esempio di avviso pagoPA",
+    "exampleModalAltText": "Avis de paiement pagoPA, avec en évidence la partie contenant le code de l’avis et le numéro fiscal de l’organisme créancier",
+    "exampleModalTitle": "Exemple d’avis pagoPA",
     "formButtons": {
       "cancel": "Retour",
       "submit": "Continuer"
@@ -419,8 +419,8 @@
     "navigate": "L’opération a échoué ? Saisir les données manuellement",
     "reloadPage": "Recharger la page",
     "title": "Scanner le code QR",
-    "usageHintPc": "Questa pagina richiede l'uso del lettore di codici QR. Per scansionare il codice QR, consenti al browser l'accesso alla fotocamera quando richiesto. Potresti dover utilizzare una webcam esterna o integrata. Il codice QR deve essere ben inquadrato e ben illuminato per facilitarne la lettura.",
-    "usageHintMobile": "Questa pagina richiede l'uso del lettore di codici QR. Per scansionare il codice QR, consenti al browser l'accesso alla fotocamera quando richiesto. Utilizza la fotocamera posteriore del tuo smartphone e orientala verso il codice QR. Il codice QR deve essere ben inquadrato e ben illuminato per facilitarne la lettura."
+    "usageHintPc": "Cette page nécessite l’utilisation du lecteur de codes QR. Pour scanner le code QR, autorisez l’accès à la caméra dans votre navigateur lorsqu’il est demandé. Vous devrez peut-être utiliser une webcam externe ou intégrée. Le code QR doit être bien cadré et bien éclairé pour faciliter sa lecture.",
+    "usageHintMobile": "Cette page nécessite l’utilisation du lecteur de codes QR. Pour scanner le code QR, autorisez l’accès à la caméra dans votre navigateur lorsqu’il est demandé. Utilisez la caméra arrière de votre smartphone et orientez-la vers le code QR. Le code QR doit être bien cadré et bien éclairé pour faciliter sa lecture."
   },
   "paymentSummaryPage": {
     "amount": "Montant mis à jour",
