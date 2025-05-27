@@ -471,7 +471,7 @@ stages:
           displayName: 'Playwright install chrmoium'
           workingDirectory: pagopa-checkout-fe
 
-        - script: yarn pwtest --workers=1 --max-failures=1 --project=chromium
+        - script: yarn pwtest --workers=3 --max-failures=0 --project=chromium
           displayName: 'Playwright integration tests exec'
           workingDirectory: pagopa-checkout-fe
 

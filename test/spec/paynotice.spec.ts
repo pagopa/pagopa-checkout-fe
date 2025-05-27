@@ -26,24 +26,72 @@ test.beforeEach(async ({ page }) => {
 });
 test.describe("Payment flow", () => {
   [
-    [0, "SUCCESS", OUTCOME_FISCAL_CODE_SUCCESS],
-    [1, "GENERIC ERROR", OUTCOME_FISCAL_CODE_GENERIC_ERROR],
-    [2, "AUTH ERROR", OUTCOME_FISCAL_CODE_AUTHORIZATION_ERROR],
-    [3, "INVALID DATA", OUTCOME_FISCAL_CODE_INVALID_DATA],
-    [4, "TIMEOUT", OUTCOME_FISCAL_CODE_TIMEOUT],
-    [7, "INVALID CARD", OUTCOME_FISCAL_CODE_INVALID_CARD],
-    [8, "CANCELLED BY USER", OUTCOME_FISCAL_CODE_CANCELLED_BY_USER],
-    [10, "EXCESSIVE AMOUNT", OUTCOME_FISCAL_CODE_EXCESSIVE_AMOUNT],
-    [17, "TAKE IN CHARGE", OUTCOME_FISCAL_CODE_TAKEN_IN_CHARGE],
-    [18, "REFUNDED", OUTCOME_FISCAL_CODE_REFUNDED],
-    [25, "PSP ERROR", OUTCOME_FISCAL_CODE_PSP_ERROR],
-    [116, "BALANCE NOT AVAILABLE", OUTCOME_FISCAL_CODE_BALANCE_NOT_AVAILABLE],
-    [117, "CVV ERROR", OUTCOME_FISCAL_CODE_CVV_ERROR],
-    [121, "LIMIT EXCEEDED", OUTCOME_FISCAL_CODE_LIMIT_EXCEEDED],
-    [0, "SUCCESS_DEFAULT", OUTCOME_FISCAL_CODE_DEFAULT],
-  ].map((testCase) => {
-    test("Pay notice with outcome " + testCase[1], async ({ page }) => {
-      const index = testCase[0] as
+    { code: 0, outcome: "SUCCESS", fiscalCode: OUTCOME_FISCAL_CODE_SUCCESS },
+    {
+      code: 1,
+      outcome: "GENERIC ERROR",
+      fiscalCode: OUTCOME_FISCAL_CODE_GENERIC_ERROR,
+    },
+    {
+      code: 2,
+      outcome: "AUTH ERROR",
+      fiscalCode: OUTCOME_FISCAL_CODE_AUTHORIZATION_ERROR,
+    },
+    {
+      code: 3,
+      outcome: "INVALID DATA",
+      fiscalCode: OUTCOME_FISCAL_CODE_INVALID_DATA,
+    },
+    { code: 4, outcome: "TIMEOUT", fiscalCode: OUTCOME_FISCAL_CODE_TIMEOUT },
+    {
+      code: 7,
+      outcome: "INVALID CARD",
+      fiscalCode: OUTCOME_FISCAL_CODE_INVALID_CARD,
+    },
+    {
+      code: 8,
+      outcome: "CANCELLED BY USER",
+      fiscalCode: OUTCOME_FISCAL_CODE_CANCELLED_BY_USER,
+    },
+    {
+      code: 10,
+      outcome: "EXCESSIVE AMOUNT",
+      fiscalCode: OUTCOME_FISCAL_CODE_EXCESSIVE_AMOUNT,
+    },
+    {
+      code: 17,
+      outcome: "TAKE IN CHARGE",
+      fiscalCode: OUTCOME_FISCAL_CODE_TAKEN_IN_CHARGE,
+    },
+    { code: 18, outcome: "REFUNDED", fiscalCode: OUTCOME_FISCAL_CODE_REFUNDED },
+    {
+      code: 25,
+      outcome: "PSP ERROR",
+      fiscalCode: OUTCOME_FISCAL_CODE_PSP_ERROR,
+    },
+    {
+      code: 116,
+      outcome: "BALANCE NOT AVAILABLE",
+      fiscalCode: OUTCOME_FISCAL_CODE_BALANCE_NOT_AVAILABLE,
+    },
+    {
+      code: 117,
+      outcome: "CVV ERROR",
+      fiscalCode: OUTCOME_FISCAL_CODE_CVV_ERROR,
+    },
+    {
+      code: 121,
+      outcome: "LIMIT EXCEEDED",
+      fiscalCode: OUTCOME_FISCAL_CODE_LIMIT_EXCEEDED,
+    },
+    {
+      code: 0,
+      outcome: "SUCCESS_DEFAULT",
+      fiscalCode: OUTCOME_FISCAL_CODE_DEFAULT,
+    },
+  ].forEach(({ code, outcome, fiscalCode }) => {
+    test(`Pay notice with outcome ${outcome}`, async ({ page }) => {
+      const codeIndex = code as
         | 0
         | 1
         | 2
@@ -61,7 +109,6 @@ test.describe("Payment flow", () => {
         | 116
         | 117
         | 121;
-      const fiscalCode = testCase[2] as string;
       await selectLang(page, "it");
       await goToInserisciDatiAvviso(page);
       await submitDatiAvviso(page, VALID_RPTID, fiscalCode);
@@ -79,7 +126,7 @@ test.describe("Payment flow", () => {
       await pay(page, "Paga 120,15\xa0€");
       await checkEsito(
         page,
-        itTranslation.paymentResponsePage[index].title.replace(
+        itTranslation.paymentResponsePage[codeIndex].title.replace(
           "{{amount}}",
           "120,15\xa0€"
         )
