@@ -22,19 +22,19 @@
     "button": "Schließen"
   },
   "authCallbackPage": {
-    "title": "Non è stato possibile accedere",
-    "body": "Si è verificato un problema durante l'accesso. Riprova tra qualche minuto.",
+    "title": "Es war nicht möglich sich anzumelden",
+    "body": "Beim Zugriff ist ein Problem aufgetreten. Versuch es in ein paar Minuten nochmal",
     "buttons": {
-      "retry": "Riprova",
-      "continueWithoutLogin": "Continua senza login"
+      "retry": "Versuch es nochmal",
+      "continueWithoutLogin": "Weiter ohne Anmeldung"
     }
   },
   "authExpiredPage": {
-    "title": "La tua sessione è scaduta",
-    "body": "Accedi per riprendere la sessione, oppure prosegui senza effettuare il login ",
+    "title": "Deine Sitzung ist abgelaufen",
+    "body": "Melde dich an, um die Sitzung fortzusetzen, oder fahre ohne Anmeldung fort",
     "buttons": {
-      "login": "Accedi",
-      "continueWithoutLogin": "Continua senza login."
+      "login": "Anmelden",
+      "continueWithoutLogin": "Weiter ohne Anmeldung"
     }
   },
   "cartDetail": {
@@ -147,7 +147,7 @@
     },
     "header": {
       "detail": {
-        "detailButton": "Apri riepilogo pagamento",
+        "detailButton": "Zahlungsübersicht öffnen",
         "detailFC": "Steuernummer des Empfängers",
         "detailIUV": "IUV-Code",
         "detailAmount": "Zwischensumme",
@@ -173,7 +173,7 @@
     "title": "Die Daten der Zahlungsaufforderung sind falsch"
   },
   "PAYMENT_DUPLICATED": {
-    "body": "Wenn du über diese Website bezahlt hast, wurde die Bestätigung an die E-Mail-Adresse gesendet, die du bei der Zahlung angegeben hast.",
+    "body": "Wenn du über diese Website bezahlt hast, wurde der Beleg an die E-Mail-Adresse gesendet, die du bei der Zahlung angegeben hast.",
     "title": "Diese Zahlungsaufforderung wurde bereits beglichen!"
   },
   "PAYMENT_EXPIRED": {
@@ -216,21 +216,21 @@
     "title": "Gib deine E-Mail-Adresse ein"
   },
   "findOutMoreModal":{
-    "title": "Cosa fare se il pagamento non va a buon fine?",
-    "section1Title": "1. Paga l'avviso",
-    "section1ContentRow1": "Ricorda di pagare l'avviso entro le scadenze previste dall'ente.",
-    "section1ContentRow2": "Se non riesci tramite questo sito, ",
-    "section1ContentRow2Link": "scopri gli altri canali abilitati a pagoPA.",
-    "section2Title": "2. Attendi il rimborso",
-    "section2ContentRow1": "Di solito l'importo viene riaccreditato entro pochi minuti.",
-    "section2ContentRow2": "In altri casi, il trasferimento di denaro sul tuo conto o carta potrebbe richiedere più tempo.",
-    "section3Title": "3. Contatta l'assistenza",
-    "section3ContentRow1": "Se dopo 5 giorni lavorativi non hai ancora ricevuto il rimborso, ",
-    "section3ContentRow2Link": "contatta l'assistenza."
+    "title": "Was tun, wenn die Zahlung nicht erfolgreich ist?",
+    "section1Title": "1. Bezahle die Zahlungsaufforderung",
+    "section1ContentRow1": "Denke daran, die Zahlungsaufforderung innerhalb der vom Amt festgelegten Fristen zu bezahlen.",
+    "section1ContentRow2": "Wenn du es über diese Seite nicht schaffst, ",
+    "section1ContentRow2Link": "entdecke die anderen über pagoPA verfügbaren Kanäle.",
+    "section2Title": "2. Warte auf die Rückerstattung",
+    "section2ContentRow1": "In der Regel wird der Betrag innerhalb weniger Minuten gutgeschrieben.",
+    "section2ContentRow2": "In anderen Fällen kann die Überweisung auf dein Konto oder deine Karte länger dauern.",
+    "section3Title": "3. Kontaktiere den Support",
+    "section3ContentRow1": "Wenn du nach 5 Werktagen die Rückerstattung noch nicht erhalten hast, ",
+    "section3ContentRow2Link": "kontaktiere den Support."
   },
   "paymentResponsePage": {
     "0": {
-      "body": "Wir haben die Zahlungsbestätigung an {{useremail}} gesendet",
+      "body": "Wir haben den Zahlungsbeleg an {{useremail}} gesendet",
       "title": "Du hast {{amount}} bezahlt"
     },
     "1": {
@@ -275,24 +275,24 @@
       "title": "Warte auf die Zahlungsbestätigung"
     },
     "18": {
-      "body": "L’importo autorizzato è stato rimborsato sul tuo metodo di pagamento. Il trasferimento di denaro potrebbe richiedere del tempo.",
-      "title": "Il pagamento non è andato a buon fine"
+      "body": "Der autorisierte Betrag wurde auf deine Zahlungsmethode zurückerstattet. Die Überweisung kann einige Zeit in Anspruch nehmen.",
+      "title": "Die Zahlung war nicht erfolgreich"
     },
     "25": {
-      "body": "Non è stato addebitato alcun importo.\n Se il problema persiste, prova a usare un altro metodo o gestore del pagamento.",
-      "title": "Il pagamento non è andato a buon fine"
+      "body": "Es wurde kein Betrag belastet.\n Wenn das Problem weiterhin besteht, versuche es mit einer anderen Zahlungsmethode oder einem anderen Zahlungsanbieter.",
+      "title": "Die Zahlung war nicht erfolgreich"
     },
     "116": {
-      "body": "Non è stato addebitato alcun importo. Prima di riprovare, aggiungi fondi alla carta o usa un altro metodo di pagamento.",
-      "title": "Il saldo della tua carta è insufficiente"
+      "body": "Es wurde kein Betrag belastet. Bevor du es erneut versuchst, lade Guthaben auf deine Karte oder nutze eine andere Zahlungsmethode.",
+      "title": "Der Kontostand deiner Karte ist nicht ausreichend."
     },
     "117": {
-      "body": "Non è stato addebitato alcun importo. Il codice (CVV o CVC) ha 3 cifre ed è riportato sul retro della carta. Se usi American Express, il codice (CID) ha 4 cifre ed è sul fronte.",
-      "title": "Il codice di sicurezza inserito è errato"
+      "body": "Es wurde kein Betrag belastet. Der Code (CVV oder CVC) besteht aus 3 Ziffern und befindet sich auf der Rückseite der Karte. Wenn du American Express benutzt, hat der Code (CID) 4 Ziffern und befindet sich auf der Vorderseite.",
+      "title": "Der eingegebene Sicherheitscode ist falsch"
     },
     "121": {
-      "body": "Non è stato addebitato alcun importo. Prima di riprovare, modifica il limite di spesa o usa un altro metodo di pagamento.",
-      "title": "Hai superato il limite di spesa della tua carta"
+      "body": "Es wurde kein Betrag belastet. Bevor du es erneut versuchst, ändere das Ausgabelimit oder nutze eine andere Zahlungsmethode.",
+      "title": "Du hast das Ausgabelimit deiner Karte überschritten."
     },
     "3dsNotInitiated": {
       "body": "Es ist keine Belastung erfolgt.\nWenn das Problem bestehen bleibt, wende dich an den Anbieter deiner Zahlungsmethode, z. B. deine Bank.",
@@ -300,7 +300,7 @@
     },
     "buttons": {
       "continue": "Weiter",
-      "findOutMode": "Scopri di più"
+      "findOutMode": "Mehr erfahren"
     },
     "survey": {
       "body": "Teile uns deine Benutzererfahrung mit der Zahlung mit und hilf uns, besser zu werden.",
@@ -374,8 +374,8 @@
   },
   "paymentNoticePage": {
     "description": "Übernimm die Angaben aus der Zahlungsaufforderung.",
-    "exampleModalAltText": "Avviso di pagamento pagoPA, con evidenziata la parte in cui sono presenti il codice avviso e il codice fiscale dell’ente creditore",
-    "exampleModalTitle": "Esempio di avviso pagoPA",
+    "exampleModalAltText": "Zahlungsaufforderung über pagoPA, mit hervorgehobenem Abschnitt, in dem der Zahlungscode und die Steuernummer der empfangenden Stelle angegeben sind",
+    "exampleModalTitle": "Beispiel einer pagoPA-Zahlungsaufforderung",
     "formButtons": {
       "cancel": "Zurück",
       "submit": "Weiter"
@@ -409,9 +409,7 @@
         "amount": "Nach Betrag"
       },
       "showResults": "Ergebnisse anzeigen"
-    },
-    "myBankAlertTitle": "Deine Bank ist nicht dabei?",
-    "myBankAlertBody": "Kein Problem: du kannst sie im nächsten Schritt auswählen."
+    }
   },
   "paymentQrPage": {
     "camBlocked": "Wir benötigen deine Erlaubnis zum Zugriff auf die Kamera. In den Datenschutzeinstellungen deines Internetbrowsers kannst du die Auswahl ändern",
@@ -419,8 +417,8 @@
     "navigate": "Funktioniert es nicht? Von Hand eingeben",
     "reloadPage": "Seite neu laden",
     "title": "QR-Code scannen",
-    "usageHintPc": "Questa pagina richiede l'uso del lettore di codici QR. Per scansionare il codice QR, consenti al browser l'accesso alla fotocamera quando richiesto. Potresti dover utilizzare una webcam esterna o integrata. Il codice QR deve essere ben inquadrato e ben illuminato per facilitarne la lettura.",
-    "usageHintMobile": "Questa pagina richiede l'uso del lettore di codici QR. Per scansionare il codice QR, consenti al browser l'accesso alla fotocamera quando richiesto. Utilizza la fotocamera posteriore del tuo smartphone e orientala verso il codice QR. Il codice QR deve essere ben inquadrato e ben illuminato per facilitarne la lettura."
+    "usageHintPc": "Diese Seite erfordert die Verwendung eines QR-Code-Scanners. Um den QR-Code zu scannen, erlaube dem Browser den Zugriff auf die Kamera, wenn du dazu aufgefordert wirst. Du musst möglicherweise eine externe oder integrierte Webcam verwenden. Der QR-Code sollte gut im Bild und ausreichend beleuchtet sein, um das Lesen zu erleichtern.",
+    "usageHintMobile": "Diese Seite erfordert die Verwendung eines QR-Code-Scanners. Um den QR-Code zu scannen, erlaube dem Browser den Zugriff auf die Kamera, wenn du dazu aufgefordert wirst. Verwende die Rückkamera deines Smartphones und richte sie auf den QR-Code. Der QR-Code sollte gut im Bild und ausreichend beleuchtet sein, um das Lesen zu erleichtern."
   },
   "paymentSummaryPage": {
     "amount": "Aktualisierter Betrag",
