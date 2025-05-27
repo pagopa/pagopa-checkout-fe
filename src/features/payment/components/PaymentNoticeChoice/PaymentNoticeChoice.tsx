@@ -10,7 +10,7 @@ import {
   CHK_PAYMENT_NOTICE_DATA_ENTRY,
   CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL,
   CHK_PAYMENT_NOTICE_QRCODE_SCAN,
-} from "utils/config/mixpanelDefs";
+} from "../../../../utils/config/mixpanelDefs";
 import { CheckoutRoutes } from "../../../../routes/models/routeModel";
 
 export function PaymentNoticeChoice() {
