@@ -33,8 +33,8 @@
     "title": "Your session expired",
     "body": "Log in to resume your session, or continue without logging in ",
     "buttons": {
-      "login": "Log in",
-      "continueWithoutLogin": "Continue without logging in."
+      "login": "Sign in",
+      "continueWithoutLogin": "Continue without signing in."
     }
   },
   "cartDetail": {
@@ -230,7 +230,7 @@
   },
   "paymentResponsePage": {
     "0": {
-      "body": "We have sent the payment receipt to {{useremail}}",
+      "body": "We have sent the payment confirmation to {{useremail}}",
       "title": "You have paid {{amount}}"
     },
     "1": {
