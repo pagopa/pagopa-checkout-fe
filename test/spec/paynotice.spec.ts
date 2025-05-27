@@ -1,6 +1,11 @@
 /* eslint-disable no-console, @typescript-eslint/restrict-plus-operands, @typescript-eslint/no-floating-promises */
 import { test, expect, Page } from "@playwright/test";
+import { t } from "i18next";
 import itTranslation from "../../src/translations/it/translations.json";
+import enTranslation from "../../src/translations/en/translations.json";
+import deTranslation from "../../src/translations/de/translations.json";
+import frTranslation from "../../src/translations/fr/translations.json";
+import slTranslation from "../../src/translations/sl/translations.json";
 
 const VALID_RPTID = "302000100000009400";
 const EMAIL = "mario.rossi@email.com";
@@ -24,114 +29,168 @@ const OUTCOME_FISCAL_CODE_DEFAULT = "77777777777";
 test.beforeEach(async ({ page }) => {
   await page.goto("http://localhost:1234");
 });
-test.describe("Payment flow", () => {
-  [
-    { code: 0, outcome: "SUCCESS", fiscalCode: OUTCOME_FISCAL_CODE_SUCCESS },
-    {
-      code: 1,
-      outcome: "GENERIC ERROR",
-      fiscalCode: OUTCOME_FISCAL_CODE_GENERIC_ERROR,
-    },
-    {
-      code: 2,
-      outcome: "AUTH ERROR",
-      fiscalCode: OUTCOME_FISCAL_CODE_AUTHORIZATION_ERROR,
-    },
-    {
-      code: 3,
-      outcome: "INVALID DATA",
-      fiscalCode: OUTCOME_FISCAL_CODE_INVALID_DATA,
-    },
-    { code: 4, outcome: "TIMEOUT", fiscalCode: OUTCOME_FISCAL_CODE_TIMEOUT },
-    {
-      code: 7,
-      outcome: "INVALID CARD",
-      fiscalCode: OUTCOME_FISCAL_CODE_INVALID_CARD,
-    },
-    {
-      code: 8,
-      outcome: "CANCELLED BY USER",
-      fiscalCode: OUTCOME_FISCAL_CODE_CANCELLED_BY_USER,
-    },
-    {
-      code: 10,
-      outcome: "EXCESSIVE AMOUNT",
-      fiscalCode: OUTCOME_FISCAL_CODE_EXCESSIVE_AMOUNT,
-    },
-    {
-      code: 17,
-      outcome: "TAKE IN CHARGE",
-      fiscalCode: OUTCOME_FISCAL_CODE_TAKEN_IN_CHARGE,
-    },
-    { code: 18, outcome: "REFUNDED", fiscalCode: OUTCOME_FISCAL_CODE_REFUNDED },
-    {
-      code: 25,
-      outcome: "PSP ERROR",
-      fiscalCode: OUTCOME_FISCAL_CODE_PSP_ERROR,
-    },
-    {
-      code: 116,
-      outcome: "BALANCE NOT AVAILABLE",
-      fiscalCode: OUTCOME_FISCAL_CODE_BALANCE_NOT_AVAILABLE,
-    },
-    {
-      code: 117,
-      outcome: "CVV ERROR",
-      fiscalCode: OUTCOME_FISCAL_CODE_CVV_ERROR,
-    },
-    {
-      code: 121,
-      outcome: "LIMIT EXCEEDED",
-      fiscalCode: OUTCOME_FISCAL_CODE_LIMIT_EXCEEDED,
-    },
-    {
-      code: 0,
-      outcome: "SUCCESS_DEFAULT",
-      fiscalCode: OUTCOME_FISCAL_CODE_DEFAULT,
-    },
-  ].forEach(({ code, outcome, fiscalCode }) => {
-    test(`Pay notice with outcome ${outcome}`, async ({ page }) => {
-      const codeIndex = code as
-        | 0
-        | 1
-        | 2
-        | 3
-        | 4
-        | 5
-        | 6
-        | 7
-        | 8
-        | 10
-        | 12
-        | 17
-        | 18
-        | 25
-        | 116
-        | 117
-        | 121;
-      await selectLang(page, "it");
-      await goToInserisciDatiAvviso(page);
-      await submitDatiAvviso(page, VALID_RPTID, fiscalCode);
-      await viewPaymentSummary(page);
-      await submitEmail(page, EMAIL);
-      await selectMethod(page, "CP");
-      await insertCardData(
-        page,
-        "4242424242424242",
-        "1230",
-        "123",
-        "Mario Rossi"
-      );
-      await selectPsp(page, "#BNLIITRR");
-      await pay(page, "Paga 120,15\xa0€");
-      await checkEsito(
-        page,
-        itTranslation.paymentResponsePage[codeIndex].title.replace(
-          "{{amount}}",
-          "120,15\xa0€"
-        )
-      );
-      page.close();
+
+[
+  { lang: "it", translation: itTranslation },
+  { lang: "en", translation: enTranslation },
+  { lang: "de", translation: deTranslation },
+  { lang: "fr", translation: frTranslation },
+  { lang: "sl", translation: slTranslation },
+].forEach(({ lang, translation }) => {
+  test.describe(`Payment flow for language ${lang}`, () => {
+    [
+      {
+        code: 0,
+        outcome: "SUCCESS",
+        fiscalCode: OUTCOME_FISCAL_CODE_SUCCESS,
+        translation,
+        lang,
+      },
+      {
+        code: 1,
+        outcome: "GENERIC ERROR",
+        fiscalCode: OUTCOME_FISCAL_CODE_GENERIC_ERROR,
+        translation,
+        lang,
+      },
+      {
+        code: 2,
+        outcome: "AUTH ERROR",
+        fiscalCode: OUTCOME_FISCAL_CODE_AUTHORIZATION_ERROR,
+        translation,
+        lang,
+      },
+      {
+        code: 3,
+        outcome: "INVALID DATA",
+        fiscalCode: OUTCOME_FISCAL_CODE_INVALID_DATA,
+        translation,
+        lang,
+      },
+      {
+        code: 4,
+        outcome: "TIMEOUT",
+        fiscalCode: OUTCOME_FISCAL_CODE_TIMEOUT,
+        translation,
+        lang,
+      },
+      {
+        code: 7,
+        outcome: "INVALID CARD",
+        fiscalCode: OUTCOME_FISCAL_CODE_INVALID_CARD,
+        translation,
+        lang,
+      },
+      {
+        code: 8,
+        outcome: "CANCELLED BY USER",
+        fiscalCode: OUTCOME_FISCAL_CODE_CANCELLED_BY_USER,
+        translation,
+        lang,
+      },
+      {
+        code: 10,
+        outcome: "EXCESSIVE AMOUNT",
+        fiscalCode: OUTCOME_FISCAL_CODE_EXCESSIVE_AMOUNT,
+        translation,
+        lang,
+      },
+      {
+        code: 17,
+        outcome: "TAKE IN CHARGE",
+        fiscalCode: OUTCOME_FISCAL_CODE_TAKEN_IN_CHARGE,
+        translation,
+        lang,
+      },
+      {
+        code: 18,
+        outcome: "REFUNDED",
+        fiscalCode: OUTCOME_FISCAL_CODE_REFUNDED,
+        translation,
+        lang,
+      },
+      {
+        code: 25,
+        outcome: "PSP ERROR",
+        fiscalCode: OUTCOME_FISCAL_CODE_PSP_ERROR,
+        translation,
+        lang,
+      },
+      {
+        code: 116,
+        outcome: "BALANCE NOT AVAILABLE",
+        fiscalCode: OUTCOME_FISCAL_CODE_BALANCE_NOT_AVAILABLE,
+        translation,
+        lang,
+      },
+      {
+        code: 117,
+        outcome: "CVV ERROR",
+        fiscalCode: OUTCOME_FISCAL_CODE_CVV_ERROR,
+        translation,
+        lang,
+      },
+      {
+        code: 121,
+        outcome: "LIMIT EXCEEDED",
+        fiscalCode: OUTCOME_FISCAL_CODE_LIMIT_EXCEEDED,
+        translation,
+        lang,
+      },
+      {
+        code: 0,
+        outcome: "SUCCESS_DEFAULT",
+        fiscalCode: OUTCOME_FISCAL_CODE_DEFAULT,
+        translation,
+        lang,
+      },
+    ].forEach(({ code, outcome, fiscalCode, translation, lang }) => {
+      test(`Pay notice with outcome ${outcome}`, async ({ page }) => {
+        const codeIndex = code as
+          | 0
+          | 1
+          | 2
+          | 3
+          | 4
+          | 5
+          | 6
+          | 7
+          | 8
+          | 10
+          | 12
+          | 17
+          | 18
+          | 25
+          | 116
+          | 117
+          | 121;
+        await selectLang(page, lang);
+        await goToInserisciDatiAvviso(page);
+        await submitDatiAvviso(page, VALID_RPTID, fiscalCode);
+        await viewPaymentSummary(page);
+        await submitEmail(page, EMAIL);
+        await selectMethod(page, "CP");
+        await insertCardData(
+          page,
+          "4242424242424242",
+          "1230",
+          "123",
+          "Mario Rossi"
+        );
+        await selectPsp(page, "#BNLIITRR");
+        await pay(
+          page,
+          translation.paymentCheckPage.buttons.submit + " 120,15\xa0€"
+        );
+        await checkEsito(
+          page,
+          translation.paymentResponsePage[codeIndex].title.replace(
+            "{{amount}}",
+            "120,15\xa0€"
+          )
+        );
+        page.close();
+      });
     });
   });
 });
