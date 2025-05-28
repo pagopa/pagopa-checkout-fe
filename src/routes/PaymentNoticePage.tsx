@@ -22,7 +22,7 @@ import {
   SessionItems,
   setSessionItem,
 } from "../utils/storage/sessionStorage";
-import { CHK_PAYMENT_NOTICE_MANUAL_ENTRY } from "../utils/config/mixpanelDefs";
+import { CHK_PAYMENT_NOTICE_MANUAL_ENTRY } from "../utils/mixpanel/mixpanelEvents";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function PaymentNoticePage() {

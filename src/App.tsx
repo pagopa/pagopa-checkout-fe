@@ -28,7 +28,7 @@ import PaymentResponsePageV2 from "./routes/PaymentResponsePageV2";
 import PaymentSummaryPage from "./routes/PaymentSummaryPage";
 import GdiCheckPage from "./routes/GdiCheckPage";
 import "./translations/i18n";
-import { mixpanelInit } from "./utils/config/mixpanelHelperInit";
+import { mixpanelInit } from "./utils/mixpanel/mixpanelHelperInit";
 import { SessionItems } from "./utils/storage/sessionStorage";
 import SessionExpiredPage from "./routes/SessionExpiredPage";
 import AuthCallback from "./routes/AuthCallbackPage";

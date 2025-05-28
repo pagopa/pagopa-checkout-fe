@@ -14,7 +14,7 @@ import { qrCodeValidation } from "../utils/regex/validators";
 import {
   CHK_QRCODE_SCAN_SCREEN,
   CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY,
-} from "../utils/config/mixpanelDefs";
+} from "../utils/mixpanel/mixpanelEvents";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function PaymentQrPage() {
