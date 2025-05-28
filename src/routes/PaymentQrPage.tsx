@@ -11,10 +11,7 @@ import { QrCodeReader } from "../components/QrCodeReader/QrCodeReader";
 import { PaymentFormFields } from "../features/payment/models/paymentModel";
 import { ErrorsType } from "../utils/errors/checkErrorsModel";
 import { qrCodeValidation } from "../utils/regex/validators";
-import {
-  CHK_QRCODE_SCAN_SCREEN,
-  CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY,
-} from "../utils/mixpanel/mixpanelEvents";
+import { MixpanelEventsId } from "../utils/mixpanel/mixpanelEvents";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function PaymentQrPage() {
@@ -26,8 +23,8 @@ export default function PaymentQrPage() {
   const [camBlocked, setCamBlocked] = React.useState(false);
 
   React.useEffect(() => {
-    mixpanel.track(CHK_QRCODE_SCAN_SCREEN.value, {
-      EVENT_ID: CHK_QRCODE_SCAN_SCREEN.value,
+    mixpanel.track(MixpanelEventsId.CHK_QRCODE_SCAN_SCREEN, {
+      EVENT_ID: MixpanelEventsId.CHK_QRCODE_SCAN_SCREEN,
     });
   }, []);
 
@@ -126,9 +123,13 @@ export default function PaymentQrPage() {
           <Button
             variant="text"
             onClick={() => {
-              mixpanel.track(CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY.value, {
-                EVENT_ID: CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY.value,
-              });
+              mixpanel.track(
+                MixpanelEventsId.CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY,
+                {
+                  EVENT_ID:
+                    MixpanelEventsId.CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY,
+                }
+              );
               navigate(`/${CheckoutRoutes.INSERISCI_DATI_AVVISO}`);
             }}
           >

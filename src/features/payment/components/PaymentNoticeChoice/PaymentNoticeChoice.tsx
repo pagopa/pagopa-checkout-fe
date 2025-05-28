@@ -6,27 +6,23 @@ import mixpanel from "mixpanel-browser";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
-import {
-  CHK_PAYMENT_NOTICE_DATA_ENTRY,
-  CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL,
-  CHK_PAYMENT_NOTICE_QRCODE_SCAN,
-} from "../../../../utils/mixpanel/mixpanelEvents";
 import { CheckoutRoutes } from "../../../../routes/models/routeModel";
+import { MixpanelEventsId } from "../../../../utils/mixpanel/mixpanelEvents";
 
 export function PaymentNoticeChoice() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
   React.useEffect(() => {
-    mixpanel.track(CHK_PAYMENT_NOTICE_DATA_ENTRY.value, {
-      EVENT_ID: CHK_PAYMENT_NOTICE_DATA_ENTRY.value,
+    mixpanel.track(MixpanelEventsId.CHK_PAYMENT_NOTICE_DATA_ENTRY, {
+      EVENT_ID: MixpanelEventsId.CHK_PAYMENT_NOTICE_DATA_ENTRY,
     });
   }, []);
 
   const handleClickOnQR = React.useCallback(() => {
     sessionStorage.setItem("notice_code_data_entry", "qr_code");
-    mixpanel.track(CHK_PAYMENT_NOTICE_QRCODE_SCAN.value, {
-      EVENT_ID: CHK_PAYMENT_NOTICE_QRCODE_SCAN.value,
+    mixpanel.track(MixpanelEventsId.CHK_PAYMENT_NOTICE_QRCODE_SCAN, {
+      EVENT_ID: MixpanelEventsId.CHK_PAYMENT_NOTICE_QRCODE_SCAN,
       data_entry: "qr_code",
     });
     navigate(`/${CheckoutRoutes.LEGGI_CODICE_QR}`);
@@ -34,8 +30,8 @@ export function PaymentNoticeChoice() {
 
   const handleClickOnForm = React.useCallback(() => {
     sessionStorage.setItem("notice_code_data_entry", "manual");
-    mixpanel.track(CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL.value, {
-      EVENT_ID: CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL.value,
+    mixpanel.track(MixpanelEventsId.CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL, {
+      EVENT_ID: MixpanelEventsId.CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL,
       data_entry: "manual",
     });
     navigate(`/${CheckoutRoutes.INSERISCI_DATI_AVVISO}`);

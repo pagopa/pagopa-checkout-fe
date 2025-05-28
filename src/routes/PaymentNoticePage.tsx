@@ -22,7 +22,7 @@ import {
   SessionItems,
   setSessionItem,
 } from "../utils/storage/sessionStorage";
-import { CHK_PAYMENT_NOTICE_MANUAL_ENTRY } from "../utils/mixpanel/mixpanelEvents";
+import { MixpanelEventsId } from "../utils/mixpanel/mixpanelEvents";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function PaymentNoticePage() {
@@ -87,8 +87,8 @@ export default function PaymentNoticePage() {
   };
 
   React.useEffect(() => {
-    mixpanel.track(CHK_PAYMENT_NOTICE_MANUAL_ENTRY.value, {
-      EVENT_ID: CHK_PAYMENT_NOTICE_MANUAL_ENTRY.value,
+    mixpanel.track(MixpanelEventsId.CHK_PAYMENT_NOTICE_MANUAL_ENTRY, {
+      EVENT_ID: MixpanelEventsId.CHK_PAYMENT_NOTICE_MANUAL_ENTRY,
     });
   }, []);
 
