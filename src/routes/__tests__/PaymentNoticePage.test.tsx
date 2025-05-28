@@ -46,7 +46,10 @@ jest.mock("mixpanel-browser", () => ({
 }));
 
 jest.mock("../../utils/mixpanel/mixpanelEvents", () => ({
-  CHK_PAYMENT_NOTICE_MANUAL_ENTRY: { value: "CHK_PAYMENT_NOTICE_MANUAL_ENTRY" },
+  __esModule: true,
+  MixpanelEventsId: {
+    CHK_PAYMENT_NOTICE_MANUAL_ENTRY: "CHK_PAYMENT_NOTICE_MANUAL_ENTRY",
+  },
 }));
 
 // Create a Jest spy for navigation

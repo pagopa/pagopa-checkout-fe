@@ -50,8 +50,9 @@ jest.mock("mixpanel-browser", () => ({
 }));
 
 jest.mock("../../utils/mixpanel/mixpanelEvents", () => ({
-  CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY: {
-    value: "CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY",
+  __esModule: true,
+  MixpanelEventsId: {
+    CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY: "CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY",
   },
 }));
 

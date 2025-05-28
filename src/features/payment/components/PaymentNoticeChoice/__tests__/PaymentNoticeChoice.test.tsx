@@ -16,11 +16,16 @@ jest.mock("mixpanel-browser", () => ({
 }));
 
 jest.mock("../../../../../utils/mixpanel/mixpanelEvents", () => ({
-  CHK_PAYMENT_NOTICE_DATA_ENTRY: { value: "CHK_PAYMENT_NOTICE_DATA_ENTRY" },
-  CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL: {
-    value: "CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL",
+  __esModule: true,
+  MixpanelEventsId: {
+    CHK_PAYMENT_NOTICE_DATA_ENTRY: { value: "CHK_PAYMENT_NOTICE_DATA_ENTRY" },
+    CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL: {
+      value: "CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL",
+    },
+    CHK_PAYMENT_NOTICE_QRCODE_SCAN: {
+      value: "CHK_PAYMENT_NOTICE_QRCODE_SCAN",
+    },
   },
-  CHK_PAYMENT_NOTICE_QRCODE_SCAN: { value: "CHK_PAYMENT_NOTICE_QRCODE_SCAN" },
 }));
 
 jest.mock("react-i18next", () => ({
