@@ -45,7 +45,11 @@ jest.mock("../../utils/config/config", () =>
   })
 );
 
-jest.mock("../../../utils/config/mixpanelDefs", () => ({
+jest.mock("mixpanel-browser", () => ({
+  track: jest.fn(),
+}));
+
+jest.mock("../../../../../utils/mixpanel/mixpanelEvents", () => ({
   CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY: {
     value: "CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY",
   },

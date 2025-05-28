@@ -41,7 +41,11 @@ jest.mock("react-google-recaptcha", () => ({
   }),
 }));
 
-jest.mock("../../../utils/config/mixpanelDefs", () => ({
+jest.mock("mixpanel-browser", () => ({
+  track: jest.fn(),
+}));
+
+jest.mock("../../../../../utils/mixpanel/mixpanelEvents", () => ({
   CHK_PAYMENT_NOTICE_MANUAL_ENTRY: { value: "CHK_PAYMENT_NOTICE_MANUAL_ENTRY" },
 }));
 

@@ -11,7 +11,11 @@ jest.mock("react-router", () => ({
   useNavigate: jest.fn(),
 }));
 
-jest.mock("../../../utils/config/mixpanelDefs", () => ({
+jest.mock("mixpanel-browser", () => ({
+  track: jest.fn(),
+}));
+
+jest.mock("../../../../../utils/mixpanel/mixpanelEvents", () => ({
   CHK_PAYMENT_NOTICE_DATA_ENTRY: { value: "CHK_PAYMENT_NOTICE_DATA_ENTRY" },
   CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL: {
     value: "CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL",
