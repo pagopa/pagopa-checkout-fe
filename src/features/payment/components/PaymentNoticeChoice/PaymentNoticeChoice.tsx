@@ -27,7 +27,7 @@ export function PaymentNoticeChoice() {
     sessionStorage.setItem("notice_code_data_entry", "qr_code");
     mixpanel.track(CHK_PAYMENT_NOTICE_QRCODE_SCAN.value, {
       EVENT_ID: CHK_PAYMENT_NOTICE_QRCODE_SCAN.value,
-      notice_code_data_entry: "qr_code",
+      data_entry: "qr_code",
     });
     navigate(`/${CheckoutRoutes.LEGGI_CODICE_QR}`);
   }, []);
@@ -36,7 +36,7 @@ export function PaymentNoticeChoice() {
     sessionStorage.setItem("notice_code_data_entry", "manual");
     mixpanel.track(CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL.value, {
       EVENT_ID: CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL.value,
-      notice_code_data_entry: "manual",
+      data_entry: "manual",
     });
     navigate(`/${CheckoutRoutes.INSERISCI_DATI_AVVISO}`);
   }, []);

@@ -161,7 +161,7 @@ describe("PaymentNoticeChoice Component", () => {
       "CHK_PAYMENT_NOTICE_QRCODE_SCAN",
       {
         EVENT_ID: "CHK_PAYMENT_NOTICE_QRCODE_SCAN",
-        notice_code_data_entry: "qr_code",
+        data_entry: "qr_code",
       }
     );
 
@@ -182,7 +182,7 @@ describe("PaymentNoticeChoice Component", () => {
       "CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL",
       {
         EVENT_ID: "CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL",
-        notice_code_data_entry: "manual",
+        data_entry: "manual",
       }
     );
 
