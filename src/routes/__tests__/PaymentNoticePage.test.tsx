@@ -41,7 +41,7 @@ jest.mock("react-google-recaptcha", () => ({
   }),
 }));
 
-jest.mock("mixpanel-browser", () => ({
+jest.mock("../../utils/mixpanel/mixpanelHelperInit", () => ({
   track: jest.fn(),
 }));
 
