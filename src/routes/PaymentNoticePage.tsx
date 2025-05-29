@@ -21,7 +21,11 @@ import {
   SessionItems,
   setSessionItem,
 } from "../utils/storage/sessionStorage";
-import { MixpanelEventsId } from "../utils/mixpanel/mixpanelEvents";
+import {
+  MixpanelEventCategory,
+  MixpanelEventsId,
+  MixpanelEventType,
+} from "../utils/mixpanel/mixpanelEvents";
 import { mixpanel } from "../utils/mixpanel/mixpanelHelperInit";
 import { CheckoutRoutes } from "./models/routeModel";
 
@@ -89,6 +93,8 @@ export default function PaymentNoticePage() {
   React.useEffect(() => {
     mixpanel.track(MixpanelEventsId.CHK_PAYMENT_NOTICE_MANUAL_ENTRY, {
       EVENT_ID: MixpanelEventsId.CHK_PAYMENT_NOTICE_MANUAL_ENTRY,
+      EVENT_CATEGORY: MixpanelEventCategory.UX,
+      EVENT_TYPE: MixpanelEventType.SCREEN_VIEW,
     });
   }, []);
 

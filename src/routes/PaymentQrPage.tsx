@@ -10,7 +10,11 @@ import { QrCodeReader } from "../components/QrCodeReader/QrCodeReader";
 import { PaymentFormFields } from "../features/payment/models/paymentModel";
 import { ErrorsType } from "../utils/errors/checkErrorsModel";
 import { qrCodeValidation } from "../utils/regex/validators";
-import { MixpanelEventsId } from "../utils/mixpanel/mixpanelEvents";
+import {
+  MixpanelEventCategory,
+  MixpanelEventsId,
+  MixpanelEventType,
+} from "../utils/mixpanel/mixpanelEvents";
 import { mixpanel } from "../utils/mixpanel/mixpanelHelperInit";
 import { CheckoutRoutes } from "./models/routeModel";
 
@@ -25,6 +29,8 @@ export default function PaymentQrPage() {
   React.useEffect(() => {
     mixpanel.track(MixpanelEventsId.CHK_QRCODE_SCAN_SCREEN, {
       EVENT_ID: MixpanelEventsId.CHK_QRCODE_SCAN_SCREEN,
+      EVENT_CATEGORY: MixpanelEventCategory.UX,
+      EVENT_TYPE: MixpanelEventType.SCREEN_VIEW,
     });
   }, []);
 
@@ -128,6 +134,8 @@ export default function PaymentQrPage() {
                 {
                   EVENT_ID:
                     MixpanelEventsId.CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY,
+                  EVENT_CATEGORY: MixpanelEventCategory.UX,
+                  EVENT_TYPE: MixpanelEventType.ACTION,
                 }
               );
               navigate(`/${CheckoutRoutes.INSERISCI_DATI_AVVISO}`);

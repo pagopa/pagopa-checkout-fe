@@ -6,6 +6,11 @@ import * as router from "react-router";
 import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders";
 import PaymentQrPage from "../PaymentQrPage";
 import { mixpanel } from "../../utils/mixpanel/mixpanelHelperInit";
+import {
+  MixpanelEventCategory,
+  MixpanelEventsId,
+  MixpanelEventType,
+} from "../../utils/mixpanel/mixpanelEvents";
 // Mock translations
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -46,14 +51,21 @@ jest.mock("../../utils/config/config", () =>
 );
 
 jest.mock("../../utils/mixpanel/mixpanelHelperInit", () => ({
-  track: jest.fn(),
+  mixpanel: { track: jest.fn() },
 }));
 
 jest.mock("../../utils/mixpanel/mixpanelEvents", () => ({
-  __esModule: true,
+  // __esModule: true,
   MixpanelEventsId: {
     CHK_QRCODE_SCAN_SCREEN: "CHK_QRCODE_SCAN_SCREEN",
     CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY: "CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY",
+  },
+  MixpanelEventType: {
+    SCREEN_VIEW: "screen view",
+    ACTION: "action",
+  },
+  MixpanelEventCategory: {
+    UX: "UX",
   },
 }));
 
@@ -87,9 +99,14 @@ describe("PaymentQrPage", () => {
       </MemoryRouter>
     );
 
-    expect(mixpanel.track).toHaveBeenCalledWith("CHK_QRCODE_SCAN_SCREEN", {
-      EVENT_ID: "CHK_QRCODE_SCAN_SCREEN",
-    });
+    expect(mixpanel.track).toHaveBeenCalledWith(
+      MixpanelEventsId.CHK_QRCODE_SCAN_SCREEN,
+      {
+        EVENT_ID: MixpanelEventsId.CHK_QRCODE_SCAN_SCREEN,
+        EVENT_CATEGORY: MixpanelEventCategory.UX,
+        EVENT_TYPE: MixpanelEventType.SCREEN_VIEW,
+      }
+    );
   });
 
   test("tracks event and navigates when clicking 'inserisci manualmente'", () => {
@@ -103,9 +120,11 @@ describe("PaymentQrPage", () => {
     fireEvent.click(goToInserisciManualmente);
 
     expect(mixpanel.track).toHaveBeenCalledWith(
-      "CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY",
+      MixpanelEventsId.CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY,
       {
-        EVENT_ID: "CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY",
+        EVENT_ID: MixpanelEventsId.CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY,
+        EVENT_CATEGORY: MixpanelEventCategory.UX,
+        EVENT_TYPE: MixpanelEventType.ACTION,
       }
     );
 

@@ -8,7 +8,9 @@ import { CheckoutRoutes } from "../../../../../routes/models/routeModel";
 import { mixpanel } from "../../../../../utils/mixpanel/mixpanelHelperInit";
 import {
   MixpanelDataEntryType,
+  MixpanelEventCategory,
   MixpanelEventsId,
+  MixpanelEventType,
 } from "../../../../../utils/mixpanel/mixpanelEvents";
 
 jest.mock("react-router", () => ({
@@ -16,11 +18,11 @@ jest.mock("react-router", () => ({
 }));
 
 jest.mock("../../../../../utils/mixpanel/mixpanelHelperInit", () => ({
-  track: jest.fn(),
+  mixpanel: { track: jest.fn() },
 }));
 
 jest.mock("../../../../../utils/mixpanel/mixpanelEvents", () => ({
-  __esModule: true,
+  // __esModule: true,
   MixpanelEventsId: {
     CHK_PAYMENT_NOTICE_DATA_ENTRY: "CHK_PAYMENT_NOTICE_DATA_ENTRY",
     CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL:
@@ -30,6 +32,13 @@ jest.mock("../../../../../utils/mixpanel/mixpanelEvents", () => ({
   MixpanelDataEntryType: {
     MANUAL: "manual",
     QR_CODE: "qr_code",
+  },
+  MixpanelEventType: {
+    SCREEN_VIEW: "screen view",
+    ACTION: "action",
+  },
+  MixpanelEventCategory: {
+    UX: "UX",
   },
 }));
 
@@ -159,6 +168,8 @@ describe("PaymentNoticeChoice Component", () => {
       "CHK_PAYMENT_NOTICE_DATA_ENTRY",
       {
         EVENT_ID: "CHK_PAYMENT_NOTICE_DATA_ENTRY",
+        EVENT_CATEGORY: MixpanelEventCategory.UX,
+        EVENT_TYPE: MixpanelEventType.SCREEN_VIEW,
       }
     );
   });
@@ -175,6 +186,8 @@ describe("PaymentNoticeChoice Component", () => {
       MixpanelEventsId.CHK_PAYMENT_NOTICE_QRCODE_SCAN,
       {
         EVENT_ID: MixpanelEventsId.CHK_PAYMENT_NOTICE_QRCODE_SCAN,
+        EVENT_CATEGORY: MixpanelEventCategory.UX,
+        EVENT_TYPE: MixpanelEventType.ACTION,
         data_entry: MixpanelDataEntryType.QR_CODE,
       }
     );
@@ -196,6 +209,8 @@ describe("PaymentNoticeChoice Component", () => {
       MixpanelEventsId.CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL,
       {
         EVENT_ID: MixpanelEventsId.CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL,
+        EVENT_CATEGORY: MixpanelEventCategory.UX,
+        EVENT_TYPE: MixpanelEventType.ACTION,
         data_entry: MixpanelDataEntryType.MANUAL,
       }
     );
