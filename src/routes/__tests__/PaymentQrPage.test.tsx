@@ -52,6 +52,7 @@ jest.mock("mixpanel-browser", () => ({
 jest.mock("../../utils/mixpanel/mixpanelEvents", () => ({
   __esModule: true,
   MixpanelEventsId: {
+    CHK_QRCODE_SCAN_SCREEN: "CHK_QRCODE_SCAN_SCREEN",
     CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY: "CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY",
   },
 }));
@@ -77,6 +78,18 @@ describe("PaymentQrPage", () => {
       fireEvent.click(goToInserisciManualmente);
     });
     expect(navigate).toHaveBeenCalledWith("/inserisci-dati-avviso");
+  });
+
+  test("tracks CHK_QRCODE_SCAN_SCREEN on mount", () => {
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentQrPage />
+      </MemoryRouter>
+    );
+
+    expect(mixpanel.track).toHaveBeenCalledWith("CHK_QRCODE_SCAN_SCREEN", {
+      EVENT_ID: "CHK_QRCODE_SCAN_SCREEN",
+    });
   });
 
   test("tracks event and navigates when clicking 'inserisci manualmente'", () => {
