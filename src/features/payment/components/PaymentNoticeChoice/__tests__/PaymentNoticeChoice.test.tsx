@@ -13,8 +13,8 @@ import {
   MixpanelEventType,
 } from "../../../../../utils/mixpanel/mixpanelEvents";
 import {
-  getSessionItem,
   SessionItems,
+  setSessionItem,
 } from "../../../../../utils/storage/sessionStorage";
 
 jest.mock("react-router", () => ({
@@ -25,26 +25,30 @@ jest.mock("../../../../../utils/mixpanel/mixpanelHelperInit", () => ({
   mixpanel: { track: jest.fn() },
 }));
 
-jest.mock("../../../../../utils/mixpanel/mixpanelEvents", () => ({
-  // __esModule: true,
-  MixpanelEventsId: {
-    CHK_PAYMENT_NOTICE_DATA_ENTRY: "CHK_PAYMENT_NOTICE_DATA_ENTRY",
-    CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL:
-      "CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL",
-    CHK_PAYMENT_NOTICE_QRCODE_SCAN: "CHK_PAYMENT_NOTICE_QRCODE_SCAN",
-  },
-  MixpanelDataEntryType: {
-    MANUAL: "manual",
-    QR_CODE: "qr_code",
-  },
-  MixpanelEventType: {
-    SCREEN_VIEW: "screen view",
-    ACTION: "action",
-  },
-  MixpanelEventCategory: {
-    UX: "UX",
-  },
-}));
+jest.mock("../../../../../utils/config/config", () =>
+  // Return the actual implementation but with our mock for getConfigOrThrow
+  ({
+    // This is the key fix - handle the case when no key is provided
+    getConfigOrThrow: jest.fn((key) => {
+      // Create a mapping of all config values
+      const configValues = {
+        CHECKOUT_API_TIMEOUT: 1000,
+        // Add other config values as needed
+      } as any;
+
+      // If no key provided, return all config values (this is the important part)
+      if (key === undefined) {
+        return configValues;
+      }
+
+      // Otherwise return the specific config value
+      return configValues[key] || "";
+    }),
+    isTestEnv: jest.fn(() => false),
+    isDevEnv: jest.fn(() => false),
+    isProdEnv: jest.fn(() => true),
+  })
+);
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
@@ -60,6 +64,16 @@ jest.mock("react-i18next", () => ({
       return translations[key] || key;
     },
   }),
+}));
+
+jest.mock("../../../../../utils/storage/sessionStorage", () => ({
+  SessionItems: {
+    cart: "cart",
+    paymentInfo: "paymentInfo",
+    enableAuthentication: "enableAuthentication",
+  },
+  getSessionItem: jest.fn(),
+  setSessionItem: jest.fn(),
 }));
 
 describe("PaymentNoticeChoice Component", () => {
@@ -196,7 +210,10 @@ describe("PaymentNoticeChoice Component", () => {
       }
     );
 
-    expect(getSessionItem(SessionItems.noticeCodeDataEntry)).toBe("qr_code");
+    expect(setSessionItem).toHaveBeenCalledWith(
+      SessionItems.noticeCodeDataEntry,
+      MixpanelDataEntryType.QR_CODE
+    );
   });
 
   it("tracks manual data entry event and sets sessionStorage when manual option is clicked", () => {
@@ -219,6 +236,9 @@ describe("PaymentNoticeChoice Component", () => {
       }
     );
 
-    expect(getSessionItem(SessionItems.noticeCodeDataEntry)).toBe("manual");
+    expect(setSessionItem).toHaveBeenCalledWith(
+      SessionItems.noticeCodeDataEntry,
+      MixpanelDataEntryType.MANUAL
+    );
   });
 });
