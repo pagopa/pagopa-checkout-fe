@@ -50,3 +50,8 @@ export enum MixpanelEventsId {
   CHK_QRCODE_SCAN_SCREEN = "CHK_QRCODE_SCAN_SCREEN",
   CHK_PAYMENT_NOTICE_MANUAL_ENTRY = "CHK_PAYMENT_NOTICE_MANUAL_ENTRY",
 }
+
+export enum MixpanelDataEntryType {
+  QR_CODE = "qr_code",
+  MANUAL = "manual",
+}

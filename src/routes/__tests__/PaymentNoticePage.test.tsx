@@ -3,7 +3,6 @@ import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { fireEvent, waitFor, screen, act } from "@testing-library/react";
 import * as TE from "fp-ts/TaskEither";
-import mixpanel from "mixpanel-browser";
 import {
   getSessionItem,
   SessionItems,
@@ -12,6 +11,7 @@ import {
 import { getEcommercePaymentInfoTask } from "../../utils/api/helper";
 import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders";
 import PaymentNotice from "../PaymentNoticePage";
+import { mixpanel } from "../../utils/mixpanel/mixpanelHelperInit";
 import { paymentInfo, rptId } from "./_model";
 
 // Mock translations and recaptcha

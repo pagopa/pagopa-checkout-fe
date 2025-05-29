@@ -3,9 +3,9 @@ import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { fireEvent, screen, act } from "@testing-library/react";
 import * as router from "react-router";
-import mixpanel from "mixpanel-browser";
 import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders";
 import PaymentQrPage from "../PaymentQrPage";
+import { mixpanel } from "../../utils/mixpanel/mixpanelHelperInit";
 // Mock translations
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),

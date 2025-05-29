@@ -3,9 +3,13 @@ import "@testing-library/jest-dom";
 import { render, screen, fireEvent } from "@testing-library/react";
 import * as router from "react-router";
 import { NavigateFunction } from "react-router";
-import mixpanel from "mixpanel-browser";
 import { PaymentNoticeChoice } from "../PaymentNoticeChoice";
 import { CheckoutRoutes } from "../../../../../routes/models/routeModel";
+import { mixpanel } from "../../../../../utils/mixpanel/mixpanelHelperInit";
+import {
+  MixpanelDataEntryType,
+  MixpanelEventsId,
+} from "../../../../../utils/mixpanel/mixpanelEvents";
 
 jest.mock("react-router", () => ({
   useNavigate: jest.fn(),
@@ -22,6 +26,10 @@ jest.mock("../../../../../utils/mixpanel/mixpanelEvents", () => ({
     CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL:
       "CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL",
     CHK_PAYMENT_NOTICE_QRCODE_SCAN: "CHK_PAYMENT_NOTICE_QRCODE_SCAN",
+  },
+  MixpanelDataEntryType: {
+    MANUAL: "manual",
+    QR_CODE: "qr_code",
   },
 }));
 
@@ -164,10 +172,10 @@ describe("PaymentNoticeChoice Component", () => {
     }
 
     expect(mixpanel.track).toHaveBeenCalledWith(
-      "CHK_PAYMENT_NOTICE_QRCODE_SCAN",
+      MixpanelEventsId.CHK_PAYMENT_NOTICE_QRCODE_SCAN,
       {
-        EVENT_ID: "CHK_PAYMENT_NOTICE_QRCODE_SCAN",
-        data_entry: "qr_code",
+        EVENT_ID: MixpanelEventsId.CHK_PAYMENT_NOTICE_QRCODE_SCAN,
+        data_entry: MixpanelDataEntryType.QR_CODE,
       }
     );
 
@@ -185,10 +193,10 @@ describe("PaymentNoticeChoice Component", () => {
     }
 
     expect(mixpanel.track).toHaveBeenCalledWith(
-      "CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL",
+      MixpanelEventsId.CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL,
       {
-        EVENT_ID: "CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL",
-        data_entry: "manual",
+        EVENT_ID: MixpanelEventsId.CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL,
+        data_entry: MixpanelDataEntryType.MANUAL,
       }
     );
 

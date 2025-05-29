@@ -5,7 +5,6 @@ import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
-import mixpanel from "mixpanel-browser";
 import { RptId } from "../../generated/definitions/payment-ecommerce/RptId";
 import notification from "../assets/images/payment-notice-pagopa.png";
 import ErrorModal from "../components/modals/ErrorModal";
@@ -23,6 +22,7 @@ import {
   setSessionItem,
 } from "../utils/storage/sessionStorage";
 import { MixpanelEventsId } from "../utils/mixpanel/mixpanelEvents";
+import { mixpanel } from "../utils/mixpanel/mixpanelHelperInit";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function PaymentNoticePage() {

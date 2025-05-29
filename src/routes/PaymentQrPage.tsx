@@ -3,7 +3,6 @@ import { Alert, Box, Button, Skeleton } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import mixpanel from "mixpanel-browser";
 import { RptId } from "../../generated/definitions/payment-ecommerce/RptId";
 import ErrorModal from "../components/modals/ErrorModal";
 import PageContainer from "../components/PageContent/PageContainer";
@@ -12,6 +11,7 @@ import { PaymentFormFields } from "../features/payment/models/paymentModel";
 import { ErrorsType } from "../utils/errors/checkErrorsModel";
 import { qrCodeValidation } from "../utils/regex/validators";
 import { MixpanelEventsId } from "../utils/mixpanel/mixpanelEvents";
+import { mixpanel } from "../utils/mixpanel/mixpanelHelperInit";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function PaymentQrPage() {

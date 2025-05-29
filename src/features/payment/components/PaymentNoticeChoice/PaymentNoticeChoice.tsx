@@ -2,12 +2,15 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import KeyboardIcon from "@mui/icons-material/Keyboard";
 import QrCodeScannerIcon from "@mui/icons-material/QrCodeScanner";
 import { Box, Grid, Typography } from "@mui/material";
-import mixpanel from "mixpanel-browser";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { CheckoutRoutes } from "../../../../routes/models/routeModel";
-import { MixpanelEventsId } from "../../../../utils/mixpanel/mixpanelEvents";
+import {
+  MixpanelDataEntryType,
+  MixpanelEventsId,
+} from "../../../../utils/mixpanel/mixpanelEvents";
+import { mixpanel } from "../../../../utils/mixpanel/mixpanelHelperInit";
 
 export function PaymentNoticeChoice() {
   const { t } = useTranslation();
@@ -20,19 +23,25 @@ export function PaymentNoticeChoice() {
   }, []);
 
   const handleClickOnQR = React.useCallback(() => {
-    sessionStorage.setItem("notice_code_data_entry", "qr_code");
+    sessionStorage.setItem(
+      "notice_code_data_entry",
+      MixpanelDataEntryType.QR_CODE
+    );
     mixpanel.track(MixpanelEventsId.CHK_PAYMENT_NOTICE_QRCODE_SCAN, {
       EVENT_ID: MixpanelEventsId.CHK_PAYMENT_NOTICE_QRCODE_SCAN,
-      data_entry: "qr_code",
+      data_entry: MixpanelDataEntryType.QR_CODE,
     });
     navigate(`/${CheckoutRoutes.LEGGI_CODICE_QR}`);
   }, []);
 
   const handleClickOnForm = React.useCallback(() => {
-    sessionStorage.setItem("notice_code_data_entry", "manual");
+    sessionStorage.setItem(
+      "notice_code_data_entry",
+      MixpanelDataEntryType.MANUAL
+    );
     mixpanel.track(MixpanelEventsId.CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL, {
       EVENT_ID: MixpanelEventsId.CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL,
-      data_entry: "manual",
+      data_entry: MixpanelDataEntryType.MANUAL,
     });
     navigate(`/${CheckoutRoutes.INSERISCI_DATI_AVVISO}`);
   }, []);
