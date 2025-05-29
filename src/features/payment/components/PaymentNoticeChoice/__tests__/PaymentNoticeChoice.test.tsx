@@ -10,9 +10,12 @@ import {
   MixpanelDataEntryType,
   MixpanelEventCategory,
   MixpanelEventsId,
-  MixpanelEventType
+  MixpanelEventType,
 } from "../../../../../utils/mixpanel/mixpanelEvents";
-import { getSessionItem, SessionItems } from "../../../../../utils/storage/sessionStorage";
+import {
+  getSessionItem,
+  SessionItems,
+} from "../../../../../utils/storage/sessionStorage";
 
 jest.mock("react-router", () => ({
   useNavigate: jest.fn(),
