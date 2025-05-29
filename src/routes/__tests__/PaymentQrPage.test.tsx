@@ -50,6 +50,8 @@ jest.mock("../../utils/config/config", () =>
   })
 );
 
+jest.mock("react-qr-reader", () => () => <div>QR Reader Mock</div>);
+
 jest.mock("../../utils/mixpanel/mixpanelHelperInit", () => ({
   mixpanel: { track: jest.fn() },
 }));
