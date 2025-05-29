@@ -13,6 +13,10 @@ import {
   MixpanelEventType,
 } from "../../../../utils/mixpanel/mixpanelEvents";
 import { mixpanel } from "../../../../utils/mixpanel/mixpanelHelperInit";
+import {
+  SessionItems,
+  setSessionItem,
+} from "../../../../utils/storage/sessionStorage";
 
 export function PaymentNoticeChoice() {
   const { t } = useTranslation();
@@ -27,8 +31,8 @@ export function PaymentNoticeChoice() {
   }, []);
 
   const handleClickOnQR = React.useCallback(() => {
-    sessionStorage.setItem(
-      "notice_code_data_entry",
+    setSessionItem(
+      SessionItems.noticeCodeDataEntry,
       MixpanelDataEntryType.QR_CODE
     );
     mixpanel.track(MixpanelEventsId.CHK_PAYMENT_NOTICE_QRCODE_SCAN, {
@@ -41,8 +45,8 @@ export function PaymentNoticeChoice() {
   }, []);
 
   const handleClickOnForm = React.useCallback(() => {
-    sessionStorage.setItem(
-      "notice_code_data_entry",
+    setSessionItem(
+      SessionItems.noticeCodeDataEntry,
       MixpanelDataEntryType.MANUAL
     );
     mixpanel.track(MixpanelEventsId.CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL, {
