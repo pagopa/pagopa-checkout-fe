@@ -38,13 +38,20 @@ export const IConfig = t.interface({
   CHECKOUT_API_AUTH_SERVICE_BASEPATH_V1: NonEmptyString,
 });
 
+const rawEnv =
+  // eslint-disable-next-line no-underscore-dangle
+  typeof window !== "undefined" && (window as any)._env_
+    ? // eslint-disable-next-line no-underscore-dangle
+      (window as any)._env_
+    : {};
+
 // No need to re-evaluate this object for each call
 const errorOrConfig: t.Validation<IConfig> = IConfig.decode({
   // eslint-disable-next-line no-underscore-dangle
   ...(window as any)._env_,
   CHECKOUT_API_TIMEOUT: parseInt(
     // eslint-disable-next-line no-underscore-dangle
-    (window as any)._env_.CHECKOUT_API_TIMEOUT,
+    rawEnv.CHECKOUT_API_TIMEOUT || "10000",
     10
   ),
   CHECKOUT_POLLING_ACTIVATION_INTERVAL: parseInt(
