@@ -1,6 +1,6 @@
 import React from "react";
 import "@testing-library/jest-dom";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import * as router from "react-router";
 import { NavigateFunction } from "react-router";
 import { PaymentNoticeChoice } from "../PaymentNoticeChoice";
@@ -10,8 +10,9 @@ import {
   MixpanelDataEntryType,
   MixpanelEventCategory,
   MixpanelEventsId,
-  MixpanelEventType,
+  MixpanelEventType
 } from "../../../../../utils/mixpanel/mixpanelEvents";
+import { getSessionItem, SessionItems } from "../../../../../utils/storage/sessionStorage";
 
 jest.mock("react-router", () => ({
   useNavigate: jest.fn(),
@@ -192,7 +193,7 @@ describe("PaymentNoticeChoice Component", () => {
       }
     );
 
-    expect(sessionStorage.getItem("notice_code_data_entry")).toBe("qr_code");
+    expect(getSessionItem(SessionItems.noticeCodeDataEntry)).toBe("qr_code");
   });
 
   it("tracks manual data entry event and sets sessionStorage when manual option is clicked", () => {
@@ -215,6 +216,6 @@ describe("PaymentNoticeChoice Component", () => {
       }
     );
 
-    expect(sessionStorage.getItem("notice_code_data_entry")).toBe("manual");
+    expect(getSessionItem(SessionItems.noticeCodeDataEntry)).toBe("manual");
   });
 });
