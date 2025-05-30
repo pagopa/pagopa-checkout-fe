@@ -1,14 +1,54 @@
 import React from "react";
 import "@testing-library/jest-dom";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import * as router from "react-router";
 import { NavigateFunction } from "react-router";
 import { PaymentNoticeChoice } from "../PaymentNoticeChoice";
 import { CheckoutRoutes } from "../../../../../routes/models/routeModel";
+import { mixpanel } from "../../../../../utils/mixpanel/mixpanelHelperInit";
+import {
+  MixpanelDataEntryType,
+  MixpanelEventCategory,
+  MixpanelEventsId,
+  MixpanelEventType,
+} from "../../../../../utils/mixpanel/mixpanelEvents";
+import {
+  SessionItems,
+  setSessionItem,
+} from "../../../../../utils/storage/sessionStorage";
 
 jest.mock("react-router", () => ({
   useNavigate: jest.fn(),
 }));
+
+jest.mock("../../../../../utils/mixpanel/mixpanelHelperInit", () => ({
+  mixpanel: { track: jest.fn() },
+}));
+
+jest.mock("../../../../../utils/config/config", () =>
+  // Return the actual implementation but with our mock for getConfigOrThrow
+  ({
+    // This is the key fix - handle the case when no key is provided
+    getConfigOrThrow: jest.fn((key) => {
+      // Create a mapping of all config values
+      const configValues = {
+        CHECKOUT_API_TIMEOUT: 1000,
+        // Add other config values as needed
+      } as any;
+
+      // If no key provided, return all config values (this is the important part)
+      if (key === undefined) {
+        return configValues;
+      }
+
+      // Otherwise return the specific config value
+      return configValues[key] || "";
+    }),
+    isTestEnv: jest.fn(() => false),
+    isDevEnv: jest.fn(() => false),
+    isProdEnv: jest.fn(() => true),
+  })
+);
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
@@ -24,6 +64,16 @@ jest.mock("react-i18next", () => ({
       return translations[key] || key;
     },
   }),
+}));
+
+jest.mock("../../../../../utils/storage/sessionStorage", () => ({
+  SessionItems: {
+    cart: "cart",
+    paymentInfo: "paymentInfo",
+    enableAuthentication: "enableAuthentication",
+  },
+  getSessionItem: jest.fn(),
+  setSessionItem: jest.fn(),
 }));
 
 describe("PaymentNoticeChoice Component", () => {
@@ -128,5 +178,67 @@ describe("PaymentNoticeChoice Component", () => {
     for (const option of options) {
       expect(option).toHaveAttribute("tabIndex", "0");
     }
+  });
+
+  it("tracks the mixpanel event on mount", () => {
+    render(<PaymentNoticeChoice />);
+    expect(mixpanel.track).toHaveBeenCalledWith(
+      MixpanelEventsId.CHK_PAYMENT_NOTICE_DATA_ENTRY,
+      {
+        EVENT_ID: MixpanelEventsId.CHK_PAYMENT_NOTICE_DATA_ENTRY,
+        EVENT_CATEGORY: MixpanelEventCategory.UX,
+        EVENT_TYPE: MixpanelEventType.SCREEN_VIEW,
+      }
+    );
+  });
+
+  it("tracks QR code scan event and sets sessionStorage when QR option is clicked", () => {
+    render(<PaymentNoticeChoice />);
+
+    const qrOption = screen.getByText("Scan QR Code").closest('[role="link"]');
+    if (qrOption) {
+      fireEvent.click(qrOption);
+    }
+
+    expect(mixpanel.track).toHaveBeenCalledWith(
+      MixpanelEventsId.CHK_PAYMENT_NOTICE_QRCODE_SCAN,
+      {
+        EVENT_ID: MixpanelEventsId.CHK_PAYMENT_NOTICE_QRCODE_SCAN,
+        EVENT_CATEGORY: MixpanelEventCategory.UX,
+        EVENT_TYPE: MixpanelEventType.ACTION,
+        data_entry: MixpanelDataEntryType.QR_CODE,
+      }
+    );
+
+    expect(setSessionItem).toHaveBeenCalledWith(
+      SessionItems.noticeCodeDataEntry,
+      MixpanelDataEntryType.QR_CODE
+    );
+  });
+
+  it("tracks manual data entry event and sets sessionStorage when manual option is clicked", () => {
+    render(<PaymentNoticeChoice />);
+
+    const formOption = screen
+      .getByText("Enter Details Manually")
+      .closest('[role="link"]');
+    if (formOption) {
+      fireEvent.click(formOption);
+    }
+
+    expect(mixpanel.track).toHaveBeenCalledWith(
+      MixpanelEventsId.CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL,
+      {
+        EVENT_ID: MixpanelEventsId.CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL,
+        EVENT_CATEGORY: MixpanelEventCategory.UX,
+        EVENT_TYPE: MixpanelEventType.ACTION,
+        data_entry: MixpanelDataEntryType.MANUAL,
+      }
+    );
+
+    expect(setSessionItem).toHaveBeenCalledWith(
+      SessionItems.noticeCodeDataEntry,
+      MixpanelDataEntryType.MANUAL
+    );
   });
 });

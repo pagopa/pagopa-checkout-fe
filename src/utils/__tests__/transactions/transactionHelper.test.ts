@@ -1,4 +1,4 @@
-jest.mock("../../config/mixpanelHelperInit", () => ({
+jest.mock("../../mixpanel/mixpanelHelperInit", () => ({
   mixpanel: { track: jest.fn() },
 }));
 

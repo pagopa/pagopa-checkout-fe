@@ -5,6 +5,12 @@ import { fireEvent, screen, act } from "@testing-library/react";
 import * as router from "react-router";
 import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders";
 import PaymentQrPage from "../PaymentQrPage";
+import { mixpanel } from "../../utils/mixpanel/mixpanelHelperInit";
+import {
+  MixpanelEventCategory,
+  MixpanelEventsId,
+  MixpanelEventType,
+} from "../../utils/mixpanel/mixpanelEvents";
 // Mock translations
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -44,6 +50,27 @@ jest.mock("../../utils/config/config", () =>
   })
 );
 
+jest.mock("react-qr-reader", () => () => <div>QR Reader Mock</div>);
+
+jest.mock("../../utils/mixpanel/mixpanelHelperInit", () => ({
+  mixpanel: { track: jest.fn() },
+}));
+
+jest.mock("../../utils/mixpanel/mixpanelEvents", () => ({
+  // __esModule: true,
+  MixpanelEventsId: {
+    CHK_QRCODE_SCAN_SCREEN: "CHK_QRCODE_SCAN_SCREEN",
+    CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY: "CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY",
+  },
+  MixpanelEventType: {
+    SCREEN_VIEW: "screen view",
+    ACTION: "action",
+  },
+  MixpanelEventCategory: {
+    UX: "UX",
+  },
+}));
+
 // Create a Jest spy for navigation
 const navigate = jest.fn();
 // Error with definition of worker
@@ -64,6 +91,45 @@ describe("PaymentQrPage", () => {
       );
       fireEvent.click(goToInserisciManualmente);
     });
+    expect(navigate).toHaveBeenCalledWith("/inserisci-dati-avviso");
+  });
+
+  test("tracks CHK_QRCODE_SCAN_SCREEN on mount", () => {
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentQrPage />
+      </MemoryRouter>
+    );
+
+    expect(mixpanel.track).toHaveBeenCalledWith(
+      MixpanelEventsId.CHK_QRCODE_SCAN_SCREEN,
+      {
+        EVENT_ID: MixpanelEventsId.CHK_QRCODE_SCAN_SCREEN,
+        EVENT_CATEGORY: MixpanelEventCategory.UX,
+        EVENT_TYPE: MixpanelEventType.SCREEN_VIEW,
+      }
+    );
+  });
+
+  test("tracks event and navigates when clicking 'inserisci manualmente'", () => {
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentQrPage />
+      </MemoryRouter>
+    );
+
+    const goToInserisciManualmente = screen.getByText("paymentQrPage.navigate");
+    fireEvent.click(goToInserisciManualmente);
+
+    expect(mixpanel.track).toHaveBeenCalledWith(
+      MixpanelEventsId.CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY,
+      {
+        EVENT_ID: MixpanelEventsId.CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY,
+        EVENT_CATEGORY: MixpanelEventCategory.UX,
+        EVENT_TYPE: MixpanelEventType.ACTION,
+      }
+    );
+
     expect(navigate).toHaveBeenCalledWith("/inserisci-dati-avviso");
   });
 });
