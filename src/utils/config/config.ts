@@ -81,7 +81,11 @@ const errorOrConfig: t.Validation<IConfig> = IConfig.decode({
     (window as any)._env_.CHECKOUT_SURVEY_SHOW,
     2
   ), */
-  CHECKOUT_SURVEY_SHOW: parseInt(rawEnv.CHECKOUT_SURVEY_SHOW || "0", 10),
+  // CHECKOUT_SURVEY_SHOW: parseInt(rawEnv.CHECKOUT_SURVEY_SHOW || "0", 10),
+  CHECKOUT_SURVEY_SHOW:
+    rawEnv.CHECKOUT_SURVEY_SHOW === "true" ||
+    rawEnv.CHECKOUT_SURVEY_SHOW === "1",
+
   // eslint-disable-next-line no-underscore-dangle
   CHECKOUT_API_RETRY_NUMBERS: (window as any)._env_.CHECKOUT_API_RETRY_NUMBERS
     ? parseInt(
