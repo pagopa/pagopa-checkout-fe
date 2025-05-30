@@ -18,6 +18,13 @@ import {
   apiPaymentEcommerceClientV3,
   apiPaymentEcommerceClientWithRetryV2,
 } from "../../utils/api/client";
+import { mixpanel } from "../../utils/mixpanel/mixpanelHelperInit";
+import {
+  MixpanelEventCategory,
+  MixpanelEventsId,
+  MixpanelEventType,
+  MixpanelFlow,
+} from "../../utils/mixpanel/mixpanelEvents";
 import {
   calculateFeeResponse,
   createSuccessGetPaymentMethodsV1,
@@ -28,13 +35,6 @@ import {
   sessionPayment,
   transaction,
 } from "./_model";
-import { mixpanel } from "../../utils/mixpanel/mixpanelHelperInit";
-import {
-  MixpanelEventCategory,
-  MixpanelEventsId,
-  MixpanelEventType,
-  MixpanelFlow
-} from "../../utils/mixpanel/mixpanelEvents";
 // Mock translations and recaptcha
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -100,7 +100,6 @@ jest.mock("../../utils/mixpanel/mixpanelTracker", () => ({
   getFlowFromSessionStorage: jest.fn(() => "cart"),
   getPaymentInfoFromSessionStorage: jest.fn(() => paymentInfo),
 }));
-
 
 jest.mock("react-google-recaptcha", () => ({
   __esModule: true,
@@ -539,17 +538,19 @@ describe("PaymentChoicePage authenticated", () => {
     );
 
     await waitFor(() => {
-      expect(mixpanel.track).toHaveBeenCalledWith(MixpanelEventsId.CHK_PAYMENT_METHOD_SELECTION, {
-        EVENT_ID: MixpanelEventsId.CHK_PAYMENT_METHOD_SELECTION,
-        EVENT_CATEGORY: MixpanelEventCategory.UX,
-        EVENT_TYPE: MixpanelEventType.SCREEN_VIEW,
-        flow: MixpanelFlow.CART,
-        organization_name: "companyName",
-        organization_fiscal_code: "77777777777",
-        amount: 12000,
-        expiration_date: "2021-07-31",
-      });
+      expect(mixpanel.track).toHaveBeenCalledWith(
+        MixpanelEventsId.CHK_PAYMENT_METHOD_SELECTION,
+        {
+          EVENT_ID: MixpanelEventsId.CHK_PAYMENT_METHOD_SELECTION,
+          EVENT_CATEGORY: MixpanelEventCategory.UX,
+          EVENT_TYPE: MixpanelEventType.SCREEN_VIEW,
+          flow: MixpanelFlow.CART,
+          organization_name: "companyName",
+          organization_fiscal_code: "77777777777",
+          amount: 12000,
+          expiration_date: "2021-07-31",
+        }
+      );
     });
   });
-
 });

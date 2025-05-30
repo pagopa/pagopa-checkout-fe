@@ -44,5 +44,5 @@ export enum MixpanelFlow {
 export enum MixpanelPaymentPhase {
   VERIFICA = "verifica",
   ATTIVA = "attiva",
-  PAGAMENTO = "pagamento"
+  PAGAMENTO = "pagamento",
 }

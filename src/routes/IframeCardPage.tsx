@@ -9,14 +9,14 @@ import { getSessionItem, SessionItems } from "../utils/storage/sessionStorage";
 import { NewTransactionResponse } from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import {
   getFlowFromSessionStorage,
-  getPaymentInfoFromSessionStorage
+  getPaymentInfoFromSessionStorage,
 } from "../utils/mixpanel/mixpanelTracker";
 import { mixpanel } from "../utils/mixpanel/mixpanelHelperInit";
 import {
   MixpanelEventCategory,
   MixpanelEventsId,
   MixpanelEventType,
-  MixpanelPaymentPhase
+  MixpanelPaymentPhase,
 } from "../utils/mixpanel/mixpanelEvents";
 
 export default function IFrameCardPage() {
