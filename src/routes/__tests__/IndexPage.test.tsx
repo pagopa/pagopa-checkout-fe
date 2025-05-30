@@ -8,6 +8,31 @@ import IndexPage from "../IndexPage";
 // mock for navigate
 const navigate = jest.fn();
 
+jest.mock("../../utils/config/config", () =>
+  // Return the actual implementation but with our mock for getConfigOrThrow
+  ({
+    // This is the key fix - handle the case when no key is provided
+    getConfigOrThrow: jest.fn((key) => {
+      // Create a mapping of all config values
+      const configValues = {
+        CHECKOUT_API_TIMEOUT: 1000,
+        // Add other config values as needed
+      } as any;
+
+      // If no key provided, return all config values (this is the important part)
+      if (key === undefined) {
+        return configValues;
+      }
+
+      // Otherwise return the specific config value
+      return configValues[key] || "";
+    }),
+    isTestEnv: jest.fn(() => false),
+    isDevEnv: jest.fn(() => false),
+    isProdEnv: jest.fn(() => true),
+  })
+);
+
 // Mock translations and recaptcha
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -24,6 +49,7 @@ jest.mock("react-i18next", () => ({
 // Mock storage utilities (and return an empty object if needed)
 jest.mock("../../utils/storage/sessionStorage", () => ({
   getSessionItem: jest.fn(),
+  setSessionItem: jest.fn(),
   clearStorageAndMaintainAuthData: jest.fn(),
   SessionItems: {
     authToken: "authToken",
@@ -36,8 +62,11 @@ jest.mock("../../utils/eventListeners", () => ({
 
 describe("IndexPage", () => {
   beforeEach(() => {
+    jest.clearAllMocks();
+
     jest.spyOn(router, "useNavigate").mockImplementation(() => navigate);
   });
+
   test("page go to inquadra qr code", async () => {
     renderWithReduxProvider(
       <MemoryRouter>
@@ -46,6 +75,7 @@ describe("IndexPage", () => {
     );
     // Query the input fields by their id
     const goToQrLink = screen.getByText("paymentNoticeChoice.qr.title");
+
     fireEvent.click(goToQrLink);
 
     expect(navigate).toHaveBeenCalledWith("/leggi-codice-qr");

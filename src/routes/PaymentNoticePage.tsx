@@ -21,6 +21,12 @@ import {
   SessionItems,
   setSessionItem,
 } from "../utils/storage/sessionStorage";
+import {
+  MixpanelEventCategory,
+  MixpanelEventsId,
+  MixpanelEventType,
+} from "../utils/mixpanel/mixpanelEvents";
+import { mixpanel } from "../utils/mixpanel/mixpanelHelperInit";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function PaymentNoticePage() {
@@ -83,6 +89,14 @@ export default function PaymentNoticePage() {
   const onCancel = () => {
     navigate(-1);
   };
+
+  React.useEffect(() => {
+    mixpanel.track(MixpanelEventsId.CHK_PAYMENT_NOTICE_MANUAL_ENTRY, {
+      EVENT_ID: MixpanelEventsId.CHK_PAYMENT_NOTICE_MANUAL_ENTRY,
+      EVENT_CATEGORY: MixpanelEventCategory.UX,
+      EVENT_TYPE: MixpanelEventType.SCREEN_VIEW,
+    });
+  }, []);
 
   React.useEffect(() => {
     if (rptid) {

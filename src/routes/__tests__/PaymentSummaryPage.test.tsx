@@ -9,6 +9,13 @@ import {
   getSessionItem,
   SessionItems,
 } from "../../utils/storage/sessionStorage";
+import { mixpanel } from "../../utils/mixpanel/mixpanelHelperInit";
+import {
+  MixpanelDataEntryType,
+  MixpanelEventCategory,
+  MixpanelEventsId,
+  MixpanelEventType,
+} from "../../utils/mixpanel/mixpanelEvents";
 import { paymentInfo, rptId } from "./_model";
 
 // Mock translations
@@ -26,10 +33,20 @@ jest.mock("react-i18next", () => ({
 
 jest.mock("../../utils/storage/sessionStorage", () => ({
   getSessionItem: jest.fn(),
+  setSessionItem: jest.fn(),
   SessionItems: {
     noticeInfo: "rptId",
     paymentInfo: "paymentInfo",
   },
+}));
+
+jest.mock("../../utils/mixpanel/mixpanelHelperInit", () => ({
+  mixpanel: { track: jest.fn() },
+}));
+
+jest.mock("../../utils/mixpanel/mixpanelTracker", () => ({
+  getPaymentInfoFromSessionStorage: jest.fn(() => paymentInfo),
+  getDataEntryTypeFromSessionStorage: jest.fn(() => "manual"),
 }));
 
 const mockGetSessionItem = (item: SessionItems) => {
@@ -106,5 +123,55 @@ describe("PaymentSummaryPage", () => {
       const dialogTitle = screen.findByText("paymentSummaryPage.dialog.title");
       expect(dialogTitle).toBeVisible();
     });
+  });
+
+  test("tracks page view on mount", () => {
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentSummaryPage />
+      </MemoryRouter>
+    );
+
+    expect(mixpanel.track).toHaveBeenCalledWith(
+      MixpanelEventsId.CHK_PAYMENT_SUMMARY_INFO_SCREEN,
+      expect.objectContaining({
+        EVENT_ID: MixpanelEventsId.CHK_PAYMENT_SUMMARY_INFO_SCREEN,
+        EVENT_CATEGORY: MixpanelEventCategory.UX,
+        EVENT_TYPE: MixpanelEventType.SCREEN_VIEW,
+        data_entry: MixpanelDataEntryType.MANUAL,
+        organization_name: "companyName",
+        organization_fiscal_code: "77777777777",
+        amount: 12000,
+        expiration_date: "2021-07-31",
+      })
+    );
+  });
+
+  test("click on submit button triggers mixpanel track and navigation", () => {
+    const { container } = renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentSummaryPage />
+      </MemoryRouter>
+    );
+
+    const submit = container.querySelector("#paymentSummaryButtonPay");
+    expect(submit).toBeInTheDocument();
+
+    fireEvent.click(submit!);
+
+    expect(mixpanel.track).toHaveBeenCalledWith(
+      MixpanelEventsId.CHK_PAYMENT_START_FLOW,
+      expect.objectContaining({
+        EVENT_ID: MixpanelEventsId.CHK_PAYMENT_START_FLOW,
+        EVENT_CATEGORY: MixpanelEventCategory.UX,
+        EVENT_TYPE: MixpanelEventType.ACTION,
+        data_entry: MixpanelDataEntryType.MANUAL,
+        organization_name: "companyName",
+        organization_fiscal_code: "77777777777",
+        amount: 12000,
+        expiration_date: "2021-07-31",
+      })
+    );
+    expect(navigate).toHaveBeenCalledWith("/inserisci-email");
   });
 });

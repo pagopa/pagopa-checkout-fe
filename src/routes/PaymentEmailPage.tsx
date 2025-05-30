@@ -13,6 +13,17 @@ import {
   setSessionItem,
 } from "../utils/storage/sessionStorage";
 import PrivacyInfo from "../components/PrivacyPolicy/PrivacyInfo";
+import {
+  MixpanelEventCategory,
+  MixpanelEventsId,
+  MixpanelEventType,
+} from "../utils/mixpanel/mixpanelEvents";
+import { mixpanel } from "../utils/mixpanel/mixpanelHelperInit";
+import {
+  getDataEntryTypeFromSessionStorage,
+  getFlowFromSessionStorage,
+  getPaymentInfoFromSessionStorage,
+} from "../utils/mixpanel/mixpanelTracker";
 import { CheckoutRoutes } from "./models/routeModel";
 
 type LocationProps = {
@@ -28,6 +39,21 @@ export default function PaymentEmailPage() {
   const email = getSessionItem(SessionItems.useremail) as string | undefined;
   const cartInfo = getSessionItem(SessionItems.cart) as Cart | undefined;
   const cancelUrl = cartInfo?.returnUrls.returnCancelUrl;
+
+  React.useEffect(() => {
+    const paymentInfo = getPaymentInfoFromSessionStorage();
+    mixpanel.track(MixpanelEventsId.CHK_PAYMENT_EMAIL_ADDRESS, {
+      EVENT_ID: MixpanelEventsId.CHK_PAYMENT_EMAIL_ADDRESS,
+      EVENT_CATEGORY: MixpanelEventCategory.UX,
+      EVENT_TYPE: MixpanelEventType.SCREEN_VIEW,
+      flow: getFlowFromSessionStorage(),
+      data_entry: getDataEntryTypeFromSessionStorage(),
+      organization_name: paymentInfo?.paName,
+      organization_fiscal_code: paymentInfo?.paFiscalCode,
+      amount: paymentInfo?.amount,
+      expiration_date: paymentInfo?.dueDate,
+    });
+  }, []);
 
   const emailForm = noConfirmEmail
     ? { email: email || "", confirmEmail: "" }

@@ -12,7 +12,7 @@ jest.mock("../../config/config", () => ({
 }));
 
 jest.mock("../../storage/sessionStorage");
-jest.mock("../../config/mixpanelHelperInit");
+jest.mock("../../mixpanel/mixpanelHelperInit");
 jest.mock("../../transactions/transactionHelper");
 jest.mock("../../regex/urlUtilities");
 

@@ -30,7 +30,7 @@ Object.defineProperty(global, "window", {
   writable: true,
 });
 import mixpanelBrowser from "mixpanel-browser";
-import { mixpanel, mixpanelInit } from "../../config/mixpanelHelperInit";
+import { mixpanel, mixpanelInit } from "../../mixpanel/mixpanelHelperInit";
 
 jest.mock("mixpanel-browser", () => ({
   init: jest.fn(),
