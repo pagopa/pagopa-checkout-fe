@@ -183,9 +183,9 @@ describe("PaymentNoticeChoice Component", () => {
   it("tracks the mixpanel event on mount", () => {
     render(<PaymentNoticeChoice />);
     expect(mixpanel.track).toHaveBeenCalledWith(
-      "CHK_PAYMENT_NOTICE_DATA_ENTRY",
+      MixpanelEventsId.CHK_PAYMENT_NOTICE_DATA_ENTRY,
       {
-        EVENT_ID: "CHK_PAYMENT_NOTICE_DATA_ENTRY",
+        EVENT_ID: MixpanelEventsId.CHK_PAYMENT_NOTICE_DATA_ENTRY,
         EVENT_CATEGORY: MixpanelEventCategory.UX,
         EVENT_TYPE: MixpanelEventType.SCREEN_VIEW,
       }
