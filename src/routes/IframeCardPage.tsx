@@ -7,6 +7,17 @@ import PageContainer from "../components/PageContent/PageContainer";
 import IframeCardForm from "../features/payment/components/IframeCardForm/IframeCardForm";
 import { getSessionItem, SessionItems } from "../utils/storage/sessionStorage";
 import { NewTransactionResponse } from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
+import {
+  getFlowFromSessionStorage,
+  getPaymentInfoFromSessionStorage
+} from "../utils/mixpanel/mixpanelTracker";
+import { mixpanel } from "../utils/mixpanel/mixpanelHelperInit";
+import {
+  MixpanelEventCategory,
+  MixpanelEventsId,
+  MixpanelEventType,
+  MixpanelPaymentPhase
+} from "../utils/mixpanel/mixpanelEvents";
 
 export default function IFrameCardPage() {
   const navigate = useNavigate();
@@ -24,6 +35,21 @@ export default function IFrameCardPage() {
         )
       )
     );
+  }, []);
+
+  React.useEffect(() => {
+    const paymentInfo = getPaymentInfoFromSessionStorage();
+    mixpanel.track(MixpanelEventsId.CHK_PAYMENT_METHOD_DATA_INSERT, {
+      EVENT_ID: MixpanelEventsId.CHK_PAYMENT_METHOD_DATA_INSERT,
+      EVENT_CATEGORY: MixpanelEventCategory.UX,
+      EVENT_TYPE: MixpanelEventType.SCREEN_VIEW,
+      flow: getFlowFromSessionStorage(),
+      payment_phase: MixpanelPaymentPhase.VERIFICA,
+      organization_name: paymentInfo?.paName,
+      organization_fiscal_code: paymentInfo?.paFiscalCode,
+      amount: paymentInfo?.amount,
+      expiration_date: paymentInfo?.dueDate,
+    });
   }, []);
 
   const onCancel = () => navigate(-1);

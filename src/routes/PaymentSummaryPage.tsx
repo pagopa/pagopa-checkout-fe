@@ -16,6 +16,16 @@ import {
 } from "../features/payment/models/paymentModel";
 import { moneyFormat } from "../utils/form/formatters";
 import { getSessionItem, SessionItems } from "../utils/storage/sessionStorage";
+import { mixpanel } from "../utils/mixpanel/mixpanelHelperInit";
+import {
+  MixpanelEventCategory,
+  MixpanelEventsId,
+  MixpanelEventType,
+} from "../utils/mixpanel/mixpanelEvents";
+import {
+  getDataEntryTypeFromSessionStorage,
+  getPaymentInfoFromSessionStorage,
+} from "../utils/mixpanel/mixpanelTracker";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function PaymentSummaryPage() {
@@ -32,7 +42,33 @@ export default function PaymentSummaryPage() {
 
   const iconStyle = { ml: 3, color: theme.palette.text.secondary };
 
+  React.useEffect(() => {
+    const paymentInfo = getPaymentInfoFromSessionStorage();
+    mixpanel.track(MixpanelEventsId.CHK_PAYMENT_SUMMARY_INFO_SCREEN, {
+      EVENT_ID: MixpanelEventsId.CHK_PAYMENT_SUMMARY_INFO_SCREEN,
+      EVENT_CATEGORY: MixpanelEventCategory.UX,
+      EVENT_TYPE: MixpanelEventType.SCREEN_VIEW,
+      data_entry: getDataEntryTypeFromSessionStorage(),
+      organization_name: paymentInfo?.paName,
+      organization_fiscal_code: paymentInfo?.paFiscalCode,
+      amount: paymentInfo?.amount,
+      expiration_date: paymentInfo?.dueDate,
+    });
+  }, []);
+
   const onSubmit = React.useCallback(async () => {
+    const paymentInfo = getPaymentInfoFromSessionStorage();
+    mixpanel.track(MixpanelEventsId.CHK_PAYMENT_START_FLOW, {
+      EVENT_ID: MixpanelEventsId.CHK_PAYMENT_START_FLOW,
+      EVENT_CATEGORY: MixpanelEventCategory.UX,
+      EVENT_TYPE: MixpanelEventType.ACTION,
+      data_entry: getDataEntryTypeFromSessionStorage(),
+      organization_name: paymentInfo?.paName,
+      organization_fiscal_code: paymentInfo?.paFiscalCode,
+      amount: paymentInfo?.amount,
+      expiration_date: paymentInfo?.dueDate,
+    });
+
     navigate(`/${CheckoutRoutes.INSERISCI_EMAIL}`);
   }, []);
 
