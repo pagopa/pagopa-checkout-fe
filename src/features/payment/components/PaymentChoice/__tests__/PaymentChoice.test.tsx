@@ -608,4 +608,21 @@ describe("PaymentChoice", () => {
     // Click on the credit card payment method
     fireEvent.click(getByText("Carte di Credito e Debito"));
   });
+
+  it("should render without crashing with amount greter than 1 milion", () => {
+    const { container } = renderWithRouterAndRedux(
+      <PaymentChoice
+        amount={130539492}
+        paymentInstruments={[]}
+        loading={true} // Set loading to true to ensure loader shows
+      />
+    );
+
+    // Check that the component rendered something
+    expect(container.firstChild).not.toBeNull();
+
+    // Check for loading fields instead of checkout loader
+    const loadingFields = screen.getAllByTestId("clickable-field");
+    expect(loadingFields.length).toBeGreaterThan(0);
+  });
 });
