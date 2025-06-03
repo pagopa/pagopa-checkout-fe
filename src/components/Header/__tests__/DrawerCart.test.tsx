@@ -374,7 +374,7 @@ describe("DrawerCart Component", () => {
     fireEvent.click(firstAccordionButton!);
 
     // Notice number and fiscal code should be visible
-    expect(screen.getByText("Notice Number")).toBeVisible();
+    expect(screen.getAllByText("Notice Number")[0]).toBeVisible();
     expect(screen.getByText("123456789")).toBeVisible();
     expect(screen.getAllByText("Fiscal Code")[0]).toBeVisible();
     expect(screen.getByText("ABCDEF12G34H567I")).toBeVisible();
@@ -488,7 +488,7 @@ describe("DrawerCart Component", () => {
       "paynotice-1"
     );
     expect(secondAccordionButton).toHaveAttribute("id", "paynotice-1");
-
+    
     expect(thirdAccordionButton).toHaveAttribute(
       "aria-controls",
       "paynotice-2"
