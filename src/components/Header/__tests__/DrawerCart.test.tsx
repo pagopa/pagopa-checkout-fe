@@ -488,7 +488,7 @@ describe("DrawerCart Component", () => {
       "paynotice-1"
     );
     expect(secondAccordionButton).toHaveAttribute("id", "paynotice-1");
-    
+
     expect(thirdAccordionButton).toHaveAttribute(
       "aria-controls",
       "paynotice-2"
