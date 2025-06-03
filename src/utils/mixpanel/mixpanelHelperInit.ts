@@ -1,5 +1,5 @@
 import { init, track, Mixpanel } from "mixpanel-browser";
-import { getConfigOrThrow } from "./config";
+import { getConfigOrThrow } from "../config/config";
 
 const ENV = getConfigOrThrow().CHECKOUT_ENV;
 
