@@ -97,6 +97,13 @@ describe("DrawerCart Component", () => {
       fiscalCode: "LMNOPQ12R34S567T",
       creditorReferenceId: "IUV12345",
     },
+    {
+      amount: 1305394.75,
+      description: "Notice C",
+      companyName: "Company C",
+      noticeNumber: "987654322",
+      fiscalCode: "LMNOPQ12R34S567T",
+    },
   ];
 
   beforeEach(() => {
@@ -112,10 +119,11 @@ describe("DrawerCart Component", () => {
     const paymentAccordions = accordionSummaries.filter(
       (element) =>
         element.textContent?.includes("Notice A") ||
-        element.textContent?.includes("Notice B")
+        element.textContent?.includes("Notice B") ||
+        element.textContent?.includes("Notice C")
     );
 
-    expect(paymentAccordions).toHaveLength(2);
+    expect(paymentAccordions).toHaveLength(3);
 
     // Check first payment notice
     const firstAccordion = paymentAccordions[0];
@@ -126,6 +134,11 @@ describe("DrawerCart Component", () => {
     const secondAccordion = paymentAccordions[1];
     expect(secondAccordion).toHaveTextContent("Notice B");
     expect(secondAccordion).toHaveTextContent("Company B");
+
+    // Check third payment notice
+    const thirdAccordion = paymentAccordions[2];
+    expect(thirdAccordion).toHaveTextContent("Notice C");
+    expect(thirdAccordion).toHaveTextContent("Company C");
 
     // For the amounts, we need to be more specific since they appear twice
     const amountElements = screen.getAllByText(/€\d+\.\d+/);
@@ -138,8 +151,13 @@ describe("DrawerCart Component", () => {
       (el) => el.textContent === "€200.75"
     );
 
+    const amount3Elements = amountElements.filter(
+      (el) => el.textContent === "€1305394.75"
+    );
+
     expect(amount1Elements.length).toBeGreaterThan(0);
     expect(amount2Elements.length).toBeGreaterThan(0);
+    expect(amount3Elements.length).toBeGreaterThan(0);
   });
 
   it("expands first item when only one payment notice is provided", () => {
@@ -257,7 +275,7 @@ describe("DrawerCart Component", () => {
     // Now check for the notice number and fiscal code
     await waitFor(() => {
       // Notice number and fiscal code should be visible
-      const noticeNumberLabel = screen.getByText("Notice Number");
+      const noticeNumberLabel = screen.getAllByText("Notice Number")[0];
       const noticeNumberValue = screen.getByText("123456789");
       const fiscalCodeLabel = screen.getAllByText("Fiscal Code")[0];
       const fiscalCodeValue = screen.getByText("ABCDEF12G34H567I");
@@ -356,7 +374,7 @@ describe("DrawerCart Component", () => {
     fireEvent.click(firstAccordionButton!);
 
     // Notice number and fiscal code should be visible
-    expect(screen.getByText("Notice Number")).toBeVisible();
+    expect(screen.getAllByText("Notice Number")[0]).toBeVisible();
     expect(screen.getByText("123456789")).toBeVisible();
     expect(screen.getAllByText("Fiscal Code")[0]).toBeVisible();
     expect(screen.getByText("ABCDEF12G34H567I")).toBeVisible();
@@ -408,6 +426,7 @@ describe("DrawerCart Component", () => {
     // Check that moneyFormat was called with the right parameters
     expect(moneyFormat).toHaveBeenCalledWith(samplePaymentNotices[0].amount);
     expect(moneyFormat).toHaveBeenCalledWith(samplePaymentNotices[1].amount);
+    expect(moneyFormat).toHaveBeenCalledWith(samplePaymentNotices[2].amount);
   });
 
   it("renders nothing when paymentNotices array is empty", () => {
@@ -424,7 +443,7 @@ describe("DrawerCart Component", () => {
 
     // Check that accordions have the correct styling
     const accordions = container.querySelectorAll(".MuiAccordion-root");
-    expect(accordions).toHaveLength(2);
+    expect(accordions).toHaveLength(3);
 
     // First accordion should have borderTop but not borderBottom
     expect(accordions[0]).toHaveStyle("border-top: 1px solid");
@@ -433,6 +452,10 @@ describe("DrawerCart Component", () => {
     // Second accordion should have both borderTop and borderBottom
     expect(accordions[1]).toHaveStyle("border-top: 1px solid");
     expect(accordions[1]).toHaveStyle("border-bottom: 1px solid");
+
+    // Third accordion should have both borderTop and borderBottom
+    expect(accordions[2]).toHaveStyle("border-top: 1px solid");
+    expect(accordions[2]).toHaveStyle("border-bottom: 1px solid");
   });
 
   it("has correct accessibility attributes", () => {
@@ -445,10 +468,13 @@ describe("DrawerCart Component", () => {
     const firstAccordionButton = accordionButtons[0];
     // Find the first accordion button (the one for Notice B)
     const secondAccordionButton = accordionButtons[1];
+    // Find the third accordion button (the one for Notice B)
+    const thirdAccordionButton = accordionButtons[2];
 
     // Verify they contain the expected text
     expect(firstAccordionButton.textContent).toContain("Notice A");
     expect(secondAccordionButton.textContent).toContain("Notice B");
+    expect(thirdAccordionButton.textContent).toContain("Notice C");
 
     // Check that accordion summaries have correct aria attributes
     expect(firstAccordionButton).toHaveAttribute(
@@ -462,5 +488,11 @@ describe("DrawerCart Component", () => {
       "paynotice-1"
     );
     expect(secondAccordionButton).toHaveAttribute("id", "paynotice-1");
+
+    expect(thirdAccordionButton).toHaveAttribute(
+      "aria-controls",
+      "paynotice-2"
+    );
+    expect(thirdAccordionButton).toHaveAttribute("id", "paynotice-2");
   });
 });
