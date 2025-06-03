@@ -97,6 +97,14 @@ describe("DrawerCart Component", () => {
       fiscalCode: "LMNOPQ12R34S567T",
       creditorReferenceId: "IUV12345",
     },
+    {
+      amount: 1305394.75,
+      description: "Notice C",
+      companyName: "Company C",
+      noticeNumber: "987654322",
+      fiscalCode: "LMNOPQ12R34S567T",
+      creditorReferenceId: "IUV12345",
+    },
   ];
 
   beforeEach(() => {
@@ -127,6 +135,11 @@ describe("DrawerCart Component", () => {
     expect(secondAccordion).toHaveTextContent("Notice B");
     expect(secondAccordion).toHaveTextContent("Company B");
 
+    // Check third payment notice
+    const thirdAccordion = paymentAccordions[2];
+    expect(thirdAccordion).toHaveTextContent("Notice C");
+    expect(thirdAccordion).toHaveTextContent("Company C");
+
     // For the amounts, we need to be more specific since they appear twice
     const amountElements = screen.getAllByText(/€\d+\.\d+/);
 
@@ -138,8 +151,13 @@ describe("DrawerCart Component", () => {
       (el) => el.textContent === "€200.75"
     );
 
+    const amount3Elements = amountElements.filter(
+      (el) => el.textContent === "1305394.75"
+    );
+
     expect(amount1Elements.length).toBeGreaterThan(0);
     expect(amount2Elements.length).toBeGreaterThan(0);
+    expect(amount3Elements.length).toBeGreaterThan(0);
   });
 
   it("expands first item when only one payment notice is provided", () => {
@@ -408,6 +426,7 @@ describe("DrawerCart Component", () => {
     // Check that moneyFormat was called with the right parameters
     expect(moneyFormat).toHaveBeenCalledWith(samplePaymentNotices[0].amount);
     expect(moneyFormat).toHaveBeenCalledWith(samplePaymentNotices[1].amount);
+    expect(moneyFormat).toHaveBeenCalledWith(samplePaymentNotices[2].amount);
   });
 
   it("renders nothing when paymentNotices array is empty", () => {
@@ -449,6 +468,7 @@ describe("DrawerCart Component", () => {
     // Verify they contain the expected text
     expect(firstAccordionButton.textContent).toContain("Notice A");
     expect(secondAccordionButton.textContent).toContain("Notice B");
+    expect(secondAccordionButton.textContent).toContain("Notice C");
 
     // Check that accordion summaries have correct aria attributes
     expect(firstAccordionButton).toHaveAttribute(
