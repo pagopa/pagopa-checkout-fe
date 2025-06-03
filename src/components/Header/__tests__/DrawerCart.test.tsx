@@ -275,7 +275,7 @@ describe("DrawerCart Component", () => {
     // Now check for the notice number and fiscal code
     await waitFor(() => {
       // Notice number and fiscal code should be visible
-      const noticeNumberLabel = screen.getByText("Notice Number");
+      const noticeNumberLabel = screen.getAllByText("Notice Number")[0];
       const noticeNumberValue = screen.getByText("123456789");
       const fiscalCodeLabel = screen.getAllByText("Fiscal Code")[0];
       const fiscalCodeValue = screen.getByText("ABCDEF12G34H567I");
