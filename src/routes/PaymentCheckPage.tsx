@@ -59,6 +59,19 @@ import { SessionPaymentMethodResponse } from "../../generated/definitions/paymen
 import { ImageComponent } from "../features/payment/components/PaymentChoice/PaymentMethodImage";
 import { removeLoggedUser } from "../redux/slices/loggedUser";
 import PspPrivacyInfo from "../components/PrivacyPolicy/PspPrivacyInfo";
+import {
+  getDataEntryTypeFromSessionStorage,
+  getFlowFromSessionStorage,
+  getPaymentInfoFromSessionStorage,
+  getPaymentMethodSelectedFromSessionStorage,
+} from "../utils/mixpanel/mixpanelTracker";
+import { mixpanel } from "../utils/mixpanel/mixpanelHelperInit";
+import {
+  MixpanelEventCategory,
+  MixpanelEventsId,
+  MixpanelEventType,
+  MixpanelPaymentPhase,
+} from "../utils/mixpanel/mixpanelEvents";
 import { CheckoutRoutes } from "./models/routeModel";
 
 const defaultStyle = {
@@ -133,6 +146,23 @@ export default function PaymentCheckPage() {
     window.history.pushState(null, "", window.location.pathname);
     window.addEventListener("popstate", onBack);
     return () => window.removeEventListener("popstate", onBack);
+  }, []);
+
+  React.useEffect(() => {
+    const paymentInfo = getPaymentInfoFromSessionStorage();
+    mixpanel.track(MixpanelEventsId.CHK_PAYMENT_SUMMARY, {
+      EVENT_ID: MixpanelEventsId.CHK_PAYMENT_SUMMARY,
+      EVENT_CATEGORY: MixpanelEventCategory.UX,
+      EVENT_TYPE: MixpanelEventType.SCREEN_VIEW,
+      flow: getFlowFromSessionStorage(),
+      payment_phase: MixpanelPaymentPhase.PAGAMENTO,
+      organization_name: paymentInfo?.paName,
+      organization_fiscal_code: paymentInfo?.paFiscalCode,
+      amount: paymentInfo?.amount,
+      expiration_date: paymentInfo?.dueDate,
+      payment_method_selected: getPaymentMethodSelectedFromSessionStorage(),
+      data_entry: getDataEntryTypeFromSessionStorage(),
+    });
   }, []);
 
   const onError = (m: string, userCancelRedirect?: boolean) => {
@@ -237,6 +267,21 @@ export default function PaymentCheckPage() {
         onResponsePsp: onPspEditResponse,
       });
     }
+
+    const paymentInfo = getPaymentInfoFromSessionStorage();
+    mixpanel.track(MixpanelEventsId.CHK_PAYMENT_SUMMARY_PAYMENT_METHOD_EDIT, {
+      EVENT_ID: MixpanelEventsId.CHK_PAYMENT_SUMMARY_PAYMENT_METHOD_EDIT,
+      EVENT_CATEGORY: MixpanelEventCategory.UX,
+      EVENT_TYPE: MixpanelEventType.ACTION,
+      flow: getFlowFromSessionStorage(),
+      payment_phase: MixpanelPaymentPhase.PAGAMENTO,
+      organization_name: paymentInfo?.paName,
+      organization_fiscal_code: paymentInfo?.paFiscalCode,
+      amount: paymentInfo?.amount,
+      expiration_date: paymentInfo?.dueDate,
+      payment_method_selected: getPaymentMethodSelectedFromSessionStorage(),
+      data_entry: getDataEntryTypeFromSessionStorage(),
+    });
   };
 
   const onPspNotFound = () => {
