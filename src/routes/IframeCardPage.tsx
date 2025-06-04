@@ -44,7 +44,7 @@ export default function IFrameCardPage() {
       EVENT_CATEGORY: MixpanelEventCategory.UX,
       EVENT_TYPE: MixpanelEventType.SCREEN_VIEW,
       flow: getFlowFromSessionStorage(),
-      payment_phase: MixpanelPaymentPhase.VERIFICA,
+      payment_phase: MixpanelPaymentPhase.ATTIVA,
       organization_name: paymentInfo?.paName,
       organization_fiscal_code: paymentInfo?.paFiscalCode,
       amount: paymentInfo?.amount,
