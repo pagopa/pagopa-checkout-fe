@@ -80,7 +80,7 @@ export default function PaymentPspListPage() {
       EVENT_CATEGORY: MixpanelEventCategory.UX,
       EVENT_TYPE: MixpanelEventType.SCREEN_VIEW,
       flow: getFlowFromSessionStorage(),
-      payment_phase: MixpanelPaymentPhase.PAGAMENTO,
+      payment_phase: MixpanelPaymentPhase.ATTIVA,
       organization_name: paymentInfo?.paName,
       organization_fiscal_code: paymentInfo?.paFiscalCode,
       amount: paymentInfo?.amount,
