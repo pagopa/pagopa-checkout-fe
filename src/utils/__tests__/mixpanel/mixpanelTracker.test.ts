@@ -2,11 +2,13 @@ import {
   getDataEntryTypeFromSessionStorage,
   getPaymentInfoFromSessionStorage,
   getFlowFromSessionStorage,
+  getPaymentMethodSelectedFromSessionStorage,
 } from "../../mixpanel/mixpanelTracker";
 import { getSessionItem } from "../../storage/sessionStorage";
 import { MixpanelFlow } from "../../mixpanel/mixpanelEvents";
 import { MixpanelDataEntryType } from "../../mixpanel/mixpanelEvents";
 import { paymentInfo } from "../../../routes/__tests__/_model";
+import { PaymentCodeTypeEnum } from "../../../features/payment/models/paymentModel";
 
 jest.mock("../../storage/sessionStorage", () => ({
   getSessionItem: jest.fn(),
@@ -83,5 +85,40 @@ describe("getFlowFromSessionStorage", () => {
     const result = getFlowFromSessionStorage();
 
     expect(result).toBe(MixpanelFlow.DATA_ENTRY);
+  });
+});
+
+describe("getPaymentMethodSelectedFromSessionStorage", () => {
+  it("should return the correct paymentTypeCode when sessionStorage contains a valid PaymentMethod object", () => {
+    const paymentMethodMock = { paymentTypeCode: PaymentCodeTypeEnum.CP };
+    (getSessionItem as jest.Mock).mockReturnValue(paymentMethodMock);
+
+    const result = getPaymentMethodSelectedFromSessionStorage();
+
+    expect(result).toBe(PaymentCodeTypeEnum.CP);
+  });
+
+  it("should return undefined if sessionStorage contains null", () => {
+    (getSessionItem as jest.Mock).mockReturnValue(null);
+
+    const result = getPaymentMethodSelectedFromSessionStorage();
+
+    expect(result).toBeUndefined();
+  });
+
+  it("should return undefined if sessionStorage contains an invalid PaymentMethod object", () => {
+    (getSessionItem as jest.Mock).mockReturnValue({ invalidKey: "invalid" });
+
+    const result = getPaymentMethodSelectedFromSessionStorage();
+
+    expect(result).toBeUndefined();
+  });
+
+  it("should return undefined if sessionStorage does not contain a PaymentMethod object", () => {
+    (getSessionItem as jest.Mock).mockReturnValue(undefined);
+
+    const result = getPaymentMethodSelectedFromSessionStorage();
+
+    expect(result).toBeUndefined();
   });
 });
