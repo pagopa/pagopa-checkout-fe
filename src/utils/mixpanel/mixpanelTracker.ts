@@ -14,7 +14,9 @@ export function getDataEntryTypeFromSessionStorage() {
 
 export function getPaymentInfoFromSessionStorage() {
   const paymentInfoRaw = getSessionItem(SessionItems.paymentInfo);
-  return typeof paymentInfoRaw === "object" && paymentInfoRaw !== null
+  return typeof paymentInfoRaw === "object" &&
+    paymentInfoRaw !== null &&
+    "amount" in paymentInfoRaw
     ? (paymentInfoRaw as PaymentInfo)
     : undefined;
 }
