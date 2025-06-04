@@ -10,7 +10,15 @@ import {
 import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders";
 import { npgSessionsFields, retrieveCardData } from "../../utils/api/helper";
 import { CreateSessionResponse } from "../../../generated/definitions/payment-ecommerce-v3/CreateSessionResponse";
-import { sessionPayment, transaction } from "./_model";
+import { mixpanel } from "../../utils/mixpanel/mixpanelHelperInit";
+import {
+  MixpanelEventCategory,
+  MixpanelEventsId,
+  MixpanelEventType,
+  MixpanelFlow,
+  MixpanelPaymentPhase,
+} from "../../utils/mixpanel/mixpanelEvents";
+import { paymentInfo, sessionPayment, transaction } from "./_model";
 
 // Create a Jest spy for navigation
 const navigate = jest.fn();
@@ -42,6 +50,17 @@ jest.mock("../../utils/storage/sessionStorage", () => ({
   SessionItems: {
     transaction: "transaction",
   },
+}));
+
+jest.mock("../../utils/mixpanel/mixpanelHelperInit", () => ({
+  mixpanel: {
+    track: jest.fn(),
+  },
+}));
+
+jest.mock("../../utils/mixpanel/mixpanelTracker", () => ({
+  getFlowFromSessionStorage: jest.fn(() => "cart"),
+  getPaymentInfoFromSessionStorage: jest.fn(() => paymentInfo),
 }));
 
 jest.mock("../../utils/eventListeners", () => ({
@@ -159,5 +178,28 @@ describe("IFrameCardPage", () => {
     });
 
     expect(navigate).toHaveBeenCalledWith(-1);
+  });
+
+  test("should track mixpanel screen view on mount", async () => {
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <IFrameCardPage />
+      </MemoryRouter>
+    );
+
+    expect(mixpanel.track).toHaveBeenCalledWith(
+      MixpanelEventsId.CHK_PAYMENT_METHOD_DATA_INSERT,
+      {
+        EVENT_ID: MixpanelEventsId.CHK_PAYMENT_METHOD_DATA_INSERT,
+        EVENT_CATEGORY: MixpanelEventCategory.UX,
+        EVENT_TYPE: MixpanelEventType.SCREEN_VIEW,
+        flow: MixpanelFlow.CART,
+        payment_phase: MixpanelPaymentPhase.ATTIVA,
+        organization_name: "companyName",
+        organization_fiscal_code: "77777777777",
+        amount: 12000,
+        expiration_date: "2021-07-31",
+      }
+    );
   });
 });
