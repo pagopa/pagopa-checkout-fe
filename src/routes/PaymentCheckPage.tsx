@@ -37,12 +37,12 @@ import {
 } from "../features/payment/models/paymentModel";
 import { useAppDispatch, useAppSelector } from "../redux/hooks/hooks";
 import {
-  cancelPayment,
   calculateFees,
-  proceedToPayment,
+  cancelPayment,
   checkLogout,
+  proceedToPayment,
 } from "../utils/api/helper";
-import { onBrowserUnload, onBrowserBackEvent } from "../utils/eventListeners";
+import { onBrowserBackEvent, onBrowserUnload } from "../utils/eventListeners";
 import { moneyFormat } from "../utils/form/formatters";
 import {
   clearSessionItem,

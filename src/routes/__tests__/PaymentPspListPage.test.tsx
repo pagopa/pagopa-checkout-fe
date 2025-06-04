@@ -21,6 +21,7 @@ import {
   MixpanelPaymentPhase,
 } from "../../utils/mixpanel/mixpanelEvents";
 import { mixpanel } from "../../utils/mixpanel/mixpanelHelperInit";
+import { PaymentCodeTypeEnum } from "../../features/payment/models/paymentModel";
 import {
   paymentMethod,
   paymentMethodInfo,
@@ -86,7 +87,7 @@ jest.mock("../../utils/mixpanel/mixpanelHelperInit", () => ({
 jest.mock("../../utils/mixpanel/mixpanelTracker", () => ({
   getFlowFromSessionStorage: jest.fn(() => "cart"),
   getPaymentInfoFromSessionStorage: jest.fn(() => paymentInfo),
-  getPaymentMethodSelectedFromSessionStorage: jest.fn(() => "cards"),
+  getPaymentMethodSelectedFromSessionStorage: jest.fn(() => "CP"),
   getDataEntryTypeFromSessionStorage: jest.fn(() => "manual"),
 }));
 
@@ -459,7 +460,7 @@ describe("PaymentPspListPage - session missing values", () => {
           organization_fiscal_code: "77777777777",
           amount: 12000,
           expiration_date: "2021-07-31",
-          payment_method_selected: "cards",
+          payment_method_selected: PaymentCodeTypeEnum.CP,
           data_entry: MixpanelDataEntryType.MANUAL,
         })
       );

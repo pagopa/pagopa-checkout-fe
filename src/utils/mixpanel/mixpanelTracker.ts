@@ -30,11 +30,9 @@ export function getFlowFromSessionStorage() {
 }
 
 export function getPaymentMethodSelectedFromSessionStorage() {
-  // cards, paypal, bancomatpay, Pay with Postepay, satispay, mybank (retrieve from sessionStorage.paymentMethod)
-  // TODO-FDT we need to verify if the correct data is returned
   const paymentMethodSelectedRaw = getSessionItem(SessionItems.paymentMethod);
   return typeof paymentMethodSelectedRaw === "object" &&
     paymentMethodSelectedRaw !== null
-    ? (paymentMethodSelectedRaw as PaymentMethod).paymentMethodId
+    ? (paymentMethodSelectedRaw as PaymentMethod).paymentTypeCode
     : undefined;
 }

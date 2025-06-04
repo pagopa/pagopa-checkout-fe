@@ -24,6 +24,7 @@ import {
   MixpanelFlow,
   MixpanelPaymentPhase,
 } from "../../utils/mixpanel/mixpanelEvents";
+import { PaymentCodeTypeEnum } from "../../features/payment/models/paymentModel";
 import {
   paymentInfo,
   paymentMethod,
@@ -101,7 +102,7 @@ jest.mock("../../utils/mixpanel/mixpanelHelperInit", () => ({
 jest.mock("../../utils/mixpanel/mixpanelTracker", () => ({
   getFlowFromSessionStorage: jest.fn(() => "cart"),
   getPaymentInfoFromSessionStorage: jest.fn(() => paymentInfo),
-  getPaymentMethodSelectedFromSessionStorage: jest.fn(() => "cards"), // TODO-FDT check the value in the test
+  getPaymentMethodSelectedFromSessionStorage: jest.fn(() => "CP"), // TODO-FDT check the value in the test
   getDataEntryTypeFromSessionStorage: jest.fn(() => "manual"),
 }));
 
@@ -304,7 +305,7 @@ describe("PaymentCheckPage", () => {
           organization_fiscal_code: "77777777777",
           amount: 12000,
           expiration_date: "2021-07-31",
-          payment_method_selected: "cards", // TODO-FDT check the value in the test
+          payment_method_selected: PaymentCodeTypeEnum.CP,
           data_entry: MixpanelDataEntryType.MANUAL,
         })
       );
@@ -334,7 +335,7 @@ describe("PaymentCheckPage", () => {
           organization_fiscal_code: "77777777777",
           amount: 12000,
           expiration_date: "2021-07-31",
-          payment_method_selected: "cards", // TODO-FDT check the value in the test
+          payment_method_selected: PaymentCodeTypeEnum.CP,
           data_entry: MixpanelDataEntryType.MANUAL,
         })
       );

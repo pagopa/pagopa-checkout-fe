@@ -85,7 +85,7 @@ export default function PaymentPspListPage() {
       organization_fiscal_code: paymentInfo?.paFiscalCode,
       amount: paymentInfo?.amount,
       expiration_date: paymentInfo?.dueDate,
-      payment_method_selected: getPaymentMethodSelectedFromSessionStorage(), // cards, paypal, bancomatpay, Paga con Postepay, satispay, mybank (recuperare da sessionStorage.paymentMethod)
+      payment_method_selected: getPaymentMethodSelectedFromSessionStorage(),
       data_entry: getDataEntryTypeFromSessionStorage(),
     });
   }, []);
