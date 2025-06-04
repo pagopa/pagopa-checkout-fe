@@ -194,7 +194,7 @@ describe("IFrameCardPage", () => {
         EVENT_CATEGORY: MixpanelEventCategory.UX,
         EVENT_TYPE: MixpanelEventType.SCREEN_VIEW,
         flow: MixpanelFlow.CART,
-        payment_phase: MixpanelPaymentPhase.VERIFICA,
+        payment_phase: MixpanelPaymentPhase.ATTIVA,
         organization_name: "companyName",
         organization_fiscal_code: "77777777777",
         amount: 12000,
