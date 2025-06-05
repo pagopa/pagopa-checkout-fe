@@ -39,7 +39,6 @@ export function PaymentNoticeChoice() {
       EVENT_ID: MixpanelEventsId.CHK_PAYMENT_NOTICE_QRCODE_SCAN,
       EVENT_CATEGORY: MixpanelEventCategory.UX,
       EVENT_TYPE: MixpanelEventType.ACTION,
-      data_entry: MixpanelDataEntryType.QR_CODE,
     });
     navigate(`/${CheckoutRoutes.LEGGI_CODICE_QR}`);
   }, []);
@@ -53,7 +52,6 @@ export function PaymentNoticeChoice() {
       EVENT_ID: MixpanelEventsId.CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL,
       EVENT_CATEGORY: MixpanelEventCategory.UX,
       EVENT_TYPE: MixpanelEventType.ACTION,
-      data_entry: MixpanelDataEntryType.MANUAL,
     });
     navigate(`/${CheckoutRoutes.INSERISCI_DATI_AVVISO}`);
   }, []);
