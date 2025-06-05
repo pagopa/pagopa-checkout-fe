@@ -205,7 +205,7 @@ describe("PaymentNoticeChoice Component", () => {
       {
         EVENT_ID: MixpanelEventsId.CHK_PAYMENT_NOTICE_QRCODE_SCAN,
         EVENT_CATEGORY: MixpanelEventCategory.UX,
-        EVENT_TYPE: MixpanelEventType.ACTION
+        EVENT_TYPE: MixpanelEventType.ACTION,
       }
     );
 
@@ -230,7 +230,7 @@ describe("PaymentNoticeChoice Component", () => {
       {
         EVENT_ID: MixpanelEventsId.CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL,
         EVENT_CATEGORY: MixpanelEventCategory.UX,
-        EVENT_TYPE: MixpanelEventType.ACTION
+        EVENT_TYPE: MixpanelEventType.ACTION,
       }
     );
 

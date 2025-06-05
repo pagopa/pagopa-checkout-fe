@@ -51,7 +51,7 @@ export function PaymentNoticeChoice() {
     mixpanel.track(MixpanelEventsId.CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL, {
       EVENT_ID: MixpanelEventsId.CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL,
       EVENT_CATEGORY: MixpanelEventCategory.UX,
-      EVENT_TYPE: MixpanelEventType.ACTION
+      EVENT_TYPE: MixpanelEventType.ACTION,
     });
     navigate(`/${CheckoutRoutes.INSERISCI_DATI_AVVISO}`);
   }, []);
