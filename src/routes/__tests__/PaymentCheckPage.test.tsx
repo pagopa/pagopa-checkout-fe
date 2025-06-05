@@ -312,36 +312,6 @@ describe("PaymentCheckPage", () => {
     });
   });
 
-  test("should track mixpanel event on psp edit click", async () => {
-    const { container } = renderWithReduxProvider(
-      <MemoryRouter>
-        <PaymentCheckPage />
-      </MemoryRouter>
-    );
-
-    const pspEditButton = container.querySelector("#pspEdit")!;
-    fireEvent.click(pspEditButton);
-
-    await waitFor(() => {
-      expect(mixpanel.track).toHaveBeenCalledWith(
-        MixpanelEventsId.CHK_PAYMENT_SUMMARY_PAYMENT_METHOD_EDIT,
-        expect.objectContaining({
-          EVENT_ID: MixpanelEventsId.CHK_PAYMENT_SUMMARY_PAYMENT_METHOD_EDIT,
-          EVENT_CATEGORY: MixpanelEventCategory.UX,
-          EVENT_TYPE: MixpanelEventType.ACTION,
-          flow: MixpanelFlow.CART,
-          payment_phase: MixpanelPaymentPhase.ATTIVA,
-          organization_name: "companyName",
-          organization_fiscal_code: "77777777777",
-          amount: 12000,
-          expiration_date: "2021-07-31",
-          payment_method_selected: PaymentCodeTypeEnum.CP,
-          data_entry: MixpanelDataEntryType.MANUAL,
-        })
-      );
-    });
-  });
-
   test("should track mixpanel event on PSP edit click", async () => {
     const { container } = renderWithReduxProvider(
       <MemoryRouter>
@@ -391,6 +361,36 @@ describe("PaymentCheckPage", () => {
           EVENT_TYPE: MixpanelEventType.ACTION,
           flow: MixpanelFlow.CART,
           payment_phase: MixpanelPaymentPhase.PAGAMENTO,
+          organization_name: "companyName",
+          organization_fiscal_code: "77777777777",
+          amount: 12000,
+          expiration_date: "2021-07-31",
+          payment_method_selected: PaymentCodeTypeEnum.CP,
+          data_entry: MixpanelDataEntryType.MANUAL,
+        })
+      );
+    });
+  });
+
+  test("should track mixpanel event on card edit click", async () => {
+    const { container } = renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentCheckPage />
+      </MemoryRouter>
+    );
+
+    const cardEditButton = container.querySelector("#cardEdit")!;
+    fireEvent.click(cardEditButton);
+
+    await waitFor(() => {
+      expect(mixpanel.track).toHaveBeenCalledWith(
+        MixpanelEventsId.CHK_PAYMENT_SUMMARY_PAYMENT_METHOD_EDIT,
+        expect.objectContaining({
+          EVENT_ID: MixpanelEventsId.CHK_PAYMENT_SUMMARY_PAYMENT_METHOD_EDIT,
+          EVENT_CATEGORY: MixpanelEventCategory.UX,
+          EVENT_TYPE: MixpanelEventType.ACTION,
+          flow: MixpanelFlow.CART,
+          payment_phase: MixpanelPaymentPhase.ATTIVA,
           organization_name: "companyName",
           organization_fiscal_code: "77777777777",
           amount: 12000,
