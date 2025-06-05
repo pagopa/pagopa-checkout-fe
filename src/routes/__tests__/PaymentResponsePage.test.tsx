@@ -25,6 +25,15 @@ import {
   sessionPayment,
   cart,
 } from "./_model";
+import { mixpanel } from "../../utils/mixpanel/mixpanelHelperInit";
+import {
+  MixpanelDataEntryType,
+  MixpanelEventCategory,
+  MixpanelEventsId,
+  MixpanelEventType, MixpanelFlow,
+  MixpanelPaymentPhase
+} from "../../utils/mixpanel/mixpanelEvents";
+import { PaymentCodeTypeEnum } from "../../features/payment/models/paymentModel";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -73,6 +82,19 @@ jest.mock("../../utils/config/config", () => ({
   isTestEnv: jest.fn(() => false),
   isDevEnv: jest.fn(() => false),
   isProdEnv: jest.fn(() => true),
+}));
+
+jest.mock("../../utils/mixpanel/mixpanelHelperInit", () => ({
+  mixpanel: {
+    track: jest.fn(),
+  },
+}));
+
+jest.mock("../../utils/mixpanel/mixpanelTracker", () => ({
+  getFlowFromSessionStorage: jest.fn(() => "cart"),
+  getPaymentInfoFromSessionStorage: jest.fn(() => paymentInfo),
+  getPaymentMethodSelectedFromSessionStorage: jest.fn(() => "CP"),
+  getDataEntryTypeFromSessionStorage: jest.fn(() => "manual"),
 }));
 
 const mockGetSessionItemNoCart = (item: SessionItems) => {
@@ -232,5 +254,44 @@ describe("PaymentResponsePage — with cart", () => {
         ? cart.returnUrls.returnOkUrl
         : cart.returnUrls.returnErrorUrl
     );
+  });
+
+  test("should track payment response success with mixpanel", async () => {
+    const transactionOutcomeInfo = {
+      outcome: 0,
+      isFinalStatus: true,
+      totalAmount: 1000,
+      fees: 100,
+    };
+
+    (callServices as jest.Mock).mockImplementation(async (cb: any) => {
+      cb(transactionOutcomeInfo);
+      return Promise.resolve();
+    });
+
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentResponsePage />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(mixpanel.track).toHaveBeenCalledWith(
+        MixpanelEventsId.CHK_PAYMENT_UX_SUCCESS,
+        expect.objectContaining({
+          EVENT_ID: MixpanelEventsId.CHK_PAYMENT_UX_SUCCESS,
+          EVENT_CATEGORY: MixpanelEventCategory.UX,
+          EVENT_TYPE: MixpanelEventType.SCREEN_VIEW,
+          flow: MixpanelFlow.CART,
+          payment_phase: MixpanelPaymentPhase.PAGAMENTO,
+          organization_name: "companyName",
+          organization_fiscal_code: "77777777777",
+          amount: 12000,
+          expiration_date: "2021-07-31",
+          payment_method_selected: PaymentCodeTypeEnum.CP,
+          data_entry: MixpanelDataEntryType.MANUAL,
+        })
+      );
+    });
   });
 });

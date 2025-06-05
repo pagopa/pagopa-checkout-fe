@@ -102,7 +102,7 @@ jest.mock("../../utils/mixpanel/mixpanelHelperInit", () => ({
 jest.mock("../../utils/mixpanel/mixpanelTracker", () => ({
   getFlowFromSessionStorage: jest.fn(() => "cart"),
   getPaymentInfoFromSessionStorage: jest.fn(() => paymentInfo),
-  getPaymentMethodSelectedFromSessionStorage: jest.fn(() => "CP"), // TODO-FDT check the value in the test
+  getPaymentMethodSelectedFromSessionStorage: jest.fn(() => "CP"),
   getDataEntryTypeFromSessionStorage: jest.fn(() => "manual"),
 }));
 
@@ -341,4 +341,67 @@ describe("PaymentCheckPage", () => {
       );
     });
   });
+
+  test("should track mixpanel event on PSP edit click", async () => {
+    const { container } = renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentCheckPage />
+      </MemoryRouter>
+    );
+
+    const pspEditButton = container.querySelector("#pspEdit")!;
+    fireEvent.click(pspEditButton);
+
+    await waitFor(() => {
+      expect(mixpanel.track).toHaveBeenCalledWith(
+        MixpanelEventsId.CHK_PAYMENT_SUMMARY_PSP_EDIT,
+        expect.objectContaining({
+          EVENT_ID: MixpanelEventsId.CHK_PAYMENT_SUMMARY_PSP_EDIT,
+          EVENT_CATEGORY: MixpanelEventCategory.UX,
+          EVENT_TYPE: MixpanelEventType.ACTION,
+          flow: MixpanelFlow.CART,
+          payment_phase: MixpanelPaymentPhase.ATTIVA,
+          organization_name: "companyName",
+          organization_fiscal_code: "77777777777",
+          amount: 12000,
+          expiration_date: "2021-07-31",
+          payment_method_selected: PaymentCodeTypeEnum.CP,
+          data_entry: MixpanelDataEntryType.MANUAL,
+        })
+      );
+    });
+  });
+
+  test("should track mixpanel event on submit payment click", async () => {
+    const { container } = renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentCheckPage />
+      </MemoryRouter>
+    );
+
+    const submitButton = container.querySelector(
+      "#paymentCheckPageButtonPay"
+    )!;
+    fireEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(mixpanel.track).toHaveBeenCalledWith(
+        MixpanelEventsId.CHK_PAYMENT_UX_CONVERSION,
+        expect.objectContaining({
+          EVENT_ID: MixpanelEventsId.CHK_PAYMENT_UX_CONVERSION,
+          EVENT_CATEGORY: MixpanelEventCategory.UX,
+          EVENT_TYPE: MixpanelEventType.ACTION,
+          flow: MixpanelFlow.CART,
+          payment_phase: MixpanelPaymentPhase.PAGAMENTO,
+          organization_name: "companyName",
+          organization_fiscal_code: "77777777777",
+          amount: 12000,
+          expiration_date: "2021-07-31",
+          payment_method_selected: PaymentCodeTypeEnum.CP,
+          data_entry: MixpanelDataEntryType.MANUAL,
+        })
+      );
+    });
+  });
+
 });

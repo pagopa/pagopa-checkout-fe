@@ -213,6 +213,20 @@ export default function PaymentCheckPage() {
   const onSubmit = React.useCallback(async () => {
     setPayLoading(true);
     if (transaction) {
+      const paymentInfo = getPaymentInfoFromSessionStorage();
+      mixpanel.track(MixpanelEventsId.CHK_PAYMENT_UX_CONVERSION, {
+        EVENT_ID: MixpanelEventsId.CHK_PAYMENT_UX_CONVERSION,
+        EVENT_CATEGORY: MixpanelEventCategory.UX,
+        EVENT_TYPE: MixpanelEventType.ACTION,
+        flow: getFlowFromSessionStorage(),
+        payment_phase: MixpanelPaymentPhase.PAGAMENTO,
+        organization_name: paymentInfo?.paName,
+        organization_fiscal_code: paymentInfo?.paFiscalCode,
+        amount: paymentInfo?.amount,
+        expiration_date: paymentInfo?.dueDate,
+        payment_method_selected: getPaymentMethodSelectedFromSessionStorage(),
+        data_entry: getDataEntryTypeFromSessionStorage(),
+      });
       await proceedToPayment(transaction, onError, onResponse);
     } else {
       onError(ErrorsType.GENERIC_ERROR);
@@ -259,6 +273,20 @@ export default function PaymentCheckPage() {
     setPspEditLoading(true);
     setShowDisclaimer(false);
     if (paymentMethod) {
+      const paymentInfo = getPaymentInfoFromSessionStorage();
+      mixpanel.track(MixpanelEventsId.CHK_PAYMENT_SUMMARY_PSP_EDIT, {
+        EVENT_ID: MixpanelEventsId.CHK_PAYMENT_SUMMARY_PSP_EDIT,
+        EVENT_CATEGORY: MixpanelEventCategory.UX,
+        EVENT_TYPE: MixpanelEventType.ACTION,
+        flow: getFlowFromSessionStorage(),
+        payment_phase: MixpanelPaymentPhase.ATTIVA,
+        organization_name: paymentInfo?.paName,
+        organization_fiscal_code: paymentInfo?.paFiscalCode,
+        amount: paymentInfo?.amount,
+        expiration_date: paymentInfo?.dueDate,
+        payment_method_selected: getPaymentMethodSelectedFromSessionStorage(),
+        data_entry: getDataEntryTypeFromSessionStorage(),
+      });
       void calculateFees({
         paymentId: paymentMethod?.paymentMethodId,
         bin: sessionPaymentMethodResponse?.bin,
