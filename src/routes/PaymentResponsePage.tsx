@@ -32,19 +32,20 @@ import { resetThreshold } from "../redux/slices/threshold";
 import { removeLoggedUser } from "../redux/slices/loggedUser";
 import { checkLogout } from "../utils/api/helper";
 import { TransactionOutcomeInfo } from "../../generated/definitions/payment-ecommerce/TransactionOutcomeInfo";
-import FindOutMoreModal from "./../components/modals/FindOutMoreModal";
 import {
-  getDataEntryTypeFromSessionStorage, getFlowFromSessionStorage,
+  getDataEntryTypeFromSessionStorage,
+  getFlowFromSessionStorage,
   getPaymentInfoFromSessionStorage,
-  getPaymentMethodSelectedFromSessionStorage
+  getPaymentMethodSelectedFromSessionStorage,
 } from "../utils/mixpanel/mixpanelTracker";
 import { mixpanel } from "../utils/mixpanel/mixpanelHelperInit";
 import {
   MixpanelEventCategory,
   MixpanelEventsId,
   MixpanelEventType,
-  MixpanelPaymentPhase
+  MixpanelPaymentPhase,
 } from "../utils/mixpanel/mixpanelEvents";
+import FindOutMoreModal from "./../components/modals/FindOutMoreModal";
 
 type PrintData = {
   useremail: string;

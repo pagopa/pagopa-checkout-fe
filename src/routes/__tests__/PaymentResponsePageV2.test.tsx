@@ -15,13 +15,21 @@ import * as reduxHooks from "../../redux/hooks/hooks";
 import { removeLoggedUser } from "../../redux/slices/loggedUser";
 import { resetThreshold } from "../../redux/slices/threshold";
 import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce-v3/NewTransactionResponse";
-import {
-  cart as mockCart, paymentInfo,
-  transaction as mockTransactionOutcomeInfoData
-} from "./_model";
 import { mixpanel } from "../../utils/mixpanel/mixpanelHelperInit";
-import { MixpanelDataEntryType, MixpanelEventCategory, MixpanelEventsId, MixpanelEventType, MixpanelFlow, MixpanelPaymentPhase } from "../../utils/mixpanel/mixpanelEvents";
+import {
+  MixpanelDataEntryType,
+  MixpanelEventCategory,
+  MixpanelEventsId,
+  MixpanelEventType,
+  MixpanelFlow,
+  MixpanelPaymentPhase,
+} from "../../utils/mixpanel/mixpanelEvents";
 import { PaymentCodeTypeEnum } from "../../features/payment/models/paymentModel";
+import {
+  cart as mockCart,
+  paymentInfo,
+  transaction as mockTransactionOutcomeInfoData,
+} from "./_model";
 
 jest.mock("../../utils/regex/urlUtilities", () => ({
   getFragmentParameter: jest.fn(),
@@ -108,7 +116,6 @@ jest.mock("../../utils/mixpanel/mixpanelTracker", () => ({
   getPaymentMethodSelectedFromSessionStorage: jest.fn(() => "CP"),
   getDataEntryTypeFromSessionStorage: jest.fn(() => "manual"),
 }));
-
 
 const mockNavigate = jest.fn();
 const mockDispatch = jest.fn();

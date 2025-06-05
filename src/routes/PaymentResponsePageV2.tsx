@@ -25,20 +25,20 @@ import { ViewOutcomeEnum } from "../utils/transactions/TransactionResultUtil";
 import { Cart } from "../features/payment/models/paymentModel";
 import { NewTransactionResponse } from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { resetThreshold } from "../redux/slices/threshold";
-import { ROUTE_FRAGMENT } from "./models/routeModel";
 import {
   getDataEntryTypeFromSessionStorage,
   getFlowFromSessionStorage,
   getPaymentInfoFromSessionStorage,
-  getPaymentMethodSelectedFromSessionStorage
+  getPaymentMethodSelectedFromSessionStorage,
 } from "../utils/mixpanel/mixpanelTracker";
 import { mixpanel } from "../utils/mixpanel/mixpanelHelperInit";
 import {
   MixpanelEventCategory,
   MixpanelEventsId,
   MixpanelEventType,
-  MixpanelPaymentPhase
+  MixpanelPaymentPhase,
 } from "../utils/mixpanel/mixpanelEvents";
+import { ROUTE_FRAGMENT } from "./models/routeModel";
 
 type PrintData = {
   useremail: string;
@@ -165,7 +165,6 @@ export default function PaymentResponsePageV2() {
       payment_phase: MixpanelPaymentPhase.PAGAMENTO,
     });
   }, []);
-
 
   return (
     <PageContainer>

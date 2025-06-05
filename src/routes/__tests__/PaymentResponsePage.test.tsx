@@ -16,6 +16,16 @@ import { checkLogout } from "../../utils/api/helper";
 import { ViewOutcomeEnum } from "../../utils/transactions/TransactionResultUtil";
 import { callServices } from "../../utils/api/response";
 
+import { mixpanel } from "../../utils/mixpanel/mixpanelHelperInit";
+import {
+  MixpanelDataEntryType,
+  MixpanelEventCategory,
+  MixpanelEventsId,
+  MixpanelEventType,
+  MixpanelFlow,
+  MixpanelPaymentPhase,
+} from "../../utils/mixpanel/mixpanelEvents";
+import { PaymentCodeTypeEnum } from "../../features/payment/models/paymentModel";
 import {
   paymentMethod,
   paymentMethodInfo,
@@ -25,15 +35,6 @@ import {
   sessionPayment,
   cart,
 } from "./_model";
-import { mixpanel } from "../../utils/mixpanel/mixpanelHelperInit";
-import {
-  MixpanelDataEntryType,
-  MixpanelEventCategory,
-  MixpanelEventsId,
-  MixpanelEventType, MixpanelFlow,
-  MixpanelPaymentPhase
-} from "../../utils/mixpanel/mixpanelEvents";
-import { PaymentCodeTypeEnum } from "../../features/payment/models/paymentModel";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),

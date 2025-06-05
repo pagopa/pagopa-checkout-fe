@@ -379,9 +379,7 @@ describe("PaymentCheckPage", () => {
       </MemoryRouter>
     );
 
-    const submitButton = container.querySelector(
-      "#paymentCheckPageButtonPay"
-    )!;
+    const submitButton = container.querySelector("#paymentCheckPageButtonPay")!;
     fireEvent.click(submitButton);
 
     await waitFor(() => {
@@ -403,5 +401,4 @@ describe("PaymentCheckPage", () => {
       );
     });
   });
-
 });
