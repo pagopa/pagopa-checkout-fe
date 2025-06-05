@@ -13,6 +13,16 @@ import {
 } from "../../utils/storage/sessionStorage";
 import { setThreshold } from "../../redux/slices/threshold";
 import {
+  MixpanelDataEntryType,
+  MixpanelEventCategory,
+  MixpanelEventsId,
+  MixpanelEventType,
+  MixpanelFlow,
+  MixpanelPaymentPhase,
+} from "../../utils/mixpanel/mixpanelEvents";
+import { mixpanel } from "../../utils/mixpanel/mixpanelHelperInit";
+import { PaymentCodeTypeEnum } from "../../features/payment/models/paymentModel";
+import {
   paymentMethod,
   paymentMethodInfo,
   transaction,
@@ -66,6 +76,19 @@ jest.mock("../../utils/api/client", () => ({
   apiPaymentEcommerceClientWithRetryV2: {
     calculateFees: jest.fn(),
   },
+}));
+
+jest.mock("../../utils/mixpanel/mixpanelHelperInit", () => ({
+  mixpanel: {
+    track: jest.fn(),
+  },
+}));
+
+jest.mock("../../utils/mixpanel/mixpanelTracker", () => ({
+  getFlowFromSessionStorage: jest.fn(() => "cart"),
+  getPaymentInfoFromSessionStorage: jest.fn(() => paymentInfo),
+  getPaymentMethodSelectedFromSessionStorage: jest.fn(() => "CP"),
+  getDataEntryTypeFromSessionStorage: jest.fn(() => "manual"),
 }));
 
 const mockGetSessionItemNoPaymentMethod = (item: SessionItems) => {
@@ -404,5 +427,43 @@ describe("PaymentPspListPage - session missing values", () => {
     );
 
     await waitFor(setMockCalledWithoutCalculateFeeMock);
+  });
+
+  test("should track event with mixpanel on mount", async () => {
+    (
+      apiPaymentEcommerceClientWithRetryV2.calculateFees as jest.Mock
+    ).mockReturnValue(
+      Promise.resolve({
+        right: {
+          status: 200,
+          value: calculateFeeResponse,
+        },
+      })
+    );
+
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentPspListPage />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(mixpanel.track).toHaveBeenCalledWith(
+        MixpanelEventsId.CHK_PAYMENT_FEE_SELECTION,
+        expect.objectContaining({
+          EVENT_ID: MixpanelEventsId.CHK_PAYMENT_FEE_SELECTION,
+          EVENT_CATEGORY: MixpanelEventCategory.UX,
+          EVENT_TYPE: MixpanelEventType.SCREEN_VIEW,
+          flow: MixpanelFlow.CART,
+          payment_phase: MixpanelPaymentPhase.ATTIVA,
+          organization_name: "companyName",
+          organization_fiscal_code: "77777777777",
+          amount: 12000,
+          expiration_date: "2021-07-31",
+          payment_method_selected: PaymentCodeTypeEnum.CP,
+          data_entry: MixpanelDataEntryType.MANUAL,
+        })
+      );
+    });
   });
 });

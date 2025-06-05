@@ -1,5 +1,8 @@
 import { getSessionItem, SessionItems } from "../storage/sessionStorage";
-import { PaymentInfo } from "../../features/payment/models/paymentModel";
+import {
+  PaymentInfo,
+  PaymentMethod,
+} from "../../features/payment/models/paymentModel";
 import {
   mixpanelDataEntryTypeFromString,
   MixpanelFlow,
@@ -26,4 +29,12 @@ export function getFlowFromSessionStorage() {
   return typeof flowCartRaw === "object" && flowCartRaw !== null
     ? MixpanelFlow.CART
     : MixpanelFlow.DATA_ENTRY;
+}
+
+export function getPaymentMethodSelectedFromSessionStorage() {
+  const paymentMethodSelectedRaw = getSessionItem(SessionItems.paymentMethod);
+  return typeof paymentMethodSelectedRaw === "object" &&
+    paymentMethodSelectedRaw !== null
+    ? (paymentMethodSelectedRaw as PaymentMethod).paymentTypeCode
+    : undefined;
 }

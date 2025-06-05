@@ -6,6 +6,12 @@ import { pipe } from "fp-ts/lib/function";
 import * as O from "fp-ts/Option";
 import { useTranslation } from "react-i18next";
 import { ButtonNaked } from "@pagopa/mui-italia";
+import {
+  getDataEntryTypeFromSessionStorage,
+  getFlowFromSessionStorage,
+  getPaymentInfoFromSessionStorage,
+  getPaymentMethodSelectedFromSessionStorage,
+} from "../utils/mixpanel/mixpanelTracker";
 import { PaymentPspListAlert } from "../features/payment/components/PaymentAlert/PaymentPspListAlert";
 import { PspOrderingModel, sortBy } from "../utils/SortUtil";
 import { PaymentPspListSortingDrawer } from "../features/payment/components/PaymentPspList/PaymentPspListSortingDrawer";
@@ -32,6 +38,13 @@ import { CalculateFeeResponse } from "../../generated/definitions/payment-ecomme
 import { SessionPaymentMethodResponse } from "../../generated/definitions/payment-ecommerce/SessionPaymentMethodResponse";
 import { FormButtons } from "../components/FormButtons/FormButtons";
 import InformationModal from "../components/modals/InformationModal";
+import {
+  MixpanelEventCategory,
+  MixpanelEventsId,
+  MixpanelEventType,
+  MixpanelPaymentPhase,
+} from "../utils/mixpanel/mixpanelEvents";
+import { mixpanel } from "../utils/mixpanel/mixpanelHelperInit";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function PaymentPspListPage() {
@@ -59,6 +72,23 @@ export default function PaymentPspListPage() {
   );
 
   const [isAlertVisible, setIsAlertVisible] = React.useState(true);
+
+  React.useEffect(() => {
+    const paymentInfo = getPaymentInfoFromSessionStorage();
+    mixpanel.track(MixpanelEventsId.CHK_PAYMENT_FEE_SELECTION, {
+      EVENT_ID: MixpanelEventsId.CHK_PAYMENT_FEE_SELECTION,
+      EVENT_CATEGORY: MixpanelEventCategory.UX,
+      EVENT_TYPE: MixpanelEventType.SCREEN_VIEW,
+      flow: getFlowFromSessionStorage(),
+      payment_phase: MixpanelPaymentPhase.ATTIVA,
+      organization_name: paymentInfo?.paName,
+      organization_fiscal_code: paymentInfo?.paFiscalCode,
+      amount: paymentInfo?.amount,
+      expiration_date: paymentInfo?.dueDate,
+      payment_method_selected: getPaymentMethodSelectedFromSessionStorage(),
+      data_entry: getDataEntryTypeFromSessionStorage(),
+    });
+  }, []);
 
   const shouldShowMyBankAlert = () =>
     paymentMethod?.paymentTypeCode === PaymentCodeTypeEnum.MYBK &&
