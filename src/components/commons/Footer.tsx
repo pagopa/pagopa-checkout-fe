@@ -5,7 +5,6 @@ import { useLocation } from "react-router-dom";
 import pagopaLogo from "../../assets/images/logo-pagopa-spa.svg";
 import LanguageFooterMenu from "../LanguageMenu/LanguageNativeSelect";
 import lang, { langSelectVisibleOnPages } from "../../translations/lang";
-// import { ThemeSwitch } from "./../../components/themeContextProvider/themeSwitch";
 
 export default function Footer(props: { fixedPages: Array<string> }) {
   const { t } = useTranslation();
@@ -107,8 +106,6 @@ export default function Footer(props: { fixedPages: Array<string> }) {
           )}
         </Box>
       </Typography>
-      {/* <Box display={"flex"} gap="3em" alignItems={"center"}>
-        <ThemeSwitch /> */}
       <Link
         href="https://www.pagopa.it/it/"
         target="_blank"
@@ -123,7 +120,6 @@ export default function Footer(props: { fixedPages: Array<string> }) {
           aria-hidden="true"
         />
       </Link>
-      {/* </Box> */}
     </Box>
   );
 }

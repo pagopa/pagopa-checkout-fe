@@ -4,13 +4,24 @@ import { ReactNode } from "react";
 import { theme, darkTheme } from "@pagopa/mui-italia";
 import { SessionItems } from "../../utils/storage/sessionStorage";
 
+export enum ThemeModes {
+  DARK = "dark",
+  LIGHT = "light",
+}
+
 const themeLight = createTheme({
   ...theme,
   palette: {
     ...theme.palette,
-    mode: "light",
+    mode: ThemeModes.LIGHT,
     background: {
       default: theme.palette.background.paper,
+    },
+    custom: {
+      // paymentSummaryInfoButtonBg intentionally omitted
+      // drawerCardBg intentionally intentionally omitted
+      drawerCardSectionTitleColor: theme.palette.action.active,
+      // drawerCardSectionBodyColor intentionally omitted
     },
   },
   components: {
@@ -39,13 +50,19 @@ const themeDark = createTheme({
   ...darkTheme,
   palette: {
     ...darkTheme.palette,
-    mode: "dark",
+    mode: ThemeModes.DARK,
     background: {
       default: darkTheme.palette.background.paper,
     },
     text: {
       primary: "#fff",
-      secondary: "#fff",
+      secondary: "#5C6F82",
+    },
+    custom: {
+      paymentSummaryInfoButtonBg: "#252525",
+      drawerCardBg: "#252525",
+      drawerCardSectionTitleColor: "#3DA2FF",
+      drawerCardSectionBodyColor: darkTheme.palette.common.white,
     },
   },
   components: {
@@ -73,6 +90,10 @@ const themeDark = createTheme({
       styleOverrides: {
         root: {
           color: "#fff",
+          "&.MuiLoadingButton-root.Mui-disabled": {
+            backgroundColor: "rgba(62,63,64, 0.26)",
+            color: "#5C6F82",
+          },
         },
       },
     },
@@ -103,28 +124,32 @@ interface ThemeContextType {
 }
 
 export const ThemeContext = createContext<ThemeContextType>({
-  mode: "light",
+  mode: ThemeModes.LIGHT,
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   toggleTheme: () => {},
 });
 
 export const ThemeContextProvider = ({ children }: { children: ReactNode }) => {
   const [mode, setMode] = useState(() => {
-    const storedMode = localStorage.getItem(SessionItems.activeTheme) as string;
-    return storedMode ? storedMode : "light";
+    const storedMode = sessionStorage.getItem(
+      SessionItems.activeTheme
+    ) as string;
+    return storedMode ? storedMode : ThemeModes.LIGHT;
   });
 
   useEffect(() => {
-    localStorage.setItem(SessionItems.activeTheme, mode);
+    sessionStorage.setItem(SessionItems.activeTheme, mode);
   }, [mode]);
 
   const theme = useMemo(
-    () => (mode === "light" ? themeLight : themeDark),
+    () => (mode === ThemeModes.LIGHT ? themeLight : themeDark),
     [mode]
   );
 
   const toggleTheme = () => {
-    setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
+    setMode((prevMode) =>
+      prevMode === ThemeModes.LIGHT ? ThemeModes.DARK : ThemeModes.LIGHT
+    );
   };
 
   return (
