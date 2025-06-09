@@ -7,7 +7,7 @@ import * as O from "fp-ts/Option";
 import { removeLoggedUser } from "../redux/slices/loggedUser";
 import { checkLogout } from "../utils/api/helper";
 import FindOutMoreModal from "../components/modals/FindOutMoreModal";
-import { getFragmentParameter } from "../utils/regex/urlUtilities";
+import { getUriFragments } from "../utils/regex/urlUtilities";
 import { getConfigOrThrow } from "../utils/config/config";
 import SurveyLink from "../components/commons/SurveyLink";
 import PageContainer from "../components/PageContent/PageContainer";
@@ -25,7 +25,19 @@ import { ViewOutcomeEnum } from "../utils/transactions/TransactionResultUtil";
 import { Cart } from "../features/payment/models/paymentModel";
 import { NewTransactionResponse } from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { resetThreshold } from "../redux/slices/threshold";
-import { Bundle } from "../../generated/definitions/payment-ecommerce/Bundle";
+import {
+  getDataEntryTypeFromSessionStorage,
+  getFlowFromSessionStorage,
+  getPaymentInfoFromSessionStorage,
+  getPaymentMethodSelectedFromSessionStorage,
+} from "../utils/mixpanel/mixpanelTracker";
+import { mixpanel } from "../utils/mixpanel/mixpanelHelperInit";
+import {
+  MixpanelEventCategory,
+  MixpanelEventsId,
+  MixpanelEventType,
+  MixpanelPaymentPhase,
+} from "../utils/mixpanel/mixpanelEvents";
 import { ROUTE_FRAGMENT } from "./models/routeModel";
 
 type PrintData = {
@@ -38,17 +50,40 @@ type CartInformation = {
   isCart: boolean;
 };
 
+// eslint-disable-next-line sonarjs/cognitive-complexity
 export default function PaymentResponsePageV2() {
   const navigate = useNavigate();
-  const outcome = getFragmentParameter(
-    window.location.href,
+
+  const {
+    transactionId,
+    outcome: outcomeFragment,
+    totalAmount: totalAmountFragment,
+    fees: feesFragment,
+  } = getUriFragments(
+    ROUTE_FRAGMENT.TRANSACTION_ID,
     ROUTE_FRAGMENT.OUTCOME,
-    false
-  ) as ViewOutcomeEnum;
+    ROUTE_FRAGMENT.TOTAL_AMOUNT,
+    ROUTE_FRAGMENT.FEES
+  );
+
+  const outcome = (outcomeFragment ||
+    ViewOutcomeEnum.GENERIC_ERROR) as ViewOutcomeEnum;
+  const totalAmount = totalAmountFragment
+    ? Number.parseInt(totalAmountFragment, 10)
+    : undefined;
+  const fees = feesFragment ? Number.parseInt(feesFragment, 10) : undefined;
 
   const conf = getConfigOrThrow();
 
-  const outcomeMessage = responseOutcome[outcome];
+  const transactionData = getSessionItem(SessionItems.transaction) as
+    | NewTransactionResponse
+    | undefined;
+
+  const isExpectedTransaction =
+    transactionData?.transactionId === transactionId;
+  const outcomeMessage = isExpectedTransaction
+    ? responseOutcome[outcome]
+    : responseOutcome[ViewOutcomeEnum.GENERIC_ERROR];
   const [findOutMoreOpen, setFindOutMoreOpen] = useState<boolean>(false);
 
   const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
@@ -66,25 +101,16 @@ export default function PaymentResponsePageV2() {
     getCartReturnUrl(outcome)
   );
 
-  const transactionData = getSessionItem(SessionItems.transaction) as
-    | NewTransactionResponse
-    | undefined;
-
-  const pspSelected = getSessionItem(SessionItems.pspSelected) as
-    | Bundle
-    | undefined;
-
   const email = getSessionItem(SessionItems.useremail) as string | undefined;
 
-  const totalAmount =
-    Number(
-      // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-      transactionData?.payments.reduce((sum, { amount }) => sum + amount, 0)
-    ) + Number(pspSelected?.taxPayerFee);
+  const grandTotalAmount =
+    totalAmount != null && fees != null
+      ? Number(totalAmount) + Number(fees)
+      : null;
 
   const usefulPrintData: PrintData = {
     useremail: email || "",
-    amount: moneyFormat(totalAmount),
+    amount: moneyFormat(grandTotalAmount!),
   };
 
   const dispatch = useAppDispatch();
@@ -122,6 +148,23 @@ export default function PaymentResponsePageV2() {
       (document.title as any) = pageTitle + " - pagoPA";
     }
   }, [outcomeMessage]);
+
+  React.useEffect(() => {
+    const paymentInfo = getPaymentInfoFromSessionStorage();
+    mixpanel.track(MixpanelEventsId.CHK_PAYMENT_UX_SUCCESS, {
+      EVENT_ID: MixpanelEventsId.CHK_PAYMENT_UX_SUCCESS,
+      EVENT_CATEGORY: MixpanelEventCategory.UX,
+      EVENT_TYPE: MixpanelEventType.SCREEN_VIEW,
+      organization_name: paymentInfo?.paName,
+      organization_fiscal_code: paymentInfo?.paFiscalCode,
+      amount: paymentInfo?.amount,
+      expiration_date: paymentInfo?.dueDate,
+      payment_method_selected: getPaymentMethodSelectedFromSessionStorage(),
+      data_entry: getDataEntryTypeFromSessionStorage(),
+      flow: getFlowFromSessionStorage(),
+      payment_phase: MixpanelPaymentPhase.PAGAMENTO,
+    });
+  }, []);
 
   return (
     <PageContainer>

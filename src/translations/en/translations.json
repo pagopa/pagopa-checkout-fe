@@ -174,7 +174,7 @@
     "title": "The data entered are incorrect"
   },
   "PAYMENT_DUPLICATED": {
-    "body": "If you paid on this website, the receipt was sent to the email address you indicated during payment.",
+    "body": "If you paid on this website, the confirmation was sent to the email address you indicated during payment.",
     "title": "This notice was already paid!"
   },
   "PAYMENT_EXPIRED": {
@@ -231,7 +231,7 @@
   },
   "paymentResponsePage": {
     "0": {
-      "body": "We have sent the payment receipt to {{useremail}}",
+      "body": "We have sent the payment confirmation to {{useremail}}",
       "title": "You have paid {{amount}}"
     },
     "1": {
@@ -321,7 +321,8 @@
     "creditCard": "Pay with",
     "disclaimer": {
       "cheaper": "Suggested because least expensive",
-      "yourCard": "Suggested because you are already a customer"
+      "yourCard": "Suggested because you are already a customer",
+      "psp":"By continuing, you accept the <terms>Terms and Conditions of Use</terms> and confirm that you have read the <privacy>Privacy Policy</privacy> of <psp>{{pspName}}</psp>"
     },
     "drawer": {
       "body": "This list contains all the operators compatible with your method, even if you are not their customer.",
@@ -409,7 +410,9 @@
         "amount": "By amount"
       },
       "showResults": "Show results"
-    }
+    },
+    "myBankAlertTitle": "Can't find your bank?",
+    "myBankAlertBody": "Don't worry: you can select it in the next steps."
   },
   "paymentQrPage": {
     "camBlocked": "We need your consent to use the camera. To change your selection, go to your browser’s privacy settings",

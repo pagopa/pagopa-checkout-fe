@@ -174,7 +174,7 @@
     "title": "Les données de l’avis ne sont pas correctes"
   },
   "PAYMENT_DUPLICATED": {
-    "body": "Si vous avez payé sur ce site, le reçu vous sera envoyé à l’adresse e-mail que vous avez donnée pendant l’opération.",
+    "body": "Si vous avez payé sur ce site, la confirmation vous sera envoyé à l’adresse e-mail que vous avez donnée pendant l’opération.",
     "title": "Cet avis a déjà été payé !"
   },
   "PAYMENT_EXPIRED": {
@@ -231,7 +231,7 @@
   },
   "paymentResponsePage": {
     "0": {
-      "body": "Nous avons envoyé le reçu du paiement à {{useremail}}",
+      "body": "Nous avons envoyé la confirmation du paiement à {{useremail}}",
       "title": "Vous avez payé {{amount}}"
     },
     "1": {
@@ -321,7 +321,8 @@
     "creditCard": "Payer avec",
     "disclaimer": {
       "cheaper": "Conseillé comme le moins cher",
-      "yourCard": "Conseillé aux clients déjà inscrits"
+      "yourCard": "Conseillé aux clients déjà inscrits",
+      "psp":"En continuant, vous acceptez les  <terms>Conditions générales d'utilisation</terms> et vous confirmez avoir lu la <privacy>Politique de confidentialité</privacy> de <psp>{{pspName}}</psp>"
     },
     "drawer": {
       "body": "Cette liste vous indique tous les opérateur compatibles avec votre moyen de paiement, même si vous ne faites pas partie de leurs clients.",
@@ -409,7 +410,9 @@
         "amount": "Par montant"
       },
       "showResults": "Afficher les résultats"
-    }
+    },
+    "myBankAlertTitle": "Vous ne trouvez pas votre banque ?",
+    "myBankAlertBody": "Pas d'inquiétude : vous pourrez la sélectionner lors des prochaines étapeshgh."
   },
   "paymentQrPage": {
     "camBlocked": "Nous avons besoin de votre autorisation pour utiliser l’appareil photo. Pour modifier votre choix, visitez les paramètre Confidentialité de votre navigateur",
