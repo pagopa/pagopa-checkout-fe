@@ -7,7 +7,7 @@ export default function CheckoutLoader() {
   return (
     <Box
       alignItems="center"
-      bgcolor="#fff"
+      bgcolor="palette.background.paper"
       display="flex"
       height="100vh"
       justifyContent="center"

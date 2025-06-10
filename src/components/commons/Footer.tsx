@@ -32,9 +32,9 @@ export default function Footer(props: { fixedPages: Array<string> }) {
       }}
       bgcolor={{
         xs: isFixed()
-          ? theme.palette.custom.footerFixedBg
-          : theme.palette.custom.footerBg,
-        sm: theme.palette.custom.footerFixedBg,
+          ? theme.palette.custom.footer?.fixed?.background?.default
+          : theme.palette.custom.footer?.principal?.background?.default,
+        sm: theme.palette.custom.footer?.fixed?.background?.default,
       }}
     >
       <Typography variant="caption" component={"div"}>

@@ -1,7 +1,8 @@
 import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { screen, fireEvent, waitFor } from "@testing-library/react";
 import DrawerDetail from "../DrawerDetail";
 import { PaymentNotice } from "../../../features/payment/models/paymentModel";
+import { renderWithReduxAndThemeProvider } from "../../../utils/testing/testRenderProviders";
 
 jest.mock("../../../utils/config/config", () => ({
   CHECKOUT_API_TIMEOUT: 30000,
@@ -50,7 +51,7 @@ describe("DrawerDetail Component", () => {
   });
 
   it("renders correctly when open", () => {
-    render(<DrawerDetail {...defaultProps} />);
+    renderWithReduxAndThemeProvider(<DrawerDetail {...defaultProps} />);
 
     // Check if the amount is displayed correctly
     expect(screen.getByText("Total Amount")).toBeTruthy();
@@ -61,7 +62,7 @@ describe("DrawerDetail Component", () => {
   });
 
   it("calls toggleDrawer when the drawer is closed", () => {
-    render(<DrawerDetail {...defaultProps} />);
+    renderWithReduxAndThemeProvider(<DrawerDetail {...defaultProps} />);
 
     // Find the close button and click it
     const closeButton = screen.getByLabelText("ariaLabels.close");
@@ -77,14 +78,14 @@ describe("DrawerDetail Component", () => {
       amountToShow: () => 250.99,
     };
 
-    render(<DrawerDetail {...customProps} />);
+    renderWithReduxAndThemeProvider(<DrawerDetail {...customProps} />);
 
     // Check if the amount is displayed correctly with the proper format
     expect(screen.getByText("2,51 €")).toBeTruthy();
   });
 
   it("passes payment notices to DrawerCart component", async () => {
-    render(<DrawerDetail {...defaultProps} />);
+    renderWithReduxAndThemeProvider(<DrawerDetail {...defaultProps} />);
 
     // Find all accordion buttons
     const accordionButtons = screen.getAllByRole("button");
@@ -118,7 +119,7 @@ describe("DrawerDetail Component", () => {
       amountToShow: () => 100.5,
     };
 
-    render(<DrawerDetail {...singleNoticeProps} />);
+    renderWithReduxAndThemeProvider(<DrawerDetail {...singleNoticeProps} />);
 
     // Find all accordion buttons
     const accordionButtons = screen.getAllByRole("button");

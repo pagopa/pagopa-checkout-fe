@@ -76,7 +76,7 @@ export default function DrawerCart(props: Props) {
                 typography="sidenav"
                 display="block"
                 sx={{
-                  color: "custom.drawerCardSectionBodyColor",
+                  color: "custom.drawer.card.sectionBody.primary",
                 }}
               >
                 {el.description && truncateText(el.description, 30)}
@@ -84,7 +84,7 @@ export default function DrawerCart(props: Props) {
               <Typography
                 component="div"
                 typography="body2"
-                color="custom.drawerCardSectionTitleColor"
+                color="custom.drawer.card.sectionTitle.primary"
               >
                 {el.companyName && truncateText(el.companyName, 30)}
               </Typography>
@@ -100,21 +100,22 @@ export default function DrawerCart(props: Props) {
               p: 0,
               borderTop: 1,
               borderColor: "grey.300",
-              backgroundColor: theme.palette.custom.drawerCardBg,
+              backgroundColor:
+                theme.palette.custom.drawer?.card?.background?.default,
             }}
           >
             <Typography
               component="div"
               typography="body2"
               display="block"
-              color="custom.drawerCardSectionTitleColor"
+              color="custom.drawer.card.sectionTitle.primary"
               mt={2}
             >
               {t("cartDetail.amount")}
             </Typography>
             <Typography
               sx={{
-                color: "custom.drawerCardSectionBodyColor",
+                color: "custom.drawer.card.sectionBody.primary",
               }}
               component="div"
               typography="sidenav"
@@ -127,7 +128,7 @@ export default function DrawerCart(props: Props) {
               typography="body2"
               display="block"
               mt={2}
-              color="custom.drawerCardSectionTitleColor"
+              color="custom.drawer.card.sectionTitle.primary"
             >
               {t("cartDetail.description")}
             </Typography>
@@ -137,7 +138,7 @@ export default function DrawerCart(props: Props) {
               display="block"
               style={{ overflowWrap: "break-word" }}
               sx={{
-                color: "custom.drawerCardSectionBodyColor",
+                color: "custom.drawer.card.sectionBody.primary",
               }}
             >
               {el.description}
@@ -147,7 +148,7 @@ export default function DrawerCart(props: Props) {
               typography="body2"
               display="block"
               mt={2}
-              color="custom.drawerCardSectionTitleColor"
+              color="custom.drawer.card.sectionTitle.primary"
             >
               {t("cartDetail.companyName")}
             </Typography>
@@ -157,7 +158,7 @@ export default function DrawerCart(props: Props) {
               display="block"
               style={{ overflowWrap: "break-word" }}
               sx={{
-                color: "custom.drawerCardSectionBodyColor",
+                color: "custom.drawer.card.sectionBody.primary",
               }}
             >
               {el.companyName}
@@ -169,7 +170,7 @@ export default function DrawerCart(props: Props) {
                   typography="body2"
                   display="block"
                   mt={2}
-                  color="custom.drawerCardSectionTitleColor"
+                  color="custom.drawer.card.sectionTitle.primary"
                 >
                   {el.creditorReferenceId
                     ? t("cartDetail.iuv")
@@ -180,7 +181,7 @@ export default function DrawerCart(props: Props) {
                   typography="sidenav"
                   display="block"
                   sx={{
-                    color: "custom.drawerCardSectionBodyColor",
+                    color: "custom.drawer.card.sectionBody.primary",
                   }}
                 >
                   {el.creditorReferenceId ?? el.noticeNumber}
@@ -190,7 +191,7 @@ export default function DrawerCart(props: Props) {
                   typography="body2"
                   display="block"
                   mt={2}
-                  color="custom.drawerCardSectionTitleColor"
+                  color="custom.drawer.card.sectionTitle.primary"
                 >
                   {t("cartDetail.fiscalCode")}
                 </Typography>
@@ -199,7 +200,7 @@ export default function DrawerCart(props: Props) {
                   typography="sidenav"
                   display="block"
                   sx={{
-                    color: "custom.drawerCardSectionBodyColor",
+                    color: "custom.drawer.card.sectionBody.primary",
                   }}
                 >
                   {el.fiscalCode}

@@ -407,7 +407,8 @@ export default function PaymentCheckPage() {
           <IconButton
             sx={{
               color: "primary.main",
-              backgroundColor: "custom.paymentSummaryInfoButtonBg",
+              backgroundColor:
+                "custom.paymentSummary.infoButton.background.default",
             }}
             onClick={() => {
               setModalOpen(true);

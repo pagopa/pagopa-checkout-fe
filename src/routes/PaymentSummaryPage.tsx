@@ -106,7 +106,8 @@ export default function PaymentSummaryPage() {
             sx={{
               mr: 2,
               color: "primary.main",
-              backgroundColor: "custom.paymentSummaryInfoButtonBg",
+              backgroundColor:
+                "custom.paymentSummary.infoButton.background.default",
             }}
             onClick={handleInfoClick}
             onKeyDown={handleKeyDown}

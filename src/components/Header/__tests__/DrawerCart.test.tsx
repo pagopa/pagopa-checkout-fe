@@ -7,6 +7,7 @@ import * as sessionStorage from "../../../utils/storage/sessionStorage";
 import { CheckoutRoutes } from "../../../routes/models/routeModel";
 import { moneyFormat } from "../../../utils/form/formatters";
 import { truncateText } from "../../../utils/transformers/text";
+import { renderWithReduxAndThemeProvider } from "../../../utils/testing/testRenderProviders";
 
 jest.mock("../../../utils/config/config", () => ({
   CHECKOUT_API_TIMEOUT: 30000,
@@ -34,23 +35,6 @@ jest.mock("react-i18next", () => ({
     },
   }),
 }));
-
-jest.mock("@mui/material", () => {
-  const original = jest.requireActual("@mui/material");
-  return {
-    ...original,
-    useTheme: () => ({
-      palette: {
-        background: {
-          default: "#ffffff",
-        },
-        primary: {
-          main: "#1976d2",
-        },
-      },
-    }),
-  };
-});
 
 jest.mock("../../../utils/form/formatters", () => ({
   moneyFormat: jest.fn((amount) => `€${amount.toFixed(2)}`),
@@ -111,7 +95,9 @@ describe("DrawerCart Component", () => {
   });
 
   it("renders payment notices correctly", () => {
-    render(<DrawerCart paymentNotices={samplePaymentNotices} />);
+    renderWithReduxAndThemeProvider(
+      <DrawerCart paymentNotices={samplePaymentNotices} />
+    );
 
     const accordionSummaries = screen.getAllByRole("button");
 
@@ -161,7 +147,9 @@ describe("DrawerCart Component", () => {
   });
 
   it("expands first item when only one payment notice is provided", () => {
-    render(<DrawerCart paymentNotices={[samplePaymentNotices[0]]} />);
+    renderWithReduxAndThemeProvider(
+      <DrawerCart paymentNotices={[samplePaymentNotices[0]]} />
+    );
 
     // The accordion details should be visible
     expect(screen.getByText("Amount")).toBeVisible();
@@ -170,7 +158,9 @@ describe("DrawerCart Component", () => {
   });
 
   it("does not expand any item by default when multiple notices are provided", () => {
-    render(<DrawerCart paymentNotices={samplePaymentNotices} />);
+    renderWithReduxAndThemeProvider(
+      <DrawerCart paymentNotices={samplePaymentNotices} />
+    );
 
     // The accordion details should not be visible initially
     const amountLabels = screen.getAllByText("Amount");
@@ -179,7 +169,9 @@ describe("DrawerCart Component", () => {
   });
 
   it("expands an accordion when clicked", () => {
-    render(<DrawerCart paymentNotices={samplePaymentNotices} />);
+    renderWithReduxAndThemeProvider(
+      <DrawerCart paymentNotices={samplePaymentNotices} />
+    );
 
     // Find all accordion buttons
     const accordionButtons = screen.getAllByRole("button");
@@ -218,7 +210,9 @@ describe("DrawerCart Component", () => {
   });
 
   it("collapses an expanded accordion when clicked again", async () => {
-    render(<DrawerCart paymentNotices={[samplePaymentNotices[0]]} />);
+    renderWithReduxAndThemeProvider(
+      <DrawerCart paymentNotices={[samplePaymentNotices[0]]} />
+    );
 
     // Find the accordion button
     const accordionButton = screen.getByRole("button");
@@ -255,7 +249,9 @@ describe("DrawerCart Component", () => {
   });
 
   it("shows notice number and fiscal code when not in WISP_REDIRECT mode", async () => {
-    render(<DrawerCart paymentNotices={samplePaymentNotices} />);
+    renderWithReduxAndThemeProvider(
+      <DrawerCart paymentNotices={samplePaymentNotices} />
+    );
 
     // Find all accordion buttons
     const accordionButtons = screen.getAllByRole("button");
@@ -294,7 +290,9 @@ describe("DrawerCart Component", () => {
   });
 
   it("shows IUV instead of notice number when creditorReferenceId is present", () => {
-    render(<DrawerCart paymentNotices={samplePaymentNotices} />);
+    renderWithReduxAndThemeProvider(
+      <DrawerCart paymentNotices={samplePaymentNotices} />
+    );
 
     // Find all accordion buttons
     const accordionButtons = screen.getAllByRole("button");
@@ -324,7 +322,9 @@ describe("DrawerCart Component", () => {
       writable: true,
     });
 
-    render(<DrawerCart paymentNotices={samplePaymentNotices} />);
+    renderWithReduxAndThemeProvider(
+      <DrawerCart paymentNotices={samplePaymentNotices} />
+    );
 
     // Find all accordion buttons
     const accordionButtons = screen.getAllByRole("button");
@@ -361,7 +361,9 @@ describe("DrawerCart Component", () => {
       writable: true,
     });
 
-    render(<DrawerCart paymentNotices={samplePaymentNotices} />);
+    renderWithReduxAndThemeProvider(
+      <DrawerCart paymentNotices={samplePaymentNotices} />
+    );
 
     // Find all accordion buttons
     const accordionButtons = screen.getAllByRole("button");
@@ -391,7 +393,9 @@ describe("DrawerCart Component", () => {
       fiscalCode: "ABCDEF12G34H567I",
     };
 
-    render(<DrawerCart paymentNotices={[longTextNotice]} />);
+    renderWithReduxAndThemeProvider(
+      <DrawerCart paymentNotices={[longTextNotice]} />
+    );
 
     // Check that truncateText was called with the right parameters
     expect(truncateText).toHaveBeenCalledWith(longTextNotice.description, 30);
@@ -409,7 +413,9 @@ describe("DrawerCart Component", () => {
       fiscalCode: "ABCDEF12G34H567I",
     };
 
-    render(<DrawerCart paymentNotices={[longTextNotice]} />);
+    renderWithReduxAndThemeProvider(
+      <DrawerCart paymentNotices={[longTextNotice]} />
+    );
 
     // In the details view, the full text should be shown
     expect(
@@ -421,7 +427,9 @@ describe("DrawerCart Component", () => {
   });
 
   it("formats money values correctly", () => {
-    render(<DrawerCart paymentNotices={samplePaymentNotices} />);
+    renderWithReduxAndThemeProvider(
+      <DrawerCart paymentNotices={samplePaymentNotices} />
+    );
 
     // Check that moneyFormat was called with the right parameters
     expect(moneyFormat).toHaveBeenCalledWith(samplePaymentNotices[0].amount);
@@ -437,7 +445,7 @@ describe("DrawerCart Component", () => {
   });
 
   it("applies correct styling to accordions", () => {
-    const { container } = render(
+    const { container } = renderWithReduxAndThemeProvider(
       <DrawerCart paymentNotices={samplePaymentNotices} />
     );
 
@@ -459,7 +467,9 @@ describe("DrawerCart Component", () => {
   });
 
   it("has correct accessibility attributes", () => {
-    render(<DrawerCart paymentNotices={samplePaymentNotices} />);
+    renderWithReduxAndThemeProvider(
+      <DrawerCart paymentNotices={samplePaymentNotices} />
+    );
 
     // Find all accordion buttons
     const accordionButtons = screen.getAllByRole("button");

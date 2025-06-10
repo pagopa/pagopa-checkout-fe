@@ -24,8 +24,19 @@
     "allowUmdGlobalAccess": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/types"
+    ]
   },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.d.ts",
+    "*.ts",
+    "*.d.ts"  
+  ],
   "exclude": [
     "node_modules",
     "src/**/__integration_tests__/*"

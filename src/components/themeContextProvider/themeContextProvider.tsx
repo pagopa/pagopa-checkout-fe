@@ -18,12 +18,19 @@ const themeLight = createTheme({
       default: theme.palette.background.paper,
     },
     custom: {
-      // paymentSummaryInfoButtonBg intentionally omitted
+      // paymentSummary.infoButton.background.default intentionally omitted
       // drawerCardBg intentionally intentionally omitted
-      drawerCardSectionTitleColor: theme.palette.action.active,
-      // drawerCardSectionBodyColor intentionally omitted
-      footerBg: theme.palette.background.default,
-      footerFixedBg: "#f2f2f2",
+      drawer: {
+        card: { sectionTitle: theme.palette.action.active },
+        icon: { color: { main: theme.palette.action.active } },
+      },
+      // custom.drawer.card.sectionTitle.primary intentionally omitted
+      footer: {
+        principal: {
+          background: { primary: theme.palette.background.default },
+        },
+        fixed: { background: { primary: "#f2f2f2" } },
+      },
     },
   },
   components: {
@@ -64,12 +71,27 @@ const themeDark = createTheme({
       active: darkTheme.palette.common.white,
     },
     custom: {
-      paymentSummaryInfoButtonBg: "#252525",
-      drawerCardBg: "#252525",
-      drawerCardSectionTitleColor: "#3DA2FF",
-      drawerCardSectionBodyColor: darkTheme.palette.common.white,
-      footerBg: darkTheme.palette.background.default,
-      footerFixedBg: "#424242",
+      paymentSummary: { infoButton: { background: { default: "#252525" } } },
+      drawer: {
+        card: {
+          background: {
+            primary: "#252525",
+          },
+          sectionTitle: {
+            primary: "#3DA2FF",
+          },
+          sectionBody: {
+            primary: darkTheme.palette.common.white,
+          },
+        },
+        icon: { color: { main: "#3DA2FF" } },
+      },
+      footer: {
+        principal: {
+          background: { primary: darkTheme.palette.background.default },
+        },
+        fixed: { background: { primary: "#424242" } },
+      },
     },
   },
   components: {
@@ -100,6 +122,15 @@ const themeDark = createTheme({
           "&.MuiLoadingButton-root.Mui-disabled": {
             backgroundColor: "rgba(62,63,64, 0.26)",
             color: "#5C6F82",
+          },
+        },
+      },
+    },
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          "&.MuiIconButton-root:hover": {
+            backgroundColor: "#0C1519",
           },
         },
       },
