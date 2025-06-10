@@ -16,6 +16,12 @@ export const payNotice = async (
   return await message.evaluate((el) => el.textContent);
 };
 
+export const clickButtonBySelector = async (selector) => {
+  const selectorButton = selector.startsWith("#") ? selector : "#" + selector;
+  const button = await page.waitForSelector(selectorButton);
+  await button.click();
+}
+
 export const verifyPaymentAndGetError = async (noticeCode, fiscalCode) => {
   const errorMessageSelector = "#verifyPaymentErrorId";
   await fillPaymentNotificationForm(noticeCode, fiscalCode);
@@ -117,7 +123,7 @@ export const getUserButton = async () => {
 export const tryLoginWithAuthCallbackError = async (noticeCode, fiscalCode) => {
   //flow test error
   await fillPaymentNotificationForm(noticeCode, fiscalCode);
-  console.log("MockFlow setted with noticeCode: " + noticeCode);
+  console.log("MockFlow set with noticeCode: " + noticeCode);
 
   //Login
   await clickLoginButton();
@@ -179,10 +185,10 @@ export const tryHandlePspPickerPage = async ()=>{
   // this navigation will not happen in all test cases
   // so we don't want to waste too much time over it
   try {
-    await page.waitForNavigation({ timeout: 3500 });
+    await page.waitForNavigation({ timeout: 3000 });
   } catch (error) {
-    // If the navigation doesn't happen within 3500ms, just log and continue
-    console.log("Navigation did not happen within 3500ms. Continuing test.");
+    // If the navigation doesn't happen within 3000ms, just log and continue
+    console.log("Navigation did not happen within 3000ms. Continuing test.");
   }
 
   // this step needs to be skipped during tests

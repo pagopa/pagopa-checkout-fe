@@ -175,7 +175,7 @@
     "title": "I dati dell'avviso non sono corretti"
   },
   "PAYMENT_DUPLICATED": {
-    "body": "Se hai pagato su questo sito, la ricevuta è stata inviata all'indirizzo email che hai indicato durante il pagamento.",
+    "body": "Se hai pagato su questo sito, la conferma è stata inviata all'indirizzo email che hai indicato durante il pagamento.",
     "title": "Questo avviso è stato già pagato!"
   },
   "PAYMENT_EXPIRED": {
@@ -232,7 +232,7 @@
   },
   "paymentResponsePage": {
     "0": {
-      "body": "Abbiamo inviato la ricevuta del pagamento a {{useremail}}",
+      "body": "Abbiamo inviato la conferma del pagamento a {{useremail}}",
       "title": "Hai pagato {{amount}}"
     },
     "1": {
@@ -322,7 +322,8 @@
     "creditCard": "Paga con",
     "disclaimer": {
       "cheaper": "Suggerito perché il più economico",
-      "yourCard": "Suggerito perché sei già cliente"
+      "yourCard": "Suggerito perché sei già cliente",
+      "psp":"Proseguendo accetti i <terms>Termini e condizioni d'uso</terms> e dichiari di aver letto l'<privacy>Informativa Privacy</privacy> di <psp>{{pspName}}</psp>"
     },
     "drawer": {
       "body": "In questa lista trovi tutti i gestori compatibili con il tuo metodo, anche se non sei loro cliente.",
@@ -410,7 +411,9 @@
         "amount": "Per importo"
       },
       "showResults": "Mostra risultati"
-    }
+    },
+    "myBankAlertTitle": "Non trovi la tua banca?",
+    "myBankAlertBody": "Non preoccuparti: dovrai selezionarla nei passaggi successivi."
   },
   "paymentQrPage": {
     "camBlocked": "Abbiamo bisogno del tuo consenso per utilizzare la fotocamera. Per modificare la tua scelta, visita le impostazioni Privacy del tuo browser",

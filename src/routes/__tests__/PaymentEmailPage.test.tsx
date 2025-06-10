@@ -5,6 +5,15 @@ import { act, fireEvent, screen } from "@testing-library/react";
 import * as router from "react-router";
 import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders";
 import PaymentEmailPage from "../PaymentEmailPage";
+import { mixpanel } from "../../utils/mixpanel/mixpanelHelperInit";
+import {
+  MixpanelDataEntryType,
+  MixpanelEventCategory,
+  MixpanelEventsId,
+  MixpanelEventType,
+  MixpanelFlow,
+} from "../../utils/mixpanel/mixpanelEvents";
+import { paymentInfo } from "./_model";
 
 // Mock translations
 jest.mock("react-i18next", () => ({
@@ -38,6 +47,18 @@ jest.mock("../../utils/storage/sessionStorage", () => ({
 jest.mock("../../utils/eventListeners", () => ({
   onBrowserUnload: jest.fn(),
   removeEventListener: jest.fn(),
+}));
+
+jest.mock("../../utils/mixpanel/mixpanelHelperInit", () => ({
+  mixpanel: {
+    track: jest.fn(),
+  },
+}));
+
+jest.mock("../../utils/mixpanel/mixpanelTracker", () => ({
+  getDataEntryTypeFromSessionStorage: jest.fn(() => "manual"),
+  getFlowFromSessionStorage: jest.fn(() => "cart"),
+  getPaymentInfoFromSessionStorage: jest.fn(() => paymentInfo),
 }));
 
 describe("PaymentEmailPage", () => {
@@ -109,5 +130,28 @@ describe("PaymentEmailPage", () => {
       fireEvent.click(screen.getByText("paymentEmailPage.formButtons.back"));
     });
     expect(navigate).toHaveBeenCalledWith(-1);
+  });
+
+  test("should track mixpanel screen view on mount", async () => {
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentEmailPage />
+      </MemoryRouter>
+    );
+
+    expect(mixpanel.track).toHaveBeenCalledWith(
+      MixpanelEventsId.CHK_PAYMENT_EMAIL_ADDRESS,
+      {
+        EVENT_ID: MixpanelEventsId.CHK_PAYMENT_EMAIL_ADDRESS,
+        EVENT_CATEGORY: MixpanelEventCategory.UX,
+        EVENT_TYPE: MixpanelEventType.SCREEN_VIEW,
+        data_entry: MixpanelDataEntryType.MANUAL,
+        flow: MixpanelFlow.CART,
+        organization_name: "companyName",
+        organization_fiscal_code: "77777777777",
+        amount: 12000,
+        expiration_date: "2021-07-31",
+      }
+    );
   });
 });

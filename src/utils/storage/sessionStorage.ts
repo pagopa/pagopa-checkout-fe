@@ -33,6 +33,7 @@ export enum SessionItems {
   cartClientId = "cartClientId",
   loginOriginPage = "loginOriginPage",
   authToken = "authToken",
+  noticeCodeDataEntry = "noticeCodeDataEntry",
 }
 const isParsable = (item: SessionItems) =>
   !(
@@ -43,7 +44,8 @@ const isParsable = (item: SessionItems) =>
     item === SessionItems.cartClientId ||
     item === SessionItems.enableAuthentication ||
     item === SessionItems.loginOriginPage ||
-    item === SessionItems.authToken
+    item === SessionItems.authToken ||
+    item === SessionItems.noticeCodeDataEntry
   );
 
 export const getSessionItem = (item: SessionItems) => {

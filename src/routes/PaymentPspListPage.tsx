@@ -6,6 +6,13 @@ import { pipe } from "fp-ts/lib/function";
 import * as O from "fp-ts/Option";
 import { useTranslation } from "react-i18next";
 import { ButtonNaked } from "@pagopa/mui-italia";
+import {
+  getDataEntryTypeFromSessionStorage,
+  getFlowFromSessionStorage,
+  getPaymentInfoFromSessionStorage,
+  getPaymentMethodSelectedFromSessionStorage,
+} from "../utils/mixpanel/mixpanelTracker";
+import { PaymentPspListAlert } from "../features/payment/components/PaymentAlert/PaymentPspListAlert";
 import { PspOrderingModel, sortBy } from "../utils/SortUtil";
 import { PaymentPspListSortingDrawer } from "../features/payment/components/PaymentPspList/PaymentPspListSortingDrawer";
 import { PaymentPSPListGrid } from "../features/payment/components/PaymentPspList/PaymentPspListGrid";
@@ -14,7 +21,10 @@ import { ErrorsType } from "../utils/errors/checkErrorsModel";
 import ErrorModal from "../components/modals/ErrorModal";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
 import PageContainer from "../components/PageContent/PageContainer";
-import { PaymentMethod } from "../features/payment/models/paymentModel";
+import {
+  PaymentCodeTypeEnum,
+  PaymentMethod,
+} from "../features/payment/models/paymentModel";
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { setThreshold } from "../redux/slices/threshold";
 import {
@@ -28,6 +38,13 @@ import { CalculateFeeResponse } from "../../generated/definitions/payment-ecomme
 import { SessionPaymentMethodResponse } from "../../generated/definitions/payment-ecommerce/SessionPaymentMethodResponse";
 import { FormButtons } from "../components/FormButtons/FormButtons";
 import InformationModal from "../components/modals/InformationModal";
+import {
+  MixpanelEventCategory,
+  MixpanelEventsId,
+  MixpanelEventType,
+  MixpanelPaymentPhase,
+} from "../utils/mixpanel/mixpanelEvents";
+import { mixpanel } from "../utils/mixpanel/mixpanelHelperInit";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function PaymentPspListPage() {
@@ -53,6 +70,31 @@ export default function PaymentPspListPage() {
   const [pspSelected, setPspSelected] = React.useState<Bundle | undefined>(
     getSessionItem(SessionItems.pspSelected) as Bundle | undefined
   );
+
+  const [isAlertVisible, setIsAlertVisible] = React.useState(true);
+
+  React.useEffect(() => {
+    const paymentInfo = getPaymentInfoFromSessionStorage();
+    mixpanel.track(MixpanelEventsId.CHK_PAYMENT_FEE_SELECTION, {
+      EVENT_ID: MixpanelEventsId.CHK_PAYMENT_FEE_SELECTION,
+      EVENT_CATEGORY: MixpanelEventCategory.UX,
+      EVENT_TYPE: MixpanelEventType.SCREEN_VIEW,
+      flow: getFlowFromSessionStorage(),
+      payment_phase: MixpanelPaymentPhase.ATTIVA,
+      organization_name: paymentInfo?.paName,
+      organization_fiscal_code: paymentInfo?.paFiscalCode,
+      amount: paymentInfo?.amount,
+      expiration_date: paymentInfo?.dueDate,
+      payment_method_selected: getPaymentMethodSelectedFromSessionStorage(),
+      data_entry: getDataEntryTypeFromSessionStorage(),
+    });
+  }, []);
+
+  const shouldShowMyBankAlert = () =>
+    paymentMethod?.paymentTypeCode === PaymentCodeTypeEnum.MYBK &&
+    isAlertVisible;
+
+  const myBankAlertVisible = shouldShowMyBankAlert();
 
   const updatePspSorting = (sortingModel: PspOrderingModel | null) => {
     if (sortingModel === null) {
@@ -146,6 +188,13 @@ export default function PaymentPspListPage() {
   return (
     <>
       {paymentMethod && loading && <CheckoutLoader />}
+      {myBankAlertVisible && (
+        <PaymentPspListAlert
+          titleKey="paymentPspListPage.myBankAlertTitle"
+          bodyKey="paymentPspListPage.myBankAlertBody"
+          onClose={() => setIsAlertVisible(false)}
+        />
+      )}
       <PageContainer
         title="paymentPspListPage.title"
         description="paymentPspListPage.description"

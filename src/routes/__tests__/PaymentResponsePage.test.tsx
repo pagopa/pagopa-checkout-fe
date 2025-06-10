@@ -3,7 +3,6 @@ import React from "react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import * as router from "react-router";
-import * as TE from "fp-ts/TaskEither";
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders";
 import {
@@ -14,10 +13,19 @@ import {
 import PaymentResponsePage from "../../routes/PaymentResponsePage";
 import "jest-location-mock";
 import { checkLogout } from "../../utils/api/helper";
-import { getViewOutcomeFromEcommerceResultCode } from "../../utils/transactions/TransactionResultUtil";
-import { ecommerceTransaction } from "../../utils/transactions/transactionHelper";
-import { getUrlParameter } from "../../utils/regex/urlUtilities";
-import { decodeToUUID } from "../../utils/api/response";
+import { ViewOutcomeEnum } from "../../utils/transactions/TransactionResultUtil";
+import { callServices } from "../../utils/api/response";
+
+import { mixpanel } from "../../utils/mixpanel/mixpanelHelperInit";
+import {
+  MixpanelDataEntryType,
+  MixpanelEventCategory,
+  MixpanelEventsId,
+  MixpanelEventType,
+  MixpanelFlow,
+  MixpanelPaymentPhase,
+} from "../../utils/mixpanel/mixpanelEvents";
+import { PaymentCodeTypeEnum } from "../../features/payment/models/paymentModel";
 import {
   paymentMethod,
   paymentMethodInfo,
@@ -26,30 +34,8 @@ import {
   paymentInfo,
   sessionPayment,
   cart,
-  transactionInfoOK,
 } from "./_model";
 
-jest.mock("../../utils/transactions/TransactionResultUtil", () => ({
-  getViewOutcomeFromEcommerceResultCode: jest.fn(),
-  ViewOutcomeEnum: {
-    SUCCESS: "0",
-    GENERIC_ERROR: "1",
-    AUTH_ERROR: "2",
-    INVALID_DATA: "3",
-    TIMEOUT: "4",
-    INVALID_CARD: "7",
-    CANCELED_BY_USER: "8",
-    EXCESSIVE_AMOUNT: "10",
-    TAKING_CHARGE: "17",
-    REFUNDED: "18",
-    PSP_ERROR: "25",
-    BALANCE_LIMIT: "116",
-    CVV_ERROR: "117",
-    LIMIT_EXCEEDED: "121",
-  },
-}));
-
-// Mock translations
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
   Trans: ({
@@ -82,53 +68,35 @@ jest.mock("../../utils/eventListeners", () => ({
   removeEventListener: jest.fn(),
 }));
 
-// Mock the API call with fp-ts TaskEither
 jest.mock("../../utils/api/helper", () => ({
   checkLogout: jest.fn(),
 }));
 
-jest.mock("../../utils/transactions/transactionHelper", () => ({
-  ecommerceTransaction: jest.fn(),
-}));
-
-jest.mock("../../utils/config/fetch", () => ({
-  constantPollingWithPromisePredicateFetch: jest.fn(),
-}));
-
-jest.mock("../../utils/regex/urlUtilities", () => ({
-  getUrlParameter: jest.fn(),
-}));
-
 jest.mock("../../utils/api/response", () => ({
-  ...(jest.requireActual("../../utils/api/response") as any),
-  decodeToUUID: jest.fn(),
+  callServices: jest.fn(),
 }));
 
-// Mock the config module
-jest.mock("../../utils/config/config", () =>
-  // Return the actual implementation but with our mock for getConfigOrThrow
-  ({
-    // This is the key fix - handle the case when no key is provided
-    getConfigOrThrow: jest.fn((key) => {
-      // Create a mapping of all config values
-      const configValues = {
-        CHECKOUT_ENV: "TEST",
-        // Add other config values as needed
-      } as any;
+jest.mock("../../utils/config/config", () => ({
+  getConfigOrThrow: jest.fn(() => ({
+    CHECKOUT_ENV: "TEST",
+  })),
+  isTestEnv: jest.fn(() => false),
+  isDevEnv: jest.fn(() => false),
+  isProdEnv: jest.fn(() => true),
+}));
 
-      // If no key provided, return all config values (this is the important part)
-      if (key === undefined) {
-        return configValues;
-      }
+jest.mock("../../utils/mixpanel/mixpanelHelperInit", () => ({
+  mixpanel: {
+    track: jest.fn(),
+  },
+}));
 
-      // Otherwise return the specific config value
-      return configValues[key] || "";
-    }),
-    isTestEnv: jest.fn(() => false),
-    isDevEnv: jest.fn(() => false),
-    isProdEnv: jest.fn(() => true),
-  })
-);
+jest.mock("../../utils/mixpanel/mixpanelTracker", () => ({
+  getFlowFromSessionStorage: jest.fn(() => "cart"),
+  getPaymentInfoFromSessionStorage: jest.fn(() => paymentInfo),
+  getPaymentMethodSelectedFromSessionStorage: jest.fn(() => "CP"),
+  getDataEntryTypeFromSessionStorage: jest.fn(() => "manual"),
+}));
 
 const mockGetSessionItemNoCart = (item: SessionItems) => {
   switch (item) {
@@ -176,26 +144,15 @@ const mockGetSessionItemWithCart = (item: SessionItems) => {
   }
 };
 
-// Create a Jest spy for navigation
 const navigate = jest.fn();
 
-describe("V1PaymentResponsePage no cart", () => {
+describe("PaymentResponsePage — no cart", () => {
   beforeEach(() => {
-    // Clear previous calls to our spy navigate function before each test
     jest.spyOn(router, "useNavigate").mockReset();
     jest.spyOn(router, "useNavigate").mockImplementation(() => navigate);
     (getSessionItem as jest.Mock).mockImplementation(mockGetSessionItemNoCart);
-    (getUrlParameter as jest.Mock).mockReturnValue(
-      transactionInfoOK.transactionId
-    );
-    (decodeToUUID as jest.Mock).mockImplementation(
-      () => transactionInfoOK.transactionId
-    );
-    (ecommerceTransaction as jest.Mock).mockReturnValue(
-      TE.right(transactionInfoOK)
-    );
   });
-  // TEST WITHOUT CART
+
   test.each([
     "0",
     "1",
@@ -211,50 +168,46 @@ describe("V1PaymentResponsePage no cart", () => {
     "116",
     "117",
     "121",
-  ])(
-    "should show payment outcome message and come back to home on close button click",
-    async (val) => {
-      (getViewOutcomeFromEcommerceResultCode as jest.Mock).mockImplementation(
-        () => val
-      );
-      renderWithReduxProvider(
-        <MemoryRouter>
-          <PaymentResponsePage />
-        </MemoryRouter>
-      );
-      await waitFor(() => {
-        expect(
-          screen.getByText("paymentResponsePage." + val + ".title")
-        ).toBeVisible();
-        expect(checkLogout).toHaveBeenCalled();
-        expect(clearStorage).toHaveBeenCalled();
-        fireEvent.click(screen.getByText("errorButton.close"));
-      });
-      expect(navigate).toHaveBeenCalledWith("/", { replace: true });
-    }
-  );
+  ])("renders outcome %s and returns home", async (val) => {
+    const transactionOutcomeInfo = {
+      outcome: Number(val),
+      isFinalStatus: true,
+      totalAmount: 1000,
+      fees: 100,
+    };
+    (callServices as jest.Mock).mockImplementation(async (cb: any) => {
+      cb(transactionOutcomeInfo);
+      return Promise.resolve();
+    });
+
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentResponsePage />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(`paymentResponsePage.${val}.title`)
+      ).toBeVisible();
+      expect(checkLogout).toHaveBeenCalled();
+      expect(clearStorage).toHaveBeenCalled();
+    });
+
+    fireEvent.click(screen.getByText("errorButton.close"));
+    expect(navigate).toHaveBeenCalledWith("/", { replace: true });
+  });
 });
 
-describe("V1PaymentResponsePage with cart", () => {
+describe("PaymentResponsePage — with cart", () => {
   beforeEach(() => {
-    // Clear previous calls to our spy navigate function before each test
     jest.spyOn(router, "useNavigate").mockReset();
     jest.spyOn(router, "useNavigate").mockImplementation(() => navigate);
     (getSessionItem as jest.Mock).mockImplementation(
       mockGetSessionItemWithCart
     );
-
-    (getUrlParameter as jest.Mock).mockReturnValue(
-      transactionInfoOK.transactionId
-    );
-    (decodeToUUID as jest.Mock).mockImplementation(
-      () => transactionInfoOK.transactionId
-    );
-    (ecommerceTransaction as jest.Mock).mockReturnValue(
-      TE.right(transactionInfoOK)
-    );
   });
-  // TEST WITH CART
+
   test.each([
     "0",
     "1",
@@ -270,30 +223,76 @@ describe("V1PaymentResponsePage with cart", () => {
     "116",
     "117",
     "121",
-  ])(
-    "should show payment outcome message and come back to home on close button click",
-    async (val) => {
-      (getViewOutcomeFromEcommerceResultCode as jest.Mock).mockImplementation(
-        () => val
+  ])("renders outcome %s and redirects correctly", async (val) => {
+    const transactionOutcomeInfo = {
+      outcome: Number(val),
+      isFinalStatus: true,
+      totalAmount: 1000,
+      fees: 100,
+    };
+    (callServices as jest.Mock).mockImplementation(async (cb: any) => {
+      cb(transactionOutcomeInfo);
+      return Promise.resolve();
+    });
+
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentResponsePage />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(`paymentResponsePage.${val}.title`)
+      ).toBeVisible();
+      expect(checkLogout).toHaveBeenCalled();
+      expect(clearStorage).toHaveBeenCalled();
+    });
+
+    fireEvent.click(screen.getByText("paymentResponsePage.buttons.continue"));
+    expect(window.location.replace).toHaveBeenCalledWith(
+      val === ViewOutcomeEnum.SUCCESS
+        ? cart.returnUrls.returnOkUrl
+        : cart.returnUrls.returnErrorUrl
+    );
+  });
+
+  test("should track payment response success with mixpanel", async () => {
+    const transactionOutcomeInfo = {
+      outcome: 0,
+      isFinalStatus: true,
+      totalAmount: 1000,
+      fees: 100,
+    };
+
+    (callServices as jest.Mock).mockImplementation(async (cb: any) => {
+      cb(transactionOutcomeInfo);
+      return Promise.resolve();
+    });
+
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentResponsePage />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(mixpanel.track).toHaveBeenCalledWith(
+        MixpanelEventsId.CHK_PAYMENT_UX_SUCCESS,
+        expect.objectContaining({
+          EVENT_ID: MixpanelEventsId.CHK_PAYMENT_UX_SUCCESS,
+          EVENT_CATEGORY: MixpanelEventCategory.UX,
+          EVENT_TYPE: MixpanelEventType.SCREEN_VIEW,
+          flow: MixpanelFlow.CART,
+          payment_phase: MixpanelPaymentPhase.PAGAMENTO,
+          organization_name: "companyName",
+          organization_fiscal_code: "77777777777",
+          amount: 12000,
+          expiration_date: "2021-07-31",
+          payment_method_selected: PaymentCodeTypeEnum.CP,
+          data_entry: MixpanelDataEntryType.MANUAL,
+        })
       );
-      renderWithReduxProvider(
-        <MemoryRouter>
-          <PaymentResponsePage />
-        </MemoryRouter>
-      );
-      await waitFor(() => {
-        expect(
-          screen.getByText("paymentResponsePage." + val + ".title")
-        ).toBeVisible();
-        expect(checkLogout).toHaveBeenCalled();
-        expect(clearStorage).toHaveBeenCalled();
-      });
-      fireEvent.click(screen.getByText("paymentResponsePage.buttons.continue"));
-      expect(window.location.replace).toHaveBeenCalledWith(
-        val === "0"
-          ? cart.returnUrls.returnOkUrl
-          : cart.returnUrls.returnErrorUrl
-      );
-    }
-  );
+    });
+  });
 });

@@ -40,7 +40,7 @@ pr: none
 # runtime, the pipeline is currently configured to use a Windows hosted image for
 # the build and deploy.
 pool:
-  vmImage: 'windows-2019'
+  vmImage: 'windows-2022'
 
 resources:
   repositories:
@@ -73,6 +73,13 @@ stages:
               #  ex: Build.SourceBranch=refs/heads/release/pagopa-porting --> release/pagopa-porting
               #  ex: Build.SourceBranch=refs/tags/v1.2.3-RELEASE --> v1.2.3-RELEASE
               gitReference: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/tags/', ''), 'refs/heads/', '') }}
+
+          # Update the meta robots tag in src/index.html to prevent indexing in dev environment
+          - script: |
+              sed -i 's/<meta name="robots" content="index, follow">/<meta name="robots" content="noindex, nofollow">/' src/index.html
+              echo "Modified robots meta tag in src/index.html"
+              grep -n "robots" src/index.html
+            displayName: 'Update robots meta tag'
 
           - template: azure-templates/setup-env.yml
             parameters:
@@ -203,6 +210,13 @@ stages:
               #  ex: Build.SourceBranch=refs/heads/main --> main
               #  ex: Build.SourceBranch=refs/tags/v1.2.3-RELEASE --> v1.2.3-RELEASE
               gitReference: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/tags/', ''), 'refs/heads/', '') }}
+
+          # Update the meta robots tag in src/index.html to prevent indexing in uat environment
+          - script: |
+              sed -i 's/<meta name="robots" content="index, follow">/<meta name="robots" content="noindex, nofollow">/' src/index.html
+              echo "Modified robots meta tag in src/index.html"
+              grep -n "robots" src/index.html
+            displayName: 'Update robots meta tag'
 
           - template: azure-templates/setup-env.yml
             parameters:
