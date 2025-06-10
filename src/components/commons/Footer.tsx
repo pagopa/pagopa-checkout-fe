@@ -9,7 +9,6 @@ import lang, { langSelectVisibleOnPages } from "../../translations/lang";
 export default function Footer(props: { fixedPages: Array<string> }) {
   const { t } = useTranslation();
   const theme = useTheme();
-  const isDarkMode = theme.palette.mode !== "light";
   const location = useLocation();
   const path = location.pathname.split("/").slice(-1)[0];
   const isFixed = () => props.fixedPages.includes(path);
@@ -32,10 +31,10 @@ export default function Footer(props: { fixedPages: Array<string> }) {
         sm: 0,
       }}
       bgcolor={{
-        ...(isFixed()
-          ? { xs: isDarkMode ? "#424242" : "#f2f2f2" }
-          : { xs: "background.default" }),
-        sm: isDarkMode ? "#424242" : "#f2f2f2",
+        xs: isFixed()
+          ? theme.palette.custom.footerFixedBg
+          : theme.palette.custom.footerBg,
+        sm: theme.palette.custom.footerFixedBg,
       }}
     >
       <Typography variant="caption" component={"div"}>

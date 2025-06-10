@@ -1,5 +1,5 @@
 import React, { createContext, useState, useMemo, useEffect } from "react";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { alpha, createTheme, ThemeProvider } from "@mui/material/styles";
 import { ReactNode } from "react";
 import { theme, darkTheme } from "@pagopa/mui-italia";
 import { SessionItems } from "../../utils/storage/sessionStorage";
@@ -22,6 +22,8 @@ const themeLight = createTheme({
       // drawerCardBg intentionally intentionally omitted
       drawerCardSectionTitleColor: theme.palette.action.active,
       // drawerCardSectionBodyColor intentionally omitted
+      footerBg: theme.palette.background.default,
+      footerFixedBg: "#f2f2f2",
     },
   },
   components: {
@@ -58,11 +60,16 @@ const themeDark = createTheme({
       primary: "#fff",
       secondary: "#5C6F82",
     },
+    action: {
+      active: darkTheme.palette.common.white,
+    },
     custom: {
       paymentSummaryInfoButtonBg: "#252525",
       drawerCardBg: "#252525",
       drawerCardSectionTitleColor: "#3DA2FF",
       drawerCardSectionBodyColor: darkTheme.palette.common.white,
+      footerBg: darkTheme.palette.background.default,
+      footerFixedBg: "#424242",
     },
   },
   components: {
@@ -112,6 +119,33 @@ const themeDark = createTheme({
             color: "#fff",
             "-webkit-box-shadow": "0 0 0 30px #3e3f40 inset",
           },
+        },
+      },
+    },
+    MuiListItemText: {
+      styleOverrides: {
+        primary: {
+          color: darkTheme.palette.common.white,
+        },
+      },
+    },
+    MuiMenuItem: {
+      styleOverrides: {
+        root: {
+          "& .MuiListItemIcon-root": {
+            color: darkTheme.palette.common.white,
+          },
+          "&:hover": {
+            backgroundColor: alpha(darkTheme.palette.common.white, 0.04),
+          },
+        },
+      },
+    },
+    MuiPopover: {
+      styleOverrides: {
+        paper: {
+          boxShadow:
+            "0px 8px 10px -5px rgba(0,0,0,0.2),0px 16px 24px 2px rgba(0,0,0,0.14),0px 6px 30px 5px rgba(0,0,0,0.12)",
         },
       },
     },

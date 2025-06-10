@@ -75,7 +75,7 @@ export function App() {
     );
   };
 
-  // / Right now is very raw check on the session storage
+  // / Very raw check on the session storage to check if we have to use the dark mode
   const checkThemeDarkMode = () => {
     const themeModeValue = sessionStorage.getItem(SessionItems.activeTheme);
     if (
