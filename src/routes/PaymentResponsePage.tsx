@@ -32,6 +32,19 @@ import { resetThreshold } from "../redux/slices/threshold";
 import { removeLoggedUser } from "../redux/slices/loggedUser";
 import { checkLogout } from "../utils/api/helper";
 import { TransactionOutcomeInfo } from "../../generated/definitions/payment-ecommerce/TransactionOutcomeInfo";
+import {
+  getDataEntryTypeFromSessionStorage,
+  getFlowFromSessionStorage,
+  getPaymentInfoFromSessionStorage,
+  getPaymentMethodSelectedFromSessionStorage,
+} from "../utils/mixpanel/mixpanelTracker";
+import { mixpanel } from "../utils/mixpanel/mixpanelHelperInit";
+import {
+  MixpanelEventCategory,
+  MixpanelEventsId,
+  MixpanelEventType,
+  MixpanelPaymentPhase,
+} from "../utils/mixpanel/mixpanelEvents";
 import FindOutMoreModal from "./../components/modals/FindOutMoreModal";
 
 type PrintData = {
@@ -133,6 +146,23 @@ export default function PaymentResponsePage() {
       (document.title as any) = pageTitle + " - pagoPA";
     }
   }, [outcomeMessage]);
+
+  React.useEffect(() => {
+    const paymentInfo = getPaymentInfoFromSessionStorage();
+    mixpanel.track(MixpanelEventsId.CHK_PAYMENT_UX_SUCCESS, {
+      EVENT_ID: MixpanelEventsId.CHK_PAYMENT_UX_SUCCESS,
+      EVENT_CATEGORY: MixpanelEventCategory.UX,
+      EVENT_TYPE: MixpanelEventType.SCREEN_VIEW,
+      organization_name: paymentInfo?.paName,
+      organization_fiscal_code: paymentInfo?.paFiscalCode,
+      amount: paymentInfo?.amount,
+      expiration_date: paymentInfo?.dueDate,
+      payment_method_selected: getPaymentMethodSelectedFromSessionStorage(),
+      data_entry: getDataEntryTypeFromSessionStorage(),
+      flow: getFlowFromSessionStorage(),
+      payment_phase: MixpanelPaymentPhase.PAGAMENTO,
+    });
+  }, []);
 
   const { t } = useTranslation();
 

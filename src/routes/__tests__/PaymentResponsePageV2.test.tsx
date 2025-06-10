@@ -15,8 +15,19 @@ import * as reduxHooks from "../../redux/hooks/hooks";
 import { removeLoggedUser } from "../../redux/slices/loggedUser";
 import { resetThreshold } from "../../redux/slices/threshold";
 import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce-v3/NewTransactionResponse";
+import { mixpanel } from "../../utils/mixpanel/mixpanelHelperInit";
+import {
+  MixpanelDataEntryType,
+  MixpanelEventCategory,
+  MixpanelEventsId,
+  MixpanelEventType,
+  MixpanelFlow,
+  MixpanelPaymentPhase,
+} from "../../utils/mixpanel/mixpanelEvents";
+import { PaymentCodeTypeEnum } from "../../features/payment/models/paymentModel";
 import {
   cart as mockCart,
+  paymentInfo,
   transaction as mockTransactionOutcomeInfoData,
 } from "./_model";
 
@@ -92,6 +103,19 @@ jest.mock(
     ({ children }: { children: React.ReactNode }) =>
       <div data-testid="page-container">{children}</div>
 );
+
+jest.mock("../../utils/mixpanel/mixpanelHelperInit", () => ({
+  mixpanel: {
+    track: jest.fn(),
+  },
+}));
+
+jest.mock("../../utils/mixpanel/mixpanelTracker", () => ({
+  getFlowFromSessionStorage: jest.fn(() => "cart"),
+  getPaymentInfoFromSessionStorage: jest.fn(() => paymentInfo),
+  getPaymentMethodSelectedFromSessionStorage: jest.fn(() => "CP"),
+  getDataEntryTypeFromSessionStorage: jest.fn(() => "manual"),
+}));
 
 const mockNavigate = jest.fn();
 const mockDispatch = jest.fn();
@@ -448,5 +472,50 @@ describe("PaymentResponsePageV2", () => {
         expect(window.location.replace).toHaveBeenCalledWith(expectedUrl);
       }
     );
+  });
+
+  describe("Mixpanel Tracking", () => {
+    test("should track mixpanel CHK_PAYMENT_UX_SUCCESS on mount", async () => {
+      mockGetUriFragments.mockReturnValue({
+        outcome: ViewOutcomeEnum.SUCCESS.toString(),
+        totalAmount: "12000",
+        fees: "15",
+        transactionId: "testId",
+      });
+
+      mockGetSessionItem.mockImplementation((item: SessionItems) => {
+        switch (item) {
+          case SessionItems.transaction:
+            return { transactionId: "testId" };
+          case SessionItems.useremail:
+            return "test@example.com";
+          case SessionItems.cart:
+            return undefined;
+          default:
+            return undefined;
+        }
+      });
+
+      renderComponent();
+
+      await waitFor(() => {
+        expect(mixpanel.track).toHaveBeenCalledWith(
+          MixpanelEventsId.CHK_PAYMENT_UX_SUCCESS,
+          expect.objectContaining({
+            EVENT_ID: MixpanelEventsId.CHK_PAYMENT_UX_SUCCESS,
+            EVENT_CATEGORY: MixpanelEventCategory.UX,
+            EVENT_TYPE: MixpanelEventType.SCREEN_VIEW,
+            organization_name: "companyName",
+            organization_fiscal_code: "77777777777",
+            amount: 12000,
+            expiration_date: "2021-07-31",
+            payment_method_selected: PaymentCodeTypeEnum.CP,
+            data_entry: MixpanelDataEntryType.MANUAL,
+            flow: MixpanelFlow.CART,
+            payment_phase: MixpanelPaymentPhase.PAGAMENTO,
+          })
+        );
+      });
+    });
   });
 });
