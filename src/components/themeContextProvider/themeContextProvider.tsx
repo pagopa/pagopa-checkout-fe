@@ -209,14 +209,12 @@ export const ThemeContext = createContext<ThemeContextType>({
 
 export const ThemeContextProvider = ({ children }: { children: ReactNode }) => {
   const [mode, setMode] = useState(() => {
-    const storedMode = sessionStorage.getItem(
-      SessionItems.activeTheme
-    ) as string;
+    const storedMode = localStorage.getItem(SessionItems.activeTheme) as string;
     return storedMode ? storedMode : ThemeModes.LIGHT;
   });
 
   useEffect(() => {
-    sessionStorage.setItem(SessionItems.activeTheme, mode);
+    localStorage.setItem(SessionItems.activeTheme, mode);
   }, [mode]);
 
   const theme = useMemo(

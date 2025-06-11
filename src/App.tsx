@@ -77,7 +77,7 @@ export function App() {
 
   // / Very raw check on the session storage to check if we have to use the dark mode
   const checkThemeDarkMode = () => {
-    const themeModeValue = sessionStorage.getItem(SessionItems.activeTheme);
+    const themeModeValue = localStorage.getItem(SessionItems.activeTheme);
     if (
       (themeModeValue === ThemeModes.DARK && mode !== ThemeModes.DARK) ||
       (themeModeValue === ThemeModes.LIGHT && mode !== ThemeModes.LIGHT)
