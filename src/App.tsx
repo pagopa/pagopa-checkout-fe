@@ -1,7 +1,5 @@
-import { createTheme, ThemeProvider } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
-import { theme } from "@pagopa/mui-italia";
-import React from "react";
+import React, { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { evaluateFeatureFlag } from "./utils/api/helper";
@@ -33,43 +31,12 @@ import { SessionItems } from "./utils/storage/sessionStorage";
 import SessionExpiredPage from "./routes/SessionExpiredPage";
 import AuthCallback from "./routes/AuthCallbackPage";
 import AuthExpiredPage from "./routes/AuthExpiredPage";
+import {
+  ThemeContext,
+  ThemeContextProvider,
+  ThemeModes,
+} from "./components/themeContextProvider/themeContextProvider";
 import PaymentPspListPage from "./routes/PaymentPspListPage";
-
-const checkoutTheme = createTheme({
-  ...theme,
-  palette: {
-    ...theme.palette,
-    background: {
-      default: theme.palette.background.paper,
-    },
-  },
-  components: {
-    ...theme.components,
-    MuiFormHelperText: {
-      styleOverrides: {
-        root: {
-          marginTop: 0,
-          height: 0,
-        },
-      },
-    },
-    MuiAlert: {
-      styleOverrides: {
-        message: {
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-        },
-        outlined: {
-          ...(typeof theme.components?.MuiAlert?.styleOverrides?.outlined ===
-          "object"
-            ? theme.components.MuiAlert.styleOverrides.outlined
-            : {}),
-        },
-      },
-    },
-  },
-});
 
 export function App() {
   const { t } = useTranslation();
@@ -83,6 +50,7 @@ export function App() {
     CheckoutRoutes.SESSIONE_SCADUTA,
     CheckoutRoutes.DONA,
   ];
+  const { mode, toggleTheme } = useContext(ThemeContext);
 
   const onFeatureFlagError = (e: string) => {
     // eslint-disable-next-line no-console
@@ -107,11 +75,23 @@ export function App() {
     );
   };
 
+  // / Very raw check on the session storage to check if we have to use the dark mode
+  const checkThemeDarkMode = () => {
+    const themeModeValue = localStorage.getItem(SessionItems.activeTheme);
+    if (
+      (themeModeValue === ThemeModes.DARK && mode !== ThemeModes.DARK) ||
+      (themeModeValue === ThemeModes.LIGHT && mode !== ThemeModes.LIGHT)
+    ) {
+      toggleTheme();
+    }
+  };
+
   React.useEffect(() => {
     void initFeatureFlag();
-
     mixpanelInit();
+    checkThemeDarkMode();
   }, []);
+
   // eslint-disable-next-line functional/immutable-data
   document.title = t("app.title");
   // eslint-disable-next-line functional/immutable-data
@@ -120,7 +100,7 @@ export function App() {
   };
 
   return (
-    <ThemeProvider theme={checkoutTheme}>
+    <ThemeContextProvider>
       <CssBaseline />
       <BrowserRouter
         future={{
@@ -254,6 +234,6 @@ export function App() {
           </Routes>
         </Layout>
       </BrowserRouter>
-    </ThemeProvider>
+    </ThemeContextProvider>
   );
 }

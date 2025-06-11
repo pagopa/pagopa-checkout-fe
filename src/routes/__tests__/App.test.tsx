@@ -41,7 +41,7 @@ import "@testing-library/jest-dom";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import fetchMock from "jest-fetch-mock";
-import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders";
+import { renderWithReduxAndThemeProvider } from "../../utils/testing/testRenderProviders";
 import * as helper from "../../utils/api/helper";
 import * as mixpanel from "../../utils/mixpanel/mixpanelHelperInit";
 import { App } from "../../App";
@@ -50,7 +50,20 @@ import { App } from "../../App";
 jest.mock("@pagopa/mui-italia", () => ({
   theme: {
     palette: {
-      background: { paper: "#fff" },
+      background: { paper: "#fff", default: "#fff" },
+      action: { active: "#000000" },
+      common: { white: "#ffffff" },
+    },
+    components: {
+      MuiAlert: { styleOverrides: { outlined: {} } },
+    },
+  },
+  darkTheme: {
+    palette: {
+      background: { paper: "#121212", default: "#121212" },
+      action: { active: "#ffffff" },
+      common: { white: "#ffffff" },
+      text: { primary: "#ffffff", secondary: "#5C6F82" },
     },
     components: {
       MuiAlert: { styleOverrides: { outlined: {} } },
@@ -151,7 +164,7 @@ describe("App", () => {
   });
 
   it("renders IndexPage and calls feature flag/mixpanel", async () => {
-    renderWithReduxProvider(<App />); // ✅ Just render App directly
+    renderWithReduxAndThemeProvider(<App />); // ✅ Just render App directly
 
     await userEvent.click(screen.getByText("mainPage.main.skipToContent"));
 

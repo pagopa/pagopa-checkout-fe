@@ -405,7 +405,11 @@ export default function PaymentCheckPage() {
         itemSx={{ pl: 0, pr: 0, gap: 2 }}
         endAdornment={
           <IconButton
-            sx={{ color: "primary.main" }}
+            sx={{
+              color: "primary.main",
+              backgroundColor:
+                "custom.paymentSummary.infoButton.background.default",
+            }}
             onClick={() => {
               setModalOpen(true);
             }}

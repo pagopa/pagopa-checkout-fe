@@ -6,6 +6,10 @@ import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders
 import DonationPageDismissed from "../DonationPageDismissed";
 import "jest-location-mock";
 
+jest.mock("../../utils/config/config", () => ({
+  CHECKOUT_API_RETRY_NUMBERS: 5,
+}));
+
 // Mock translations and recaptcha
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),

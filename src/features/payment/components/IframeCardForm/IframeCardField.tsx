@@ -132,6 +132,7 @@ export function IframeCardField(props: Props) {
 
 const useStyles = (props: Props): Styles => {
   const { style } = props;
+  const { palette } = useTheme();
   const borderStyle = useBorderStyles(props);
 
   return {
@@ -161,6 +162,8 @@ const useStyles = (props: Props): Styles => {
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "flex-end",
+      backgroundColor: palette.common.white,
+      borderRadius: "4px",
     },
     iframe: {
       display: "flex",
