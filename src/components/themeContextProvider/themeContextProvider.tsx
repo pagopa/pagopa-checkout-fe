@@ -18,13 +18,10 @@ const themeLight = createTheme({
       default: theme.palette.background.paper,
     },
     custom: {
-      // paymentSummary.infoButton.background.default intentionally omitted
-      // drawerCardBg intentionally intentionally omitted
       drawer: {
         card: { sectionTitle: theme.palette.action.active },
         icon: { color: { main: theme.palette.action.active } },
       },
-      // custom.drawer.card.sectionTitle.primary intentionally omitted
       footer: {
         principal: {
           background: { primary: theme.palette.background.default },
