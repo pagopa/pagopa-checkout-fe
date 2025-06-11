@@ -177,6 +177,22 @@ const themeDark = createTheme({
         },
       },
     },
+    MuiTableCell: {
+      styleOverrides: {
+        root: {
+          color: darkTheme.palette.common.white,
+        },
+      },
+    },
+    MuiTableSortLabel: {
+      styleOverrides: {
+        root: {
+          "& .MuiSvgIcon-root.MuiTableSortLabel-icon": {
+            color: darkTheme.palette.common.white,
+          },
+        },
+      },
+    },
   },
 });
 
