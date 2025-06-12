@@ -17,6 +17,7 @@ import { resetThreshold } from "../../redux/slices/threshold";
 import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce-v3/NewTransactionResponse";
 import { mixpanel } from "../../utils/mixpanel/mixpanelHelperInit";
 import {
+  eventViewOutcomeMap,
   MixpanelDataEntryType,
   MixpanelEventCategory,
   MixpanelEventsId,
@@ -515,6 +516,63 @@ describe("PaymentResponsePageV2", () => {
             payment_phase: MixpanelPaymentPhase.PAGAMENTO,
           })
         );
+      });
+    });
+
+    test.each([
+      ViewOutcomeEnum.AUTH_ERROR,
+      ViewOutcomeEnum.INVALID_DATA,
+      ViewOutcomeEnum.TIMEOUT,
+      ViewOutcomeEnum.CIRCUIT_ERROR,
+      ViewOutcomeEnum.MISSING_FIELDS,
+      ViewOutcomeEnum.INVALID_CARD,
+      ViewOutcomeEnum.CANCELED_BY_USER,
+      ViewOutcomeEnum.EXCESSIVE_AMOUNT,
+      ViewOutcomeEnum.REFUNDED,
+      ViewOutcomeEnum.PSP_ERROR,
+      ViewOutcomeEnum.BALANCE_LIMIT,
+      ViewOutcomeEnum.LIMIT_EXCEEDED,
+      ViewOutcomeEnum.INVALID_METHOD,
+      ViewOutcomeEnum.TAKING_CHARGE,
+    ])("should track mixpanel %s KO outcome on mount", async (outcomeValue) => {
+      mockGetUriFragments.mockReturnValue({
+        outcome: outcomeValue.toString(),
+        totalAmount: "12000",
+        fees: "15",
+        transactionId: "testId",
+      });
+
+      mockGetSessionItem.mockImplementation((item: SessionItems) => {
+        switch (item) {
+          case SessionItems.transaction:
+            return { transactionId: "testId" };
+          case SessionItems.useremail:
+            return "test@example.com";
+          case SessionItems.cart:
+            return undefined;
+          default:
+            return undefined;
+        }
+      });
+
+      renderComponent();
+
+      await waitFor(() => {
+        const calls = (mixpanel.track as jest.Mock).mock.calls;
+        expect(
+          calls.some(
+            ([eventId, props]) =>
+              eventId === eventViewOutcomeMap[outcomeValue] &&
+              props.EVENT_ID === eventViewOutcomeMap[outcomeValue] &&
+              props.EVENT_CATEGORY === MixpanelEventCategory.KO &&
+              props.payment_phase === MixpanelPaymentPhase.PAGAMENTO &&
+              props.organization_name === "companyName" &&
+              props.organization_fiscal_code === "77777777777" &&
+              props.amount === 12000 &&
+              props.expiration_date === "2021-07-31" &&
+              props.data_entry === MixpanelDataEntryType.MANUAL
+          )
+        ).toBe(true);
       });
     });
   });

@@ -37,6 +37,11 @@ import {
 import { UserInfoResponse } from "../../../generated/definitions/checkout-auth-service-v1/UserInfoResponse";
 import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce-v3/NewTransactionResponse";
 import { CancelPayment } from "../../components/modals/CancelPayment";
+import { mixpanel } from "../../utils/mixpanel/mixpanelHelperInit";
+import {
+  MixpanelEventCategory,
+  MixpanelEventsId,
+} from "../../utils/mixpanel/mixpanelEvents";
 
 export default function LoginHeader() {
   const { t } = useTranslation();
@@ -100,6 +105,11 @@ export default function LoginHeader() {
       } else {
         window.location.assign(url);
       }
+      mixpanel.track(MixpanelEventsId.CHK_LOGIN_SUCCESS, {
+        EVENT_ID: MixpanelEventsId.CHK_LOGIN_SUCCESS,
+        EVENT_CATEGORY: MixpanelEventCategory.TECH,
+        page: window.location.pathname,
+      });
     } catch {
       onError(ErrorsType.GENERIC_ERROR);
     }
@@ -107,6 +117,11 @@ export default function LoginHeader() {
 
   const onLogin = async (recaptchaRef: ReCAPTCHA) => {
     setLoading(true);
+    mixpanel.track(MixpanelEventsId.CHK_LOGIN_REQUEST, {
+      EVENT_ID: MixpanelEventsId.CHK_LOGIN_REQUEST,
+      EVENT_CATEGORY: MixpanelEventCategory.TECH,
+      page: window.location.pathname,
+    });
     await proceedToLogin({ recaptchaRef, onError, onResponse });
   };
 
