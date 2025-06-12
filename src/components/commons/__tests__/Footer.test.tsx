@@ -3,8 +3,12 @@ import "@testing-library/jest-dom";
 import { queryByAttribute } from "@testing-library/react";
 import { screen } from "@testing-library/dom";
 import { MemoryRouter } from "react-router-dom";
+import { renderWithReduxAndThemeProvider } from "../../../utils/testing/testRenderProviders";
 import Footer from "../Footer";
-import { renderWithReduxProvider } from "../../../utils/testing/testRenderProviders";
+
+jest.mock("../../../utils/config/config", () => ({
+  CHECKOUT_API_RETRY_NUMBERS: 5,
+}));
 
 // Mock the translations module
 jest.mock("../../../translations/lang", () => ({
@@ -34,7 +38,7 @@ const getById = queryByAttribute.bind(null, "id");
 
 describe("Footer", () => {
   it("renders all footer links correctly", () => {
-    renderWithReduxProvider(
+    renderWithReduxAndThemeProvider(
       <MemoryRouter>
         <Footer fixedPages={[]} />
       </MemoryRouter>
@@ -55,7 +59,7 @@ describe("Footer", () => {
   });
 
   it("applies fixed styling when current page is in fixedPages", () => {
-    const { baseElement } = renderWithReduxProvider(
+    const { baseElement } = renderWithReduxAndThemeProvider(
       <MemoryRouter initialEntries={["/test-page"]}>
         <Footer fixedPages={["test-page"]} />
       </MemoryRouter>
@@ -67,7 +71,7 @@ describe("Footer", () => {
   });
 
   it("applies non-fixed styling when current page is not in fixedPages", () => {
-    const { baseElement } = renderWithReduxProvider(
+    const { baseElement } = renderWithReduxAndThemeProvider(
       <MemoryRouter initialEntries={["/non-fixed-page"]}>
         <Footer fixedPages={["test-page"]} />
       </MemoryRouter>
@@ -79,7 +83,7 @@ describe("Footer", () => {
   });
 
   it("shows language selector when conditions are met", () => {
-    renderWithReduxProvider(
+    renderWithReduxAndThemeProvider(
       <MemoryRouter initialEntries={["/test-page"]}>
         <Footer fixedPages={[]} />
       </MemoryRouter>
@@ -89,7 +93,7 @@ describe("Footer", () => {
   });
 
   it("hides language selector when not on a supported page", () => {
-    renderWithReduxProvider(
+    renderWithReduxAndThemeProvider(
       <MemoryRouter initialEntries={["/unsupported-page"]}>
         <Footer fixedPages={[]} />
       </MemoryRouter>
@@ -99,7 +103,7 @@ describe("Footer", () => {
   });
 
   it("extracts the correct path from location", () => {
-    renderWithReduxProvider(
+    renderWithReduxAndThemeProvider(
       <MemoryRouter initialEntries={["/parent/test-page"]}>
         <Footer fixedPages={[]} />
       </MemoryRouter>
@@ -109,7 +113,7 @@ describe("Footer", () => {
   });
 
   it("all links have correct href attributes", () => {
-    renderWithReduxProvider(
+    renderWithReduxAndThemeProvider(
       <MemoryRouter>
         <Footer fixedPages={[]} />
       </MemoryRouter>
@@ -148,7 +152,7 @@ describe("Footer", () => {
   });
 
   it("renders separators between links", () => {
-    renderWithReduxProvider(
+    renderWithReduxAndThemeProvider(
       <MemoryRouter>
         <Footer fixedPages={[]} />
       </MemoryRouter>

@@ -103,7 +103,12 @@ export default function PaymentSummaryPage() {
         endAdornment={
           <IconButton
             id="infoButton"
-            sx={{ mr: 2, color: "primary.main" }}
+            sx={{
+              mr: 2,
+              color: "primary.main",
+              backgroundColor:
+                "custom.paymentSummary.infoButton.background.default",
+            }}
             onClick={handleInfoClick}
             onKeyDown={handleKeyDown}
             aria-label={t("ariaLabels.informationDialog")}

@@ -32,7 +32,7 @@ export function CustomDrawer(props: {
             aria-label={t("ariaLabels.close")}
             onClick={() => props.onClose()}
             sx={{
-              color: "action.active",
+              color: "custom.drawer.icon.color.main",
               p: 0,
             }}
             aria-hidden="true"
