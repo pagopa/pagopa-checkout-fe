@@ -71,6 +71,15 @@ jest.mock("../../utils/mixpanel/mixpanelEvents", () => ({
   },
 }));
 
+jest.mock("../../components/QrCodeReader/QrCodeReader", () => ({
+  QrCodeReader: ({ onScan }: { onScan: (data: string | null) => void }) => (
+    // Espone un bottone per simulare la scansione
+    <button onClick={() => onScan("INVALID|DATA|SHOULD|FAIL")}>
+      QR Reader Mock
+    </button>
+  ),
+}));
+
 // Create a Jest spy for navigation
 const navigate = jest.fn();
 // Error with definition of worker
@@ -131,5 +140,27 @@ describe("PaymentQrPage", () => {
     );
 
     expect(navigate).toHaveBeenCalledWith("/inserisci-dati-avviso");
+  });
+
+  test("tracks CHK_PAYMENT_INVALID_CODE_ERROR when scanned QR code is invalid", () => {
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentQrPage />
+      </MemoryRouter>
+    );
+
+    const mockButton = screen.getByText("QR Reader Mock");
+    fireEvent.click(mockButton);
+
+    expect(mixpanel.track).toHaveBeenCalledWith(
+      MixpanelEventsId.CHK_PAYMENT_INVALID_CODE_ERROR,
+      {
+        EVENT_ID: MixpanelEventsId.CHK_PAYMENT_INVALID_CODE_ERROR,
+        EVENT_CATEGORY: MixpanelEventCategory.KO,
+      }
+    );
+
+    expect(screen.getByText("GENERIC_ERROR.title")).toBeInTheDocument();
+    expect(screen.getByText("GENERIC_ERROR.body")).toBeInTheDocument();
   });
 });
