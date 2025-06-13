@@ -395,4 +395,19 @@ describe("Ecommerce payment methods helper - getFees tests", () => {
     await getFees(mockOnResponse, mockPspNotFound, mockOnError, "bin");
     expect(mockOnError).toHaveBeenCalledWith(ErrorsType.GENERIC_ERROR);
   });
+  it("SHould call onError with ErrorsType.GENERIC_ERROR when calculateFee returns 401", async () => {
+    (getSessionItem as jest.Mock).mockReturnValue(sessionItemTransactionMock);
+    (
+      apiPaymentEcommerceClientWithRetryV2.calculateFees as jest.Mock
+    ).mockReturnValue(
+      Promise.resolve({
+        left: {
+          status: 401,
+          value: {},
+        },
+      })
+    );
+    await getFees(mockOnResponse, mockPspNotFound, mockOnError, "bin");
+    expect(mockOnError).toHaveBeenCalledWith(ErrorsType.GENERIC_ERROR);
+  });
 });
