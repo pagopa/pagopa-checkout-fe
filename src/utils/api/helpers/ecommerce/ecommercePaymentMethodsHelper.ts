@@ -78,7 +78,7 @@ export const retrieveCardData = async ({
         pipe(
           myResExt,
           E.fold(
-            () => [],
+            () => [onError(ErrorsType.GENERIC_ERROR)],
             (myRes) => {
               if (myRes?.status === 200) {
                 const sessionPaymentMethodResponse = myRes?.value;
