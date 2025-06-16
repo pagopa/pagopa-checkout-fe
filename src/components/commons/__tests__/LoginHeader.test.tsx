@@ -13,6 +13,11 @@ import LoginHeader from "../LoginHeader";
 import "jest-location-mock";
 import { UserInfoResponse } from "../../../../generated/definitions/checkout-auth-service-v1/UserInfoResponse";
 import { renderWithReduxProvider } from "../../../utils/testing/testRenderProviders";
+import { mixpanel } from "../../../utils/mixpanel/mixpanelHelperInit";
+import {
+  MixpanelEventCategory,
+  MixpanelEventsId,
+} from "../../../utils/mixpanel/mixpanelEvents";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
@@ -85,9 +90,25 @@ jest.mock("../../../utils/eventListeners", () => ({
   onBrowserUnload: jest.fn(),
 }));
 
+jest.mock("../../../utils/mixpanel/mixpanelHelperInit", () => ({
+  mixpanel: {
+    track: jest.fn(),
+  },
+}));
+
 const getById = queryByAttribute.bind(null, "id");
 
 describe("LoginHeader", () => {
+  beforeEach(() => {
+    (getSessionItem as jest.Mock).mockImplementation((item) => {
+      if (item === "authToken") {
+        return null;
+      }
+      return undefined;
+    });
+    (proceedToLogin as jest.Mock).mockImplementation(() => undefined);
+  });
+
   it("Renders loading header", () => {
     renderWithReduxProvider(
       <MemoryRouter>
@@ -208,5 +229,56 @@ describe("LoginHeader", () => {
     expect(logoutConfirmButton).toBeVisible();
     fireEvent.click(logoutConfirmButton);
     expect(logoutUser).toHaveBeenCalled();
+  });
+
+  it("tracks CHK_LOGIN_REQUEST mixpanel event on login attempt", async () => {
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <LoginHeader />
+      </MemoryRouter>
+    );
+
+    const loginButton = await screen.findByTitle(/Accedi/i);
+    fireEvent.click(loginButton);
+
+    await waitFor(() => {
+      const calls = (mixpanel.track as jest.Mock).mock.calls;
+      expect(
+        calls.some(
+          ([event, params]) =>
+            event === MixpanelEventsId.CHK_LOGIN_REQUEST &&
+            params.EVENT_ID === MixpanelEventsId.CHK_LOGIN_REQUEST &&
+            params.EVENT_CATEGORY === MixpanelEventCategory.TECH
+        )
+      ).toBe(true);
+    });
+  });
+
+  it("tracks CHK_LOGIN_SUCCESS mixpanel event on login success", async () => {
+    const redirectUrl = window.location.origin + "/redirect-page";
+    (proceedToLogin as jest.Mock).mockImplementation(({ onResponse }) => {
+      onResponse(redirectUrl);
+    });
+
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <LoginHeader />
+      </MemoryRouter>
+    );
+
+    const loginButton = await screen.findByTitle(/Accedi/i);
+    fireEvent.click(loginButton);
+
+    await waitFor(() => {
+      const calls = (mixpanel.track as jest.Mock).mock.calls;
+      expect(
+        calls.some(
+          ([event, params]) =>
+            event === MixpanelEventsId.CHK_LOGIN_SUCCESS &&
+            params.EVENT_ID === MixpanelEventsId.CHK_LOGIN_SUCCESS &&
+            params.EVENT_CATEGORY === MixpanelEventCategory.TECH
+        )
+      ).toBe(true);
+    });
   });
 });

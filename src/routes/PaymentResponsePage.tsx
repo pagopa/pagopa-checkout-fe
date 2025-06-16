@@ -40,8 +40,8 @@ import {
 } from "../utils/mixpanel/mixpanelTracker";
 import { mixpanel } from "../utils/mixpanel/mixpanelHelperInit";
 import {
+  eventViewOutcomeMap,
   MixpanelEventCategory,
-  MixpanelEventsId,
   MixpanelEventType,
   MixpanelPaymentPhase,
 } from "../utils/mixpanel/mixpanelEvents";
@@ -104,6 +104,38 @@ export default function PaymentResponsePage() {
 
     setOutcome(outcome);
     showFinalResult(outcome);
+
+    const eventId = eventViewOutcomeMap[outcome];
+    if (!eventId) {
+      return;
+    }
+
+    const paymentInfo = getPaymentInfoFromSessionStorage();
+
+    const baseProps = {
+      EVENT_ID: eventId,
+      organization_name: paymentInfo?.paName,
+      organization_fiscal_code: paymentInfo?.paFiscalCode,
+      amount: paymentInfo?.amount,
+      expiration_date: paymentInfo?.dueDate,
+      data_entry: getDataEntryTypeFromSessionStorage(),
+      payment_phase: MixpanelPaymentPhase.PAGAMENTO,
+    };
+
+    const extraProps =
+      outcome === ViewOutcomeEnum.SUCCESS
+        ? {
+            EVENT_CATEGORY: MixpanelEventCategory.UX,
+            EVENT_TYPE: MixpanelEventType.SCREEN_VIEW,
+            payment_method_selected:
+              getPaymentMethodSelectedFromSessionStorage(),
+            flow: getFlowFromSessionStorage(),
+          }
+        : {
+            EVENT_CATEGORY: MixpanelEventCategory.KO,
+          };
+
+    mixpanel.track(eventId, { ...baseProps, ...extraProps });
   };
 
   const showFinalResult = (outcome: ViewOutcomeEnum) => {
@@ -146,23 +178,6 @@ export default function PaymentResponsePage() {
       (document.title as any) = pageTitle + " - pagoPA";
     }
   }, [outcomeMessage]);
-
-  React.useEffect(() => {
-    const paymentInfo = getPaymentInfoFromSessionStorage();
-    mixpanel.track(MixpanelEventsId.CHK_PAYMENT_UX_SUCCESS, {
-      EVENT_ID: MixpanelEventsId.CHK_PAYMENT_UX_SUCCESS,
-      EVENT_CATEGORY: MixpanelEventCategory.UX,
-      EVENT_TYPE: MixpanelEventType.SCREEN_VIEW,
-      organization_name: paymentInfo?.paName,
-      organization_fiscal_code: paymentInfo?.paFiscalCode,
-      amount: paymentInfo?.amount,
-      expiration_date: paymentInfo?.dueDate,
-      payment_method_selected: getPaymentMethodSelectedFromSessionStorage(),
-      data_entry: getDataEntryTypeFromSessionStorage(),
-      flow: getFlowFromSessionStorage(),
-      payment_phase: MixpanelPaymentPhase.PAGAMENTO,
-    });
-  }, []);
 
   const { t } = useTranslation();
 

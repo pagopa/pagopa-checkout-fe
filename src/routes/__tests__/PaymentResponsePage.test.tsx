@@ -18,6 +18,7 @@ import { callServices } from "../../utils/api/response";
 
 import { mixpanel } from "../../utils/mixpanel/mixpanelHelperInit";
 import {
+  eventViewOutcomeMap,
   MixpanelDataEntryType,
   MixpanelEventCategory,
   MixpanelEventsId,
@@ -257,14 +258,18 @@ describe("PaymentResponsePage — with cart", () => {
     );
   });
 
-  test("should track payment response success with mixpanel", async () => {
+  test("should track SUCCESS outcome with mixpanel (with cart)", async () => {
+    jest.spyOn(router, "useNavigate").mockImplementation(() => jest.fn());
+    (getSessionItem as jest.Mock).mockImplementation(
+      mockGetSessionItemWithCart
+    );
+
     const transactionOutcomeInfo = {
-      outcome: 0,
+      outcome: ViewOutcomeEnum.SUCCESS,
       isFinalStatus: true,
       totalAmount: 1000,
       fees: 100,
     };
-
     (callServices as jest.Mock).mockImplementation(async (cb: any) => {
       cb(transactionOutcomeInfo);
       return Promise.resolve();
@@ -283,8 +288,8 @@ describe("PaymentResponsePage — with cart", () => {
           EVENT_ID: MixpanelEventsId.CHK_PAYMENT_UX_SUCCESS,
           EVENT_CATEGORY: MixpanelEventCategory.UX,
           EVENT_TYPE: MixpanelEventType.SCREEN_VIEW,
-          flow: MixpanelFlow.CART,
           payment_phase: MixpanelPaymentPhase.PAGAMENTO,
+          flow: MixpanelFlow.CART,
           organization_name: "companyName",
           organization_fiscal_code: "77777777777",
           amount: 12000,
@@ -295,4 +300,63 @@ describe("PaymentResponsePage — with cart", () => {
       );
     });
   });
+
+  test.each([
+    ViewOutcomeEnum.AUTH_ERROR,
+    ViewOutcomeEnum.INVALID_DATA,
+    ViewOutcomeEnum.TIMEOUT,
+    ViewOutcomeEnum.CIRCUIT_ERROR,
+    ViewOutcomeEnum.MISSING_FIELDS,
+    ViewOutcomeEnum.INVALID_CARD,
+    ViewOutcomeEnum.CANCELED_BY_USER,
+    ViewOutcomeEnum.EXCESSIVE_AMOUNT,
+    ViewOutcomeEnum.REFUNDED,
+    ViewOutcomeEnum.PSP_ERROR,
+    ViewOutcomeEnum.BALANCE_LIMIT,
+    ViewOutcomeEnum.LIMIT_EXCEEDED,
+    ViewOutcomeEnum.INVALID_METHOD,
+    ViewOutcomeEnum.TAKING_CHARGE,
+  ])(
+    "should track KO outcome %s with mixpanel (with cart)",
+    async (outcomeValue) => {
+      const transactionOutcomeInfo = {
+        outcome: Number(outcomeValue),
+        isFinalStatus: true,
+        totalAmount: 1000,
+        fees: 100,
+      };
+      jest.spyOn(router, "useNavigate").mockImplementation(() => jest.fn());
+      (getSessionItem as jest.Mock).mockImplementation(
+        mockGetSessionItemWithCart
+      );
+      (callServices as jest.Mock).mockImplementation(async (cb: any) => {
+        cb(transactionOutcomeInfo);
+        return Promise.resolve();
+      });
+
+      renderWithReduxProvider(
+        <MemoryRouter>
+          <PaymentResponsePage />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        const calls = (mixpanel.track as jest.Mock).mock.calls;
+        expect(
+          calls.some(
+            ([eventId, props]) =>
+              eventId === eventViewOutcomeMap[outcomeValue] &&
+              props.EVENT_ID === eventViewOutcomeMap[outcomeValue] &&
+              props.EVENT_CATEGORY === MixpanelEventCategory.KO &&
+              props.payment_phase === MixpanelPaymentPhase.PAGAMENTO &&
+              props.organization_name === "companyName" &&
+              props.organization_fiscal_code === "77777777777" &&
+              props.amount === 12000 &&
+              props.expiration_date === "2021-07-31" &&
+              props.data_entry === MixpanelDataEntryType.MANUAL
+          )
+        ).toBe(true);
+      });
+    }
+  );
 });

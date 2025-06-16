@@ -11,6 +11,14 @@ import ErrorModal from "../ErrorModal";
 
 import { FaultCategoryEnum } from "../../../../generated/definitions/payment-ecommerce/FaultCategory";
 import { ErrorsType } from "../../../utils/errors/checkErrorsModel";
+import { paymentInfo } from "../../../routes/__tests__/_model";
+import { mixpanel } from "../../../utils/mixpanel/mixpanelHelperInit";
+import {
+  MixpanelDataEntryType,
+  MixpanelEventCategory,
+  MixpanelEventsId,
+  MixpanelPaymentPhase,
+} from "../../../utils/mixpanel/mixpanelEvents";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
@@ -180,6 +188,17 @@ Object.assign(navigator, {
     writeText: jest.fn().mockImplementation(() => Promise.resolve()),
   },
 });
+
+jest.mock("../../../utils/mixpanel/mixpanelHelperInit", () => ({
+  mixpanel: {
+    track: jest.fn(),
+  },
+}));
+
+jest.mock("../../../utils/mixpanel/mixpanelTracker", () => ({
+  getDataEntryTypeFromSessionStorage: jest.fn(() => "manual"),
+  getPaymentInfoFromSessionStorage: jest.fn(() => paymentInfo),
+}));
 
 describe("ErrorModal Component", () => {
   const mockOnClose = jest.fn();
@@ -424,5 +443,26 @@ describe("ErrorModal Component", () => {
     if (emptyAlertTitle) {
       expect(emptyAlertTitle.textContent).toBe("");
     }
+  });
+
+  it("tracks mixpanel event when modal opens with a known error category", () => {
+    const errorCode = `${FaultCategoryEnum.PAYMENT_DUPLICATED}-DUPLICATE_CODE`;
+
+    render(<ErrorModal error={errorCode} open={true} onClose={mockOnClose} />);
+
+    expect(mixpanel.track).toHaveBeenCalledWith(
+      MixpanelEventsId.PAYMENT_DUPLICATED,
+      expect.objectContaining({
+        EVENT_ID: MixpanelEventsId.PAYMENT_DUPLICATED,
+        EVENT_CATEGORY: MixpanelEventCategory.KO,
+        reason: "DUPLICATE_CODE",
+        data_entry: MixpanelDataEntryType.MANUAL,
+        organization_name: "companyName",
+        organization_fiscal_code: "77777777777",
+        amount: 12000,
+        expiration_date: "2021-07-31",
+        payment_phase: MixpanelPaymentPhase.VERIFICA,
+      })
+    );
   });
 });

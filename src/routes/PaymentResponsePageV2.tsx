@@ -33,8 +33,8 @@ import {
 } from "../utils/mixpanel/mixpanelTracker";
 import { mixpanel } from "../utils/mixpanel/mixpanelHelperInit";
 import {
+  eventViewOutcomeMap,
   MixpanelEventCategory,
-  MixpanelEventsId,
   MixpanelEventType,
   MixpanelPaymentPhase,
 } from "../utils/mixpanel/mixpanelEvents";
@@ -150,21 +150,38 @@ export default function PaymentResponsePageV2() {
   }, [outcomeMessage]);
 
   React.useEffect(() => {
+    const eventId = eventViewOutcomeMap[outcome];
+    if (!eventId) {
+      return;
+    }
+
     const paymentInfo = getPaymentInfoFromSessionStorage();
-    mixpanel.track(MixpanelEventsId.CHK_PAYMENT_UX_SUCCESS, {
-      EVENT_ID: MixpanelEventsId.CHK_PAYMENT_UX_SUCCESS,
-      EVENT_CATEGORY: MixpanelEventCategory.UX,
-      EVENT_TYPE: MixpanelEventType.SCREEN_VIEW,
+
+    const baseProps = {
+      EVENT_ID: eventId,
       organization_name: paymentInfo?.paName,
       organization_fiscal_code: paymentInfo?.paFiscalCode,
       amount: paymentInfo?.amount,
       expiration_date: paymentInfo?.dueDate,
-      payment_method_selected: getPaymentMethodSelectedFromSessionStorage(),
       data_entry: getDataEntryTypeFromSessionStorage(),
-      flow: getFlowFromSessionStorage(),
       payment_phase: MixpanelPaymentPhase.PAGAMENTO,
-    });
-  }, []);
+    };
+
+    const extraProps =
+      outcome === ViewOutcomeEnum.SUCCESS
+        ? {
+            EVENT_CATEGORY: MixpanelEventCategory.UX,
+            EVENT_TYPE: MixpanelEventType.SCREEN_VIEW,
+            payment_method_selected:
+              getPaymentMethodSelectedFromSessionStorage(),
+            flow: getFlowFromSessionStorage(),
+          }
+        : {
+            EVENT_CATEGORY: MixpanelEventCategory.KO,
+          };
+
+    mixpanel.track(eventId, { ...baseProps, ...extraProps });
+  }, [outcome]);
 
   return (
     <PageContainer>
