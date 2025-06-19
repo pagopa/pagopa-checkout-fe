@@ -1,4 +1,9 @@
 import { init, track, Mixpanel } from "mixpanel-browser";
+import {
+  getSessionItem,
+  SessionItems,
+  setSessionItem,
+} from "../../utils/storage/sessionStorage";
 import { getConfigOrThrow } from "../config/config";
 
 const ENV = getConfigOrThrow().CHECKOUT_ENV;
@@ -18,7 +23,7 @@ const mixpanelInit = function (): void {
         if (sessionStorage.getItem("rptId") === null) {
           mixpanel.reset();
         }
-        sessionStorage.setItem("isMixpanelLoaded", "true");
+        setSessionItem(SessionItems.isMixpanelLoaded, "true");
       },
     });
   }
@@ -27,7 +32,7 @@ const mixpanelInit = function (): void {
 export const mixpanel = {
   track(event_name: string, properties?: any): void {
     const isMixpanelLoaded =
-      sessionStorage.getItem("isMixpanelLoaded") === "true";
+      getSessionItem(SessionItems.isMixpanelLoaded) === "true";
 
     if (!isMixpanelLoaded) {
       mixpanelInit();
