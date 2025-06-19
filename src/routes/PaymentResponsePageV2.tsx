@@ -135,10 +135,15 @@ export default function PaymentResponsePageV2() {
   };
 
   useEffect(() => {
-    void checkLogoutAndClearStorage();
-    dispatch(resetThreshold());
-    window.removeEventListener("beforeunload", onBrowserUnload);
-  }, []);
+    const performActions = async () => {
+      await handleOutcomeForMixpanelEvent(outcome);
+      void checkLogoutAndClearStorage();
+      dispatch(resetThreshold());
+      window.removeEventListener("beforeunload", onBrowserUnload);
+    };
+
+    void performActions();
+  }, [outcome]);
 
   const { t } = useTranslation();
 
@@ -149,7 +154,7 @@ export default function PaymentResponsePageV2() {
     }
   }, [outcomeMessage]);
 
-  React.useEffect(() => {
+  const handleOutcomeForMixpanelEvent = async (outcome: ViewOutcomeEnum) => {
     const eventId = eventViewOutcomeMap[outcome];
     if (!eventId) {
       return;
@@ -181,7 +186,7 @@ export default function PaymentResponsePageV2() {
           };
 
     mixpanel.track(eventId, { ...baseProps, ...extraProps });
-  }, [outcome]);
+  };
 
   return (
     <PageContainer>
