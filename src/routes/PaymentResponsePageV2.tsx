@@ -137,7 +137,7 @@ export default function PaymentResponsePageV2() {
   useEffect(() => {
     const performActions = async () => {
       await handleOutcomeForMixpanelEvent(outcome);
-      await checkLogoutAndClearStorage();
+      void checkLogoutAndClearStorage();
       dispatch(resetThreshold());
       window.removeEventListener("beforeunload", onBrowserUnload);
     };
