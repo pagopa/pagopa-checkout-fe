@@ -18,7 +18,7 @@ const mixpanelInit = function (): void {
         if (sessionStorage.getItem("rptId") === null) {
           mixpanel.reset();
         }
-        sessionStorage.setItem("mixpanelLoaded", "true");
+        sessionStorage.setItem("isMixpanelLoaded", "true");
       },
     });
   }
@@ -27,7 +27,7 @@ const mixpanelInit = function (): void {
 export const mixpanel = {
   track(event_name: string, properties?: any): void {
     const isMixpanelLoaded =
-      sessionStorage.getItem("mixpanelLoaded") === "true";
+      sessionStorage.getItem("isMixpanelLoaded") === "true";
 
     if (!isMixpanelLoaded) {
       mixpanelInit();
