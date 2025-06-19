@@ -52,6 +52,6 @@ export const mixpanel = {
 const isMixpanelReady = (): boolean =>
   pipe(
     E.tryCatch(() => get_distinct_id(), E.toError),
-    E.map((id) => typeof id === "string" && id.length > 0),
-    E.getOrElse(() => false)
+    E.map((id): boolean => typeof id === "string" && id.length > 0),
+    E.getOrElseW(() => false)
   );
