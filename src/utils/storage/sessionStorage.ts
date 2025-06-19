@@ -35,7 +35,6 @@ export enum SessionItems {
   loginOriginPage = "loginOriginPage",
   authToken = "authToken",
   noticeCodeDataEntry = "noticeCodeDataEntry",
-  isMixpanelLoaded = "isMixpanelLoaded",
 }
 const isParsable = (item: SessionItems) =>
   !(
@@ -47,8 +46,7 @@ const isParsable = (item: SessionItems) =>
     item === SessionItems.enableAuthentication ||
     item === SessionItems.loginOriginPage ||
     item === SessionItems.authToken ||
-    item === SessionItems.noticeCodeDataEntry ||
-    item === SessionItems.isMixpanelLoaded
+    item === SessionItems.noticeCodeDataEntry
   );
 
 export const getSessionItem = (item: SessionItems) => {

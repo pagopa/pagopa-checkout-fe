@@ -1,9 +1,6 @@
-import { init, track, Mixpanel } from "mixpanel-browser";
-import {
-  getSessionItem,
-  SessionItems,
-  setSessionItem,
-} from "../../utils/storage/sessionStorage";
+import { init, track, Mixpanel, get_distinct_id } from "mixpanel-browser";
+import * as E from "fp-ts/Either";
+import { pipe } from "fp-ts/function";
 import { getConfigOrThrow } from "../config/config";
 
 const ENV = getConfigOrThrow().CHECKOUT_ENV;
@@ -23,7 +20,6 @@ const mixpanelInit = function (): void {
         if (sessionStorage.getItem("rptId") === null) {
           mixpanel.reset();
         }
-        setSessionItem(SessionItems.isMixpanelLoaded, "true");
       },
     });
   }
@@ -31,10 +27,7 @@ const mixpanelInit = function (): void {
 
 export const mixpanel = {
   track(event_name: string, properties?: any): void {
-    const isMixpanelLoaded =
-      getSessionItem(SessionItems.isMixpanelLoaded) === "true";
-
-    if (!isMixpanelLoaded) {
+    if (!isMixpanelReady()) {
       mixpanelInit();
     }
 
@@ -55,3 +48,10 @@ export const mixpanel = {
     }
   },
 };
+
+const isMixpanelReady = (): boolean =>
+  pipe(
+    E.tryCatch(() => get_distinct_id(), E.toError),
+    E.map((id) => typeof id === "string" && id.length > 0),
+    E.getOrElse(() => false)
+  );
