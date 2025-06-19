@@ -164,11 +164,11 @@ export default function PaymentResponsePageV2() {
 
     const baseProps = {
       EVENT_ID: eventId,
-      organization_name: paymentInfo?.paName,
-      organization_fiscal_code: paymentInfo?.paFiscalCode,
-      amount: paymentInfo?.amount,
-      expiration_date: paymentInfo?.dueDate,
-      data_entry: getDataEntryTypeFromSessionStorage(),
+      organization_name: paymentInfo?.paName || "Unknown",
+      organization_fiscal_code: paymentInfo?.paFiscalCode || "Unknown",
+      amount: paymentInfo?.amount ?? 0,
+      expiration_date: paymentInfo?.dueDate ?? "Unknown",
+      data_entry: getDataEntryTypeFromSessionStorage() ?? "Unknown",
       payment_phase: MixpanelPaymentPhase.PAGAMENTO,
     };
 
@@ -178,8 +178,8 @@ export default function PaymentResponsePageV2() {
             EVENT_CATEGORY: MixpanelEventCategory.UX,
             EVENT_TYPE: MixpanelEventType.SCREEN_VIEW,
             payment_method_selected:
-              getPaymentMethodSelectedFromSessionStorage(),
-            flow: getFlowFromSessionStorage(),
+              getPaymentMethodSelectedFromSessionStorage() ?? "Unknown",
+            flow: getFlowFromSessionStorage() ?? "Unknown",
           }
         : {
             EVENT_CATEGORY: MixpanelEventCategory.KO,
