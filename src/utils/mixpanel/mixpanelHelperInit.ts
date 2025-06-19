@@ -3,7 +3,7 @@ import { getConfigOrThrow } from "../config/config";
 
 const ENV = getConfigOrThrow().CHECKOUT_ENV;
 
-export const mixpanelInit = function (): void {
+const mixpanelInit = function (): void {
   if (ENV === "DEV") {
     // eslint-disable-next-line no-console
     console.log("Mixpanel events mock on console log.");
@@ -18,6 +18,7 @@ export const mixpanelInit = function (): void {
         if (sessionStorage.getItem("rptId") === null) {
           mixpanel.reset();
         }
+        sessionStorage.setItem("mixpanelLoaded", "true");
       },
     });
   }
@@ -25,6 +26,13 @@ export const mixpanelInit = function (): void {
 
 export const mixpanel = {
   track(event_name: string, properties?: any): void {
+    const isMixpanelLoaded =
+      sessionStorage.getItem("mixpanelLoaded") === "true";
+
+    if (!isMixpanelLoaded) {
+      mixpanelInit();
+    }
+
     if (ENV === "DEV") {
       // eslint-disable-next-line no-console
       console.log(event_name, properties);

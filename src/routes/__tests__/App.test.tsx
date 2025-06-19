@@ -43,7 +43,6 @@ import userEvent from "@testing-library/user-event";
 import fetchMock from "jest-fetch-mock";
 import { renderWithReduxAndThemeProvider } from "../../utils/testing/testRenderProviders";
 import * as helper from "../../utils/api/helper";
-import * as mixpanel from "../../utils/mixpanel/mixpanelHelperInit";
 import { App } from "../../App";
 
 // Mock MUI Italia theme
@@ -152,7 +151,6 @@ jest
       return Promise.resolve();
     }
   );
-jest.spyOn(mixpanel, "mixpanelInit").mockImplementation(() => undefined);
 
 describe("App", () => {
   beforeEach(() => {
