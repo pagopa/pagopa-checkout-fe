@@ -239,7 +239,7 @@ export const getPaymentInstruments = async (
           myResExt,
           E.fold(
             () =>  {
-              onError(ErrorsType.GENERIC_ERROR); 
+              onError(ErrorsType.GENERIC_ERROR);
               return [];
             },
             (myRes) => {
@@ -250,7 +250,6 @@ export const getPaymentInstruments = async (
                   onError(ErrorsType.UNAUTHORIZED);
                   return [];
                 default:
-                  onError(ErrorsType.EMPTY_METHOD);
                   return [];
               }
             }
