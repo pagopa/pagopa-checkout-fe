@@ -232,7 +232,7 @@ export const getPaymentInstruments = async (
     TE.fold(
       () => async () => {
         onError(ErrorsType.STATUS_ERROR);
-        return []; 
+        return [];
       },
       (myResExt) => async () =>
         pipe(
