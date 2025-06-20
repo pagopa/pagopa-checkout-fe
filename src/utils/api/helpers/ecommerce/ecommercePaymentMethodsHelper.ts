@@ -232,13 +232,16 @@ export const getPaymentInstruments = async (
     TE.fold(
       () => async () => {
         onError(ErrorsType.STATUS_ERROR);
-        return [];
+        return []; 
       },
       (myResExt) => async () =>
         pipe(
           myResExt,
           E.fold(
-            () => [],
+            () =>  {
+              onError(ErrorsType.GENERIC_ERROR); 
+              return [];
+            },
             (myRes) => {
               switch (myRes.status) {
                 case 200:
@@ -247,6 +250,7 @@ export const getPaymentInstruments = async (
                   onError(ErrorsType.UNAUTHORIZED);
                   return [];
                 default:
+                  onError(ErrorsType.EMPTY_METHOD);
                   return [];
               }
             }
