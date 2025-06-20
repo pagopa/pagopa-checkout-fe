@@ -39,6 +39,7 @@ describe("ErrorsType enum", () => {
       "DONATIONLIST_ERROR",
       "ECOMMERCE_ERROR",
       "INVALID_DECODE",
+      "EMPTY_METHOD"
     ];
 
     expect(enumValues).toEqual(expectedValues);
