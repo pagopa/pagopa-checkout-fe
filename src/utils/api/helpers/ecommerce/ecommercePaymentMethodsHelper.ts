@@ -238,7 +238,7 @@ export const getPaymentInstruments = async (
         pipe(
           myResExt,
           E.fold(
-            () =>  {
+            () => {
               onError(ErrorsType.GENERIC_ERROR);
               return [];
             },

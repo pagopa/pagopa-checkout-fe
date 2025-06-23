@@ -1,6 +1,6 @@
+import * as E from "fp-ts/Either";
 import { getSessionItem } from "../../../../../utils/storage/sessionStorage";
 import { ErrorsType } from "../../../../../utils/errors/checkErrorsModel";
-import * as E from "fp-ts/Either";
 import {
   calculateFeeResponseMock,
   mockApiConfig,
@@ -206,15 +206,11 @@ describe("Ecommerce payment methods helper - getPaymentInstruments tests", () =>
     (getSessionItem as jest.Mock).mockReturnValue("fake-auth-token");
 
     // Simula che getAllPaymentMethodsV3 ritorni un Either.left
-    (apiPaymentEcommerceClientV3.getAllPaymentMethodsV3 as jest.Mock).mockReturnValue(
-      Promise.resolve(E.left(new Error("some error")))
-    );
+    (
+      apiPaymentEcommerceClientV3.getAllPaymentMethodsV3 as jest.Mock
+    ).mockReturnValue(Promise.resolve(E.left(new Error("some error"))));
 
-    await getPaymentInstruments(
-      { amount: 100 },
-      mockOnError,
-      mockOnResponse
-    );
+    await getPaymentInstruments({ amount: 100 }, mockOnError, mockOnResponse);
 
     expect(mockOnError).toHaveBeenCalledWith(ErrorsType.GENERIC_ERROR);
     expect(mockOnResponse).toHaveBeenCalledWith([]); // perché ritorna []
