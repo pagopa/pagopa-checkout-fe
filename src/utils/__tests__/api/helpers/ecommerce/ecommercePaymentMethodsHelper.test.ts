@@ -202,10 +202,10 @@ describe("Ecommerce payment methods helper - calculateFees tests", () => {
 
 describe("Ecommerce payment methods helper - getPaymentInstruments tests", () => {
   it("Should call onError with GENERIC_ERROR and onResponse with empty array when API returns status 500", async () => {
-    // Simula presenza di token in sessione (quindi ramo V3)
+    // Simulate presence of token in session (therefore V3 branch)
     (getSessionItem as jest.Mock).mockReturnValue("fake-auth-token");
 
-    // Simula che getAllPaymentMethodsV3 ritorni un Either.left
+    // Simulate that getAllPaymentMethodsV3 returns an Either.left
     (
       apiPaymentEcommerceClientV3.getAllPaymentMethodsV3 as jest.Mock
     ).mockReturnValue(Promise.resolve(E.left(new Error("some error"))));
@@ -213,7 +213,7 @@ describe("Ecommerce payment methods helper - getPaymentInstruments tests", () =>
     await getPaymentInstruments({ amount: 100 }, mockOnError, mockOnResponse);
 
     expect(mockOnError).toHaveBeenCalledWith(ErrorsType.GENERIC_ERROR);
-    expect(mockOnResponse).toHaveBeenCalledWith([]); // perché ritorna []
+    expect(mockOnResponse).toHaveBeenCalledWith([]); // returns empty array on error
   });
 
   it("Should call onResponse when api return correct value", async () => {
