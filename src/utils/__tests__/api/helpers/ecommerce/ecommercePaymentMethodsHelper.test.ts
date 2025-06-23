@@ -213,7 +213,7 @@ describe("Ecommerce payment methods helper - getPaymentInstruments tests", () =>
     await getPaymentInstruments({ amount: 100 }, mockOnError, mockOnResponse);
 
     expect(mockOnError).toHaveBeenCalledWith(ErrorsType.GENERIC_ERROR);
-    expect(mockOnResponse).toHaveBeenCalledWith([]); 
+    expect(mockOnResponse).toHaveBeenCalledWith([]);
   });
 
   it("Should call onResponse when api return correct value", async () => {
