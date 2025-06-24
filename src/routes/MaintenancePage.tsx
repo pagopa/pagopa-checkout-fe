@@ -67,19 +67,6 @@ export default function MaintenancePage(){
               {t("maintenancePage.detailsButton")}
             </Button>
           </Box>
-
-          <Box paddingX={3} paddingY={5} width="100%">
-            
-            <Button
-              type="button"
-              variant="text"
-              size="small"
-              fullWidth={true}
-              onClick={() => window.location.replace(siteUrl)}
-            >
-              {t("maintenancePage.closeButton")}
-            </Button>
-          </Box>
         </Box>
       </Box>
     </PageContainer>
