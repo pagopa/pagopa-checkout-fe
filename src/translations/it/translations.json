@@ -477,5 +477,11 @@
       "submitButton": "Esci",
       "cancelButton": "Annulla"
     }
+  },
+  "maintenancePage": {
+    "title": "Stiamo lavorando per te",
+    "subtitle": "pagoPa non è al momento disponibile a causa di una manutenzione programmata"   ,
+    "closeButton": "Chiudi",
+    "detailsButton": "Scopri di più"
   }
 }

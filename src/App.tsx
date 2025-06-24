@@ -36,6 +36,7 @@ import {
   ThemeModes,
 } from "./components/themeContextProvider/themeContextProvider";
 import PaymentPspListPage from "./routes/PaymentPspListPage";
+import MaintenancePage from "./routes/MaintenancePage";
 
 export function App() {
   const { t } = useTranslation();
@@ -110,6 +111,10 @@ export function App() {
           <Routes>
             <Route path="/" element={<PaymentOutlet />}>
               <Route path={CheckoutRoutes.ROOT} element={<IndexPage />} />
+               <Route
+                path={CheckoutRoutes.MAINTENANCE}
+                element={<MaintenancePage />}
+              />
               <Route
                 path={CheckoutRoutes.AUTH_CALLBACK}
                 element={<AuthCallback />}
