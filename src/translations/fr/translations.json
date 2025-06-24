@@ -476,6 +476,12 @@
       "cancelButton": "Non, rester connecté"
     }
   },
+   "maintenancePage": {
+    "title": "Nous travaillons pour vous",
+    "subtitle": "pagoPa n'est pas disponible pour le moment en raison d'une maintenance programmée."   ,
+    "closeButton": "Fermer",
+    "detailsButton": "En savoir plus"
+  },
   "__variant-name": "Francese",
   "__variant-description": ""
 }

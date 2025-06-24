@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import PageContainer from "../components/PageContent/PageContainer";
-import heartIcon from "../assets/images/heart.svg";
+import inProgressIcon from "../assets/images/in-progress.svg";
 import { useEffect } from "react";
 import { Box, Button, Typography } from "@mui/material";
 
@@ -25,7 +25,7 @@ export default function MaintenancePage(){
         sx={{ mt: 6 }}
       >
         <img
-          src={heartIcon}
+          src={inProgressIcon}
           alt="Icona cuore"
           style={{ width: "80px", height: "auto" }}
           aria-hidden="true"
