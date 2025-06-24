@@ -89,7 +89,7 @@ export interface PaymentMethod {
 }
 
 export enum PaymentCodeTypeEnum {
-  KLAR = "KLAR", // Klarna
+  KLRN = "KLRN", // Klarna
   RBPR = "RBPR", // Conto BancoPosta Retail
   RBPB = "RBPB", // Conto BancoPosta Impresa
   RBPP = "RBPP", // Paga con Postepay

@@ -47,7 +47,7 @@ export const PaymentMethodRoutes: PaymentTypecode = {
   SATY: {
     route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
   },
-  KLAR: {
+  KLRN: {
     route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
   },
 };
