@@ -4,7 +4,6 @@ import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { ShoppingCart } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
-import featureFlags from "../../utils/featureFlags";
 import pagopaLogo from "../../assets/images/pagopa-logo.svg";
 import {
   Cart,
@@ -21,7 +20,7 @@ import { getTotalFromCart } from "../../utils/cart/cart";
 import { moneyFormat } from "../../utils/form/formatters";
 import { paymentSubjectTransform } from "../../utils/transformers/paymentTransformers";
 import DrawerDetail from "../Header/DrawerDetail";
-import { evaluateFeatureFlag } from "./../../utils/api/helper";
+import { useFeatureFlags } from "../../hooks/useFeatureFlags";
 import SkipToContent from "./SkipToContent";
 import LoginHeader from "./LoginHeader";
 
@@ -91,61 +90,30 @@ export default function Header() {
         },
       ];
 
-  const onFeatureFlagError = (e: string) => {
-    // eslint-disable-next-line no-console
-    console.error(
-      "Error while getting feature flag " + SessionItems.enableAuthentication,
-      e
-    );
-    setEnableAuthentication(false);
-  };
-
-  const onFeatureFlagSuccess = (data: { enabled: boolean }) => {
-    setSessionItem(SessionItems.enableAuthentication, data.enabled.toString());
-    setEnableAuthentication(data.enabled);
-  };
-
-  const onFeatureFlagErrorMaintenance = (e: string) => {
-    // eslint-disable-next-line no-console
-    console.error(
-      "Error while getting feature flag " + SessionItems.enableAuthentication,
-      e
-    );
-    setSessionItem(SessionItems.enableMaintenance, false);
-  };
-
-  const onFeatureFlagSuccessMaintenance = (data: { enabled: boolean }) => {
-    setSessionItem(SessionItems.enableMaintenance, data.enabled.toString());
-    if (data.enabled) {
-      setEnableAuthentication(false);
-    }
-  };
+  const { checkFeatureFlag } = useFeatureFlags();
 
   const initFeatureFlag = async () => {
     try {
-      const storedFeatureFlag = getSessionItem(
-        SessionItems.enableAuthentication
-      );
-      // avoid asking again if you already have received an answer
-      if (!storedFeatureFlag) {
-        await evaluateFeatureFlag(
-          featureFlags.enableAuthentication,
-          onFeatureFlagError,
-          onFeatureFlagSuccess
-        );
-      }
-
-      const storedFeatureFlagMaintenance = getSessionItem(
-        SessionItems.enableMaintenance
-      );
-      // avoid asking again if you already have received an answer
-      if (!storedFeatureFlagMaintenance) {
-        await evaluateFeatureFlag(
-          featureFlags.enableMaintenance,
-          onFeatureFlagErrorMaintenance,
-          onFeatureFlagSuccessMaintenance
-        );
-      }
+      await Promise.all([
+        checkFeatureFlag({
+          flagName: "enableAuthentication",
+          sessionKey: SessionItems.enableAuthentication,
+          onSuccess: setEnableAuthentication,
+          onError: () => setEnableAuthentication(false),
+        }),
+        checkFeatureFlag({
+          flagName: "enableMaintenance",
+          sessionKey: SessionItems.enableMaintenance,
+          onSuccess: (enabled: boolean) => {
+            if (enabled) {
+              setEnableAuthentication(false);
+            }
+          },
+          onError: () => {
+            setSessionItem(SessionItems.enableMaintenance, "false");
+          },
+        }),
+      ]);
     } finally {
       setLoadingFlags(false); // Even if it fails, complete the loading state
     }
@@ -159,11 +127,10 @@ export default function Header() {
   // avoiding flicker when MaintenancePage should be shown.
   const [loadingFlags, setLoadingFlags] = React.useState(true);
 
-  if(loadingFlags)
-  {
+  if (loadingFlags) {
     return null;
   }
-  
+
   return (
     <header>
       <Stack position="relative" zIndex="1000">

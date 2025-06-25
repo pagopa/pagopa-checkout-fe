@@ -2,8 +2,6 @@ import CssBaseline from "@mui/material/CssBaseline";
 import React, { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import { evaluateFeatureFlag } from "./utils/api/helper";
-import featureFlags from "./utils/featureFlags";
 import Guard from "./components/commons/Guard";
 import { Layout } from "./components/commons/Layout";
 import NoticeGuard from "./components/commons/NoticeGuard";
@@ -26,11 +24,7 @@ import PaymentResponsePageV2 from "./routes/PaymentResponsePageV2";
 import PaymentSummaryPage from "./routes/PaymentSummaryPage";
 import GdiCheckPage from "./routes/GdiCheckPage";
 import "./translations/i18n";
-import {
-  getSessionItem,
-  SessionItems,
-  setSessionItem,
-} from "./utils/storage/sessionStorage";
+import { getSessionItem, SessionItems } from "./utils/storage/sessionStorage";
 import SessionExpiredPage from "./routes/SessionExpiredPage";
 import AuthCallback from "./routes/AuthCallbackPage";
 import AuthExpiredPage from "./routes/AuthExpiredPage";
@@ -42,6 +36,7 @@ import {
 import PaymentPspListPage from "./routes/PaymentPspListPage";
 import MaintenancePage from "./routes/MaintenancePage";
 import MaintenanceGuard from "./components/commons/MaintenanceGuard";
+import { useFeatureFlags } from "./hooks/useFeatureFlags";
 
 export function App() {
   const { t } = useTranslation();
@@ -66,48 +61,31 @@ export function App() {
       getSessionItem(SessionItems.enableMaintenance) === "true"
     );
 
-  const onFeatureFlagError = (e: string) => {
-    // eslint-disable-next-line no-console
-    console.error(
-      "Error while getting feature flag " + SessionItems.enablePspPage,
-      e
-    );
-  };
-
-  const onFeatureFlagSuccess = (data: { enabled: boolean }) => {
-    // we need to use localstorage to be permanent in case of page refreshes
-    // which happen after entering the credit card data
-    localStorage.setItem(SessionItems.enablePspPage, data.enabled.toString());
-  };
-
-  const onFeatureFlagErrorMaintenance = (e: string) => {
-    // eslint-disable-next-line no-console
-    console.error(
-      "Error while getting feature flag " + SessionItems.enableAuthentication,
-      e
-    );
-    setSessionItem(SessionItems.enableMaintenance, false);
-  };
-
-  const onFeatureFlagSuccessMaintenance = (data: { enabled: boolean }) => {
-    setSessionItem(SessionItems.enableMaintenance, data.enabled.toString());
-    setIsMaintenanceEnabled(data.enabled);
-  };
+  const { checkFeatureFlag } = useFeatureFlags();
 
   const initFeatureFlag = async () => {
     try {
       // we need to always evaluate this flag since is stored in the local storage
-      await evaluateFeatureFlag(
-        featureFlags.enablePspPage,
-        onFeatureFlagError,
-        onFeatureFlagSuccess
-      );
-
-      await evaluateFeatureFlag(
-        featureFlags.enableMaintenance,
-        onFeatureFlagErrorMaintenance,
-        onFeatureFlagSuccessMaintenance
-      );
+      await Promise.all([
+        checkFeatureFlag({
+          flagName: "enablePspPage",
+          sessionKey: SessionItems.enablePspPage,
+          onSuccess: (enabled: boolean) => {
+            localStorage.setItem(
+              SessionItems.enablePspPage,
+              enabled.toString()
+            );
+          },
+          store: "local",
+          skipIfStored: false,
+        }),
+        checkFeatureFlag({
+          flagName: "enableMaintenance",
+          sessionKey: SessionItems.enableMaintenance,
+          onSuccess: setIsMaintenanceEnabled,
+          store: "session",
+        }),
+      ]);
     } finally {
       setLoadingFlags(false); // Even if it fails, complete the loading state
     }
