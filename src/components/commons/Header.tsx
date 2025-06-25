@@ -116,30 +116,38 @@ export default function Header() {
 
   const onFeatureFlagSuccessMaintenance = (data: { enabled: boolean }) => {
     setSessionItem(SessionItems.enableMaintenance, data.enabled.toString());
-    setEnableAuthentication(false);
+    if (data.enabled) {
+      setEnableAuthentication(false);
+    }
   };
 
   const initFeatureFlag = async () => {
-    const storedFeatureFlag = getSessionItem(SessionItems.enableAuthentication);
-    // avoid asking again if you already have received an answer
-    if (!storedFeatureFlag) {
-      await evaluateFeatureFlag(
-        featureFlags.enableAuthentication,
-        onFeatureFlagError,
-        onFeatureFlagSuccess
+    try {
+      const storedFeatureFlag = getSessionItem(
+        SessionItems.enableAuthentication
       );
-    }
+      // avoid asking again if you already have received an answer
+      if (!storedFeatureFlag) {
+        await evaluateFeatureFlag(
+          featureFlags.enableAuthentication,
+          onFeatureFlagError,
+          onFeatureFlagSuccess
+        );
+      }
 
-    const storedFeatureFlagMaintenance = getSessionItem(
-      SessionItems.enableMaintenance
-    );
-    // avoid asking again if you already have received an answer
-    if (!storedFeatureFlagMaintenance) {
-      await evaluateFeatureFlag(
-        featureFlags.enableMaintenance,
-        onFeatureFlagErrorMaintenance,
-        onFeatureFlagSuccessMaintenance
+      const storedFeatureFlagMaintenance = getSessionItem(
+        SessionItems.enableMaintenance
       );
+      // avoid asking again if you already have received an answer
+      if (!storedFeatureFlagMaintenance) {
+        await evaluateFeatureFlag(
+          featureFlags.enableMaintenance,
+          onFeatureFlagErrorMaintenance,
+          onFeatureFlagSuccessMaintenance
+        );
+      }
+    } finally {
+      setLoadingFlags(false); // Even if it fails, complete the loading state
     }
   };
 
@@ -147,6 +155,15 @@ export default function Header() {
     void initFeatureFlag();
   }, []);
 
+  // Prevents initial UI render before feature flags are loaded,
+  // avoiding flicker when MaintenancePage should be shown.
+  const [loadingFlags, setLoadingFlags] = React.useState(true);
+
+  if(loadingFlags)
+  {
+    return null;
+  }
+  
   return (
     <header>
       <Stack position="relative" zIndex="1000">

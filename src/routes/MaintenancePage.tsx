@@ -4,6 +4,11 @@ import { Box, Button, Typography } from "@mui/material";
 import React from "react";
 import PageContainer from "../components/PageContent/PageContainer";
 import inProgressIcon from "../assets/images/in-progress.svg";
+import { mixpanel } from "../utils/mixpanel/mixpanelHelperInit";
+import {
+  MixpanelEventCategory,
+  MixpanelEventsId,
+} from "../utils/mixpanel/mixpanelEvents";
 
 export default function MaintenancePage() {
   const { t } = useTranslation();
@@ -12,8 +17,14 @@ export default function MaintenancePage() {
   sessionStorage.clear();
 
   useEffect(() => {
-    const pageTitle = t("donationPage.title");
+    const pageTitle = t("maintenancePage.title");
     (document.title as any) = pageTitle + " - pagoPA";
+
+    mixpanel.track(MixpanelEventsId.SCHEDULED_MAINTENANCE, {
+      EVENT_ID: MixpanelEventsId.SCHEDULED_MAINTENANCE,
+      EVENT_CATEGORY: MixpanelEventCategory.KO,
+      page: window.location.pathname,
+    });
   }, []);
 
   return (
@@ -61,7 +72,17 @@ export default function MaintenancePage() {
               variant="contained"
               size="small"
               fullWidth={true}
-              onClick={() => window.location.replace(siteUrl)}
+              onClick={() => {
+                mixpanel.track(
+                  MixpanelEventsId.SCHEDULED_MAINTENANCE_MORE_INFO,
+                  {
+                    EVENT_ID: MixpanelEventsId.SCHEDULED_MAINTENANCE_MORE_INFO,
+                    EVENT_CATEGORY: MixpanelEventCategory.UX,
+                    page: window.location.pathname,
+                  }
+                );
+                window.location.replace(siteUrl);
+              }}
             >
               {t("maintenancePage.detailsButton")}
             </Button>
