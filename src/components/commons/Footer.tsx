@@ -95,6 +95,19 @@ export default function Footer(props: { fixedPages: Array<string> }) {
           >
             {t("mainPage.footer.terms")}
           </Link>
+          <p aria-hidden="true">·</p>
+          <Link
+            href="https://status.platform.pagopa.it/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: theme.palette.text.primary,
+              textDecoration: "none",
+            }}
+            title={t("mainPage.footer.platformStatus")}
+          >
+            {t("mainPage.footer.platformStatus")}
+          </Link>
           {showLanguageSelect() && (
             <>
               <p aria-hidden="true">·</p>

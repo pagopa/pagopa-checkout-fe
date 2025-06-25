@@ -50,6 +50,9 @@ describe("Footer", () => {
     expect(screen.getByTitle("mainPage.footer.help")).toBeInTheDocument();
     expect(screen.getByTitle("mainPage.footer.privacy")).toBeInTheDocument();
     expect(screen.getByTitle("mainPage.footer.terms")).toBeInTheDocument();
+    expect(
+      screen.getByTitle("mainPage.footer.platformStatus")
+    ).toBeInTheDocument();
     expect(screen.getByTitle("mainPage.footer.pagoPA")).toBeInTheDocument();
 
     const logo = document.querySelector('img[alt="pagoPA"]');
@@ -145,6 +148,12 @@ describe("Footer", () => {
     expect(termsLink).toHaveAttribute(
       "href",
       "https://checkout.pagopa.it/termini-di-servizio"
+    );
+
+    const platformStatus = screen.getByTitle("mainPage.footer.platformStatus");
+    expect(platformStatus).toHaveAttribute(
+      "href",
+      "https://status.platform.pagopa.it/"
     );
 
     const pagopaLink = screen.getByTitle("mainPage.footer.pagoPA");
