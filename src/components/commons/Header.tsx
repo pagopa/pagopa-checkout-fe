@@ -105,6 +105,20 @@ export default function Header() {
     setEnableAuthentication(data.enabled);
   };
 
+  const onFeatureFlagErrorMaintenance = (e: string) => {
+    // eslint-disable-next-line no-console
+    console.error(
+      "Error while getting feature flag " + SessionItems.enableAuthentication,
+      e
+    );
+    setSessionItem(SessionItems.enableMaintenance, false);
+  };
+
+  const onFeatureFlagSuccessMaintenance = (data: { enabled: boolean }) => {
+    setSessionItem(SessionItems.enableMaintenance, data.enabled.toString());
+    setEnableAuthentication(false);
+  };
+
   const initFeatureFlag = async () => {
     const storedFeatureFlag = getSessionItem(SessionItems.enableAuthentication);
     // avoid asking again if you already have received an answer
@@ -113,6 +127,18 @@ export default function Header() {
         featureFlags.enableAuthentication,
         onFeatureFlagError,
         onFeatureFlagSuccess
+      );
+    }
+
+    const storedFeatureFlagMaintenance = getSessionItem(
+      SessionItems.enableMaintenance
+    );
+    // avoid asking again if you already have received an answer
+    if (!storedFeatureFlagMaintenance) {
+      await evaluateFeatureFlag(
+        featureFlags.enableMaintenance,
+        onFeatureFlagErrorMaintenance,
+        onFeatureFlagSuccessMaintenance
       );
     }
   };

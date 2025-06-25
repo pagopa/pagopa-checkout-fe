@@ -1,13 +1,13 @@
 import { useTranslation } from "react-i18next";
-import PageContainer from "../components/PageContent/PageContainer";
-import inProgressIcon from "../assets/images/in-progress.svg";
 import { useEffect } from "react";
 import { Box, Button, Typography } from "@mui/material";
+import React from "react";
+import PageContainer from "../components/PageContent/PageContainer";
+import inProgressIcon from "../assets/images/in-progress.svg";
 
-export default function MaintenancePage(){
+export default function MaintenancePage() {
   const { t } = useTranslation();
-  const siteUrl =
-    "https://status.platform.pagopa.it/";
+  const siteUrl = "https://status.platform.pagopa.it/";
 
   sessionStorage.clear();
 
@@ -56,7 +56,6 @@ export default function MaintenancePage(){
             {t("maintenancePage.subtitle")}
           </Typography>
           <Box paddingX={3} width="60%">
-            
             <Button
               type="button"
               variant="contained"
