@@ -75,7 +75,7 @@ stages:
         pool:
           vmImage: 'ubuntu-latest'
         steps:
-        - template: templates/node-job-setup/template.yaml@pagopaCommons
+        - template: azure-templates/node-job-setup.yaml
 
         - template: azure-templates/setup-env.yml
           parameters:
