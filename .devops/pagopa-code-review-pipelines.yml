@@ -102,8 +102,6 @@ stages:
       - job: lint
         steps:
         - template: templates/node-job-setup/template.yaml@pagopaCommons
-        - script: yarn cache clean
-          displayName: 'Clear yarn cache'
         - script: yarn lint
           displayName: 'Lint'
       - job: danger
@@ -188,8 +186,6 @@ stages:
         steps:
 
         - checkout: checkout-be-mock
-        - script: yarn cache clean
-          displayName: 'Clear yarn cache'
         - script: |
             cp env.example .env
             sed -i "s/^NPG_API_KEY=.*$/NPG_API_KEY=$(CHECKOUT-TEST-NPG-API-KEY)/" .env
