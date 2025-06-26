@@ -178,7 +178,7 @@ stages:
       - job: make_release
         steps:
         - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
-          - template: azure-templates/node-job-setup.yaml
+          - template: azure-templates/node-job-setup.yml
             parameters:
               persistCredentials: true
           - template: templates/node-github-release/template.yaml@pagopaCommons
