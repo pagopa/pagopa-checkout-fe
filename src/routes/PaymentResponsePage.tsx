@@ -263,11 +263,12 @@ export default function PaymentResponsePage() {
                   : t("errorButton.close")}
               </Button>
             </Box>
-            {conf.CHECKOUT_SURVEY_SHOW && outcome === ViewOutcomeEnum.SUCCESS && (
-              <Box sx={{ width: "100%" }} px={{ xs: 8, sm: 0 }}>
-                <SurveyLink />
-              </Box>
-            )}
+            {conf.CHECKOUT_SURVEY_SHOW &&
+              outcome === ViewOutcomeEnum.SUCCESS && (
+                <Box sx={{ width: "100%" }} px={{ xs: 8, sm: 0 }}>
+                  <SurveyLink />
+                </Box>
+              )}
           </Box>
         )}
       </Box>

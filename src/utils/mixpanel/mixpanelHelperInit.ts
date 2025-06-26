@@ -1,6 +1,7 @@
-import { init, track, Mixpanel, get_distinct_id } from "mixpanel-browser";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
+import { Mixpanel } from "mixpanel-browser";
+import { get_distinct_id, init, track } from "mixpanel-browser/index";
 import { getConfigOrThrow } from "../config/config";
 
 const ENV = getConfigOrThrow().CHECKOUT_ENV;
