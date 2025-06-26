@@ -65,7 +65,7 @@ stages:
         pool:
           vmImage: 'ubuntu-latest'
         steps:
-          - template: templates/node-job-setup/template.yaml@pagopaCommons
+          - template: azure-templates/node-job-setup.yml
             parameters:
               # On the assumption that this stage is executed only when Relase stage is,
               #  with this parameter we set the reference the deploy script must pull changes from.
@@ -202,7 +202,7 @@ stages:
         pool:
           vmImage: 'ubuntu-latest'
         steps:
-          - template: templates/node-job-setup/template.yaml@pagopaCommons
+          - template: azure-templates/node-job-setup.yml
             parameters:
               # On the assumption that this stage is executed only when Relase stage is,
               #  with this parameter we set the reference the deploy script must pull changes from.
@@ -313,7 +313,7 @@ stages:
         pool:
           vmImage: 'ubuntu-latest'
         steps:
-          - template: templates/node-job-setup/template.yaml@pagopaCommons
+          - template: azure-templates/node-job-setup.yml
             parameters:
               # On the assumption that this stage is executed only when Relase stage is,
               #  with this parameter we set the reference the deploy script must pull changes from.
