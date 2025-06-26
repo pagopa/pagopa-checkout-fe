@@ -66,6 +66,6 @@ steps:
 
 - bash: |
     echo "current folder: $(pwd)"
-    yarn install --frozen-lockfile --no-progress --non-interactive --ignore-scripts
+    yarn install --frozen-lockfile --no-progress --non-interactive
   workingDirectory: ${{ parameters.projectDir }}
   displayName: 'Install node modules'
