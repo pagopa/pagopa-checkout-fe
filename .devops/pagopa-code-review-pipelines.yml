@@ -73,7 +73,7 @@ stages:
     jobs:
       - job: make_build
         steps:
-        - template: azure-templates/node-job-setup.yml
+        - template: templates/node-job-setup/template.yaml@pagopaCommons
 
         - template: azure-templates/setup-env.yml
           parameters:
