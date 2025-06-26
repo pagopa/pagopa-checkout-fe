@@ -212,7 +212,7 @@ stages:
           displayName: 'Wait for backend to be up and running'
           workingDirectory: pagopa-checkout-fe
 
-        - script: npx puppeteer install
+        - script: yarn add puppeteer
           displayName: 'Install Puppeteer Chromium'
   
         - script: yarn test:outcomes-integration
