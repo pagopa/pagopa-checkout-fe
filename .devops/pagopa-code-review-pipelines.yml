@@ -42,7 +42,7 @@ parameters:
     default: true
 
 variables:
-  NODE_VERSION: '18.17.1'
+  NODE_VERSION: '22.17.0'
   YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
 trigger: none
 
