@@ -50,7 +50,7 @@ trigger: none
 # Execute agents (jobs) on latest Ubuntu version.
 # To change OS for a specific, ovverride "pool" attribute inside the job definition
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: 'ubuntu-22.04'
 
 resources:
   repositories:
@@ -212,6 +212,9 @@ stages:
           displayName: 'Wait for backend to be up and running'
           workingDirectory: pagopa-checkout-fe
 
+        - script: npx puppeteer install
+          displayName: 'Install Puppeteer Chromium'
+  
         - script: yarn test:outcomes-integration
           displayName: 'Outcomes integration tests exec'
           workingDirectory: pagopa-checkout-fe
