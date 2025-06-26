@@ -102,6 +102,8 @@ stages:
       - job: lint
         steps:
         - template: templates/node-job-setup/template.yaml@pagopaCommons
+        - script: yarn cache clean
+          displayName: 'Clear yarn cache'
         - script: yarn lint
           displayName: 'Lint'
       - job: danger
@@ -149,7 +151,8 @@ stages:
               sonar.tests=src
               sonar.test.inclusions=src/**/__tests__/**/*,src/**/__test__/**
               sonar.cpd.exclusions=src/**/__tests__/**,src/**/__test__/**,__mocks__/**,/src/utils/testing/**
-
+        - script: yarn cache clean
+          displayName: 'Clear yarn cache'
         - script: |
             yarn generate
             yarn test:coverage --watchAll=false
@@ -185,7 +188,8 @@ stages:
         steps:
 
         - checkout: checkout-be-mock
-
+        - script: yarn cache clean
+          displayName: 'Clear yarn cache'
         - script: |
             cp env.example .env
             sed -i "s/^NPG_API_KEY=.*$/NPG_API_KEY=$(CHECKOUT-TEST-NPG-API-KEY)/" .env
@@ -252,7 +256,8 @@ stages:
             sed -i "s/^PSP_API_KEY=.*$/PSP_API_KEY=$(CHECKOUT-TEST-NPG-API-KEY)/" .env
           workingDirectory: pagopa-checkout-be-mock
           displayName: 'Setup env for mock'
-
+        - script: yarn cache clean
+          displayName: 'Clear yarn cache'
         - script: yarn global add node-gyp && yarn install && yarn build
           workingDirectory: pagopa-checkout-be-mock
           displayName: 'Setup deps for mock'
@@ -312,6 +317,9 @@ stages:
             sed -i "s/^PSP_API_KEY=.*$/PSP_API_KEY=$(CHECKOUT-TEST-NPG-API-KEY)/" .env
           workingDirectory: pagopa-checkout-be-mock
           displayName: 'Setup env for mock'
+
+        - script: yarn cache clean
+          displayName: 'Clear yarn cache'
 
         - script: yarn global add node-gyp && yarn install && yarn build
           workingDirectory: pagopa-checkout-be-mock
@@ -373,6 +381,9 @@ stages:
           workingDirectory: pagopa-checkout-be-mock
           displayName: 'Setup env for mock'
 
+        - script: yarn cache clean
+          displayName: 'Clear yarn cache'
+          
         - script: yarn global add node-gyp && yarn install && yarn build
           workingDirectory: pagopa-checkout-be-mock
           displayName: 'Setup deps for mock'

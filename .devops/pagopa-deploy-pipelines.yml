@@ -105,6 +105,9 @@ stages:
               checkout_npg_sdk_url: 'https://stg-ta.nexigroup.com/monetaweb/resources/hfsdk.js'
               checkout_gdi_check_timeout: 20000
               checkout_version: "$(Build.SourceBranchName):$(Build.SourceVersion)"
+          
+          - script: yarn cache clean
+            displayName: 'Clear yarn cache'
 
           - script: |
               yarn build
@@ -178,6 +181,8 @@ stages:
       - job: make_release
         steps:
         - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
+          - script: yarn cache clean
+            displayName: 'Clear yarn cache'
           - template: templates/node-job-setup/template.yaml@pagopaCommons
             parameters:
               persistCredentials: true
@@ -243,6 +248,9 @@ stages:
               checkout_version: "$(Build.SourceBranchName):$(Build.SourceVersion)"
               checkout_gdi_check_timeout: 20000
               
+          - script: yarn cache clean
+            displayName: 'Clear yarn cache'
+
           - script: |
               yarn build
             displayName: 'Build'
@@ -346,6 +354,9 @@ stages:
               checkout_npg_sdk_url: 'https://xpay.nexigroup.com/monetaweb/resources/hfsdk.js'
               checkout_version: "$(Build.SourceBranchName):$(Build.SourceVersion)"
               checkout_gdi_check_timeout: 20000
+
+          - script: yarn cache clean
+            displayName: 'Clear yarn cache'
 
           - script: |
               yarn build
