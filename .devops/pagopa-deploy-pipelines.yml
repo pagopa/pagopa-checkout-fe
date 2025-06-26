@@ -47,7 +47,7 @@ resources:
     - repository: pagopaCommons
       type: github
       name: pagopa/azure-pipeline-templates
-      ref: refs/tags/v19
+      ref: refs/tags/v6.17.3
       endpoint: 'io-azure-devops-github-ro'
 
     - repository: checkoutTests
