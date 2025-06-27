@@ -287,7 +287,7 @@ export const fillCardDataForm = async (cardData) => {
     await page.click(holderNameInput, { clickCount: 3 });
     await page.keyboard.type(cardData.holderName);
     completed = !!!(await page.$(disabledContinueBtnXPath));
-    await page.waitForTimeout(1_000);
+    await new Promise(resolve => setTimeout(resolve, 1000)); 
   }
   const continueBtn = await page.waitForSelector(continueBtnXPath, {
     visible: true,
