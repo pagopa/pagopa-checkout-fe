@@ -477,6 +477,12 @@
       "cancelButton": "Prekliči"
     }
   },
+   "maintenancePage": {
+    "title": "Delamo za vas",
+    "subtitle": "pagoPa trenutno ni na voljo zaradi načrtovanega vzdrževanja."   ,
+    "closeButton": "Zapri",
+    "detailsButton": "Izvedi več"
+  },
   "__variant-name": "Sloveno",
   "__variant-description": ""
 }
