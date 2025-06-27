@@ -198,6 +198,9 @@ stages:
           parameters:
            projectDir: pagopa-checkout-fe
 
+        - script: node node_modules/puppeteer/install.js
+          displayName: 'Install Puppeteer (Chromium)'
+
         - script: |
             export $(grep -v '^#' .env.development | xargs)
           displayName: 'export envs from .env.development'
@@ -211,9 +214,6 @@ stages:
         - script: while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:1234)" != "200" ]]; do sleep 5; done
           displayName: 'Wait for backend to be up and running'
           workingDirectory: pagopa-checkout-fe
-
-        - script: npx puppeteer install
-          displayName: 'Install Puppeteer Chromium'
   
         - script: yarn test:outcomes-integration
           displayName: 'Outcomes integration tests exec'
