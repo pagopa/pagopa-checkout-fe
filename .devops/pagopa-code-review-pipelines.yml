@@ -274,6 +274,25 @@ stages:
            projectDir: pagopa-checkout-fe
 
         - script: |
+            node node_modules/puppeteer/install.js &
+            PID=$!
+            for i in {1..60}; do
+              if ls "$HOME/.cache/puppeteer/chrome/"* >/dev/null 2>&1; then
+                echo "Chromium cache folder detected, killing install process (PID=$PID)..."
+                kill $PID
+                wait $PID || true
+                exit 0
+              fi
+              sleep 5
+            done
+            echo "Timeout: Chromium not downloaded"
+            kill $PID
+            wait $PID || true
+            exit 1
+          displayName: 'Install Puppeteer (Chromium)'
+          workingDirectory: pagopa-checkout-fe
+
+        - script: |
             export $(grep -v '^#' .env.development | xargs)
           displayName: 'export envs from .env.development'
           workingDirectory: pagopa-checkout-fe
@@ -292,7 +311,9 @@ stages:
             sudo apt-get install -y chromium-browser
           displayName: 'Install Chromium Browser'
 
-        - script: yarn test:payment-flow-integration
+        - script: |
+            export PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+            yarn test:payment-flow-integration
           displayName: 'Payment flow integration tests exec'
           workingDirectory: pagopa-checkout-fe
 
@@ -337,6 +358,25 @@ stages:
            projectDir: pagopa-checkout-fe
 
         - script: |
+            node node_modules/puppeteer/install.js &
+            PID=$!
+            for i in {1..60}; do
+              if ls "$HOME/.cache/puppeteer/chrome/"* >/dev/null 2>&1; then
+                echo "Chromium cache folder detected, killing install process (PID=$PID)..."
+                kill $PID
+                wait $PID || true
+                exit 0
+              fi
+              sleep 5
+            done
+            echo "Timeout: Chromium not downloaded"
+            kill $PID
+            wait $PID || true
+            exit 1
+          displayName: 'Install Puppeteer (Chromium)'
+          workingDirectory: pagopa-checkout-fe
+
+        - script: |
             export $(grep -v '^#' .env.development | xargs)
           displayName: 'export envs from .env.development'
           workingDirectory: pagopa-checkout-fe
@@ -350,7 +390,9 @@ stages:
           displayName: 'Wait for backend to be up and running'
           workingDirectory: pagopa-checkout-fe
 
-        - script: yarn test:authentication-integration
+        - script: |
+            export PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+            yarn test:authentication-integration
           displayName: 'Authentication integration tests exec'
           workingDirectory: pagopa-checkout-fe
 
@@ -395,6 +437,25 @@ stages:
            projectDir: pagopa-checkout-fe
 
         - script: |
+            node node_modules/puppeteer/install.js &
+            PID=$!
+            for i in {1..60}; do
+              if ls "$HOME/.cache/puppeteer/chrome/"* >/dev/null 2>&1; then
+                echo "Chromium cache folder detected, killing install process (PID=$PID)..."
+                kill $PID
+                wait $PID || true
+                exit 0
+              fi
+              sleep 5
+            done
+            echo "Timeout: Chromium not downloaded"
+            kill $PID
+            wait $PID || true
+            exit 1
+          displayName: 'Install Puppeteer (Chromium)'
+          workingDirectory: pagopa-checkout-fe
+          
+        - script: |
             export $(grep -v '^#' .env.development | xargs)
           displayName: 'export envs from .env.development'
           workingDirectory: pagopa-checkout-fe
@@ -408,7 +469,9 @@ stages:
           displayName: 'Wait for backend to be up and running'
           workingDirectory: pagopa-checkout-fe
 
-        - script: yarn test:payment-responsepageV2
+        - script: | 
+            export PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+            yarn test:payment-responsepageV2
           displayName: 'Authentication integration tests exec'
           workingDirectory: pagopa-checkout-fe
 
