@@ -106,7 +106,7 @@
     "prettier": "^2.5.1",
     "process": "^0.11.10",
     "promise-polyfill": "^8.2.0",
-    "puppeteer": "^21.0.0",
+    "puppeteer": "^22.0.0",
     "querystring-es3": "^0.2.1",
     "request": "^2.88.2",
     "rimraf": "^2.6.2",
