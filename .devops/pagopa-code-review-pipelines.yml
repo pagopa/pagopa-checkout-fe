@@ -198,15 +198,15 @@ stages:
             node node_modules/puppeteer/install.js &
             PID=$!
             for i in {1..60}; do
-              if [ -f "$HOME/.cache/puppeteer/chrome/linux-115.0.5790.98/chrome-linux/chrome" ]; then
-                echo "Chromium downloaded, killing install process (PID=$PID)..."
+              if ls "$HOME/.cache/puppeteer/chrome/"* >/dev/null 2>&1; then
+                echo "Chromium cache folder detected, killing install process (PID=$PID)..."
                 kill $PID
                 wait $PID || true
                 exit 0
               fi
               sleep 5
             done
-            echo "Timeout: Chromium not downloaded after 5 minutes"
+            echo "Timeout: Chromium not downloaded"
             kill $PID
             wait $PID || true
             exit 1
