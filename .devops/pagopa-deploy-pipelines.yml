@@ -47,7 +47,7 @@ resources:
     - repository: pagopaCommons
       type: github
       name: pagopa/azure-pipeline-templates
-      ref: refs/tags/v19
+      ref: refs/tags/v6.17.3
       endpoint: 'io-azure-devops-github-ro'
 
     - repository: checkoutTests
@@ -65,7 +65,7 @@ stages:
         pool:
           vmImage: 'ubuntu-latest'
         steps:
-          - template: templates/node-job-setup/template.yaml@pagopaCommons
+          - template: azure-templates/node-job-setup.yml
             parameters:
               # On the assumption that this stage is executed only when Relase stage is,
               #  with this parameter we set the reference the deploy script must pull changes from.
@@ -178,7 +178,7 @@ stages:
       - job: make_release
         steps:
         - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
-          - template: templates/node-job-setup/template.yaml@pagopaCommons
+          - template: azure-templates/node-job-setup.yml
             parameters:
               persistCredentials: true
           - template: templates/node-github-release/template.yaml@pagopaCommons
@@ -202,7 +202,7 @@ stages:
         pool:
           vmImage: 'ubuntu-latest'
         steps:
-          - template: templates/node-job-setup/template.yaml@pagopaCommons
+          - template: azure-templates/node-job-setup.yml
             parameters:
               # On the assumption that this stage is executed only when Relase stage is,
               #  with this parameter we set the reference the deploy script must pull changes from.
@@ -242,7 +242,7 @@ stages:
               checkout_npg_sdk_url: 'https://stg-ta.nexigroup.com/monetaweb/resources/hfsdk.js'
               checkout_version: "$(Build.SourceBranchName):$(Build.SourceVersion)"
               checkout_gdi_check_timeout: 20000
-              
+
           - script: |
               yarn build
             displayName: 'Build'
@@ -313,7 +313,7 @@ stages:
         pool:
           vmImage: 'ubuntu-latest'
         steps:
-          - template: templates/node-job-setup/template.yaml@pagopaCommons
+          - template: azure-templates/node-job-setup.yml
             parameters:
               # On the assumption that this stage is executed only when Relase stage is,
               #  with this parameter we set the reference the deploy script must pull changes from.

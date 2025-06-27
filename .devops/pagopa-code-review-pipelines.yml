@@ -47,19 +47,13 @@ variables:
 trigger: none
 
 
-# Execute agents (jobs) on latest Ubuntu version.
+# Execute agents (jobs) on ubuntu-22.04 Ubuntu version.
 # To change OS for a specific, ovverride "pool" attribute inside the job definition
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: 'ubuntu-22.04'
 
 resources:
   repositories:
-    - repository: pagopaCommons
-      type: github
-      name: pagopa/azure-pipeline-templates
-      ref: refs/tags/v19
-      endpoint: 'io-azure-devops-github-ro'
-
     - repository: checkout-be-mock
       type: github
       name: pagopa/pagopa-checkout-be-mock
@@ -72,10 +66,8 @@ stages:
     dependsOn: []
     jobs:
       - job: make_build
-        pool:
-          vmImage: 'ubuntu-latest'
         steps:
-        - template: templates/node-job-setup/template.yaml@pagopaCommons
+        - template: azure-templates/node-job-setup.yml
 
         - template: azure-templates/setup-env.yml
           parameters:
@@ -101,7 +93,7 @@ stages:
     jobs:
       - job: lint
         steps:
-        - template: templates/node-job-setup/template.yaml@pagopaCommons
+        - template: azure-templates/node-job-setup.yml
         - script: yarn lint
           displayName: 'Lint'
       - job: danger
@@ -111,8 +103,7 @@ stages:
             ne(variables['DANGER_GITHUB_API_TOKEN'], 'skip')
           )
         steps:
-          - template: templates/node-job-setup/template.yaml@pagopaCommons
-
+          - template: azure-templates/node-job-setup.yml
           - bash: yarn danger ci
             env:
               DANGER_GITHUB_API_TOKEN: '$(DANGER_GITHUB_API_TOKEN)'
@@ -121,13 +112,11 @@ stages:
   # B) Run unit tests if there is a push or pull request on any branch.
   - stage: Unit_Tests
     condition: and(succeeded(), eq('${{parameters.UNIT_TESTS}}', true))
-    pool:
-      vmImage: 'ubuntu-latest'
     dependsOn: []
     jobs:
       - job: run_unit_tests
         steps:
-        - template: templates/node-job-setup/template.yaml@pagopaCommons
+        - template: azure-templates/node-job-setup.yml
 
         - task: SonarCloudPrepare@3
           displayName: 'Prepare SonarCloud analysis configuration'
@@ -176,8 +165,6 @@ stages:
 # B) Run integration tests if there is a push or pull request on any branch.
   - stage: Integration_Tests_Outcomes
     condition: and(succeeded(), eq('${{parameters.OUTCOMES_TESTS}}', true))
-    pool:
-      vmImage: 'ubuntu-latest'
     dependsOn: []
     jobs:
       - job: run_integration_tests
@@ -185,7 +172,6 @@ stages:
         steps:
 
         - checkout: checkout-be-mock
-
         - script: |
             cp env.example .env
             sed -i "s/^NPG_API_KEY=.*$/NPG_API_KEY=$(CHECKOUT-TEST-NPG-API-KEY)/" .env
@@ -204,9 +190,28 @@ stages:
 
         - checkout: self
 
-        - template: templates/node-job-setup/template.yaml@pagopaCommons
+        - template: azure-templates/node-job-setup.yml
           parameters:
-           projectDir: pagopa-checkout-fe
+            projectDir: pagopa-checkout-fe
+
+        - script: |
+            node node_modules/puppeteer/install.js &
+            PID=$!
+            for i in {1..60}; do
+              if ls "$HOME/.cache/puppeteer/chrome/"* >/dev/null 2>&1; then
+                echo "Chromium cache folder detected, killing install process (PID=$PID)..."
+                kill $PID
+                wait $PID || true
+                exit 0
+              fi
+              sleep 5
+            done
+            echo "Timeout: Chromium not downloaded"
+            kill $PID
+            wait $PID || true
+            exit 1
+          displayName: 'Install Puppeteer (Chromium)'
+          workingDirectory: pagopa-checkout-fe
 
         - script: |
             export $(grep -v '^#' .env.development | xargs)
@@ -221,8 +226,10 @@ stages:
         - script: while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:1234)" != "200" ]]; do sleep 5; done
           displayName: 'Wait for backend to be up and running'
           workingDirectory: pagopa-checkout-fe
-
-        - script: yarn test:outcomes-integration
+  
+        - script: |
+              export PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+              yarn test:outcomes-integration
           displayName: 'Outcomes integration tests exec'
           workingDirectory: pagopa-checkout-fe
 
@@ -236,8 +243,6 @@ stages:
 
   - stage: Integration_Tests_Payment_Flow
     condition: and(succeeded(), eq('${{parameters.PAYMENT_INTEGRATION_TESTS}}', true))
-    pool:
-      vmImage: 'ubuntu-latest'
     dependsOn: []
     jobs:
       - job: run_integration_tests
@@ -264,9 +269,28 @@ stages:
 
         - checkout: self
 
-        - template: templates/node-job-setup/template.yaml@pagopaCommons
+        - template: azure-templates/node-job-setup.yml
           parameters:
            projectDir: pagopa-checkout-fe
+
+        - script: |
+            node node_modules/puppeteer/install.js &
+            PID=$!
+            for i in {1..60}; do
+              if ls "$HOME/.cache/puppeteer/chrome/"* >/dev/null 2>&1; then
+                echo "Chromium cache folder detected, killing install process (PID=$PID)..."
+                kill $PID
+                wait $PID || true
+                exit 0
+              fi
+              sleep 5
+            done
+            echo "Timeout: Chromium not downloaded"
+            kill $PID
+            wait $PID || true
+            exit 1
+          displayName: 'Install Puppeteer (Chromium)'
+          workingDirectory: pagopa-checkout-fe
 
         - script: |
             export $(grep -v '^#' .env.development | xargs)
@@ -282,7 +306,14 @@ stages:
           displayName: 'Wait for backend to be up and running'
           workingDirectory: pagopa-checkout-fe
 
-        - script: yarn test:payment-flow-integration
+        - script: |
+            sudo apt-get update
+            sudo apt-get install -y chromium-browser
+          displayName: 'Install Chromium Browser'
+
+        - script: |
+            export PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+            yarn test:payment-flow-integration
           displayName: 'Payment flow integration tests exec'
           workingDirectory: pagopa-checkout-fe
 
@@ -296,8 +327,6 @@ stages:
 
   - stage: Integration_Tests_Authentication
     condition: and(succeeded(), eq('${{parameters.AUTHENTICATION_TESTS}}', true))
-    pool:
-      vmImage: 'ubuntu-latest'
     dependsOn: []
     jobs:
       - job: run_integration_tests
@@ -324,9 +353,28 @@ stages:
 
         - checkout: self
 
-        - template: templates/node-job-setup/template.yaml@pagopaCommons
+        - template: azure-templates/node-job-setup.yml
           parameters:
            projectDir: pagopa-checkout-fe
+
+        - script: |
+            node node_modules/puppeteer/install.js &
+            PID=$!
+            for i in {1..60}; do
+              if ls "$HOME/.cache/puppeteer/chrome/"* >/dev/null 2>&1; then
+                echo "Chromium cache folder detected, killing install process (PID=$PID)..."
+                kill $PID
+                wait $PID || true
+                exit 0
+              fi
+              sleep 5
+            done
+            echo "Timeout: Chromium not downloaded"
+            kill $PID
+            wait $PID || true
+            exit 1
+          displayName: 'Install Puppeteer (Chromium)'
+          workingDirectory: pagopa-checkout-fe
 
         - script: |
             export $(grep -v '^#' .env.development | xargs)
@@ -342,7 +390,9 @@ stages:
           displayName: 'Wait for backend to be up and running'
           workingDirectory: pagopa-checkout-fe
 
-        - script: yarn test:authentication-integration
+        - script: |
+            export PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+            yarn test:authentication-integration
           displayName: 'Authentication integration tests exec'
           workingDirectory: pagopa-checkout-fe
 
@@ -356,8 +406,6 @@ stages:
 
   - stage: Integration_Tests_PaymentResponsePageV2
     condition: and(succeeded(), eq('${{parameters.PAYMENT_RESPONSE_PAGE_V2_TEST}}', true))
-    pool:
-      vmImage: 'ubuntu-latest'
     dependsOn: []
     jobs:
       - job: run_integration_tests
@@ -372,7 +420,7 @@ stages:
             sed -i "s/^PSP_API_KEY=.*$/PSP_API_KEY=$(CHECKOUT-TEST-NPG-API-KEY)/" .env
           workingDirectory: pagopa-checkout-be-mock
           displayName: 'Setup env for mock'
-
+          
         - script: yarn global add node-gyp && yarn install && yarn build
           workingDirectory: pagopa-checkout-be-mock
           displayName: 'Setup deps for mock'
@@ -384,10 +432,29 @@ stages:
 
         - checkout: self
 
-        - template: templates/node-job-setup/template.yaml@pagopaCommons
+        - template: azure-templates/node-job-setup.yml
           parameters:
            projectDir: pagopa-checkout-fe
 
+        - script: |
+            node node_modules/puppeteer/install.js &
+            PID=$!
+            for i in {1..60}; do
+              if ls "$HOME/.cache/puppeteer/chrome/"* >/dev/null 2>&1; then
+                echo "Chromium cache folder detected, killing install process (PID=$PID)..."
+                kill $PID
+                wait $PID || true
+                exit 0
+              fi
+              sleep 5
+            done
+            echo "Timeout: Chromium not downloaded"
+            kill $PID
+            wait $PID || true
+            exit 1
+          displayName: 'Install Puppeteer (Chromium)'
+          workingDirectory: pagopa-checkout-fe
+          
         - script: |
             export $(grep -v '^#' .env.development | xargs)
           displayName: 'export envs from .env.development'
@@ -402,7 +469,9 @@ stages:
           displayName: 'Wait for backend to be up and running'
           workingDirectory: pagopa-checkout-fe
 
-        - script: yarn test:payment-responsepageV2
+        - script: | 
+            export PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+            yarn test:payment-responsepageV2
           displayName: 'Authentication integration tests exec'
           workingDirectory: pagopa-checkout-fe
 

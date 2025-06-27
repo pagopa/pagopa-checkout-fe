@@ -6,7 +6,7 @@ import * as TE from "fp-ts/TaskEither";
 import * as O from "fp-ts/Option";
 import * as T from "fp-ts/Task";
 import { pipe } from "fp-ts/function";
-import { DeferredPromise } from "@pagopa/ts-commons//lib/promises";
+import { DeferredPromise } from "@pagopa/ts-commons/lib/promises";
 import { Millisecond } from "@pagopa/ts-commons//lib/units";
 import { createCounter } from "../../utils/counter";
 import { ecommerceTransactionOutcome } from "../transactions/transactionHelper";
