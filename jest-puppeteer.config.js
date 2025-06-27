@@ -1,5 +1,4 @@
 module.exports = {
-    executablePath: '/usr/bin/chromium',
     launch: {
         dumpio: true,
         headless: "new",
