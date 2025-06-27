@@ -227,7 +227,9 @@ stages:
           displayName: 'Wait for backend to be up and running'
           workingDirectory: pagopa-checkout-fe
   
-        - script: yarn test:outcomes-integration
+        - script: |
+              export PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+              yarn test:outcomes-integration
           displayName: 'Outcomes integration tests exec'
           workingDirectory: pagopa-checkout-fe
 
