@@ -198,7 +198,22 @@ stages:
           parameters:
             projectDir: pagopa-checkout-fe
 
-        - script: node node_modules/puppeteer/install.js
+        - script: |
+            node node_modules/puppeteer/install.js &
+            PID=$!
+            for i in {1..60}; do
+              if [ -f "$HOME/.cache/puppeteer/chrome/linux-115.0.5790.98/chrome-linux/chrome" ]; then
+                echo "Chromium downloaded, killing install process (PID=$PID)..."
+                kill $PID
+                wait $PID || true
+                exit 0
+              fi
+              sleep 5
+            done
+            echo "Timeout: Chromium not downloaded after 5 minutes"
+            kill $PID
+            wait $PID || true
+            exit 1
           displayName: 'Install Puppeteer (Chromium)'
           workingDirectory: pagopa-checkout-fe
 
