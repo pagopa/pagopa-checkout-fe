@@ -275,6 +275,11 @@ stages:
           displayName: 'Wait for backend to be up and running'
           workingDirectory: pagopa-checkout-fe
 
+        - script: |
+            sudo apt-get update
+            sudo apt-get install -y chromium-browser
+          displayName: 'Install Chromium Browser'
+
         - script: yarn test:payment-flow-integration
           displayName: 'Payment flow integration tests exec'
           workingDirectory: pagopa-checkout-fe
