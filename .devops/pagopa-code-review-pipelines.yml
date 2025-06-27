@@ -196,10 +196,11 @@ stages:
 
         - template: azure-templates/node-job-setup.yml
           parameters:
-           projectDir: pagopa-checkout-fe
+            projectDir: pagopa-checkout-fe
 
         - script: node node_modules/puppeteer/install.js
           displayName: 'Install Puppeteer (Chromium)'
+          workingDirectory: pagopa-checkout-fe
 
         - script: |
             export $(grep -v '^#' .env.development | xargs)
