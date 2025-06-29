@@ -477,6 +477,11 @@
       "cancelButton": "Prekliči"
     }
   },
+  "ScheduledMaintenanceBanner": {
+    "titleKey": "Načrtovano vzdrževanje",
+    "bodyKey": "Plačilo ne bo mogoče od 02:00 do 08:00 dne 9. julija 2025.",
+    "linkTextKey": "Več informacij"
+  },
   "__variant-name": "Sloveno",
   "__variant-description": ""
 }
