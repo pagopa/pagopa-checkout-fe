@@ -1,4 +1,5 @@
 import React from "react";
+import { ScheduledMaintenanceBanner } from "../components/commons/ScheduledMaintenanceBanner";
 import { onBrowserUnload } from "../utils/eventListeners";
 import { resetThreshold } from "../redux/slices/threshold";
 import PageContainer from "../components/PageContent/PageContainer";
@@ -16,14 +17,19 @@ export default function IndexPage() {
   }, []);
   clearStorageAndMaintainAuthData();
 
+  const showScheduledMaintenanceBanner = false; // This can be set based on some condition in another PR
+
   return (
-    <PageContainer
-      title="indexPage.title"
-      description="indexPage.description"
-      childrenSx={{ mt: 6 }}
-    >
-      <PaymentNoticeChoice />
-      <PrivacyInfo />
-    </PageContainer>
+    <>
+      {showScheduledMaintenanceBanner && <ScheduledMaintenanceBanner />}
+      <PageContainer
+        title="indexPage.title"
+        description="indexPage.description"
+        childrenSx={{ mt: 6 }}
+      >
+        <PaymentNoticeChoice />
+        <PrivacyInfo />
+      </PageContainer>
+    </>
   );
 }

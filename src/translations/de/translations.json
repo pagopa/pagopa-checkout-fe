@@ -474,6 +474,11 @@
       "cancelButton": "Abbrechen"
     }
   },
+  "ScheduledMaintenanceBanner": {
+    "titleKey": "Geplante Wartung",
+    "bodyKey": "Es wird nicht möglich sein, Zahlungen zwischen 02:00 und 08:00 am 9. Juli 2025 vorzunehmen.",
+    "linkTextKey": "Weitere Informationen"
+  },
   "__variant-name": "Tedesco",
   "__variant-description": ""
 }

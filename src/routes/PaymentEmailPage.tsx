@@ -1,6 +1,7 @@
 import { Box } from "@mui/material";
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { ScheduledMaintenanceBanner } from "../components/commons/ScheduledMaintenanceBanner";
 import PageContainer from "../components/PageContent/PageContainer";
 import { PaymentEmailForm } from "../features/payment/components/PaymentEmailForm/PaymentEmailForm";
 import {
@@ -67,8 +68,11 @@ export default function PaymentEmailPage() {
   const onCancel = () =>
     cancelUrl ? window.location.replace(cancelUrl) : navigate(-1);
 
+  const showScheduledMaintenanceBanner = false && cartInfo;
+
   return (
     <>
+      {showScheduledMaintenanceBanner && <ScheduledMaintenanceBanner />}
       <PageContainer
         title="paymentEmailPage.title"
         description="paymentEmailPage.description"
