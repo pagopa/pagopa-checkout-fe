@@ -52,7 +52,7 @@ export default function MaintenancePage() {
             },
           }}
         >
-          <Typography variant="h6" component="div">
+          <Typography variant="h6" component="div" id="id_maintenance">
             {t("maintenancePage.title")}
           </Typography>
           <Typography
@@ -68,6 +68,7 @@ export default function MaintenancePage() {
           </Typography>
           <Box paddingX={3} width="60%">
             <Button
+              id="id_button_redirect"
               type="button"
               variant="contained"
               size="small"

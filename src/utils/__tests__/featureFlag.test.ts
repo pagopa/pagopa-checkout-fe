@@ -4,6 +4,7 @@ describe("featureFlags", () => {
   test("should have correct keys and values", () => {
     expect(featureFlags).toEqual({
       enableAuthentication: "isAuthenticationEnabled",
+      enableMaintenance: "isEnableMaintenance",
       enablePspPage: "isPspPickerPageEnabled",
     });
   });
@@ -19,6 +20,13 @@ describe("featureFlags", () => {
     expect(featureFlags).toHaveProperty(
       "enablePspPage",
       "isPspPickerPageEnabled"
+    );
+  });
+
+  test("should contain enablePspPage flag", () => {
+    expect(featureFlags).toHaveProperty(
+      "enableMaintenance",
+      "isEnableMaintenance"
     );
   });
 });

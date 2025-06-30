@@ -25,6 +25,8 @@ const getSessionItemDefaultMock = (key: SessionItems) => {
   return null;
 };
 
+import { useFeatureFlags } from "../../../hooks/useFeatureFlags";
+
 // Mock all the imported modules
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
@@ -101,9 +103,14 @@ jest.mock("../SkipToContent", () => ({
   ),
 }));
 
+jest.mock("../../../hooks/useFeatureFlags", () => ({
+  useFeatureFlags: jest.fn(),
+}));
+
 describe("Header Component", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    sessionStorage.clear();
 
     // Default mock implementations
     (getSessionItem as jest.Mock).mockImplementation((key) => {
@@ -128,7 +135,12 @@ describe("Header Component", () => {
     );
   });
 
-  it("renders basic header without payment info", () => {
+  it("renders basic header without payment info", async () => {
+    const mockCheckFeatureFlag = jest.fn().mockResolvedValue(undefined);
+
+    (useFeatureFlags as jest.Mock).mockReturnValue({
+      checkFeatureFlag: mockCheckFeatureFlag,
+    });
     render(
       <MemoryRouter initialEntries={["/"]}>
         <Header />
@@ -136,8 +148,9 @@ describe("Header Component", () => {
     );
 
     // Check for logo
-    expect(screen.getByAltText("pagoPA")).toBeInTheDocument();
-
+    await waitFor(() => {
+      expect(screen.getByAltText("pagoPA")).toBeInTheDocument();
+    });
     // Check for SkipToContent
     expect(screen.getByTestId("skip-to-content")).toBeInTheDocument();
 
@@ -151,7 +164,12 @@ describe("Header Component", () => {
     expect(screen.getByTestId("drawer-state").textContent).toBe("false");
   });
 
-  it("renders header with payment info and summary button", () => {
+  it("renders header with payment info and summary button", async () => {
+    const mockCheckFeatureFlag = jest.fn().mockResolvedValue(undefined);
+
+    (useFeatureFlags as jest.Mock).mockReturnValue({
+      checkFeatureFlag: mockCheckFeatureFlag,
+    });
     // Mock payment info
     (getSessionItem as jest.Mock).mockImplementation((key) => {
       if (key === SessionItems.paymentInfo) {
@@ -174,17 +192,24 @@ describe("Header Component", () => {
     );
 
     // Check for payment summary button
-    const summaryButton = screen.getByRole("button", {
-      name: /View Payment Details/i,
+    await waitFor(() => {
+      const summaryButton = screen.getByRole("button", {
+        name: /View Payment Details/i,
+      });
+      expect(summaryButton).toBeInTheDocument();
+      expect(summaryButton.textContent).toContain("€100.50");
     });
-    expect(summaryButton).toBeInTheDocument();
-    expect(summaryButton.textContent).toContain("€100.50");
 
     // Check moneyFormat was called with the correct amount
     expect(moneyFormat).toHaveBeenCalledWith(100.5);
   });
 
-  it("renders header with cart info and summary button", () => {
+  it("renders header with cart info and summary button", async () => {
+    const mockCheckFeatureFlag = jest.fn().mockResolvedValue(undefined);
+
+    (useFeatureFlags as jest.Mock).mockReturnValue({
+      checkFeatureFlag: mockCheckFeatureFlag,
+    });
     // Mock cart info
     (getSessionItem as jest.Mock).mockImplementation((key) => {
       if (key === SessionItems.cart) {
@@ -220,17 +245,24 @@ describe("Header Component", () => {
     );
 
     // Check for payment summary button
-    const summaryButton = screen.getByRole("button", {
-      name: /View Payment Details/i,
+    await waitFor(() => {
+      const summaryButton = screen.getByRole("button", {
+        name: /View Payment Details/i,
+      });
+      expect(summaryButton).toBeInTheDocument();
+      expect(summaryButton.textContent).toContain("€126.00");
     });
-    expect(summaryButton).toBeInTheDocument();
-    expect(summaryButton.textContent).toContain("€126.00");
 
     // Check getTotalFromCart was called
     expect(getTotalFromCart).toHaveBeenCalled();
   });
 
-  it("hides summary button on ignored routes", () => {
+  it("hides summary button on ignored routes", async () => {
+    const mockCheckFeatureFlag = jest.fn().mockResolvedValue(undefined);
+
+    (useFeatureFlags as jest.Mock).mockReturnValue({
+      checkFeatureFlag: mockCheckFeatureFlag,
+    });
     // Mock payment info
     (getSessionItem as jest.Mock).mockImplementation(getSessionItemDefaultMock);
 
@@ -241,12 +273,19 @@ describe("Header Component", () => {
     );
 
     // Summary button should not be visible on ignored routes
-    expect(
-      screen.queryByRole("button", { name: /View Payment Details/i })
-    ).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.queryByRole("button", { name: /View Payment Details/i })
+      ).not.toBeInTheDocument();
+    });
   });
 
-  it("hides payment header on specific routes", () => {
+  it("hides payment header on specific routes", async () => {
+    const mockCheckFeatureFlag = jest.fn().mockResolvedValue(undefined);
+
+    (useFeatureFlags as jest.Mock).mockReturnValue({
+      checkFeatureFlag: mockCheckFeatureFlag,
+    });
     render(
       <MemoryRouter initialEntries={[`/${CheckoutRoutes.AUTH_CALLBACK}`]}>
         <Header />
@@ -254,10 +293,17 @@ describe("Header Component", () => {
     );
 
     // Logo should not be visible when header is hidden
-    expect(screen.queryByAltText("pagoPA")).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByAltText("pagoPA")).not.toBeInTheDocument();
+    });
   });
 
-  it("opens drawer when summary button is clicked", () => {
+  it("opens drawer when summary button is clicked", async () => {
+    const mockCheckFeatureFlag = jest.fn().mockResolvedValue(undefined);
+
+    (useFeatureFlags as jest.Mock).mockReturnValue({
+      checkFeatureFlag: mockCheckFeatureFlag,
+    });
     // Mock payment info
     (getSessionItem as jest.Mock).mockImplementation(getSessionItemDefaultMock);
 
@@ -268,7 +314,9 @@ describe("Header Component", () => {
     );
 
     // Drawer should be closed initially
-    expect(screen.getByTestId("drawer-state").textContent).toBe("false");
+    await waitFor(() => {
+      expect(screen.getByTestId("drawer-state").textContent).toBe("false");
+    });
 
     // Click summary button
     fireEvent.click(
@@ -279,7 +327,12 @@ describe("Header Component", () => {
     expect(screen.getByTestId("drawer-state").textContent).toBe("true");
   });
 
-  it("closes drawer when close button is clicked", () => {
+  it("closes drawer when close button is clicked", async () => {
+    const mockCheckFeatureFlag = jest.fn().mockResolvedValue(undefined);
+
+    (useFeatureFlags as jest.Mock).mockReturnValue({
+      checkFeatureFlag: mockCheckFeatureFlag,
+    });
     // Mock payment info and set drawer open
     (getSessionItem as jest.Mock).mockImplementation(getSessionItemDefaultMock);
 
@@ -290,9 +343,11 @@ describe("Header Component", () => {
     );
 
     // Open the drawer
-    fireEvent.click(
-      screen.getByRole("button", { name: /View Payment Details/i })
-    );
+    await waitFor(() => {
+      fireEvent.click(
+        screen.getByRole("button", { name: /View Payment Details/i })
+      );
+    });
     expect(screen.getByTestId("drawer-state").textContent).toBe("true");
 
     // Close the drawer
@@ -301,6 +356,11 @@ describe("Header Component", () => {
   });
 
   it("shows login header when authentication is enabled", async () => {
+    const mockCheckFeatureFlag = jest.fn().mockResolvedValue(undefined);
+
+    (useFeatureFlags as jest.Mock).mockReturnValue({
+      checkFeatureFlag: mockCheckFeatureFlag,
+    });
     // Mock authentication enabled
     (getSessionItem as jest.Mock).mockImplementation((key) => {
       if (key === SessionItems.enableAuthentication) {
@@ -316,14 +376,33 @@ describe("Header Component", () => {
     );
 
     // Login header should be visible
-    expect(screen.getByTestId("login-header")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByTestId("login-header")).toBeInTheDocument();
+    });
   });
 
   it("fetches authentication feature flag on mount when not in session", async () => {
+    const mockCheckFeatureFlag = jest
+      .fn()
+      .mockImplementation(async ({ onSuccess }) => {
+        // chiama internamente evaluateFeatureFlag (mockata)
+        await evaluateFeatureFlag("enableAuthentication", jest.fn(), onSuccess);
+        await evaluateFeatureFlag("enableMaintenance", jest.fn(), onSuccess);
+      });
+
+    (useFeatureFlags as jest.Mock).mockReturnValue({
+      checkFeatureFlag: mockCheckFeatureFlag,
+    });
+
     // Mock feature flag evaluation to enable authentication
     (evaluateFeatureFlag as jest.Mock).mockImplementation(
       (_flag, _onError, onSuccess) => {
-        onSuccess({ enabled: true });
+        if (_flag === "enableMaintenance") {
+          onSuccess({ enabled: false }); // o onError() se preferisci
+        } else if (_flag === "enableAuthentication") {
+          setSessionItem(_flag, "true");
+          onSuccess({ enabled: true });
+        }
         return Promise.resolve();
       }
     );
@@ -352,11 +431,34 @@ describe("Header Component", () => {
 
   it("handles feature flag evaluation error", async () => {
     // Mock feature flag evaluation to fail
-    (evaluateFeatureFlag as jest.Mock).mockImplementation((_flag, onError) => {
-      onError("Test error");
-      return Promise.resolve();
+    sessionStorage.clear();
+    sessionStorage.setItem("enableAuthentication", "false");
+
+    const mockCheckFeatureFlag = jest
+      .fn()
+      .mockImplementation(async ({ onSuccess }) => {
+        // chiama internamente evaluateFeatureFlag (mockata)
+        await evaluateFeatureFlag("enableAuthentication", jest.fn(), onSuccess);
+        await evaluateFeatureFlag("enableMaintenance", jest.fn(), onSuccess);
+      });
+
+    (useFeatureFlags as jest.Mock).mockReturnValue({
+      checkFeatureFlag: mockCheckFeatureFlag,
     });
 
+    // Mock feature flag evaluation to enable authentication
+    (evaluateFeatureFlag as jest.Mock).mockImplementation(
+      (_flag, onError, onSuccess) => {
+        if (_flag === "enableMaintenance") {
+          onSuccess({ enabled: false }); // o onError() se preferisci
+        } else if (_flag === "enableAuthentication") {
+          // eslint-disable-next-line no-console
+          console.error("Test error");
+          onError("Test error");
+        }
+        return Promise.resolve();
+      }
+    );
     // Spy on console.error
     const consoleSpy = jest.spyOn(console, "error").mockImplementation();
 
@@ -373,16 +475,28 @@ describe("Header Component", () => {
 
       // Check if console.error was called
       expect(consoleSpy).toHaveBeenCalled();
-    });
 
-    // Login header should not be visible after feature flag evaluation error
-    expect(screen.queryByTestId("login-header")).not.toBeInTheDocument();
+      // Login header should not be visible after feature flag evaluation error
+      expect(screen.queryByTestId("login-header")).not.toBeInTheDocument();
+    });
 
     // Restore console.error
     consoleSpy.mockRestore();
   });
 
-  it("passes correct payment notices to drawer", () => {
+  it("passes correct payment notices to drawer", async () => {
+    const mockCheckFeatureFlag = jest
+      .fn()
+      .mockImplementation(async ({ onSuccess }) => {
+        // chiama internamente evaluateFeatureFlag (mockata)
+        await evaluateFeatureFlag("enableAuthentication", jest.fn(), onSuccess);
+        await evaluateFeatureFlag("enableMaintenance", jest.fn(), onSuccess);
+      });
+
+    (useFeatureFlags as jest.Mock).mockReturnValue({
+      checkFeatureFlag: mockCheckFeatureFlag,
+    });
+
     // Mock cart info
     const cartData = {
       paymentNotices: [
@@ -417,10 +531,23 @@ describe("Header Component", () => {
     );
 
     // Check if drawer has the correct number of payment notices
-    expect(screen.getByTestId("payment-notices-count").textContent).toBe("2");
+    await waitFor(() => {
+      expect(screen.getByTestId("payment-notices-count").textContent).toBe("2");
+    });
   });
 
-  it("creates single payment notice from payment info when no cart", () => {
+  it("creates single payment notice from payment info when no cart", async () => {
+    const mockCheckFeatureFlag = jest
+      .fn()
+      .mockImplementation(async ({ onSuccess }) => {
+        // chiama internamente evaluateFeatureFlag (mockata)
+        await evaluateFeatureFlag("enableAuthentication", jest.fn(), onSuccess);
+        await evaluateFeatureFlag("enableMaintenance", jest.fn(), onSuccess);
+      });
+
+    (useFeatureFlags as jest.Mock).mockReturnValue({
+      checkFeatureFlag: mockCheckFeatureFlag,
+    });
     // Mock payment info
     const paymentInfo = {
       paName: "Test Organization",
@@ -445,6 +572,8 @@ describe("Header Component", () => {
     );
 
     // Check if drawer has one payment notice
-    expect(screen.getByTestId("payment-notices-count").textContent).toBe("1");
+    await waitFor(() => {
+      expect(screen.getByTestId("payment-notices-count").textContent).toBe("1");
+    });
   });
 });

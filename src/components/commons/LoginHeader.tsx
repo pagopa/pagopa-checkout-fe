@@ -225,7 +225,7 @@ export default function LoginHeader() {
   }, []);
 
   return (
-    <Box component="div" id="login-header">
+    <Box component="div" data-testid="login-header" id="login-header">
       {loading && <CheckoutLoader />}
       <HeaderAccount
         rootLink={pagoPALink}

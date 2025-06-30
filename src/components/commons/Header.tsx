@@ -92,20 +92,27 @@ export default function Header() {
 
   const { checkFeatureFlag } = useFeatureFlags();
 
+  const [loadingFlags, setLoadingFlags] = React.useState(true);
+
   const initFeatureFlag = async () => {
     try {
       await Promise.all([
         checkFeatureFlag({
           flagName: "enableAuthentication",
           sessionKey: SessionItems.enableAuthentication,
-          onSuccess: setEnableAuthentication,
-          onError: () => setEnableAuthentication(false),
+          skipIfStored: false,
+          onSuccess: () => {
+            setEnableAuthentication(true);
+          },
+          onError: () => {
+            setEnableAuthentication(false);
+          },
         }),
         checkFeatureFlag({
           flagName: "enableMaintenance",
           sessionKey: SessionItems.enableMaintenance,
           onSuccess: (enabled: boolean) => {
-            if (enabled) {
+            if (enabled === true) {
               setEnableAuthentication(false);
             }
           },
@@ -115,7 +122,7 @@ export default function Header() {
         }),
       ]);
     } finally {
-      setLoadingFlags(false); // Even if it fails, complete the loading state
+      setLoadingFlags(false);
     }
   };
 
@@ -125,10 +132,9 @@ export default function Header() {
 
   // Prevents initial UI render before feature flags are loaded,
   // avoiding flicker when MaintenancePage should be shown.
-  const [loadingFlags, setLoadingFlags] = React.useState(true);
 
   if (loadingFlags) {
-    return null;
+    return <div>Loading</div>;
   }
 
   return (
