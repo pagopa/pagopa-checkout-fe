@@ -24,7 +24,11 @@ import PaymentResponsePageV2 from "./routes/PaymentResponsePageV2";
 import PaymentSummaryPage from "./routes/PaymentSummaryPage";
 import GdiCheckPage from "./routes/GdiCheckPage";
 import "./translations/i18n";
-import { getSessionItem, SessionItems } from "./utils/storage/sessionStorage";
+import {
+  getSessionItem,
+  SessionItems,
+  setSessionItem,
+} from "./utils/storage/sessionStorage";
 import SessionExpiredPage from "./routes/SessionExpiredPage";
 import AuthCallback from "./routes/AuthCallbackPage";
 import AuthExpiredPage from "./routes/AuthExpiredPage";
@@ -36,7 +40,8 @@ import {
 import PaymentPspListPage from "./routes/PaymentPspListPage";
 import MaintenancePage from "./routes/MaintenancePage";
 import MaintenanceGuard from "./components/commons/MaintenanceGuard";
-import { useFeatureFlags } from "./hooks/useFeatureFlags";
+import { useFeatureFlagsAll } from "./hooks/useFeatureFlags";
+import featureFlags from "./utils/featureFlags";
 
 export function App() {
   const { t } = useTranslation();
@@ -61,31 +66,24 @@ export function App() {
       getSessionItem(SessionItems.enableMaintenance) === "true"
     );
 
-  const { checkFeatureFlag } = useFeatureFlags();
+  const { checkFeatureFlagAll } = useFeatureFlagsAll();
 
   const initFeatureFlag = async () => {
     try {
-      // we need to always evaluate this flag since is stored in the local storage
-      await Promise.all([
-        checkFeatureFlag({
-          flagName: "enablePspPage",
-          sessionKey: SessionItems.enablePspPage,
-          onSuccess: (enabled: boolean) => {
-            localStorage.setItem(
-              SessionItems.enablePspPage,
-              enabled.toString()
-            );
-          },
-          store: "local",
-          skipIfStored: false,
-        }),
-        checkFeatureFlag({
-          flagName: "enableMaintenance",
-          sessionKey: SessionItems.enableMaintenance,
-          onSuccess: setIsMaintenanceEnabled,
-          store: "session",
-        }),
-      ]);
+      const allFlags = await checkFeatureFlagAll();
+      if (featureFlags[SessionItems.enablePspPage] in allFlags) {
+        const enabled = allFlags.isPspPickerPageEnabled;
+        localStorage.setItem(SessionItems.enablePspPage, enabled.toString());
+      }
+      if (featureFlags[SessionItems.enableAuthentication] in allFlags) {
+        const enabled = allFlags.isAuthenticationEnabled;
+        setSessionItem(SessionItems.enableAuthentication, enabled.toString());
+      }
+      if (featureFlags[SessionItems.enableMaintenance] in allFlags) {
+        const enabled = allFlags.isMaintenancePageEnabled;
+        setSessionItem(SessionItems.enableMaintenance, enabled.toString());
+        setIsMaintenanceEnabled(enabled);
+      }
     } finally {
       setLoadingFlags(false); // Even if it fails, complete the loading state
     }
@@ -106,6 +104,13 @@ export function App() {
     void initFeatureFlag();
     checkThemeDarkMode();
   }, []);
+
+  React.useEffect(() => {
+    setSessionItem(
+      SessionItems.enableMaintenance,
+      isMaintenanceEnabled.toString()
+    );
+  }, [isMaintenanceEnabled]);
 
   // eslint-disable-next-line functional/immutable-data
   document.title = t("app.title");

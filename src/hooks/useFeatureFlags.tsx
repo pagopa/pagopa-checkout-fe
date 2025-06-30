@@ -1,5 +1,8 @@
 import { useCallback } from "react";
-import { evaluateFeatureFlag } from "../utils/api/helper";
+import {
+  evaluateFeatureFlag,
+  evaluateFeatureFlagsAll,
+} from "../utils/api/helper";
 import featureFlags from "../utils/featureFlags";
 import { SessionItems } from "../utils/storage/sessionStorage";
 
@@ -49,4 +52,17 @@ export const useFeatureFlags = () => {
   );
 
   return { checkFeatureFlag };
+};
+
+export const useFeatureFlagsAll = () => {
+  const checkFeatureFlagAll = useCallback(async () => {
+    try {
+      return await evaluateFeatureFlagsAll();
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error("Error fetching feature flags", e);
+      return {};
+    }
+  }, []);
+  return { checkFeatureFlagAll };
 };
