@@ -37,6 +37,8 @@ import PaymentPspListPage from "./routes/PaymentPspListPage";
 import MaintenancePage from "./routes/MaintenancePage";
 import MaintenanceGuard from "./components/commons/MaintenanceGuard";
 import { useFeatureFlags } from "./hooks/useFeatureFlags";
+import { evaluateFeatureFlag } from "utils/api/helper";
+import featureFlags from "utils/featureFlags";
 
 export function App() {
   const { t } = useTranslation();
@@ -61,31 +63,26 @@ export function App() {
       getSessionItem(SessionItems.enableMaintenance) === "true"
     );
 
-  const { checkFeatureFlag } = useFeatureFlags();
+
+const onFeatureFlagSuccessMultiple = (featureKey: string, data: { enabled: boolean }) => {
+    // we need to use localstorage to be permanent in case of page refreshes
+    // which happen after entering the credit card data
+    switch(featureKey) {
+      case SessionItems.enablePspPage:
+        localStorage.setItem(SessionItems.enablePspPage, data.enabled.toString());
+      default:
+        sessionStorage.setItem(featureKey, data.enabled.toString());
+    }
+  };
 
   const initFeatureFlag = async () => {
     try {
       // we need to always evaluate this flag since is stored in the local storage
-      await Promise.all([
-        checkFeatureFlag({
-          flagName: "enablePspPage",
-          sessionKey: SessionItems.enablePspPage,
-          onSuccess: (enabled: boolean) => {
-            localStorage.setItem(
-              SessionItems.enablePspPage,
-              enabled.toString()
-            );
-          },
-          store: "local",
-          skipIfStored: false,
-        }),
-        checkFeatureFlag({
-          flagName: "enableMaintenance",
-          sessionKey: SessionItems.enableMaintenance,
-          onSuccess: setIsMaintenanceEnabled,
-          store: "session",
-        }),
-      ]);
+      await evaluateFeatureFlag(
+        [featureFlags.enablePspPage, SessionItems.enableMaintenance],
+        onFeatureFlagError,
+        onFeatureFlagSuccessMultiple
+      );
     } finally {
       setLoadingFlags(false); // Even if it fails, complete the loading state
     }
@@ -267,3 +264,7 @@ export function App() {
     </ThemeContextProvider>
   );
 }
+function onFeatureFlagError(e: string): void {
+  throw new Error("Function not implemented.");
+}
+

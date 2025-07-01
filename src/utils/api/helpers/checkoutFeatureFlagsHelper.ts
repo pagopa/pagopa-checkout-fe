@@ -4,9 +4,9 @@ import { pipe } from "fp-ts/lib/function";
 import { apiCheckoutFeatureFlags } from "../client";
 
 export const evaluateFeatureFlag = async (
-  featureKey: string,
+  featureKeys: string[],
   onError: (e: string) => void,
-  onResponse: (data: { enabled: boolean }) => void
+  onResponse: (featureKey: string, data: { enabled: boolean }) => void
 ) => {
   await pipe(
     TE.tryCatch(
@@ -30,12 +30,15 @@ export const evaluateFeatureFlag = async (
               return {};
             },
             (res: any) => {
-              const target: any = res.value?.[featureKey] ?? false;
-              onResponse({ enabled: target });
-              return { enabled: target };
+              featureKeys.forEach(featureKey => {
+                 const target: any = res.value?.[featureKey] ?? false;
+                 onResponse(featureKey, { enabled: target });
+              })
+              return {};
             }
           )
         )
     )
   )();
 };
+
