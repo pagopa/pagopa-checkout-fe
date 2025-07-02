@@ -31,7 +31,7 @@ describe("Checkout feature flags helper test", () => {
       })
     );
     await evaluateFeatureFlag(
-      "isFeatureFlagEnabled",
+      ["isFeatureFlagEnabled"],
       mockOnError,
       mockOnResponse
     );
@@ -43,7 +43,7 @@ describe("Checkout feature flags helper test", () => {
       apiCheckoutFeatureFlags.evaluateFeatureFlags as jest.Mock
     ).mockRejectedValue("Api error");
     await evaluateFeatureFlag(
-      "isFeatureFlagEnabled",
+      ["isFeatureFlagEnabled"],
       mockOnError,
       mockOnResponse
     );

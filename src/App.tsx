@@ -2,6 +2,8 @@ import CssBaseline from "@mui/material/CssBaseline";
 import React, { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { evaluateFeatureFlag } from "utils/api/helper";
+import featureFlags from "utils/featureFlags";
 import Guard from "./components/commons/Guard";
 import { Layout } from "./components/commons/Layout";
 import NoticeGuard from "./components/commons/NoticeGuard";
@@ -36,9 +38,6 @@ import {
 import PaymentPspListPage from "./routes/PaymentPspListPage";
 import MaintenancePage from "./routes/MaintenancePage";
 import MaintenanceGuard from "./components/commons/MaintenanceGuard";
-import { useFeatureFlags } from "./hooks/useFeatureFlags";
-import { evaluateFeatureFlag } from "utils/api/helper";
-import featureFlags from "utils/featureFlags";
 
 export function App() {
   const { t } = useTranslation();
@@ -63,23 +62,44 @@ export function App() {
       getSessionItem(SessionItems.enableMaintenance) === "true"
     );
 
-
-const onFeatureFlagSuccessMultiple = (featureKey: string, data: { enabled: boolean }) => {
+  const onFeatureFlagSuccessMultiple = (
+    featureKey: string,
+    data: { enabled: boolean }
+  ) => {
     // we need to use localstorage to be permanent in case of page refreshes
     // which happen after entering the credit card data
-    switch(featureKey) {
-      case SessionItems.enablePspPage:
-        localStorage.setItem(SessionItems.enablePspPage, data.enabled.toString());
-      default:
-        sessionStorage.setItem(featureKey, data.enabled.toString());
+    switch (featureKey) {
+      case featureFlags.enablePspPage:
+        localStorage.setItem(
+          SessionItems.enablePspPage,
+          data.enabled.toString()
+        );
+        break;
+      case featureFlags.enableMaintenance:
+        {
+          sessionStorage.setItem(
+            SessionItems.enableMaintenance,
+            data.enabled.toString()
+          );
+          setIsMaintenanceEnabled(data.enabled);
+        }
+        break;
     }
+  };
+
+  const onFeatureFlagError = (e: string) => {
+    // eslint-disable-next-line no-console
+    console.error(
+      "Error while getting feature flag " + SessionItems.enablePspPage,
+      e
+    );
   };
 
   const initFeatureFlag = async () => {
     try {
       // we need to always evaluate this flag since is stored in the local storage
       await evaluateFeatureFlag(
-        [featureFlags.enablePspPage, SessionItems.enableMaintenance],
+        [featureFlags.enablePspPage, featureFlags.enableMaintenance],
         onFeatureFlagError,
         onFeatureFlagSuccessMultiple
       );
@@ -264,7 +284,3 @@ const onFeatureFlagSuccessMultiple = (featureKey: string, data: { enabled: boole
     </ThemeContextProvider>
   );
 }
-function onFeatureFlagError(e: string): void {
-  throw new Error("Function not implemented.");
-}
-

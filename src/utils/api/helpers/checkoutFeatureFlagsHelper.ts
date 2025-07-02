@@ -4,7 +4,7 @@ import { pipe } from "fp-ts/lib/function";
 import { apiCheckoutFeatureFlags } from "../client";
 
 export const evaluateFeatureFlag = async (
-  featureKeys: string[],
+  featureKeys: Array<string>,
   onError: (e: string) => void,
   onResponse: (featureKey: string, data: { enabled: boolean }) => void
 ) => {
@@ -30,10 +30,10 @@ export const evaluateFeatureFlag = async (
               return {};
             },
             (res: any) => {
-              featureKeys.forEach(featureKey => {
-                 const target: any = res.value?.[featureKey] ?? false;
-                 onResponse(featureKey, { enabled: target });
-              })
+              featureKeys.forEach((featureKey) => {
+                const target: any = res.value?.[featureKey] ?? false;
+                onResponse(featureKey, { enabled: target });
+              });
               return {};
             }
           )
@@ -41,4 +41,3 @@ export const evaluateFeatureFlag = async (
     )
   )();
 };
-

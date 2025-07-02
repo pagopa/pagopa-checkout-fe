@@ -4,6 +4,8 @@ import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { ShoppingCart } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
+import featureFlags from "utils/featureFlags";
+import { evaluateFeatureFlag } from "utils/api/helpers/checkoutFeatureFlagsHelper";
 import pagopaLogo from "../../assets/images/pagopa-logo.svg";
 import {
   Cart,
@@ -14,13 +16,11 @@ import { CheckoutRoutes } from "../../routes/models/routeModel";
 import {
   getSessionItem,
   SessionItems,
-  setSessionItem,
 } from "../../utils/storage/sessionStorage";
 import { getTotalFromCart } from "../../utils/cart/cart";
 import { moneyFormat } from "../../utils/form/formatters";
 import { paymentSubjectTransform } from "../../utils/transformers/paymentTransformers";
 import DrawerDetail from "../Header/DrawerDetail";
-import { useFeatureFlags } from "../../hooks/useFeatureFlags";
 import SkipToContent from "./SkipToContent";
 import LoginHeader from "./LoginHeader";
 
@@ -90,37 +90,50 @@ export default function Header() {
         },
       ];
 
-  const { checkFeatureFlag } = useFeatureFlags();
-
   const [loadingFlags, setLoadingFlags] = React.useState(true);
+
+  const onFeatureFlagSuccessMultiple = (
+    featureKey: string,
+    data: { enabled: boolean }
+  ) => {
+    // we need to use localstorage to be permanent in case of page refreshes
+    // which happen after entering the credit card data
+    switch (featureKey) {
+      case featureFlags.enableAuthentication:
+        {
+          sessionStorage.setItem(
+            SessionItems.enableAuthentication,
+            data.enabled.toString()
+          );
+          setEnableAuthentication(data.enabled);
+        }
+        break;
+      case featureFlags.enableMaintenance:
+        {
+          sessionStorage.setItem(
+            SessionItems.enableMaintenance,
+            data.enabled.toString()
+          );
+        }
+        break;
+    }
+  };
+
+  const onFeatureFlagError = (e: string) => {
+    // eslint-disable-next-line no-console
+    console.error(
+      "Error while getting feature flag " + SessionItems.enablePspPage,
+      e
+    );
+  };
 
   const initFeatureFlag = async () => {
     try {
-      await Promise.all([
-        checkFeatureFlag({
-          flagName: "enableAuthentication",
-          sessionKey: SessionItems.enableAuthentication,
-          skipIfStored: false,
-          onSuccess: () => {
-            setEnableAuthentication(true);
-          },
-          onError: () => {
-            setEnableAuthentication(false);
-          },
-        }),
-        checkFeatureFlag({
-          flagName: "enableMaintenance",
-          sessionKey: SessionItems.enableMaintenance,
-          onSuccess: (enabled: boolean) => {
-            if (enabled === true) {
-              setEnableAuthentication(false);
-            }
-          },
-          onError: () => {
-            setSessionItem(SessionItems.enableMaintenance, "false");
-          },
-        }),
-      ]);
+      await evaluateFeatureFlag(
+        [featureFlags.enableAuthentication, featureFlags.enableMaintenance],
+        onFeatureFlagError,
+        onFeatureFlagSuccessMultiple
+      );
     } finally {
       setLoadingFlags(false);
     }

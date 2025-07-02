@@ -143,12 +143,12 @@ jest.mock("../../components/commons/RptidGuard", () => ({
 jest
   .spyOn(helper, "evaluateFeatureFlag")
   .mockImplementation((flag, _onError, onSuccess) => {
-    if (flag === "enableMaintenance") {
-      onSuccess({ enabled: false });
-    } else if (flag === "enablePspPage") {
-      onSuccess({ enabled: true });
+    if ("enableMaintenance" in flag) {
+      onSuccess("enableMaintenance", { enabled: false });
+    } else if ("enablePspPage" in flag) {
+      onSuccess("enablePspPage", { enabled: true });
     } else {
-      onSuccess({ enabled: true });
+      onSuccess("", { enabled: true });
     }
     return Promise.resolve();
   });
