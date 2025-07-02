@@ -41,7 +41,9 @@ const themeLight = createTheme({
       },
     },
     MuiAlert: {
+      ...theme.components?.MuiAlert,
       styleOverrides: {
+        ...theme.components?.MuiAlert?.styleOverrides,
         message: {
           whiteSpace: "nowrap",
           overflow: "hidden",

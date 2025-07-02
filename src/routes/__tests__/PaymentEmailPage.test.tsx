@@ -3,7 +3,9 @@ import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { act, fireEvent, screen } from "@testing-library/react";
 import * as router from "react-router";
+import fetchMock from "jest-fetch-mock";
 import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders";
+import * as helper from "../../utils/api/helper";
 import PaymentEmailPage from "../PaymentEmailPage";
 import { mixpanel } from "../../utils/mixpanel/mixpanelHelperInit";
 import {
@@ -14,6 +16,21 @@ import {
   MixpanelFlow,
 } from "../../utils/mixpanel/mixpanelEvents";
 import { paymentInfo } from "./_model";
+
+jest.mock("../../utils/config/config", () => ({
+  getConfigOrThrow: jest.fn((key) => {
+    const configValues = {
+      CHECKOUT_API_TIMEOUT: 1000,
+    } as any;
+    if (key === undefined) {
+      return configValues;
+    }
+    return configValues[key] || "";
+  }),
+  isTestEnv: jest.fn(() => false),
+  isDevEnv: jest.fn(() => false),
+  isProdEnv: jest.fn(() => true),
+}));
 
 // Mock translations
 jest.mock("react-i18next", () => ({
@@ -61,9 +78,24 @@ jest.mock("../../utils/mixpanel/mixpanelTracker", () => ({
   getPaymentInfoFromSessionStorage: jest.fn(() => paymentInfo),
 }));
 
+jest
+  .spyOn(helper, "evaluateFeatureFlag")
+  .mockImplementation(
+    (
+      _flag: any,
+      _onError: any,
+      onSuccess: (arg0: { enabled: boolean }) => void
+    ) => {
+      onSuccess({ enabled: true });
+      return Promise.resolve();
+    }
+  );
+
 describe("PaymentEmailPage", () => {
   beforeEach(() => {
     jest.spyOn(router, "useNavigate").mockImplementation(() => navigate);
+    fetchMock.resetMocks();
+    fetchMock.mockResponseOnce(JSON.stringify({ data: "mocked data" }));
   });
   test("test fill email", async () => {
     const { container } = renderWithReduxProvider(

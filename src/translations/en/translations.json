@@ -475,6 +475,11 @@
       "cancelButton": "Cancel"
     }
   },
+  "ScheduledMaintenanceBanner": {
+    "titleKey": "Scheduled maintenance",
+    "bodyKey": "It will not be possible to make payments from 02:00 to 08:00 on 9 July 2025.",
+    "linkTextKey": "More information"
+  },
   "__variant-name": "Inglese",
   "__variant-description": ""
 }
