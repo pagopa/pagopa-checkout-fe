@@ -42,6 +42,7 @@ export default function PaymentEmailPage() {
   const email = getSessionItem(SessionItems.useremail) as string | undefined;
   const cartInfo = getSessionItem(SessionItems.cart) as Cart | undefined;
   const cancelUrl = cartInfo?.returnUrls.returnCancelUrl;
+  const isCartFlow = !!cartInfo;
 
   const [
     isScheduledMaintenanceBannerEnabled,
@@ -107,8 +108,6 @@ export default function PaymentEmailPage() {
 
   const onCancel = () =>
     cancelUrl ? window.location.replace(cancelUrl) : navigate(-1);
-
-  const isCartFlow = !!cartInfo;
 
   return (
     <>
