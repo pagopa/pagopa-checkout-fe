@@ -68,11 +68,14 @@ export default function PaymentEmailPage() {
   const onCancel = () =>
     cancelUrl ? window.location.replace(cancelUrl) : navigate(-1);
 
-  const showScheduledMaintenanceBanner = false && cartInfo;
+  const isScheduledMaintenanceBannerEnabled =
+    cartInfo &&
+    localStorage.getItem(SessionItems.isScheduledMaintenanceBannerEnabled) ===
+      "true";
 
   return (
     <>
-      {showScheduledMaintenanceBanner && <ScheduledMaintenanceBanner />}
+      {isScheduledMaintenanceBannerEnabled && <ScheduledMaintenanceBanner />}
       <PageContainer
         title="paymentEmailPage.title"
         description="paymentEmailPage.description"

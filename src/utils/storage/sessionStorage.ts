@@ -35,6 +35,7 @@ export enum SessionItems {
   loginOriginPage = "loginOriginPage",
   authToken = "authToken",
   noticeCodeDataEntry = "noticeCodeDataEntry",
+  isScheduledMaintenanceBannerEnabled = "isScheduledMaintenanceBannerEnabled",
 }
 const isParsable = (item: SessionItems) =>
   !(

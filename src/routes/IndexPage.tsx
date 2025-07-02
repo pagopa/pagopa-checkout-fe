@@ -6,7 +6,10 @@ import PageContainer from "../components/PageContent/PageContainer";
 import PrivacyInfo from "../components/PrivacyPolicy/PrivacyInfo";
 import { PaymentNoticeChoice } from "../features/payment/components/PaymentNoticeChoice/PaymentNoticeChoice";
 import { useAppDispatch } from "../redux/hooks/hooks";
-import { clearStorageAndMaintainAuthData } from "../utils/storage/sessionStorage";
+import {
+  clearStorageAndMaintainAuthData,
+  SessionItems,
+} from "../utils/storage/sessionStorage";
 
 export default function IndexPage() {
   window.removeEventListener("beforeunload", onBrowserUnload);
@@ -17,11 +20,13 @@ export default function IndexPage() {
   }, []);
   clearStorageAndMaintainAuthData();
 
-  const showScheduledMaintenanceBanner = false; // This can be set based on some condition in another PR
+  const isScheduledMaintenanceBannerEnabled =
+    localStorage.getItem(SessionItems.isScheduledMaintenanceBannerEnabled) ===
+    "true";
 
   return (
     <>
-      {showScheduledMaintenanceBanner && <ScheduledMaintenanceBanner />}
+      {isScheduledMaintenanceBannerEnabled && <ScheduledMaintenanceBanner />}
       <PageContainer
         title="indexPage.title"
         description="indexPage.description"

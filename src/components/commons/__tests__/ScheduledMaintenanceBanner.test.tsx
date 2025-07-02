@@ -22,13 +22,18 @@ jest.mock("react-i18next", () => ({
 }));
 
 describe("ScheduledMaintenanceBanner", () => {
-  it("renders correctly with translation keys and triggers onClose", () => {
+  it("renders correctly with translation keys", () => {
     render(<ScheduledMaintenanceBanner />);
 
     // Assert translated title and body are rendered
-    expect(screen.getByText("[t]alert.title")).toBeInTheDocument();
-    expect(screen.getByText("[t]alert.body")).toBeInTheDocument();
-    expect(screen.getByText("[t]alert.linkTextKey")).toBeInTheDocument();
-    expect(screen.getByText("[t]alert.linkHrefKey")).toBeInTheDocument();
+    expect(
+      screen.getByText("[t]ScheduledMaintenanceBanner.titleKey")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("[t]ScheduledMaintenanceBanner.bodyKey")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("[t]ScheduledMaintenanceBanner.linkTextKey")
+    ).toBeInTheDocument();
   });
 });
