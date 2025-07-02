@@ -1,4 +1,4 @@
-import featureFlags from "../featureFlags";
+import { featureFlags } from "utils/featureFlags";
 
 describe("featureFlags", () => {
   test("should have correct keys and values", () => {

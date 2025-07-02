@@ -4,7 +4,6 @@ import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { ShoppingCart } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
-import featureFlags from "utils/featureFlags";
 import { evaluateFeatureFlag } from "utils/api/helpers/checkoutFeatureFlagsHelper";
 import pagopaLogo from "../../assets/images/pagopa-logo.svg";
 import {
@@ -23,6 +22,7 @@ import { paymentSubjectTransform } from "../../utils/transformers/paymentTransfo
 import DrawerDetail from "../Header/DrawerDetail";
 import SkipToContent from "./SkipToContent";
 import LoginHeader from "./LoginHeader";
+import { featureFlags } from "utils/featureFlags";
 
 function amountToShow() {
   const cartInfo = getSessionItem(SessionItems.cart) as Cart | undefined;

@@ -2,7 +2,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import React, { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import { evaluateFeatureFlag } from "utils/api/helper";
+import { evaluateFeatureFlag } from "utils/api/helpers/checkoutFeatureFlagsHelper";
 import featureFlags from "utils/featureFlags";
 import Guard from "./components/commons/Guard";
 import { Layout } from "./components/commons/Layout";
