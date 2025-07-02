@@ -25,6 +25,8 @@ import {
   getFlowFromSessionStorage,
   getPaymentInfoFromSessionStorage,
 } from "../utils/mixpanel/mixpanelTracker";
+import { evaluateFeatureFlag } from "../utils/api/helper";
+import featureFlags from "../utils/featureFlags";
 import { CheckoutRoutes } from "./models/routeModel";
 
 type LocationProps = {
@@ -41,6 +43,43 @@ export default function PaymentEmailPage() {
   const cartInfo = getSessionItem(SessionItems.cart) as Cart | undefined;
   const cancelUrl = cartInfo?.returnUrls.returnCancelUrl;
 
+  const [
+    isScheduledMaintenanceBannerEnabled,
+    setIsScheduledMaintenanceBannerEnabled,
+  ] = React.useState<boolean | null>(null);
+
+  const checkIsScheduledMaintenanceBannerEnabled = async () => {
+    const isScheduledMaintenanceBannerEnabledFromSessionStorage =
+      getSessionItem(SessionItems.isScheduledMaintenanceBannerEnabled);
+
+    if (
+      isScheduledMaintenanceBannerEnabledFromSessionStorage === null ||
+      isScheduledMaintenanceBannerEnabledFromSessionStorage === undefined
+    ) {
+      await evaluateFeatureFlag(
+        featureFlags.enableScheduledMaintenanceBanner,
+        (e: string) => {
+          // eslint-disable-next-line no-console
+          console.error(
+            `Error while getting feature flag ${SessionItems.isScheduledMaintenanceBannerEnabled}`,
+            e
+          );
+        },
+        (data: { enabled: boolean }) => {
+          setSessionItem(
+            SessionItems.isScheduledMaintenanceBannerEnabled,
+            data.enabled.toString()
+          );
+          setIsScheduledMaintenanceBannerEnabled(data.enabled);
+        }
+      );
+    } else {
+      setIsScheduledMaintenanceBannerEnabled(
+        isScheduledMaintenanceBannerEnabledFromSessionStorage === "true"
+      );
+    }
+  };
+
   React.useEffect(() => {
     const paymentInfo = getPaymentInfoFromSessionStorage();
     mixpanel.track(MixpanelEventsId.CHK_PAYMENT_EMAIL_ADDRESS, {
@@ -54,6 +93,7 @@ export default function PaymentEmailPage() {
       amount: paymentInfo?.amount,
       expiration_date: paymentInfo?.dueDate,
     });
+    void checkIsScheduledMaintenanceBannerEnabled();
   }, []);
 
   const emailForm = noConfirmEmail
@@ -68,14 +108,13 @@ export default function PaymentEmailPage() {
   const onCancel = () =>
     cancelUrl ? window.location.replace(cancelUrl) : navigate(-1);
 
-  const isScheduledMaintenanceBannerEnabled =
-    cartInfo &&
-    localStorage.getItem(SessionItems.isScheduledMaintenanceBannerEnabled) ===
-      "true";
+  const isCartFlow = !!cartInfo;
 
   return (
     <>
-      {isScheduledMaintenanceBannerEnabled && <ScheduledMaintenanceBanner />}
+      {isScheduledMaintenanceBannerEnabled && isCartFlow && (
+        <ScheduledMaintenanceBanner />
+      )}
       <PageContainer
         title="paymentEmailPage.title"
         description="paymentEmailPage.description"

@@ -51,27 +51,27 @@ export function App() {
   ];
   const { mode, toggleTheme } = useContext(ThemeContext);
 
-  const handleFeatureFlag = async (flag: string, sessionKey: string) => {
-    await evaluateFeatureFlag(
-      flag,
-      (e: string) => {
-        // eslint-disable-next-line no-console
-        console.error(`Error while getting feature flag ${sessionKey}`, e);
-      },
-      (data: { enabled: boolean }) => {
-        localStorage.setItem(sessionKey, data.enabled.toString());
-      }
+  const onFeatureFlagError = (e: string) => {
+    // eslint-disable-next-line no-console
+    console.error(
+      "Error while getting feature flag " + SessionItems.enablePspPage,
+      e
     );
   };
 
+  const onFeatureFlagSuccess = (data: { enabled: boolean }) => {
+    // we need to use localstorage to be permanent in case of page refreshes
+    // which happen after entering the credit card data
+    localStorage.setItem(SessionItems.enablePspPage, data.enabled.toString());
+  };
+
   const initFeatureFlag = async () => {
-    await Promise.all([
-      handleFeatureFlag(featureFlags.enablePspPage, SessionItems.enablePspPage),
-      handleFeatureFlag(
-        featureFlags.enableScheduledMaintenanceBanner,
-        SessionItems.isScheduledMaintenanceBannerEnabled
-      ),
-    ]);
+    // we need to always evaluate this flag since is stored in the local storage
+    await evaluateFeatureFlag(
+      featureFlags.enablePspPage,
+      onFeatureFlagError,
+      onFeatureFlagSuccess
+    );
   };
 
   // / Very raw check on the session storage to check if we have to use the dark mode
