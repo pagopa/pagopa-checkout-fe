@@ -4,6 +4,11 @@ import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { ShoppingCart } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks/hooks";
+import {
+  selectMaintenanceEnabled,
+  setMaintenanceEnabled,
+} from "../../redux/slices/maintanancePage";
 import featureFlags from "../../utils/featureFlags";
 import pagopaLogo from "../../assets/images/pagopa-logo.svg";
 import {
@@ -40,6 +45,7 @@ function amountToShow() {
 export default function Header() {
   const { t } = useTranslation();
   const location = useLocation();
+  const dispatch = useAppDispatch();
   const currentPath = location.pathname.split("/").slice(-1)[0];
   const paymentInfoData = getSessionItem(SessionItems.paymentInfo) as
     | PaymentInfo
@@ -110,14 +116,17 @@ export default function Header() {
       if (featureFlags[SessionItems.enableMaintenance] in allFlags) {
         const enabled = allFlags.isMaintenancePageEnabled;
         setSessionItem(SessionItems.enableMaintenance, enabled.toString());
-        if (enabled === true) {
-          setEnableAuthentication(false);
-        }
+        dispatch(setMaintenanceEnabled({ maintenanceEnabled: enabled }));
+        setEnableAuthentication(!enabled);
       }
     } finally {
       setLoadingFlags(false); // Even if it fails, complete the loading state
     }
   };
+
+  const maintenanceEnabled = useAppSelector(
+    selectMaintenanceEnabled
+  ).maintenanceEnabled;
 
   useEffect(() => {
     void initFeatureFlag();
@@ -126,13 +135,13 @@ export default function Header() {
   // Prevents initial UI render before feature flags are loaded,
   // avoiding flicker when MaintenancePage should be shown.
   if (loadingFlags) {
-    return <div>Loading</div>;
+    return <div></div>;
   }
 
   return (
     <header>
       <Stack position="relative" zIndex="1000">
-        {enableAuthentication && <LoginHeader />}
+        {!maintenanceEnabled && enableAuthentication && <LoginHeader />}
         {!hidePaymentHeader && (
           <Box p={3}>
             <Stack

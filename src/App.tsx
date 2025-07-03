@@ -3,6 +3,11 @@ import CssBaseline from "@mui/material/CssBaseline";
 import React, { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "./redux/hooks/hooks";
+import {
+  selectMaintenanceEnabled,
+  setMaintenanceEnabled,
+} from "./redux/slices/maintanancePage";
 import Guard from "./components/commons/Guard";
 import { Layout } from "./components/commons/Layout";
 import NoticeGuard from "./components/commons/NoticeGuard";
@@ -25,11 +30,7 @@ import PaymentResponsePageV2 from "./routes/PaymentResponsePageV2";
 import PaymentSummaryPage from "./routes/PaymentSummaryPage";
 import GdiCheckPage from "./routes/GdiCheckPage";
 import "./translations/i18n";
-import {
-  getSessionItem,
-  SessionItems,
-  setSessionItem,
-} from "./utils/storage/sessionStorage";
+import { SessionItems, setSessionItem } from "./utils/storage/sessionStorage";
 import SessionExpiredPage from "./routes/SessionExpiredPage";
 import AuthCallback from "./routes/AuthCallbackPage";
 import AuthExpiredPage from "./routes/AuthExpiredPage";
@@ -45,6 +46,8 @@ import { useInitFeatureFlags } from "./hooks/useInitFeatureFlags";
 
 export function App() {
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
+
   const fixedFooterPages = [
     CheckoutRoutes.ROOT,
     CheckoutRoutes.LEGGI_CODICE_QR,
@@ -59,6 +62,50 @@ export function App() {
   const { loadingFlags, isMaintenanceEnabled } = useInitFeatureFlags();
   const { mode, toggleTheme } = useContext(ThemeContext);
 
+  // Prevents initial UI render before feature flags are loaded,
+  // avoiding flicker when MaintenancePage should be shown.
+  const [loadingFlags, setLoadingFlags] = React.useState(true);
+  /*
+  const [isMaintenanceEnabled, setIsMaintenanceEnabled] =
+    React.useState<boolean>(
+      getSessionItem(SessionItems.enableMaintenance) === "true"
+    );
+*/
+  const { checkFeatureFlagAll } = useFeatureFlagsAll();
+
+  const initFeatureFlag = async () => {
+    try {
+      const allFlags = await checkFeatureFlagAll();
+      if (featureFlags[SessionItems.enablePspPage] in allFlags) {
+        const enabled = allFlags.isPspPickerPageEnabled;
+        localStorage.setItem(SessionItems.enablePspPage, enabled.toString());
+      }
+      if (featureFlags[SessionItems.enableAuthentication] in allFlags) {
+        const enabled = allFlags.isAuthenticationEnabled;
+        setSessionItem(SessionItems.enableAuthentication, enabled.toString());
+      }
+      if (featureFlags[SessionItems.enableMaintenance] in allFlags) {
+        const enabled = allFlags.isMaintenancePageEnabled;
+        setSessionItem(SessionItems.enableMaintenance, enabled.toString());
+        // setIsMaintenanceEnabled(enabled);
+        dispatch(setMaintenanceEnabled({ maintenanceEnabled: enabled }));
+      }
+      if (
+        featureFlags[SessionItems.enableScheduledMaintenanceBannerEnabled] in
+        allFlags
+      ) {
+        const enabled = allFlags.isScheduledMaintenanceBannerEnabled;
+        setSessionItem(
+          SessionItems.enableScheduledMaintenanceBannerEnabled,
+          enabled.toString()
+        );
+      }
+    } finally {
+      setLoadingFlags(false); // Even if it fails, complete the loading state
+    }
+  };
+
+  // / Very raw check on the session storage to check if we have to use the dark mode
   const checkThemeDarkMode = () => {
     const themeModeValue = localStorage.getItem(SessionItems.activeTheme);
     if (
@@ -80,6 +127,10 @@ export function App() {
     useRecaptchaNet: true,
   };
 
+  const maintenanceEnabled = useAppSelector(
+    selectMaintenanceEnabled
+  ).maintenanceEnabled;
+
   return (
     <ThemeContextProvider>
       <CssBaseline />
@@ -91,7 +142,7 @@ export function App() {
           }}
         >
           <Layout fixedFooterPages={fixedFooterPages}>
-            {isMaintenanceEnabled ? (
+            {maintenanceEnabled ? (
               <MaintenancePage />
             ) : (
               <Routes>
