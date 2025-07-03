@@ -26,24 +26,24 @@ export default function IndexPage() {
 
   const checkIsScheduledMaintenanceBanner = async () => {
     const isScheduledMaintenanceBannerEnabledFromSessionStorage =
-      getSessionItem(SessionItems.isScheduledMaintenanceBannerEnabled);
+      getSessionItem(SessionItems.enableScheduledMaintenanceBannerEnabled);
 
     if (
       isScheduledMaintenanceBannerEnabledFromSessionStorage === null ||
       isScheduledMaintenanceBannerEnabledFromSessionStorage === undefined
     ) {
       await evaluateFeatureFlag(
-        featureFlags.enableScheduledMaintenanceBanner,
+        featureFlags.enableScheduledMaintenanceBannerEnabled,
         (e: string) => {
           // eslint-disable-next-line no-console
           console.error(
-            `Error while getting feature flag ${SessionItems.isScheduledMaintenanceBannerEnabled}`,
+            `Error while getting feature flag ${SessionItems.enableScheduledMaintenanceBannerEnabled}`,
             e
           );
         },
         (data: { enabled: boolean }) => {
           setSessionItem(
-            SessionItems.isScheduledMaintenanceBannerEnabled,
+            SessionItems.enableScheduledMaintenanceBannerEnabled,
             data.enabled.toString()
           );
           setIsScheduledMaintenanceBannerEnabled(data.enabled);

@@ -84,6 +84,16 @@ export function App() {
         setSessionItem(SessionItems.enableMaintenance, enabled.toString());
         setIsMaintenanceEnabled(enabled);
       }
+      if (
+        featureFlags[SessionItems.enableScheduledMaintenanceBannerEnabled] in
+        allFlags
+      ) {
+        const enabled = allFlags.enableScheduledMaintenanceBannerEnabled;
+        setSessionItem(
+          SessionItems.enableScheduledMaintenanceBannerEnabled,
+          enabled.toString()
+        );
+      }
     } finally {
       setLoadingFlags(false); // Even if it fails, complete the loading state
     }
@@ -104,13 +114,6 @@ export function App() {
     void initFeatureFlag();
     checkThemeDarkMode();
   }, []);
-
-  React.useEffect(() => {
-    setSessionItem(
-      SessionItems.enableMaintenance,
-      isMaintenanceEnabled.toString()
-    );
-  }, [isMaintenanceEnabled]);
 
   // eslint-disable-next-line functional/immutable-data
   document.title = t("app.title");

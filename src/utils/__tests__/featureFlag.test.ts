@@ -27,7 +27,12 @@ describe("featureFlags", () => {
   test("should contain enablePspPage flag", () => {
     expect(featureFlags).toHaveProperty(
       "enableMaintenance",
-      "isMaintenancePageEnabled",
+      "isMaintenancePageEnabled"
+    );
+  });
+
+  test("should contain enableScheduledMaintenanceBanner flag", () => {
+    expect(featureFlags).toHaveProperty(
       "enableScheduledMaintenanceBanner",
       "isScheduledMaintenanceBannerEnabled"
     );

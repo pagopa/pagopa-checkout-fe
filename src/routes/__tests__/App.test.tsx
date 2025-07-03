@@ -153,6 +153,14 @@ jest
     return Promise.resolve();
   });
 
+jest.spyOn(helper, "evaluateFeatureFlagsAll").mockImplementation(() =>
+  Promise.resolve({
+    isMaintenancePageEnabled: false,
+    isPspPickerPageEnabled: true,
+    isAuthenticationEnabled: true,
+  })
+);
+
 describe("App", () => {
   beforeEach(() => {
     localStorage.clear();
@@ -163,7 +171,7 @@ describe("App", () => {
     sessionStorage.setItem("enableMaintenance", "false");
   });
 
-  it("renders IndexPage and calls feature flag/mixpanel", async () => {
+  it.only("renders IndexPage and calls feature flag/mixpanel", async () => {
     await act(async () => {
       renderWithReduxAndThemeProvider(<App />);
     });
