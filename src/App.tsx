@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/cognitive-complexity */
 import CssBaseline from "@mui/material/CssBaseline";
 import React, { useContext } from "react";
 import { useTranslation } from "react-i18next";
