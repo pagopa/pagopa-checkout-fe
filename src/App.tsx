@@ -40,8 +40,7 @@ import {
 import PaymentPspListPage from "./routes/PaymentPspListPage";
 import MaintenancePage from "./routes/MaintenancePage";
 import MaintenanceGuard from "./components/commons/MaintenanceGuard";
-import { useFeatureFlagsAll } from "./hooks/useFeatureFlags";
-import featureFlags from "./utils/featureFlags";
+import { useInitFeatureFlags } from "./hooks/useInitFeatureFlags";
 
 export function App() {
   const { t } = useTranslation();
@@ -55,51 +54,10 @@ export function App() {
     CheckoutRoutes.SESSIONE_SCADUTA,
     CheckoutRoutes.DONA,
   ];
+
+  const { loadingFlags, isMaintenanceEnabled } = useInitFeatureFlags();
   const { mode, toggleTheme } = useContext(ThemeContext);
 
-  // Prevents initial UI render before feature flags are loaded,
-  // avoiding flicker when MaintenancePage should be shown.
-  const [loadingFlags, setLoadingFlags] = React.useState(true);
-
-  const [isMaintenanceEnabled, setIsMaintenanceEnabled] =
-    React.useState<boolean>(
-      getSessionItem(SessionItems.enableMaintenance) === "true"
-    );
-
-  const { checkFeatureFlagAll } = useFeatureFlagsAll();
-
-  const initFeatureFlag = async () => {
-    try {
-      const allFlags = await checkFeatureFlagAll();
-      if (featureFlags[SessionItems.enablePspPage] in allFlags) {
-        const enabled = allFlags.isPspPickerPageEnabled;
-        localStorage.setItem(SessionItems.enablePspPage, enabled.toString());
-      }
-      if (featureFlags[SessionItems.enableAuthentication] in allFlags) {
-        const enabled = allFlags.isAuthenticationEnabled;
-        setSessionItem(SessionItems.enableAuthentication, enabled.toString());
-      }
-      if (featureFlags[SessionItems.enableMaintenance] in allFlags) {
-        const enabled = allFlags.isMaintenancePageEnabled;
-        setSessionItem(SessionItems.enableMaintenance, enabled.toString());
-        setIsMaintenanceEnabled(enabled);
-      }
-      if (
-        featureFlags[SessionItems.enableScheduledMaintenanceBannerEnabled] in
-        allFlags
-      ) {
-        const enabled = allFlags.enableScheduledMaintenanceBannerEnabled;
-        setSessionItem(
-          SessionItems.enableScheduledMaintenanceBannerEnabled,
-          enabled.toString()
-        );
-      }
-    } finally {
-      setLoadingFlags(false); // Even if it fails, complete the loading state
-    }
-  };
-
-  // / Very raw check on the session storage to check if we have to use the dark mode
   const checkThemeDarkMode = () => {
     const themeModeValue = localStorage.getItem(SessionItems.activeTheme);
     if (
@@ -111,7 +69,6 @@ export function App() {
   };
 
   React.useEffect(() => {
-    void initFeatureFlag();
     checkThemeDarkMode();
   }, []);
 
