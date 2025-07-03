@@ -6,7 +6,8 @@ describe("featureFlags", () => {
       enableAuthentication: "isAuthenticationEnabled",
       enableMaintenance: "isMaintenancePageEnabled",
       enablePspPage: "isPspPickerPageEnabled",
-      enableScheduledMaintenanceBannerEnabled: "isScheduledMaintenanceBannerEnabled",
+      enableScheduledMaintenanceBannerEnabled:
+        "isScheduledMaintenanceBannerEnabled",
     });
   });
 

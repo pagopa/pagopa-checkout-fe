@@ -12,7 +12,7 @@ const initialState: MaintenancePageState = {
 };
 
 export const maintenanceSlice = createSlice({
-  name: "threshold",
+  name: "maintenance",
   initialState,
   reducers: {
     setMaintenanceEnabled(

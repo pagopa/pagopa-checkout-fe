@@ -4,11 +4,6 @@ import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { ShoppingCart } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
-import { useAppDispatch, useAppSelector } from "../../redux/hooks/hooks";
-import {
-  selectMaintenanceEnabled,
-  setMaintenanceEnabled,
-} from "../../redux/slices/maintanancePage";
 import featureFlags from "../../utils/featureFlags";
 import pagopaLogo from "../../assets/images/pagopa-logo.svg";
 import {
@@ -26,7 +21,7 @@ import { getTotalFromCart } from "../../utils/cart/cart";
 import { moneyFormat } from "../../utils/form/formatters";
 import { paymentSubjectTransform } from "../../utils/transformers/paymentTransformers";
 import DrawerDetail from "../Header/DrawerDetail";
-import { useFeatureFlagsAll } from "../../hooks/useFeatureFlags";
+import { evaluateFeatureFlag } from "./../../utils/api/helper";
 import SkipToContent from "./SkipToContent";
 import LoginHeader from "./LoginHeader";
 
@@ -45,7 +40,6 @@ function amountToShow() {
 export default function Header() {
   const { t } = useTranslation();
   const location = useLocation();
-  const dispatch = useAppDispatch();
   const currentPath = location.pathname.split("/").slice(-1)[0];
   const paymentInfoData = getSessionItem(SessionItems.paymentInfo) as
     | PaymentInfo
@@ -97,49 +91,40 @@ export default function Header() {
         },
       ];
 
-  const { checkFeatureFlagAll } = useFeatureFlagsAll();
-
-  const [loadingFlags, setLoadingFlags] = React.useState(true);
-
-  const initFeatureFlag = async () => {
-    try {
-      const allFlags = await checkFeatureFlagAll();
-
-      if (featureFlags[SessionItems.enableAuthentication] in allFlags) {
-        const enabled = allFlags.isAuthenticationEnabled;
-        setSessionItem(SessionItems.enableAuthentication, enabled.toString());
-        setEnableAuthentication(enabled);
-      } else {
-        setEnableAuthentication(false);
-      }
-
-      if (featureFlags.enableMaintenance in allFlags) {
-        const enabled = allFlags.isMaintenancePageEnabled;
-        dispatch(setMaintenanceEnabled({ maintenanceEnabled: enabled }));
-      }
-    } finally {
-      setLoadingFlags(false); // Even if it fails, complete the loading state
-    }
+  const onFeatureFlagError = (e: string) => {
+    // eslint-disable-next-line no-console
+    console.error(
+      "Error while getting feature flag " + SessionItems.enableAuthentication,
+      e
+    );
+    setEnableAuthentication(false);
   };
 
-  const maintenanceEnabled = useAppSelector(
-    selectMaintenanceEnabled
-  ).maintenanceEnabled;
+  const onFeatureFlagSuccess = (data: { enabled: boolean }) => {
+    setSessionItem(SessionItems.enableAuthentication, data.enabled.toString());
+    setEnableAuthentication(data.enabled);
+  };
+
+  const initFeatureFlag = async () => {
+    const storedFeatureFlag = getSessionItem(SessionItems.enableAuthentication);
+    // avoid asking again if you already have received an answer
+    if (!storedFeatureFlag) {
+      await evaluateFeatureFlag(
+        featureFlags.enableAuthentication,
+        onFeatureFlagError,
+        onFeatureFlagSuccess
+      );
+    }
+  };
 
   useEffect(() => {
     void initFeatureFlag();
   }, []);
 
-  // Prevents initial UI render before feature flags are loaded,
-  // avoiding flicker when MaintenancePage should be shown.
-  if (loadingFlags) {
-    return <div></div>;
-  }
-
   return (
     <header>
       <Stack position="relative" zIndex="1000">
-        {!maintenanceEnabled && enableAuthentication && <LoginHeader />}
+        {enableAuthentication && <LoginHeader />}
         {!hidePaymentHeader && (
           <Box p={3}>
             <Stack
