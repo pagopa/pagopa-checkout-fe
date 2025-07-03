@@ -42,7 +42,8 @@ import {
 import PaymentPspListPage from "./routes/PaymentPspListPage";
 import MaintenancePage from "./routes/MaintenancePage";
 import MaintenanceGuard from "./components/commons/MaintenanceGuard";
-import { useInitFeatureFlags } from "./hooks/useInitFeatureFlags";
+import featureFlags from "./utils/featureFlags";
+import { useFeatureFlagsAll } from "./hooks/useFeatureFlags";
 
 export function App() {
   const { t } = useTranslation();
@@ -59,18 +60,11 @@ export function App() {
     CheckoutRoutes.DONA,
   ];
 
-  const { loadingFlags, isMaintenanceEnabled } = useInitFeatureFlags();
   const { mode, toggleTheme } = useContext(ThemeContext);
-
   // Prevents initial UI render before feature flags are loaded,
   // avoiding flicker when MaintenancePage should be shown.
   const [loadingFlags, setLoadingFlags] = React.useState(true);
-  /*
-  const [isMaintenanceEnabled, setIsMaintenanceEnabled] =
-    React.useState<boolean>(
-      getSessionItem(SessionItems.enableMaintenance) === "true"
-    );
-*/
+
   const { checkFeatureFlagAll } = useFeatureFlagsAll();
 
   const initFeatureFlag = async () => {
@@ -84,10 +78,8 @@ export function App() {
         const enabled = allFlags.isAuthenticationEnabled;
         setSessionItem(SessionItems.enableAuthentication, enabled.toString());
       }
-      if (featureFlags[SessionItems.enableMaintenance] in allFlags) {
+      if (featureFlags.enableMaintenance in allFlags) {
         const enabled = allFlags.isMaintenancePageEnabled;
-        setSessionItem(SessionItems.enableMaintenance, enabled.toString());
-        // setIsMaintenanceEnabled(enabled);
         dispatch(setMaintenanceEnabled({ maintenanceEnabled: enabled }));
       }
       if (
@@ -117,6 +109,7 @@ export function App() {
   };
 
   React.useEffect(() => {
+    void initFeatureFlag();
     checkThemeDarkMode();
   }, []);
 
