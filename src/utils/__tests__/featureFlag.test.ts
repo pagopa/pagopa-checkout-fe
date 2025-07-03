@@ -6,6 +6,7 @@ describe("featureFlags", () => {
       enableAuthentication: "isAuthenticationEnabled",
       enableMaintenance: "isMaintenancePageEnabled",
       enablePspPage: "isPspPickerPageEnabled",
+      enableScheduledMaintenanceBanner: "isScheduledMaintenanceBannerEnabled",
     });
   });
 
@@ -26,7 +27,9 @@ describe("featureFlags", () => {
   test("should contain enablePspPage flag", () => {
     expect(featureFlags).toHaveProperty(
       "enableMaintenance",
-      "isMaintenancePageEnabled"
+      "isMaintenancePageEnabled",
+      "enableScheduledMaintenanceBanner",
+      "isScheduledMaintenanceBannerEnabled"
     );
   });
 });

@@ -478,7 +478,12 @@
       "cancelButton": "Prekliči"
     }
   },
-   "maintenancePage": {
+  "ScheduledMaintenanceBanner": {
+    "titleKey": "Načrtovano vzdrževanje",
+    "bodyKey": "Plačilo ne bo mogoče od 02:00 do 08:00 dne 9. julija 2025.",
+    "linkTextKey": "Več informacij"
+  },
+  "maintenancePage": {
     "title": "Delamo za vas",
     "subtitle": "pagoPa trenutno ni na voljo zaradi načrtovanega vzdrževanja."   ,
     "closeButton": "Zapri",

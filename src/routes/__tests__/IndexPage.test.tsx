@@ -3,7 +3,9 @@ import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { fireEvent, screen } from "@testing-library/react";
 import * as router from "react-router";
+import fetchMock from "jest-fetch-mock";
 import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders";
+import * as helper from "../../utils/api/helper";
 import IndexPage from "../IndexPage";
 // mock for navigate
 const navigate = jest.fn();
@@ -60,11 +62,26 @@ jest.mock("../../utils/eventListeners", () => ({
   onBrowserUnload: jest.fn(),
 }));
 
+jest
+  .spyOn(helper, "evaluateFeatureFlag")
+  .mockImplementation(
+    (
+      _flag: any,
+      _onError: any,
+      onSuccess: (arg0: { enabled: boolean }) => void
+    ) => {
+      onSuccess({ enabled: true });
+      return Promise.resolve();
+    }
+  );
+
 describe("IndexPage", () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
     jest.spyOn(router, "useNavigate").mockImplementation(() => navigate);
+    fetchMock.resetMocks();
+    fetchMock.mockResponseOnce(JSON.stringify({ data: "mocked data" }));
   });
 
   test("page go to inquadra qr code", async () => {
