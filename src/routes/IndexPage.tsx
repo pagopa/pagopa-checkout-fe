@@ -28,10 +28,8 @@ export default function IndexPage() {
 
   const initFeatureFlag = async () => {
     const allFlags = await checkFeatureFlagAll();
-    if (featureFlags[SessionItems.enableMaintenance] in allFlags) {
+    if (featureFlags.enableMaintenance in allFlags) {
       const enabled = allFlags.isMaintenancePageEnabled;
-      setSessionItem(SessionItems.enableMaintenance, enabled.toString());
-      // window.location.reload();
       dispatch(setMaintenanceEnabled({ maintenanceEnabled: enabled }));
     }
     if (

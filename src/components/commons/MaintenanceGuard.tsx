@@ -1,15 +1,14 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
-import {
-  getSessionItem,
-  SessionItems,
-} from "../../utils/storage/sessionStorage";
+import { selectMaintenanceEnabled } from "../../redux/slices/maintanancePage";
+import { useAppSelector } from "../../redux/hooks/hooks";
 
 export default function MaintenanceGuard(props: {
   children?: React.ReactNode;
 }) {
-  const isMaintenanceEnabled =
-    getSessionItem(SessionItems.enableMaintenance) === "true";
+  const isMaintenanceEnabled = useAppSelector(
+    selectMaintenanceEnabled
+  ).maintenanceEnabled;
 
   return isMaintenanceEnabled ? (
     <>{props.children}</>

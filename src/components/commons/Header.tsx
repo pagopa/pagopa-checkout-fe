@@ -113,11 +113,9 @@ export default function Header() {
         setEnableAuthentication(false);
       }
 
-      if (featureFlags[SessionItems.enableMaintenance] in allFlags) {
+      if (featureFlags.enableMaintenance in allFlags) {
         const enabled = allFlags.isMaintenancePageEnabled;
-        setSessionItem(SessionItems.enableMaintenance, enabled.toString());
         dispatch(setMaintenanceEnabled({ maintenanceEnabled: enabled }));
-        setEnableAuthentication(!enabled);
       }
     } finally {
       setLoadingFlags(false); // Even if it fails, complete the loading state

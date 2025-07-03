@@ -25,7 +25,8 @@ const getSessionItemDefaultMock = (key: SessionItems) => {
   return null;
 };
 
-import { useFeatureFlags } from "../../../hooks/useFeatureFlags";
+import { useFeatureFlags, useFeatureFlagsAll } from "../../../hooks/useFeatureFlags";
+import { renderWithReduxProvider } from "../../../utils/testing/testRenderProviders";
 
 // Mock all the imported modules
 jest.mock("react-i18next", () => ({
@@ -105,6 +106,7 @@ jest.mock("../SkipToContent", () => ({
 
 jest.mock("../../../hooks/useFeatureFlags", () => ({
   useFeatureFlags: jest.fn(),
+  useFeatureFlagsAll: jest.fn()
 }));
 
 describe("Header Component", () => {
@@ -138,10 +140,11 @@ describe("Header Component", () => {
   it("renders basic header without payment info", async () => {
     const mockCheckFeatureFlag = jest.fn().mockResolvedValue(undefined);
 
-    (useFeatureFlags as jest.Mock).mockReturnValue({
-      checkFeatureFlag: mockCheckFeatureFlag,
+    (useFeatureFlagsAll as jest.Mock).mockReturnValue({
+      checkFeatureFlagAll: mockCheckFeatureFlag,
     });
-    render(
+
+    renderWithReduxProvider(
       <MemoryRouter initialEntries={["/"]}>
         <Header />
       </MemoryRouter>
