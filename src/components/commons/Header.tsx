@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { ShoppingCart } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
+import featureFlags from "../../utils/featureFlags";
 import pagopaLogo from "../../assets/images/pagopa-logo.svg";
 import {
   Cart,
@@ -20,7 +21,7 @@ import { getTotalFromCart } from "../../utils/cart/cart";
 import { moneyFormat } from "../../utils/form/formatters";
 import { paymentSubjectTransform } from "../../utils/transformers/paymentTransformers";
 import DrawerDetail from "../Header/DrawerDetail";
-import { useFeatureFlags } from "../../hooks/useFeatureFlags";
+import { useFeatureFlagsAll } from "../../hooks/useFeatureFlags";
 import SkipToContent from "./SkipToContent";
 import LoginHeader from "./LoginHeader";
 
@@ -90,39 +91,31 @@ export default function Header() {
         },
       ];
 
-  const { checkFeatureFlag } = useFeatureFlags();
+  const { checkFeatureFlagAll } = useFeatureFlagsAll();
 
   const [loadingFlags, setLoadingFlags] = React.useState(true);
 
   const initFeatureFlag = async () => {
     try {
-      await Promise.all([
-        checkFeatureFlag({
-          flagName: "enableAuthentication",
-          sessionKey: SessionItems.enableAuthentication,
-          skipIfStored: false,
-          onSuccess: () => {
-            setEnableAuthentication(true);
-          },
-          onError: () => {
-            setEnableAuthentication(false);
-          },
-        }),
-        checkFeatureFlag({
-          flagName: "enableMaintenance",
-          sessionKey: SessionItems.enableMaintenance,
-          onSuccess: (enabled: boolean) => {
-            if (enabled === true) {
-              setEnableAuthentication(false);
-            }
-          },
-          onError: () => {
-            setSessionItem(SessionItems.enableMaintenance, "false");
-          },
-        }),
-      ]);
+      const allFlags = await checkFeatureFlagAll();
+
+      if (featureFlags[SessionItems.enableAuthentication] in allFlags) {
+        const enabled = allFlags.isAuthenticationEnabled;
+        setSessionItem(SessionItems.enableAuthentication, enabled.toString());
+        setEnableAuthentication(enabled);
+      } else {
+        setEnableAuthentication(false);
+      }
+
+      if (featureFlags[SessionItems.enableMaintenance] in allFlags) {
+        const enabled = allFlags.isMaintenancePageEnabled;
+        setSessionItem(SessionItems.enableMaintenance, enabled.toString());
+        if (enabled === true) {
+          setEnableAuthentication(false);
+        }
+      }
     } finally {
-      setLoadingFlags(false);
+      setLoadingFlags(false); // Even if it fails, complete the loading state
     }
   };
 
@@ -132,7 +125,6 @@ export default function Header() {
 
   // Prevents initial UI render before feature flags are loaded,
   // avoiding flicker when MaintenancePage should be shown.
-
   if (loadingFlags) {
     return <div>Loading</div>;
   }
