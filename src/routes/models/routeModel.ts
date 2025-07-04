@@ -17,6 +17,7 @@ export enum CheckoutRoutes {
   ANNULLATO = "annullato",
   SESSIONE_SCADUTA = "sessione-scaduta",
   ERRORE = "errore",
+  MAINTENANCE = "maintenance",
 }
 
 export enum ROUTE_FRAGMENT {

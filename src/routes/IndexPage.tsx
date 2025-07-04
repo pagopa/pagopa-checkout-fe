@@ -1,4 +1,5 @@
 import React from "react";
+import { useFeatureFlagsAll } from "../hooks/useFeatureFlags";
 import { ScheduledMaintenanceBanner } from "../components/commons/ScheduledMaintenanceBanner";
 import { onBrowserUnload } from "../utils/eventListeners";
 import { resetThreshold } from "../redux/slices/threshold";
@@ -8,12 +9,11 @@ import { PaymentNoticeChoice } from "../features/payment/components/PaymentNotic
 import { useAppDispatch } from "../redux/hooks/hooks";
 import {
   clearStorageAndMaintainAuthData,
-  getSessionItem,
   SessionItems,
   setSessionItem,
 } from "../utils/storage/sessionStorage";
-import { evaluateFeatureFlag } from "../utils/api/helpers/checkoutFeatureFlagsHelper";
 import featureFlags from "../utils/featureFlags";
+import { setMaintenanceEnabled } from "../redux/slices/maintanancePage";
 
 export default function IndexPage() {
   window.removeEventListener("beforeunload", onBrowserUnload);
@@ -24,42 +24,30 @@ export default function IndexPage() {
     setIsScheduledMaintenanceBannerEnabled,
   ] = React.useState<boolean | null>(null);
 
-  const checkIsScheduledMaintenanceBanner = async () => {
-    const isScheduledMaintenanceBannerEnabledFromSessionStorage =
-      getSessionItem(SessionItems.isScheduledMaintenanceBannerEnabled);
+  const { checkFeatureFlagAll } = useFeatureFlagsAll();
 
+  const initFeatureFlag = async () => {
+    const allFlags = await checkFeatureFlagAll();
+    if (featureFlags.enableMaintenance in allFlags) {
+      const enabled = allFlags.isMaintenancePageEnabled;
+      dispatch(setMaintenanceEnabled({ maintenanceEnabled: enabled }));
+    }
     if (
-      isScheduledMaintenanceBannerEnabledFromSessionStorage === null ||
-      isScheduledMaintenanceBannerEnabledFromSessionStorage === undefined
+      featureFlags[SessionItems.enableScheduledMaintenanceBanner] in allFlags
     ) {
-      await evaluateFeatureFlag(
-        featureFlags.enableScheduledMaintenanceBanner,
-        (e: string) => {
-          // eslint-disable-next-line no-console
-          console.error(
-            `Error while getting feature flag ${SessionItems.isScheduledMaintenanceBannerEnabled}`,
-            e
-          );
-        },
-        (data: { enabled: boolean }) => {
-          setSessionItem(
-            SessionItems.isScheduledMaintenanceBannerEnabled,
-            data.enabled.toString()
-          );
-          setIsScheduledMaintenanceBannerEnabled(data.enabled);
-        }
+      const enabled = allFlags.isScheduledMaintenanceBannerEnabled;
+      setSessionItem(
+        SessionItems.enableScheduledMaintenanceBanner,
+        enabled.toString()
       );
-    } else {
-      setIsScheduledMaintenanceBannerEnabled(
-        isScheduledMaintenanceBannerEnabledFromSessionStorage === "true"
-      );
+      setIsScheduledMaintenanceBannerEnabled(enabled);
     }
   };
 
   React.useEffect(() => {
     dispatch(resetThreshold());
     clearStorageAndMaintainAuthData();
-    void checkIsScheduledMaintenanceBanner();
+    void initFeatureFlag();
   }, []);
 
   return (

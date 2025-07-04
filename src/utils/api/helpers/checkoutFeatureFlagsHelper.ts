@@ -39,3 +39,26 @@ export const evaluateFeatureFlag = async (
     )
   )();
 };
+
+export const evaluateFeatureFlagsAll = async () =>
+  await pipe(
+    TE.tryCatch(
+      () => apiCheckoutFeatureFlags.evaluateFeatureFlags({}),
+      () => new Error("Network error")
+    ),
+    TE.fold(
+      () => async () => {
+        throw new Error("Server error");
+      },
+      (response) => async () =>
+        pipe(
+          response,
+          E.fold(
+            () => {
+              throw new Error("Response error");
+            },
+            (res: any) => res.value ?? {}
+          )
+        )
+    )
+  )();

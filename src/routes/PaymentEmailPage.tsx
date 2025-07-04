@@ -51,7 +51,7 @@ export default function PaymentEmailPage() {
 
   const checkIsScheduledMaintenanceBannerEnabled = async () => {
     const isScheduledMaintenanceBannerEnabledFromSessionStorage =
-      getSessionItem(SessionItems.isScheduledMaintenanceBannerEnabled);
+      getSessionItem(SessionItems.enableScheduledMaintenanceBanner);
 
     if (
       isScheduledMaintenanceBannerEnabledFromSessionStorage === null ||
@@ -62,13 +62,13 @@ export default function PaymentEmailPage() {
         (e: string) => {
           // eslint-disable-next-line no-console
           console.error(
-            `Error while getting feature flag ${SessionItems.isScheduledMaintenanceBannerEnabled}`,
+            `Error while getting feature flag ${SessionItems.enableScheduledMaintenanceBanner}`,
             e
           );
         },
         (data: { enabled: boolean }) => {
           setSessionItem(
-            SessionItems.isScheduledMaintenanceBannerEnabled,
+            SessionItems.enableScheduledMaintenanceBanner,
             data.enabled.toString()
           );
           setIsScheduledMaintenanceBannerEnabled(data.enabled);

@@ -75,7 +75,7 @@ export default function KOPage() {
           justifyContent="space-between"
           alignItems="center"
         >
-          <Typography variant="h6" component="div">
+          <Typography variant="h6" component="div" id="id_ko_page">
             {t("koPage.title")}
           </Typography>
           <Typography variant="body2" component="div">

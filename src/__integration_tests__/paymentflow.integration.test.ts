@@ -86,6 +86,13 @@ beforeEach(async () => {
   await page.goto(CHECKOUT_URL);
 });
 
+afterEach(async () => {
+  await page.evaluate(() => {
+    window.onbeforeunload = null;
+  });
+});
+
+
 describe("Checkout payment verify failure tests", () => {
   it("Should fail a payment VERIFY and get FAIL_VERIFY_404_PPT_STAZIONE_INT_PA_SCONOSCIUTA", async () => {
     const resultMessage = await verifyPaymentAndGetError(
@@ -312,9 +319,10 @@ describe("Checkout fails to calculate fee", () => {
       const closeErrorModalButton = "#closeError";
       await page.waitForSelector(closeErrorModalButton);
       await page.click(closeErrorModalButton);
-      const errorDescriptionXpath =
-        '//*[@id="root"]/div/main/div/div/div/div[1]/div[1]';
-      const errorMessageElem = await page.waitForXPath(errorDescriptionXpath);
+
+      
+     
+      const errorMessageElem = await  page.waitForSelector("#id_ko_page");
       const errorMessage = await errorMessageElem.evaluate(
         (el) => el.textContent
       );
