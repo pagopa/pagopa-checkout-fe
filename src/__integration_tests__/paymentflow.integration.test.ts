@@ -292,7 +292,7 @@ describe("PSP disclaimer tests", () => {
 });
 
 describe("Checkout fails to calculate fee", () => {
-  it.only.each([
+  it.each([
     ["it", itTranslation],
     ["en", enTranslation],
     ["fr", frTranslation],
