@@ -2,8 +2,7 @@ const featureFlags = {
   enableAuthentication: "isAuthenticationEnabled",
   enablePspPage: "isPspPickerPageEnabled",
   enableMaintenance: "isMaintenancePageEnabled",
-  enableScheduledMaintenanceBannerEnabled:
-    "isScheduledMaintenanceBannerEnabled",
+  enableScheduledMaintenanceBanner: "isScheduledMaintenanceBannerEnabled",
 };
 
 export default featureFlags;

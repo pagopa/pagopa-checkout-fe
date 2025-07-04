@@ -3,6 +3,8 @@ import CssBaseline from "@mui/material/CssBaseline";
 import React, { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import * as TE from "fp-ts/TaskEither";
+import { pipe } from "fp-ts/function";
 import { useAppDispatch, useAppSelector } from "./redux/hooks/hooks";
 import {
   selectMaintenanceEnabled,
@@ -67,35 +69,48 @@ export function App() {
 
   const { checkFeatureFlagAll } = useFeatureFlagsAll();
 
-  const initFeatureFlag = async () => {
-    try {
-      const allFlags = await checkFeatureFlagAll();
+  const initFeatureFlag = pipe(
+    TE.tryCatch(
+      async () => await checkFeatureFlagAll(),
+      (error) => new Error(String(error))
+    ),
+    TE.map((allFlags) => {
       if (featureFlags[SessionItems.enablePspPage] in allFlags) {
         const enabled = allFlags.isPspPickerPageEnabled;
         localStorage.setItem(SessionItems.enablePspPage, enabled.toString());
       }
+
       if (featureFlags[SessionItems.enableAuthentication] in allFlags) {
         const enabled = allFlags.isAuthenticationEnabled;
         setSessionItem(SessionItems.enableAuthentication, enabled.toString());
       }
+
       if (featureFlags.enableMaintenance in allFlags) {
         const enabled = allFlags.isMaintenancePageEnabled;
         dispatch(setMaintenanceEnabled({ maintenanceEnabled: enabled }));
       }
+
       if (
-        featureFlags[SessionItems.enableScheduledMaintenanceBannerEnabled] in
-        allFlags
+        featureFlags[SessionItems.enableScheduledMaintenanceBanner] in allFlags
       ) {
         const enabled = allFlags.isScheduledMaintenanceBannerEnabled;
         setSessionItem(
-          SessionItems.enableScheduledMaintenanceBannerEnabled,
+          SessionItems.enableScheduledMaintenanceBanner,
           enabled.toString()
         );
       }
-    } finally {
-      setLoadingFlags(false); // Even if it fails, complete the loading state
-    }
-  };
+    }),
+    TE.fold(
+      (err) => async () => {
+        // eslint-disable-next-line no-console
+        console.error("Error:", err);
+        setLoadingFlags(false);
+      },
+      () => async () => {
+        setLoadingFlags(false);
+      }
+    )
+  );
 
   // / Very raw check on the session storage to check if we have to use the dark mode
   const checkThemeDarkMode = () => {

@@ -33,12 +33,11 @@ export default function IndexPage() {
       dispatch(setMaintenanceEnabled({ maintenanceEnabled: enabled }));
     }
     if (
-      featureFlags[SessionItems.enableScheduledMaintenanceBannerEnabled] in
-      allFlags
+      featureFlags[SessionItems.enableScheduledMaintenanceBanner] in allFlags
     ) {
       const enabled = allFlags.isScheduledMaintenanceBannerEnabled;
       setSessionItem(
-        SessionItems.enableScheduledMaintenanceBannerEnabled,
+        SessionItems.enableScheduledMaintenanceBanner,
         enabled.toString()
       );
       setIsScheduledMaintenanceBannerEnabled(enabled);
