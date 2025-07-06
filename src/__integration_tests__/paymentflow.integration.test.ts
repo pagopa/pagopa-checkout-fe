@@ -232,7 +232,7 @@ describe("Auth request failure tests", () => {
       await paymentCheckPageButtonCancel.click();
       const cancPayment = await page.waitForSelector("#confirm", {visible: true});
       await cancPayment.click();
-      await page.waitForNavigation();
+      await page.waitForSelector("#redirect-button");
       expect(resultMessage).toContain(translation.GENERIC_ERROR.title);
       //await cancelPaymentAction();
     }
