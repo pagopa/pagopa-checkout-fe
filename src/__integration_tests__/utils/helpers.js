@@ -302,7 +302,7 @@ export const cancelPaymentAction = async () => {
   await paymentCheckPageButtonCancel.click();
   const cancPayment = await page.waitForSelector("#confirm", {visible: true});
   await cancPayment.click();
-  await page.waitForNavigation();
+  await page.waitForSelector("#redirect-button");
 };
 
 export const cancelPaymentOK = async (
