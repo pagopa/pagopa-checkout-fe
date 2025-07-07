@@ -425,6 +425,7 @@ describe("Checkout authentication tests", () => {
 
     //go to payment methods page
     await page.goto(PAYMENT_METHODS_PAGE);
+    await page.waitForSelector("#errorTitle");
     expect(page.url()).toContain("/autenticazione-scaduta");
   });
 
@@ -466,6 +467,7 @@ describe("Checkout authentication tests", () => {
 
     //go to payment methods page and select card payment
     await page.goto(INSERT_CARD_PAGE);
+    await page.waitForSelector("#errorTitle");
     expect(page.url()).toContain("/autenticazione-scaduta");
   });
 
