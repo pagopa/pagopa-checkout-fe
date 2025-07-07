@@ -204,7 +204,7 @@ describe("PaymentEmailPage", () => {
       }
     );
     (getSessionItem as jest.Mock).mockImplementation((key) => {
-      if (key === SessionItems.isScheduledMaintenanceBannerEnabled) {
+      if (key === SessionItems.enableScheduledMaintenanceBanner) {
         return "true";
       }
       if (key === SessionItems.cart) {
@@ -235,7 +235,7 @@ describe("PaymentEmailPage", () => {
       }
     );
     (getSessionItem as jest.Mock).mockImplementation((key) => {
-      if (key === SessionItems.isScheduledMaintenanceBannerEnabled) {
+      if (key === SessionItems.enableScheduledMaintenanceBanner) {
         return "false";
       }
       if (key === SessionItems.cart) {
