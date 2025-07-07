@@ -143,6 +143,6 @@ describe("IndexPage", () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText("ScheduledMaintenanceBanner")).toBeInTheDocument();
+    expect(screen.getByText("ScheduledMaintenanceBanner.titleKey")).toBeInTheDocument();
   });
 });
