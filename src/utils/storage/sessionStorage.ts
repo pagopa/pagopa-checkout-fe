@@ -35,7 +35,7 @@ export enum SessionItems {
   loginOriginPage = "loginOriginPage",
   authToken = "authToken",
   noticeCodeDataEntry = "noticeCodeDataEntry",
-  isScheduledMaintenanceBannerEnabled = "isScheduledMaintenanceBannerEnabled",
+  enableScheduledMaintenanceBanner = "enableScheduledMaintenanceBanner",
 }
 const isParsable = (item: SessionItems) =>
   !(
@@ -48,7 +48,7 @@ const isParsable = (item: SessionItems) =>
     item === SessionItems.loginOriginPage ||
     item === SessionItems.authToken ||
     item === SessionItems.noticeCodeDataEntry ||
-    item === SessionItems.isScheduledMaintenanceBannerEnabled
+    item === SessionItems.enableScheduledMaintenanceBanner
   );
 
 export const getSessionItem = (item: SessionItems) => {
@@ -128,7 +128,7 @@ export const clearStorageAndMaintainAuthData = () => {
     SessionItems.enableAuthentication
   ) as string;
   const isScheduledMaintenanceBannerEnabled = getSessionItem(
-    SessionItems.isScheduledMaintenanceBannerEnabled
+    SessionItems.enableScheduledMaintenanceBanner
   ) as string;
   sessionStorage.clear();
   if (authToken != null) {
@@ -139,7 +139,7 @@ export const clearStorageAndMaintainAuthData = () => {
   }
   if (isScheduledMaintenanceBannerEnabled != null) {
     setSessionItem(
-      SessionItems.isScheduledMaintenanceBannerEnabled,
+      SessionItems.enableScheduledMaintenanceBanner,
       isScheduledMaintenanceBannerEnabled
     );
   }

@@ -90,16 +90,16 @@ describe("sessionStorage utils", () => {
   test("clearStorageAndMaintainAuthData keeps auth token and flags", () => {
     setSessionItem(SessionItems.authToken, "token123");
     setSessionItem(SessionItems.enableAuthentication, "true");
-    setSessionItem(SessionItems.isScheduledMaintenanceBannerEnabled, "true");
+    setSessionItem(SessionItems.enableScheduledMaintenanceBanner, "true");
     setSessionItem(SessionItems.useremail, "shouldClear");
 
     clearStorageAndMaintainAuthData();
 
     expect(getSessionItem(SessionItems.authToken)).toBe("token123");
     expect(getSessionItem(SessionItems.enableAuthentication)).toBe("true");
-    expect(
-      getSessionItem(SessionItems.isScheduledMaintenanceBannerEnabled)
-    ).toBe("true");
+    expect(getSessionItem(SessionItems.enableScheduledMaintenanceBanner)).toBe(
+      "true"
+    );
     expect(getSessionItem(SessionItems.useremail)).toBeUndefined();
   });
 
