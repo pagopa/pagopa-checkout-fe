@@ -149,7 +149,6 @@ stages:
         - script: |
             yarn generate
             yarn test:coverage --watchAll=false
-            echo "Exit code: $?"
           displayName: 'Unit tests execution'
 
         - script: yarn lint
