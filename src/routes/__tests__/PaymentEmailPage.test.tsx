@@ -15,6 +15,11 @@ import {
   MixpanelEventType,
   MixpanelFlow,
 } from "../../utils/mixpanel/mixpanelEvents";
+import {
+  getSessionItem,
+  SessionItems,
+} from "../../utils/storage/sessionStorage";
+import { getCartResponseMock } from "../../utils/testing/testUtils";
 import { paymentInfo } from "./_model";
 
 jest.mock("../../utils/config/config", () => ({
@@ -70,6 +75,10 @@ jest.mock("../../utils/mixpanel/mixpanelHelperInit", () => ({
   mixpanel: {
     track: jest.fn(),
   },
+}));
+
+jest.mock("../../utils/api/helper", () => ({
+  evaluateFeatureFlag: jest.fn(),
 }));
 
 jest.mock("../../utils/mixpanel/mixpanelTracker", () => ({
@@ -185,5 +194,67 @@ describe("PaymentEmailPage", () => {
         expiration_date: "2021-07-31",
       }
     );
+  });
+
+  test.only("should show banner if sessionStorage returns 'true'", () => {
+    (helper.evaluateFeatureFlag as jest.Mock).mockImplementation(
+      (_flag, _onError, onSuccess) => {
+        onSuccess({ enabled: true });
+        return Promise.resolve();
+      }
+    );
+    (getSessionItem as jest.Mock).mockImplementation((key) => {
+      if (key === SessionItems.isScheduledMaintenanceBannerEnabled) {
+        return "true";
+      }
+      if (key === SessionItems.cart) {
+        return getCartResponseMock;
+      }
+      if (key === SessionItems.useremail) {
+        return "test@mail.com";
+      }
+      return null;
+    });
+
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentEmailPage />
+      </MemoryRouter>
+    );
+
+    expect(
+      screen.getByText("ScheduledMaintenanceBanner.titleKey")
+    ).toBeInTheDocument();
+  });
+
+  test("should NOT show banner if sessionStorage returns 'false'", () => {
+    (helper.evaluateFeatureFlag as jest.Mock).mockImplementation(
+      (_flag, _onError, onSuccess) => {
+        onSuccess({ enabled: false });
+        return Promise.resolve();
+      }
+    );
+    (getSessionItem as jest.Mock).mockImplementation((key) => {
+      if (key === SessionItems.isScheduledMaintenanceBannerEnabled) {
+        return "false";
+      }
+      if (key === SessionItems.cart) {
+        return getCartResponseMock;
+      }
+      if (key === SessionItems.useremail) {
+        return "test@mail.com";
+      }
+      return null;
+    });
+
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentEmailPage />
+      </MemoryRouter>
+    );
+
+    expect(
+      screen.queryByText("ScheduledMaintenanceBanner.titleKey")
+    ).not.toBeInTheDocument();
   });
 });

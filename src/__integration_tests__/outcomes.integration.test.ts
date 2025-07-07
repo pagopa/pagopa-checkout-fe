@@ -49,10 +49,6 @@ afterEach(async () => {
     await clickButtonBySelector("#closeButton");
 });
 
-afterAll(async () => {
-    await page.close();
-});
-
 describe("Transaction outcome success tests", () => {
     it.each([
         [0, "SUCCESS", OUTCOME_FISCAL_CODE_SUCCESS],

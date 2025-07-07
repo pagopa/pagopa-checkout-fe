@@ -239,7 +239,7 @@ describe("Auth request failure tests", () => {
       await paymentCheckPageButtonCancel.click();
       const cancPayment = await page.waitForSelector("#confirm", {visible: true});
       await cancPayment.click();
-      await page.waitForNavigation();
+      await page.waitForSelector("#redirect-button");
       expect(resultMessage).toContain(translation.GENERIC_ERROR.title);
       //await cancelPaymentAction();
     }
@@ -320,9 +320,7 @@ describe("Checkout fails to calculate fee", () => {
       await page.waitForSelector(closeErrorModalButton);
       await page.click(closeErrorModalButton);
 
-      
-     
-      const errorMessageElem = await  page.waitForSelector("#id_ko_page");
+      const errorMessageElem = await page.waitForSelector("#koPageTitle");
       const errorMessage = await errorMessageElem.evaluate(
         (el) => el.textContent
       );

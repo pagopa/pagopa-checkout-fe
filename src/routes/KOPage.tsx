@@ -75,10 +75,10 @@ export default function KOPage() {
           justifyContent="space-between"
           alignItems="center"
         >
-          <Typography variant="h6" component="div" id="id_ko_page">
+          <Typography variant="h6" component="div" id="koPageTitle">
             {t("koPage.title")}
           </Typography>
-          <Typography variant="body2" component="div">
+          <Typography variant="body2" component="div" id="koPageBody">
             {t("koPage.body")}
           </Typography>
         </Box>

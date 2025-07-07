@@ -7,6 +7,7 @@ import fetchMock from "jest-fetch-mock";
 import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders";
 import * as helper from "../../utils/api/helper";
 import IndexPage from "../IndexPage";
+import { getSessionItem } from "../../utils/storage/sessionStorage";
 // mock for navigate
 const navigate = jest.fn();
 
@@ -34,6 +35,14 @@ jest.mock("../../utils/config/config", () =>
     isProdEnv: jest.fn(() => true),
   })
 );
+
+jest.mock("../../utils/storage/sessionStorage", () => ({
+  getSessionItem: jest.fn(),
+  setSessionItem: jest.fn(),
+  SessionItems: {
+    isScheduledMaintenanceBannerEnabled: "true",
+  },
+}));
 
 // Mock translations and recaptcha
 jest.mock("react-i18next", () => ({
@@ -110,5 +119,46 @@ describe("IndexPage", () => {
     fireEvent.click(goToNoticeLink);
 
     expect(navigate).toHaveBeenCalledWith("/inserisci-dati-avviso");
+  });
+
+  test("should remove beforeunload listener", () => {
+    const removeSpy = jest.spyOn(window, "removeEventListener");
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <IndexPage />
+      </MemoryRouter>
+    );
+    expect(removeSpy).toHaveBeenCalledWith(
+      "beforeunload",
+      expect.any(Function)
+    );
+  });
+
+  test("should show banner if sessionStorage returns 'true'", () => {
+    (getSessionItem as jest.Mock).mockReturnValue("true");
+
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <IndexPage />
+      </MemoryRouter>
+    );
+
+    expect(
+      screen.getByText("ScheduledMaintenanceBanner.titleKey")
+    ).toBeInTheDocument();
+  });
+
+  test("should NOT show banner if sessionStorage returns 'false'", () => {
+    (getSessionItem as jest.Mock).mockReturnValue("false");
+
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <IndexPage />
+      </MemoryRouter>
+    );
+
+    expect(
+      screen.queryByText("ScheduledMaintenanceBanner.titleKey")
+    ).not.toBeInTheDocument();
   });
 });
