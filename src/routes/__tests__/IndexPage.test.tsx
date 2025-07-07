@@ -147,4 +147,18 @@ describe("IndexPage", () => {
       screen.getByText("ScheduledMaintenanceBanner.titleKey")
     ).toBeInTheDocument();
   });
+
+  test("should NOT show banner if sessionStorage returns 'false'", () => {
+    (getSessionItem as jest.Mock).mockReturnValue("false");
+
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <IndexPage />
+      </MemoryRouter>
+    );
+
+    expect(
+      screen.queryByText("ScheduledMaintenanceBanner.titleKey")
+    ).not.toBeInTheDocument();
+  });
 });
