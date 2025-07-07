@@ -37,7 +37,7 @@ export default function MaintenancePage() {
       >
         <img
           src={inProgressIcon}
-          alt="Icona cuore"
+          alt="Work in progress"
           style={{ width: "80px", height: "auto" }}
           aria-hidden="true"
         />
