@@ -53,13 +53,19 @@ describe("Maintenance mode language tests", () => {
     expect(title).toContain(translation.maintenancePage.title);
   });
 
-  
-  it("Should redirect to status page on button click in [%s]", async () => { 
-    await page.waitForSelector("#id_button_redirect", { visible: true, timeout: 5000 });    
-    await Promise.all([
-      page.click("#id_button_redirect"),
-      page.waitForNavigation({ timeout: 5000 })
-    ]);    
-    expect(page.url()).toContain(siteUrl);
+  it('Should redirect to status page on button click in [%s]', async () => {
+    try {
+      await Promise.all([
+        await page.goto(CHECKOUT_URL, { waitUntil: "networkidle0" }),
+        await page.waitForSelector('#id_button_redirect', { visible: true, timeout: 15000 }),
+        page.click('#id_button_redirect'),
+        page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 10000 })
+      ]);
+      const currentUrl = page.url();
+      expect(currentUrl).toContain(siteUrl);
+    } catch (error) {
+      throw error;
+    }
   });
+
 });
