@@ -36,6 +36,8 @@ export const IConfig = t.interface({
   CHECKOUT_API_RETRY_DELAY: t.number,
   CHECKOUT_GDI_CHECK_TIMEOUT: t.number,
   CHECKOUT_API_AUTH_SERVICE_BASEPATH_V1: NonEmptyString,
+  CHECKOUT_API_RETRY_NUMBERS_NORMAL: t.number,
+  CHECKOUT_API_RETRY_NUMBERS_EXPONENT: t.number
 });
 
 // eslint-disable-next-line no-underscore-dangle

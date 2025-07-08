@@ -24,6 +24,8 @@ import { getConfigOrThrow } from "./config";
 // Returns a fetch wrapped with timeout and retry logic
 //
 const API_TIMEOUT = getConfigOrThrow().CHECKOUT_API_TIMEOUT as Millisecond;
+const RETRY_NUMBERS_NORMAL= getConfigOrThrow().CHECKOUT_API_RETRY_NUMBERS_NORMAL as Millisecond;
+const EXPONENT = getConfigOrThrow().CHECKOUT_API_RETRY_NUMBERS_NORMAL as Millisecond;
 
 export function retryingFetch(
   fetchApi: typeof fetch,
@@ -118,9 +120,19 @@ export const constantPollingWithPromisePredicateFetch = (
   const abortableFetch = AbortableFetch((global as any).fetch);
   const timeoutFetch = toFetch(setFetchTimeout(timeout, abortableFetch));
 
-  // use a constant backoff
-  const constantBackoff = () => delay as Millisecond;
-  const retryLogic = withRetries<Error, Response>(retries, constantBackoff);
+  // use a exponetial backoff
+  let attempt = 0;
+
+  const variableBackoff = (): Millisecond => {
+    if (attempt < RETRY_NUMBERS_NORMAL) {
+      attempt++;
+      return delay as Millisecond;
+    }
+    const backoffDelay = delay * Math.pow(EXPONENT, attempt - 2);
+    attempt++;
+    return backoffDelay as Millisecond;
+  };
+  const retryLogic = withRetries<Error, Response>(retries, variableBackoff);
 
   // use to define transient errors
   const retryWithPromisePredicate = retryLogicOnPromisePredicate(
