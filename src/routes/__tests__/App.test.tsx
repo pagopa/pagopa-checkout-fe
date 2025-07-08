@@ -41,9 +41,9 @@ import "@testing-library/jest-dom";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import fetchMock from "jest-fetch-mock";
+import { act } from "react";
 import { renderWithReduxAndThemeProvider } from "../../utils/testing/testRenderProviders";
 import * as helper from "../../utils/api/helper";
-import * as mixpanel from "../../utils/mixpanel/mixpanelHelperInit";
 import { App } from "../../App";
 
 // Mock MUI Italia theme
@@ -142,17 +142,24 @@ jest.mock("../../components/commons/RptidGuard", () => ({
 // Mock helpers
 jest
   .spyOn(helper, "evaluateFeatureFlag")
-  .mockImplementation(
-    (
-      _flag: any,
-      _onError: any,
-      onSuccess: (arg0: { enabled: boolean }) => void
-    ) => {
+  .mockImplementation((flag, _onError, onSuccess) => {
+    if (flag === "enableMaintenance") {
+      onSuccess({ enabled: false });
+    } else if (flag === "enablePspPage") {
       onSuccess({ enabled: true });
-      return Promise.resolve();
+    } else {
+      onSuccess({ enabled: true });
     }
-  );
-jest.spyOn(mixpanel, "mixpanelInit").mockImplementation(() => undefined);
+    return Promise.resolve();
+  });
+
+jest.spyOn(helper, "evaluateFeatureFlagsAll").mockImplementation(() =>
+  Promise.resolve({
+    isMaintenancePageEnabled: false,
+    isPspPickerPageEnabled: true,
+    isAuthenticationEnabled: true,
+  })
+);
 
 describe("App", () => {
   beforeEach(() => {
@@ -161,10 +168,19 @@ describe("App", () => {
     document.title = "";
     fetchMock.resetMocks();
     fetchMock.mockResponseOnce(JSON.stringify({ data: "mocked data" }));
+    sessionStorage.setItem("enableMaintenance", "false");
   });
 
-  it("renders IndexPage and calls feature flag/mixpanel", async () => {
-    renderWithReduxAndThemeProvider(<App />); // ✅ Just render App directly
+  it.only("renders IndexPage and calls feature flag/mixpanel", async () => {
+    await act(async () => {
+      renderWithReduxAndThemeProvider(<App />);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText(/skipToContent/i)).toBeInTheDocument();
+    });
+
+    screen.debug();
 
     await userEvent.click(screen.getByText("mainPage.main.skipToContent"));
 

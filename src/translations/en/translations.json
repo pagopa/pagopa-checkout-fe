@@ -143,6 +143,7 @@
       "help": "Help",
       "privacy": "Privacy",
       "terms": "Terms",
+      "platformStatus": "Platform status",
       "pagoPA": "Visit the pagoPA website"
     },
     "header": {
@@ -473,6 +474,17 @@
       "submitButton": "Log out",
       "cancelButton": "Cancel"
     }
+  },
+  "ScheduledMaintenanceBanner": {
+    "titleKey": "Scheduled maintenance",
+    "bodyKey": "It will not be possible to make payments from 02:00 to 08:00 on 9 July 2025.",
+    "linkTextKey": "More information"
+  },
+  "maintenancePage": {
+    "title": "We're working for you",
+    "subtitle": "pagoPa is currently not available due to scheduled maintenance."   ,
+    "closeButton": "Close",
+    "detailsButton": "Find out more"
   },
   "__variant-name": "Inglese",
   "__variant-description": ""

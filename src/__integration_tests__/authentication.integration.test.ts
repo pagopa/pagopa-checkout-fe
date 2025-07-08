@@ -425,6 +425,7 @@ describe("Checkout authentication tests", () => {
 
     //go to payment methods page
     await page.goto(PAYMENT_METHODS_PAGE);
+    await page.waitForSelector("#errorTitle");
     expect(page.url()).toContain("/autenticazione-scaduta");
   });
 
@@ -466,6 +467,7 @@ describe("Checkout authentication tests", () => {
 
     //go to payment methods page and select card payment
     await page.goto(INSERT_CARD_PAGE);
+    await page.waitForSelector("#errorTitle");
     expect(page.url()).toContain("/autenticazione-scaduta");
   });
 
@@ -625,7 +627,7 @@ describe("Logout tests", () => {
     console.log("Login completed");
     const userButton = await getUserButton();
     await userButton.click();
-    const logoutButton = await page.waitForXPath('/html/body/div[3]/div[3]/ul/li');
+    const logoutButton = await page.waitForSelector('#logout-button-icon');
     console.log("wait for logout button");
     await logoutButton.click();
     const confirmButton = await page.waitForSelector("#logoutModalConfirmButton");

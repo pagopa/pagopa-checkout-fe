@@ -143,6 +143,7 @@
       "help": "Pomoč",
       "privacy": "Zasebnost",
       "terms": "Pogoji",
+      "platformStatus":"Stanje platforme",
       "pagoPA": "Obiščite spletno stran pagoPA"
     },
     "header": {
@@ -476,6 +477,17 @@
       "submitButton": "Izhod",
       "cancelButton": "Prekliči"
     }
+  },
+  "ScheduledMaintenanceBanner": {
+    "titleKey": "Načrtovano vzdrževanje",
+    "bodyKey": "Plačilo ne bo mogoče od 02:00 do 08:00 dne 9. julija 2025.",
+    "linkTextKey": "Več informacij"
+  },
+  "maintenancePage": {
+    "title": "Delamo za vas",
+    "subtitle": "pagoPa trenutno ni na voljo zaradi načrtovanega vzdrževanja."   ,
+    "closeButton": "Zapri",
+    "detailsButton": "Izvedi več"
   },
   "__variant-name": "Sloveno",
   "__variant-description": ""

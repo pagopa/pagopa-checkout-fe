@@ -87,9 +87,8 @@ export const checkErrorOnCardDataFormSubmit = async (
 };
 
 export const selectKeyboardForm = async () => {
-  const selectFormXPath =
-    "/html/body/div[1]/div/main/div/div[2]/div[2]/div[1]";
-  const selectFormBtn = await page.waitForXPath(selectFormXPath);
+  const selectFormSelector = "[data-testid='KeyboardIcon']";
+  const selectFormBtn = await page.waitForSelector(selectFormSelector);
   await selectFormBtn.click();
 };
 
@@ -288,7 +287,7 @@ export const fillCardDataForm = async (cardData) => {
     await page.click(holderNameInput, { clickCount: 3 });
     await page.keyboard.type(cardData.holderName);
     completed = !!!(await page.$(disabledContinueBtnXPath));
-    await page.waitForTimeout(1_000);
+    await new Promise(resolve => setTimeout(resolve, 1000)); 
   }
   const continueBtn = await page.waitForSelector(continueBtnXPath, {
     visible: true,
@@ -303,7 +302,7 @@ export const cancelPaymentAction = async () => {
   await paymentCheckPageButtonCancel.click();
   const cancPayment = await page.waitForSelector("#confirm", {visible: true});
   await cancPayment.click();
-  await page.waitForNavigation();
+  await page.waitForSelector("#redirect-button");
 };
 
 export const cancelPaymentOK = async (
@@ -313,7 +312,7 @@ export const cancelPaymentOK = async (
   cardData
 ) => {
   const resultMessageXPath =
-    "/html/body/div[1]/div/main/div/div/div/div[1]/div";
+    "#main_content > div > div > div > div.MuiBox-root.css-5vb4lz > div";
   await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
   const paymentCheckPageButtonCancel = await page.waitForSelector(
     "#paymentCheckPageButtonCancel"
@@ -325,7 +324,7 @@ export const cancelPaymentOK = async (
   // this new timeout is needed for how react 18 handles the addition of animated content 
   // to the page. Without it, the resultMessageXPath never resolves
   await new Promise((r) => setTimeout(r, 200));
-  const message = await page.waitForXPath(resultMessageXPath);
+  const message = await page.waitForSelector(resultMessageXPath);
   return await message.evaluate((el) => el.textContent);
 };
 
@@ -343,12 +342,6 @@ export const cancelPaymentKO = async (noticeCode, fiscalCode, email) => {
   return await message.evaluate((el) => el.textContent);
 };
 
-export const closeErrorModal = async () => {
-  const closeErrorBtn = await page.waitForXPath(
-    "/html/body/div[6]/div[3]/div/div/div[2]/div[1]/button"
-  );
-  await closeErrorBtn.click();
-};
 
 export const selectLanguage = async (language) => {
   await page.select("#languageMenu", language);

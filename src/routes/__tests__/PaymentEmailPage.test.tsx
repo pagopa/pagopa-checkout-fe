@@ -3,7 +3,9 @@ import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { act, fireEvent, screen } from "@testing-library/react";
 import * as router from "react-router";
+import fetchMock from "jest-fetch-mock";
 import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders";
+import * as helper from "../../utils/api/helper";
 import PaymentEmailPage from "../PaymentEmailPage";
 import { mixpanel } from "../../utils/mixpanel/mixpanelHelperInit";
 import {
@@ -13,7 +15,27 @@ import {
   MixpanelEventType,
   MixpanelFlow,
 } from "../../utils/mixpanel/mixpanelEvents";
+import {
+  getSessionItem,
+  SessionItems,
+} from "../../utils/storage/sessionStorage";
+import { getCartResponseMock } from "../../utils/testing/testUtils";
 import { paymentInfo } from "./_model";
+
+jest.mock("../../utils/config/config", () => ({
+  getConfigOrThrow: jest.fn((key) => {
+    const configValues = {
+      CHECKOUT_API_TIMEOUT: 1000,
+    } as any;
+    if (key === undefined) {
+      return configValues;
+    }
+    return configValues[key] || "";
+  }),
+  isTestEnv: jest.fn(() => false),
+  isDevEnv: jest.fn(() => false),
+  isProdEnv: jest.fn(() => true),
+}));
 
 // Mock translations
 jest.mock("react-i18next", () => ({
@@ -55,15 +77,34 @@ jest.mock("../../utils/mixpanel/mixpanelHelperInit", () => ({
   },
 }));
 
+jest.mock("../../utils/api/helper", () => ({
+  evaluateFeatureFlag: jest.fn(),
+}));
+
 jest.mock("../../utils/mixpanel/mixpanelTracker", () => ({
   getDataEntryTypeFromSessionStorage: jest.fn(() => "manual"),
   getFlowFromSessionStorage: jest.fn(() => "cart"),
   getPaymentInfoFromSessionStorage: jest.fn(() => paymentInfo),
 }));
 
+jest
+  .spyOn(helper, "evaluateFeatureFlag")
+  .mockImplementation(
+    (
+      _flag: any,
+      _onError: any,
+      onSuccess: (arg0: { enabled: boolean }) => void
+    ) => {
+      onSuccess({ enabled: true });
+      return Promise.resolve();
+    }
+  );
+
 describe("PaymentEmailPage", () => {
   beforeEach(() => {
     jest.spyOn(router, "useNavigate").mockImplementation(() => navigate);
+    fetchMock.resetMocks();
+    fetchMock.mockResponseOnce(JSON.stringify({ data: "mocked data" }));
   });
   test("test fill email", async () => {
     const { container } = renderWithReduxProvider(
@@ -153,5 +194,67 @@ describe("PaymentEmailPage", () => {
         expiration_date: "2021-07-31",
       }
     );
+  });
+
+  test.only("should show banner if sessionStorage returns 'true'", () => {
+    (helper.evaluateFeatureFlag as jest.Mock).mockImplementation(
+      (_flag, _onError, onSuccess) => {
+        onSuccess({ enabled: true });
+        return Promise.resolve();
+      }
+    );
+    (getSessionItem as jest.Mock).mockImplementation((key) => {
+      if (key === SessionItems.enableScheduledMaintenanceBanner) {
+        return "true";
+      }
+      if (key === SessionItems.cart) {
+        return getCartResponseMock;
+      }
+      if (key === SessionItems.useremail) {
+        return "test@mail.com";
+      }
+      return null;
+    });
+
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentEmailPage />
+      </MemoryRouter>
+    );
+
+    expect(
+      screen.getByText("ScheduledMaintenanceBanner.titleKey")
+    ).toBeInTheDocument();
+  });
+
+  test("should NOT show banner if sessionStorage returns 'false'", () => {
+    (helper.evaluateFeatureFlag as jest.Mock).mockImplementation(
+      (_flag, _onError, onSuccess) => {
+        onSuccess({ enabled: false });
+        return Promise.resolve();
+      }
+    );
+    (getSessionItem as jest.Mock).mockImplementation((key) => {
+      if (key === SessionItems.enableScheduledMaintenanceBanner) {
+        return "false";
+      }
+      if (key === SessionItems.cart) {
+        return getCartResponseMock;
+      }
+      if (key === SessionItems.useremail) {
+        return "test@mail.com";
+      }
+      return null;
+    });
+
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentEmailPage />
+      </MemoryRouter>
+    );
+
+    expect(
+      screen.queryByText("ScheduledMaintenanceBanner.titleKey")
+    ).not.toBeInTheDocument();
   });
 });

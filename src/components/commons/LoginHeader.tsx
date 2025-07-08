@@ -9,6 +9,7 @@ import { Box } from "@mui/material";
 import { pipe } from "fp-ts/function";
 import * as E from "fp-ts/Either";
 import * as O from "fp-ts/Option";
+import { selectMaintenanceEnabled } from "../../redux/slices/maintanancePage";
 import { UserLogout } from "../../components/modals/UserLogout";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks/hooks";
 import {
@@ -64,6 +65,9 @@ export default function LoginHeader() {
     CheckoutRoutes.SCEGLI_METODO,
   ];
   const loggedUser = useAppSelector(getLoggedUser);
+  const maintenanceEnabled = useAppSelector(
+    selectMaintenanceEnabled
+  ).maintenanceEnabled;
   const ref = React.useRef<ReCAPTCHA>(null);
   const [loading, setLoading] = React.useState(false);
   const [isLoginButtonReady, setLoginButtonReady] = React.useState(false);
@@ -77,6 +81,7 @@ export default function LoginHeader() {
   // the login button should be visible if user is already logged in
   // and user is on pages where he cannot do login
   const showLoginButton = (): boolean =>
+    !maintenanceEnabled &&
     isLoginButtonReady &&
     (loginRoutes.includes(currentPath) || loggedUser.userInfo != null);
 
@@ -225,7 +230,7 @@ export default function LoginHeader() {
   }, []);
 
   return (
-    <Box component="div" id="login-header">
+    <Box component="div" data-testid="login-header" id="login-header">
       {loading && <CheckoutLoader />}
       <HeaderAccount
         rootLink={pagoPALink}

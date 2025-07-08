@@ -144,6 +144,7 @@
       "help": "Aiuto",
       "privacy": "Privacy",
       "terms": "Condizioni",
+      "platformStatus": "Stato della piattaforma",
       "pagoPA": "Visita il sito pagoPA"
     },
     "header": {
@@ -477,5 +478,16 @@
       "submitButton": "Esci",
       "cancelButton": "Annulla"
     }
+  },
+  "ScheduledMaintenanceBanner": {
+    "titleKey": "Manutenzione programmata",
+    "bodyKey": "Non sarà possibile pagare dalle ore 02:00 alle ore 08:00 del 9 luglio 2025.",
+    "linkTextKey": "Maggiori informazioni"
+  },
+  "maintenancePage": {
+    "title": "Stiamo lavorando per te",
+    "subtitle": "pagoPa non è al momento disponibile a causa di una manutenzione programmata."   ,
+    "closeButton": "Chiudi",
+    "detailsButton": "Scopri di più"
   }
 }

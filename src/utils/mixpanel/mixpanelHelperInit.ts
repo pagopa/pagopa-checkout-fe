@@ -1,9 +1,11 @@
-import { init, track, Mixpanel } from "mixpanel-browser";
+import { init, track, Mixpanel, get_distinct_id } from "mixpanel-browser";
+import * as E from "fp-ts/Either";
+import { pipe } from "fp-ts/function";
 import { getConfigOrThrow } from "../config/config";
 
 const ENV = getConfigOrThrow().CHECKOUT_ENV;
 
-export const mixpanelInit = function (): void {
+const mixpanelInit = function (): void {
   if (ENV === "DEV") {
     // eslint-disable-next-line no-console
     console.log("Mixpanel events mock on console log.");
@@ -25,6 +27,10 @@ export const mixpanelInit = function (): void {
 
 export const mixpanel = {
   track(event_name: string, properties?: any): void {
+    if (!isMixpanelReady()) {
+      mixpanelInit();
+    }
+
     if (ENV === "DEV") {
       // eslint-disable-next-line no-console
       console.log(event_name, properties);
@@ -42,3 +48,10 @@ export const mixpanel = {
     }
   },
 };
+
+const isMixpanelReady = (): boolean =>
+  pipe(
+    E.tryCatch(() => get_distinct_id(), E.toError),
+    E.map((id): boolean => typeof id === "string" && id.length > 0),
+    E.getOrElseW(() => false)
+  );

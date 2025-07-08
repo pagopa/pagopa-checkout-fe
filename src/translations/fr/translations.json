@@ -143,6 +143,7 @@
       "help": "Aide",
       "privacy": "Confidentialité",
       "terms": "Conditions",
+      "platformStatus": "Statut de la plateforme",
       "pagoPA": "Visiter le site pagoPA"
     },
     "header": {
@@ -475,6 +476,12 @@
       "submitButton": "Se déconnecter",
       "cancelButton": "Non, rester connecté"
     }
+  },
+   "maintenancePage": {
+    "title": "Nous travaillons pour vous",
+    "subtitle": "pagoPa n'est pas disponible pour le moment en raison d'une maintenance programmée."   ,
+    "closeButton": "Fermer",
+    "detailsButton": "En savoir plus"
   },
   "__variant-name": "Francese",
   "__variant-description": ""
