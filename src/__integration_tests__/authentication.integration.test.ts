@@ -47,10 +47,10 @@ const CHECKOUT_URL_AFTER_AUTHORIZATION = `http://localhost:1234/esito`;
 const VALID_NOTICE_CODE = "302016723749670000";
 
 
-jest.setTimeout(60000);
+jest.setTimeout(20000);
 jest.retryTimes(3);
-page.setDefaultNavigationTimeout(30000);
-page.setDefaultTimeout(30000);
+page.setDefaultNavigationTimeout(15000);
+page.setDefaultTimeout(15000);
 
 beforeAll(async () => {
   await page.goto(CHECKOUT_URL);
@@ -338,6 +338,7 @@ describe("Checkout authentication tests", () => {
 
     //reload page in order to read authToken into sessionStorage
     await page.reload();
+    await new Promise((r) => setTimeout(r, 1000));
 
     //Wait return to error page
     expect(page.url()).toContain("/errore");
