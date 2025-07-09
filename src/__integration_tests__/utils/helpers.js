@@ -180,34 +180,38 @@ export const fillAndSubmitCardDataForm = async (
 };
 
 export const tryHandlePspPickerPage = async ()=>{
+
+  const enablePspPage = await page.evaluate(() => localStorage.getItem('enablePspPage'));
+  if (enablePspPage === "true") await selectPspOnPspPickerPage();
+
   // wait for page to change, max wait time few seconds
   // this navigation will not happen in all test cases
   // so we don't want to waste too much time over it
-  try {
+  /*try {
     await page.waitForNavigation({ timeout: 3000 });
   } catch (error) {
     // If the navigation doesn't happen within 3000ms, just log and continue
     console.log("Navigation did not happen within 3000ms. Continuing test.");
-  }
+  }*/
 
   // this step needs to be skipped during tests
   // in which we trigger an error modal in the previous page
-  if(await page.url().includes("lista-psp")){
+  /*if(await page.url().includes("lista-psp")){
     await selectPspOnPspPickerPage();
-  }
+  }*/
 }
 
 export const selectPspOnPspPickerPage = async () => {
   try{
     const pspPickerRadio = await page.waitForSelector("#psp-radio-button-unchecked", {
-      visible: true, timeout: 500
+      visible: true
     });
     await pspPickerRadio.click();
-  
+
     const continueButton = await page.waitForSelector("#paymentPspListPageButtonContinue", {
-      visible: true, timeout: 500
+      visible: true
     });
-    
+
     await continueButton.click();
   }catch(e){
     console.log("Buttons not found: this is caused by PSP page immediately navigate to the summary page (if 1 psp available)");
