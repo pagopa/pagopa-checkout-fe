@@ -39,9 +39,6 @@ const navigateToFinalPage = async (lang, outcome) => {
         localStorage.setItem("i18nextLng", language);
     }, lang);
 
-    await page.waitForFunction("sessionStorage.getItem('transaction') != null");
-    await page.waitForFunction("sessionStorage.getItem('useremail') != null");
-
     const url = `${CHECKOUT_ESITO_V2_BASE_URL}?t=1747230371951#transactionId=test&outcome=${outcome}${outcome === 0 ? '&totalAmount=12000&fees=15' : ''}`;
     await page.goto(url);
 
