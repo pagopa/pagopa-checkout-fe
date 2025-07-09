@@ -212,12 +212,13 @@ describe("Checkout authentication tests", () => {
 
     await fillPaymentNotificationForm(POST_AUTH_TOKEN_FAILS_503, VALID_FISCAL_CODE);
     await page.waitForNavigation();
-    await clickLoginButton();
+    await Promise.all([
+      page.waitForResponse(res => res.url().includes("/auth/users") && res.status() === 200),
+      clickLoginButton(),
+    ]);
+    await page.waitForNavigation();
 
-    await page.waitForNavigation();
-    await page.waitForNavigation();
     const currentUrl = await page.evaluate(() => location.href);
-
 
     expect(first503Response).toBe(true);
     expect(tokenCalls).toBe(2);
@@ -240,8 +241,10 @@ describe("Checkout authentication tests", () => {
 
     await fillPaymentNotificationForm(POST_AUTH_TOKEN_FAILS_504, VALID_FISCAL_CODE);
     await page.waitForNavigation();
-    await clickLoginButton();
-
+    await Promise.all([
+      page.waitForResponse(res => res.url().includes("/auth/users") && res.status() === 200),
+      clickLoginButton(),
+    ]);
     await page.waitForNavigation();
     await page.waitForNavigation();
 
@@ -268,8 +271,10 @@ describe("Checkout authentication tests", () => {
 
     await fillPaymentNotificationForm(POST_AUTH_TOKEN_FAILS_429, VALID_FISCAL_CODE);
     await page.waitForNavigation();
-    await clickLoginButton();
-
+    await Promise.all([
+      page.waitForResponse(res => res.url().includes("/auth/users") && res.status() === 200),
+      clickLoginButton(),
+    ]);
     await page.waitForNavigation();
     await page.waitForNavigation();
 
@@ -314,8 +319,10 @@ describe("Checkout authentication tests", () => {
       sessionStorage.setItem('authToken', 'auth-token-value');
     });
     //reload page in order to read authToken into sessionStorage
-    await page.reload();
-    
+    await Promise.all([
+      page.waitForResponse(res => res.url().includes(page.url()) && res.status() === 200),
+      page.reload(),
+    ]);
     //Check if user button is present into login header
     const userButton = await getUserButton();
     expect(userButton).toBeDefined();
@@ -323,10 +330,11 @@ describe("Checkout authentication tests", () => {
 
   it("Should redirect to error page receiving 401 from get user info on page refresh", async () => {
     //Do login
-    await clickLoginButton();
-
-    //Wait auth-callback page
-    await page.waitForNavigation();
+    await Promise.all([
+      page.waitForResponse(res => res.url().includes("/auth/users") && res.status() === 200),
+      clickLoginButton(),
+    ]);
+    //await page.waitForNavigation();
     //Wait return to main page
     await page.waitForNavigation();
     console.log("Login completed");
@@ -337,19 +345,20 @@ describe("Checkout authentication tests", () => {
     console.log("MockFlow setted with noticeCode: ", FAIL_GET_USERS_401);
 
     //reload page in order to read authToken into sessionStorage
-    await page.reload();
-    await new Promise((r) => setTimeout(r, 1000));
-
+    await Promise.all([
+      page.waitForResponse(res => res.url().includes(page.url()) && res.status() === 200),
+      page.reload()
+    ]);
     //Wait return to error page
     expect(page.url()).toContain("/errore");
   });
 
   it("Should redirect to error page receiving 500 from get user info on page refresh", async () => {
     //Do login
-    await clickLoginButton();
-
-    //Wait auth-callback page
-    await page.waitForNavigation();
+    await Promise.all([
+      page.waitForResponse(res => res.url().includes("/auth/users") && res.status() === 200),
+      clickLoginButton(),
+    ]);
     //Wait return to main page
     await page.waitForNavigation();
     console.log("Login completed");
@@ -360,7 +369,10 @@ describe("Checkout authentication tests", () => {
     console.log("MockFlow setted with noticeCode: ", FAIL_GET_USERS_500);
 
     //reload page in order to read authToken into sessionStorage
-    await page.reload();
+    await Promise.all([
+      page.waitForResponse(res => res.url().includes(page.url()) && res.status() === 200),
+      page.reload(),
+    ]);
     //wait for redirect to error page after retry
     await page.waitForNavigation();
 
@@ -370,10 +382,11 @@ describe("Checkout authentication tests", () => {
 
   it("Should correctly retrieve user info after login is completed on auth-callback page", async () => {
     //Login
-    await clickLoginButton();
-
-    //Wait auth-callback page
-    await page.waitForNavigation();
+    await Promise.all([
+      page.waitForResponse(res => res.url().includes("/auth/users") && res.status() === 200),
+      clickLoginButton(),
+    ]);
+    //await page.waitForNavigation();
     //Wait return to main page
     await page.waitForNavigation();
     console.log("Login completed");
@@ -507,10 +520,11 @@ describe("Checkout authentication tests", () => {
     await page.waitForNavigation();
 
     //Login
-    await clickLoginButton();
-
-    //Wait auth-callback page
-    await page.waitForNavigation();
+    await Promise.all([
+      page.waitForResponse(res => res.url().includes("/auth/users") && res.status() === 200),
+      clickLoginButton(),
+    ]);
+    //await page.waitForNavigation();
     //Wait return to main page
     await page.waitForNavigation();
     console.log("Login completed");
@@ -523,8 +537,11 @@ describe("Checkout authentication tests", () => {
     console.log("wait for logout button");
     await logoutButton.click();
     const confirmButton = await page.waitForSelector("#logoutModalConfirmButton");
-    await confirmButton.click();
-    await new Promise((r) => setTimeout(r, 500));
+
+    await Promise.all([
+      page.waitForResponse(res => res.url().includes("/auth/logout") && res.status() === 204),
+      confirmButton.click()
+    ]);
     console.log("Logout completed");
         
     expect(apiContainsXRptIdCount).toBe(expectedCount);
@@ -545,10 +562,11 @@ describe("Checkout authentication tests", () => {
     });
 
     //Login
-    await clickLoginButton();
-
-    //Wait auth-callback page
-    await page.waitForNavigation();
+    await Promise.all([
+      page.waitForResponse(res => res.url().includes("/auth/users") && res.status() === 200),
+      clickLoginButton(),
+    ]);
+    //await page.waitForNavigation();
     //Wait return to main page
     await page.waitForNavigation();
     console.log("Login completed");
@@ -582,10 +600,11 @@ describe("Checkout authentication tests", () => {
     });
 
     // Login
-    await clickLoginButton();
-
-    //Wait auth-callback page
-    await page.waitForNavigation();
+    await Promise.all([
+      page.waitForResponse(res => res.url().includes("/auth/users") && res.status() === 200),
+      clickLoginButton(),
+    ]);
+    //await page.waitForNavigation();
     //Wait return to main page
     await page.waitForNavigation();
     console.log("Login completed");
@@ -619,10 +638,11 @@ describe("Logout tests", () => {
     });
 
     //Login
-    await clickLoginButton();
-
-    //Wait auth-callback page
-    await page.waitForNavigation();
+    await Promise.all([
+      page.waitForResponse(res => res.url().includes("/auth/users") && res.status() === 200),
+      clickLoginButton(),
+    ]);
+    //await page.waitForNavigation();
     //Wait return to main page
     await page.waitForNavigation();
     console.log("Login completed");
@@ -632,8 +652,10 @@ describe("Logout tests", () => {
     console.log("wait for logout button");
     await logoutButton.click();
     const confirmButton = await page.waitForSelector("#logoutModalConfirmButton");
-    await confirmButton.click();
-    await new Promise((r) => setTimeout(r, 500));
+    await Promise.all([
+      page.waitForResponse(res => res.url().includes("/auth/logout") && res.status() === 204),
+      confirmButton.click()
+    ]);
     expect(logout204).toBe(true);
   });
 
@@ -652,10 +674,11 @@ describe("Logout tests", () => {
     });
 
     //Login
-    await clickLoginButton();
-
-    //Wait auth-callback page
-    await page.waitForNavigation();
+    await Promise.all([
+      page.waitForResponse(res => res.url().includes("/auth/users") && res.status() === 200),
+      clickLoginButton(),
+    ]);
+    //await page.waitForNavigation();
     //Wait return to main page
     await page.waitForNavigation();
     console.log("Login completed");
@@ -696,10 +719,11 @@ describe("Logout tests", () => {
     });
 
     //Login
-    await clickLoginButton();
-
-    //Wait auth-callback page
-    await page.waitForNavigation();
+    await Promise.all([
+      page.waitForResponse(res => res.url().includes("/auth/users") && res.status() === 200),
+      clickLoginButton(),
+    ]);
+    //await page.waitForNavigation();
     //Wait return to main page
     await page.waitForNavigation();
     console.log("Login completed");
@@ -739,10 +763,11 @@ describe("Logout tests", () => {
     });
 
     //Login
-    await clickLoginButton();
-
-    //Wait auth-callback page
-    await page.waitForNavigation();
+    await Promise.all([
+      page.waitForResponse(res => res.url().includes("/auth/users") && res.status() === 200),
+      clickLoginButton(),
+    ]);
+    //await page.waitForNavigation();
     //Wait return to main page
     await page.waitForNavigation();
     console.log("Login completed");
@@ -778,10 +803,11 @@ describe("Logout tests", () => {
     });
 
     //Login
-    await clickLoginButton();
-
-    //Wait auth-callback page
-    await page.waitForNavigation();
+    await Promise.all([
+      page.waitForResponse(res => res.url().includes("/auth/users") && res.status() === 200),
+      clickLoginButton(),
+    ]);
+    //await page.waitForNavigation();
     //Wait return to main page
     await page.waitForNavigation();
     console.log("Login completed");
@@ -816,10 +842,11 @@ describe("Logout tests", () => {
     });
 
     //Login
-    await clickLoginButton();
-
-    //Wait auth-callback page
-    await page.waitForNavigation();
+    await Promise.all([
+      page.waitForResponse(res => res.url().includes("/auth/users") && res.status() === 200),
+      clickLoginButton(),
+    ]);
+    //await page.waitForNavigation();
     //Wait return to main page
     await page.waitForNavigation();
     console.log("Login completed");
@@ -853,10 +880,11 @@ describe("Logout tests", () => {
     });
 
     //Login
-    await clickLoginButton();
-
-    //Wait auth-callback page
-    await page.waitForNavigation();
+    await Promise.all([
+      page.waitForResponse(res => res.url().includes("/auth/users") && res.status() === 200),
+      clickLoginButton(),
+    ]);
+    //await page.waitForNavigation();
     //Wait return to main page
     await page.waitForNavigation();
     console.log("Login completed");
@@ -884,10 +912,11 @@ describe("Logout tests", () => {
     });
 
     //Login
-    await clickLoginButton();
-
-    //Wait auth-callback page
-    await page.waitForNavigation();
+    await Promise.all([
+      page.waitForResponse(res => res.url().includes("/auth/users") && res.status() === 200),
+      clickLoginButton(),
+    ]);
+    //await page.waitForNavigation();
     //Wait return to main page
     await page.waitForNavigation();
     console.log("Login completed");
@@ -919,10 +948,11 @@ describe("Logout tests", () => {
     await fillPaymentNotificationForm(VALID_RPTID, VALID_FISCAL_CODE, false);
 
     //Login
-    await clickLoginButton();
-
-    //Wait auth-callback page
-    await page.waitForNavigation();
+    await Promise.all([
+      page.waitForResponse(res => res.url().includes("/auth/users") && res.status() === 200),
+      clickLoginButton(),
+    ]);
+    //await page.waitForNavigation();
     //Wait return to main page
     await page.waitForNavigation();
     console.log("Login completed");
