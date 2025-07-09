@@ -72,10 +72,10 @@ const PSP_NOT_FOUND_FAIL = "302016723749670076";
  * Increase default test timeout (120000ms)
  * to support entire payment flow
  */
-jest.setTimeout(80000);
+jest.setTimeout(20000);
 jest.retryTimes(3);
-page.setDefaultNavigationTimeout(40000);
-page.setDefaultTimeout(40000);
+page.setDefaultNavigationTimeout(15000);
+page.setDefaultTimeout(15000);
 
 beforeAll(async () => {
   await page.goto(CHECKOUT_URL);
