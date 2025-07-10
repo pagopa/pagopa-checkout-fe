@@ -336,7 +336,7 @@ describe("Checkout authentication tests", () => {
 
     //reload page in order to read authToken into sessionStorage
     await page.reload();
-
+    await new Promise(resolve => setTimeout(resolve, 1000));
     //Wait return to error page
     expect(page.url()).toContain("/errore");
   });
