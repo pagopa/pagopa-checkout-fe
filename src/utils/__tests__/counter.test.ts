@@ -11,7 +11,7 @@ describe("createCounter", () => {
   };
 
   beforeEach(() => {
-    sessionStorage.clear()
+    sessionStorage.clear();
     counter = createCounter();
   });
 
@@ -60,7 +60,6 @@ describe("createCounter", () => {
   });
 });
 
-
 describe("createCounter with sessionStorage", () => {
   const storageKey = "testCounterKey";
 
@@ -96,7 +95,7 @@ describe("createCounter with sessionStorage", () => {
     const storageKey = "testCounterKey";
     let counter = createCounter(0, storageKey);
     counter.increment(7);
-    //Simulate a page refresh with re-create the counter using the same storage key
+    // Simulate a page refresh with re-create the counter using the same storage key
     counter = createCounter(0, storageKey);
     expect(counter.getValue()).toBe(7);
   });
@@ -105,12 +104,12 @@ describe("createCounter with sessionStorage", () => {
     const initialValue = 5;
 
     const counter1 = createCounter(initialValue, storageKey);
-    counter1.increment(3); 
+    counter1.increment(3);
     expect(counter1.getValue()).toBe(8);
     sessionStorage.clear();
 
     expect(sessionStorage.getItem(storageKey)).toBeNull();
     const counter2 = createCounter(initialValue, storageKey);
-    expect(counter2.getValue()).toBe(initialValue); 
+    expect(counter2.getValue()).toBe(initialValue);
   });
 });

@@ -4,12 +4,14 @@
  * @param {string} [storageKey='counterPolling'] - The initial value of sessionStorage key. Deafaults to counterPolling if not provided
  * @returns {Object} - Counter object with methods.
  */
-export const createCounter = ( initialValue = 0, storageKey = "counterPolling",) => {
-
+export const createCounter = (
+  initialValue = 0,
+  storageKey = "counterPolling"
+) => {
   const savedValue = sessionStorage.getItem(storageKey);
   // eslint-disable-next-line functional/no-let
   let counter = savedValue !== null ? Number(savedValue) : initialValue;
-  
+
   const saveValue = () => {
     sessionStorage.setItem(storageKey, counter.toString());
   };
