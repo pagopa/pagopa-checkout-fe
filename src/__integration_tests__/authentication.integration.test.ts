@@ -601,7 +601,7 @@ describe("Checkout authentication tests", () => {
 
 });
 
-describe.only("Logout tests", () => {
+describe("Logout tests", () => {
 
   it("Should invoke logout with success", async () => {
     await selectLanguage("it");
