@@ -8,6 +8,7 @@ export const payNotice = async (
   const payBtnSelector = "#paymentCheckPageButtonPay";
   const resultTitleSelector = "#responsePageMessageTitle";
   await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
+  await tryHandlePspPickerPage();
   const payBtn = await page.waitForSelector(payBtnSelector);
   await payBtn.click();
   await page.waitForNavigation();
@@ -176,7 +177,7 @@ export const fillAndSubmitCardDataForm = async (
   await fillEmailForm(email);
   await choosePaymentMethod("CP");
   await fillCardDataForm(cardData);
-  await tryHandlePspPickerPage();
+  //await tryHandlePspPickerPage();
 };
 
 export const tryHandlePspPickerPage = async ()=>{

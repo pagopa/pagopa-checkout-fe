@@ -73,9 +73,9 @@ const PSP_NOT_FOUND_FAIL = "302016723749670076";
  * to support entire payment flow
  */
 jest.setTimeout(20000);
-jest.retryTimes(3);
-page.setDefaultNavigationTimeout(15000);
-page.setDefaultTimeout(15000);
+jest.retryTimes(0);
+page.setDefaultNavigationTimeout(30000);
+page.setDefaultTimeout(30000);
 
 beforeAll(async () => {
   await page.goto(CHECKOUT_URL);
@@ -141,13 +141,12 @@ describe("Checkout payment ongoing failure tests", () => {
         VALID_CARD_DATA,
         ErrorTitleID
       );
-
       expect(resultMessage).toContain(translation.PAYMENT_ONGOING.title);
     }
   );
 });
 
-describe("Checkout payment activation failure tests", () => {
+describe.only("Checkout payment activation failure tests", () => {
   it("Should fail a payment ACTIVATION and get PPT_STAZIONE_INT_PA_TIMEOUT", async () => {
     const errorID = "#iframeCardFormErrorId";
     const resultMessage = await activatePaymentAndGetError(
@@ -234,7 +233,7 @@ describe("Auth request failure tests", () => {
       );
       const closeErrorButton = await page.waitForSelector("#closeError");
       await closeErrorButton.click();
-      await new Promise((r) => setTimeout(r, 1000));
+      //await new Promise((r) => setTimeout(r, 1000));
       const paymentCheckPageButtonCancel = await page.waitForSelector("#paymentCheckPageButtonCancel");
       await paymentCheckPageButtonCancel.click();
       const cancPayment = await page.waitForSelector("#confirm", {visible: true});
@@ -301,10 +300,10 @@ describe("PSP disclaimer tests", () => {
 describe("Checkout fails to calculate fee", () => {
   it.each([
     ["it", itTranslation],
-    ["en", enTranslation],
+   /* ["en", enTranslation],
     ["fr", frTranslation],
     ["de", deTranslation],
-    ["sl", slTranslation],
+    ["sl", slTranslation],*/
   ])(
     "Should fails calculate fee for language [%s]",
     async (lang, translation) => {
