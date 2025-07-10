@@ -69,10 +69,10 @@ describe("Check outcome for response page V2", () => {
     ]).forEach(outcome => {
         it.each([
             ["it", itTranslation],
-            /*["en", enTranslation],
+            ["en", enTranslation],
             ["fr", frTranslation],
             ["de", deTranslation],
-            ["sl", slTranslation]*/
+            ["sl", slTranslation]
         ])(`Show outcome ${outcome} for language [%s]`, async (lang, translation) => {
             var message = await navigateToFinalPage(lang, outcome);
 
