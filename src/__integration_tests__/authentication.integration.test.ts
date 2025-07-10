@@ -323,10 +323,8 @@ describe("Checkout authentication tests", () => {
     //Do login
     await clickLoginButton();
 
-    //Wait auth-callback page
-    await page.waitForNavigation();
-    //Wait return to main page
-    await page.waitForNavigation();
+    await page.waitForSelector('button[aria-label="party-menu-button"]');
+
     console.log("Login completed");
 
     //set flow error case
@@ -336,7 +334,7 @@ describe("Checkout authentication tests", () => {
 
     //reload page in order to read authToken into sessionStorage
     await page.reload();
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await page.waitForSelector("#koPageBody");
     //Wait return to error page
     expect(page.url()).toContain("/errore");
   });
@@ -506,10 +504,7 @@ describe("Checkout authentication tests", () => {
     //Login
     await clickLoginButton();
 
-    //Wait auth-callback page
-    await page.waitForNavigation();
-    //Wait return to main page
-    await page.waitForNavigation();
+    await page.waitForSelector('button[aria-label="party-menu-button"]');
     console.log("Login completed");
 
     //Logout
@@ -521,7 +516,8 @@ describe("Checkout authentication tests", () => {
     await logoutButton.click();
     const confirmButton = await page.waitForSelector("#logoutModalConfirmButton");
     await confirmButton.click();
-    await new Promise((r) => setTimeout(r, 500));
+    await page.waitForSelector('button[title="Accedi"]');
+    // await new Promise((r) => setTimeout(r, 500));
     console.log("Logout completed");
         
     expect(apiContainsXRptIdCount).toBe(expectedCount);
