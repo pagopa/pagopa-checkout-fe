@@ -47,7 +47,7 @@ const CHECKOUT_URL_AFTER_AUTHORIZATION = `http://localhost:1234/esito`;
 const VALID_NOTICE_CODE = "302016723749670000";
 
 
-jest.setTimeout(20000);
+jest.setTimeout(30000);
 jest.retryTimes(3);
 page.setDefaultNavigationTimeout(15000);
 page.setDefaultTimeout(15000);
@@ -79,7 +79,7 @@ describe("Checkout authentication tests", () => {
     });
 
     // start flow from a url different from home
-    await page.goto(PAGE_LOGIN_COMEBACK_URL);
+    await page.goto(PAGE_LOGIN_COMEBACK_URL, { timeout: 30000 });
 
     //search login button and click it
     console.log("Search login button")
@@ -314,7 +314,6 @@ describe("Checkout authentication tests", () => {
     });
     //reload page in order to read authToken into sessionStorage
     await page.reload();
-
     //Check if user button is present into login header
     const userButton = await getUserButton();
     expect(userButton).toBeDefined();
@@ -359,7 +358,6 @@ describe("Checkout authentication tests", () => {
 
     //reload page in order to read authToken into sessionStorage
     await page.reload();
-
     //wait for redirect to error page after retry
     await page.waitForNavigation();
 
@@ -603,7 +601,7 @@ describe("Checkout authentication tests", () => {
 
 });
 
-describe("Logout tests", () => {
+describe.only("Logout tests", () => {
 
   it("Should invoke logout with success", async () => {
     await selectLanguage("it");

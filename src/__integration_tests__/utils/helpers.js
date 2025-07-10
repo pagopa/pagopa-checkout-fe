@@ -348,6 +348,7 @@ export const cancelPaymentKO = async (noticeCode, fiscalCode, email) => {
 
 
 export const selectLanguage = async (language) => {
+  await page.waitForSelector("#languageMenu");
   await page.select("#languageMenu", language);
 };
 
