@@ -55,7 +55,7 @@ describe("Check outcome for response page V2", () => {
     Array.from([
         0,
         1,
-       /* 2,
+        2,
         3,
         4,
         7,
@@ -65,7 +65,7 @@ describe("Check outcome for response page V2", () => {
         25,
         116,
         117,
-        121*/
+        121
     ]).forEach(outcome => {
         it.each([
             ["it", itTranslation],
