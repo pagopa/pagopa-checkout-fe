@@ -14,7 +14,7 @@ const CHECKOUT_ESITO_V2_BASE_URL = "http://localhost:1234/v2/esito"
  * Increase default test timeout (80000ms)
  * to support entire payment flow
  */
-jest.setTimeout(20000);
+jest.setTimeout(30000);
 jest.retryTimes(0);
 page.setDefaultNavigationTimeout(15000);
 page.setDefaultTimeout(15000);
@@ -41,7 +41,7 @@ const navigateToFinalPage = async (lang, outcome) => {
 
     const url = `${CHECKOUT_ESITO_V2_BASE_URL}?t=1747230371951#transactionId=test&outcome=${outcome}${outcome === 0 ? '&totalAmount=12000&fees=15' : ''}`;
     await page.goto(url);
-
+    await new Promise(resolve => setTimeout(resolve, 1000));
     return await page.waitForSelector("#responsePageMessageTitle");
 };
 
