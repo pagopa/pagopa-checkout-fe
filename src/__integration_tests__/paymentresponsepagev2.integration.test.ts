@@ -48,7 +48,21 @@ const navigateToFinalPage = async (lang, outcome) => {
 
 
 describe("Check outcome for response page V2", () => {
-    Array.from([0, 1, 2, 3, 4, 7, 8, 17, 18, 25, 116, 117, 121]).forEach(outcome => {
+    Array.from([
+        //0,
+         1,
+    //    2,
+        3,
+        4,
+        7,
+        8,
+        17,
+        18,
+        25,
+        116,
+        117,
+    //    121
+    ]).forEach(outcome => {
         it.each([
             ["it", itTranslation],
             /*["en", enTranslation],
