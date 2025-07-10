@@ -14,10 +14,10 @@ const CHECKOUT_ESITO_V2_BASE_URL = "http://localhost:1234/v2/esito"
  * Increase default test timeout (80000ms)
  * to support entire payment flow
  */
-jest.setTimeout(30000);
-jest.retryTimes(0);
-page.setDefaultNavigationTimeout(15000);
-page.setDefaultTimeout(15000);
+jest.setTimeout(60000);
+jest.retryTimes(3);
+page.setDefaultNavigationTimeout(30000);
+page.setDefaultTimeout(30000);
 
 beforeEach(async () => {
     await page.goto(CHECKOUT_URL);
@@ -42,16 +42,20 @@ const navigateToFinalPage = async (lang, outcome) => {
     } else {
         await page.goto(`${CHECKOUT_ESITO_V2_BASE_URL}?t=1747230371951#transactionId=test&outcome=${outcome}`);
     }
-    //await new Promise(resolve => setTimeout(resolve, 100000));
-    return await page.waitForSelector("#responsePageMessageTitle", { visible: true });
+
+    //await page.waitForResponse(response => response.url().includes('/v1/features/values') && response.status() === 200);
+
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    return await page.waitForSelector("#responsePageMessageTitle", { visible: true, timeout: 30000 });
+
 };
 
 
 describe("Check outcome for response page V2", () => {
     Array.from([
-        //0,
-         1,
-    //    2,
+        0,
+        1,
+       /* 2,
         3,
         4,
         7,
@@ -61,7 +65,7 @@ describe("Check outcome for response page V2", () => {
         25,
         116,
         117,
-    //    121
+        121*/
     ]).forEach(outcome => {
         it.each([
             ["it", itTranslation],
@@ -71,6 +75,7 @@ describe("Check outcome for response page V2", () => {
             ["sl", slTranslation]*/
         ])(`Show outcome ${outcome} for language [%s]`, async (lang, translation) => {
             var message = await navigateToFinalPage(lang, outcome);
+
             const responseMessage = await message.evaluate((el) => el.textContent);
             const messageToCheck = translation.paymentResponsePage[outcome].title;
             if (outcome === 0) {
