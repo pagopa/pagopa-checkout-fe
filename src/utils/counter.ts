@@ -1,11 +1,21 @@
 /**
  * Creates a counter object with initial value.
  * @param {number} [initialValue=0] - The initial value of the counter. Defaults to 0 if not provided.
+ * @param {string} [storageKey='counterPolling'] - The initial value of sessionStorage key. Deafaults to counterPolling if not provided
  * @returns {Object} - Counter object with methods.
  */
-export const createCounter = (initialValue = 0) => {
+export const createCounter = (
+  initialValue = 0,
+  storageKey = "counterPolling"
+) => {
+  const savedValue = sessionStorage.getItem(storageKey);
+  const parsed = Number(savedValue);
   // eslint-disable-next-line functional/no-let
-  let counter = initialValue;
+  let counter = Number.isFinite(parsed) ? parsed : initialValue;
+
+  const saveValue = () => {
+    sessionStorage.setItem(storageKey, counter.toString());
+  };
 
   /**
    * Retrieves the current value of the counter.
@@ -20,6 +30,7 @@ export const createCounter = (initialValue = 0) => {
    */
   const increment = (value = 1) => {
     counter += value;
+    saveValue();
   };
 
   /**
@@ -29,6 +40,7 @@ export const createCounter = (initialValue = 0) => {
    */
   const decrement = (value = 1) => {
     counter -= value;
+    saveValue();
   };
 
   /**
@@ -43,6 +55,7 @@ export const createCounter = (initialValue = 0) => {
    */
   const reset = () => {
     counter = 0;
+    saveValue();
   };
 
   return {
