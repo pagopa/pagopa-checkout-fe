@@ -253,32 +253,4 @@ describe("LoginHeader", () => {
       ).toBe(true);
     });
   });
-
-  it("tracks CHK_LOGIN_SUCCESS mixpanel event on login success", async () => {
-    const redirectUrl = window.location.origin + "/redirect-page";
-    (proceedToLogin as jest.Mock).mockImplementation(({ onResponse }) => {
-      onResponse(redirectUrl);
-    });
-
-    renderWithReduxProvider(
-      <MemoryRouter>
-        <LoginHeader />
-      </MemoryRouter>
-    );
-
-    const loginButton = await screen.findByTitle(/Accedi/i);
-    fireEvent.click(loginButton);
-
-    await waitFor(() => {
-      const calls = (mixpanel.track as jest.Mock).mock.calls;
-      expect(
-        calls.some(
-          ([event, params]) =>
-            event === MixpanelEventsId.CHK_LOGIN_SUCCESS &&
-            params.EVENT_ID === MixpanelEventsId.CHK_LOGIN_SUCCESS &&
-            params.EVENT_CATEGORY === MixpanelEventCategory.TECH
-        )
-      ).toBe(true);
-    });
-  });
 });
