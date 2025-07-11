@@ -11,11 +11,13 @@ import { PaymentFormFields } from "../features/payment/models/paymentModel";
 import { ErrorsType } from "../utils/errors/checkErrorsModel";
 import { qrCodeValidation } from "../utils/regex/validators";
 import {
+  MixpanelDataEntryType,
   MixpanelEventCategory,
   MixpanelEventsId,
   MixpanelEventType,
 } from "../utils/mixpanel/mixpanelEvents";
 import { mixpanel } from "../utils/mixpanel/mixpanelHelperInit";
+import { SessionItems, setSessionItem } from "../utils/storage/sessionStorage";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function PaymentQrPage() {
@@ -141,6 +143,10 @@ export default function PaymentQrPage() {
                   EVENT_CATEGORY: MixpanelEventCategory.UX,
                   EVENT_TYPE: MixpanelEventType.ACTION,
                 }
+              );
+              setSessionItem(
+                SessionItems.noticeCodeDataEntry,
+                MixpanelDataEntryType.MANUAL
               );
               navigate(`/${CheckoutRoutes.INSERISCI_DATI_AVVISO}`);
             }}
