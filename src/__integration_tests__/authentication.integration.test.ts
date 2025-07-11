@@ -47,10 +47,10 @@ const CHECKOUT_URL_AFTER_AUTHORIZATION = `http://localhost:1234/esito`;
 const VALID_NOTICE_CODE = "302016723749670000";
 
 
-jest.setTimeout(60000);
+jest.setTimeout(40000);
 jest.retryTimes(3);
-page.setDefaultNavigationTimeout(30000);
-page.setDefaultTimeout(30000);
+page.setDefaultNavigationTimeout(15000);
+page.setDefaultTimeout(15000);
 
 beforeAll(async () => {
   await page.goto(CHECKOUT_URL);
@@ -79,7 +79,7 @@ describe("Checkout authentication tests", () => {
     });
 
     // start flow from a url different from home
-    await page.goto(PAGE_LOGIN_COMEBACK_URL);
+    await page.goto(PAGE_LOGIN_COMEBACK_URL, { timeout: 30000 });
 
     //search login button and click it
     console.log("Search login button")
@@ -218,7 +218,6 @@ describe("Checkout authentication tests", () => {
     await page.waitForNavigation();
     const currentUrl = await page.evaluate(() => location.href);
 
-
     expect(first503Response).toBe(true);
     expect(tokenCalls).toBe(2);
     expect(currentUrl).toBe(BASE_CALLBACK_URL_PAYMENT_DATA);
@@ -315,7 +314,6 @@ describe("Checkout authentication tests", () => {
     });
     //reload page in order to read authToken into sessionStorage
     await page.reload();
-    
     //Check if user button is present into login header
     const userButton = await getUserButton();
     expect(userButton).toBeDefined();
@@ -325,10 +323,8 @@ describe("Checkout authentication tests", () => {
     //Do login
     await clickLoginButton();
 
-    //Wait auth-callback page
-    await page.waitForNavigation();
-    //Wait return to main page
-    await page.waitForNavigation();
+    await page.waitForSelector('button[aria-label="party-menu-button"]');
+
     console.log("Login completed");
 
     //set flow error case
@@ -338,7 +334,7 @@ describe("Checkout authentication tests", () => {
 
     //reload page in order to read authToken into sessionStorage
     await page.reload();
-
+    await page.waitForSelector("#koPageBody");
     //Wait return to error page
     expect(page.url()).toContain("/errore");
   });
@@ -508,10 +504,7 @@ describe("Checkout authentication tests", () => {
     //Login
     await clickLoginButton();
 
-    //Wait auth-callback page
-    await page.waitForNavigation();
-    //Wait return to main page
-    await page.waitForNavigation();
+    await page.waitForSelector('button[aria-label="party-menu-button"]');
     console.log("Login completed");
 
     //Logout
@@ -523,7 +516,8 @@ describe("Checkout authentication tests", () => {
     await logoutButton.click();
     const confirmButton = await page.waitForSelector("#logoutModalConfirmButton");
     await confirmButton.click();
-    await new Promise((r) => setTimeout(r, 500));
+    await page.waitForSelector('button[title="Accedi"]');
+    // await new Promise((r) => setTimeout(r, 500));
     console.log("Logout completed");
         
     expect(apiContainsXRptIdCount).toBe(expectedCount);
