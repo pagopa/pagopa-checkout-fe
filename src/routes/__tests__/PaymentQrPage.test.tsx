@@ -11,6 +11,12 @@ import {
   MixpanelEventsId,
   MixpanelEventType,
 } from "../../utils/mixpanel/mixpanelEvents";
+import {
+  setSessionItem,
+  SessionItems,
+} from "../../utils/storage/sessionStorage";
+import { MixpanelDataEntryType } from "../../utils/mixpanel/mixpanelEvents";
+
 // Mock translations
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -69,6 +75,9 @@ jest.mock("../../utils/mixpanel/mixpanelEvents", () => ({
   MixpanelEventCategory: {
     UX: "UX",
   },
+  MixpanelDataEntryType: {
+    MANUAL: "MANUAL",
+  },
 }));
 
 jest.mock("../../components/QrCodeReader/QrCodeReader", () => ({
@@ -78,6 +87,13 @@ jest.mock("../../components/QrCodeReader/QrCodeReader", () => ({
       QR Reader Mock
     </button>
   ),
+}));
+
+jest.mock("../../utils/storage/sessionStorage", () => ({
+  SessionItems: {
+    noticeCodeDataEntry: "noticeCodeDataEntry",
+  },
+  setSessionItem: jest.fn(),
 }));
 
 // Create a Jest spy for navigation
@@ -120,7 +136,7 @@ describe("PaymentQrPage", () => {
     );
   });
 
-  test("tracks event and navigates when clicking 'inserisci manualmente'", () => {
+  test("tracks event, sets session item and navigates when clicking 'inserisci manualmente'", () => {
     renderWithReduxProvider(
       <MemoryRouter>
         <PaymentQrPage />
@@ -137,6 +153,11 @@ describe("PaymentQrPage", () => {
         EVENT_CATEGORY: MixpanelEventCategory.UX,
         EVENT_TYPE: MixpanelEventType.ACTION,
       }
+    );
+
+    expect(setSessionItem).toHaveBeenCalledWith(
+      SessionItems.noticeCodeDataEntry,
+      MixpanelDataEntryType.MANUAL
     );
 
     expect(navigate).toHaveBeenCalledWith("/inserisci-dati-avviso");
