@@ -4,34 +4,34 @@ import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
-import configureMockStore from "redux-mock-store";
+import { configureStore } from "@reduxjs/toolkit";
 import DonationPage from "../../routes/DonationPage";
 import * as reduxHooks from "../../redux/hooks/hooks";
 import { getDonationEntityList } from "../../utils/api/helper";
+
+const userReducer = (state = { name: "Test User", loggedIn: true }) => state;
 
 jest.mock("../../utils/api/helper", () => ({
   getDonationEntityList: jest.fn(),
 }));
 jest.mock("../../redux/hooks/hooks");
 
-const mockStore = configureMockStore([]);
+const mockStore = configureStore({
+  reducer: {
+    user: userReducer,
+  },
+});
 const theme = createTheme();
 jest.spyOn(reduxHooks, "useAppDispatch").mockReturnValue(jest.fn());
 
-const renderWithProviders = (ui: React.ReactNode, storeOverride = {}) => {
-  const store = mockStore({
-    threshold: {},
-    ...storeOverride,
-  });
-
-  return render(
-    <Provider store={store}>
+const renderWithProviders = (ui: React.ReactNode) =>
+  render(
+    <Provider store={mockStore}>
       <ThemeProvider theme={theme}>
         <BrowserRouter>{ui}</BrowserRouter>
       </ThemeProvider>
     </Provider>
   );
-};
 
 describe("DonationPage", () => {
   it("renders loading skeleton initially", async () => {
