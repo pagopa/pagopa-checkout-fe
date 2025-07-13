@@ -78,12 +78,12 @@ page.setDefaultNavigationTimeout(40000);
 page.setDefaultTimeout(40000);
 
 beforeAll(async () => {
-  await page.goto(CHECKOUT_URL);
+  await page.goto(CHECKOUT_URL, { waitUntil: "networkidle0" });
   await page.setViewport({ width: 1200, height: 907 });
 });
 
 beforeEach(async () => {
-  await page.goto(CHECKOUT_URL);
+  await page.goto(CHECKOUT_URL, { waitUntil: "networkidle0" });
 });
 
 afterEach(async () => {
@@ -122,7 +122,7 @@ describe("Checkout payment verify failure tests", () => {
   });
 });
 
-describe("Checkout payment ongoing failure tests", () => {
+describe.only("Checkout payment ongoing failure tests", () => {
   it.each([
     ["it", itTranslation],
     ["en", enTranslation],
