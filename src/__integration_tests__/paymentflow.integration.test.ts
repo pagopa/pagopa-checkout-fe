@@ -122,7 +122,7 @@ describe("Checkout payment verify failure tests", () => {
   });
 });
 
-describe.only("Checkout payment ongoing failure tests", () => {
+describe("Checkout payment ongoing failure tests", () => {
   it.each([
     ["it", itTranslation],
     ["en", enTranslation],
