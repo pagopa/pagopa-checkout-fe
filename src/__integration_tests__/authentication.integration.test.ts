@@ -53,14 +53,14 @@ page.setDefaultNavigationTimeout(30000);
 page.setDefaultTimeout(30000);
 
 beforeAll(async () => {
-  await page.goto(CHECKOUT_URL);
+  await page.goto(CHECKOUT_URL, { waitUntil: "networkidle0" });
   await page.setViewport({ width: 1200, height: 907 });
 });
 
 beforeEach(async () => {
   await page.evaluate(() => sessionStorage.clear());
   await page.deleteCookie({name:'mockFlow'});
-  await page.goto(CHECKOUT_URL);
+  await page.goto(CHECKOUT_URL, { waitUntil: "networkidle0" });
 });
 
 describe("Checkout authentication tests", () => {
@@ -326,9 +326,8 @@ describe("Checkout authentication tests", () => {
     await clickLoginButton();
 
     //Wait auth-callback page
-    await page.waitForNavigation();
-    //Wait return to main page
-    await page.waitForNavigation();
+    await page.waitForSelector('button[aria-label="party-menu-button"]');
+
     console.log("Login completed");
 
     //set flow error case
@@ -340,6 +339,7 @@ describe("Checkout authentication tests", () => {
     await page.reload();
 
     //Wait return to error page
+    await page.waitForSelector("#koPageBody");
     expect(page.url()).toContain("/errore");
   });
 
@@ -348,9 +348,8 @@ describe("Checkout authentication tests", () => {
     await clickLoginButton();
 
     //Wait auth-callback page
-    await page.waitForNavigation();
-    //Wait return to main page
-    await page.waitForNavigation();
+    await page.waitForSelector('button[aria-label="party-menu-button"]');
+
     console.log("Login completed");
 
     //set flow error case
@@ -372,9 +371,7 @@ describe("Checkout authentication tests", () => {
     await clickLoginButton();
 
     //Wait auth-callback page
-    await page.waitForNavigation();
-    //Wait return to main page
-    await page.waitForNavigation();
+    await page.waitForSelector('button[aria-label="party-menu-button"]');
     console.log("Login completed");
 
     //Check if user button is present into login header
@@ -509,9 +506,8 @@ describe("Checkout authentication tests", () => {
     await clickLoginButton();
 
     //Wait auth-callback page
-    await page.waitForNavigation();
-    //Wait return to main page
-    await page.waitForNavigation();
+    await page.waitForSelector('button[aria-label="party-menu-button"]');
+    
     console.log("Login completed");
 
     //Logout
@@ -523,7 +519,7 @@ describe("Checkout authentication tests", () => {
     await logoutButton.click();
     const confirmButton = await page.waitForSelector("#logoutModalConfirmButton");
     await confirmButton.click();
-    await new Promise((r) => setTimeout(r, 500));
+    await page.waitForSelector('button[title="Accedi"]');
     console.log("Logout completed");
         
     expect(apiContainsXRptIdCount).toBe(expectedCount);
@@ -547,9 +543,8 @@ describe("Checkout authentication tests", () => {
     await clickLoginButton();
 
     //Wait auth-callback page
-    await page.waitForNavigation();
-    //Wait return to main page
-    await page.waitForNavigation();
+    await page.waitForSelector('button[aria-label="party-menu-button"]');
+    
     console.log("Login completed");
 
     //Logout
@@ -584,9 +579,8 @@ describe("Checkout authentication tests", () => {
     await clickLoginButton();
 
     //Wait auth-callback page
-    await page.waitForNavigation();
-    //Wait return to main page
-    await page.waitForNavigation();
+    await page.waitForSelector('button[aria-label="party-menu-button"]');
+    
     console.log("Login completed");
 
     // Complete authenticated payment
@@ -621,9 +615,8 @@ describe("Logout tests", () => {
     await clickLoginButton();
 
     //Wait auth-callback page
-    await page.waitForNavigation();
-    //Wait return to main page
-    await page.waitForNavigation();
+    await page.waitForSelector('button[aria-label="party-menu-button"]');
+
     console.log("Login completed");
     const userButton = await getUserButton();
     await userButton.click();
@@ -654,9 +647,8 @@ describe("Logout tests", () => {
     await clickLoginButton();
 
     //Wait auth-callback page
-    await page.waitForNavigation();
-    //Wait return to main page
-    await page.waitForNavigation();
+    await page.waitForSelector('button[aria-label="party-menu-button"]');
+
     console.log("Login completed");
 
     await fillPaymentNotificationForm(FAIL_LOGIN_400, VALID_FISCAL_CODE);
@@ -698,9 +690,8 @@ describe("Logout tests", () => {
     await clickLoginButton();
 
     //Wait auth-callback page
-    await page.waitForNavigation();
-    //Wait return to main page
-    await page.waitForNavigation();
+    await page.waitForSelector('button[aria-label="party-menu-button"]');
+
     console.log("Login completed");
 
     await fillPaymentNotificationForm(FAIL_LOGIN_500, VALID_FISCAL_CODE);
@@ -741,9 +732,8 @@ describe("Logout tests", () => {
     await clickLoginButton();
 
     //Wait auth-callback page
-    await page.waitForNavigation();
-    //Wait return to main page
-    await page.waitForNavigation();
+    await page.waitForSelector('button[aria-label="party-menu-button"]');
+
     console.log("Login completed");
 
     const resultMessage = await payNotice(
@@ -780,9 +770,8 @@ describe("Logout tests", () => {
     await clickLoginButton();
 
     //Wait auth-callback page
-    await page.waitForNavigation();
-    //Wait return to main page
-    await page.waitForNavigation();
+    await page.waitForSelector('button[aria-label="party-menu-button"]');
+
     console.log("Login completed");
 
     const resultMessage = await cancelPaymentOK(
@@ -818,9 +807,8 @@ describe("Logout tests", () => {
     await clickLoginButton();
 
     //Wait auth-callback page
-    await page.waitForNavigation();
-    //Wait return to main page
-    await page.waitForNavigation();
+    await page.waitForSelector('button[aria-label="party-menu-button"]');
+
     console.log("Login completed");
 
     const resultMessage = await cancelPaymentKO(
@@ -855,9 +843,8 @@ describe("Logout tests", () => {
     await clickLoginButton();
 
     //Wait auth-callback page
-    await page.waitForNavigation();
-    //Wait return to main page
-    await page.waitForNavigation();
+    await page.waitForSelector('button[aria-label="party-menu-button"]');
+
     console.log("Login completed");
     await fillAndSubmitCardDataForm(FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA, VALID_FISCAL_CODE, EMAIL, VALID_CARD_DATA);
     expect(page.url()).toContain("/sessione-scaduta");
@@ -886,9 +873,8 @@ describe("Logout tests", () => {
     await clickLoginButton();
 
     //Wait auth-callback page
-    await page.waitForNavigation();
-    //Wait return to main page
-    await page.waitForNavigation();
+    await page.waitForSelector('button[aria-label="party-menu-button"]');
+
     console.log("Login completed");
     
     await checkErrorOnCardDataFormSubmit(
@@ -921,9 +907,8 @@ describe("Logout tests", () => {
     await clickLoginButton();
 
     //Wait auth-callback page
-    await page.waitForNavigation();
-    //Wait return to main page
-    await page.waitForNavigation();
+    await page.waitForSelector('button[aria-label="party-menu-button"]');
+
     console.log("Login completed");
 
     //Logout
