@@ -11,7 +11,7 @@ export const createCounter = (
   const savedValue = sessionStorage.getItem(storageKey);
   const parsed = Number(savedValue);
   // eslint-disable-next-line functional/no-let
-  let counter = Number.isFinite(parsed) ? parsed : initialValue;
+  let counter = Number.isInteger(parsed) && parsed >= 0 ? parsed : initialValue;
 
   const saveValue = () => {
     sessionStorage.setItem(storageKey, counter.toString());
