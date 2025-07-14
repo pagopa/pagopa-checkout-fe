@@ -79,7 +79,7 @@ describe("Checkout authentication tests", () => {
     });
 
     // start flow from a url different from home
-    await page.goto(PAGE_LOGIN_COMEBACK_URL);
+    await page.goto(PAGE_LOGIN_COMEBACK_URL, { waitUntil: "networkidle0" });
 
     //search login button and click it
     console.log("Search login button")
@@ -94,7 +94,7 @@ describe("Checkout authentication tests", () => {
 
     // now navigate to callback url (and force error with bad parameters)
     // so that the retry button will be visible
-    await page.goto(CALLBACK_URL_NO_CODE);
+    await page.goto(CALLBACK_URL_NO_CODE, { waitUntil: "networkidle0" });
 
     // click the retry button
     const retryButton = await page.waitForSelector("#auth-retry-button");
@@ -128,7 +128,7 @@ describe("Checkout authentication tests", () => {
       //set item into sessionStorage and localStorage for pass the route Guard
       sessionStorage.setItem('loginOriginPage', '/inserisci-email');
     });
-    await page.goto(CALLBACK_URL_NO_CODE);
+    await page.goto(CALLBACK_URL_NO_CODE, { waitUntil: "networkidle0" });
     const currentUrl = await page.evaluate(() => location.href);
     console.log("Current url: " + currentUrl);
 
@@ -154,7 +154,7 @@ describe("Checkout authentication tests", () => {
       //set item into sessionStorage and localStorage for pass the route Guard
       sessionStorage.setItem('loginOriginPage', '/inserisci-email');
     });
-    await page.goto(CALLBACK_URL_NO_STATE);
+    await page.goto(CALLBACK_URL_NO_STATE, { waitUntil: "networkidle0" });
     const currentUrl = await page.evaluate(() => location.href);
     console.log("Current url: " + currentUrl);
 
@@ -403,7 +403,7 @@ describe("Checkout authentication tests", () => {
       sessionStorage.setItem('authToken', 'auth-token-value');
     });
     //go to payment methods page
-    await page.goto(PAYMENT_METHODS_PAGE);
+    await page.goto(PAYMENT_METHODS_PAGE, { waitUntil: "networkidle0" });
 
     const isPaymentMethodsPresents = await verifyPaymentMethods();
     expect(isPaymentMethodsPresents).toBeTruthy();
@@ -421,7 +421,7 @@ describe("Checkout authentication tests", () => {
     await page.waitForNavigation();
 
     //go to payment methods page
-    await page.goto(PAYMENT_METHODS_PAGE);
+    await page.goto(PAYMENT_METHODS_PAGE, { waitUntil: "networkidle0" });
     await page.waitForSelector("#errorTitle");
     expect(page.url()).toContain("/autenticazione-scaduta");
   });
@@ -438,7 +438,7 @@ describe("Checkout authentication tests", () => {
     await page.waitForNavigation();
 
     //go to payment methods page and select card payment
-    await page.goto(PAYMENT_METHODS_PAGE);
+    await page.goto(PAYMENT_METHODS_PAGE, { waitUntil: "networkidle0" });
     await choosePaymentMethod("CP");
 
     //wait until in the session storage are presents correlationId and orderId§
@@ -463,7 +463,7 @@ describe("Checkout authentication tests", () => {
     await page.waitForNavigation();
 
     //go to payment methods page and select card payment
-    await page.goto(INSERT_CARD_PAGE);
+    await page.goto(INSERT_CARD_PAGE, { waitUntil: "networkidle0" });
     await page.waitForSelector("#errorTitle");
     expect(page.url()).toContain("/autenticazione-scaduta");
   });
