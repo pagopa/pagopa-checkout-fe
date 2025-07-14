@@ -109,6 +109,18 @@ const errorOrConfig: t.Validation<IConfig> = IConfig.decode({
     (window as any)._env_.CHECKOUT_GDI_CHECK_TIMEOUT,
     10
   ),
+
+  CHECKOUT_API_RETRY_NUMBERS_NORMAL: parseInt(
+    // eslint-disable-next-line no-underscore-dangle
+    (window as any)._env_.CHECKOUT_API_RETRY_NUMBERS_NORMAL,
+    10
+  ),
+
+  CHECKOUT_API_RETRY_NUMBERS_EXPONENT: parseInt(
+    // eslint-disable-next-line no-underscore-dangle
+    (window as any)._env_.CHECKOUT_API_RETRY_NUMBERS_EXPONENT,
+    10
+  ),
 });
 
 /**

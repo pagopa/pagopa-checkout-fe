@@ -27,7 +27,7 @@ const API_TIMEOUT = getConfigOrThrow().CHECKOUT_API_TIMEOUT as Millisecond;
 const RETRY_NUMBERS_NORMAL = getConfigOrThrow()
   .CHECKOUT_API_RETRY_NUMBERS_NORMAL as Millisecond;
 const EXPONENT = getConfigOrThrow()
-  .CHECKOUT_API_RETRY_NUMBERS_NORMAL as Millisecond;
+  .CHECKOUT_API_RETRY_NUMBERS_EXPONENT as Millisecond;
 
 export function retryingFetch(
   fetchApi: typeof fetch,
@@ -151,18 +151,14 @@ export const exponetialPollingWithPromisePredicateFetch = (
 
   // use a exponetial backoff
   /* eslint-disable functional/no-let */
-  const variableBackoff = (() => {
-    let attempt = 0;
-    return (): Millisecond => {
-      if (attempt < RETRY_NUMBERS_NORMAL) {
-        attempt++;
-        return delay as Millisecond;
-      }
-      const backoffDelay = delay * Math.pow(EXPONENT, attempt - 2);
-      attempt++;
-      return backoffDelay as Millisecond;
-    };
-  })();
+  const variableBackoff = (attempt: number): Millisecond => {
+    if (attempt < RETRY_NUMBERS_NORMAL) {
+      return delay as Millisecond;
+    }
+
+    return (delay *
+      Math.pow(EXPONENT, attempt - RETRY_NUMBERS_NORMAL)) as Millisecond;
+  };
   const retryLogic = withRetries<Error, Response>(retries, variableBackoff);
 
   // use to define transient errors
