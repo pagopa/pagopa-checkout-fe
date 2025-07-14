@@ -20,9 +20,9 @@ const CHECKOUT_ESITO_V2_BASE_URL = "http://localhost:1234/v2/esito"
   page.setDefaultTimeout(30000);
 
   beforeEach(async () => {
-     await page.goto(CHECKOUT_URL);
+    await page.goto(CHECKOUT_URL, { waitUntil: "networkidle0" });
     await page.setViewport({ width: 1200, height: 907 });
-     await page.evaluate(() => {
+    await page.evaluate(() => {
       sessionStorage.removeItem("i18nextLng");
     });
   });
@@ -39,9 +39,9 @@ const CHECKOUT_ESITO_V2_BASE_URL = "http://localhost:1234/v2/esito"
     await page.waitForFunction("sessionStorage.getItem('transaction') != null");
     await page.waitForFunction("sessionStorage.getItem('useremail') != null");
     if(outcome === 0) {
-      await page.goto(`${CHECKOUT_ESITO_V2_BASE_URL}?t=1747230371951#transactionId=test&outcome=${outcome}&totalAmount=12000&fees=15`);
+      await page.goto(`${CHECKOUT_ESITO_V2_BASE_URL}?t=1747230371951#transactionId=test&outcome=${outcome}&totalAmount=12000&fees=15`, { waitUntil: "networkidle0" });
     } else {
-      await page.goto(`${CHECKOUT_ESITO_V2_BASE_URL}?t=1747230371951#transactionId=test&outcome=${outcome}`);
+      await page.goto(`${CHECKOUT_ESITO_V2_BASE_URL}?t=1747230371951#transactionId=test&outcome=${outcome}`, { waitUntil: "networkidle0" });
     }
       const resultTitleSelector = "#responsePageMessageTitle";
     return await page.waitForSelector(resultTitleSelector);
