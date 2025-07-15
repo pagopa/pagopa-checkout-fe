@@ -78,7 +78,6 @@ jest.mock("../../utils/storage/sessionStorage", () => {
   };
 });
 
-
 jest.mock("../../utils/api/client", () => ({
   apiCheckoutFeatureFlags: {
     evaluateFeatureFlags: jest.fn(() =>
