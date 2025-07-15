@@ -62,7 +62,8 @@ describe("errorsModel", () => {
       }
 
       expect(window.open).toHaveBeenCalledWith(
-        HELPDESK_URL + category.toString(),
+        // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+        HELPDESK_URL + category,
         "_blank"
       );
     });
