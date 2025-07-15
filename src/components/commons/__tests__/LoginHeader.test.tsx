@@ -19,6 +19,7 @@ import {
   MixpanelEventsId,
 } from "../../../utils/mixpanel/mixpanelEvents";
 
+
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string) => {
@@ -59,6 +60,7 @@ jest.mock("../../../utils/api/helper", () => ({
   proceedToLogin: jest.fn(),
   retrieveUserInfo: jest.fn(),
   logoutUser: jest.fn(),
+  cancelPayment: jest.fn(),
 }));
 
 jest.mock("../../../utils/storage/sessionStorage", () => ({
@@ -95,6 +97,16 @@ jest.mock("../../../utils/mixpanel/mixpanelHelperInit", () => ({
     track: jest.fn(),
   },
 }));
+
+const mockNavigate = jest.fn();
+
+jest.mock("react-router-dom", () => {
+  const original = jest.requireActual("react-router-dom");
+  return {
+    ...original,
+    useNavigate: () => mockNavigate,
+  };
+});
 
 const getById = queryByAttribute.bind(null, "id");
 
@@ -253,4 +265,48 @@ describe("LoginHeader", () => {
       ).toBe(true);
     });
   });
+
+  it("navigate internally if the login URL is from the same origin", async () => {
+    const internalUrl = "http://localhost/internal-callback?token=abc";
+    (proceedToLogin as jest.Mock).mockImplementation(({ onResponse }) => {
+      onResponse(internalUrl);
+    });
+
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <LoginHeader />
+      </MemoryRouter>
+    );
+
+    fireEvent.click(await screen.findByTitle(/Accedi/i));
+
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith(
+        "/internal-callback?token=abc",
+        { replace: true }
+      );
+    });
+  });
+
+  it("Handles an exception if onResponse receives a malformed URL", async () => {
+    const { baseElement } = renderWithReduxProvider(
+      <MemoryRouter>
+        <LoginHeader />
+      </MemoryRouter>
+    );
+
+    (proceedToLogin as jest.Mock).mockImplementation(({ onResponse }) => {
+      onResponse("not a valid url");
+    });
+
+    fireEvent.click(await screen.findByTitle(/Accedi/i));
+
+    await waitFor(() =>
+      expect(
+        getById(baseElement, "idTitleErrorModalPaymentCheckPage")
+      ).toBeInTheDocument()
+    );
+  });
+
+
 });
