@@ -25,7 +25,7 @@ export const PaymentCategoryResponses: Record<FaultCategory, ErrorModal> = {
       {
         title: "errorButton.help",
         action: () => {
-          window.open(HELPDESK_URL + "DOMAIN_UNKNOWN", "_blank")?.focus();
+          window.open(`${HELPDESK_URL}DOMAIN_UNKNOWN`, "_blank")?.focus();
         },
       },
       {
@@ -40,7 +40,7 @@ export const PaymentCategoryResponses: Record<FaultCategory, ErrorModal> = {
       {
         title: "errorButton.help",
         action: () => {
-          window.open(HELPDESK_URL + "PAYMENT_UNAVAILABLE", "_blank")?.focus();
+          window.open(`${HELPDESK_URL}PAYMENT_UNAVAILABLE`, "_blank")?.focus();
         },
       },
       {
@@ -55,7 +55,7 @@ export const PaymentCategoryResponses: Record<FaultCategory, ErrorModal> = {
       {
         title: "errorButton.help",
         action: () => {
-          window.open(HELPDESK_URL + "PAYMENT_DATA_ERROR", "_blank")?.focus();
+          window.open(`${HELPDESK_URL}PAYMENT_DATA_ERROR`, "_blank")?.focus();
         },
       },
       {
@@ -74,7 +74,7 @@ export const PaymentCategoryResponses: Record<FaultCategory, ErrorModal> = {
       {
         title: "errorButton.help",
         action: () => {
-          window.open(HELPDESK_URL + "GENERIC_ERROR", "_blank")?.focus();
+          window.open(`${HELPDESK_URL}GENERIC_ERROR`, "_blank")?.focus();
         },
       },
     ],
