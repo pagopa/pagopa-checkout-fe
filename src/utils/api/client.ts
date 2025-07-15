@@ -1,5 +1,5 @@
 import { Millisecond } from "@pagopa/ts-commons/lib/units";
-import { DeferredPromise } from "@pagopa/ts-commons//lib/promises";
+import { DeferredPromise } from "@pagopa/ts-commons/lib/promises";
 import { createClient as createEcommerceClient } from "../../../generated/definitions/payment-ecommerce/client";
 import { createClient as createEcommerceClientV3 } from "../../../generated/definitions/payment-ecommerce-v3/client";
 import { createClient as createEcommerceClientV2 } from "../../../generated/definitions/payment-ecommerce-v2/client";

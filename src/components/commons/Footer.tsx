@@ -31,8 +31,10 @@ export default function Footer(props: { fixedPages: Array<string> }) {
         sm: 0,
       }}
       bgcolor={{
-        ...(isFixed() ? { xs: "#f2f2f2" } : { xs: "background.default" }),
-        sm: "#f2f2f2",
+        xs: isFixed()
+          ? theme.palette.custom.footer?.fixed?.background?.default
+          : theme.palette.custom.footer?.principal?.background?.default,
+        sm: theme.palette.custom.footer?.fixed?.background?.default,
       }}
     >
       <Typography variant="caption" component={"div"}>
@@ -92,6 +94,19 @@ export default function Footer(props: { fixedPages: Array<string> }) {
             title={t("mainPage.footer.terms")}
           >
             {t("mainPage.footer.terms")}
+          </Link>
+          <p aria-hidden="true">·</p>
+          <Link
+            href="https://status.platform.pagopa.it/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: theme.palette.text.primary,
+              textDecoration: "none",
+            }}
+            title={t("mainPage.footer.platformStatus")}
+          >
+            {t("mainPage.footer.platformStatus")}
           </Link>
           {showLanguageSelect() && (
             <>

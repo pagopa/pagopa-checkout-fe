@@ -22,19 +22,19 @@
     "button": "Zapri"
   },
   "authCallbackPage": {
-    "title": "Non è stato possibile accedere",
-    "body": "Si è verificato un problema durante l'accesso. Riprova tra qualche minuto.",
+    "title": "Ni bilo mogoče dostopati",
+    "body": "Prišlo je do težave med dostopom. Poskusi znova čez nekaj minut.",
     "buttons": {
-      "retry": "Riprova",
-      "continueWithoutLogin": "Continua senza login"
+      "retry": "Poskusi znova",
+      "continueWithoutLogin": "Nadaljuj brez prijave"
     }
   },
   "authExpiredPage": {
-    "title": "La tua sessione è scaduta",
-    "body": "Accedi per riprendere la sessione, oppure prosegui senza effettuare il login ",
+    "title": "Tvoja seja je potekla",
+    "body": "Prijavi se za nadaljevanje seje ali nadaljuj brez prijave ",
     "buttons": {
-      "login": "Accedi",
-      "continueWithoutLogin": "Continua senza login."
+      "login": "Prijava",
+      "continueWithoutLogin": "Nadaljuj brez prijave."
     }
   },
   "cartDetail": {
@@ -143,6 +143,7 @@
       "help": "Pomoč",
       "privacy": "Zasebnost",
       "terms": "Pogoji",
+      "platformStatus":"Stanje platforme",
       "pagoPA": "Obiščite spletno stran pagoPA"
     },
     "header": {
@@ -216,17 +217,17 @@
     "title": "Vnesite svoj elektronki naslov"
   },
   "findOutMoreModal":{
-    "title": "Cosa fare se il pagamento non va a buon fine?",
-    "section1Title": "1. Paga l'avviso",
-    "section1ContentRow1": "Ricorda di pagare l'avviso entro le scadenze previste dall'ente.",
-    "section1ContentRow2": "Se non riesci tramite questo sito, ",
-    "section1ContentRow2Link": "scopri gli altri canali abilitati a pagoPA.",
-    "section2Title": "2. Attendi il rimborso",
-    "section2ContentRow1": "Di solito l'importo viene riaccreditato entro pochi minuti.",
-    "section2ContentRow2": "In altri casi, il trasferimento di denaro sul tuo conto o carta potrebbe richiedere più tempo.",
-    "section3Title": "3. Contatta l'assistenza",
-    "section3ContentRow1": "Se dopo 5 giorni lavorativi non hai ancora ricevuto il rimborso, ",
-    "section3ContentRow2Link": "contatta l'assistenza."
+    "title": "Kaj storiti, če plačilo ni uspešno?",
+    "section1Title": "1. Plačaj obvestilo",
+    "section1ContentRow1": "Ne pozabi plačati obvestila v predvidenem roku, ki ga določi organ.",
+    "section1ContentRow2": "Če prek tega spletnega mesta ne uspe, ",
+    "section1ContentRow2Link": "poišči druge kanale, ki so omogočeni za pagoPA.",
+    "section2Title": "2. Počakaj na vračilo.",
+    "section2ContentRow1": "Običajno je znesek povrnjen v nekaj minutah.",
+    "section2ContentRow2": "V drugih primerih lahko prenos denarja na tvoj račun ali kartico traja dlje časa.",
+    "section3Title": "3. Kontaktiraj podporo uporabnikom.",
+    "section3ContentRow1": "Če po 5 delovnih dneh še nisi prejel vračila, ",
+    "section3ContentRow2Link": "kontaktiraj podporo uporabnikom."
   },
   "paymentResponsePage": {
     "0": {
@@ -275,24 +276,24 @@
       "title": "Počakajte na potrditev plačila"
     },
     "18": {
-      "body": "L’importo autorizzato è stato rimborsato sul tuo metodo di pagamento. Il trasferimento di denaro potrebbe richiedere del tempo.",
-      "title": "Il pagamento non è andato a buon fine"
+      "body": "Dovoljeni znesek je bil vrnjen na tvoje plačilno sredstvo. Prenos denarja lahko traja nekaj časa.",
+      "title": "Plačilo ni bilo uspešno"
     },
     "25": {
-      "body": "Non è stato addebitato alcun importo.\n Se il problema persiste, prova a usare un altro metodo o gestore del pagamento.",
-      "title": "Il pagamento non è andato a buon fine"
+      "body": "Noben znesek ni bil zaračunan. \n Če težava vztraja, poskusi uporabiti drug način ali ponudnika plačila.",
+      "title": "Plačilo ni bilo uspešno"
     },
     "116": {
-      "body": "Non è stato addebitato alcun importo. Prima di riprovare, aggiungi fondi alla carta o usa un altro metodo di pagamento.",
-      "title": "Il saldo della tua carta è insufficiente"
+      "body": "Noben znesek ni bil zaračunan. Preden poskusiš znova, dodaj sredstva na kartico ali uporabi drug način plačila.",
+      "title": "Stanje na tvoji kartici ni dovolj"
     },
     "117": {
-      "body": "Non è stato addebitato alcun importo. Il codice (CVV o CVC) ha 3 cifre ed è riportato sul retro della carta. Se usi American Express, il codice (CID) ha 4 cifre ed è sul fronte.",
-      "title": "Il codice di sicurezza inserito è errato"
+      "body": "Noben znesek ni bil zaračunan. Koda (CVV ali CVC) ima 3 številke in se nahaja na zadnji strani kartice. Če uporabljaš American Express, ima koda (CID) 4 številke in je na sprednji strani.",
+      "title": "Vnesena varnostna koda je napačna"
     },
     "121": {
-      "body": "Non è stato addebitato alcun importo. Prima di riprovare, modifica il limite di spesa o usa un altro metodo di pagamento.",
-      "title": "Hai superato il limite di spesa della tua carta"
+      "body": "Noben znesek ni bil zaračunan. Preden poskusiš znova, spremeni limit porabe ali uporabi drug način plačila.",
+      "title": "Presegel si limit porabe na svoji kartici"
     },
     "3dsNotInitiated": {
       "body": "Noben znesek ni bil zaračunan.\nČe težave ne morete odpraviti, se obrnite na ponudnika plačilnega sredstva, na primer na banko.",
@@ -300,7 +301,7 @@
     },
     "buttons": {
       "continue": "Nadaljuj",
-      "findOutMode": "Scopri di più"
+      "findOutMode": "Izvedi več"
     },
     "survey": {
       "body": "Zaupajte nam svoje izkušnje s plačevanjem in nam pomagajte izboljšati se.",
@@ -320,7 +321,9 @@
     "creditCard": "Plačajte z",
     "disclaimer": {
       "cheaper": "Priporočeno, ker je najcenejše",
-      "yourCard": "Priporočeno, ker ste že stranka"
+      "yourCard": "Priporočeno, ker ste že stranka",
+      "psp":"Z nadaljevanjem sprejemate <terms>Pogoje uporabe</terms> in potrjujete, da ste prebrali <privacy>Politiko zasebnosti družbe</privacy> <psp>{{pspName}}</psp>"
+
     },
     "drawer": {
       "body": "Na tem seznamu boste našli vse ponudnike, ki so združljivi z vašim načinom, tudi če niste njihova stranka.",
@@ -373,8 +376,8 @@
   },
   "paymentNoticePage": {
     "description": "Vnesite podatke, kot so navedeni na obvestilu o plačilu.",
-    "exampleModalAltText": "Avviso di pagamento pagoPA, con evidenziata la parte in cui sono presenti il codice avviso e il codice fiscale dell’ente creditore",
-    "exampleModalTitle": "Esempio di avviso pagoPA",
+    "exampleModalAltText": "Obvestilo o plačilu pagoPA, s poudarkom na delu, kjer sta navedena koda obvestila in davčna številka upnika",
+    "exampleModalTitle": "Primer obvestila pagoPA",
     "formButtons": {
       "cancel": "Nazaj",
       "submit": "Nadaljuj"
@@ -408,7 +411,9 @@
         "amount": "Po znesku"
       },
       "showResults": "Prikaži rezultate"
-    }
+    },
+    "myBankAlertTitle": "Ne najdete svoje banke?",
+    "myBankAlertBody": "Ne skrbite: v naslednjih korakih jo boste morali izbrati."
   },
   "paymentQrPage": {
     "camBlocked": "Za uporabo kamere potrebujemo vaše soglasje. Če želite spremeniti svojo izbiro, pojdite na nastavitve zasebnosti v svojem brskalniku",
@@ -416,8 +421,8 @@
     "navigate": "Ne deluje? Vnesite ročno",
     "reloadPage": "Ponovno naloži stran",
     "title": "Uokvirite kodo QR",
-    "usageHintPc": "Questa pagina richiede l'uso del lettore di codici QR. Per scansionare il codice QR, consenti al browser l'accesso alla fotocamera quando richiesto. Potresti dover utilizzare una webcam esterna o integrata. Il codice QR deve essere ben inquadrato e ben illuminato per facilitarne la lettura.",
-    "usageHintMobile": "Questa pagina richiede l'uso del lettore di codici QR. Per scansionare il codice QR, consenti al browser l'accesso alla fotocamera quando richiesto. Utilizza la fotocamera posteriore del tuo smartphone e orientala verso il codice QR. Il codice QR deve essere ben inquadrato e ben illuminato per facilitarne la lettura."
+    "usageHintPc": "Ta stran zahteva uporabo bralnika QR kod. Za skeniranje QR kode dovoli brskalniku dostop do kamere, ko bo zahtevano. Morda boš moral uporabiti zunanjo ali vgrajeno spletno kamero. QR koda mora biti dobro uokvirjena in osvetljena, da bo njeno branje lažje.",
+    "usageHintMobile": "Ta stran zahteva uporabo bralnika QR kod. Za skeniranje QR kode dovoli brskalniku dostop do kamere, ko bo zahtevano. Uporabi zadnjo kamero svojega pametnega telefona in jo usmeri proti QR kodi. QR koda mora biti dobro uokvirjena in osvetljena, da bo njeno branje lažje."
   },
   "paymentSummaryPage": {
     "amount": "Posodobljeni znesek",
@@ -472,6 +477,17 @@
       "submitButton": "Izhod",
       "cancelButton": "Prekliči"
     }
+  },
+  "ScheduledMaintenanceBanner": {
+    "titleKey": "Načrtovano vzdrževanje",
+    "bodyKey": "Plačilo ne bo mogoče od 02:00 do 08:00 dne 9. julija 2025.",
+    "linkTextKey": "Več informacij"
+  },
+  "maintenancePage": {
+    "title": "Delamo za vas",
+    "subtitle": "pagoPa trenutno ni na voljo zaradi načrtovanega vzdrževanja."   ,
+    "closeButton": "Zapri",
+    "detailsButton": "Izvedi več"
   },
   "__variant-name": "Sloveno",
   "__variant-description": ""

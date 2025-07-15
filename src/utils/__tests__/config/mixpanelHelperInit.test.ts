@@ -30,7 +30,7 @@ Object.defineProperty(global, "window", {
   writable: true,
 });
 import mixpanelBrowser from "mixpanel-browser";
-import { mixpanel, mixpanelInit } from "../../config/mixpanelHelperInit";
+import { mixpanel } from "../../mixpanel/mixpanelHelperInit";
 
 jest.mock("mixpanel-browser", () => ({
   init: jest.fn(),
@@ -39,20 +39,6 @@ jest.mock("mixpanel-browser", () => ({
 }));
 
 describe("Mixpanel integration tests", () => {
-  it("should call mixpanel.init in PROD environment", () => {
-    mixpanelInit();
-
-    expect(mixpanelBrowser.init).toHaveBeenCalledWith(
-      "c3db8f517102d7a7ebd670c9da3e05c4",
-      expect.objectContaining({
-        api_host: "https://api-eu.mixpanel.com",
-        persistence: "localStorage",
-        ip: false,
-        property_blacklist: ["$current_url", "$initial_referrer", "$referrer"],
-      })
-    );
-  });
-
   it("should call mixpanel.track with event name and properties in PROD environment", () => {
     mixpanel.track("test_event", { prop: "value" });
 

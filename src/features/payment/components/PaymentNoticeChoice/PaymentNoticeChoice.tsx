@@ -6,15 +6,53 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { CheckoutRoutes } from "../../../../routes/models/routeModel";
+import {
+  MixpanelDataEntryType,
+  MixpanelEventCategory,
+  MixpanelEventsId,
+  MixpanelEventType,
+} from "../../../../utils/mixpanel/mixpanelEvents";
+import { mixpanel } from "../../../../utils/mixpanel/mixpanelHelperInit";
+import {
+  SessionItems,
+  setSessionItem,
+} from "../../../../utils/storage/sessionStorage";
 
 export function PaymentNoticeChoice() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
+  React.useEffect(() => {
+    mixpanel.track(MixpanelEventsId.CHK_PAYMENT_NOTICE_DATA_ENTRY, {
+      EVENT_ID: MixpanelEventsId.CHK_PAYMENT_NOTICE_DATA_ENTRY,
+      EVENT_CATEGORY: MixpanelEventCategory.UX,
+      EVENT_TYPE: MixpanelEventType.SCREEN_VIEW,
+    });
+  }, []);
+
   const handleClickOnQR = React.useCallback(() => {
+    setSessionItem(
+      SessionItems.noticeCodeDataEntry,
+      MixpanelDataEntryType.QR_CODE
+    );
+    mixpanel.track(MixpanelEventsId.CHK_PAYMENT_NOTICE_QRCODE_SCAN, {
+      EVENT_ID: MixpanelEventsId.CHK_PAYMENT_NOTICE_QRCODE_SCAN,
+      EVENT_CATEGORY: MixpanelEventCategory.UX,
+      EVENT_TYPE: MixpanelEventType.ACTION,
+    });
     navigate(`/${CheckoutRoutes.LEGGI_CODICE_QR}`);
   }, []);
+
   const handleClickOnForm = React.useCallback(() => {
+    setSessionItem(
+      SessionItems.noticeCodeDataEntry,
+      MixpanelDataEntryType.MANUAL
+    );
+    mixpanel.track(MixpanelEventsId.CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL, {
+      EVENT_ID: MixpanelEventsId.CHK_PAYMENT_NOTICE_DATA_ENTRY_MANUAL,
+      EVENT_CATEGORY: MixpanelEventCategory.UX,
+      EVENT_TYPE: MixpanelEventType.ACTION,
+    });
     navigate(`/${CheckoutRoutes.INSERISCI_DATI_AVVISO}`);
   }, []);
 

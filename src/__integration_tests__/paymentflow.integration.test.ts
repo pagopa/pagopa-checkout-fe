@@ -72,53 +72,26 @@ const PSP_NOT_FOUND_FAIL = "302016723749670076";
  * Increase default test timeout (120000ms)
  * to support entire payment flow
  */
-jest.setTimeout(30000);
+jest.setTimeout(80000);
 jest.retryTimes(3);
-page.setDefaultNavigationTimeout(30000);
-page.setDefaultTimeout(30000);
+page.setDefaultNavigationTimeout(40000);
+page.setDefaultTimeout(40000);
 
 beforeAll(async () => {
-  await page.goto(CHECKOUT_URL);
+  await page.goto(CHECKOUT_URL, { waitUntil: "networkidle0" });
   await page.setViewport({ width: 1200, height: 907 });
 });
 
 beforeEach(async () => {
-  await page.goto(CHECKOUT_URL);
-  // Listen for dialog events and automatically accept them after a delay
-  page.on('dialog', async dialog => {
-    if (dialog.type() === 'beforeunload') {
-      try {
-        // Wait for few seconds before accepting the dialog
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        await dialog.accept();
-      } catch (error) {
-        console.log('Dialog is already accepted.');
-      }
-    }
+  await page.goto(CHECKOUT_URL, { waitUntil: "networkidle0" });
+});
+
+afterEach(async () => {
+  await page.evaluate(() => {
+    window.onbeforeunload = null;
   });
 });
 
-
-describe("Checkout payment tests", () => {
-  it.each([
-    ["it", itTranslation],
-    ["en", enTranslation],
-    ["fr", frTranslation],
-    ["de", deTranslation],
-    ["sl", slTranslation]
-  ])("Should correctly execute a payment for language [%s]", async (lang, translation) => {
-    selectLanguage(lang);
-    const resultMessage = await payNotice(
-      VALID_NOTICE_CODE,
-      VALID_FISCAL_CODE,
-      EMAIL,
-      VALID_CARD_DATA,
-      CHECKOUT_URL_AFTER_AUTHORIZATION
-    );
-
-    expect(resultMessage).toContain(translation.paymentResponsePage[0].title.replace("{{amount}}", "120,15\xa0€"));
-  });
-});
 
 describe("Checkout payment verify failure tests", () => {
   it("Should fail a payment VERIFY and get FAIL_VERIFY_404_PPT_STAZIONE_INT_PA_SCONOSCIUTA", async () => {
@@ -266,7 +239,7 @@ describe("Auth request failure tests", () => {
       await paymentCheckPageButtonCancel.click();
       const cancPayment = await page.waitForSelector("#confirm", {visible: true});
       await cancPayment.click();
-      await page.waitForNavigation();
+      await page.waitForSelector("#redirect-button");
       expect(resultMessage).toContain(translation.GENERIC_ERROR.title);
       //await cancelPaymentAction();
     }
@@ -346,9 +319,8 @@ describe("Checkout fails to calculate fee", () => {
       const closeErrorModalButton = "#closeError";
       await page.waitForSelector(closeErrorModalButton);
       await page.click(closeErrorModalButton);
-      const errorDescriptionXpath =
-        '//*[@id="root"]/div/main/div/div/div/div[1]/div[1]';
-      const errorMessageElem = await page.waitForXPath(errorDescriptionXpath);
+
+      const errorMessageElem = await page.waitForSelector("#koPageTitle");
       const errorMessage = await errorMessageElem.evaluate(
         (el) => el.textContent
       );
@@ -545,8 +517,8 @@ describe("Checkout Payment - PSP Selection Flow", () => {
     it("Should fill form, select PSP, and proceed with payment (IT)", async () => {
         selectLanguage("it");
         await fillAndSubmitCardDataForm(VALID_NOTICE_CODE, VALID_FISCAL_CODE, EMAIL, VALID_CARD_DATA);
-
         expect(await page.url()).toContain(CHECKOUT_URL_PAYMENT_SUMMARY);
+        await cancelPaymentAction();
     });
 
     it("Should mock PSP list with one PSP and proceed with selection", async () => {

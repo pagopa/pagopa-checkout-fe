@@ -20,6 +20,16 @@ import { ErrorsType } from "../../utils/errors/checkErrorsModel";
 import { PaymentCategoryResponses } from "../../utils/errors/errorsModel";
 import { ErrorButtons } from "../FormButtons/ErrorButtons";
 import { FaultCategoryEnum } from "../../../generated/definitions/payment-ecommerce/FaultCategory";
+import {
+  MixpanelEventCategory,
+  MixpanelEventsId,
+  MixpanelPaymentPhase,
+} from "../../utils/mixpanel/mixpanelEvents";
+import {
+  getDataEntryTypeFromSessionStorage,
+  getPaymentInfoFromSessionStorage,
+} from "../../utils/mixpanel/mixpanelTracker";
+import { mixpanel } from "../../utils/mixpanel/mixpanelHelperInit";
 
 function ErrorModal(props: {
   error: string;
@@ -81,6 +91,41 @@ function ErrorModal(props: {
         )
       : buttons;
   const showProgressBar = props.error === ErrorsType.POLLING_SLOW;
+
+  React.useEffect(() => {
+    if (props.open && nodeFaultCodeCategory) {
+      const eventMap: Partial<Record<FaultCategoryEnum, string>> = {
+        [FaultCategoryEnum.PAYMENT_DUPLICATED]:
+          MixpanelEventsId.PAYMENT_DUPLICATED,
+        [FaultCategoryEnum.PAYMENT_ONGOING]: MixpanelEventsId.PAYMENT_ONGOING,
+        [FaultCategoryEnum.PAYMENT_EXPIRED]: MixpanelEventsId.PAYMENT_EXPIRED,
+        [FaultCategoryEnum.PAYMENT_UNAVAILABLE]:
+          MixpanelEventsId.PAYMENT_UNAVAILABLE,
+        [FaultCategoryEnum.PAYMENT_UNKNOWN]: MixpanelEventsId.PAYMENT_UNKNOWN,
+        [FaultCategoryEnum.DOMAIN_UNKNOWN]: MixpanelEventsId.DOMAIN_UNKNOWN,
+        [FaultCategoryEnum.PAYMENT_CANCELED]: MixpanelEventsId.PAYMENT_CANCELED,
+        [FaultCategoryEnum.GENERIC_ERROR]: MixpanelEventsId.GENERIC_ERROR,
+        [FaultCategoryEnum.PAYMENT_DATA_ERROR]:
+          MixpanelEventsId.PAYMENT_DATA_ERROR,
+      };
+
+      const eventId = eventMap[nodeFaultCodeCategory as FaultCategoryEnum];
+      if (eventId) {
+        const paymentInfo = getPaymentInfoFromSessionStorage();
+        mixpanel.track(eventId, {
+          EVENT_ID: eventId,
+          EVENT_CATEGORY: MixpanelEventCategory.KO,
+          reason: nodeFaultCodeDetails ? nodeFaultCodeDetails : null,
+          data_entry: getDataEntryTypeFromSessionStorage(),
+          organization_name: paymentInfo?.paName,
+          organization_fiscal_code: paymentInfo?.paFiscalCode,
+          amount: paymentInfo?.amount,
+          expiration_date: paymentInfo?.dueDate,
+          payment_phase: MixpanelPaymentPhase.VERIFICA,
+        });
+      }
+    }
+  }, [props.open, nodeFaultCodeCategory, nodeFaultCodeDetails]);
 
   return (
     <Dialog

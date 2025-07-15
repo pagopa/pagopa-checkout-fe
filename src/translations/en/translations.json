@@ -22,19 +22,19 @@
     "button": "Close"
   },
   "authCallbackPage": {
-    "title": "Non è stato possibile accedere",
-    "body": "Si è verificato un problema durante l'accesso. Riprova tra qualche minuto.",
+    "title": "It was not possible to sign in",
+    "body": "A problem occurred during sign in. Please try again in a few minutes.",
     "buttons": {
-      "retry": "Riprova",
-      "continueWithoutLogin": "Continua senza login"
+      "retry": "Try again",
+      "continueWithoutLogin": "Continue without signing in"
     }
   },
   "authExpiredPage": {
-    "title": "La tua sessione è scaduta",
-    "body": "Accedi per riprendere la sessione, oppure prosegui senza effettuare il login ",
+    "title": "Your session expired",
+    "body": "Sign in to resume your session, or continue without signing in ",
     "buttons": {
-      "login": "Accedi",
-      "continueWithoutLogin": "Continua senza login."
+      "login": "Sign in",
+      "continueWithoutLogin": "Continue without signing in."
     }
   },
   "cartDetail": {
@@ -143,6 +143,7 @@
       "help": "Help",
       "privacy": "Privacy",
       "terms": "Terms",
+      "platformStatus": "Platform status",
       "pagoPA": "Visit the pagoPA website"
     },
     "header": {
@@ -173,7 +174,7 @@
     "title": "The data entered are incorrect"
   },
   "PAYMENT_DUPLICATED": {
-    "body": "If you paid on this website, the receipt was sent to the email address you indicated during payment.",
+    "body": "If you paid on this website, the confirmation was sent to the email address you indicated during payment.",
     "title": "This notice was already paid!"
   },
   "PAYMENT_EXPIRED": {
@@ -216,21 +217,21 @@
     "title": "Enter your email"
   },
   "findOutMoreModal":{
-    "title": "Cosa fare se il pagamento non va a buon fine?",
-    "section1Title": "1. Paga l'avviso",
-    "section1ContentRow1": "Ricorda di pagare l'avviso entro le scadenze previste dall'ente.",
-    "section1ContentRow2": "Se non riesci tramite questo sito, ",
-    "section1ContentRow2Link": "scopri gli altri canali abilitati a pagoPA.",
-    "section2Title": "2. Attendi il rimborso",
-    "section2ContentRow1": "Di solito l'importo viene riaccreditato entro pochi minuti.",
-    "section2ContentRow2": "In altri casi, il trasferimento di denaro sul tuo conto o carta potrebbe richiedere più tempo.",
-    "section3Title": "3. Contatta l'assistenza",
-    "section3ContentRow1": "Se dopo 5 giorni lavorativi non hai ancora ricevuto il rimborso, ",
-    "section3ContentRow2Link": "contatta l'assistenza."
+    "title": "What to do if the payment fails?",
+    "section1Title": "1. Pay the notice",
+    "section1ContentRow1": "Remember to pay the notice by the deadline set by the issuing authority.",
+    "section1ContentRow2": "If you’re unable to proceed through this site, ",
+    "section1ContentRow2Link": "discover the other channels enabled for pagoPA.",
+    "section2Title": "2. Wait for the refund",
+    "section2ContentRow1": "The amount is usually refunded within a few minutes.",
+    "section2ContentRow2": "In other cases, the transfer of money to your account or card could take more time.",
+    "section3Title": "3. Contact support",
+    "section3ContentRow1": "If you have not received the refund after 5 business days, ",
+    "section3ContentRow2Link": "contact support."
   },
   "paymentResponsePage": {
     "0": {
-      "body": "We have sent the payment receipt to {{useremail}}",
+      "body": "We have sent the payment confirmation to {{useremail}}",
       "title": "You have paid {{amount}}"
     },
     "1": {
@@ -275,32 +276,32 @@
       "title": "Wait for payment confirmation"
     },
     "18": {
-      "body": "L’importo autorizzato è stato rimborsato sul tuo metodo di pagamento. Il trasferimento di denaro potrebbe richiedere del tempo.",
-      "title": "Il pagamento non è andato a buon fine"
+      "body": "The authorized amount has been refunded to your payment method. The transfer of money could take some time.",
+      "title": "The payment was unsuccessful"
     },
     "25": {
-      "body": "Non è stato addebitato alcun importo.\n Se il problema persiste, prova a usare un altro metodo o gestore del pagamento.",
-      "title": "Il pagamento non è andato a buon fine"
+      "body": "No amount was charged.\n If the problem continue, try using another payment method or provider.",
+      "title": "The payment was unsuccessful"
     },
     "116": {
-      "body": "Non è stato addebitato alcun importo. Prima di riprovare, aggiungi fondi alla carta o usa un altro metodo di pagamento.",
-      "title": "Il saldo della tua carta è insufficiente"
+      "body": "No amount was charged. Before trying again, add funds to your card or use another payment method.",
+      "title": "Your card balance is insufficient"
     },
     "117": {
-      "body": "Non è stato addebitato alcun importo. Il codice (CVV o CVC) ha 3 cifre ed è riportato sul retro della carta. Se usi American Express, il codice (CID) ha 4 cifre ed è sul fronte.",
-      "title": "Il codice di sicurezza inserito è errato"
+      "body": "No amount was charged. The code (CVV or CVC) has 3 digits and is located on the back of the card. If you use American Express, the code (CID) has 4 digits and is on the front.",
+      "title": "The security code entered is incorrect."
     },
     "121": {
-      "body": "Non è stato addebitato alcun importo. Prima di riprovare, modifica il limite di spesa o usa un altro metodo di pagamento.",
-      "title": "Hai superato il limite di spesa della tua carta"
+      "body": "No amount was charged. Before trying again, change the spending limit or use another payment method.",
+      "title": "You have exceeded your card’s spending limit."
     },
     "3dsNotInitiated": {
-      "body": "No amount was charged.\nIf the problem continues, contact the operator of the payment method, your bank for example.",
+      "body": "No amount was charged.\n If the problem continues, contact the operator of the payment method, your bank for example.",
       "title": "There was a problem with the operator of your payment method"
     },
     "buttons": {
       "continue": "Continue",
-      "findOutMode": "Scopri di più"
+      "findOutMode": "Find out more"
     },
     "survey": {
       "body": "Tell us about your experience with the payment and help us improve.",
@@ -320,7 +321,8 @@
     "creditCard": "Pay with",
     "disclaimer": {
       "cheaper": "Suggested because least expensive",
-      "yourCard": "Suggested because you are already a customer"
+      "yourCard": "Suggested because you are already a customer",
+      "psp":"By continuing, you accept the <terms>Terms and Conditions of Use</terms> and confirm that you have read the <privacy>Privacy Policy</privacy> of <psp>{{pspName}}</psp>"
     },
     "drawer": {
       "body": "This list contains all the operators compatible with your method, even if you are not their customer.",
@@ -373,8 +375,8 @@
   },
   "paymentNoticePage": {
     "description": "Enter the data as show on the payment notice.",
-    "exampleModalAltText": "Avviso di pagamento pagoPA, con evidenziata la parte in cui sono presenti il codice avviso e il codice fiscale dell’ente creditore",
-    "exampleModalTitle": "Esempio di avviso pagoPA",
+    "exampleModalAltText": "pagoPA payment notice, with the hightlighted section showing the notice code and the tax code of the creditor entity.",
+    "exampleModalTitle": "Example of a pagoPA notice",
     "formButtons": {
       "cancel": "Back",
       "submit": "Continue"
@@ -416,8 +418,8 @@
     "navigate": "Not working? Enter it manually",
     "reloadPage": "Reload the page",
     "title": "Scan the QR code",
-    "usageHintPc": "Questa pagina richiede l'uso del lettore di codici QR. Per scansionare il codice QR, consenti al browser l'accesso alla fotocamera quando richiesto. Potresti dover utilizzare una webcam esterna o integrata. Il codice QR deve essere ben inquadrato e ben illuminato per facilitarne la lettura.",
-    "usageHintMobile": "Questa pagina richiede l'uso del lettore di codici QR. Per scansionare il codice QR, consenti al browser l'accesso alla fotocamera quando richiesto. Utilizza la fotocamera posteriore del tuo smartphone e orientala verso il codice QR. Il codice QR deve essere ben inquadrato e ben illuminato per facilitarne la lettura."
+    "usageHintPc": "This page requires the use of a QR code reader. To scan the QR code, allow the browser access to the camera when prompted. You may need to use an external or built-in webcam. The QR code must be well framed and well lit to facilitate reading.",
+    "usageHintMobile": "This page requires the use of a QR code reader. To scan the QR code, allow the browser to access the camera when prompted. Use your smartphone’s rear camera and point it at the QR code. The QR code must be well framed and well lit to ensure it can be read properly."
   },
   "paymentSummaryPage": {
     "amount": "Amount updated",
@@ -472,6 +474,17 @@
       "submitButton": "Log out",
       "cancelButton": "Cancel"
     }
+  },
+  "ScheduledMaintenanceBanner": {
+    "titleKey": "Scheduled maintenance",
+    "bodyKey": "It will not be possible to make payments from 02:00 to 08:00 on 9 July 2025.",
+    "linkTextKey": "More information"
+  },
+  "maintenancePage": {
+    "title": "We're working for you",
+    "subtitle": "pagoPa is currently not available due to scheduled maintenance."   ,
+    "closeButton": "Close",
+    "detailsButton": "Find out more"
   },
   "__variant-name": "Inglese",
   "__variant-description": ""
