@@ -19,7 +19,6 @@ import {
   MixpanelEventsId,
 } from "../../../utils/mixpanel/mixpanelEvents";
 
-
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string) => {
@@ -307,6 +306,4 @@ describe("LoginHeader", () => {
       ).toBeInTheDocument()
     );
   });
-
-
 });
