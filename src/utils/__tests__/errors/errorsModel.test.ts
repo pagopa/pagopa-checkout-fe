@@ -62,7 +62,7 @@ describe("errorsModel", () => {
       }
 
       expect(window.open).toHaveBeenCalledWith(
-        HELPDESK_URL + category,
+        HELPDESK_URL + category.toString(),
         "_blank"
       );
     });
