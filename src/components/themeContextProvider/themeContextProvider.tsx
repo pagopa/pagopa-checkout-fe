@@ -48,6 +48,9 @@ const themeLight = createTheme({
           whiteSpace: "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis",
+          [theme.breakpoints.down("lg")]: {
+            whiteSpace: "normal",
+          },
         },
       },
     },
