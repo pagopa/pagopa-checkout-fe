@@ -83,7 +83,7 @@ describe("Transaction outcome success tests", () => {
         expect(resultMessage).toContain(itTranslation.paymentResponsePage[outcomeCode].title.replace("{{amount}}", "120,15\xa0€"));
     });
     
-    it.only("Testing executes 5 polling retries as expected", async () => {
+    it("Testing executes 5 polling retries as expected", async () => {
       console.log("Testing outcome polling");
 
       let outcomeCallCount = 0;  
