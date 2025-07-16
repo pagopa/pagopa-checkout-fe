@@ -207,7 +207,7 @@ describe("exponetialPollingWithPromisePredicateFetch backoff behavior", () => {
     status: 503,
   };
 
-  it("should increase delay exponentially after RETRY_NUMBERS_NORMAL attempts", async () => {
+  it("should increase delay exponentially after RETRY_NUMBERS_LINEAR attempts", async () => {
     const condition = jest
       .fn()
       .mockResolvedValueOnce(true)
