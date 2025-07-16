@@ -104,7 +104,7 @@ function ErrorModal(props: {
         [FaultCategoryEnum.PAYMENT_UNKNOWN]: MixpanelEventsId.PAYMENT_UNKNOWN,
         [FaultCategoryEnum.DOMAIN_UNKNOWN]: MixpanelEventsId.DOMAIN_UNKNOWN,
         [FaultCategoryEnum.PAYMENT_CANCELED]: MixpanelEventsId.PAYMENT_CANCELED,
-        [FaultCategoryEnum.GENERIC_ERROR]: MixpanelEventsId.PAYMENT_UNKNOWN,
+        [FaultCategoryEnum.GENERIC_ERROR]: MixpanelEventsId.GENERIC_ERROR,
         [FaultCategoryEnum.PAYMENT_DATA_ERROR]:
           MixpanelEventsId.PAYMENT_DATA_ERROR,
       };
