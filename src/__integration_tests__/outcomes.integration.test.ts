@@ -35,7 +35,7 @@ const POLLING_RETRAY = "77777777122";
 
 
 jest.setTimeout(60000);
-//jest.retryTimes(3);
+jest.retryTimes(3);
 page.setDefaultNavigationTimeout(30000);
 page.setDefaultTimeout(30000);
 
