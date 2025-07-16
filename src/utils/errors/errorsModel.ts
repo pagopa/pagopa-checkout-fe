@@ -1,6 +1,7 @@
 import { FaultCategory } from "../../../generated/definitions/payment-ecommerce/FaultCategory";
 
-const HELPDESK_URL: string = "https://www.pagopa.gov.it/it/helpdesk/";
+const HELPDESK_URL: string =
+  "https://assistenza.pagopa.gov.it/hc/it/search?utf8=%E2%9C%93&query=";
 
 export type ErrorModalBtn = {
   title: string;
@@ -24,7 +25,7 @@ export const PaymentCategoryResponses: Record<FaultCategory, ErrorModal> = {
       {
         title: "errorButton.help",
         action: () => {
-          window.open(HELPDESK_URL, "_blank")?.focus();
+          window.open(`${HELPDESK_URL}DOMAIN_UNKNOWN`, "_blank")?.focus();
         },
       },
       {
@@ -39,7 +40,7 @@ export const PaymentCategoryResponses: Record<FaultCategory, ErrorModal> = {
       {
         title: "errorButton.help",
         action: () => {
-          window.open(HELPDESK_URL, "_blank")?.focus();
+          window.open(`${HELPDESK_URL}PAYMENT_UNAVAILABLE`, "_blank")?.focus();
         },
       },
       {
@@ -54,7 +55,7 @@ export const PaymentCategoryResponses: Record<FaultCategory, ErrorModal> = {
       {
         title: "errorButton.help",
         action: () => {
-          window.open(HELPDESK_URL, "_blank")?.focus();
+          window.open(`${HELPDESK_URL}PAYMENT_DATA_ERROR`, "_blank")?.focus();
         },
       },
       {
@@ -73,7 +74,7 @@ export const PaymentCategoryResponses: Record<FaultCategory, ErrorModal> = {
       {
         title: "errorButton.help",
         action: () => {
-          window.open(HELPDESK_URL, "_blank")?.focus();
+          window.open(`${HELPDESK_URL}GENERIC_ERROR`, "_blank")?.focus();
         },
       },
     ],
