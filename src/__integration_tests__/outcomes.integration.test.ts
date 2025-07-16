@@ -13,8 +13,9 @@ const VALID_CARD_DATA = {
     expirationDate: "1230",
     ccv: "123",
     holderName: "Mario Rossi",
-};
+};                         
 const VALID_NOTICE_CODE = "302016723749670000";
+const RETRY_CODE = "302016723749670500";
 const OUTCOME_FISCAL_CODE_SUCCESS = "77777777000";
 const OUTCOME_FISCAL_CODE_GENERIC_ERROR = "77777777001";
 const OUTCOME_FISCAL_CODE_AUTHORIZATION_ERROR = "77777777002";
@@ -30,9 +31,11 @@ const OUTCOME_FISCAL_CODE_BALANCE_NOT_AVAILABLE = "77777777116";
 const OUTCOME_FISCAL_CODE_CVV_ERROR = "77777777117";
 const OUTCOME_FISCAL_CODE_LIMIT_EXCEEDED = "77777777121";
 const OUTCOME_FISCAL_CODE_DEFAULT = "77777777777";
+const POLLING_RETRAY = "77777777122";
+
 
 jest.setTimeout(60000);
-jest.retryTimes(3);
+//jest.retryTimes(3);
 page.setDefaultNavigationTimeout(30000);
 page.setDefaultTimeout(30000);
 
@@ -78,5 +81,34 @@ describe("Transaction outcome success tests", () => {
             CHECKOUT_URL_AFTER_AUTHORIZATION
         )
         expect(resultMessage).toContain(itTranslation.paymentResponsePage[outcomeCode].title.replace("{{amount}}", "120,15\xa0€"));
+    });
+    
+    it.only("Testing executes 5 polling retries as expected", async () => {
+      console.log("Testing outcome polling");
+
+      let outcomeCallCount = 0;  
+
+      page.on("request", (request) => {
+        const url = request.url();
+        if (
+          url.includes("/ecommerce/checkout/v1/transactions") &&
+          url.includes("/outcomes")
+        ) {
+          outcomeCallCount++;
+          console.log("Call outcome #", outcomeCallCount);
+          
+        }
+      });
+
+      await selectLanguage("it");
+
+      await payNotice(
+        RETRY_CODE,
+        OUTCOME_FISCAL_CODE_SUCCESS,
+        EMAIL,
+        VALID_CARD_DATA,
+        CHECKOUT_URL_AFTER_AUTHORIZATION
+      );
+      expect(outcomeCallCount).toEqual(5);
     });
 });

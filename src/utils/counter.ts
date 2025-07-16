@@ -12,9 +12,10 @@ export const createCounter = (
   const parsed = savedValue !== null ? Number(savedValue) : null;
 
   // eslint-disable-next-line functional/no-let
-  let counter = parsed !== null && Number.isInteger(parsed) && parsed >= 0
-  ? parsed
-  : initialValue;
+  let counter =
+    parsed !== null && Number.isInteger(parsed) && parsed >= 0
+      ? parsed
+      : initialValue;
 
   const saveValue = () => {
     sessionStorage.setItem(storageKey, counter.toString());
