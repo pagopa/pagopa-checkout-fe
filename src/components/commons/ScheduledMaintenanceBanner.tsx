@@ -7,7 +7,14 @@ export function ScheduledMaintenanceBanner() {
   return (
     <Alert severity="info" variant="standard" sx={{ alignItems: "center" }}>
       <AlertTitle>{t("ScheduledMaintenanceBanner.titleKey")}</AlertTitle>
-      <Box component="div">
+      <Box
+        component="div"
+        sx={{
+          "@media (max-width: 1024px)": {
+            whiteSpace: "normal",
+          },
+        }}
+      >
         {t("ScheduledMaintenanceBanner.bodyKey")}
         <Box mt={1}>
           <Link
