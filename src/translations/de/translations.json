@@ -477,7 +477,7 @@
   },
   "ScheduledMaintenanceBanner": {
     "titleKey": "Geplante Wartung",
-    "bodyKey": "Es wird nicht möglich sein, Zahlungen zwischen 02:00 und 08:00 am 9. Juli 2025 vorzunehmen.",
+    "bodyKey": "Es wird nicht möglich sein, Zahlungen zwischen 00:01 und 03:00 am 18. Juli 2025 vorzunehmen.",
     "linkTextKey": "Weitere Informationen"
   },
   "maintenancePage": {
