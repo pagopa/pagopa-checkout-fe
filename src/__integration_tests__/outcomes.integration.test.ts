@@ -15,6 +15,7 @@ const VALID_CARD_DATA = {
     holderName: "Mario Rossi",
 };
 const VALID_NOTICE_CODE = "302016723749670000";
+const RETRY_CODE = "302016723749670500";
 const OUTCOME_FISCAL_CODE_SUCCESS = "77777777000";
 const OUTCOME_FISCAL_CODE_GENERIC_ERROR = "77777777001";
 const OUTCOME_FISCAL_CODE_AUTHORIZATION_ERROR = "77777777002";
@@ -79,4 +80,5 @@ describe("Transaction outcome success tests", () => {
         )
         expect(resultMessage).toContain(itTranslation.paymentResponsePage[outcomeCode].title.replace("{{amount}}", "120,15\xa0€"));
     });
+    
 });

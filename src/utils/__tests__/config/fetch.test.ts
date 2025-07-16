@@ -25,12 +25,24 @@ Object.defineProperty(global, "window", {
       CHECKOUT_API_RETRY_DELAY: "2000",
       CHECKOUT_GDI_CHECK_TIMEOUT: "5000",
       CHECKOUT_API_AUTH_SERVICE_BASEPATH_V1: "/auth",
-      CHECKOUT_API_RETRY_NUMBERS_NORMAL: "2",
+      CHECKOUT_API_RETRY_NUMBERS_LINEAR: "2",
       CHECKOUT_API_RETRY_NUMBERS_EXPONENT: "3",
     },
   },
   writable: true,
 });
+
+const generateExpectedDelays = (
+  baseDelay: number,
+  exponent: number,
+  normalAttempts: number,
+  totalAttempts: number
+): Array<number> =>
+  Array.from({ length: totalAttempts }, (_, i) =>
+    i < normalAttempts
+      ? baseDelay
+      : baseDelay * Math.pow(exponent, i - normalAttempts)
+  );
 
 import { Millisecond } from "@pagopa/ts-commons/lib/units";
 import {
@@ -206,9 +218,9 @@ describe("exponetialPollingWithPromisePredicateFetch backoff behavior", () => {
 
     const fetchMock = jest
       .fn()
-      .mockResolvedValueOnce(mockResponse503) // 1
-      .mockResolvedValueOnce(mockResponse503) // 2
-      .mockResolvedValueOnce(mockResponse200); // 5
+      .mockResolvedValueOnce(mockResponse503)
+      .mockResolvedValueOnce(mockResponse503)
+      .mockResolvedValueOnce(mockResponse200);
 
     (global as any).fetch = fetchMock;
 
@@ -222,11 +234,10 @@ describe("exponetialPollingWithPromisePredicateFetch backoff behavior", () => {
 
     const promise = fetchWithRetry("https://api.example.com");
 
-    const retryDelays = [10, 10, 10 * 3];
+    const expectedDelays = generateExpectedDelays(10, 3, 2, 3);
     /* eslint-disable functional/no-let */
-    for (let index = 0; index < retryDelays.length; index++) {
-      const delay = retryDelays[index];
-      jest.advanceTimersByTime(delay);
+    for (let i = 0; i < expectedDelays.length; i++) {
+      jest.advanceTimersByTime(expectedDelays[i]);
       await jest.runAllTimersAsync();
       await Promise.resolve();
     }
@@ -234,6 +245,6 @@ describe("exponetialPollingWithPromisePredicateFetch backoff behavior", () => {
     const response = await promise;
 
     expect(response.status).toBe(200);
-    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(fetchMock).toHaveBeenCalledTimes(expectedDelays.length);
   });
 });

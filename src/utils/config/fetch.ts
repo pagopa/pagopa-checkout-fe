@@ -25,7 +25,7 @@ import { getConfigOrThrow } from "./config";
 //
 const API_TIMEOUT = getConfigOrThrow().CHECKOUT_API_TIMEOUT as Millisecond;
 const RETRY_NUMBERS_NORMAL = getConfigOrThrow()
-  .CHECKOUT_API_RETRY_NUMBERS_NORMAL as Millisecond;
+  .CHECKOUT_API_RETRY_NUMBERS_LINEAR as Millisecond;
 const EXPONENT = getConfigOrThrow()
   .CHECKOUT_API_RETRY_NUMBERS_EXPONENT as Millisecond;
 

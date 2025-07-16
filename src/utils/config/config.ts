@@ -36,7 +36,7 @@ export const IConfig = t.interface({
   CHECKOUT_API_RETRY_DELAY: t.number,
   CHECKOUT_GDI_CHECK_TIMEOUT: t.number,
   CHECKOUT_API_AUTH_SERVICE_BASEPATH_V1: NonEmptyString,
-  CHECKOUT_API_RETRY_NUMBERS_NORMAL: t.number,
+  CHECKOUT_API_RETRY_NUMBERS_LINEAR: t.number,
   CHECKOUT_API_RETRY_NUMBERS_EXPONENT: t.number,
 });
 
@@ -110,9 +110,9 @@ const errorOrConfig: t.Validation<IConfig> = IConfig.decode({
     10
   ),
 
-  CHECKOUT_API_RETRY_NUMBERS_NORMAL: parseInt(
+  CHECKOUT_API_RETRY_NUMBERS_LINEAR: parseInt(
     // eslint-disable-next-line no-underscore-dangle
-    (window as any)._env_.CHECKOUT_API_RETRY_NUMBERS_NORMAL,
+    (window as any)._env_.CHECKOUT_API_RETRY_NUMBERS_LINEAR,
     10
   ),
 
