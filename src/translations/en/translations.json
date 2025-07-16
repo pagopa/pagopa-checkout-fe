@@ -477,7 +477,7 @@
   },
   "ScheduledMaintenanceBanner": {
     "titleKey": "Scheduled maintenance",
-    "bodyKey": "It will not be possible to make payments from 02:00 to 08:00 on 9 July 2025.",
+    "bodyKey": "It will not be possible to make payments from 00:01 to 03:00 on 18 July 2025.",
     "linkTextKey": "More information"
   },
   "maintenancePage": {

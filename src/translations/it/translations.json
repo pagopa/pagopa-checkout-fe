@@ -481,7 +481,7 @@
   },
   "ScheduledMaintenanceBanner": {
     "titleKey": "Manutenzione programmata",
-    "bodyKey": "Non sarà possibile pagare dalle ore 02:00 alle ore 08:00 del 9 luglio 2025.",
+    "bodyKey": "Non sarà possibile pagare dalle ore 00:01 alle ore 03:00 del 18 luglio 2025.",
     "linkTextKey": "Maggiori informazioni"
   },
   "maintenancePage": {
