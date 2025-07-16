@@ -4,7 +4,8 @@ import {
   ErrorModalBtn,
 } from "../../errors/errorsModel";
 
-const HELPDESK_URL = "https://www.pagopa.gov.it/it/helpdesk/";
+const HELPDESK_URL =
+  "https://assistenza.pagopa.gov.it/hc/it/search?utf8=%E2%9C%93&query=";
 
 afterEach(() => {
   jest.resetAllMocks();
@@ -60,7 +61,10 @@ describe("errorsModel", () => {
         helpButton.action();
       }
 
-      expect(window.open).toHaveBeenCalledWith(HELPDESK_URL, "_blank");
+      expect(window.open).toHaveBeenCalledWith(
+        `${HELPDESK_URL}${category}`,
+        "_blank"
+      );
     });
   });
 
