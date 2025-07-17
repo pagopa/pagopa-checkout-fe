@@ -17,6 +17,7 @@ import { getConfigOrThrow } from "../config/config";
 
 export enum SessionItems {
   paymentInfo = "paymentInfo",
+  activeTheme = "activeTheme",
   noticeInfo = "rptId",
   useremail = "useremail",
   enableAuthentication = "enableAuthentication",
@@ -33,6 +34,8 @@ export enum SessionItems {
   cartClientId = "cartClientId",
   loginOriginPage = "loginOriginPage",
   authToken = "authToken",
+  noticeCodeDataEntry = "noticeCodeDataEntry",
+  enableScheduledMaintenanceBanner = "enableScheduledMaintenanceBanner",
 }
 const isParsable = (item: SessionItems) =>
   !(
@@ -43,7 +46,9 @@ const isParsable = (item: SessionItems) =>
     item === SessionItems.cartClientId ||
     item === SessionItems.enableAuthentication ||
     item === SessionItems.loginOriginPage ||
-    item === SessionItems.authToken
+    item === SessionItems.authToken ||
+    item === SessionItems.noticeCodeDataEntry ||
+    item === SessionItems.enableScheduledMaintenanceBanner
   );
 
 export const getSessionItem = (item: SessionItems) => {
@@ -122,12 +127,21 @@ export const clearStorageAndMaintainAuthData = () => {
   const enableAuthentication = getSessionItem(
     SessionItems.enableAuthentication
   ) as string;
+  const isScheduledMaintenanceBannerEnabled = getSessionItem(
+    SessionItems.enableScheduledMaintenanceBanner
+  ) as string;
   sessionStorage.clear();
   if (authToken != null) {
     setSessionItem(SessionItems.authToken, authToken);
   }
   if (enableAuthentication != null) {
     setSessionItem(SessionItems.enableAuthentication, enableAuthentication);
+  }
+  if (isScheduledMaintenanceBannerEnabled != null) {
+    setSessionItem(
+      SessionItems.enableScheduledMaintenanceBanner,
+      isScheduledMaintenanceBannerEnabled
+    );
   }
 };
 

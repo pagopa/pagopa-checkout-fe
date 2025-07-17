@@ -37,12 +37,12 @@ import {
 } from "../features/payment/models/paymentModel";
 import { useAppDispatch, useAppSelector } from "../redux/hooks/hooks";
 import {
-  cancelPayment,
   calculateFees,
-  proceedToPayment,
+  cancelPayment,
   checkLogout,
+  proceedToPayment,
 } from "../utils/api/helper";
-import { onBrowserUnload, onBrowserBackEvent } from "../utils/eventListeners";
+import { onBrowserBackEvent, onBrowserUnload } from "../utils/eventListeners";
 import { moneyFormat } from "../utils/form/formatters";
 import {
   clearSessionItem,
@@ -59,6 +59,19 @@ import { SessionPaymentMethodResponse } from "../../generated/definitions/paymen
 import { ImageComponent } from "../features/payment/components/PaymentChoice/PaymentMethodImage";
 import { removeLoggedUser } from "../redux/slices/loggedUser";
 import PspPrivacyInfo from "../components/PrivacyPolicy/PspPrivacyInfo";
+import {
+  getDataEntryTypeFromSessionStorage,
+  getFlowFromSessionStorage,
+  getPaymentInfoFromSessionStorage,
+  getPaymentMethodSelectedFromSessionStorage,
+} from "../utils/mixpanel/mixpanelTracker";
+import { mixpanel } from "../utils/mixpanel/mixpanelHelperInit";
+import {
+  MixpanelEventCategory,
+  MixpanelEventsId,
+  MixpanelEventType,
+  MixpanelPaymentPhase,
+} from "../utils/mixpanel/mixpanelEvents";
 import { CheckoutRoutes } from "./models/routeModel";
 
 const defaultStyle = {
@@ -135,6 +148,23 @@ export default function PaymentCheckPage() {
     return () => window.removeEventListener("popstate", onBack);
   }, []);
 
+  React.useEffect(() => {
+    const paymentInfo = getPaymentInfoFromSessionStorage();
+    mixpanel.track(MixpanelEventsId.CHK_PAYMENT_SUMMARY, {
+      EVENT_ID: MixpanelEventsId.CHK_PAYMENT_SUMMARY,
+      EVENT_CATEGORY: MixpanelEventCategory.UX,
+      EVENT_TYPE: MixpanelEventType.SCREEN_VIEW,
+      flow: getFlowFromSessionStorage(),
+      payment_phase: MixpanelPaymentPhase.ATTIVA,
+      organization_name: paymentInfo?.paName,
+      organization_fiscal_code: paymentInfo?.paFiscalCode,
+      amount: paymentInfo?.amount,
+      expiration_date: paymentInfo?.dueDate,
+      payment_method_selected: getPaymentMethodSelectedFromSessionStorage(),
+      data_entry: getDataEntryTypeFromSessionStorage(),
+    });
+  }, []);
+
   const onError = (m: string, userCancelRedirect?: boolean) => {
     setPayLoading(false);
     setCancelLoading(false);
@@ -183,6 +213,20 @@ export default function PaymentCheckPage() {
   const onSubmit = React.useCallback(async () => {
     setPayLoading(true);
     if (transaction) {
+      const paymentInfo = getPaymentInfoFromSessionStorage();
+      mixpanel.track(MixpanelEventsId.CHK_PAYMENT_UX_CONVERSION, {
+        EVENT_ID: MixpanelEventsId.CHK_PAYMENT_UX_CONVERSION,
+        EVENT_CATEGORY: MixpanelEventCategory.UX,
+        EVENT_TYPE: MixpanelEventType.ACTION,
+        flow: getFlowFromSessionStorage(),
+        payment_phase: MixpanelPaymentPhase.PAGAMENTO,
+        organization_name: paymentInfo?.paName,
+        organization_fiscal_code: paymentInfo?.paFiscalCode,
+        amount: paymentInfo?.amount,
+        expiration_date: paymentInfo?.dueDate,
+        payment_method_selected: getPaymentMethodSelectedFromSessionStorage(),
+        data_entry: getDataEntryTypeFromSessionStorage(),
+      });
       await proceedToPayment(transaction, onError, onResponse);
     } else {
       onError(ErrorsType.GENERIC_ERROR);
@@ -190,6 +234,21 @@ export default function PaymentCheckPage() {
   }, []);
 
   const onCardEdit = () => {
+    const paymentInfo = getPaymentInfoFromSessionStorage();
+    mixpanel.track(MixpanelEventsId.CHK_PAYMENT_SUMMARY_PAYMENT_METHOD_EDIT, {
+      EVENT_ID: MixpanelEventsId.CHK_PAYMENT_SUMMARY_PAYMENT_METHOD_EDIT,
+      EVENT_CATEGORY: MixpanelEventCategory.UX,
+      EVENT_TYPE: MixpanelEventType.ACTION,
+      flow: getFlowFromSessionStorage(),
+      payment_phase: MixpanelPaymentPhase.ATTIVA,
+      organization_name: paymentInfo?.paName,
+      organization_fiscal_code: paymentInfo?.paFiscalCode,
+      amount: paymentInfo?.amount,
+      expiration_date: paymentInfo?.dueDate,
+      payment_method_selected: getPaymentMethodSelectedFromSessionStorage(),
+      data_entry: getDataEntryTypeFromSessionStorage(),
+    });
+
     window.removeEventListener("beforeunload", onBrowserUnload);
     navigate(`/${CheckoutRoutes.SCEGLI_METODO}`, { replace: true });
   };
@@ -229,6 +288,22 @@ export default function PaymentCheckPage() {
     setPspEditLoading(true);
     setShowDisclaimer(false);
     if (paymentMethod) {
+      const paymentInfo = getPaymentInfoFromSessionStorage();
+
+      mixpanel.track(MixpanelEventsId.CHK_PAYMENT_SUMMARY_PSP_EDIT, {
+        EVENT_ID: MixpanelEventsId.CHK_PAYMENT_SUMMARY_PSP_EDIT,
+        EVENT_CATEGORY: MixpanelEventCategory.UX,
+        EVENT_TYPE: MixpanelEventType.ACTION,
+        flow: getFlowFromSessionStorage(),
+        payment_phase: MixpanelPaymentPhase.ATTIVA,
+        organization_name: paymentInfo?.paName,
+        organization_fiscal_code: paymentInfo?.paFiscalCode,
+        amount: paymentInfo?.amount,
+        expiration_date: paymentInfo?.dueDate,
+        payment_method_selected: getPaymentMethodSelectedFromSessionStorage(),
+        data_entry: getDataEntryTypeFromSessionStorage(),
+      });
+
       void calculateFees({
         paymentId: paymentMethod?.paymentMethodId,
         bin: sessionPaymentMethodResponse?.bin,
@@ -330,7 +405,11 @@ export default function PaymentCheckPage() {
         itemSx={{ pl: 0, pr: 0, gap: 2 }}
         endAdornment={
           <IconButton
-            sx={{ color: "primary.main" }}
+            sx={{
+              color: "primary.main",
+              backgroundColor:
+                "custom.paymentSummary.infoButton.background.default",
+            }}
             onClick={() => {
               setModalOpen(true);
             }}

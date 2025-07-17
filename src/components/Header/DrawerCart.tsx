@@ -59,6 +59,7 @@ export default function DrawerCart(props: Props) {
             borderTop: 1,
             borderBottom: index > 0 ? 1 : 0,
             borderColor: "grey.300",
+            backgroundImage: "none",
           }}
         >
           <AccordionSummary
@@ -70,13 +71,20 @@ export default function DrawerCart(props: Props) {
             }}
           >
             <Box>
-              <Typography component="div" typography="sidenav" display="block">
+              <Typography
+                component="div"
+                typography="sidenav"
+                display="block"
+                sx={{
+                  color: "custom.drawer.card.sectionBody.primary",
+                }}
+              >
                 {el.description && truncateText(el.description, 30)}
               </Typography>
               <Typography
                 component="div"
                 typography="body2"
-                color="action.active"
+                color="custom.drawer.card.sectionTitle.primary"
               >
                 {el.companyName && truncateText(el.companyName, 30)}
               </Typography>
@@ -88,18 +96,31 @@ export default function DrawerCart(props: Props) {
             </Box>
           </AccordionSummary>
           <AccordionDetails
-            sx={{ p: 0, borderTop: 1, borderColor: "grey.300" }}
+            sx={{
+              p: 0,
+              borderTop: 1,
+              borderColor: "grey.300",
+              backgroundColor:
+                theme.palette.custom.drawer?.card?.background?.default,
+            }}
           >
             <Typography
               component="div"
               typography="body2"
               display="block"
-              color="action.active"
+              color="custom.drawer.card.sectionTitle.primary"
               mt={2}
             >
               {t("cartDetail.amount")}
             </Typography>
-            <Typography component="div" typography="sidenav" display="block">
+            <Typography
+              sx={{
+                color: "custom.drawer.card.sectionBody.primary",
+              }}
+              component="div"
+              typography="sidenav"
+              display="block"
+            >
               {moneyFormat(el.amount)}
             </Typography>
             <Typography
@@ -107,7 +128,7 @@ export default function DrawerCart(props: Props) {
               typography="body2"
               display="block"
               mt={2}
-              color="action.active"
+              color="custom.drawer.card.sectionTitle.primary"
             >
               {t("cartDetail.description")}
             </Typography>
@@ -116,6 +137,9 @@ export default function DrawerCart(props: Props) {
               typography="sidenav"
               display="block"
               style={{ overflowWrap: "break-word" }}
+              sx={{
+                color: "custom.drawer.card.sectionBody.primary",
+              }}
             >
               {el.description}
             </Typography>
@@ -124,7 +148,7 @@ export default function DrawerCart(props: Props) {
               typography="body2"
               display="block"
               mt={2}
-              color="action.active"
+              color="custom.drawer.card.sectionTitle.primary"
             >
               {t("cartDetail.companyName")}
             </Typography>
@@ -133,6 +157,9 @@ export default function DrawerCart(props: Props) {
               typography="sidenav"
               display="block"
               style={{ overflowWrap: "break-word" }}
+              sx={{
+                color: "custom.drawer.card.sectionBody.primary",
+              }}
             >
               {el.companyName}
             </Typography>
@@ -143,7 +170,7 @@ export default function DrawerCart(props: Props) {
                   typography="body2"
                   display="block"
                   mt={2}
-                  color="action.active"
+                  color="custom.drawer.card.sectionTitle.primary"
                 >
                   {el.creditorReferenceId
                     ? t("cartDetail.iuv")
@@ -153,6 +180,9 @@ export default function DrawerCart(props: Props) {
                   component="div"
                   typography="sidenav"
                   display="block"
+                  sx={{
+                    color: "custom.drawer.card.sectionBody.primary",
+                  }}
                 >
                   {el.creditorReferenceId ?? el.noticeNumber}
                 </Typography>
@@ -161,7 +191,7 @@ export default function DrawerCart(props: Props) {
                   typography="body2"
                   display="block"
                   mt={2}
-                  color="action.active"
+                  color="custom.drawer.card.sectionTitle.primary"
                 >
                   {t("cartDetail.fiscalCode")}
                 </Typography>
@@ -169,6 +199,9 @@ export default function DrawerCart(props: Props) {
                   component="div"
                   typography="sidenav"
                   display="block"
+                  sx={{
+                    color: "custom.drawer.card.sectionBody.primary",
+                  }}
                 >
                   {el.fiscalCode}
                 </Typography>

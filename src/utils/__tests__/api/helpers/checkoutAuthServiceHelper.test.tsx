@@ -15,6 +15,11 @@ import {
 import { ErrorsType } from "../../../../utils/errors/checkErrorsModel";
 import { callRecaptcha } from "../../../../utils/api/helpers/recaptchaHelper";
 import { getSessionItem } from "../../../../utils/storage/sessionStorage";
+import {
+  MixpanelEventCategory,
+  MixpanelEventsId,
+} from "../../../mixpanel/mixpanelEvents";
+import { mixpanel } from "../../../mixpanel/mixpanelHelperInit";
 
 jest.mock("../../../storage/sessionStorage", () => ({
   getSessionItem: jest.fn(),
@@ -43,6 +48,12 @@ jest.mock("../../../api/client", () => ({
 
 jest.mock("../../../api/helpers/recaptchaHelper", () => ({
   callRecaptcha: jest.fn(() => "recaptchaToken"),
+}));
+
+jest.mock("../../../mixpanel/mixpanelHelperInit", () => ({
+  mixpanel: {
+    track: jest.fn(),
+  },
 }));
 
 const mockOnResponse: jest.Mock = jest.fn();
@@ -131,6 +142,14 @@ describe("Checkout auth service helper - authentication tests", () => {
       onError: mockOnError,
     });
     expect(mockOnResponse).toHaveBeenCalledWith(authToken);
+    expect(mixpanel.track).toHaveBeenCalledWith(
+      MixpanelEventsId.CHK_LOGIN_SUCCESS,
+      {
+        EVENT_ID: MixpanelEventsId.CHK_LOGIN_SUCCESS,
+        EVENT_CATEGORY: MixpanelEventCategory.TECH,
+        page: window.location.pathname,
+      }
+    );
   });
 
   it("Should call onError with ErrorsType.GENERIC_ERROR when api fail", async () => {

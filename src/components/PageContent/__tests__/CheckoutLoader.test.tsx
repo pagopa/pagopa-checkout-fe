@@ -83,7 +83,9 @@ describe("CheckoutLoader Component", () => {
 
     // Check if the Box component has the correct styles
     expect(boxElement).toHaveStyle("align-items: center");
-    expect(boxElement).toHaveStyle("background-color: #fff");
+    expect(boxElement).toHaveStyle(
+      "background-color: palette.background.paper"
+    );
     expect(boxElement).toHaveStyle("display: flex");
     expect(boxElement).toHaveStyle("height: 100vh");
     expect(boxElement).toHaveStyle("justify-content: center");

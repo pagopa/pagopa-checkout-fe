@@ -17,9 +17,13 @@ export enum CheckoutRoutes {
   ANNULLATO = "annullato",
   SESSIONE_SCADUTA = "sessione-scaduta",
   ERRORE = "errore",
+  MAINTENANCE = "maintenance",
 }
 
 export enum ROUTE_FRAGMENT {
   GDI_IFRAME_URL = "gdiIframeUrl",
   OUTCOME = "outcome",
+  TOTAL_AMOUNT = "totalAmount",
+  FEES = "fees",
+  TRANSACTION_ID = "transactionId",
 }

@@ -144,6 +144,7 @@
       "help": "Aiuto",
       "privacy": "Privacy",
       "terms": "Condizioni",
+      "platformStatus": "Stato della piattaforma",
       "pagoPA": "Visita il sito pagoPA"
     },
     "header": {
@@ -175,7 +176,7 @@
     "title": "I dati dell'avviso non sono corretti"
   },
   "PAYMENT_DUPLICATED": {
-    "body": "Se hai pagato su questo sito, la ricevuta è stata inviata all'indirizzo email che hai indicato durante il pagamento.",
+    "body": "Se hai pagato su questo sito, la conferma è stata inviata all'indirizzo email che hai indicato durante il pagamento.",
     "title": "Questo avviso è stato già pagato!"
   },
   "PAYMENT_EXPIRED": {
@@ -232,7 +233,7 @@
   },
   "paymentResponsePage": {
     "0": {
-      "body": "Abbiamo inviato la ricevuta del pagamento a {{useremail}}",
+      "body": "Abbiamo inviato la conferma del pagamento a {{useremail}}",
       "title": "Hai pagato {{amount}}"
     },
     "1": {
@@ -307,7 +308,7 @@
     "survey": {
       "body": "Raccontaci la tua esperienza con il pagamento e aiutaci a migliorare.",
       "link": {
-        "href": "https://pagopa.gov.it/diccilatua/ces-pagamento/",
+        "href": "https://pagopa.qualtrics.com/jfe/form/SV_0jllXJcXhmSpb38",
         "text": "Vai al sondaggio"
       },
       "title": "Puoi dirci com’è andata?"
@@ -411,7 +412,9 @@
         "amount": "Per importo"
       },
       "showResults": "Mostra risultati"
-    }
+    },
+    "myBankAlertTitle": "Non trovi la tua banca?",
+    "myBankAlertBody": "Non preoccuparti: dovrai selezionarla nei passaggi successivi."
   },
   "paymentQrPage": {
     "camBlocked": "Abbiamo bisogno del tuo consenso per utilizzare la fotocamera. Per modificare la tua scelta, visita le impostazioni Privacy del tuo browser",
@@ -475,5 +478,16 @@
       "submitButton": "Esci",
       "cancelButton": "Annulla"
     }
+  },
+  "ScheduledMaintenanceBanner": {
+    "titleKey": "Manutenzione programmata",
+    "bodyKey": "Non sarà possibile pagare dalle ore 00:01 alle ore 03:00 del 18 luglio 2025.",
+    "linkTextKey": "Maggiori informazioni"
+  },
+  "maintenancePage": {
+    "title": "Stiamo lavorando per te",
+    "subtitle": "pagoPa non è al momento disponibile a causa di una manutenzione programmata."   ,
+    "closeButton": "Chiudi",
+    "detailsButton": "Scopri di più"
   }
 }

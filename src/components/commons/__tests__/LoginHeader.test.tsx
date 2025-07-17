@@ -13,6 +13,11 @@ import LoginHeader from "../LoginHeader";
 import "jest-location-mock";
 import { UserInfoResponse } from "../../../../generated/definitions/checkout-auth-service-v1/UserInfoResponse";
 import { renderWithReduxProvider } from "../../../utils/testing/testRenderProviders";
+import { mixpanel } from "../../../utils/mixpanel/mixpanelHelperInit";
+import {
+  MixpanelEventCategory,
+  MixpanelEventsId,
+} from "../../../utils/mixpanel/mixpanelEvents";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
@@ -54,6 +59,7 @@ jest.mock("../../../utils/api/helper", () => ({
   proceedToLogin: jest.fn(),
   retrieveUserInfo: jest.fn(),
   logoutUser: jest.fn(),
+  cancelPayment: jest.fn(),
 }));
 
 jest.mock("../../../utils/storage/sessionStorage", () => ({
@@ -85,9 +91,35 @@ jest.mock("../../../utils/eventListeners", () => ({
   onBrowserUnload: jest.fn(),
 }));
 
+jest.mock("../../../utils/mixpanel/mixpanelHelperInit", () => ({
+  mixpanel: {
+    track: jest.fn(),
+  },
+}));
+
+const mockNavigate = jest.fn();
+
+jest.mock("react-router-dom", () => {
+  const original = jest.requireActual("react-router-dom");
+  return {
+    ...original,
+    useNavigate: () => mockNavigate,
+  };
+});
+
 const getById = queryByAttribute.bind(null, "id");
 
 describe("LoginHeader", () => {
+  beforeEach(() => {
+    (getSessionItem as jest.Mock).mockImplementation((item) => {
+      if (item === "authToken") {
+        return null;
+      }
+      return undefined;
+    });
+    (proceedToLogin as jest.Mock).mockImplementation(() => undefined);
+  });
+
   it("Renders loading header", () => {
     renderWithReduxProvider(
       <MemoryRouter>
@@ -208,5 +240,70 @@ describe("LoginHeader", () => {
     expect(logoutConfirmButton).toBeVisible();
     fireEvent.click(logoutConfirmButton);
     expect(logoutUser).toHaveBeenCalled();
+  });
+
+  it("tracks CHK_LOGIN_REQUEST mixpanel event on login attempt", async () => {
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <LoginHeader />
+      </MemoryRouter>
+    );
+
+    const loginButton = await screen.findByTitle(/Accedi/i);
+    fireEvent.click(loginButton);
+
+    await waitFor(() => {
+      const calls = (mixpanel.track as jest.Mock).mock.calls;
+      expect(
+        calls.some(
+          ([event, params]) =>
+            event === MixpanelEventsId.CHK_LOGIN_REQUEST &&
+            params.EVENT_ID === MixpanelEventsId.CHK_LOGIN_REQUEST &&
+            params.EVENT_CATEGORY === MixpanelEventCategory.TECH
+        )
+      ).toBe(true);
+    });
+  });
+
+  it("navigate internally if the login URL is from the same origin", async () => {
+    const internalUrl = "http://localhost/internal-callback?token=abc";
+    (proceedToLogin as jest.Mock).mockImplementation(({ onResponse }) => {
+      onResponse(internalUrl);
+    });
+
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <LoginHeader />
+      </MemoryRouter>
+    );
+
+    fireEvent.click(await screen.findByTitle(/Accedi/i));
+
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith(
+        "/internal-callback?token=abc",
+        { replace: true }
+      );
+    });
+  });
+
+  it("Handles an exception if onResponse receives a malformed URL", async () => {
+    const { baseElement } = renderWithReduxProvider(
+      <MemoryRouter>
+        <LoginHeader />
+      </MemoryRouter>
+    );
+
+    (proceedToLogin as jest.Mock).mockImplementation(({ onResponse }) => {
+      onResponse("not a valid url");
+    });
+
+    fireEvent.click(await screen.findByTitle(/Accedi/i));
+
+    await waitFor(() =>
+      expect(
+        getById(baseElement, "idTitleErrorModalPaymentCheckPage")
+      ).toBeInTheDocument()
+    );
   });
 });
