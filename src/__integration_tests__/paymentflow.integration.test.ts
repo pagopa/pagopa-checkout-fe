@@ -72,6 +72,9 @@ const PSP_NOT_FOUND_FAIL = "302016723749670076";
  * Increase default test timeout (120000ms)
  * to support entire payment flow
  */
+
+const RETRY_CODE = "302016723749670500";
+const OUTCOME_FISCAL_CODE_SUCCESS = "77777777000";
 jest.setTimeout(80000);
 jest.retryTimes(3);
 page.setDefaultNavigationTimeout(40000);
@@ -581,4 +584,35 @@ describe("Checkout Payment - PSP Selection Flow", () => {
         expect(await page.url()).toContain(CHECKOUT_URL_PAYMENT_SUMMARY);
     });
 
+});
+
+describe("Transaction outcome polling logic after payment authorization", () => {
+  it("Testing executes 5 polling retries as expected", async () => {
+       console.log("Testing outcome polling");
+ 
+       let outcomeCallCount = 0;  
+ 
+       page.on("request", (request) => {
+         const url = request.url();
+         if (
+           url.includes("/ecommerce/checkout/v1/transactions") &&
+           url.includes("/outcomes")
+         ) {
+           outcomeCallCount++;
+           console.log("Call outcome #", outcomeCallCount);
+           
+         }
+       });
+ 
+       await selectLanguage("it");
+ 
+       await payNotice(
+         RETRY_CODE,
+         OUTCOME_FISCAL_CODE_SUCCESS,
+         EMAIL,
+         VALID_CARD_DATA,
+         CHECKOUT_URL_AFTER_AUTHORIZATION
+       );
+       expect(outcomeCallCount).toEqual(5);
+     });
 });
