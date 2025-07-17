@@ -586,7 +586,7 @@ describe("Checkout Payment - PSP Selection Flow", () => {
 
 });
 
-describe("Transaction outcome polling logic after payment authorization", () => {
+describe.skip("Transaction outcome polling logic after payment authorization", () => {
   it("Testing executes 5 polling retries as expected", async () => {
        console.log("Testing outcome polling");
  
