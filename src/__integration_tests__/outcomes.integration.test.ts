@@ -13,7 +13,7 @@ const VALID_CARD_DATA = {
     expirationDate: "1230",
     ccv: "123",
     holderName: "Mario Rossi",
-};
+};                         
 const VALID_NOTICE_CODE = "302016723749670000";
 const OUTCOME_FISCAL_CODE_SUCCESS = "77777777000";
 const OUTCOME_FISCAL_CODE_GENERIC_ERROR = "77777777001";
@@ -31,18 +31,19 @@ const OUTCOME_FISCAL_CODE_CVV_ERROR = "77777777117";
 const OUTCOME_FISCAL_CODE_LIMIT_EXCEEDED = "77777777121";
 const OUTCOME_FISCAL_CODE_DEFAULT = "77777777777";
 
+
 jest.setTimeout(60000);
 jest.retryTimes(3);
 page.setDefaultNavigationTimeout(30000);
 page.setDefaultTimeout(30000);
 
 beforeAll(async () => {
-    await page.goto(CHECKOUT_URL, { waitUntil: "networkidle0" });
+    await page.goto(CHECKOUT_URL);
     await page.setViewport({ width: 1200, height: 907 });
 });
 
 beforeEach(async () => {
-    await page.goto(CHECKOUT_URL, { waitUntil: "networkidle0" });
+    await page.goto(CHECKOUT_URL);
 });
 
 afterEach(async () => {
@@ -79,4 +80,5 @@ describe("Transaction outcome success tests", () => {
         )
         expect(resultMessage).toContain(itTranslation.paymentResponsePage[outcomeCode].title.replace("{{amount}}", "120,15\xa0€"));
     });
+
 });
