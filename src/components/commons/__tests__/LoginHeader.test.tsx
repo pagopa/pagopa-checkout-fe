@@ -59,6 +59,7 @@ jest.mock("../../../utils/api/helper", () => ({
   proceedToLogin: jest.fn(),
   retrieveUserInfo: jest.fn(),
   logoutUser: jest.fn(),
+  cancelPayment: jest.fn(),
 }));
 
 jest.mock("../../../utils/storage/sessionStorage", () => ({
@@ -95,6 +96,16 @@ jest.mock("../../../utils/mixpanel/mixpanelHelperInit", () => ({
     track: jest.fn(),
   },
 }));
+
+const mockNavigate = jest.fn();
+
+jest.mock("react-router-dom", () => {
+  const original = jest.requireActual("react-router-dom");
+  return {
+    ...original,
+    useNavigate: () => mockNavigate,
+  };
+});
 
 const getById = queryByAttribute.bind(null, "id");
 
@@ -254,10 +265,10 @@ describe("LoginHeader", () => {
     });
   });
 
-  it("tracks CHK_LOGIN_SUCCESS mixpanel event on login success", async () => {
-    const redirectUrl = window.location.origin + "/redirect-page";
+  it("navigate internally if the login URL is from the same origin", async () => {
+    const internalUrl = "http://localhost/internal-callback?token=abc";
     (proceedToLogin as jest.Mock).mockImplementation(({ onResponse }) => {
-      onResponse(redirectUrl);
+      onResponse(internalUrl);
     });
 
     renderWithReduxProvider(
@@ -266,19 +277,33 @@ describe("LoginHeader", () => {
       </MemoryRouter>
     );
 
-    const loginButton = await screen.findByTitle(/Accedi/i);
-    fireEvent.click(loginButton);
+    fireEvent.click(await screen.findByTitle(/Accedi/i));
 
     await waitFor(() => {
-      const calls = (mixpanel.track as jest.Mock).mock.calls;
-      expect(
-        calls.some(
-          ([event, params]) =>
-            event === MixpanelEventsId.CHK_LOGIN_SUCCESS &&
-            params.EVENT_ID === MixpanelEventsId.CHK_LOGIN_SUCCESS &&
-            params.EVENT_CATEGORY === MixpanelEventCategory.TECH
-        )
-      ).toBe(true);
+      expect(mockNavigate).toHaveBeenCalledWith(
+        "/internal-callback?token=abc",
+        { replace: true }
+      );
     });
+  });
+
+  it("Handles an exception if onResponse receives a malformed URL", async () => {
+    const { baseElement } = renderWithReduxProvider(
+      <MemoryRouter>
+        <LoginHeader />
+      </MemoryRouter>
+    );
+
+    (proceedToLogin as jest.Mock).mockImplementation(({ onResponse }) => {
+      onResponse("not a valid url");
+    });
+
+    fireEvent.click(await screen.findByTitle(/Accedi/i));
+
+    await waitFor(() =>
+      expect(
+        getById(baseElement, "idTitleErrorModalPaymentCheckPage")
+      ).toBeInTheDocument()
+    );
   });
 });

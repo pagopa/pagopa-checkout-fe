@@ -19,11 +19,12 @@ jest.retryTimes(3);
 page.setDefaultNavigationTimeout(30000);
 page.setDefaultTimeout(30000);
 
-beforeEach(async () => {
-    await page.goto(CHECKOUT_URL);
-    await page.setViewport({width: 1200, height: 907});
+
+  beforeEach(async () => {
+    await page.goto(CHECKOUT_URL, { waitUntil: "networkidle0" });
+    await page.setViewport({ width: 1200, height: 907 });
     await page.evaluate(() => {
-        sessionStorage.removeItem("i18nextLng");
+      sessionStorage.removeItem("i18nextLng");
     });
 });
 
@@ -38,9 +39,9 @@ const navigateToFinalPage = async (lang, outcome) => {
     }, lang);
 
     if(outcome === 0) {
-        await page.goto(`${CHECKOUT_ESITO_V2_BASE_URL}?t=1747230371951#transactionId=test&outcome=${outcome}&totalAmount=12000&fees=15`);
+      await page.goto(`${CHECKOUT_ESITO_V2_BASE_URL}?t=1747230371951#transactionId=test&outcome=${outcome}&totalAmount=12000&fees=15`, { waitUntil: "networkidle0" });
     } else {
-        await page.goto(`${CHECKOUT_ESITO_V2_BASE_URL}?t=1747230371951#transactionId=test&outcome=${outcome}`);
+      await page.goto(`${CHECKOUT_ESITO_V2_BASE_URL}?t=1747230371951#transactionId=test&outcome=${outcome}`, { waitUntil: "networkidle0" });
     }
 
     //await page.waitForResponse(response => response.url().includes('/v1/features/values') && response.status() === 200);

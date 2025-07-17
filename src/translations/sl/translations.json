@@ -306,7 +306,7 @@
     "survey": {
       "body": "Zaupajte nam svoje izkušnje s plačevanjem in nam pomagajte izboljšati se.",
       "link": {
-        "href": "https://pagopa.gov.it/diccilatua/ces-pagamento/",
+        "href": "https://pagopa.qualtrics.com/jfe/form/SV_0jllXJcXhmSpb38",
         "text": "Pojdite na anketo"
       },
       "title": "Nam lahko poveste, kako je bilo?"
@@ -480,7 +480,7 @@
   },
   "ScheduledMaintenanceBanner": {
     "titleKey": "Načrtovano vzdrževanje",
-    "bodyKey": "Plačilo ne bo mogoče od 02:00 do 08:00 dne 9. julija 2025.",
+    "bodyKey": "Plačilo ne bo mogoče od 00:01 do 03:00 dne 18. julija 2025.",
     "linkTextKey": "Več informacij"
   },
   "maintenancePage": {

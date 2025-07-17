@@ -110,11 +110,6 @@ export default function LoginHeader() {
       } else {
         window.location.assign(url);
       }
-      mixpanel.track(MixpanelEventsId.CHK_LOGIN_SUCCESS, {
-        EVENT_ID: MixpanelEventsId.CHK_LOGIN_SUCCESS,
-        EVENT_CATEGORY: MixpanelEventCategory.TECH,
-        page: window.location.pathname,
-      });
     } catch {
       onError(ErrorsType.GENERIC_ERROR);
     }

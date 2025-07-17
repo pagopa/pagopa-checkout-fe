@@ -12,7 +12,7 @@ export const payNotice = async (
   const payBtn = await page.waitForSelector(payBtnSelector);
   await payBtn.click();
   await page.waitForNavigation();
-  await page.goto(checkoutUrlAfterAuth);
+  await page.goto(checkoutUrlAfterAuth, { waitUntil: "networkidle0" });
   const message = await page.waitForSelector(resultTitleSelector);
   return await message.evaluate((el) => el.textContent);
 };
