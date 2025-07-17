@@ -1,5 +1,13 @@
 import { createCounter } from "../counter";
 
+export const mockApiConfig = {
+  CHECKOUT_API_RETRY_NUMBERS: 10
+};
+
+jest.mock("../config/config", () => ({
+  getConfigOrThrow: jest.fn(() => mockApiConfig),
+}));
+
 describe("createCounter", () => {
   /* eslint-disable functional/no-let */
   let counter: {
