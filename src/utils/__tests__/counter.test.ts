@@ -1,7 +1,7 @@
 import { createCounter } from "../counter";
 
 export const mockApiConfig = {
-  CHECKOUT_API_RETRY_NUMBERS: 10
+  CHECKOUT_API_RETRY_NUMBERS: 10,
 };
 
 jest.mock("../config/config", () => ({
