@@ -74,15 +74,66 @@ function ErrorModal(props: {
   };
 
   const getErrorButtons = () => {
-    if (notListed(nodeFaultCodeCategory)) {
-      return PaymentCategoryResponses[FaultCategoryEnum.GENERIC_ERROR]?.buttons;
+    const HELPDESK_URL: string =
+      "https://assistenza.pagopa.gov.it/hc/it/search?utf8=%E2%9C%93&query=";
+    const query = encodeURIComponent(nodeFaultCodeDetails);
+
+    if (
+      [
+        FaultCategoryEnum.DOMAIN_UNKNOWN,
+        FaultCategoryEnum.PAYMENT_UNAVAILABLE,
+        FaultCategoryEnum.PAYMENT_DATA_ERROR,
+        FaultCategoryEnum.GENERIC_ERROR,
+      ].includes(nodeFaultCodeCategory as FaultCategoryEnum)
+    ) {
+      return [
+        {
+          title: "errorButton.help",
+          action: () => {
+            window.open(`${HELPDESK_URL}${query}`, "_blank")?.focus();
+          },
+        },
+        {
+          title: "errorButton.close",
+        },
+      ];
+    } else {
+      return [
+        {
+          title: "errorButton.close",
+        },
+      ];
     }
-    return PaymentCategoryResponses[nodeFaultCodeCategory]?.buttons;
+
+    // if (notListed(nodeFaultCodeCategory)) {
+    //   return PaymentCategoryResponses[FaultCategoryEnum.GENERIC_ERROR]?.buttons;
+    // }
+    // return PaymentCategoryResponses[nodeFaultCodeCategory]?.buttons;
   };
 
   const title = getErrorTitle() || "GENERIC_ERROR.title";
   const body = getErrorBody() || "GENERIC_ERROR.body";
   const buttons = getErrorButtons();
+
+  // const rawButtons = getErrorButtons();
+  // const buttons = rawButtons?.map((btn) => {
+  //   if (btn.title === "errorButton.help" && nodeFaultCodeDetails) {
+  //     return {
+  //       ...btn,
+  //       action: () => {
+  //         const query = encodeURIComponent(nodeFaultCodeDetails);
+  //         window
+  //           .open(
+  //             `https://assistenza.pagopa.gov.it/hc/it/search?utf8=%E2%9C%93&query=${query}`,
+  //             "_blank"
+  //           )
+  //           ?.focus();
+  //       },
+  //     };
+  //   }
+  //   return btn;
+  // });
+
   const buttonsDetail =
     props.error === ErrorsType.STATUS_ERROR ||
     props.error === ErrorsType.TIMEOUT
