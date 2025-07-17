@@ -7,11 +7,18 @@ export function ScheduledMaintenanceBanner() {
   return (
     <Alert severity="info" variant="standard" sx={{ alignItems: "center" }}>
       <AlertTitle>{t("ScheduledMaintenanceBanner.titleKey")}</AlertTitle>
-      <Box component="div">
+      <Box
+        component="div"
+        sx={{
+          "@media (max-width: 1024px)": {
+            whiteSpace: "normal",
+          },
+        }}
+      >
         {t("ScheduledMaintenanceBanner.bodyKey")}
         <Box mt={1}>
           <Link
-            href="https://status.platform.pagopa.it/it/maintenance/610207" // TODO: understand whether the status page link is dynamic, in order to move it to the environment configuration.
+            href="https://status.platform.pagopa.it/it/maintenance/619923" // TODO: understand whether the status page link is dynamic, in order to move it to the environment configuration.
             target="_blank"
             rel="noreferrer"
             style={{ fontWeight: 600, textDecoration: "none" }}

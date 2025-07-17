@@ -49,15 +49,19 @@ The table below describes all the Environment variables needed by the applicatio
    ```sh
    yarn generate
    ```
-3. Build
+3. Generate env config file
+   ```sh
+   yarn dev:env
+   ```
+4. Build
    ```sh
    yarn build
    ```
-4. tests
+5. tests
    ```sh
    yarn test
    ```
-5. Linter
+6. Linter
    ```sh
    yarn lint
    ```

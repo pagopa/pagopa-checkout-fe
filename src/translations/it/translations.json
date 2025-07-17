@@ -308,7 +308,7 @@
     "survey": {
       "body": "Raccontaci la tua esperienza con il pagamento e aiutaci a migliorare.",
       "link": {
-        "href": "https://pagopa.gov.it/diccilatua/ces-pagamento/",
+        "href": "https://pagopa.qualtrics.com/jfe/form/SV_0jllXJcXhmSpb38",
         "text": "Vai al sondaggio"
       },
       "title": "Puoi dirci com’è andata?"
@@ -481,7 +481,7 @@
   },
   "ScheduledMaintenanceBanner": {
     "titleKey": "Manutenzione programmata",
-    "bodyKey": "Non sarà possibile pagare dalle ore 02:00 alle ore 08:00 del 9 luglio 2025.",
+    "bodyKey": "Non sarà possibile pagare dalle ore 00:01 alle ore 03:00 del 18 luglio 2025.",
     "linkTextKey": "Maggiori informazioni"
   },
   "maintenancePage": {

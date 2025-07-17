@@ -40,12 +40,12 @@ page.setDefaultNavigationTimeout(30000);
 page.setDefaultTimeout(30000);
 
 beforeAll(async () => {
-    await page.goto(CHECKOUT_URL);
+    await page.goto(CHECKOUT_URL, { waitUntil: "networkidle0" });
     await page.setViewport({ width: 1200, height: 907 });
 });
 
 beforeEach(async () => {
-    await page.goto(CHECKOUT_URL);
+    await page.goto(CHECKOUT_URL, { waitUntil: "networkidle0" });
 });
 
 afterEach(async () => {

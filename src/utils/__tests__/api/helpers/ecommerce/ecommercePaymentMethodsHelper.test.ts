@@ -1,3 +1,4 @@
+import * as E from "fp-ts/Either";
 import { getSessionItem } from "../../../../../utils/storage/sessionStorage";
 import { ErrorsType } from "../../../../../utils/errors/checkErrorsModel";
 import {
@@ -200,6 +201,21 @@ describe("Ecommerce payment methods helper - calculateFees tests", () => {
 });
 
 describe("Ecommerce payment methods helper - getPaymentInstruments tests", () => {
+  it("Should call onError with GENERIC_ERROR and onResponse with empty array when API returns status 500", async () => {
+    // Simulate presence of token in session (therefore V3 branch)
+    (getSessionItem as jest.Mock).mockReturnValue("fake-auth-token");
+
+    // Simulate that getAllPaymentMethodsV3 returns an Either.left
+    (
+      apiPaymentEcommerceClientV3.getAllPaymentMethodsV3 as jest.Mock
+    ).mockReturnValue(Promise.resolve(E.left(new Error("some error"))));
+
+    await getPaymentInstruments({ amount: 100 }, mockOnError, mockOnResponse);
+
+    expect(mockOnError).toHaveBeenCalledWith(ErrorsType.GENERIC_ERROR);
+    expect(mockOnResponse).toHaveBeenCalledWith([]);
+  });
+
   it("Should call onResponse when api return correct value", async () => {
     (
       apiPaymentEcommerceClient.getAllPaymentMethods as jest.Mock

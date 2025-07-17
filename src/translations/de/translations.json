@@ -306,7 +306,7 @@
     "survey": {
       "body": "Teile uns deine Benutzererfahrung mit der Zahlung mit und hilf uns, besser zu werden.",
       "link": {
-        "href": "https://pagopa.gov.it/diccilatua/ces-pagamento/",
+        "href": "https://pagopa.qualtrics.com/jfe/form/SV_0jllXJcXhmSpb38",
         "text": "Weiter zur Umfrage"
       },
       "title": "Sagst du uns bitte, wie es gelaufen ist?"
@@ -477,7 +477,7 @@
   },
   "ScheduledMaintenanceBanner": {
     "titleKey": "Geplante Wartung",
-    "bodyKey": "Es wird nicht möglich sein, Zahlungen zwischen 02:00 und 08:00 am 9. Juli 2025 vorzunehmen.",
+    "bodyKey": "Es wird nicht möglich sein, Zahlungen zwischen 00:01 und 03:00 am 18. Juli 2025 vorzunehmen.",
     "linkTextKey": "Weitere Informationen"
   },
   "maintenancePage": {
