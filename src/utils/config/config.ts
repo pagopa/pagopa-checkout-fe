@@ -95,7 +95,7 @@ const errorOrConfig: t.Validation<IConfig> = IConfig.decode({
         (window as any)._env_.CHECKOUT_API_RETRY_NUMBERS,
         10
       )
-    : 20,
+    : 10,
   // eslint-disable-next-line no-underscore-dangle
   CHECKOUT_API_RETRY_DELAY: (window as any)._env_.CHECKOUT_API_RETRY_DELAY
     ? parseInt(
