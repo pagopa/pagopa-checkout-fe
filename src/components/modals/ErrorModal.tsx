@@ -45,13 +45,11 @@ function ErrorModal(props: {
   const theme = useTheme();
   const [copy, setCopy] = React.useState(t("clipboard.copy"));
 
+  const responses = PaymentCategoryResponses();
   const notListed = (faultCategory: string) =>
-    PaymentCategoryResponses[
-      faultCategory as keyof typeof FaultCategoryEnum
-    ] === undefined;
+    responses[faultCategory as FaultCategoryEnum] === undefined;
   const hasDetail = (faultCategory: string) =>
-    !!PaymentCategoryResponses[faultCategory as keyof typeof FaultCategoryEnum]
-      ?.detail;
+    !!responses[faultCategory as FaultCategoryEnum]?.detail;
   const showDetail = (text: string) => text === "ErrorCodeDescription";
 
   // error for Node verify & activation
@@ -61,23 +59,23 @@ function ErrorModal(props: {
   const nodeFaultCodeDetails =
     nodeFaultCode.length === 2 ? nodeFaultCode[1] : "";
 
-  const getErrorTitle = () =>
-    PaymentCategoryResponses[nodeFaultCodeCategory]?.title;
+  const getErrorTitle = () => responses[nodeFaultCodeCategory]?.title;
   const getErrorBody = () => {
     if (notListed(nodeFaultCodeCategory)) {
-      return PaymentCategoryResponses[FaultCategoryEnum.GENERIC_ERROR]?.body;
+      return responses[FaultCategoryEnum.GENERIC_ERROR]?.body;
     }
     if (hasDetail(nodeFaultCodeCategory)) {
       return "ErrorCodeDescription";
     }
-    return PaymentCategoryResponses[nodeFaultCodeCategory]?.body;
+    return responses[nodeFaultCodeCategory]?.body;
   };
 
   const getErrorButtons = () => {
     if (notListed(nodeFaultCodeCategory)) {
-      return PaymentCategoryResponses[FaultCategoryEnum.GENERIC_ERROR]?.buttons;
+      return responses[FaultCategoryEnum.GENERIC_ERROR]?.buttons;
     }
-    return PaymentCategoryResponses[nodeFaultCodeCategory]?.buttons;
+    return PaymentCategoryResponses(nodeFaultCodeDetails)[nodeFaultCodeCategory]
+      ?.buttons;
   };
 
   const title = getErrorTitle() || "GENERIC_ERROR.title";
