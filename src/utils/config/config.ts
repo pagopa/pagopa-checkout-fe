@@ -36,6 +36,7 @@ export const IConfig = t.interface({
   CHECKOUT_API_RETRY_DELAY: t.number,
   CHECKOUT_GDI_CHECK_TIMEOUT: t.number,
   CHECKOUT_API_AUTH_SERVICE_BASEPATH_V1: NonEmptyString,
+  CHECKOUT_API_RETRY_NUMBERS_LINEAR: t.number,
 });
 
 // eslint-disable-next-line no-underscore-dangle
@@ -93,7 +94,7 @@ const errorOrConfig: t.Validation<IConfig> = IConfig.decode({
         (window as any)._env_.CHECKOUT_API_RETRY_NUMBERS,
         10
       )
-    : 20,
+    : 10,
   // eslint-disable-next-line no-underscore-dangle
   CHECKOUT_API_RETRY_DELAY: (window as any)._env_.CHECKOUT_API_RETRY_DELAY
     ? parseInt(
@@ -107,6 +108,16 @@ const errorOrConfig: t.Validation<IConfig> = IConfig.decode({
     (window as any)._env_.CHECKOUT_GDI_CHECK_TIMEOUT,
     10
   ),
+
+  // eslint-disable-next-line no-underscore-dangle
+  CHECKOUT_API_RETRY_NUMBERS_LINEAR: (window as any)._env_
+    .CHECKOUT_API_RETRY_NUMBERS_LINEAR
+    ? parseInt(
+        // eslint-disable-next-line no-underscore-dangle
+        (window as any)._env_.CHECKOUT_API_RETRY_NUMBERS_LINEAR,
+        10
+      )
+    : 5,
 });
 
 /**

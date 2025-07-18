@@ -38,6 +38,7 @@ The table below describes all the Environment variables needed by the applicatio
 |----------------|-------------|------|
 |IO\_PAY\_PORTAL\_API\_HOST| api services | endpoint/string
 |IO\_PAY\_PORTAL\_API\_REQUEST\_TIMEOUT| request timeout | milliseconds
+|CHECKOUT_API_RETRY_NUMBERS_LINEAR| number of calls at regular intervals| number
 
 ### Installation
 
@@ -136,4 +137,23 @@ The app uses i18n for translations, in order to add a new one follow this steps:
       },
       //here
    }
+   ```
+   
+   ## Polling
+
+   The function exponentialPollingWithPromisePredicateFetch uses the variableBackoff formula to calculate the polling intervals based on the attempt number:
+
+   -  For attempts less than or equal to RETRY_NUMBERS_LINEAR, it returns a fixed delay.
+
+   -  For attempts greater than that, the delay increases linearly according to the formula.
+
+   - 
+   ```sh
+   const variableBackoff = (attempt: number): Millisecond => {
+      if (attempt <= RETRY_NUMBERS_LINEAR) {
+         return delay as Millisecond;
+      }
+
+      return (delay * (attempt - RETRY_NUMBERS_LINEAR)) as Millisecond;
+   };
    ```
