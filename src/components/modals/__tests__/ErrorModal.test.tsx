@@ -78,72 +78,70 @@ jest.mock("../../../utils/errors/errorsModel", () => {
   );
 
   return {
-    PaymentCategoryResponses: {
+    PaymentCategoryResponses: jest.fn(() => ({
       [FaultCategoryEnum.GENERIC_ERROR]: {
         title: "GENERIC_ERROR.title",
         body: "GENERIC_ERROR.body",
-        buttons: [{ text: "button.close", action: undefined }],
+        buttons: [{ title: "button.close", action: undefined }],
       },
       [FaultCategoryEnum.PAYMENT_UNAVAILABLE]: {
         title: "PAYMENT_UNAVAILABLE.title",
         body: "PAYMENT_UNAVAILABLE.body",
-        buttons: [{ text: "button.close", action: undefined }],
+        buttons: [{ title: "button.close", action: undefined }],
       },
       [FaultCategoryEnum.PAYMENT_EXPIRED]: {
         title: "PAYMENT_EXPIRED.title",
         body: "PAYMENT_EXPIRED.body",
-        buttons: [{ text: "button.close", action: undefined }],
+        buttons: [{ title: "button.close", action: undefined }],
       },
       [FaultCategoryEnum.PAYMENT_DATA_ERROR]: {
         title: "PAYMENT_DATA_ERROR.title",
         body: "ErrorCodeDescription",
         detail: true,
-        buttons: [{ text: "button.close", action: undefined }],
+        buttons: [{ title: "button.close", action: undefined }],
       },
       [FaultCategoryEnum.PAYMENT_DUPLICATED]: {
         title: "PAYMENT_DUPLICATED.title",
         body: "PAYMENT_DUPLICATED.body",
-        buttons: [{ text: "button.close", action: undefined }],
+        buttons: [{ title: "button.close", action: undefined }],
       },
       [FaultCategoryEnum.PAYMENT_UNKNOWN]: {
         title: "PAYMENT_UNKNOWN.title",
         body: "PAYMENT_UNKNOWN.body",
-        buttons: [{ text: "button.close", action: undefined }],
+        buttons: [{ title: "button.close", action: undefined }],
       },
       [FaultCategoryEnum.PAYMENT_CANCELED]: {
         title: "PAYMENT_CANCELED.title",
         body: "PAYMENT_CANCELED.body",
-        buttons: [{ text: "button.close", action: undefined }],
+        buttons: [{ title: "button.close", action: undefined }],
       },
       [FaultCategoryEnum.PAYMENT_ONGOING]: {
         title: "PAYMENT_ONGOING.title",
         body: "PAYMENT_ONGOING.body",
-        buttons: [{ text: "button.close", action: undefined }],
+        buttons: [{ title: "button.close", action: undefined }],
       },
       [FaultCategoryEnum.DOMAIN_UNKNOWN]: {
         title: "DOMAIN_UNKNOWN.title",
         body: "DOMAIN_UNKNOWN.body",
-        buttons: [{ text: "button.close", action: undefined }],
+        buttons: [{ title: "button.close", action: undefined }],
       },
-      // Add these for STATUS_ERROR and TIMEOUT tests
       STATUS_ERROR: {
         title: "STATUS_ERROR.title",
         body: "STATUS_ERROR.body",
         buttons: [
-          { text: "button.close", action: undefined },
-          { text: "button.retry", action: undefined },
+          { title: "button.close", action: undefined },
+          { title: "button.retry", action: undefined },
         ],
       },
       TIMEOUT: {
         title: "TIMEOUT.title",
         body: "TIMEOUT.body",
         buttons: [
-          { text: "button.close", action: undefined },
-          { text: "button.retry", action: undefined },
+          { title: "button.close", action: undefined },
+          { title: "button.retry", action: undefined },
         ],
       },
-    },
-    // Add ErrorModalBtn type export
+    })),
     ErrorModalBtn: {},
   };
 });
