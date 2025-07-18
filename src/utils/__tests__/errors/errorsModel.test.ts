@@ -117,4 +117,24 @@ describe("errorsModel", () => {
       expect(unknownError.buttons).toHaveLength(2);
     });
   });
+
+  it("should open the correct helpdesk URL using the provided error code", () => {
+    const mockErrorCodeDetail = "MOCK_ERROR_CODE";
+    const expectedUrl = `${HELPDESK_URL}${mockErrorCodeDetail}`;
+
+    const response =
+      PaymentCategoryResponses(mockErrorCodeDetail)[
+        FaultCategoryEnum.GENERIC_ERROR
+      ];
+
+    const helpButton = response.buttons?.find(
+      (btn: ErrorModalBtn) => btn.title === "errorButton.help"
+    );
+
+    expect(helpButton).toBeDefined();
+    expect(helpButton?.action).toBeDefined();
+
+    helpButton?.action?.();
+    expect(window.open).toHaveBeenCalledWith(expectedUrl, "_blank");
+  });
 });
