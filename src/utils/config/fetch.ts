@@ -26,8 +26,8 @@ import { getConfigOrThrow } from "./config";
 const API_TIMEOUT = getConfigOrThrow().CHECKOUT_API_TIMEOUT as Millisecond;
 const RETRY_NUMBERS_LINEAR = getConfigOrThrow()
   .CHECKOUT_API_RETRY_NUMBERS_LINEAR as number;
-const EXPONENT = getConfigOrThrow()
-  .CHECKOUT_API_RETRY_NUMBERS_EXPONENT as number;
+const BASE = getConfigOrThrow()
+  .CHECKOUT_API_RETRY_NUMBERS_BASE as number;
 
 export function retryingFetch(
   fetchApi: typeof fetch,
@@ -152,12 +152,11 @@ export const exponetialPollingWithPromisePredicateFetch = (
   // use a exponetial backoff
   /* eslint-disable functional/no-let */
   const variableBackoff = (attempt: number): Millisecond => {
-    if (attempt < RETRY_NUMBERS_LINEAR) {
+    if (attempt <= RETRY_NUMBERS_LINEAR) {
       return delay as Millisecond;
     }
 
-    return (delay *
-      Math.pow(EXPONENT, attempt - RETRY_NUMBERS_LINEAR)) as Millisecond;
+    return (delay * (attempt - RETRY_NUMBERS_LINEAR)) as Millisecond;
   };
   const retryLogic = withRetries<Error, Response>(retries, variableBackoff);
 
