@@ -26,8 +26,7 @@ import { getConfigOrThrow } from "./config";
 const API_TIMEOUT = getConfigOrThrow().CHECKOUT_API_TIMEOUT as Millisecond;
 const RETRY_NUMBERS_LINEAR = getConfigOrThrow()
   .CHECKOUT_API_RETRY_NUMBERS_LINEAR as number;
-const BASE = getConfigOrThrow()
-  .CHECKOUT_API_RETRY_NUMBERS_BASE as number;
+const BASE = getConfigOrThrow().CHECKOUT_API_RETRY_NUMBERS_BASE as number;
 
 export function retryingFetch(
   fetchApi: typeof fetch,

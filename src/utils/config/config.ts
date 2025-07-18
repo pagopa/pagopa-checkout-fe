@@ -110,17 +110,25 @@ const errorOrConfig: t.Validation<IConfig> = IConfig.decode({
     10
   ),
 
-  CHECKOUT_API_RETRY_NUMBERS_LINEAR: (window as any)._env_.CHECKOUT_API_RETRY_NUMBERS_LINEAR ? parseInt(
-    // eslint-disable-next-line no-underscore-dangle
-    (window as any)._env_.CHECKOUT_API_RETRY_NUMBERS_LINEAR,
-    10
-  ) : 5,
+  // eslint-disable-next-line no-underscore-dangle
+  CHECKOUT_API_RETRY_NUMBERS_LINEAR: (window as any)._env_
+    .CHECKOUT_API_RETRY_NUMBERS_LINEAR
+    ? parseInt(
+        // eslint-disable-next-line no-underscore-dangle
+        (window as any)._env_.CHECKOUT_API_RETRY_NUMBERS_LINEAR,
+        10
+      )
+    : 5,
 
-  CHECKOUT_API_RETRY_NUMBERS_BASE: (window as any)._env_.CHECKOUT_API_RETRY_NUMBERS_BASE ? parseInt(
-    // eslint-disable-next-line no-underscore-dangle
-    (window as any)._env_.CHECKOUT_API_RETRY_NUMBERS_BASE,
-    10
-  ) : 1,
+  // eslint-disable-next-line no-underscore-dangle
+  CHECKOUT_API_RETRY_NUMBERS_BASE: (window as any)._env_
+    .CHECKOUT_API_RETRY_NUMBERS_BASE
+    ? parseInt(
+        // eslint-disable-next-line no-underscore-dangle
+        (window as any)._env_.CHECKOUT_API_RETRY_NUMBERS_BASE,
+        10
+      )
+    : 1,
 });
 
 /**
