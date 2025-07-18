@@ -36,6 +36,7 @@ export enum SessionItems {
   authToken = "authToken",
   noticeCodeDataEntry = "noticeCodeDataEntry",
   enableScheduledMaintenanceBanner = "enableScheduledMaintenanceBanner",
+  counterPolling = "counterPolling",
 }
 const isParsable = (item: SessionItems) =>
   !(
