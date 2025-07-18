@@ -150,11 +150,12 @@ export const exponetialPollingWithPromisePredicateFetch = (
   // use a exponetial backoff
   /* eslint-disable functional/no-let */
   const variableBackoff = (attempt: number): Millisecond => {
-    if (attempt <= RETRY_NUMBERS_LINEAR) {
+    const totalAttempts = attempt + 1;
+    if (totalAttempts <= RETRY_NUMBERS_LINEAR) {
       return delay as Millisecond;
     }
 
-    return (delay * (attempt - RETRY_NUMBERS_LINEAR)) as Millisecond;
+    return (delay * (totalAttempts - RETRY_NUMBERS_LINEAR)) as Millisecond;
   };
   const retryLogic = withRetries<Error, Response>(retries, variableBackoff);
 
