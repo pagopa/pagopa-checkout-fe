@@ -347,7 +347,7 @@ describe("Checkout authentication tests", () => {
   ])("Should show error receiving 401 from get user info on auth-callback page for language [%s]", async (lang, translation) => {
     await selectLanguage(lang);
 
-    const authCallbackError = await tryLoginWithAuthCallbackError(KORPTIDs.FAIL_GET_USERS_401, OKPaymentInfo,VALID_FISCAL_CODE);
+    const authCallbackError = await tryLoginWithAuthCallbackError(KORPTIDs.FAIL_GET_USERS_401, OKPaymentInfo.VALID_FISCAL_CODE);
 
     const regex = new RegExp(URL.BASE_CALLBACK_URL_REGEX);
     expect(regex.test(authCallbackError.currentUrl)).toBe(true);

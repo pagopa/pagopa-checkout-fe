@@ -47,7 +47,7 @@ describe("Transaction outcome success tests", () => {
             fiscalCode,
             OKPaymentInfo.EMAIL,
             OKPaymentInfo.VALID_CARD_DATA,
-            OKPaymentInfo.CHECKOUT_URL_AFTER_AUTHORIZATION
+            URL.CHECKOUT_URL_AFTER_AUTHORIZATION
         )
         expect(resultMessage).toContain(itTranslation.paymentResponsePage[outcomeCode].title.replace("{{amount}}", "120,15\xa0€"));
     });
