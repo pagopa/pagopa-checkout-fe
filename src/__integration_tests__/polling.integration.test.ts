@@ -45,7 +45,7 @@ describe("Transaction outcome polling logic after payment authorization", () => 
  
        let outcomeCallCount = 0;  
  
-       page.on("request", (request: any) => {
+       page.on("request", (request) => {
          const url = request.url();
          if (
            url.includes("/ecommerce/checkout/v1/transactions") &&
