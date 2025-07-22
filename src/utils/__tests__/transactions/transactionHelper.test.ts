@@ -7,6 +7,11 @@ jest.mock("../../config/fetch", () => ({
   constantPollingWithPromisePredicateFetch: jest.fn(() => jest.fn()),
 }));
 
+jest.mock("../../config/fetch", () => ({
+  retryingFetch: jest.fn(() => jest.fn()),
+  exponetialPollingWithPromisePredicateFetch: jest.fn(() => jest.fn()),
+}));
+
 import * as E from "fp-ts/Either";
 import { UNKNOWN } from "../../transactions/TransactionStatesTypes";
 import { ecommerceTransactionOutcome } from "../../transactions/transactionHelper";
