@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import * as TE from "fp-ts/TaskEither";
 import { pipe } from "fp-ts/function";
+import { ApmRoutes } from "@elastic/apm-rum-react";
 import { useAppDispatch, useAppSelector } from "./redux/hooks/hooks";
 import {
   selectMaintenanceEnabled,
@@ -46,7 +47,6 @@ import MaintenancePage from "./routes/MaintenancePage";
 import MaintenanceGuard from "./components/commons/MaintenanceGuard";
 import featureFlags from "./utils/featureFlags";
 import { useFeatureFlagsAll } from "./hooks/useFeatureFlags";
-import { ApmRoutes } from '@elastic/apm-rum-react'
 
 export function App() {
   const { t } = useTranslation();
@@ -154,141 +154,140 @@ export function App() {
             {maintenanceEnabled ? (
               <MaintenancePage />
             ) : (
-
-            <ApmRoutes> 
-              <Routes>
-                <Route path="/" element={<PaymentOutlet />}>
-                  <Route path={CheckoutRoutes.ROOT} element={<IndexPage />} />
-                  <Route
-                    path={CheckoutRoutes.MAINTENANCE}
-                    element={
-                      // This guard ensures the route is accessible only when the maintenance feature flag is active
-                      <MaintenanceGuard>
-                        <MaintenancePage />
-                      </MaintenanceGuard>
-                    }
-                  />
-                  <Route
-                    path={CheckoutRoutes.AUTH_CALLBACK}
-                    element={<AuthCallback />}
-                  />
-                  <Route
-                    path={CheckoutRoutes.AUTH_EXPIRED}
-                    element={<AuthExpiredPage />}
-                  />
-                  <Route
-                    path={CheckoutRoutes.DONA}
-                    element={<DonationPageDismissed />}
-                  />
-                  <Route
-                    path={CheckoutRoutes.LEGGI_CODICE_QR}
-                    element={<PaymentQrPage />}
-                  />
-                  <Route
-                    path={CheckoutRoutes.INSERISCI_DATI_AVVISO}
-                    element={<PaymentNoticePage />}
-                  />
-                  <Route
-                    path={CheckoutRoutes.DATI_PAGAMENTO}
-                    element={
-                      <Guard item={SessionItems.paymentInfo}>
-                        <PaymentSummaryPage />
-                      </Guard>
-                    }
-                  />
-                  <Route
-                    path={CheckoutRoutes.INSERISCI_EMAIL}
-                    element={
-                      <NoticeGuard>
-                        <PaymentEmailPage />
-                      </NoticeGuard>
-                    }
-                  />
-                  <Route
-                    path={CheckoutRoutes.INSERISCI_CARTA}
-                    element={
-                      <Guard item={SessionItems.useremail}>
-                        <IframeCardPage />
-                      </Guard>
-                    }
-                  />
-                  <Route
-                    path={CheckoutRoutes.SCEGLI_METODO}
-                    element={
-                      <Guard item={SessionItems.useremail}>
-                        <PaymentChoicePage />
-                      </Guard>
-                    }
-                  />
-                  <Route
-                    path={CheckoutRoutes.LISTA_PSP}
-                    element={
-                      <Guard item={SessionItems.transaction}>
-                        <PaymentPspListPage />
-                      </Guard>
-                    }
-                  />
-                  <Route
-                    path={CheckoutRoutes.RIEPILOGO_PAGAMENTO}
-                    element={
-                      <Guard item={SessionItems.transaction}>
-                        <PaymentCheckPage />
-                      </Guard>
-                    }
-                  />
-                  <Route
-                    path={CheckoutRoutes.GDI_CHECK}
-                    element={
-                      <Guard item={SessionItems.orderId}>
-                        <GdiCheckPage />
-                      </Guard>
-                    }
-                  />
-                  <Route
-                    path={CheckoutRoutes.ESITO}
-                    element={
-                      <Guard item={SessionItems.transaction}>
-                        <PaymentResponsePage />
-                      </Guard>
-                    }
-                  />
-                  <Route
-                    path={`v2/${CheckoutRoutes.ESITO}`}
-                    element={
-                      <Guard item={SessionItems.transaction}>
-                        <PaymentResponsePageV2 />
-                      </Guard>
-                    }
-                  />
-                  <Route
-                    path={CheckoutRoutes.ANNULLATO}
-                    element={<CancelledPage />}
-                  />
-                  <Route path={CheckoutRoutes.ERRORE} element={<KOPage />} />
-                  <Route
-                    path={CheckoutRoutes.SESSIONE_SCADUTA}
-                    element={<SessionExpiredPage />}
-                  />
-                  <Route
-                    path=":rptid"
-                    element={
-                      <RptidGuard>
-                        <PaymentNoticePage />
-                      </RptidGuard>
-                    }
-                  />
-                  <Route
-                    path={`${CheckoutRoutes.CARRELLO}/:cartid`}
-                    element={
-                      // set a guard here to check if cartid matches a regex
-                      <PaymentCartPage />
-                    }
-                  />
+              <ApmRoutes>
+                <Routes>
+                  <Route path="/" element={<PaymentOutlet />}>
+                    <Route path={CheckoutRoutes.ROOT} element={<IndexPage />} />
+                    <Route
+                      path={CheckoutRoutes.MAINTENANCE}
+                      element={
+                        // This guard ensures the route is accessible only when the maintenance feature flag is active
+                        <MaintenanceGuard>
+                          <MaintenancePage />
+                        </MaintenanceGuard>
+                      }
+                    />
+                    <Route
+                      path={CheckoutRoutes.AUTH_CALLBACK}
+                      element={<AuthCallback />}
+                    />
+                    <Route
+                      path={CheckoutRoutes.AUTH_EXPIRED}
+                      element={<AuthExpiredPage />}
+                    />
+                    <Route
+                      path={CheckoutRoutes.DONA}
+                      element={<DonationPageDismissed />}
+                    />
+                    <Route
+                      path={CheckoutRoutes.LEGGI_CODICE_QR}
+                      element={<PaymentQrPage />}
+                    />
+                    <Route
+                      path={CheckoutRoutes.INSERISCI_DATI_AVVISO}
+                      element={<PaymentNoticePage />}
+                    />
+                    <Route
+                      path={CheckoutRoutes.DATI_PAGAMENTO}
+                      element={
+                        <Guard item={SessionItems.paymentInfo}>
+                          <PaymentSummaryPage />
+                        </Guard>
+                      }
+                    />
+                    <Route
+                      path={CheckoutRoutes.INSERISCI_EMAIL}
+                      element={
+                        <NoticeGuard>
+                          <PaymentEmailPage />
+                        </NoticeGuard>
+                      }
+                    />
+                    <Route
+                      path={CheckoutRoutes.INSERISCI_CARTA}
+                      element={
+                        <Guard item={SessionItems.useremail}>
+                          <IframeCardPage />
+                        </Guard>
+                      }
+                    />
+                    <Route
+                      path={CheckoutRoutes.SCEGLI_METODO}
+                      element={
+                        <Guard item={SessionItems.useremail}>
+                          <PaymentChoicePage />
+                        </Guard>
+                      }
+                    />
+                    <Route
+                      path={CheckoutRoutes.LISTA_PSP}
+                      element={
+                        <Guard item={SessionItems.transaction}>
+                          <PaymentPspListPage />
+                        </Guard>
+                      }
+                    />
+                    <Route
+                      path={CheckoutRoutes.RIEPILOGO_PAGAMENTO}
+                      element={
+                        <Guard item={SessionItems.transaction}>
+                          <PaymentCheckPage />
+                        </Guard>
+                      }
+                    />
+                    <Route
+                      path={CheckoutRoutes.GDI_CHECK}
+                      element={
+                        <Guard item={SessionItems.orderId}>
+                          <GdiCheckPage />
+                        </Guard>
+                      }
+                    />
+                    <Route
+                      path={CheckoutRoutes.ESITO}
+                      element={
+                        <Guard item={SessionItems.transaction}>
+                          <PaymentResponsePage />
+                        </Guard>
+                      }
+                    />
+                    <Route
+                      path={`v2/${CheckoutRoutes.ESITO}`}
+                      element={
+                        <Guard item={SessionItems.transaction}>
+                          <PaymentResponsePageV2 />
+                        </Guard>
+                      }
+                    />
+                    <Route
+                      path={CheckoutRoutes.ANNULLATO}
+                      element={<CancelledPage />}
+                    />
+                    <Route path={CheckoutRoutes.ERRORE} element={<KOPage />} />
+                    <Route
+                      path={CheckoutRoutes.SESSIONE_SCADUTA}
+                      element={<SessionExpiredPage />}
+                    />
+                    <Route
+                      path=":rptid"
+                      element={
+                        <RptidGuard>
+                          <PaymentNoticePage />
+                        </RptidGuard>
+                      }
+                    />
+                    <Route
+                      path={`${CheckoutRoutes.CARRELLO}/:cartid`}
+                      element={
+                        // set a guard here to check if cartid matches a regex
+                        <PaymentCartPage />
+                      }
+                    />
+                    <Route path="*" element={<Navigate replace to="/" />} />
+                  </Route>
                   <Route path="*" element={<Navigate replace to="/" />} />
-                </Route>
-                <Route path="*" element={<Navigate replace to="/" />} />
-              </Routes>
-          </ApmRoutes> 
+                </Routes>
+              </ApmRoutes>
             )}
           </Layout>
         </BrowserRouter>

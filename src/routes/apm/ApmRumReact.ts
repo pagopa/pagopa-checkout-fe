@@ -1,9 +1,9 @@
 // elastic__apm-rum-react.d.ts
-declare module '@elastic/apm-rum-react' {
-  import { ComponentType } from 'react';
-import { Route, Routes } from 'react-router';
-export const ApmRoute: typeof Route;
-export const ApmRoutes: typeof Routes;
+declare module "@elastic/apm-rum-react" {
+  import { ComponentType } from "react";
+  import { Route, Routes } from "react-router";
+  export const ApmRoute: typeof Route;
+  export const ApmRoutes: typeof Routes;
 
   /**
    * Wrap a component to record an elastic APM transaction while it is rendered.
@@ -14,6 +14,6 @@ export const ApmRoutes: typeof Routes;
    */
   export const withTransaction: (
     name: string,
-    eventType: string,
+    eventType: string
   ) => <T>(component: ComponentType<T>) => ComponentType<T>;
 }
