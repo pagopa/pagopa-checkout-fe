@@ -46,6 +46,7 @@ import MaintenancePage from "./routes/MaintenancePage";
 import MaintenanceGuard from "./components/commons/MaintenanceGuard";
 import featureFlags from "./utils/featureFlags";
 import { useFeatureFlagsAll } from "./hooks/useFeatureFlags";
+import { ApmRoutes } from '@elastic/apm-rum-react'
 
 export function App() {
   const { t } = useTranslation();
@@ -153,6 +154,8 @@ export function App() {
             {maintenanceEnabled ? (
               <MaintenancePage />
             ) : (
+
+            <ApmRoutes> 
               <Routes>
                 <Route path="/" element={<PaymentOutlet />}>
                   <Route path={CheckoutRoutes.ROOT} element={<IndexPage />} />
@@ -285,6 +288,7 @@ export function App() {
                 </Route>
                 <Route path="*" element={<Navigate replace to="/" />} />
               </Routes>
+          </ApmRoutes> 
             )}
           </Layout>
         </BrowserRouter>
