@@ -14,11 +14,12 @@ import {
 } from "../utils/storage/sessionStorage";
 import featureFlags from "../utils/featureFlags";
 import { setMaintenanceEnabled } from "../redux/slices/maintanancePage";
+import { initializeApm } from "../utils/elastic/apmInitializer";
 
 export default function IndexPage() {
   window.removeEventListener("beforeunload", onBrowserUnload);
   const dispatch = useAppDispatch();
-
+  initializeApm();
   const [
     isScheduledMaintenanceBannerEnabled,
     setIsScheduledMaintenanceBannerEnabled,
