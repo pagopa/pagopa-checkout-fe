@@ -734,7 +734,7 @@ describe("Logout tests", () => {
     console.log("Login completed");
 
     const resultMessage = await cancelPaymentOK(
-      OKPaymentInfo.CANCEL_PAYMENT_OK,
+      KORPTIDs.CANCEL_PAYMENT_OK,
       OKPaymentInfo.VALID_FISCAL_CODE,
       OKPaymentInfo.EMAIL,
       OKPaymentInfo.VALID_CARD_DATA
