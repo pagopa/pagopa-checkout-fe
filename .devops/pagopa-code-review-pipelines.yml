@@ -206,8 +206,6 @@ stages:
           displayName: 'Start backend mock'
           workingDirectory: pagopa-checkout-be-mock
 
-        - checkout: self
-
         - template: templates/node-job-setup/template.yaml@pagopaCommons
           parameters:
            projectDir: pagopa-checkout-fe
@@ -268,8 +266,6 @@ stages:
           displayName: 'Start backend mock'
           workingDirectory: pagopa-checkout-be-mock
 
-        - checkout: self
-
         - template: templates/node-job-setup/template.yaml@pagopaCommons
           parameters:
            projectDir: pagopa-checkout-fe
@@ -326,8 +322,6 @@ stages:
           displayName: 'Start backend mock'
           workingDirectory: pagopa-checkout-be-mock
 
-        - checkout: self
-
         - template: templates/node-job-setup/template.yaml@pagopaCommons
           parameters:
            projectDir: pagopa-checkout-fe
@@ -383,8 +377,6 @@ stages:
             nohup yarn start &
           displayName: 'Start backend mock'
           workingDirectory: pagopa-checkout-be-mock
-
-        - checkout: self
 
         - template: templates/node-job-setup/template.yaml@pagopaCommons
           parameters:
