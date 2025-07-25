@@ -352,7 +352,7 @@ stages:
             searchFolder: '$(System.DefaultWorkingDirectory)'
             failTaskOnFailedTests: true
 
-  - stage: PaymentResponsePageV2_FeatureFlags_Integration_Tests
+  - stage: PaymentResponsePageV2_And_FeatureFlags_Integration_Tests
     condition: and(succeeded(), eq('${{parameters.PAYMENT_RESPONSE_PAGE_V2_TEST}}', true))
     dependsOn: []
     jobs:
