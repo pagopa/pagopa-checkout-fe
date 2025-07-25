@@ -1,6 +1,6 @@
 {
   "name": "io-pay-portal-frontend",
-  "version": "4.24.10",
+  "version": "4.24.11",
   "scripts": {
     "type-check": "tsc",
     "generate": "npm-run-all generate:*",
@@ -24,6 +24,7 @@
     "test:outcomes-integration": "jest --config=jest.outcomes.integration.config.js",
     "test:payment-responsepageV2": "jest --config=jest.payment-response-pagev2.integration.config.js",
     "test:feature-flags-integration": "jest --config=jest.feature-flags.integration.config.js",
+    "test:outcome-polling-integration": "jest --config=jest.polling.integration.config.js",
     "test:coverage": "jest --coverage --passWithNoTests --config=jest.config.js",
     "preversion": "auto-changelog  --config .auto-changelog.json --unreleased --commit-limit false --stdout --template preview.hbs",
     "version": "auto-changelog -p --config .auto-changelog.json --unreleased && git add CHANGELOG.md",

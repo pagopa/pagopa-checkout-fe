@@ -25,6 +25,9 @@ import { URL, KORPTIDs, OKPaymentInfo  } from "./utils/testConstants";
  * Increase default test timeout (120000ms)
  * to support entire payment flow
  */
+
+const RETRY_CODE = "302016723749670500";
+const OUTCOME_FISCAL_CODE_SUCCESS = "77777777000";
 jest.setTimeout(80000);
 jest.retryTimes(3);
 page.setDefaultNavigationTimeout(40000);

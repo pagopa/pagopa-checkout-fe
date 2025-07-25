@@ -15,8 +15,11 @@ describe("API Clients", () => {
 
   jest.mock("../../config/fetch", () => ({
     retryingFetch: jest.fn((_) => jest.fn()),
+    exponetialPollingWithPromisePredicateFetch: jest.fn((_) => jest.fn()),
     constantPollingWithPromisePredicateFetch: jest.fn((_) => jest.fn()),
+    e: jest.fn((_) => jest.fn()),
   }));
+
   /* eslint-disable functional/immutable-data */
   global.fetch = jest.fn().mockResolvedValue({
     json: jest.fn().mockResolvedValue({}),

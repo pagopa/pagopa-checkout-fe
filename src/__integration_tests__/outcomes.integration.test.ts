@@ -2,7 +2,6 @@ import itTranslation from "../translations/it/translations.json";
 import { clickButtonBySelector, payNotice, selectLanguage } from "./utils/helpers";
 import { URL, KONoticeCodes, OKPaymentInfo } from "./utils/testConstants";
 
-
 jest.setTimeout(60000);
 jest.retryTimes(3);
 page.setDefaultNavigationTimeout(30000);
@@ -47,9 +46,8 @@ describe("Transaction outcome success tests", () => {
             fiscalCode,
             OKPaymentInfo.EMAIL,
             OKPaymentInfo.VALID_CARD_DATA,
-            OKPaymentInfo.CHECKOUT_URL_AFTER_AUTHORIZATION
+            URL.CHECKOUT_URL_AFTER_AUTHORIZATION
         )
         expect(resultMessage).toContain(itTranslation.paymentResponsePage[outcomeCode].title.replace("{{amount}}", "120,15\xa0€"));
     });
-
 });
