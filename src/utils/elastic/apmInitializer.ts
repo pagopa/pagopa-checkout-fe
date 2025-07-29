@@ -7,7 +7,7 @@ export const initializeApm = (): ApmBase =>
     active: true,
     serviceName: "Checkout-fe",
     serverUrl:
-      "https://0fbb6b488afc4677a39b9655f2caa1c2.apm.westeurope.azure.elastic-cloud.com:443",
+      "https://pagopa-s-weu-ec.apm.westeurope.azure.elastic-cloud.com:443",
     environment: "DEV",
     serviceVersion,
   });
