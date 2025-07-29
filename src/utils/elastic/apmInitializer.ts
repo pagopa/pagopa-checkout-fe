@@ -2,8 +2,8 @@ import { ApmBase, init as initApm } from "@elastic/apm-rum";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const serviceVersion = require("../../../package.json").version;
-export const initializeApm = (): ApmBase => {
-  const apm = initApm({
+export const initializeApm = (): ApmBase =>
+  initApm({
     active: true,
     serviceName: "Checkout-fe",
     serverUrl:
@@ -11,9 +11,3 @@ export const initializeApm = (): ApmBase => {
     environment: "DEV",
     serviceVersion,
   });
-  // eslint-disable-next-line no-console
-  console.log(`APM enabled -> : ${apm.isEnabled()}`);
-  // eslint-disable-next-line no-console
-  console.log(`APM active -> : ${apm.isActive()}`);
-  return apm;
-};

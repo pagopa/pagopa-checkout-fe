@@ -47,8 +47,14 @@ import MaintenancePage from "./routes/MaintenancePage";
 import MaintenanceGuard from "./components/commons/MaintenanceGuard";
 import featureFlags from "./utils/featureFlags";
 import { useFeatureFlagsAll } from "./hooks/useFeatureFlags";
+import { initializeApm } from "./utils/elastic/apmInitializer";
 
 export function App() {
+  const apm = initializeApm();
+  // eslint-disable-next-line no-console
+  console.log(`APM enabled -> : ${apm.isEnabled()}`);
+  // eslint-disable-next-line no-console
+  console.log(`APM active -> : ${apm.isActive()}`);
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
