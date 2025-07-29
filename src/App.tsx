@@ -47,12 +47,10 @@ import MaintenancePage from "./routes/MaintenancePage";
 import MaintenanceGuard from "./components/commons/MaintenanceGuard";
 import featureFlags from "./utils/featureFlags";
 import { useFeatureFlagsAll } from "./hooks/useFeatureFlags";
-import { initializeApm } from "./utils/elastic/apmInitializer";
 
 export function App() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const elasticApm = initializeApm();
 
   const fixedFooterPages = [
     CheckoutRoutes.ROOT,
