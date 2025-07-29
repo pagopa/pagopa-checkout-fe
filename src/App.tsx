@@ -2,7 +2,7 @@
 import CssBaseline from "@mui/material/CssBaseline";
 import React, { useContext } from "react";
 import { useTranslation } from "react-i18next";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route } from "react-router-dom";
 import * as TE from "fp-ts/TaskEither";
 import { pipe } from "fp-ts/function";
 import { ApmRoutes } from "@elastic/apm-rum-react";
@@ -47,10 +47,12 @@ import MaintenancePage from "./routes/MaintenancePage";
 import MaintenanceGuard from "./components/commons/MaintenanceGuard";
 import featureFlags from "./utils/featureFlags";
 import { useFeatureFlagsAll } from "./hooks/useFeatureFlags";
+import { initializeApm } from "./utils/elastic/apmInitializer";
 
 export function App() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+  const elasticApm = initializeApm();
 
   const fixedFooterPages = [
     CheckoutRoutes.ROOT,
