@@ -307,7 +307,7 @@ describe("LoginHeader", () => {
       ).toBeInTheDocument()
     );
   });
-   it("renders the login button with translated text", () => {
+  it("renders the login button with translated text", () => {
     renderWithReduxProvider(
       <MemoryRouter>
         <LoginHeader />
