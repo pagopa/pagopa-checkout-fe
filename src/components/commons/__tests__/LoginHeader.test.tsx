@@ -27,6 +27,7 @@ jest.mock("react-i18next", () => ({
         "mainPage.header.logout": "Esci",
         "mainPage.footer.pagoPA": "PagoPA S.p.A.",
         "ariaLabels.assistance": "Assistenza",
+        "authExpiredPage.buttons.login": "Login",
       };
       return translations[key] || key;
     },
@@ -305,5 +306,15 @@ describe("LoginHeader", () => {
         getById(baseElement, "idTitleErrorModalPaymentCheckPage")
       ).toBeInTheDocument()
     );
+  });
+   it("renders the login button with translated text", () => {
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <LoginHeader />
+      </MemoryRouter>
+    );
+
+    const loginButton = screen.getByRole("button", { name: /login/i });
+    expect(loginButton).toBeInTheDocument();
   });
 });
