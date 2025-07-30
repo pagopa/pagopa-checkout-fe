@@ -18,7 +18,6 @@ import { setMaintenanceEnabled } from "../redux/slices/maintanancePage";
 export default function IndexPage() {
   window.removeEventListener("beforeunload", onBrowserUnload);
   const dispatch = useAppDispatch();
-
   const [
     isScheduledMaintenanceBannerEnabled,
     setIsScheduledMaintenanceBannerEnabled,
