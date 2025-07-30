@@ -10,4 +10,5 @@ export const initializeApm = (): ApmBase =>
       "https://pagopa-s-weu-ec.apm.westeurope.azure.elastic-cloud.com:443",
     environment: "DEV",
     serviceVersion,
+    distributedTracingOrigins: ['https://dev.checkout.pagopa.it']
   });
