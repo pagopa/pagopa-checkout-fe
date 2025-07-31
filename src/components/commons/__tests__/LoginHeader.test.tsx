@@ -317,5 +317,6 @@ describe("LoginHeader", () => {
 
     const loginButton = screen.getByRole("button", { name: "Login" });
     expect(loginButton).toBeInTheDocument();
+    expect(tMock).toHaveBeenCalledWith("authExpiredPage.buttons.login");
   });
 });
