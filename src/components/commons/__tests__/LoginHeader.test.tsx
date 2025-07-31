@@ -19,18 +19,19 @@ import {
   MixpanelEventsId,
 } from "../../../utils/mixpanel/mixpanelEvents";
 
+const tMock = jest.fn((key: string) => {
+  const translations: Record<string, string> = {
+    "mainPage.header.logout": "Esci",
+    "mainPage.footer.pagoPA": "PagoPA S.p.A.",
+    "ariaLabels.assistance": "Assistenza",
+    "authExpiredPage.buttons.login": "Login",
+  };
+  return translations[key] || key;
+});
+
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
-    t: (key: string) => {
-      // Simple mock translation function
-      const translations: Record<string, string> = {
-        "mainPage.header.logout": "Esci",
-        "mainPage.footer.pagoPA": "PagoPA S.p.A.",
-        "ariaLabels.assistance": "Assistenza",
-        "authExpiredPage.buttons.login": "Login",
-      };
-      return translations[key] || key;
-    },
+    t: tMock,
   }),
   Trans: ({
     i18nKey,
@@ -314,7 +315,7 @@ describe("LoginHeader", () => {
       </MemoryRouter>
     );
 
-    const loginButton = screen.getByRole("button", { name: /login/i });
+    const loginButton = screen.getByRole("button", { name: "Login" });
     expect(loginButton).toBeInTheDocument();
   });
 });
