@@ -105,6 +105,8 @@ function ErrorModal(props: {
         [FaultCategoryEnum.GENERIC_ERROR]: MixpanelEventsId.GENERIC_ERROR,
         [FaultCategoryEnum.PAYMENT_DATA_ERROR]:
           MixpanelEventsId.PAYMENT_DATA_ERROR,
+        [FaultCategoryEnum.INVALID_QRCODE]:
+          MixpanelEventsId.CHK_PAYMENT_INVALID_CODE_ERROR,
       };
 
       const eventId = eventMap[nodeFaultCodeCategory as FaultCategoryEnum];

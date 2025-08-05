@@ -1,7 +1,12 @@
-import { init, track, Mixpanel, get_distinct_id } from "mixpanel-browser";
+import { get_distinct_id, init, Mixpanel, track } from "mixpanel-browser";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
 import { getConfigOrThrow } from "../config/config";
+import {
+  getSessionItem,
+  SessionItems,
+  setSessionItem,
+} from "../storage/sessionStorage";
 
 const ENV = getConfigOrThrow().CHECKOUT_ENV;
 
@@ -17,8 +22,15 @@ const mixpanelInit = function (): void {
       property_blacklist: ["$current_url", "$initial_referrer", "$referrer"],
       loaded(mixpanel: Mixpanel) {
         // this is useful to obtain a new distinct_id every session
-        if (sessionStorage.getItem("rptId") === null) {
+        if (getSessionItem(SessionItems.noticeInfo) === null) {
           mixpanel.reset();
+        }
+        const distinct_id = getSessionItem(SessionItems.distinctId) as string;
+        if (distinct_id) {
+          mixpanel.identify(distinct_id);
+        } else {
+          const currentDistinctId = get_distinct_id();
+          setSessionItem(SessionItems.distinctId, currentDistinctId);
         }
       },
     });

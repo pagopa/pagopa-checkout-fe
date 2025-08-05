@@ -17,7 +17,7 @@ export function getTotalFromCart(cart: Cart): number {
 export function adaptCartAsPaymentInfo(cart: Cart): void {
   const CartItem = cart.paymentNotices[0];
   const CartAsPI = {
-    amount: CartItem.amount,
+    amount: parseFloat(CartItem.amount.toFixed(2)),
     paymentContextCode: "CART0000000000000000000000000000",
     rptId: `${CartItem.fiscalCode}${CartItem.noticeNumber}`,
     paFiscalCode: CartItem.fiscalCode,

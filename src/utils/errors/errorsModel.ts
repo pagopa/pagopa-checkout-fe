@@ -101,6 +101,28 @@ export const PaymentCategoryResponses = (
       },
     ],
   },
+  INVALID_QRCODE: {
+    title: "INVALID_QRCODE.title",
+    detail: false,
+    body: "INVALID_QRCODE.body",
+    buttons: [
+      {
+        title: "errorButton.close",
+      },
+      {
+        title: "errorButton.help",
+        // eslint-disable-next-line sonarjs/no-identical-functions
+        action: () => {
+          window
+            .open(
+              `${HELPDESK_URL}${errorCodeDetail ?? "GENERIC_ERROR"}`,
+              "_blank"
+            )
+            ?.focus();
+        },
+      },
+    ],
+  },
   PAYMENT_DUPLICATED: {
     title: "PAYMENT_DUPLICATED.title",
     detail: false,

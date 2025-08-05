@@ -162,26 +162,4 @@ describe("PaymentQrPage", () => {
 
     expect(navigate).toHaveBeenCalledWith("/inserisci-dati-avviso");
   });
-
-  test("tracks CHK_PAYMENT_INVALID_CODE_ERROR when scanned QR code is invalid", () => {
-    renderWithReduxProvider(
-      <MemoryRouter>
-        <PaymentQrPage />
-      </MemoryRouter>
-    );
-
-    const mockButton = screen.getByText("QR Reader Mock");
-    fireEvent.click(mockButton);
-
-    expect(mixpanel.track).toHaveBeenCalledWith(
-      MixpanelEventsId.CHK_PAYMENT_INVALID_CODE_ERROR,
-      {
-        EVENT_ID: MixpanelEventsId.CHK_PAYMENT_INVALID_CODE_ERROR,
-        EVENT_CATEGORY: MixpanelEventCategory.KO,
-      }
-    );
-
-    expect(screen.getByText("GENERIC_ERROR.title")).toBeInTheDocument();
-    expect(screen.getByText("GENERIC_ERROR.body")).toBeInTheDocument();
-  });
 });

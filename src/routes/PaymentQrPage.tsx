@@ -37,6 +37,7 @@ export default function PaymentQrPage() {
   }, []);
 
   const onError = React.useCallback((m: string) => {
+    alert(m);
     setError(m);
     setErrorModalOpen(true);
   }, []);
@@ -52,10 +53,6 @@ export default function PaymentQrPage() {
         setLoading(true);
         if (!qrCodeValidation(data)) {
           onError(ErrorsType.INVALID_QRCODE);
-          mixpanel.track(MixpanelEventsId.CHK_PAYMENT_INVALID_CODE_ERROR, {
-            EVENT_ID: MixpanelEventsId.CHK_PAYMENT_INVALID_CODE_ERROR,
-            EVENT_CATEGORY: MixpanelEventCategory.KO,
-          });
         } else {
           void onSubmit({
             billCode: data?.split("|")[2] || "",
