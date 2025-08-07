@@ -232,6 +232,16 @@ export const paymentInfo: PaymentInfo = {
   dueDate: "2021-07-31",
 };
 
+export const paymentInfoWIthFormattedAmount = {
+  amount: "120,00 €",
+  paymentContextCode: "ff368bb048fa4e1daa2a297e1a9fd353",
+  rptId: "77777777777302000100000009488" as RptId,
+  paFiscalCode: "77777777777",
+  paName: "companyName",
+  description: "Pagamento di Test",
+  dueDate: "2021-07-31",
+}
+
 export const sessionPayment: SessionPaymentMethodResponse = {
   sessionId: "4c15c2aa-3bd9-45d2-b06e-73525983b87b",
   bin: "42424242",

@@ -17,7 +17,10 @@ import {
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { ErrorsType } from "../../utils/errors/checkErrorsModel";
-import { PaymentCategoryResponses } from "../../utils/errors/errorsModel";
+import {
+  CustomErrorResponses,
+  PaymentCategoryResponses,
+} from "../../utils/errors/errorsModel";
 import { ErrorButtons } from "../FormButtons/ErrorButtons";
 import { FaultCategoryEnum } from "../../../generated/definitions/payment-ecommerce/FaultCategory";
 import {
@@ -45,11 +48,11 @@ function ErrorModal(props: {
   const theme = useTheme();
   const [copy, setCopy] = React.useState(t("clipboard.copy"));
 
-  const responses = PaymentCategoryResponses();
-  const notListed = (faultCategory: string) =>
-    responses[faultCategory as FaultCategoryEnum] === undefined;
-  const hasDetail = (faultCategory: string) =>
-    !!responses[faultCategory as FaultCategoryEnum]?.detail;
+  const faultResponses = PaymentCategoryResponses();
+  // const notListed = (faultCategory: string) =>
+  //   faultResponses[faultCategory as FaultCategoryEnum] === undefined;
+  // const hasDetail = (faultCategory: string) =>
+  //   !!faultResponses[faultCategory as FaultCategoryEnum]?.detail;
   const showDetail = (text: string) => text === "ErrorCodeDescription";
 
   // error for Node verify & activation
@@ -59,24 +62,48 @@ function ErrorModal(props: {
   const nodeFaultCodeDetails =
     nodeFaultCode.length === 2 ? nodeFaultCode[1] : "";
 
-  const getErrorTitle = () => responses[nodeFaultCodeCategory]?.title;
-  const getErrorBody = () => {
-    if (notListed(nodeFaultCodeCategory)) {
-      return responses[FaultCategoryEnum.GENERIC_ERROR]?.body;
-    }
-    if (hasDetail(nodeFaultCodeCategory)) {
-      return "ErrorCodeDescription";
-    }
-    return responses[nodeFaultCodeCategory]?.body;
-  };
+  const customResponse = CustomErrorResponses[props.error as ErrorsType];
+  const isCustomError = !!customResponse;
+  const isFaultCategory = faultResponses[nodeFaultCodeCategory] !== undefined;
 
-  const getErrorButtons = () => {
-    if (notListed(nodeFaultCodeCategory)) {
-      return responses[FaultCategoryEnum.GENERIC_ERROR]?.buttons;
-    }
-    return PaymentCategoryResponses(nodeFaultCodeDetails)[nodeFaultCodeCategory]
-      ?.buttons;
-  };
+  const getErrorTitle = () =>
+    isCustomError
+      ? customResponse.title
+      : faultResponses[nodeFaultCodeCategory]?.title;
+
+  // const getErrorTitle = () => responses[nodeFaultCodeCategory]?.title;
+  // const getErrorBody = () => {
+  //   if (notListed(nodeFaultCodeCategory)) {
+  //     return responses[FaultCategoryEnum.GENERIC_ERROR]?.body;
+  //   }
+  //   if (hasDetail(nodeFaultCodeCategory)) {
+  //     return "ErrorCodeDescription";
+  //   }
+  //   return responses[nodeFaultCodeCategory]?.body;
+  // };
+  const getErrorBody = () =>
+    isCustomError
+      ? customResponse.body
+      : !isFaultCategory
+      ? faultResponses[FaultCategoryEnum.GENERIC_ERROR]?.body
+      : faultResponses[nodeFaultCodeCategory]?.detail
+      ? "ErrorCodeDescription"
+      : faultResponses[nodeFaultCodeCategory]?.body;
+
+  // const getErrorButtons = () => {
+  //   if (notListed(nodeFaultCodeCategory)) {
+  //     return responses[FaultCategoryEnum.GENERIC_ERROR]?.buttons;
+  //   }
+  //   return PaymentCategoryResponses(nodeFaultCodeDetails)[nodeFaultCodeCategory]
+  //     ?.buttons;
+  // };
+  const getErrorButtons = () =>
+    isCustomError
+      ? customResponse.buttons
+      : !isFaultCategory
+      ? faultResponses[FaultCategoryEnum.GENERIC_ERROR]?.buttons
+      : PaymentCategoryResponses(nodeFaultCodeDetails)[nodeFaultCodeCategory]
+          ?.buttons;
 
   const title = getErrorTitle() || "GENERIC_ERROR.title";
   const body = getErrorBody() || "GENERIC_ERROR.body";
