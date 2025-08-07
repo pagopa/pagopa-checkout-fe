@@ -200,4 +200,4 @@ const sendMixpanelEventCHK_PAYMENT_ERROR_HELP = (
     data_entry: getDataEntryTypeFromSessionStorage(),
     expiration_date: paymentInfo?.dueDate,
   });
-}
+};

@@ -240,7 +240,7 @@ export const paymentInfoWIthFormattedAmount = {
   paName: "companyName",
   description: "Pagamento di Test",
   dueDate: "2021-07-31",
-}
+};
 
 export const sessionPayment: SessionPaymentMethodResponse = {
   sessionId: "4c15c2aa-3bd9-45d2-b06e-73525983b87b",
