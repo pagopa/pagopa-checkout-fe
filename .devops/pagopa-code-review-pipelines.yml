@@ -133,6 +133,7 @@ stages:
     jobs:
       - job: run_unit_tests
         steps:
+
         - template: templates/node-job-setup/template.yaml@pagopaCommons
 
         - task: SonarCloudPrepare@3
@@ -197,7 +198,16 @@ stages:
           workingDirectory: pagopa-checkout-be-mock
           displayName: 'Setup env for mock'
 
-        - script: yarn global add node-gyp && yarn install && yarn build
+        - task: Cache@2
+          inputs:
+            key: 'yarn | "$(Agent.OS)" | pagopa-checkout-be-mock/yarn.lock'
+            restoreKeys: |
+              yarn | "$(Agent.OS)"
+              yarn
+            path: $(YARN_CACHE_FOLDER)
+          displayName: Cache Mock Yarn packages
+
+        - script: yarn global add node-gyp && yarn install --frozen-lockfile && yarn build
           workingDirectory: pagopa-checkout-be-mock
           displayName: 'Setup deps for mock'
 
@@ -257,7 +267,16 @@ stages:
           workingDirectory: pagopa-checkout-be-mock
           displayName: 'Setup env for mock'
 
-        - script: yarn global add node-gyp && yarn install && yarn build
+        - task: Cache@2
+          inputs:
+            key: 'yarn | "$(Agent.OS)" | pagopa-checkout-be-mock/yarn.lock'
+            restoreKeys: |
+              yarn | "$(Agent.OS)"
+              yarn
+            path: $(YARN_CACHE_FOLDER)
+          displayName: Cache Mock Yarn packages
+
+        - script: yarn global add node-gyp && yarn install --frozen-lockfile && yarn build
           workingDirectory: pagopa-checkout-be-mock
           displayName: 'Setup deps for mock'
 
