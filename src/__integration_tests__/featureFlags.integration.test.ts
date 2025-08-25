@@ -5,10 +5,7 @@ import enTranslation from "../translations/en/translations.json";
 import frTranslation from "../translations/fr/translations.json";
 import slTranslation from "../translations/sl/translations.json";
 import { selectLanguage } from "./utils/helpers";
-
-const CHECKOUT_URL = "http://localhost:1234";
-const FEATURE_FLAG_PATH = "/checkout/feature-flags/v1/features/values";
-const siteUrl = "https://status.platform.pagopa.it/";
+import { URL } from "./utils/testConstants";
 
 jest.setTimeout(60000);
 jest.retryTimes(1);
@@ -18,7 +15,7 @@ page.setDefaultTimeout(30000);
 beforeAll(async () => {
   await page.setRequestInterception(true);
   page.on("request", (request) => {
-    if (request.url().endsWith(FEATURE_FLAG_PATH)) {
+    if (request.url().endsWith(URL.FEATURE_FLAG_PATH)) {
       request.respond({
         status: 200,
         contentType: "application/json",
@@ -34,7 +31,7 @@ beforeAll(async () => {
       request.continue();
     }
   });
-  await page.goto(CHECKOUT_URL, { waitUntil: "networkidle0" });
+  await page.goto(URL.CHECKOUT_URL, { waitUntil: "networkidle0" });
   await page.setViewport({ width: 1200, height: 907 });
 });
 
@@ -60,6 +57,6 @@ describe("Maintenance mode language tests", () => {
       page.click("#id_button_redirect"),
       page.waitForNavigation({ timeout: 5000 })
     ]);    
-    expect(page.url()).toContain(siteUrl);
+    expect(page.url()).toContain(URL.SITE_URL);
   });
 });
