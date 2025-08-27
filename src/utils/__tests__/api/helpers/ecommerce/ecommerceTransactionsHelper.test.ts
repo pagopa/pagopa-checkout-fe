@@ -24,7 +24,10 @@ import {
   recaptchaTransaction,
 } from "../../../../api/helper";
 import { ErrorsType } from "../../../../errors/checkErrorsModel";
-import {getRptIdsFromSession, getSessionItem} from "../../../../storage/sessionStorage";
+import {
+  getRptIdsFromSession,
+  getSessionItem,
+} from "../../../../storage/sessionStorage";
 import { NewTransactionResponse } from "../../../../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 
 jest.mock("../../../../config/config", () => ({
@@ -170,13 +173,15 @@ describe("Ecommerce transactions helper - activatePayment tests", () => {
         cardPaymentMethodMock.paymentMethodId,
         "orderId"
       );
-      expect(apiPaymentEcommerceClientV3.newTransactionV3).toHaveBeenCalledWith({
-        "x-rpt-ids": "rptIds",
-        bearerAuth: "authToken", // Check that the token was passed correctly
-        body: expect.anything(),
-        "x-client-id-from-client": "CHECKOUT",
-        "x-correlation-id": "correlationId",
-      })
+      expect(apiPaymentEcommerceClientV3.newTransactionV3).toHaveBeenCalledWith(
+        {
+          "x-rpt-ids": "rptIds",
+          bearerAuth: "authToken", // Check that the token was passed correctly
+          body: expect.anything(),
+          "x-client-id-from-client": "CHECKOUT",
+          "x-correlation-id": "correlationId",
+        }
+      );
     });
   });
 
