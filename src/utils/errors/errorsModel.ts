@@ -1,6 +1,7 @@
 import { FaultCategory } from "../../../generated/definitions/payment-ecommerce/FaultCategory";
 
-const HELPDESK_URL: string = "https://www.pagopa.gov.it/it/helpdesk/";
+const HELPDESK_URL: string =
+  "https://assistenza.pagopa.gov.it/hc/it/search?utf8=%E2%9C%93&query=";
 
 export type ErrorModalBtn = {
   title: string;
@@ -16,7 +17,9 @@ type ErrorModal = {
   buttons?: Array<ErrorModalBtn>;
 };
 
-export const PaymentCategoryResponses: Record<FaultCategory, ErrorModal> = {
+export const PaymentCategoryResponses = (
+  errorCodeDetail?: string
+): Record<FaultCategory, ErrorModal> => ({
   DOMAIN_UNKNOWN: {
     title: "DOMAIN_UNKNOWN.title",
     detail: true,
@@ -24,7 +27,12 @@ export const PaymentCategoryResponses: Record<FaultCategory, ErrorModal> = {
       {
         title: "errorButton.help",
         action: () => {
-          window.open(HELPDESK_URL, "_blank")?.focus();
+          window
+            .open(
+              `${HELPDESK_URL}${errorCodeDetail ?? "DOMAIN_UNKNOWN"}`,
+              "_blank"
+            )
+            ?.focus();
         },
       },
       {
@@ -39,7 +47,12 @@ export const PaymentCategoryResponses: Record<FaultCategory, ErrorModal> = {
       {
         title: "errorButton.help",
         action: () => {
-          window.open(HELPDESK_URL, "_blank")?.focus();
+          window
+            .open(
+              `${HELPDESK_URL}${errorCodeDetail ?? "PAYMENT_UNAVAILABLE"}`,
+              "_blank"
+            )
+            ?.focus();
         },
       },
       {
@@ -54,7 +67,12 @@ export const PaymentCategoryResponses: Record<FaultCategory, ErrorModal> = {
       {
         title: "errorButton.help",
         action: () => {
-          window.open(HELPDESK_URL, "_blank")?.focus();
+          window
+            .open(
+              `${HELPDESK_URL}${errorCodeDetail ?? "PAYMENT_DATA_ERROR"}`,
+              "_blank"
+            )
+            ?.focus();
         },
       },
       {
@@ -73,7 +91,12 @@ export const PaymentCategoryResponses: Record<FaultCategory, ErrorModal> = {
       {
         title: "errorButton.help",
         action: () => {
-          window.open(HELPDESK_URL, "_blank")?.focus();
+          window
+            .open(
+              `${HELPDESK_URL}${errorCodeDetail ?? "GENERIC_ERROR"}`,
+              "_blank"
+            )
+            ?.focus();
         },
       },
     ],
@@ -128,4 +151,4 @@ export const PaymentCategoryResponses: Record<FaultCategory, ErrorModal> = {
       },
     ],
   },
-};
+});

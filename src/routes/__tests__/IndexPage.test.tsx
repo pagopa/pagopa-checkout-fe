@@ -4,6 +4,7 @@ import { MemoryRouter } from "react-router-dom";
 import { fireEvent, screen } from "@testing-library/react";
 import * as router from "react-router";
 import fetchMock from "jest-fetch-mock";
+import * as E from "fp-ts/Either";
 import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders";
 import * as helper from "../../utils/api/helper";
 import IndexPage from "../IndexPage";
@@ -36,14 +37,6 @@ jest.mock("../../utils/config/config", () =>
   })
 );
 
-jest.mock("../../utils/storage/sessionStorage", () => ({
-  getSessionItem: jest.fn(),
-  setSessionItem: jest.fn(),
-  SessionItems: {
-    isScheduledMaintenanceBannerEnabled: "true",
-  },
-}));
-
 // Mock translations and recaptcha
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -55,16 +48,6 @@ jest.mock("react-i18next", () => ({
     components?: Array<any>;
     children?: React.ReactNode;
   }) => <span data-testid="mocked-trans">{i18nKey || "no-key"}</span>,
-}));
-
-// Mock storage utilities (and return an empty object if needed)
-jest.mock("../../utils/storage/sessionStorage", () => ({
-  getSessionItem: jest.fn(),
-  setSessionItem: jest.fn(),
-  clearStorageAndMaintainAuthData: jest.fn(),
-  SessionItems: {
-    authToken: "authToken",
-  },
 }));
 
 jest.mock("../../utils/eventListeners", () => ({
@@ -83,6 +66,31 @@ jest
       return Promise.resolve();
     }
   );
+
+jest.mock("../../utils/storage/sessionStorage", () => {
+  const actual = jest.requireActual("../../utils/storage/sessionStorage");
+  return {
+    __esModule: true,
+    ...actual,
+    getSessionItem: jest.fn(),
+    setSessionItem: jest.fn(),
+    clearStorageAndMaintainAuthData: jest.fn(),
+  };
+});
+
+jest.mock("../../utils/api/client", () => ({
+  apiCheckoutFeatureFlags: {
+    evaluateFeatureFlags: jest.fn(() =>
+      Promise.resolve(
+        E.right({
+          value: {
+            isScheduledMaintenanceBannerEnabled: true,
+          },
+        })
+      )
+    ),
+  },
+}));
 
 describe("IndexPage", () => {
   beforeEach(() => {
@@ -134,7 +142,7 @@ describe("IndexPage", () => {
     );
   });
 
-  test("should show banner if sessionStorage returns 'true'", () => {
+  test("should show banner if sessionStorage returns 'true'", async () => {
     (getSessionItem as jest.Mock).mockReturnValue("true");
 
     renderWithReduxProvider(
@@ -143,9 +151,10 @@ describe("IndexPage", () => {
       </MemoryRouter>
     );
 
-    expect(
-      screen.getByText("ScheduledMaintenanceBanner.titleKey")
-    ).toBeInTheDocument();
+    const banner = await screen.findByText(
+      "ScheduledMaintenanceBanner.titleKey"
+    );
+    expect(banner).toBeInTheDocument();
   });
 
   test("should NOT show banner if sessionStorage returns 'false'", () => {

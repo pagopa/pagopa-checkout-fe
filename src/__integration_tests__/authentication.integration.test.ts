@@ -4,48 +4,7 @@ import enTranslation from "../translations/en/translations.json";
 import frTranslation from "../translations/fr/translations.json";
 import slTranslation from "../translations/sl/translations.json";
 import { cancelPaymentKO, cancelPaymentOK, checkErrorOnCardDataFormSubmit, clickLoginButton, tryHandlePspPickerPage, fillAndSubmitCardDataForm, fillPaymentNotificationForm, getUserButton, payNotice, selectLanguage , tryLoginWithAuthCallbackError, choosePaymentMethod, verifyPaymentMethods } from "./utils/helpers";
-/**
- * Test input and configuration
- */
-const CHECKOUT_URL = `http://localhost:1234`;
-const BASE_CALLBACK_URL = "http://localhost:1234/auth-callback";
-const BASE_CALLBACK_URL_PAYMENT_DATA = "http://localhost:1234/dati-pagamento";
-const BASE_CALLBACK_URL_REGEX = "http:\\/\\/localhost:\\d+\\/auth-callback\\?code=([a-zA-Z0-9]+)&state=([a-zA-Z0-9]+)";
-const CALLBACK_URL_NO_CODE = `${BASE_CALLBACK_URL}?state=pu6nlBmHs1EpmfWq`;
-const CALLBACK_URL_NO_STATE = `${BASE_CALLBACK_URL}?code=gMPV0CSInuTY0pjd&`;
-const PAGE_LOGIN_COMEBACK_URL = `http://localhost:1234/inserisci-dati-avviso`;
-const PAYMENT_METHODS_PAGE = 'http://localhost:1234/scegli-metodo';
-const INSERT_CARD_PAGE = 'http://localhost:1234/inserisci-carta';
-/* POST AUTH TOKEN FAIL ends with 78 */
-const VALID_RPTID = "302000100000009400"; 
-const POST_AUTH_TOKEN_FAILS = "302000100000009478"
-const POST_AUTH_TOKEN_FAILS_503 = "302000100000009479"
-const POST_AUTH_TOKEN_FAILS_504 = "302000100000009480"
-const POST_AUTH_TOKEN_FAILS_429 = "302000100000009481"
-const FAIL_GET_USERS_401 = "302000100000009482";
-const FAIL_GET_USERS_500 = "302000100000009483";
-const FAIL_UNAUTHORIZED_401 = "302000100000009484";
-const FAIL_LOGIN_400 = "302016723749670086";
-const FAIL_LOGIN_500 = "302016723749670087";
-const PSP_FAIL = "302016723749670057";
-/* CANCEL_PAYMENT SUCCESS end with 58 */
-const CANCEL_PAYMENT_OK = "302016723749670058";
-/* CANCEL_PAYMENT_FAIL end with 59 */
-const CANCEL_PAYMENT_KO = "302016723749670059";
-const VALID_FISCAL_CODE = "77777777777";
-const EMAIL = "mario.rossi@email.com";
-const VALID_CARD_DATA = {
-  number: "4333334000098346",
-  expirationDate: "1230",
-  ccv: "123",
-  holderName: "Mario Rossi",
-};
-/* FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA end with 77 */
-const FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA = "302016723749670077";
-const CHECKOUT_URL_AFTER_AUTHORIZATION = `http://localhost:1234/esito`;
-/* VALID_NOTICE_CODE */
-const VALID_NOTICE_CODE = "302016723749670000";
-
+import { URL, OKPaymentInfo, KORPTIDs } from "./utils/testConstants";
 
 jest.setTimeout(60000);
 jest.retryTimes(3);
@@ -53,14 +12,14 @@ page.setDefaultNavigationTimeout(30000);
 page.setDefaultTimeout(30000);
 
 beforeAll(async () => {
-  await page.goto(CHECKOUT_URL, { waitUntil: "networkidle0" });
+  await page.goto(URL.CHECKOUT_URL, { waitUntil: "networkidle0" });
   await page.setViewport({ width: 1200, height: 907 });
 });
 
 beforeEach(async () => {
   await page.evaluate(() => sessionStorage.clear());
   await page.deleteCookie({name:'mockFlow'});
-  await page.goto(CHECKOUT_URL, { waitUntil: "networkidle0" });
+  await page.goto(URL.CHECKOUT_URL, { waitUntil: "networkidle0" });
 });
 
 describe("Checkout authentication tests", () => {
@@ -73,13 +32,13 @@ describe("Checkout authentication tests", () => {
     // when the login is completed we will be redirected to BASE_CALLBACK_URL
     page.on('framenavigated', async (frame) => {
       const url = frame.url();
-      if(url.startsWith(BASE_CALLBACK_URL)){
+      if(url.startsWith(URL.BASE_CALLBACK_URL)){
         successfullLogins++;
       }
     });
 
     // start flow from a url different from home
-    await page.goto(PAGE_LOGIN_COMEBACK_URL, { waitUntil: "networkidle0" });
+    await page.goto(URL.PAGE_LOGIN_COMEBACK_URL, { waitUntil: "networkidle0" });
 
     //search login button and click it
     console.log("Search login button")
@@ -94,7 +53,7 @@ describe("Checkout authentication tests", () => {
 
     // now navigate to callback url (and force error with bad parameters)
     // so that the retry button will be visible
-    await page.goto(CALLBACK_URL_NO_CODE, { waitUntil: "networkidle0" });
+    await page.goto(URL.CALLBACK_URL_NO_CODE, { waitUntil: "networkidle0" });
 
     // click the retry button
     const retryButton = await page.waitForSelector("#auth-retry-button");
@@ -113,7 +72,7 @@ describe("Checkout authentication tests", () => {
     expect(successfullLogins).toBe(3);
 
     // verify successfull login brings back to correct page
-    expect(urlAfterSuccessfullLogin).toBe(PAGE_LOGIN_COMEBACK_URL);
+    expect(urlAfterSuccessfullLogin).toBe(URL.PAGE_LOGIN_COMEBACK_URL);
   });
 
   it.each([
@@ -128,7 +87,7 @@ describe("Checkout authentication tests", () => {
       //set item into sessionStorage and localStorage for pass the route Guard
       sessionStorage.setItem('loginOriginPage', '/inserisci-email');
     });
-    await page.goto(CALLBACK_URL_NO_CODE, { waitUntil: "networkidle0" });
+    await page.goto(URL.CALLBACK_URL_NO_CODE, { waitUntil: "networkidle0" });
     const currentUrl = await page.evaluate(() => location.href);
     console.log("Current url: " + currentUrl);
 
@@ -137,7 +96,7 @@ describe("Checkout authentication tests", () => {
     const title = await titleErrorElem.evaluate((el) => el.textContent);
     const body = await titleErrorBody.evaluate((el) => el.textContent);
 
-    expect(currentUrl).not.toBe(PAGE_LOGIN_COMEBACK_URL);
+    expect(currentUrl).not.toBe(URL.PAGE_LOGIN_COMEBACK_URL);
     expect(title).toContain(translation.authCallbackPage.title);
     expect(body).toContain(translation.authCallbackPage.body);
   });
@@ -154,7 +113,7 @@ describe("Checkout authentication tests", () => {
       //set item into sessionStorage and localStorage for pass the route Guard
       sessionStorage.setItem('loginOriginPage', '/inserisci-email');
     });
-    await page.goto(CALLBACK_URL_NO_STATE, { waitUntil: "networkidle0" });
+    await page.goto(URL.CALLBACK_URL_NO_STATE, { waitUntil: "networkidle0" });
     const currentUrl = await page.evaluate(() => location.href);
     console.log("Current url: " + currentUrl);
 
@@ -163,7 +122,7 @@ describe("Checkout authentication tests", () => {
     const title = await titleErrorElem.evaluate((el) => el.textContent);
     const body = await titleErrorBody.evaluate((el) => el.textContent);
 
-    expect(currentUrl).not.toBe(PAGE_LOGIN_COMEBACK_URL);
+    expect(currentUrl).not.toBe(URL.PAGE_LOGIN_COMEBACK_URL);
     expect(title).toContain(translation.authCallbackPage.title);
     expect(body).toContain(translation.authCallbackPage.body);
   });
@@ -176,7 +135,7 @@ describe("Checkout authentication tests", () => {
     ["sl", slTranslation]
   ])("Should show error receiving 5xx from post auth token for language [%s]", async (lang, translation) => {
     await selectLanguage(lang);
-    await fillPaymentNotificationForm(POST_AUTH_TOKEN_FAILS, VALID_FISCAL_CODE);
+    await fillPaymentNotificationForm(KORPTIDs.POST_AUTH_TOKEN_FAILS, OKPaymentInfo.VALID_FISCAL_CODE);
 
     await clickLoginButton();
 
@@ -186,11 +145,11 @@ describe("Checkout authentication tests", () => {
     const body = await titleErrorBody.evaluate((el) => el.textContent);
 
     const currentUrl = await page.evaluate(() => location.href);
-    expect(currentUrl.startsWith(BASE_CALLBACK_URL)).toBe(true);
+    expect(currentUrl.startsWith(URL.BASE_CALLBACK_URL)).toBe(true);
 
     console.log("Search login button")
 
-    const regex = new RegExp(BASE_CALLBACK_URL_REGEX);
+    const regex = new RegExp(URL.BASE_CALLBACK_URL_REGEX);
     expect(regex.test(currentUrl)).toBe(true);
     expect(title).toContain(translation.authCallbackPage.title);
     expect(body).toContain(translation.authCallbackPage.body);
@@ -210,7 +169,7 @@ describe("Checkout authentication tests", () => {
       }
     });
 
-    await fillPaymentNotificationForm(POST_AUTH_TOKEN_FAILS_503, VALID_FISCAL_CODE);
+    await fillPaymentNotificationForm(KORPTIDs.POST_AUTH_TOKEN_FAILS_503, OKPaymentInfo.VALID_FISCAL_CODE);
     await page.waitForNavigation();
     await clickLoginButton();
 
@@ -221,7 +180,7 @@ describe("Checkout authentication tests", () => {
 
     expect(first503Response).toBe(true);
     expect(tokenCalls).toBe(2);
-    expect(currentUrl).toBe(BASE_CALLBACK_URL_PAYMENT_DATA);
+    expect(currentUrl).toBe(URL.BASE_CALLBACK_URL_PAYMENT_DATA);
   });
 
   it("should retry once if server responds 504 and succeed on second attempt", async () => {
@@ -238,7 +197,7 @@ describe("Checkout authentication tests", () => {
       }
     });
 
-    await fillPaymentNotificationForm(POST_AUTH_TOKEN_FAILS_504, VALID_FISCAL_CODE);
+    await fillPaymentNotificationForm(KORPTIDs.POST_AUTH_TOKEN_FAILS_504, OKPaymentInfo.VALID_FISCAL_CODE);
     await page.waitForNavigation();
     await clickLoginButton();
 
@@ -249,7 +208,7 @@ describe("Checkout authentication tests", () => {
 
     expect(first504Response).toBe(true);
     expect(tokenCalls).toBe(2);
-    expect(currentUrl).toBe(BASE_CALLBACK_URL_PAYMENT_DATA);
+    expect(currentUrl).toBe(URL.BASE_CALLBACK_URL_PAYMENT_DATA);
   });
 
   it("should retry once if server responds 429 and succeed on second attempt", async () => {
@@ -266,7 +225,7 @@ describe("Checkout authentication tests", () => {
       }
     });
 
-    await fillPaymentNotificationForm(POST_AUTH_TOKEN_FAILS_429, VALID_FISCAL_CODE);
+    await fillPaymentNotificationForm(KORPTIDs.POST_AUTH_TOKEN_FAILS_429, OKPaymentInfo.VALID_FISCAL_CODE);
     await page.waitForNavigation();
     await clickLoginButton();
 
@@ -278,7 +237,7 @@ describe("Checkout authentication tests", () => {
 
     expect(first429Response).toBe(true);
     expect(tokenCalls).toBe(2);
-    expect(currentUrl).toBe(BASE_CALLBACK_URL_PAYMENT_DATA);
+    expect(currentUrl).toBe(URL.BASE_CALLBACK_URL_PAYMENT_DATA);
   });
 
   it("should NOT retry if server responds 500 (since 500 is not in retryCondition)", async () => {
@@ -295,7 +254,7 @@ describe("Checkout authentication tests", () => {
       }
     });
 
-    await fillPaymentNotificationForm(POST_AUTH_TOKEN_FAILS, VALID_FISCAL_CODE);
+    await fillPaymentNotificationForm(KORPTIDs.POST_AUTH_TOKEN_FAILS, OKPaymentInfo.VALID_FISCAL_CODE);
     await page.waitForNavigation();
     await clickLoginButton();
 
@@ -331,9 +290,9 @@ describe("Checkout authentication tests", () => {
     console.log("Login completed");
 
     //set flow error case
-    await fillPaymentNotificationForm(FAIL_GET_USERS_401, VALID_FISCAL_CODE);
+    await fillPaymentNotificationForm(KORPTIDs.FAIL_GET_USERS_401, OKPaymentInfo.VALID_FISCAL_CODE);
     await page.waitForNavigation();
-    console.log("MockFlow setted with noticeCode: ", FAIL_GET_USERS_401);
+    console.log("MockFlow setted with noticeCode: ", KORPTIDs.FAIL_GET_USERS_401);
 
     //reload page in order to read authToken into sessionStorage
     await page.reload();
@@ -353,9 +312,9 @@ describe("Checkout authentication tests", () => {
     console.log("Login completed");
 
     //set flow error case
-    await fillPaymentNotificationForm(FAIL_GET_USERS_500, VALID_FISCAL_CODE);
+    await fillPaymentNotificationForm(KORPTIDs.FAIL_GET_USERS_500, OKPaymentInfo.VALID_FISCAL_CODE);
     await page.waitForNavigation();
-    console.log("MockFlow setted with noticeCode: ", FAIL_GET_USERS_500);
+    console.log("MockFlow setted with noticeCode: ", KORPTIDs.FAIL_GET_USERS_500);
 
     //reload page in order to read authToken into sessionStorage
     await page.reload();
@@ -388,9 +347,9 @@ describe("Checkout authentication tests", () => {
   ])("Should show error receiving 401 from get user info on auth-callback page for language [%s]", async (lang, translation) => {
     await selectLanguage(lang);
 
-    const authCallbackError = await tryLoginWithAuthCallbackError(FAIL_GET_USERS_401, VALID_FISCAL_CODE);
+    const authCallbackError = await tryLoginWithAuthCallbackError(KORPTIDs.FAIL_GET_USERS_401, OKPaymentInfo.VALID_FISCAL_CODE);
 
-    const regex = new RegExp(BASE_CALLBACK_URL_REGEX);
+    const regex = new RegExp(URL.BASE_CALLBACK_URL_REGEX);
     expect(regex.test(authCallbackError.currentUrl)).toBe(true);
     expect(authCallbackError.title).toContain(translation.authCallbackPage.title);
     expect(authCallbackError.body).toContain(translation.authCallbackPage.body);
@@ -403,7 +362,7 @@ describe("Checkout authentication tests", () => {
       sessionStorage.setItem('authToken', 'auth-token-value');
     });
     //go to payment methods page
-    await page.goto(PAYMENT_METHODS_PAGE, { waitUntil: "networkidle0" });
+    await page.goto(URL.PAYMENT_METHODS_PAGE, { waitUntil: "networkidle0" });
 
     const isPaymentMethodsPresents = await verifyPaymentMethods();
     expect(isPaymentMethodsPresents).toBeTruthy();
@@ -417,11 +376,11 @@ describe("Checkout authentication tests", () => {
     });
     
     //set flow error case
-    await fillPaymentNotificationForm(FAIL_UNAUTHORIZED_401, VALID_FISCAL_CODE);
+    await fillPaymentNotificationForm(KORPTIDs.FAIL_UNAUTHORIZED_401, OKPaymentInfo.VALID_FISCAL_CODE);
     await page.waitForNavigation();
 
     //go to payment methods page
-    await page.goto(PAYMENT_METHODS_PAGE, { waitUntil: "networkidle0" });
+    await page.goto(URL.PAYMENT_METHODS_PAGE, { waitUntil: "networkidle0" });
     await page.waitForSelector("#errorTitle");
     expect(page.url()).toContain("/autenticazione-scaduta");
   });
@@ -434,11 +393,11 @@ describe("Checkout authentication tests", () => {
     });
 
     //set flow success case
-    await fillPaymentNotificationForm(VALID_RPTID, VALID_FISCAL_CODE);
+    await fillPaymentNotificationForm(OKPaymentInfo.VALID_RPTID, OKPaymentInfo.VALID_FISCAL_CODE);
     await page.waitForNavigation();
 
     //go to payment methods page and select card payment
-    await page.goto(PAYMENT_METHODS_PAGE, { waitUntil: "networkidle0" });
+    await page.goto(URL.PAYMENT_METHODS_PAGE, { waitUntil: "networkidle0" });
     await choosePaymentMethod("CP");
 
     //wait until in the session storage are presents correlationId and orderId§
@@ -459,11 +418,11 @@ describe("Checkout authentication tests", () => {
     });
     
     //set flow error case
-    await fillPaymentNotificationForm(FAIL_UNAUTHORIZED_401, VALID_FISCAL_CODE);
+    await fillPaymentNotificationForm(KORPTIDs.FAIL_UNAUTHORIZED_401, OKPaymentInfo.VALID_FISCAL_CODE);
     await page.waitForNavigation();
 
     //go to payment methods page and select card payment
-    await page.goto(INSERT_CARD_PAGE, { waitUntil: "networkidle0" });
+    await page.goto(URL.INSERT_CARD_PAGE, { waitUntil: "networkidle0" });
     await page.waitForSelector("#errorTitle");
     expect(page.url()).toContain("/autenticazione-scaduta");
   });
@@ -477,9 +436,9 @@ describe("Checkout authentication tests", () => {
   ])("Should show error receiving 500 from get user info on auth-callback page for language [%s]", async (lang, translation) => {
     await selectLanguage(lang);
 
-    const authCallbackError = await tryLoginWithAuthCallbackError(FAIL_GET_USERS_500, VALID_FISCAL_CODE);
+    const authCallbackError = await tryLoginWithAuthCallbackError(KORPTIDs.FAIL_GET_USERS_500, OKPaymentInfo.VALID_FISCAL_CODE);
 
-    const regex = new RegExp(BASE_CALLBACK_URL_REGEX);
+    const regex = new RegExp(URL.BASE_CALLBACK_URL_REGEX);
     expect(regex.test(authCallbackError.currentUrl)).toBe(true);
     expect(authCallbackError.title).toContain(translation.authCallbackPage.title);
     expect(authCallbackError.body).toContain(translation.authCallbackPage.body);
@@ -499,7 +458,7 @@ describe("Checkout authentication tests", () => {
     });
 
     //Insert valid rptId
-    await fillPaymentNotificationForm(VALID_RPTID, VALID_FISCAL_CODE);
+    await fillPaymentNotificationForm(OKPaymentInfo.VALID_RPTID, OKPaymentInfo.VALID_FISCAL_CODE);
     await page.waitForNavigation();
 
     //Login
@@ -585,11 +544,11 @@ describe("Checkout authentication tests", () => {
 
     // Complete authenticated payment
     await payNotice(
-          VALID_NOTICE_CODE,
-          VALID_FISCAL_CODE,
-          EMAIL,
-          VALID_CARD_DATA,
-          CHECKOUT_URL_AFTER_AUTHORIZATION
+          OKPaymentInfo.VALID_NOTICE_CODE,
+          OKPaymentInfo.VALID_FISCAL_CODE,
+          OKPaymentInfo.EMAIL,
+          OKPaymentInfo.VALID_CARD_DATA,
+          URL.CHECKOUT_URL_AFTER_AUTHORIZATION
     );
         
     expect(apiContainsXRptIdCount).toBe(expectedCount);
@@ -651,7 +610,7 @@ describe("Logout tests", () => {
 
     console.log("Login completed");
 
-    await fillPaymentNotificationForm(FAIL_LOGIN_400, VALID_FISCAL_CODE);
+    await fillPaymentNotificationForm(KORPTIDs.FAIL_LOGIN_400, OKPaymentInfo.VALID_FISCAL_CODE);
     await page.waitForNavigation();
     const userButton = await getUserButton();
     await userButton.click();
@@ -694,7 +653,7 @@ describe("Logout tests", () => {
 
     console.log("Login completed");
 
-    await fillPaymentNotificationForm(FAIL_LOGIN_500, VALID_FISCAL_CODE);
+    await fillPaymentNotificationForm(KORPTIDs.FAIL_LOGIN_500, OKPaymentInfo.VALID_FISCAL_CODE);
     await page.waitForNavigation();
     const userButton = await getUserButton();
     await userButton.click();
@@ -737,11 +696,11 @@ describe("Logout tests", () => {
     console.log("Login completed");
 
     const resultMessage = await payNotice(
-      VALID_NOTICE_CODE,
-      VALID_FISCAL_CODE,
-      EMAIL,
-      VALID_CARD_DATA,
-      CHECKOUT_URL_AFTER_AUTHORIZATION
+      OKPaymentInfo.VALID_NOTICE_CODE,
+      OKPaymentInfo.VALID_FISCAL_CODE,
+      OKPaymentInfo.EMAIL,
+      OKPaymentInfo.VALID_CARD_DATA,
+      URL.CHECKOUT_URL_AFTER_AUTHORIZATION
     );
 
     expect(resultMessage).toContain(itTranslation.paymentResponsePage[0].title.replace("{{amount}}", "120,15\xa0€"));
@@ -775,10 +734,10 @@ describe("Logout tests", () => {
     console.log("Login completed");
 
     const resultMessage = await cancelPaymentOK(
-      CANCEL_PAYMENT_OK,
-      VALID_FISCAL_CODE,
-      EMAIL,
-      VALID_CARD_DATA
+      KORPTIDs.CANCEL_PAYMENT_OK,
+      OKPaymentInfo.VALID_FISCAL_CODE,
+      OKPaymentInfo.EMAIL,
+      OKPaymentInfo.VALID_CARD_DATA
     );
     expect(resultMessage).toContain(itTranslation.cancelledPage.body);
     expect(deleteTransaction202).toBe(true);
@@ -812,9 +771,9 @@ describe("Logout tests", () => {
     console.log("Login completed");
 
     const resultMessage = await cancelPaymentKO(
-            CANCEL_PAYMENT_KO,
-            VALID_FISCAL_CODE,
-            EMAIL
+            KORPTIDs.CANCEL_PAYMENT_KO,
+            OKPaymentInfo.VALID_FISCAL_CODE,
+            OKPaymentInfo.EMAIL
           );
     expect(resultMessage).toContain(itTranslation.GENERIC_ERROR.title);
     const closeErrorButton = await page.waitForSelector("#closeError");
@@ -846,7 +805,7 @@ describe("Logout tests", () => {
     await page.waitForSelector('button[aria-label="party-menu-button"]');
 
     console.log("Login completed");
-    await fillAndSubmitCardDataForm(FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA, VALID_FISCAL_CODE, EMAIL, VALID_CARD_DATA);
+    await fillAndSubmitCardDataForm(KORPTIDs.FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA, OKPaymentInfo.VALID_FISCAL_CODE, OKPaymentInfo.EMAIL, OKPaymentInfo.VALID_CARD_DATA);
     expect(page.url()).toContain("/sessione-scaduta");
     await new Promise((r) => setTimeout(r, 500));
     expect(logout204).toBe(true);
@@ -878,10 +837,10 @@ describe("Logout tests", () => {
     console.log("Login completed");
     
     await checkErrorOnCardDataFormSubmit(
-      PSP_FAIL,
-      VALID_FISCAL_CODE,
-      EMAIL,
-      VALID_CARD_DATA
+      KORPTIDs.PSP_FAIL,
+      OKPaymentInfo.VALID_FISCAL_CODE,
+      OKPaymentInfo.EMAIL,
+      OKPaymentInfo.VALID_CARD_DATA
     );
     const closeErrorModalButton = "#closeError";
     await page.waitForSelector(closeErrorModalButton);
@@ -901,7 +860,7 @@ describe("Logout tests", () => {
   ("Should remain on the same page in case of logout for no active transaction [%s]", async (lang, translation) => {
     await selectLanguage(lang);
     //Insert valid rptId and remain on payment form page
-    await fillPaymentNotificationForm(VALID_RPTID, VALID_FISCAL_CODE, false);
+    await fillPaymentNotificationForm(OKPaymentInfo.VALID_RPTID, OKPaymentInfo.VALID_FISCAL_CODE, false);
 
     //Login
     await clickLoginButton();
