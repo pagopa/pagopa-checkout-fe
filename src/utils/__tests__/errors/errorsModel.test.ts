@@ -4,7 +4,8 @@ import {
   ErrorModalBtn,
 } from "../../errors/errorsModel";
 
-const HELPDESK_URL = "https://www.pagopa.gov.it/it/helpdesk/";
+const HELPDESK_URL =
+  "https://assistenza.pagopa.gov.it/hc/it/search?utf8=%E2%9C%93&query=";
 
 afterEach(() => {
   jest.resetAllMocks();
@@ -19,16 +20,17 @@ describe("errorsModel", () => {
   });
 
   it("should have a response for each FaultCategory", () => {
+    const responses = PaymentCategoryResponses();
     const faultCategories = Object.values(FaultCategoryEnum);
 
     faultCategories.forEach((category) => {
-      expect(PaymentCategoryResponses[category]).toBeDefined();
+      expect(responses[category]).toBeDefined();
     });
   });
 
   it("each response should have required properties", () => {
     Object.values(FaultCategoryEnum).forEach((category) => {
-      const response = PaymentCategoryResponses[category];
+      const response = PaymentCategoryResponses()[category];
 
       expect(response).toHaveProperty("title");
       expect(typeof response.title).toBe("string");
@@ -48,7 +50,7 @@ describe("errorsModel", () => {
       FaultCategoryEnum.PAYMENT_DATA_ERROR,
       FaultCategoryEnum.GENERIC_ERROR,
     ].forEach((category) => {
-      const response = PaymentCategoryResponses[category];
+      const response = PaymentCategoryResponses(category)[category];
       const helpButton = response.buttons?.find(
         (btn: ErrorModalBtn) => btn.title === "errorButton.help"
       );
@@ -60,7 +62,10 @@ describe("errorsModel", () => {
         helpButton.action();
       }
 
-      expect(window.open).toHaveBeenCalledWith(HELPDESK_URL, "_blank");
+      expect(window.open).toHaveBeenCalledWith(
+        `${HELPDESK_URL}${category}`,
+        "_blank"
+      );
     });
   });
 
@@ -72,7 +77,7 @@ describe("errorsModel", () => {
       FaultCategoryEnum.PAYMENT_UNKNOWN,
       FaultCategoryEnum.PAYMENT_CANCELED,
     ].forEach((category) => {
-      const response = PaymentCategoryResponses[category];
+      const response = PaymentCategoryResponses()[category];
       const closeButton = response.buttons?.find(
         (btn: ErrorModalBtn) => btn.title === "errorButton.close"
       );
@@ -85,7 +90,7 @@ describe("errorsModel", () => {
   describe("specific error categories", () => {
     it("GENERIC_ERROR should have correct structure", () => {
       const genericError =
-        PaymentCategoryResponses[FaultCategoryEnum.GENERIC_ERROR];
+        PaymentCategoryResponses()[FaultCategoryEnum.GENERIC_ERROR];
 
       expect(genericError.title).toBe("GENERIC_ERROR.title");
       expect(genericError.detail).toBe(false);
@@ -95,7 +100,7 @@ describe("errorsModel", () => {
 
     it("PAYMENT_DUPLICATED should have correct structure", () => {
       const duplicatedError =
-        PaymentCategoryResponses[FaultCategoryEnum.PAYMENT_DUPLICATED];
+        PaymentCategoryResponses()[FaultCategoryEnum.PAYMENT_DUPLICATED];
 
       expect(duplicatedError.title).toBe("PAYMENT_DUPLICATED.title");
       expect(duplicatedError.detail).toBe(false);
@@ -105,11 +110,31 @@ describe("errorsModel", () => {
 
     it("DOMAIN_UNKNOWN should have correct structure", () => {
       const unknownError =
-        PaymentCategoryResponses[FaultCategoryEnum.DOMAIN_UNKNOWN];
+        PaymentCategoryResponses()[FaultCategoryEnum.DOMAIN_UNKNOWN];
 
       expect(unknownError.title).toBe("DOMAIN_UNKNOWN.title");
       expect(unknownError.detail).toBe(true);
       expect(unknownError.buttons).toHaveLength(2);
     });
+  });
+
+  it("should open the correct helpdesk URL using the provided error code", () => {
+    const mockErrorCodeDetail = "MOCK_ERROR_CODE";
+    const expectedUrl = `${HELPDESK_URL}${mockErrorCodeDetail}`;
+
+    const response =
+      PaymentCategoryResponses(mockErrorCodeDetail)[
+        FaultCategoryEnum.GENERIC_ERROR
+      ];
+
+    const helpButton = response.buttons?.find(
+      (btn: ErrorModalBtn) => btn.title === "errorButton.help"
+    );
+
+    expect(helpButton).toBeDefined();
+    expect(helpButton?.action).toBeDefined();
+
+    helpButton?.action?.();
+    expect(window.open).toHaveBeenCalledWith(expectedUrl, "_blank");
   });
 });

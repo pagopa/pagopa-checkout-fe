@@ -10,7 +10,7 @@ import { DeferredPromise } from "@pagopa/ts-commons/lib/promises";
 import { Millisecond } from "@pagopa/ts-commons/lib/units";
 import { createCounter } from "../../utils/counter";
 import { ecommerceTransactionOutcome } from "../transactions/transactionHelper";
-import { constantPollingWithPromisePredicateFetch } from "../config/fetch";
+import { exponetialPollingWithPromisePredicateFetch } from "../config/fetch";
 import { getUrlParameter } from "../regex/urlUtilities";
 import { getConfigOrThrow } from "../config/config";
 import { getSessionItem, SessionItems } from "../storage/sessionStorage";
@@ -43,7 +43,7 @@ const counter = createCounter();
 
 const ecommerceClientWithPollingV1: EcommerceClientV1 = createClientV1({
   baseUrl: config.CHECKOUT_PAGOPA_APIM_HOST,
-  fetchApi: constantPollingWithPromisePredicateFetch(
+  fetchApi: exponetialPollingWithPromisePredicateFetch(
     DeferredPromise<boolean>().e1,
     retries,
     delay,

@@ -196,7 +196,7 @@ describe("PaymentEmailPage", () => {
     );
   });
 
-  test.only("should show banner if sessionStorage returns 'true'", () => {
+  test("should show banner if sessionStorage returns 'true'", () => {
     (helper.evaluateFeatureFlag as jest.Mock).mockImplementation(
       (_flag, _onError, onSuccess) => {
         onSuccess({ enabled: true });
