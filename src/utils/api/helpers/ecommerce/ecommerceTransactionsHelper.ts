@@ -163,7 +163,7 @@ const activePaymentTask = (
                 `${location.pathname}${location.search}`
               );
               return apiPaymentEcommerceClientV3.newTransactionV3({
-                "x-rpt-id": getRptIdsFromSession(),
+                "x-rpt-ids": getRptIdsFromSession(),
                 bearerAuth, // add auth token
                 ...payload,
               });
