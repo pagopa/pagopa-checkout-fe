@@ -315,7 +315,9 @@ describe("LoginHeader", () => {
       </MemoryRouter>
     );
 
-    const loginButton = screen.getByRole("button", { name: "mainPage.header.login" });
+    const loginButton = screen.getByRole("button", {
+      name: "mainPage.header.login",
+    });
     expect(loginButton).toBeInTheDocument();
     expect(tMock).toHaveBeenCalledWith("mainPage.header.login");
   });
