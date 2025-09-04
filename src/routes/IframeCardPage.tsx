@@ -1,8 +1,9 @@
-import { Box } from "@mui/material";
+import { Box, Button, Link, Typography } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
+import { t } from "i18next";
 import PageContainer from "../components/PageContent/PageContainer";
 import IframeCardForm from "../features/payment/components/IframeCardForm/IframeCardForm";
 import { getSessionItem, SessionItems } from "../utils/storage/sessionStorage";
@@ -18,11 +19,15 @@ import {
   MixpanelEventType,
   MixpanelPaymentPhase,
 } from "../utils/mixpanel/mixpanelEvents";
+import InformationModal from "../components/modals/InformationModal";
+import { Trans } from "react-i18next";
 
 export default function IFrameCardPage() {
   const navigate = useNavigate();
   const [loading] = React.useState(false);
   const [hideCancelButton, setHideCancelButton] = React.useState(false);
+  const [modalOpen, setModalOpen] = React.useState(false);
+  const handleClose = () => setModalOpen(false);
 
   React.useEffect(() => {
     setHideCancelButton(
@@ -55,6 +60,9 @@ export default function IFrameCardPage() {
   const onCancel = () => navigate(-1);
   return (
     <PageContainer title="inputCardPage.title">
+      <Button variant="text" onClick={() => setModalOpen(true)} sx={{ p: 0 }}>
+        {t("iframeCardPage.helpLink")}
+      </Button>
       <Box sx={{ mt: 6 }}>
         <IframeCardForm
           onCancel={onCancel}
@@ -62,6 +70,50 @@ export default function IFrameCardPage() {
           loading={loading}
         />
       </Box>
+      <InformationModal
+        title={t("iframeCardPage.modalTitle")}
+        open={modalOpen}
+        onClose={handleClose}
+        maxWidth="sm"
+        hideIcon={true}
+      >
+        <Box sx={{ mt: -1 }}>
+          <Typography
+            variant="body1"
+            component={"div"}
+            sx={{
+              "& ul": {
+                listStyleType: "none",
+                paddingLeft: 0,
+                marginTop: 2,
+                marginBottom: 0,
+              },
+              "& li": {
+                display: "flex",
+                marginBottom: 1,
+              },
+              "& li.second": {
+                marginTop: 0,
+              },
+              "& li .bullet": {
+                minWidth: "24px",
+              },
+              "& p:first-of-type": {
+                marginTop: 0,
+              },
+            }}
+          >
+            <Trans i18nKey="iframeCardPage.modalBodyText">
+              Default text <br /> Fallback
+            </Trans>
+          </Typography>
+          <Box display="flex" justifyContent="flex-end" sx={{ mt: 3 }}>
+            <Button variant="contained" onClick={handleClose}>
+              {t("iframeCardPage.buttonClose")}
+            </Button>
+          </Box>
+        </Box>
+      </InformationModal>
     </PageContainer>
   );
 }
