@@ -148,6 +148,7 @@
       "pagoPA": "Visita il sito pagoPA"
     },
     "header": {
+      "login": "Accedi",
       "logout": "Esci",
       "detail": {
         "detailButton": "Apri riepilogo pagamento",

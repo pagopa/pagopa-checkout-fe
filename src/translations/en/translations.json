@@ -147,6 +147,8 @@
       "pagoPA": "Visit the pagoPA website"
     },
     "header": {
+      "login": "Sign in",
+      "logout": "Log out",
       "detail": {
         "detailButton": "Apri riepilogo pagamento",
         "detailFC": "Payee tax code",

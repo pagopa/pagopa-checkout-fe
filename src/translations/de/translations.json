@@ -147,6 +147,8 @@
       "pagoPA": "Website von pagoPA aufrufen"
     },
     "header": {
+      "login": "Anmelden",
+      "logout": "Abmelden",
       "detail": {
         "detailButton": "Zahlungsübersicht öffnen",
         "detailFC": "Steuernummer des Empfängers",
