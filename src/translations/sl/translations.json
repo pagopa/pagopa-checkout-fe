@@ -94,6 +94,12 @@
     "description": "Svojo kartico, račun ali plačilno aplikacijo lahko uporabite. Rezultat plačila boste prejeli po elektronski pošti.",
     "title": "Plačajte obvestilo"
   },
+  "iframeCardPage": {
+    "helpLink": "Kje najdem CVV?",
+    "modalTitle": "Kje najdem CVV?",
+    "modalBodyText": "Koda CVV (ali CVC) ima 3 številke in jo najdete na zadnji strani svoje kartice.Na karticah American Express ima koda (CID) 4 številke in je na sprednji strani.",
+    "buttonClose": "Zapri"
+  },
   "inputCardPage": {
     "formErrors": {
       "cid": "Vnesite 4-mestna številka",
