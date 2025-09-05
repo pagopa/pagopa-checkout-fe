@@ -95,10 +95,10 @@
     "title": "Pay a notice"
   },
   "iframeCardPage": {
-    "helpLink": "Dove trovo il CVV?",
-    "modalTitle": "Dove trovo il CVV?",
-    "modalBodyText": "Il codice CVV(o CVC) ha 3 cifre e lo trovi sul retro della tua carta. <br> Sulle carte American Express, il codice (CID) ha 4 cifre ed è posizionato sul fronte.",
-    "buttonClose": "Chiudi"
+    "helpLink": "Where do I find the CVV?",
+    "modalTitle": "Where do I find the CVV?",
+    "modalBodyText": "The CVV code (or CVC) has 3 digits and is located on the back of your card. On American Express cards, the code (CID) has 4 digits and is located on the front.",
+    "buttonClose": "Close"
   },
   "inputCardPage": {
     "formErrors": {
