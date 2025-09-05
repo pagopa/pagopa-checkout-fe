@@ -118,8 +118,8 @@ const createSessionResponse: CreateSessionResponse = {
   },
 };
 const helpLink = screen.getByRole("button", {
-      name: "iframeCardPage.helpLink"
-    });
+  name: "iframeCardPage.helpLink",
+});
 
 describe("IFrameCardPage", () => {
   beforeEach(() => {
@@ -220,8 +220,8 @@ describe("IFrameCardPage", () => {
         <IFrameCardPage />
       </MemoryRouter>
     );
-    fireEvent.click(await helpLink);
-    
+    fireEvent.click(helpLink);
+
     expect(screen.findByTitle("iframeCardPage.modalTitle")).toBeInTheDocument();
   });
   test("when close button is clicked modal closes", async () => {
@@ -231,10 +231,12 @@ describe("IFrameCardPage", () => {
       </MemoryRouter>
     );
 
-    fireEvent.click(await helpLink);
+    fireEvent.click(helpLink);
 
-    fireEvent.click(await screen.findByTitle(/Chiudi/i))
+    fireEvent.click(await screen.findByTitle(/Chiudi/i));
 
-     expect(screen.findByTitle("iframeCardPage.modalTitle")).not.toBeInTheDocument();
-  })
+    expect(
+      screen.findByTitle("iframeCardPage.modalTitle")
+    ).not.toBeInTheDocument();
+  });
 });

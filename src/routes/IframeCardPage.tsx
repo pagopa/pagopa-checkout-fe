@@ -1,9 +1,10 @@
-import { Box, Button, Link, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
 import { t } from "i18next";
+import { Trans } from "react-i18next";
 import PageContainer from "../components/PageContent/PageContainer";
 import IframeCardForm from "../features/payment/components/IframeCardForm/IframeCardForm";
 import { getSessionItem, SessionItems } from "../utils/storage/sessionStorage";
@@ -20,7 +21,6 @@ import {
   MixpanelPaymentPhase,
 } from "../utils/mixpanel/mixpanelEvents";
 import InformationModal from "../components/modals/InformationModal";
-import { Trans } from "react-i18next";
 
 export default function IFrameCardPage() {
   const navigate = useNavigate();
@@ -71,12 +71,19 @@ export default function IFrameCardPage() {
         />
       </Box>
       <InformationModal
-        title={t("iframeCardPage.modalTitle")}
         open={modalOpen}
         onClose={handleClose}
         maxWidth="sm"
         hideIcon={true}
       >
+        <Typography
+          variant="h6"
+          component={"div"}
+          sx={{ pb: 2 }}
+          id="pspNotFoundTitleId"
+        >
+          {t("iframeCardPage.modalTitle")}
+        </Typography>
         <Box sx={{ mt: -1 }}>
           <Typography
             variant="body1"
