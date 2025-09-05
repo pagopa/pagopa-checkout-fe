@@ -1,4 +1,5 @@
 import React from "react";
+import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { act, fireEvent, screen } from "@testing-library/react";
 import IFrameCardPage from "../../routes/IframeCardPage";
@@ -116,6 +117,9 @@ const createSessionResponse: CreateSessionResponse = {
     ],
   },
 };
+const helpLink = screen.getByRole("button", {
+      name: "iframeCardPage.helpLink"
+    });
 
 describe("IFrameCardPage", () => {
   beforeEach(() => {
@@ -202,4 +206,35 @@ describe("IFrameCardPage", () => {
       }
     );
   });
+  test("help link should be visible", async () => {
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <IFrameCardPage />
+      </MemoryRouter>
+    );
+    expect(helpLink).toBeInTheDocument();
+  });
+  test("when help link is clicked modal is visible", async () => {
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <IFrameCardPage />
+      </MemoryRouter>
+    );
+    fireEvent.click(await helpLink);
+    
+    expect(screen.findByTitle("iframeCardPage.modalTitle")).toBeInTheDocument();
+  });
+  test("when close button is clicked modal closes", async () => {
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <IFrameCardPage />
+      </MemoryRouter>
+    );
+
+    fireEvent.click(await helpLink);
+
+    fireEvent.click(await screen.findByTitle(/Chiudi/i))
+
+     expect(screen.findByTitle("iframeCardPage.modalTitle")).not.toBeInTheDocument();
+  })
 });
