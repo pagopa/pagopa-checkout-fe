@@ -60,7 +60,13 @@ export default function IFrameCardPage() {
   const onCancel = () => navigate(-1);
   return (
     <PageContainer title="inputCardPage.title">
-      <Button variant="text" onClick={() => setModalOpen(true)} sx={{ p: 0 }}>
+      <Button
+        data-testid="helpLink"
+        id={"helpLink"}
+        variant="text"
+        onClick={() => setModalOpen(true)}
+        sx={{ p: 0 }}
+      >
         {t("iframeCardPage.helpLink")}
       </Button>
       <Box sx={{ mt: 6 }}>
@@ -77,10 +83,10 @@ export default function IFrameCardPage() {
         hideIcon={true}
       >
         <Typography
+          data-testid="modalTitle"
           variant="h6"
           component={"div"}
           sx={{ pb: 2 }}
-          id="pspNotFoundTitleId"
         >
           {t("iframeCardPage.modalTitle")}
         </Typography>
@@ -115,7 +121,11 @@ export default function IFrameCardPage() {
             </Trans>
           </Typography>
           <Box display="flex" justifyContent="flex-end" sx={{ mt: 3 }}>
-            <Button variant="contained" onClick={handleClose}>
+            <Button
+              data-testid="closeButton"
+              variant="contained"
+              onClick={handleClose}
+            >
               {t("iframeCardPage.buttonClose")}
             </Button>
           </Box>
