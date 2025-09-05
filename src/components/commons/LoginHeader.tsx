@@ -243,6 +243,7 @@ export default function LoginHeader() {
         enableAssistanceButton={false}
         onAssistanceClick={() => {}} // eslint-disable-line @typescript-eslint/no-empty-function
         onLogin={handleClickOnLogin}
+        translationsMap={{ logIn: t("mainPage.header.login") }}
       />
       <Box display="none">
         <ReCAPTCHA

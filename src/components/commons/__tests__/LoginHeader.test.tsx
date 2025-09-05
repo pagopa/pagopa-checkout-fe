@@ -19,17 +19,19 @@ import {
   MixpanelEventsId,
 } from "../../../utils/mixpanel/mixpanelEvents";
 
+const tMock = jest.fn((key: string) => {
+  const translations: Record<string, string> = {
+    "mainPage.header.logout": "Esci",
+    "mainPage.footer.pagoPA": "PagoPA S.p.A.",
+    "ariaLabels.assistance": "Assistenza",
+    "authExpiredPage.buttons.login": "Login",
+  };
+  return translations[key] || key;
+});
+
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
-    t: (key: string) => {
-      // Simple mock translation function
-      const translations: Record<string, string> = {
-        "mainPage.header.logout": "Esci",
-        "mainPage.footer.pagoPA": "PagoPA S.p.A.",
-        "ariaLabels.assistance": "Assistenza",
-      };
-      return translations[key] || key;
-    },
+    t: tMock,
   }),
   Trans: ({
     i18nKey,
@@ -305,5 +307,18 @@ describe("LoginHeader", () => {
         getById(baseElement, "idTitleErrorModalPaymentCheckPage")
       ).toBeInTheDocument()
     );
+  });
+  it("renders the login button with translated text", () => {
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <LoginHeader />
+      </MemoryRouter>
+    );
+
+    const loginButton = screen.getByRole("button", {
+      name: "mainPage.header.login",
+    });
+    expect(loginButton).toBeInTheDocument();
+    expect(tMock).toHaveBeenCalledWith("mainPage.header.login");
   });
 });

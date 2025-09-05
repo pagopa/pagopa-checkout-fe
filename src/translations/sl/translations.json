@@ -152,7 +152,9 @@
       "platformStatus":"Stanje platforme",
       "pagoPA": "Obiščite spletno stran pagoPA"
     },
-    "header": {
+    "header": { 
+      "login": "Prijava",
+      "logout": "Izhod",
       "detail": {
         "detailButton": "Apri riepilogo pagamento",
         "detailFC": "Davčna številka upnika",
