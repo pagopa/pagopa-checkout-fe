@@ -26,8 +26,8 @@ export default function IFrameCardPage() {
   const navigate = useNavigate();
   const [loading] = React.useState(false);
   const [hideCancelButton, setHideCancelButton] = React.useState(false);
-  const [modalOpen, setModalOpen] = React.useState(false);
-  const handleClose = () => setModalOpen(false);
+  const [cvvModalOpen, setCvvModalOpen] = React.useState(false);
+  const handleClose = () => setCvvModalOpen(false);
 
   React.useEffect(() => {
     setHideCancelButton(
@@ -64,7 +64,7 @@ export default function IFrameCardPage() {
         data-testid="helpLink"
         id={"helpLink"}
         variant="text"
-        onClick={() => setModalOpen(true)}
+        onClick={() => setCvvModalOpen(true)}
         sx={{ p: 0 }}
       >
         {t("iframeCardPage.helpLink")}
@@ -77,7 +77,7 @@ export default function IFrameCardPage() {
         />
       </Box>
       <InformationModal
-        open={modalOpen}
+        open={cvvModalOpen}
         onClose={handleClose}
         maxWidth="sm"
         hideIcon={true}
