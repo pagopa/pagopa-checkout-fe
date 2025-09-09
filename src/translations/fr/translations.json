@@ -147,6 +147,8 @@
       "pagoPA": "Visiter le site pagoPA"
     },
     "header": {
+      "login": "Connectez-vous",
+      "logout": "Se déconnecter",
       "detail": {
         "detailButton": "Apri riepilogo pagamento",
         "detailFC": "Code fiscal organisme créancier",
