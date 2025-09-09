@@ -94,6 +94,12 @@
     "description": "Vous pouvez payer par carte, compte ou appli de paiement. Vous recevrez le résultat du paiement par e-mail.",
     "title": "Payer un avis"
   },
+  "iframeCardPage": {
+    "helpLink": "Où se trouve le CVV?",
+    "modalTitle": "Où se trouve le CVV?",
+    "modalBodyText": "Le code CVV (ou CVC) a 3 chiffres et vous le trouvez au dos de votre carte.Sur les cartes American Express, le code (CID) a 4 chiffres et il est situé à l’avant.",
+    "buttonClose": "Fermer"
+  },
   "inputCardPage": {
     "formErrors": {
       "cid": "Saisir 4 chiffres",
