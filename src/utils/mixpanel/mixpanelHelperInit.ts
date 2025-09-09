@@ -6,32 +6,32 @@ import { getConfigOrThrow } from "../config/config";
 const ENV = getConfigOrThrow().CHECKOUT_ENV;
 
 const mixpanelInit = function (): void {
-  // if (ENV === "DEV") {
-  //   // eslint-disable-next-line no-console
-  //   console.log("Mixpanel events mock on console log.");
-  // } else {
-  init("c3db8f517102d7a7ebd670c9da3e05c4", {
-    api_host: "https://api-eu.mixpanel.com",
-    persistence: "localStorage",
-    persistence_name: "app",
-    debug: true,
-    ip: false,
-    property_blacklist: ["$current_url", "$initial_referrer", "$referrer"],
-    loaded(mixpanel: Mixpanel) {
-      // eslint-disable-next-line no-console,@typescript-eslint/restrict-plus-operands
-      console.log("pippo: " + mixpanel.get_distinct_id());
+  if (ENV === "DEV") {
+    // eslint-disable-next-line no-console
+    console.log("Mixpanel events mock on console log.");
+  } else {
+    init("c3db8f517102d7a7ebd670c9da3e05c4", {
+      api_host: "https://api-eu.mixpanel.com",
+      persistence: "localStorage",
+      persistence_name: "app",
+      debug: true,
+      ip: false,
+      property_blacklist: ["$current_url", "$initial_referrer", "$referrer"],
+      loaded(mixpanel: Mixpanel) {
+        // eslint-disable-next-line no-console,@typescript-eslint/restrict-plus-operands
+        console.log("pippo: " + mixpanel.get_distinct_id());
 
-      if (sessionStorage.getItem("rptId") === null) {
-        const oldDevice = mixpanel.get_property?.("$device_id");
-        mixpanel.reset();
+        if (sessionStorage.getItem("rptId") === null) {
+          const oldDevice = mixpanel.get_property?.("$device_id");
+          mixpanel.reset();
 
-        if (oldDevice) {
-          mixpanel.register({ $device_id: oldDevice });
+          if (oldDevice) {
+            mixpanel.register({ $device_id: oldDevice });
+          }
         }
-      }
-    },
-  });
-  // }
+      },
+    });
+  }
 };
 
 export const mixpanel = {
