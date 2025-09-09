@@ -18,7 +18,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { ErrorsType } from "../../utils/errors/checkErrorsModel";
 import {
-  CustomErrorResponses,
+  ErrorResponses,
   PaymentCategoryResponses,
 } from "../../utils/errors/errorsModel";
 import { ErrorButtons } from "../FormButtons/ErrorButtons";
@@ -62,7 +62,7 @@ function ErrorModal(props: {
   const nodeFaultCodeDetails =
     nodeFaultCode.length === 2 ? nodeFaultCode[1] : "";
 
-  const customResponse = CustomErrorResponses[props.error as ErrorsType];
+  const customResponse = ErrorResponses[props.error as ErrorsType];
   const isCustomError = !!customResponse;
   const isFaultCategory = faultResponses[nodeFaultCodeCategory] !== undefined;
 

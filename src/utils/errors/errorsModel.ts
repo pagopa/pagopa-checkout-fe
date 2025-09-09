@@ -27,7 +27,7 @@ type ErrorModal = {
   buttons?: Array<ErrorModalBtn>;
 };
 
-export const CustomErrorResponses: Partial<Record<ErrorsType, ErrorModal>> = {
+export const ErrorResponses: Partial<Record<ErrorsType, ErrorModal>> = {
   [ErrorsType.INVALID_QRCODE]: {
     title: "INVALID_QRCODE.title",
     body: "INVALID_QRCODE.body",
@@ -36,7 +36,7 @@ export const CustomErrorResponses: Partial<Record<ErrorsType, ErrorModal>> = {
       {
         title: "errorButton.help",
         action: () => {
-          sendMixpanelEventCHK_PAYMENT_ERROR_HELP("INVALID_QRCODE");
+          sendMixpanelPaymentErrorHelpEvent("INVALID_QRCODE");
           window.open(`${HELPDESK_URL}INVALID_QRCODE`, "_blank")?.focus();
         },
       },
@@ -57,7 +57,7 @@ export const PaymentCategoryResponses = (
       {
         title: "errorButton.help",
         action: () => {
-          sendMixpanelEventCHK_PAYMENT_ERROR_HELP(errorCodeDetail);
+          sendMixpanelPaymentErrorHelpEvent(errorCodeDetail);
           window
             .open(
               `${HELPDESK_URL}${errorCodeDetail ?? "DOMAIN_UNKNOWN"}`,
@@ -78,7 +78,7 @@ export const PaymentCategoryResponses = (
       {
         title: "errorButton.help",
         action: () => {
-          sendMixpanelEventCHK_PAYMENT_ERROR_HELP(errorCodeDetail);
+          sendMixpanelPaymentErrorHelpEvent(errorCodeDetail);
           window
             .open(
               `${HELPDESK_URL}${errorCodeDetail ?? "PAYMENT_UNAVAILABLE"}`,
@@ -99,7 +99,7 @@ export const PaymentCategoryResponses = (
       {
         title: "errorButton.help",
         action: () => {
-          sendMixpanelEventCHK_PAYMENT_ERROR_HELP(errorCodeDetail);
+          sendMixpanelPaymentErrorHelpEvent(errorCodeDetail);
           window
             .open(
               `${HELPDESK_URL}${errorCodeDetail ?? "PAYMENT_DATA_ERROR"}`,
@@ -124,7 +124,7 @@ export const PaymentCategoryResponses = (
       {
         title: "errorButton.help",
         action: () => {
-          sendMixpanelEventCHK_PAYMENT_ERROR_HELP(errorCodeDetail);
+          sendMixpanelPaymentErrorHelpEvent(errorCodeDetail);
           window
             .open(
               `${HELPDESK_URL}${errorCodeDetail ?? "GENERIC_ERROR"}`,
@@ -187,7 +187,7 @@ export const PaymentCategoryResponses = (
   },
 });
 
-const sendMixpanelEventCHK_PAYMENT_ERROR_HELP = (
+const sendMixpanelPaymentErrorHelpEvent = (
   errorCodeDetail: string | undefined
 ) => {
   const paymentInfo = getPaymentInfoFromSessionStorage();
