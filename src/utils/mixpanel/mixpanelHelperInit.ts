@@ -20,7 +20,7 @@ const mixpanelInit = function (): void {
     loaded(mixpanel: Mixpanel) {
       // eslint-disable-next-line no-console,@typescript-eslint/restrict-plus-operands
       console.log("pippo: " + mixpanel.get_distinct_id());
-      // this is useful to obtain a new distinct_id every session
+
       if (sessionStorage.getItem("rptId") === null) {
         const oldDevice = mixpanel.get_property?.("$device_id");
         mixpanel.reset();
