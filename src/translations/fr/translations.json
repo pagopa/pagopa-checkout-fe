@@ -97,7 +97,7 @@
   "iframeCardPage": {
     "helpLink": "Où se trouve le CVV?",
     "modalTitle": "Où se trouve le CVV?",
-    "modalBodyText": "Le code CVV (ou CVC) a 3 chiffres et vous le trouvez au dos de votre carte.Sur les cartes American Express, le code (CID) a 4 chiffres et il est situé à l’avant.",
+    "modalBodyText": "Le code CVV (ou CVC) a 3 chiffres et vous le trouvez au dos de votre carte.<br>Sur les cartes American Express, le code (CID) a 4 chiffres et il est situé à l’avant.",
     "buttonClose": "Fermer"
   },
   "inputCardPage": {

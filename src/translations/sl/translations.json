@@ -97,7 +97,7 @@
   "iframeCardPage": {
     "helpLink": "Kje najdem CVV?",
     "modalTitle": "Kje najdem CVV?",
-    "modalBodyText": "Koda CVV (ali CVC) ima 3 številke in jo najdete na zadnji strani svoje kartice.Na karticah American Express ima koda (CID) 4 številke in je na sprednji strani.",
+    "modalBodyText": "Koda CVV (ali CVC) ima 3 številke in jo najdete na zadnji strani svoje kartice.<br>Na karticah American Express ima koda (CID) 4 številke in je na sprednji strani.",
     "buttonClose": "Zapri"
   },
   "inputCardPage": {
