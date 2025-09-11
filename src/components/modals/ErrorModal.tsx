@@ -59,7 +59,7 @@ function ErrorModal(props: {
     nodeFaultCode.length === 2 ? nodeFaultCode[1] : "";
 
   const errorResponse = ErrorResponses[props.error as ErrorsType];
-  const isCustomError = !!customResponse;
+  const isErrorResponse = !!errorResponse;
   const isFaultCategory = faultResponses[nodeFaultCodeCategory] !== undefined;
 
   const getErrorTitle = () =>
