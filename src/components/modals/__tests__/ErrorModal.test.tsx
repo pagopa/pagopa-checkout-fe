@@ -142,7 +142,7 @@ jest.mock("../../../utils/errors/errorsModel", () => {
         ],
       },
     })),
-    CustomErrorResponses: {
+    ErrorResponses: {
       INVALID_QRCODE: {
         title: "INVALID_QRCODE.title",
         body: "INVALID_QRCODE.body",
