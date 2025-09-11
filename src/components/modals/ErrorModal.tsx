@@ -49,10 +49,6 @@ function ErrorModal(props: {
   const [copy, setCopy] = React.useState(t("clipboard.copy"));
 
   const faultResponses = PaymentCategoryResponses();
-  // const notListed = (faultCategory: string) =>
-  //   faultResponses[faultCategory as FaultCategoryEnum] === undefined;
-  // const hasDetail = (faultCategory: string) =>
-  //   !!faultResponses[faultCategory as FaultCategoryEnum]?.detail;
   const showDetail = (text: string) => text === "ErrorCodeDescription";
 
   // error for Node verify & activation
@@ -71,16 +67,6 @@ function ErrorModal(props: {
       ? customResponse.title
       : faultResponses[nodeFaultCodeCategory]?.title;
 
-  // const getErrorTitle = () => responses[nodeFaultCodeCategory]?.title;
-  // const getErrorBody = () => {
-  //   if (notListed(nodeFaultCodeCategory)) {
-  //     return responses[FaultCategoryEnum.GENERIC_ERROR]?.body;
-  //   }
-  //   if (hasDetail(nodeFaultCodeCategory)) {
-  //     return "ErrorCodeDescription";
-  //   }
-  //   return responses[nodeFaultCodeCategory]?.body;
-  // };
   const getErrorBody = () =>
     isCustomError
       ? customResponse.body
@@ -90,13 +76,6 @@ function ErrorModal(props: {
       ? "ErrorCodeDescription"
       : faultResponses[nodeFaultCodeCategory]?.body;
 
-  // const getErrorButtons = () => {
-  //   if (notListed(nodeFaultCodeCategory)) {
-  //     return responses[FaultCategoryEnum.GENERIC_ERROR]?.buttons;
-  //   }
-  //   return PaymentCategoryResponses(nodeFaultCodeDetails)[nodeFaultCodeCategory]
-  //     ?.buttons;
-  // };
   const getErrorButtons = () =>
     isCustomError
       ? customResponse.buttons
