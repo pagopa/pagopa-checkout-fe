@@ -1,4 +1,14 @@
 import { FaultCategory } from "../../../generated/definitions/payment-ecommerce/FaultCategory";
+import { mixpanel } from "../mixpanel/mixpanelHelperInit";
+import {
+  MixpanelEventCategory,
+  MixpanelEventsId,
+} from "../mixpanel/mixpanelEvents";
+import {
+  getDataEntryTypeFromSessionStorage,
+  getPaymentInfoFromSessionStorage,
+} from "../mixpanel/mixpanelTracker";
+import { ErrorsType } from "./checkErrorsModel";
 
 const HELPDESK_URL: string =
   "https://assistenza.pagopa.gov.it/hc/it/search?utf8=%E2%9C%93&query=";
@@ -17,6 +27,26 @@ type ErrorModal = {
   buttons?: Array<ErrorModalBtn>;
 };
 
+export const ErrorResponses: Partial<Record<ErrorsType, ErrorModal>> = {
+  [ErrorsType.INVALID_QRCODE]: {
+    title: "INVALID_QRCODE.title",
+    body: "INVALID_QRCODE.body",
+    detail: false,
+    buttons: [
+      {
+        title: "errorButton.help",
+        action: () => {
+          sendMixpanelPaymentErrorHelpEvent("INVALID_QRCODE");
+          window.open(`${HELPDESK_URL}INVALID_QRCODE`, "_blank")?.focus();
+        },
+      },
+      {
+        title: "errorButton.close",
+      },
+    ],
+  },
+};
+
 export const PaymentCategoryResponses = (
   errorCodeDetail?: string
 ): Record<FaultCategory, ErrorModal> => ({
@@ -27,6 +57,7 @@ export const PaymentCategoryResponses = (
       {
         title: "errorButton.help",
         action: () => {
+          sendMixpanelPaymentErrorHelpEvent(errorCodeDetail);
           window
             .open(
               `${HELPDESK_URL}${errorCodeDetail ?? "DOMAIN_UNKNOWN"}`,
@@ -47,6 +78,7 @@ export const PaymentCategoryResponses = (
       {
         title: "errorButton.help",
         action: () => {
+          sendMixpanelPaymentErrorHelpEvent(errorCodeDetail);
           window
             .open(
               `${HELPDESK_URL}${errorCodeDetail ?? "PAYMENT_UNAVAILABLE"}`,
@@ -67,6 +99,7 @@ export const PaymentCategoryResponses = (
       {
         title: "errorButton.help",
         action: () => {
+          sendMixpanelPaymentErrorHelpEvent(errorCodeDetail);
           window
             .open(
               `${HELPDESK_URL}${errorCodeDetail ?? "PAYMENT_DATA_ERROR"}`,
@@ -91,6 +124,7 @@ export const PaymentCategoryResponses = (
       {
         title: "errorButton.help",
         action: () => {
+          sendMixpanelPaymentErrorHelpEvent(errorCodeDetail);
           window
             .open(
               `${HELPDESK_URL}${errorCodeDetail ?? "GENERIC_ERROR"}`,
@@ -152,3 +186,18 @@ export const PaymentCategoryResponses = (
     ],
   },
 });
+
+const sendMixpanelPaymentErrorHelpEvent = (
+  errorCodeDetail: string | undefined
+) => {
+  const paymentInfo = getPaymentInfoFromSessionStorage();
+  mixpanel.track(MixpanelEventsId.CHK_PAYMENT_ERROR_HELP, {
+    EVENT_ID: MixpanelEventsId.CHK_PAYMENT_ERROR_HELP,
+    EVENT_CATEGORY: MixpanelEventCategory.UX,
+    error: errorCodeDetail,
+    organization_name: paymentInfo?.paName,
+    organization_fiscal_code: paymentInfo?.paFiscalCode,
+    data_entry: getDataEntryTypeFromSessionStorage(),
+    expiration_date: paymentInfo?.dueDate,
+  });
+};

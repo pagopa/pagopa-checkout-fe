@@ -181,7 +181,7 @@ describe("PaymentQrPage", () => {
       }
     );
 
-    expect(screen.getByText("GENERIC_ERROR.title")).toBeInTheDocument();
-    expect(screen.getByText("GENERIC_ERROR.body")).toBeInTheDocument();
+    expect(screen.getByText("INVALID_QRCODE.title")).toBeInTheDocument();
+    expect(screen.getByText("INVALID_QRCODE.body")).toBeInTheDocument();
   });
 });
