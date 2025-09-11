@@ -1,7 +1,12 @@
-import { init, track, Mixpanel, get_distinct_id } from "mixpanel-browser";
+import mp, { get_distinct_id, init, track } from "mixpanel-browser";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
 import { getConfigOrThrow } from "../config/config";
+import {
+  getSessionItem,
+  SessionItems,
+  setSessionItem,
+} from "../storage/sessionStorage";
 
 const ENV = getConfigOrThrow().CHECKOUT_ENV;
 
@@ -14,20 +19,20 @@ const mixpanelInit = function (): void {
       api_host: "https://api-eu.mixpanel.com",
       persistence: "localStorage",
       persistence_name: "app",
-      debug: true,
+      debug: false,
       ip: false,
       property_blacklist: ["$current_url", "$initial_referrer", "$referrer"],
-      loaded(mixpanel: Mixpanel) {,
-        if (sessionStorage.getItem("mixpanelDeviceId") === null) {
-          const oldDevice = mixpanel.get_property?.("$device_id");
-          mixpanel.reset();
-
-          if (oldDevice) {
-            mixpanel.register({ $device_id: oldDevice });
-          }
-        }
-      },
     });
+
+    if (getSessionItem(SessionItems.mixpanelDeviceId) === undefined) {
+      const oldDevice = mp.get_property?.("$device_id");
+      mp.reset();
+
+      if (oldDevice) {
+        mp.register({ $device_id: oldDevice });
+      }
+      setSessionItem(SessionItems.mixpanelDeviceId, oldDevice.toString());
+    }
   }
 };
 
@@ -42,11 +47,10 @@ export const mixpanel = {
       console.log(event_name, properties);
     } else {
       try {
-          track(event_name, 
-            { ...properties,
-              ...(ENV === "UAT" && { environment: "UAT" }) 
-            }
-            );
+        track(event_name, {
+          ...properties,
+          ...(ENV === "UAT" && { environment: "UAT" }),
+        });
       } catch (_) {
         // eslint-disable-next-line no-console
         console.log(event_name, properties);
@@ -58,6 +62,11 @@ export const mixpanel = {
 const isMixpanelReady = (): boolean =>
   pipe(
     E.tryCatch(() => get_distinct_id(), E.toError),
-    E.map((id): boolean => typeof id === "string" && id.length > 0),
+    E.map((id): boolean => {
+      const hasDistinctId = typeof id === "string" && id.length > 0;
+      const hasDeviceId =
+        getSessionItem(SessionItems.mixpanelDeviceId) !== undefined;
+      return hasDistinctId && hasDeviceId;
+    }),
     E.getOrElseW(() => false)
   );

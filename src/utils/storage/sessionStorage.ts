@@ -37,6 +37,7 @@ export enum SessionItems {
   noticeCodeDataEntry = "noticeCodeDataEntry",
   enableScheduledMaintenanceBanner = "enableScheduledMaintenanceBanner",
   counterPolling = "counterPolling",
+  mixpanelDeviceId = "mixpanelDeviceId",
 }
 const isParsable = (item: SessionItems) =>
   !(
@@ -49,7 +50,8 @@ const isParsable = (item: SessionItems) =>
     item === SessionItems.loginOriginPage ||
     item === SessionItems.authToken ||
     item === SessionItems.noticeCodeDataEntry ||
-    item === SessionItems.enableScheduledMaintenanceBanner
+    item === SessionItems.enableScheduledMaintenanceBanner ||
+    item === SessionItems.mixpanelDeviceId
   );
 
 export const getSessionItem = (item: SessionItems) => {
@@ -131,6 +133,7 @@ export const clearStorageAndMaintainAuthData = () => {
   const isScheduledMaintenanceBannerEnabled = getSessionItem(
     SessionItems.enableScheduledMaintenanceBanner
   ) as string;
+  const mixpanelDeviceId = getSessionItem(SessionItems.mixpanelDeviceId);
   sessionStorage.clear();
   if (authToken != null) {
     setSessionItem(SessionItems.authToken, authToken);
@@ -143,6 +146,9 @@ export const clearStorageAndMaintainAuthData = () => {
       SessionItems.enableScheduledMaintenanceBanner,
       isScheduledMaintenanceBannerEnabled
     );
+  }
+  if (mixpanelDeviceId != null) {
+    setSessionItem(SessionItems.mixpanelDeviceId, mixpanelDeviceId);
   }
 };
 
