@@ -80,13 +80,13 @@ describe("Mixpanel integration tests", () => {
   });
 
   it("should reset and register old device_id in mixpanelInit", () => {
-    (window as any)._env_.CHECKOUT_ENV = "PROD";
-
     sessionStorage.clear();
 
     mixpanel.track("device_event");
 
     expect(mixpanelBrowser.reset).toHaveBeenCalled();
-    expect(mixpanelBrowser.register).toHaveBeenCalledWith({ $device_id: "device-1" });
+    expect(mixpanelBrowser.register).toHaveBeenCalledWith({
+      $device_id: "device-1",
+    });
   });
 });
