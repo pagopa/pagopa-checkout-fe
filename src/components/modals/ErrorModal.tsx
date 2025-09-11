@@ -63,26 +63,38 @@ function ErrorModal(props: {
   const isFaultCategory = faultResponses[nodeFaultCodeCategory] !== undefined;
 
   const getErrorTitle = () =>
-    isCustomError
-      ? customResponse.title
+    isErrorResponse
+      ? errorResponse.title
       : faultResponses[nodeFaultCodeCategory]?.title;
 
-  const getErrorBody = () =>
-    isCustomError
-      ? customResponse.body
-      : !isFaultCategory
-      ? faultResponses[FaultCategoryEnum.GENERIC_ERROR]?.body
-      : faultResponses[nodeFaultCodeCategory]?.detail
-      ? "ErrorCodeDescription"
-      : faultResponses[nodeFaultCodeCategory]?.body;
+  const getErrorBody = () => {
+    if (isErrorResponse) {
+      return errorResponse.body;
+    }
 
-  const getErrorButtons = () =>
-    isCustomError
-      ? customResponse.buttons
-      : !isFaultCategory
-      ? faultResponses[FaultCategoryEnum.GENERIC_ERROR]?.buttons
-      : PaymentCategoryResponses(nodeFaultCodeDetails)[nodeFaultCodeCategory]
-          ?.buttons;
+    if (!isFaultCategory) {
+      return faultResponses[FaultCategoryEnum.GENERIC_ERROR]?.body;
+    }
+
+    if (faultResponses[nodeFaultCodeCategory]?.detail) {
+      return "ErrorCodeDescription";
+    }
+
+    return faultResponses[nodeFaultCodeCategory]?.body;
+  };
+
+  const getErrorButtons = () => {
+    if (isErrorResponse) {
+      return errorResponse.buttons;
+    }
+
+    if (!isFaultCategory) {
+      return faultResponses[FaultCategoryEnum.GENERIC_ERROR]?.buttons;
+    }
+
+    return PaymentCategoryResponses(nodeFaultCodeDetails)[nodeFaultCodeCategory]
+      ?.buttons;
+  };
 
   const title = getErrorTitle() || "GENERIC_ERROR.title";
   const body = getErrorBody() || "GENERIC_ERROR.body";
