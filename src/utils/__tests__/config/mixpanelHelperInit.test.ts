@@ -29,7 +29,7 @@ Object.defineProperty(global, "window", {
   },
   writable: true,
 });
-import mixpanelBrowser from "mixpanel-browser";
+import mixpanelBrowser, { get_distinct_id } from "mixpanel-browser";
 import { mixpanel } from "../../mixpanel/mixpanelHelperInit";
 
 jest.mock("mixpanel-browser", () => {
@@ -57,11 +57,36 @@ jest.mock("mixpanel-browser", () => {
 });
 
 describe("Mixpanel integration tests", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it("should call mixpanel.track with event name and properties in PROD environment", () => {
     mixpanel.track("test_event", { prop: "value" });
 
     expect(mixpanelBrowser.track).toHaveBeenCalledWith("test_event", {
       prop: "value",
     });
+  });
+
+  it("should call mixpanelInit when isMixpanelReady is false", () => {
+    (get_distinct_id as jest.Mock).mockImplementationOnce(() => {
+      throw new Error("no distinct id");
+    });
+
+    mixpanel.track("init_event");
+
+    expect(mixpanelBrowser.init).toHaveBeenCalled();
+  });
+
+  it("should reset and register old device_id in mixpanelInit", () => {
+    (window as any)._env_.CHECKOUT_ENV = "PROD";
+
+    sessionStorage.clear();
+
+    mixpanel.track("device_event");
+
+    expect(mixpanelBrowser.reset).toHaveBeenCalled();
+    expect(mixpanelBrowser.register).toHaveBeenCalledWith({ $device_id: "device-1" });
   });
 });
