@@ -28,7 +28,13 @@ export const mixpanel = {
   },
 };
 
+// eslint-disable-next-line complexity
 const mixpanelInit = () => {
+  if (ENV === "DEV") {
+    // eslint-disable-next-line no-console
+    console.log("Mixpanel events mock on console log.");
+    return;
+  }
   const mp_app = localStorage.getItem("mp_app");
   // eslint-disable-next-line functional/no-let
   let distinctId = localStorage.getItem("mp_distinct_id");
