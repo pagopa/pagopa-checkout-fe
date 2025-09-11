@@ -32,11 +32,29 @@ Object.defineProperty(global, "window", {
 import mixpanelBrowser from "mixpanel-browser";
 import { mixpanel } from "../../mixpanel/mixpanelHelperInit";
 
-jest.mock("mixpanel-browser", () => ({
-  init: jest.fn(),
-  track: jest.fn(),
-  Mixpanel: jest.fn(),
-}));
+jest.mock("mixpanel-browser", () => {
+  const track = jest.fn();
+  const init = jest.fn();
+  const reset = jest.fn();
+  const get_distinct_id = jest.fn(() => "distinct-1");
+
+  const defaultExport = {
+    get_property: jest.fn(() => "device-1"),
+    register: jest.fn(),
+    reset,
+    track,
+    init,
+  };
+
+  return {
+    __esModule: true,
+    default: defaultExport,
+    init,
+    track,
+    reset,
+    get_distinct_id,
+  };
+});
 
 describe("Mixpanel integration tests", () => {
   it("should call mixpanel.track with event name and properties in PROD environment", () => {
