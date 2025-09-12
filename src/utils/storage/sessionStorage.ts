@@ -37,7 +37,7 @@ export enum SessionItems {
   noticeCodeDataEntry = "noticeCodeDataEntry",
   enableScheduledMaintenanceBanner = "enableScheduledMaintenanceBanner",
   counterPolling = "counterPolling",
-  mixpanelDeviceId = "mixpanelDeviceId",
+  mixpanelInitialized = "mixpanelInitialized",
 }
 const isParsable = (item: SessionItems) =>
   !(
@@ -51,7 +51,7 @@ const isParsable = (item: SessionItems) =>
     item === SessionItems.authToken ||
     item === SessionItems.noticeCodeDataEntry ||
     item === SessionItems.enableScheduledMaintenanceBanner ||
-    item === SessionItems.mixpanelDeviceId
+    item === SessionItems.mixpanelInitialized
   );
 
 export const getSessionItem = (item: SessionItems) => {
