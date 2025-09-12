@@ -15,7 +15,7 @@ const mixpanelInit = function (): void {
     // eslint-disable-next-line no-console
     console.log("Mixpanel events mock on console log.");
   } else {
-    //initialize mixpanel retrieving info from local storage such as device id and distinct id
+    // initialize mixpanel retrieving info from local storage such as device id and distinct id
     init("c3db8f517102d7a7ebd670c9da3e05c4", {
       api_host: "https://api-eu.mixpanel.com",
       persistence: "localStorage",
@@ -26,12 +26,12 @@ const mixpanelInit = function (): void {
     });
 
     if (!getSessionItem(SessionItems.mixpanelInitialized)) {
-      //retrieve device id from local storage initialized mixpanel entity
+      // retrieve device id from local storage initialized mixpanel entity
       const oldDevice = mp.get_property?.("$device_id");
-      //reset mixpanel instance, generating new device_id and distinct id
+      // reset mixpanel instance, generating new device_id and distinct id
       mp.reset();
       if (oldDevice) {
-        //set device id to the one retrieved from local storage
+        // set device id to the one retrieved from local storage
         mp.register({ $device_id: oldDevice });
       }
       setSessionItem(SessionItems.mixpanelInitialized, true);
@@ -68,7 +68,7 @@ const isMixpanelReady = (): boolean =>
     E.map((id): boolean => {
       const hasDistinctId = typeof id === "string" && id.length > 0;
       const mixpanelInitialized =
-        getSessionItem(SessionItems.mixpanelInitialized) === "true" ;
+        getSessionItem(SessionItems.mixpanelInitialized) === "true";
       return hasDistinctId && mixpanelInitialized;
     }),
     E.getOrElseW(() => false)

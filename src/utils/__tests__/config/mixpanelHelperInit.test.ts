@@ -1,4 +1,8 @@
 /* eslint-disable functional/immutable-data */
+import mixpanelBrowser, { get_distinct_id } from "mixpanel-browser";
+import { mixpanel } from "../../mixpanel/mixpanelHelperInit";
+import { SessionItems } from "../../storage/sessionStorage";
+
 Object.defineProperty(global, "window", {
   value: {
     _env_: {
@@ -29,8 +33,17 @@ Object.defineProperty(global, "window", {
   },
   writable: true,
 });
-import mixpanelBrowser, { get_distinct_id } from "mixpanel-browser";
-import { mixpanel } from "../../mixpanel/mixpanelHelperInit";
+
+jest.mock("../../storage/sessionStorage", () => {
+  const key = "mixpanelInitialized";
+  return {
+    __esModule: true,
+    SessionItems: { mixpanelInitialized: key },
+    getSessionItem: (k: string) => sessionStorage.getItem(k),
+    setSessionItem: (k: string, v: unknown) =>
+      sessionStorage.setItem(k, String(v)),
+  };
+});
 
 jest.mock("mixpanel-browser", () => {
   const track = jest.fn();
@@ -59,6 +72,7 @@ jest.mock("mixpanel-browser", () => {
 describe("Mixpanel integration tests", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    sessionStorage.clear();
   });
 
   it("should call mixpanel.track with event name and properties in PROD environment", () => {
@@ -88,5 +102,32 @@ describe("Mixpanel integration tests", () => {
     expect(mixpanelBrowser.register).toHaveBeenCalledWith({
       $device_id: "device-1",
     });
+  });
+
+  it("does NOT init when isMixpanelReady === true (distinct id present and flag 'true')", () => {
+    (get_distinct_id as jest.Mock).mockReturnValueOnce("distinct-123");
+    sessionStorage.setItem(SessionItems.mixpanelInitialized, "true");
+
+    mixpanel.track("ready_event");
+
+    expect(mixpanelBrowser.init).not.toHaveBeenCalled();
+    expect(mixpanelBrowser.track).toHaveBeenCalledWith("ready_event", {});
+  });
+
+  it("calls init when distinct id is empty string (hasDistinctId === false)", () => {
+    (get_distinct_id as jest.Mock).mockReturnValueOnce("");
+    sessionStorage.setItem(SessionItems.mixpanelInitialized, "true");
+
+    mixpanel.track("empty_distinct");
+
+    expect(mixpanelBrowser.init).toHaveBeenCalled();
+  });
+
+  it("calls init when mixpanelInitialized flag is not 'true'", () => {
+    (get_distinct_id as jest.Mock).mockReturnValueOnce("distinct-123");
+
+    mixpanel.track("no_flag_event");
+
+    expect(mixpanelBrowser.init).toHaveBeenCalled();
   });
 });
