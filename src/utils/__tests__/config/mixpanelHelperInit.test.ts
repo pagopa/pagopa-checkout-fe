@@ -34,6 +34,13 @@ Object.defineProperty(global, "window", {
   writable: true,
 });
 
+jest.mock("../../config/config", () => ({
+  __esModule: true,
+  getConfigOrThrow: jest.fn(() => ({
+    CHECKOUT_ENV: "PROD",
+  })),
+}));
+
 jest.mock("../../storage/sessionStorage", () => {
   const key = "mixpanelInitialized";
   return {
