@@ -197,7 +197,6 @@ export default function PaymentResponsePageV2() {
           setFindOutMoreOpen(false);
         }}
       />
-      pippo
       <Box
         sx={{
           minHeight: "20dvh",
@@ -210,7 +209,6 @@ export default function PaymentResponsePageV2() {
         <Box
           sx={{
             width: "100%",
-            maxWidth: 560,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",

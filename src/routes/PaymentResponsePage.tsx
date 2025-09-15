@@ -203,7 +203,6 @@ export default function PaymentResponsePage() {
           <Box
             sx={{
               width: "100%",
-              maxWidth: 560,
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
