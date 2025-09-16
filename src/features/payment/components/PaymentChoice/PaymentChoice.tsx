@@ -4,7 +4,7 @@ import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidV4 } from "uuid";
-import { Typography, Button } from "@mui/material";
+import { Typography, Button, InputAdornment, TextField } from "@mui/material";
 import { t } from "i18next";
 import InformationModal from "../../../../components/modals/InformationModal";
 import ErrorModal from "../../../../components/modals/ErrorModal";
@@ -39,6 +39,7 @@ export function PaymentChoice(props: {
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
   const [pspNotFoundModal, setPspNotFoundModalOpen] = React.useState(false);
+  const [paymentMethodFilter, setPaymentMethodFilter] = React.useState("");
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -108,6 +109,15 @@ export function PaymentChoice(props: {
     });
   };
 
+  const filterPaymentMethodsHandler = async (value: string) => {
+    if (!loading) {
+      setPaymentMethodFilter(value);
+    }
+  };
+
+  const filterPaymentMethods = (p: any) =>
+    p.description.toLowerCase().indexOf(paymentMethodFilter.toLowerCase()) > -1;
+
   const handleClickOnMethod = async (method: PaymentInstrumentsType) => {
     if (!loading) {
       const { paymentTypeCode, id: paymentMethodId } = method;
@@ -144,12 +154,35 @@ export function PaymentChoice(props: {
         ))
       ) : (
         <>
+          <TextField
+            label="Cerca un metodo"
+            id="outlined-start-adornment"
+            fullWidth
+            inputProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">kg</InputAdornment>
+                ),
+              },
+            }}
+            onChange={(e) => filterPaymentMethodsHandler(e.target.value)}
+          />
           <MethodComponentList
-            methods={paymentMethods.enabled}
+            methods={
+              paymentMethodFilter === ""
+                ? paymentMethods.enabled
+                : paymentMethods.enabled.filter(filterPaymentMethods)
+            }
             onClick={handleClickOnMethod}
             testable
           />
-          <DisabledPaymentMethods methods={paymentMethods.disabled} />
+          <DisabledPaymentMethods
+            methods={
+              paymentMethodFilter === ""
+                ? paymentMethods.disabled
+                : paymentMethods.disabled.filter(filterPaymentMethods)
+            }
+          />
         </>
       )}
       <Box display="none">
