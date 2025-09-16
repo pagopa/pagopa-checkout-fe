@@ -185,6 +185,7 @@ export function PaymentChoice(props: {
           />
         </>
       )}
+      {paymentMethods.enabled.concat(paymentMethods.disabled).filter(filterPaymentMethods).length === 0 ? <Typography>Nessun risultato trovato. Prova a rimuovere i filtri o cerca usando altri termini.</Typography>: <Typography></Typography>}
       <Box display="none">
         <ReCAPTCHA
           ref={ref}
