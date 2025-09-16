@@ -46,6 +46,7 @@ function TextFormField(props: TextFormFieldProps) {
       error={props.error}
       label={t(props.label)}
       id={props.id}
+      data-testid={props.id}
       name={props.id}
       variant={props.variant}
       autoComplete={props.autoComplete}

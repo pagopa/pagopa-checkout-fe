@@ -4,15 +4,10 @@ import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidV4 } from "uuid";
-import {
-  Typography,
-  Button,
-  InputAdornment,
-  IconButton,
-  TextField,
-} from "@mui/material";
+import { Typography, Button, InputAdornment, IconButton } from "@mui/material";
 import { t } from "i18next";
 import { Clear, Search } from "@mui/icons-material";
+import TextFormField from "../../../../components/TextFormField/TextFormField";
 import InformationModal from "../../../../components/modals/InformationModal";
 import ErrorModal from "../../../../components/modals/ErrorModal";
 import CheckoutLoader from "../../../../components/PageContent/CheckoutLoader";
@@ -170,30 +165,36 @@ export function PaymentChoice(props: {
         ))
       ) : (
         <>
-          <TextField
+          <TextFormField
             label={t("paymentChoicePage.filterLabel")}
             id="paymentMethodsFilter"
             fullWidth
-            onChange={(e) => filterPaymentMethodsHandler(e.currentTarget.value)}
+            handleChange={(e) =>
+              filterPaymentMethodsHandler(e.currentTarget.value)
+            }
             value={paymentMethodFilter}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Search />
-                </InputAdornment>
-              ),
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    onClick={resetPaymentMethodFilter}
-                    edge="end"
-                    id="clearFilterPaymentMethod"
-                  >
-                    <Clear />
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
+            startAdornment={
+              <InputAdornment position="start">
+                <Search />
+              </InputAdornment>
+            }
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton
+                  onClick={resetPaymentMethodFilter}
+                  edge="end"
+                  id="clearFilterPaymentMethod"
+                  data-testid="clearFilterPaymentMethod"
+                >
+                  <Clear />
+                </IconButton>
+              </InputAdornment>
+            }
+            error={false}
+            errorText={undefined}
+            type="text"
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            handleBlur={() => {}}
           />
           <MethodComponentList
             methods={

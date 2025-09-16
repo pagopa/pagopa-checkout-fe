@@ -1,6 +1,12 @@
 import React from "react";
 import "@testing-library/jest-dom";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from "@testing-library/react";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { PaymentChoice } from "../PaymentChoice";
@@ -337,6 +343,94 @@ describe("PaymentChoice", () => {
 
     // Should show disabled methods separately
     expect(screen.getByTestId("disabled-methods")).toBeInTheDocument();
+  });
+
+  it("should render filtered payment methods when input text in filter box", async () => {
+    // Mock the useRef to immediately set the ref
+    jest.spyOn(React, "useRef").mockImplementation(() => ({
+      current: { execute: jest.fn(), reset: jest.fn() },
+    }));
+
+    const result = renderWithRouterAndRedux(
+      <PaymentChoice
+        amount={100}
+        paymentInstruments={samplePaymentInstruments}
+        loading={false}
+      />
+    );
+
+    // Wait for loading to finish (component has internal loading state)
+    await waitFor(() => {
+      expect(screen.queryByTestId("checkout-loader")).not.toBeInTheDocument();
+    });
+
+    // Should show enabled payment methods
+    expect(screen.getByTestId("payment-method-CP")).toBeInTheDocument();
+    expect(screen.getByTestId("payment-method-PAYPAL")).toBeInTheDocument();
+    // Should show disabled methods separately
+    expect(screen.getByTestId("disabled-methods")).toBeInTheDocument();
+
+    // Filter for string 'cart'
+    const filterInput = result.container.querySelector(
+      "#paymentMethodsFilter"
+    )!;
+
+    await act(async () => {
+      fireEvent.change(filterInput, { target: { value: "cart" } });
+    });
+    // Should show only card payment methods
+    expect(screen.getByTestId("payment-method-CP")).toBeInTheDocument();
+    expect(
+      screen.queryByTestId("payment-method-PAYPAL")
+    ).not.toBeInTheDocument();
+  });
+
+  it("should render all payment methods when input text clear icon is clicked", async () => {
+    // Mock the useRef to immediately set the ref
+    jest.spyOn(React, "useRef").mockImplementation(() => ({
+      current: { execute: jest.fn(), reset: jest.fn() },
+    }));
+
+    const result = renderWithRouterAndRedux(
+      <PaymentChoice
+        amount={100}
+        paymentInstruments={samplePaymentInstruments}
+        loading={false}
+      />
+    );
+
+    // Wait for loading to finish (component has internal loading state)
+    await waitFor(() => {
+      expect(screen.queryByTestId("checkout-loader")).not.toBeInTheDocument();
+    });
+
+    expect(screen.getByTestId("payment-method-CP")).toBeInTheDocument();
+    expect(screen.queryByTestId("payment-method-PAYPAL")).toBeInTheDocument();
+
+    // Filter for string 'cart'
+    const filterInput = result.container.querySelector(
+      "#paymentMethodsFilter"
+    )!;
+
+    await act(async () => {
+      fireEvent.change(filterInput, { target: { value: "cart" } });
+    });
+    // Should show only card payment methods
+    expect(screen.getByTestId("payment-method-CP")).toBeInTheDocument();
+    expect(
+      screen.queryByTestId("payment-method-PAYPAL")
+    ).not.toBeInTheDocument();
+
+    const clearFilter = result.container.querySelector(
+      "#clearFilterPaymentMethod"
+    )!;
+    // expect(clearFilter).toBeInTheDocument();
+    await act(async () => {
+      fireEvent.click(clearFilter);
+    });
+    // Should show enabled payment methods
+    expect(screen.getByTestId("payment-method-CP")).toBeInTheDocument();
+    expect(screen.getByTestId("payment-method-PAYPAL")).toBeInTheDocument();
   });
 
   it("should handle credit card payment method click", async () => {
