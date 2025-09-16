@@ -145,6 +145,11 @@ export function PaymentChoice(props: {
     [props.amount, props.paymentInstruments]
   );
 
+  const paymentMethodsVisible = () =>
+    paymentMethods.enabled
+      .concat(paymentMethods.disabled)
+      .filter(filterPaymentMethods).length === 0;
+
   return (
     <>
       {loading && <CheckoutLoader />}
@@ -155,7 +160,7 @@ export function PaymentChoice(props: {
       ) : (
         <>
           <TextField
-            label="Cerca un metodo"
+            label={t("paymentChoicePage.filterLabel")}
             id="outlined-start-adornment"
             fullWidth
             inputProps={{
@@ -185,7 +190,11 @@ export function PaymentChoice(props: {
           />
         </>
       )}
-      {paymentMethods.enabled.concat(paymentMethods.disabled).filter(filterPaymentMethods).length === 0 ? <Typography>Nessun risultato trovato. Prova a rimuovere i filtri o cerca usando altri termini.</Typography>: <Typography></Typography>}
+      <Typography>
+        {paymentMethodsVisible()
+          ? t("paymentChoicePage.noPaymentMethodsAvailable")
+          : ""}
+      </Typography>
       <Box display="none">
         <ReCAPTCHA
           ref={ref}
