@@ -216,7 +216,7 @@ export function PaymentChoice(props: {
         </>
       )}
       {paymentMethodsNotVisible() && (
-        <Typography>
+        <Typography id="noPaymentMethodsMessage">
           {t("paymentChoicePage.noPaymentMethodsAvailable")}
         </Typography>
       )}

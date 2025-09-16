@@ -16,6 +16,11 @@ export const payNotice = async (
   return await message.evaluate((el) => el.textContent);
 };
 
+export const noPaymentMethodsMessage = async () => {
+  const message = await page.waitForSelector("#noPaymentMethodsMessage");
+  return await message.evaluate((el) => el.textContent);
+};
+
 export const clickButtonBySelector = async (selector) => {
   const selectorButton = selector.startsWith("#") ? selector : "#" + selector;
   const button = await page.waitForSelector(selectorButton);
@@ -194,6 +199,8 @@ export const fillAndSearchFormPaymentMethod = async (
   await fillEmailForm(email);
   await filterPaymentMethodByName(paymentMethod);
 };
+
+
 
 export const tryHandlePspPickerPage = async ()=>{
   // wait for page to change, max wait time few seconds

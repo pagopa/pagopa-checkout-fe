@@ -1,5 +1,4 @@
 import {
-  payNotice,
   verifyPaymentAndGetError,
   activatePaymentAndGetError,
   authorizePaymentAndGetError,
@@ -16,6 +15,7 @@ import {
   fillAndSearchFormPaymentMethod,
   verifyPaymentMethodsLength,
   verifyPaymentMethodsContains,
+  noPaymentMethodsMessage,
 } from "./utils/helpers";
 import itTranslation from "../translations/it/translations.json";
 import deTranslation from "../translations/de/translations.json";
@@ -543,7 +543,7 @@ describe("Checkout Payment - PSP Selection Flow", () => {
 });
 
 
-describe.only("Filter payment method", () => {
+describe("Filter payment method", () => {
     it("Filter payment method", async () => {
         await fillAndSearchFormPaymentMethod(
           KORPTIDs.CANCEL_PAYMENT_OK,
@@ -551,7 +551,6 @@ describe.only("Filter payment method", () => {
             OKPaymentInfo.EMAIL,
             "cart"
         );
-        //await new Promise((r) => setTimeout(r, 20000));
         const isOnlyOnePaymentMethods = await verifyPaymentMethodsLength(1);
         const isOnlyCardPaymentMethods = await verifyPaymentMethodsContains("CP");
         expect(isOnlyOnePaymentMethods).toBeTruthy()
@@ -584,14 +583,14 @@ describe.only("Filter payment method", () => {
       });
 
 
-      it.skip("Filter payment empty values", async () => {
+      it("Filter payment empty values", async () => {
         await fillAndSearchFormPaymentMethod(
           KORPTIDs.CANCEL_PAYMENT_OK,
             OKPaymentInfo.VALID_FISCAL_CODE,
             OKPaymentInfo.EMAIL,
             "carta"
         );
-        const isOnlyOnePaymentMethods = await verifyPaymentMethodsLength(0);
-        expect(isOnlyOnePaymentMethods).toBeTruthy()
+        const paymentMethodsFilteredOutMessage = await noPaymentMethodsMessage()
+        expect(paymentMethodsFilteredOutMessage).toContain(itTranslation.paymentChoicePage.noPaymentMethodsAvailable)
       });
 });
