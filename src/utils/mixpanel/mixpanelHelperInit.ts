@@ -25,14 +25,22 @@ const mixpanelInit = function (): void {
       property_blacklist: ["$current_url", "$initial_referrer", "$referrer"],
     });
 
+    const localMixpanelDeviceId = localStorage.getItem("mixpanelDeviceId");
+    // retrieve device id from local storage initialized mixpanel entity
+    const mp_deviceId = mp.get_property?.("$device_id");
+    if (localMixpanelDeviceId === null) {
+      localStorage.setItem("mixpanelDeviceId", mp_deviceId);
+    } else if (mp_deviceId !== localMixpanelDeviceId) {
+      mp.register({ $device_id: localMixpanelDeviceId });
+      setSessionItem(SessionItems.mixpanelInitialized, true);
+    }
+
     if (!getSessionItem(SessionItems.mixpanelInitialized)) {
-      // retrieve device id from local storage initialized mixpanel entity
-      const oldDevice = mp.get_property?.("$device_id");
       // reset mixpanel instance, generating new device_id and distinct id
       mp.reset();
-      if (oldDevice) {
+      if (mp_deviceId) {
         // set device id to the one retrieved from local storage
-        mp.register({ $device_id: oldDevice });
+        mp.register({ $device_id: mp_deviceId });
       }
       setSessionItem(SessionItems.mixpanelInitialized, true);
     }
