@@ -6,6 +6,7 @@ import * as TE from "fp-ts/TaskEither";
 import {
   apiPaymentEcommerceClient,
   apiPaymentEcommerceClientV3,
+  apiPaymentEcommerceClientV4,
   apiPaymentEcommerceClientWithRetry,
   apiPaymentEcommerceClientWithRetryV2,
   apiPaymentEcommerceClientWithRetryV3,
@@ -208,6 +209,22 @@ export const getPaymentInstruments = async (
   onError: (e: string) => void,
   onResponse: (data: Array<PaymentInstrumentsType>) => void
 ) => {
+  const isPaymentMethodsHandlerEnabled = (getSessionItem(SessionItems.enablePaymentMethodsHandler) as string) === "true";
+
+  if (isPaymentMethodsHandlerEnabled) {
+    await getPaymentInstrumentsWithHandler(query, onError, onResponse);
+  } else {
+    await getPaymentInstrumentsLegacy(query, onError, onResponse);
+  }
+};
+
+const getPaymentInstrumentsLegacy = async (
+  query: {
+    amount: number;
+  },
+  onError: (e: string) => void,
+  onResponse: (data: Array<PaymentInstrumentsType>) => void
+) => {
   const list = await pipe(
     TE.tryCatch(
       () =>
@@ -221,6 +238,102 @@ export const getPaymentInstruments = async (
                 "x-rpt-ids": getRptIdsFromSession(),
                 bearerAuth,
                 ...query,
+              })
+          )
+        ),
+      () => {
+        onError(ErrorsType.STATUS_ERROR);
+        return E.toError;
+      }
+    ),
+    TE.fold(
+      () => async () => {
+        onError(ErrorsType.STATUS_ERROR);
+        return [];
+      },
+      (myResExt) => async () =>
+        pipe(
+          myResExt,
+          E.fold(
+            () => {
+              onError(ErrorsType.GENERIC_ERROR);
+              return [];
+            },
+            (myRes) => {
+              switch (myRes.status) {
+                case 200:
+                  return myRes.value.paymentMethods;
+                case 401:
+                  onError(ErrorsType.UNAUTHORIZED);
+                  return [];
+                default:
+                  return [];
+              }
+            }
+          )
+        )
+    )
+  )();
+  onResponse(list as any as Array<PaymentInstrumentsType>);
+};
+
+const getPaymentInstrumentsWithHandler = async (
+  query: {
+    amount: number;
+  },
+  onError: (e: string) => void,
+  onResponse: (data: Array<PaymentInstrumentsType>) => void
+) => {
+  const transaction = getSessionItem(SessionItems.transaction) as NewTransactionResponse | null;
+
+  // build the request payload for the new POST API
+  const buildPostPaymentMethodsRequest = () => {
+    // map client id: if present use CHECKOUT_CART, if not present use CHECKOUT
+    const sessionClientId = transaction?.clientId;
+    const clientId = sessionClientId ? "CHECKOUT_CART" : "CHECKOUT";
+
+    const baseRequest = {
+      clientId,
+      totalAmount: query.amount,
+    };
+
+    // at least one activation completed -> populate paymentNotice and transferList
+    if (transaction && transaction.payments && transaction.payments.length > 0) {
+      const firstPayment = transaction.payments[0];
+      return {
+        ...baseRequest,
+        paymentNotice: {
+          rptId: firstPayment.rptId,
+          amount: firstPayment.amount,
+        },
+        // transferList: only populate if present in payment data, otherwise null
+        transferList: firstPayment.transferList || null,
+      };
+    }
+
+    // for contexts before at least one activation, both paymentNotice and transferList are null
+    return {
+      ...baseRequest,
+      paymentNotice: null,
+      transferList: null,
+    };
+  };
+
+  const list = await pipe(
+    TE.tryCatch(
+      () =>
+        pipe(
+          getSessionItem(SessionItems.authToken) as string,
+          O.fromNullable,
+          O.fold(
+            () => apiPaymentEcommerceClientV4.getAllPaymentMethodsAuth({
+              body: buildPostPaymentMethodsRequest(),
+            }),
+            (bearerAuth) =>
+              apiPaymentEcommerceClientV4.getAllPaymentMethodsAuth({
+                "x-rpt-ids": getRptIdsFromSession(),
+                bearerAuth,
+                body: buildPostPaymentMethodsRequest(),
               })
           )
         ),
