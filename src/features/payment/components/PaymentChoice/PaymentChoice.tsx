@@ -4,8 +4,15 @@ import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidV4 } from "uuid";
-import { Typography, Button, InputAdornment, TextField } from "@mui/material";
+import {
+  Typography,
+  Button,
+  InputAdornment,
+  IconButton,
+  TextField,
+} from "@mui/material";
 import { t } from "i18next";
+import { Clear, Search } from "@mui/icons-material";
 import InformationModal from "../../../../components/modals/InformationModal";
 import ErrorModal from "../../../../components/modals/ErrorModal";
 import CheckoutLoader from "../../../../components/PageContent/CheckoutLoader";
@@ -49,6 +56,10 @@ export function PaymentChoice(props: {
       setLoading(false);
     }
   }, [ref.current]);
+
+  const resetPaymentMethodFilter = () => {
+    setPaymentMethodFilter("");
+  };
 
   const onError = (m: string) => {
     setLoading(false);
@@ -161,16 +172,28 @@ export function PaymentChoice(props: {
         <>
           <TextField
             label={t("paymentChoicePage.filterLabel")}
-            id="outlined-start-adornment"
+            id="paymentMethodsFilter"
             fullWidth
-            inputProps={{
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start">kg</InputAdornment>
-                ),
-              },
+            onChange={(e) => filterPaymentMethodsHandler(e.currentTarget.value)}
+            value={paymentMethodFilter}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search />
+                </InputAdornment>
+              ),
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={resetPaymentMethodFilter}
+                    edge="end"
+                    id="clearFilterPaymentMethod"
+                  >
+                    <Clear />
+                  </IconButton>
+                </InputAdornment>
+              ),
             }}
-            onChange={(e) => filterPaymentMethodsHandler(e.target.value)}
           />
           <MethodComponentList
             methods={
