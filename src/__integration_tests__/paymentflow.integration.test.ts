@@ -10,10 +10,12 @@ import {
   cancelPaymentKO,
   selectLanguage,
   fillAndSubmitCardDataForm,
-  tryHandlePspPickerPage,
   fillAndSubmitSatispayPayment,
   checkPspListNames,
   checkPspListFees,
+  fillAndSearchFormPaymentMethod,
+  verifyPaymentMethodsLength,
+  verifyPaymentMethodsContains,
 } from "./utils/helpers";
 import itTranslation from "../translations/it/translations.json";
 import deTranslation from "../translations/de/translations.json";
@@ -410,6 +412,7 @@ describe("Cancel payment tests", () => {
   );
 });
 
+
 describe("Cancel payment failure tests (satispay)", () => {
   it.each([
     ["it", itTranslation],
@@ -537,4 +540,58 @@ describe("Checkout Payment - PSP Selection Flow", () => {
         expect(await page.url()).toContain(URL.CHECKOUT_URL_PAYMENT_SUMMARY);
     });
 
+});
+
+
+describe.only("Filter payment method", () => {
+    it("Filter payment method", async () => {
+        await fillAndSearchFormPaymentMethod(
+          KORPTIDs.CANCEL_PAYMENT_OK,
+            OKPaymentInfo.VALID_FISCAL_CODE,
+            OKPaymentInfo.EMAIL,
+            "cart"
+        );
+        //await new Promise((r) => setTimeout(r, 20000));
+        const isOnlyOnePaymentMethods = await verifyPaymentMethodsLength(1);
+        const isOnlyCardPaymentMethods = await verifyPaymentMethodsContains("CP");
+        expect(isOnlyOnePaymentMethods).toBeTruthy()
+        expect(isOnlyCardPaymentMethods).toBeTruthy()
+      });
+
+      it("Filter payment method and reset filter", async () => {
+        await fillAndSearchFormPaymentMethod(
+          KORPTIDs.CANCEL_PAYMENT_OK,
+            OKPaymentInfo.VALID_FISCAL_CODE,
+            OKPaymentInfo.EMAIL,
+            "cart"
+        );
+        const isOnlyOnePaymentMethods = await verifyPaymentMethodsLength(1);
+        const isOnlyCardPaymentMethods = await verifyPaymentMethodsContains("CP");
+        expect(isOnlyOnePaymentMethods).toBeTruthy()
+        expect(isOnlyCardPaymentMethods).toBeTruthy()
+
+        const paymentMethodFilterBoxReset = await page.waitForSelector("#clearFilterPaymentMethod");
+        await paymentMethodFilterBoxReset?.click();
+
+        const isMoreThanOnePaymentMethods = await verifyPaymentMethodsLength(7);
+        const isCardPaymentMethodsPresent = await verifyPaymentMethodsContains("CP");
+        const isSatispayPaymentMethodsPresent = await verifyPaymentMethodsContains("SATY");
+
+        expect(isMoreThanOnePaymentMethods).toBeTruthy()
+        expect(isCardPaymentMethodsPresent).toBeTruthy()
+        expect(isSatispayPaymentMethodsPresent).toBeTruthy()
+
+      });
+
+
+      it.skip("Filter payment empty values", async () => {
+        await fillAndSearchFormPaymentMethod(
+          KORPTIDs.CANCEL_PAYMENT_OK,
+            OKPaymentInfo.VALID_FISCAL_CODE,
+            OKPaymentInfo.EMAIL,
+            "carta"
+        );
+        const isOnlyOnePaymentMethods = await verifyPaymentMethodsLength(0);
+        expect(isOnlyOnePaymentMethods).toBeTruthy()
+      });
 });

@@ -151,10 +151,11 @@ export function PaymentChoice(props: {
     [props.amount, props.paymentInstruments]
   );
 
-  const paymentMethodsVisible = () =>
+  const paymentMethodsNotVisible = () =>
     paymentMethods.enabled
       .concat(paymentMethods.disabled)
-      .filter(filterPaymentMethods).length === 0;
+      .filter(filterPaymentMethods).length === 0 &&
+    paymentMethods.enabled.concat(paymentMethods.disabled).length > 0;
 
   return (
     <>
@@ -214,11 +215,12 @@ export function PaymentChoice(props: {
           />
         </>
       )}
-      <Typography>
-        {paymentMethodsVisible()
-          ? t("paymentChoicePage.noPaymentMethodsAvailable")
-          : ""}
-      </Typography>
+      {paymentMethodsNotVisible() && (
+        <Typography>
+          {t("paymentChoicePage.noPaymentMethodsAvailable")}
+        </Typography>
+      )}
+
       <Box display="none">
         <ReCAPTCHA
           ref={ref}
