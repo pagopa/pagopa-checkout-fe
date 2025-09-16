@@ -103,6 +103,10 @@ describe("Mixpanel integration tests", () => {
   it("should reset and register old device_id in mixpanelInit", () => {
     sessionStorage.clear();
 
+    (mixpanelBrowser.get_property as jest.Mock)
+      .mockReturnValueOnce("device-1")
+      .mockReturnValueOnce("device-2");
+
     mixpanel.track("device_event");
 
     expect(mixpanelBrowser.reset).toHaveBeenCalled();
