@@ -99,6 +99,11 @@ export function App() {
           enabled.toString()
         );
       }
+
+      if (featureFlags[SessionItems.enablePaymentMethodsHandler] in allFlags) {
+        const enabled = allFlags.isPaymentMethodsHandlerEnabled;
+        setSessionItem(SessionItems.enablePaymentMethodsHandler, enabled.toString());
+      }
     }),
     TE.fold(
       (err) => async () => {

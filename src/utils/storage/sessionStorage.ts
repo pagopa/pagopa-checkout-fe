@@ -36,6 +36,7 @@ export enum SessionItems {
   authToken = "authToken",
   noticeCodeDataEntry = "noticeCodeDataEntry",
   enableScheduledMaintenanceBanner = "enableScheduledMaintenanceBanner",
+  enablePaymentMethodsHandler = "enablePaymentMethodsHandler",
   counterPolling = "counterPolling",
 }
 const isParsable = (item: SessionItems) =>
@@ -49,7 +50,8 @@ const isParsable = (item: SessionItems) =>
     item === SessionItems.loginOriginPage ||
     item === SessionItems.authToken ||
     item === SessionItems.noticeCodeDataEntry ||
-    item === SessionItems.enableScheduledMaintenanceBanner
+    item === SessionItems.enableScheduledMaintenanceBanner ||
+    item === SessionItems.enablePaymentMethodsHandler
   );
 
 export const getSessionItem = (item: SessionItems) => {
