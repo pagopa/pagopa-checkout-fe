@@ -44,6 +44,7 @@ import {
 import PaymentPspListPage from "./routes/PaymentPspListPage";
 import MaintenancePage from "./routes/MaintenancePage";
 import MaintenanceGuard from "./components/commons/MaintenanceGuard";
+import DeviceDetectionTestPage from "./routes/DeviceDetectionTestPage"; // TODO remove in final PR
 import featureFlags from "./utils/featureFlags";
 import { useFeatureFlagsAll } from "./hooks/useFeatureFlags";
 
@@ -164,6 +165,10 @@ export function App() {
                         <MaintenancePage />
                       </MaintenanceGuard>
                     }
+                  />
+                  <Route // TODO remove in final PR
+                    path={CheckoutRoutes.DEVICE_TEST}
+                    element={<DeviceDetectionTestPage />}
                   />
                   <Route
                     path={CheckoutRoutes.AUTH_CALLBACK}
