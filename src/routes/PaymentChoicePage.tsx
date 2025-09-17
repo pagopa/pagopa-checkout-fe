@@ -53,7 +53,7 @@ export default function PaymentChoicePage() {
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
   const [paymentInstruments, setPaymentInstruments] = React.useState<
-    Array<PaymentInstrumentsType>
+    Array<PaymentInstrumentsType> | Array<PaymentInstrumentsTypeV2>
   >([]);
 
   const getPaymentMethods = async () => {
@@ -81,7 +81,9 @@ export default function PaymentChoicePage() {
     });
   }, []);
 
-  const onResponse = (list: Array<PaymentInstrumentsType> | Array<PaymentInstrumentsTypeV2>) => {
+  const onResponse = (
+    list: Array<PaymentInstrumentsType> | Array<PaymentInstrumentsTypeV2>
+  ) => {
     setPaymentInstruments(list);
     setInstrumentsLoading(false);
   };

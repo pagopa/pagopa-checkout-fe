@@ -4,6 +4,7 @@ import { SxProps } from "@mui/material";
 import { Theme } from "@emotion/react";
 import { PaymentMethodResponse } from "../../../../generated/definitions/payment-ecommerce/PaymentMethodResponse";
 import { PaymentMethodResponse as PaymentMethodResponseV2 } from "../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
+import { PaymentTypeCodeEnum as PaymentTypeCodeEnumV2 } from "../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 
 export interface PaymentFormFields {
   billCode: string;

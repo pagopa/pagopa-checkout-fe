@@ -31,7 +31,11 @@ import { CalculateFeeRequest } from "../../../../../generated/definitions/paymen
 import { CreateSessionResponse } from "../../../../../generated/definitions/payment-ecommerce/CreateSessionResponse";
 import { Bundle } from "../../../../../generated/definitions/payment-ecommerce-v2/Bundle";
 import { CalculateFeeResponse } from "../../../../../generated/definitions/payment-ecommerce-v2/CalculateFeeResponse";
-import { PaymentMethodsRequest, UserDeviceEnum, UserTouchpointEnum } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodsRequest";
+import {
+  PaymentMethodsRequest,
+  UserDeviceEnum,
+  UserTouchpointEnum,
+} from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodsRequest";
 
 // ->Promise<Either<string,SessionPaymentMethodResponse>>
 export const retrieveCardData = async ({
@@ -210,7 +214,9 @@ export const getPaymentInstruments = async (
     amount: number;
   },
   onError: (e: string) => void,
-  onResponse: (data: Array<PaymentInstrumentsType> | Array<PaymentInstrumentsTypeV2>) => void
+  onResponse: (
+    data: Array<PaymentInstrumentsType> | Array<PaymentInstrumentsTypeV2>
+  ) => void
 ) => {
   const isPaymentMethodsHandlerEnabled =
     (getSessionItem(SessionItems.enablePaymentMethodsHandler) as string) ===
@@ -284,7 +290,9 @@ const getPaymentInstrumentsV1V3 = async (
 
 const getPaymentInstrumentsV2V4 = async (
   onError: (e: string) => void,
-  onResponse: (data: Array<PaymentInstrumentsType> | Array<PaymentInstrumentsTypeV2>) => void
+  onResponse: (
+    data: Array<PaymentInstrumentsType> | Array<PaymentInstrumentsTypeV2>
+  ) => void
 ) => {
   const transaction = getSessionItem(
     SessionItems.transaction
@@ -294,7 +302,9 @@ const getPaymentInstrumentsV2V4 = async (
   const buildPostPaymentMethodsRequest = (): PaymentMethodsRequest => {
     // map client id: if present use CHECKOUT_CART, if not present use CHECKOUT
     const sessionClientId = transaction?.clientId;
-    const userTouchpointEnum = sessionClientId ? UserTouchpointEnum.CHECKOUT_CART : UserTouchpointEnum.CHECKOUT;
+    const userTouchpointEnum = sessionClientId
+      ? UserTouchpointEnum.CHECKOUT_CART
+      : UserTouchpointEnum.CHECKOUT;
     // total amount -> sum of all payment amounts from payment notices
     const totalAmount =
       transaction && transaction.payments && transaction.payments.length > 0
@@ -325,7 +335,7 @@ const getPaymentInstrumentsV2V4 = async (
             creditorInstitution: transfer.paFiscalCode,
             digitalStamp: transfer.digitalStamp,
             transferCategory: transfer.transferCategory,
-          }))
+          })),
         }),
       }));
 

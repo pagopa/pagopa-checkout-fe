@@ -22,6 +22,7 @@ import {
   PaymentCodeType,
   PaymentCodeTypeEnum,
   PaymentInstrumentsType,
+  PaymentInstrumentsTypeV2,
 } from "../../models/paymentModel";
 import { setThreshold } from "../../../../redux/slices/threshold";
 import { CheckoutRoutes } from "../../../../routes/models/routeModel";
@@ -31,7 +32,9 @@ import { getNormalizedMethods } from "./utils";
 
 export function PaymentChoice(props: {
   amount: number;
-  paymentInstruments: Array<PaymentInstrumentsType>;
+  paymentInstruments:
+    | Array<PaymentInstrumentsType>
+    | Array<PaymentInstrumentsTypeV2>;
   loading?: boolean;
 }) {
   const ref = React.useRef<ReCAPTCHA>(null);
