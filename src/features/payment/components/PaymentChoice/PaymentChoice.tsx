@@ -68,7 +68,8 @@ export function PaymentChoice(props: {
     paymentTypeCode: PaymentCodeType | PaymentTypeCodeEnum,
     belowThreshold?: boolean
   ) => {
-    const route: string = PaymentMethodRoutes[paymentTypeCode as PaymentCodeType]?.route;
+    const route: string =
+      PaymentMethodRoutes[paymentTypeCode as PaymentCodeType]?.route;
 
     if (belowThreshold !== undefined) {
       dispatch(setThreshold({ belowThreshold }));
@@ -110,17 +111,23 @@ export function PaymentChoice(props: {
     });
   };
 
-  const handleClickOnMethod = async (method: PaymentInstrumentsType | PaymentInstrumentsTypeV4) => {
+  const handleClickOnMethod = async (
+    method: PaymentInstrumentsType | PaymentInstrumentsTypeV4
+  ) => {
     if (!loading) {
       const { paymentTypeCode, id: paymentMethodId } = method;
       const currentLanguage = (
         localStorage.getItem("i18nextLng") ?? "IT"
       ).toUpperCase();
-      const methodDescription = typeof method.description === 'object'
-        ? method.description[currentLanguage] ?? method.description.IT
-        : method.description;
+      const methodDescription =
+        typeof method.description === "object"
+          ? method.description[currentLanguage] ?? method.description.IT
+          : method.description;
 
-      const methodAsset = 'asset' in method ? method.asset : (method as PaymentInstrumentsTypeV4).paymentMethodAsset;
+      const methodAsset =
+        "asset" in method
+          ? method.asset
+          : (method as PaymentInstrumentsTypeV4).paymentMethodAsset;
 
       setSessionItem(SessionItems.paymentMethodInfo, {
         title: methodDescription,
@@ -131,7 +138,11 @@ export function PaymentChoice(props: {
         paymentMethodId,
         paymentTypeCode,
       });
-      if (paymentTypeCode !== PaymentCodeTypeEnum.CP && paymentTypeCode !== PaymentTypeCodeEnum.CP && ref.current) {
+      if (
+        paymentTypeCode !== PaymentCodeTypeEnum.CP &&
+        paymentTypeCode !== PaymentTypeCodeEnum.CP &&
+        ref.current
+      ) {
         await onApmChoice(ref.current, (belowThreshold: boolean) =>
           onSuccess(paymentTypeCode, belowThreshold)
         );

@@ -5,9 +5,7 @@ import {
   PaymentInstrumentsTypeV4,
 } from "../../models/paymentModel";
 import { PaymentMethodStatusEnum } from "../../../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
-import {
-  PaymentTypeCodeEnum,
-} from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
+import { PaymentTypeCodeEnum } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 
 const isFirstPaymentMethod = (method: PaymentInstrumentsType) =>
   method.paymentTypeCode === PaymentCodeTypeEnum.CP;
@@ -48,7 +46,9 @@ const compareMethodsV4 = (
 };
 
 export const getNormalizedMethods = (
-  paymentInstruments: Array<PaymentInstrumentsType> | Array<PaymentInstrumentsTypeV4>
+  paymentInstruments:
+    | Array<PaymentInstrumentsType>
+    | Array<PaymentInstrumentsTypeV4>
 ) => {
   const { methods, duplicatedMethods } = paymentInstruments.reduce<{
     foundTypes: Array<PaymentCodeType | PaymentTypeCodeEnum>;
@@ -88,7 +88,7 @@ export const getNormalizedMethods = (
     { disabledMethods: [], enabledMethods: [] }
   );
 
-  const isV4 = methods.length > 0 && typeof methods[0].description === 'object';
+  const isV4 = methods.length > 0 && typeof methods[0].description === "object";
   const sortFunction = isV4 ? compareMethodsV4 : compareMethods;
 
   return {
@@ -97,4 +97,3 @@ export const getNormalizedMethods = (
     duplicatedMethods,
   };
 };
-

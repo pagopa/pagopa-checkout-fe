@@ -9,7 +9,10 @@ import {
 import * as React from "react";
 import { useTranslation } from "react-i18next";
 import ClickableFieldContainer from "../../../../components/TextFormField/ClickableFieldContainer";
-import { PaymentInstrumentsType, PaymentInstrumentsTypeV4 } from "../../models/paymentModel";
+import {
+  PaymentInstrumentsType,
+  PaymentInstrumentsTypeV4,
+} from "../../models/paymentModel";
 import { PaymentMethodStatusEnum } from "../../../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
 import { ImageComponent } from "./PaymentMethodImage";
 
@@ -79,15 +82,20 @@ const MethodComponent = ({
   const currentLanguage = (
     localStorage.getItem("i18nextLng") ?? "IT"
   ).toUpperCase();
-  const methodDescription = typeof method.description === 'object'
-    ? method.description[currentLanguage] ?? method.description.IT
-    : method.description;
+  const methodDescription =
+    typeof method.description === "object"
+      ? method.description[currentLanguage] ?? method.description.IT
+      : method.description;
 
-  const methodName = typeof method.name === 'object'
-    ? method.name[currentLanguage] ?? method.name.IT
-    : (method as PaymentInstrumentsType).name;
+  const methodName =
+    typeof method.name === "object"
+      ? method.name[currentLanguage] ?? method.name.IT
+      : (method as PaymentInstrumentsType).name;
 
-  const methodAsset = 'asset' in method ? method.asset : (method as PaymentInstrumentsTypeV4).paymentMethodAsset;
+  const methodAsset =
+    "asset" in method
+      ? method.asset
+      : (method as PaymentInstrumentsTypeV4).paymentMethodAsset;
 
   return (
     <ClickableFieldContainer
@@ -95,10 +103,19 @@ const MethodComponent = ({
       dataTestLabel={testable ? "payment-method" : undefined}
       title={methodDescription}
       onClick={onClick}
-      icon={<ImageComponent asset={methodAsset} name={methodName} disabled={method.status === PaymentMethodStatusEnum.DISABLED} />}
+      icon={
+        <ImageComponent
+          asset={methodAsset}
+          name={methodName}
+          disabled={method.status === PaymentMethodStatusEnum.DISABLED}
+        />
+      }
       endAdornment={
         method.status === PaymentMethodStatusEnum.ENABLED && (
-          <ArrowForwardIosIcon sx={{ color: "primary.main" }} fontSize="small" />
+          <ArrowForwardIosIcon
+            sx={{ color: "primary.main" }}
+            fontSize="small"
+          />
         )
       }
       disabled={method.status === PaymentMethodStatusEnum.DISABLED}
