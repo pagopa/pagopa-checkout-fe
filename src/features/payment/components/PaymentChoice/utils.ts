@@ -50,12 +50,16 @@ export const getNormalizedMethods = (
     | Array<PaymentInstrumentsType>
     | Array<PaymentInstrumentsTypeV4>
 ) => {
-  const { methods, duplicatedMethods } = paymentInstruments.reduce<{
+  const { methods, duplicatedMethods } = (
+    paymentInstruments as Array<
+      PaymentInstrumentsType | PaymentInstrumentsTypeV4
+    >
+  ).reduce<{
     foundTypes: Array<PaymentCodeType | PaymentTypeCodeEnum>;
     methods: Array<PaymentInstrumentsType | PaymentInstrumentsTypeV4>;
     duplicatedMethods: Array<PaymentInstrumentsType | PaymentInstrumentsTypeV4>;
   }>(
-    ({ foundTypes, duplicatedMethods, methods }, method) => {
+    ({ foundTypes, duplicatedMethods, methods }: any, method: any) => { // TODO check with team if we can avoid using 'any' here
       if (foundTypes.includes(method.paymentTypeCode)) {
         return {
           duplicatedMethods: duplicatedMethods.concat(method),
@@ -81,7 +85,7 @@ export const getNormalizedMethods = (
     enabledMethods: Array<PaymentInstrumentsType | PaymentInstrumentsTypeV4>;
     disabledMethods: Array<PaymentInstrumentsType | PaymentInstrumentsTypeV4>;
   }>(
-    ({ enabledMethods, disabledMethods }, method) =>
+    ({ enabledMethods, disabledMethods }: any, method: any) => // TODO check with team if we can avoid using 'any' here
       method.status === PaymentMethodStatusEnum.ENABLED
         ? { disabledMethods, enabledMethods: enabledMethods.concat(method) }
         : { enabledMethods, disabledMethods: disabledMethods.concat(method) },

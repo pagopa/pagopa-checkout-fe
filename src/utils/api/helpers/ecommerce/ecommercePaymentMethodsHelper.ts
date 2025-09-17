@@ -15,7 +15,7 @@ import {
 import { ErrorsType } from "../../../../utils/errors/checkErrorsModel";
 import {
   PaymentInstrumentsType,
-  PaymentInstrumentsTypeV2,
+  PaymentInstrumentsTypeV4,
   PaymentMethod,
   PaymentMethodInfo,
 } from "../../../../features/payment/models/paymentModel";
@@ -215,7 +215,7 @@ export const getPaymentInstruments = async (
   },
   onError: (e: string) => void,
   onResponse: (
-    data: Array<PaymentInstrumentsType> | Array<PaymentInstrumentsTypeV2>
+    data: Array<PaymentInstrumentsType | PaymentInstrumentsTypeV4>
   ) => void
 ) => {
   const isPaymentMethodsHandlerEnabled =
@@ -223,7 +223,7 @@ export const getPaymentInstruments = async (
     "true";
 
   if (isPaymentMethodsHandlerEnabled) {
-    await getPaymentInstrumentsV2V4(query, onError, onResponse);
+    await getPaymentInstrumentsV2V4(onError, onResponse);
   } else {
     await getPaymentInstrumentsV1V3(query, onError, onResponse);
   }
@@ -291,7 +291,7 @@ const getPaymentInstrumentsV1V3 = async (
 const getPaymentInstrumentsV2V4 = async (
   onError: (e: string) => void,
   onResponse: (
-    data: Array<PaymentInstrumentsType> | Array<PaymentInstrumentsTypeV2>
+    data: Array<PaymentInstrumentsType | PaymentInstrumentsTypeV4>
   ) => void
 ) => {
   const transaction = getSessionItem(
@@ -308,7 +308,10 @@ const getPaymentInstrumentsV2V4 = async (
     // total amount -> sum of all payment amounts from payment notices
     const totalAmount =
       transaction && transaction.payments && transaction.payments.length > 0
-        ? transaction.payments.reduce((sum, payment) => sum + payment.amount, 0)
+        ? transaction.payments.reduce(
+            (sum: number, payment) => sum + Number(payment.amount),
+            0
+          )
         : 0;
 
     const baseRequest = {
@@ -361,14 +364,14 @@ const getPaymentInstrumentsV2V4 = async (
           O.fold(
             () =>
               apiPaymentEcommerceClientV2.getAllPaymentMethods({
+                bearerAuth: "", // TODO check with team
                 body: buildPostPaymentMethodsRequest(),
               }),
             (bearerAuth) =>
               apiPaymentEcommerceClientV4.getAllPaymentMethodsAuth({
-                "x-rpt-ids": getRptIdsFromSession(),
                 bearerAuth,
-                body: buildPostPaymentMethodsRequest(),
-              })
+                body: buildPostPaymentMethodsRequest() as any, // TODO check with team
+              }) as any // TODO check with team
           )
         ),
       () => {
@@ -381,7 +384,8 @@ const getPaymentInstrumentsV2V4 = async (
         onError(ErrorsType.STATUS_ERROR);
         return [];
       },
-      (myResExt) => async () =>
+      (myResExt: any) => async () =>
+        // TODO check with team
         pipe(
           myResExt,
           E.fold(
@@ -389,7 +393,8 @@ const getPaymentInstrumentsV2V4 = async (
               onError(ErrorsType.GENERIC_ERROR);
               return [];
             },
-            (myRes) => {
+            (myRes: any) => {
+              // TODO check with team
               switch (myRes.status) {
                 case 200:
                   return myRes.value.paymentMethods;
@@ -404,7 +409,37 @@ const getPaymentInstrumentsV2V4 = async (
         )
     )
   )();
-  onResponse(list as Array<PaymentInstrumentsTypeV2>);
+  // TODO check with team
+  // decode V4 response to V2 format
+  const transformMethodToV2 = (method: any): PaymentInstrumentsType => {
+    const currentLanguage = (
+      localStorage.getItem("i18nextLng") ?? "IT"
+    ).toUpperCase();
+
+    // check if V4 method (has localized description object)
+    if (typeof method.description === "object" && method.description !== null) {
+      // v4 method -> decode to v2 format using marshall/unmarshall
+      const v4Json = JSON.stringify(method);
+      const baseV2 = JSON.parse(v4Json);
+
+      return {
+        ...baseV2,
+        // convert localized description to current language string
+        description:
+          method.description[currentLanguage] ?? method.description.IT,
+        // convert localized name to current language string
+        name: method.name[currentLanguage] ?? method.name.IT,
+        // map v4 asset property to v2 asset property
+        asset: method.paymentMethodAsset,
+      } as PaymentInstrumentsType;
+    } else {
+      // already v2 format -> return as-is
+      return method as PaymentInstrumentsType;
+    }
+  };
+
+  const transformedList = list.map(transformMethodToV2);
+  onResponse(transformedList);
 };
 
 export const npgSessionsFields = async (

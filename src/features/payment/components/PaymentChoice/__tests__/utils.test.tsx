@@ -240,8 +240,13 @@ describe("paymentMethodsUtils", () => {
       expect(result.enabled[0].id).toBe("cp1");
 
       // Verify the rest are sorted alphabetically
-      const secondDescription = result.enabled[1].description;
-      const thirdDescription = result.enabled[2].description;
+      const getDescription = (method: any) =>
+        typeof method.description === "object"
+          ? method.description.IT || method.description.EN
+          : method.description;
+
+      const secondDescription = getDescription(result.enabled[1]);
+      const thirdDescription = getDescription(result.enabled[2]);
       expect(secondDescription.localeCompare(thirdDescription) <= 0).toBe(true);
 
       // Check that the expected methods are in duplicatedMethods
