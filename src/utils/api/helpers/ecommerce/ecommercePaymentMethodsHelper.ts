@@ -5,6 +5,7 @@ import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
 import {
   apiPaymentEcommerceClient,
+  apiPaymentEcommerceClientV2,
   apiPaymentEcommerceClientV3,
   apiPaymentEcommerceClientV4,
   apiPaymentEcommerceClientWithRetry,
@@ -14,6 +15,7 @@ import {
 import { ErrorsType } from "../../../../utils/errors/checkErrorsModel";
 import {
   PaymentInstrumentsType,
+  PaymentInstrumentsTypeV2,
   PaymentMethod,
   PaymentMethodInfo,
 } from "../../../../features/payment/models/paymentModel";
@@ -29,6 +31,7 @@ import { CalculateFeeRequest } from "../../../../../generated/definitions/paymen
 import { CreateSessionResponse } from "../../../../../generated/definitions/payment-ecommerce/CreateSessionResponse";
 import { Bundle } from "../../../../../generated/definitions/payment-ecommerce-v2/Bundle";
 import { CalculateFeeResponse } from "../../../../../generated/definitions/payment-ecommerce-v2/CalculateFeeResponse";
+import { PaymentMethodsRequest, UserDeviceEnum, UserTouchpointEnum } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodsRequest";
 
 // ->Promise<Either<string,SessionPaymentMethodResponse>>
 export const retrieveCardData = async ({
@@ -207,20 +210,20 @@ export const getPaymentInstruments = async (
     amount: number;
   },
   onError: (e: string) => void,
-  onResponse: (data: Array<PaymentInstrumentsType>) => void
+  onResponse: (data: Array<PaymentInstrumentsType> | Array<PaymentInstrumentsTypeV2>) => void
 ) => {
   const isPaymentMethodsHandlerEnabled =
     (getSessionItem(SessionItems.enablePaymentMethodsHandler) as string) ===
     "true";
 
   if (isPaymentMethodsHandlerEnabled) {
-    await getPaymentInstrumentsWithHandler(query, onError, onResponse);
+    await getPaymentInstrumentsV2V4(query, onError, onResponse);
   } else {
-    await getPaymentInstrumentsLegacy(query, onError, onResponse);
+    await getPaymentInstrumentsV1V3(query, onError, onResponse);
   }
 };
 
-const getPaymentInstrumentsLegacy = async (
+const getPaymentInstrumentsV1V3 = async (
   query: {
     amount: number;
   },
@@ -276,52 +279,66 @@ const getPaymentInstrumentsLegacy = async (
         )
     )
   )();
-  onResponse(list as any as Array<PaymentInstrumentsType>);
+  onResponse(list as Array<PaymentInstrumentsType>);
 };
 
-const getPaymentInstrumentsWithHandler = async (
-  query: {
-    amount: number;
-  },
+const getPaymentInstrumentsV2V4 = async (
   onError: (e: string) => void,
-  onResponse: (data: Array<PaymentInstrumentsType>) => void
+  onResponse: (data: Array<PaymentInstrumentsType> | Array<PaymentInstrumentsTypeV2>) => void
 ) => {
-  const transaction = getSessionItem(SessionItems.transaction) as NewTransactionResponse | null;
+  const transaction = getSessionItem(
+    SessionItems.transaction
+  ) as NewTransactionResponse | null;
 
   // build the request payload for the new POST API
-  const buildPostPaymentMethodsRequest = () => {
+  const buildPostPaymentMethodsRequest = (): PaymentMethodsRequest => {
     // map client id: if present use CHECKOUT_CART, if not present use CHECKOUT
     const sessionClientId = transaction?.clientId;
-    const clientId = sessionClientId ? "CHECKOUT_CART" : "CHECKOUT";
+    const userTouchpointEnum = sessionClientId ? UserTouchpointEnum.CHECKOUT_CART : UserTouchpointEnum.CHECKOUT;
+    // total amount -> sum of all payment amounts from payment notices
+    const totalAmount =
+      transaction && transaction.payments && transaction.payments.length > 0
+        ? transaction.payments.reduce((sum, payment) => sum + payment.amount, 0)
+        : 0;
 
     const baseRequest = {
-      clientId,
-      totalAmount: query.amount,
+      userTouchpoint: userTouchpointEnum,
+      userDevice: UserDeviceEnum.WEB as const, // placeholder/default
+      bin: undefined,
+      totalAmount,
+      allCCp: transaction?.payments[0].isAllCCP,
+      targetKey: undefined,
     };
 
-    // at least one activation completed -> populate paymentNotice and transferList
+    // at least one activation completed -> populate paymentNotice/transferList arrays
     if (
       transaction &&
       transaction.payments &&
       transaction.payments.length > 0
     ) {
-      const firstPayment = transaction.payments[0];
+      // map paymentNotice
+      const paymentNotice = transaction.payments.map((payment) => ({
+        paymentAmount: payment.amount,
+        primaryCreditorInstitution: payment.rptId.substring(0, 11),
+        ...(payment.transferList && {
+          transferList: payment.transferList.map((transfer) => ({
+            creditorInstitution: transfer.paFiscalCode,
+            digitalStamp: transfer.digitalStamp,
+            transferCategory: transfer.transferCategory,
+          }))
+        }),
+      }));
+
       return {
         ...baseRequest,
-        paymentNotice: {
-          rptId: firstPayment.rptId,
-          amount: firstPayment.amount,
-        },
-        // transferList: only populate if present in payment data, otherwise null
-        transferList: firstPayment.transferList || null,
+        paymentNotice,
       };
     }
 
-    // for contexts before at least one activation, both paymentNotice and transferList are null
+    // for contexts before at least one activation, paymentNotice is empty array
     return {
       ...baseRequest,
-      paymentNotice: null,
-      transferList: null,
+      paymentNotice: [],
     };
   };
 
@@ -332,9 +349,10 @@ const getPaymentInstrumentsWithHandler = async (
           getSessionItem(SessionItems.authToken) as string,
           O.fromNullable,
           O.fold(
-            () => apiPaymentEcommerceClientV4.getAllPaymentMethodsAuth({
-              body: buildPostPaymentMethodsRequest(),
-            }),
+            () =>
+              apiPaymentEcommerceClientV2.getAllPaymentMethods({
+                body: buildPostPaymentMethodsRequest(),
+              }),
             (bearerAuth) =>
               apiPaymentEcommerceClientV4.getAllPaymentMethodsAuth({
                 "x-rpt-ids": getRptIdsFromSession(),
@@ -376,7 +394,7 @@ const getPaymentInstrumentsWithHandler = async (
         )
     )
   )();
-  onResponse(list as any as Array<PaymentInstrumentsType>);
+  onResponse(list as Array<PaymentInstrumentsTypeV2>);
 };
 
 export const npgSessionsFields = async (

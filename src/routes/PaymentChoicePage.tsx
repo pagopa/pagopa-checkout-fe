@@ -16,6 +16,7 @@ import {
   Cart,
   PaymentInfo,
   PaymentInstrumentsType,
+  PaymentInstrumentsTypeV2,
 } from "../features/payment/models/paymentModel";
 import { getPaymentInstruments } from "../utils/api/helper";
 import { getTotalFromCart } from "../utils/cart/cart";
@@ -80,7 +81,7 @@ export default function PaymentChoicePage() {
     });
   }, []);
 
-  const onResponse = (list: Array<PaymentInstrumentsType>) => {
+  const onResponse = (list: Array<PaymentInstrumentsType> | Array<PaymentInstrumentsTypeV2>) => {
     setPaymentInstruments(list);
     setInstrumentsLoading(false);
   };
