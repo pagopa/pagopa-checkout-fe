@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 
 function ClickableFieldContainer(props: {
   title?: string;
+  subtitle?: string;
   icon?: React.ReactNode;
   endAdornment?: React.ReactNode;
   clickable?: boolean;
@@ -74,13 +75,28 @@ function ClickableFieldContainer(props: {
         ) : (
           <>
             {props.icon}
-            <Typography
-              variant={props.variant}
-              component="div"
-              sx={props.disabled ? { color: theme.palette.text.disabled } : {}}
-            >
-              {t(props.title || "")}
-            </Typography>
+            <Box display="flex" flexDirection="column">
+              <Typography
+                variant={props.variant}
+                component="div"
+                sx={
+                  props.disabled ? { color: theme.palette.text.disabled } : {}
+                }
+              >
+                {t(props.title || "")}
+              </Typography>
+              {props.subtitle && (
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={
+                    props.disabled ? { color: theme.palette.text.disabled } : {}
+                  }
+                >
+                  {props.subtitle}
+                </Typography>
+              )}
+            </Box>
           </>
         )}
       </Box>

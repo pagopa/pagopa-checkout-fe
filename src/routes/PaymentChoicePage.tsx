@@ -81,8 +81,9 @@ export default function PaymentChoicePage() {
     });
   }, []);
 
-  
-  const onResponse = (list: Array<PaymentInstrumentsType | PaymentInstrumentsTypeV4>) => {
+  const onResponse = (
+    list: Array<PaymentInstrumentsType | PaymentInstrumentsTypeV4>
+  ) => {
     setPaymentInstruments(list);
     setInstrumentsLoading(false);
   };

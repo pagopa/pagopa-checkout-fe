@@ -1,6 +1,7 @@
 import MobileFriendlyIcon from "@mui/icons-material/MobileFriendly";
 import * as React from "react";
 import { useTheme } from "@mui/material";
+import { PaymentMethodResponseName } from "../../../../../generated/definitions/payment-ecommerce-v4/PaymentMethodResponse";
 
 interface IDefaultIcon {
   disabled: boolean;
@@ -9,7 +10,7 @@ interface IDefaultIcon {
 interface IImageComponent {
   asset?: string;
   disabled?: boolean;
-  name: string;
+  name: string | PaymentMethodResponseName;
 }
 
 const DefaultIcon = ({ disabled }: IDefaultIcon) => {

@@ -27,6 +27,7 @@ import {
 import { setThreshold } from "../../../../redux/slices/threshold";
 import { CheckoutRoutes } from "../../../../routes/models/routeModel";
 import { onErrorActivate } from "../../../../utils/api/transactionsErrorHelper";
+import { PaymentTypeCodeEnum } from "../../../../../generated/definitions/payment-ecommerce-v4/PaymentMethodResponse";
 import { DisabledPaymentMethods, MethodComponentList } from "./PaymentMethod";
 import { getNormalizedMethods } from "./utils";
 
@@ -64,10 +65,13 @@ export function PaymentChoice(props: {
   };
 
   const onSuccess = (
-    paymentTypeCode: PaymentCodeType,
+    paymentTypeCode: PaymentCodeType | PaymentTypeCodeEnum,
     belowThreshold?: boolean
   ) => {
-    const route: string = PaymentMethodRoutes[paymentTypeCode]?.route;
+    const route =
+      (paymentTypeCode as string) in PaymentMethodRoutes
+        ? PaymentMethodRoutes[paymentTypeCode as PaymentCodeType].route
+        : "";
 
     if (belowThreshold !== undefined) {
       dispatch(setThreshold({ belowThreshold }));
@@ -109,12 +113,19 @@ export function PaymentChoice(props: {
     });
   };
 
-  const handleClickOnMethod = async (method: PaymentInstrumentsType) => {
+  const handleClickOnMethod = async (
+    method: PaymentInstrumentsType | PaymentInstrumentsTypeV4
+  ) => {
     if (!loading) {
       const { paymentTypeCode, id: paymentMethodId } = method;
+
+      const assetValue =
+        "paymentMethodAsset" in method
+          ? method.paymentMethodAsset // nuova API (V4)
+          : method.asset || ""; // vecchia API
       setSessionItem(SessionItems.paymentMethodInfo, {
         title: method.description,
-        asset: method.asset || "",
+        asset: assetValue || "",
       });
 
       setSessionItem(SessionItems.paymentMethod, {
@@ -132,8 +143,8 @@ export function PaymentChoice(props: {
   };
 
   const paymentMethods = React.useMemo(
-    [props.amount, props.paymentInstruments]
     () => getNormalizedMethods(props.paymentInstruments),
+    [props.amount, props.paymentInstruments]
   );
 
   return (

@@ -3,7 +3,10 @@ import * as t from "io-ts";
 import { SxProps } from "@mui/material";
 import { Theme } from "@emotion/react";
 import { PaymentMethodResponse } from "../../../../generated/definitions/payment-ecommerce/PaymentMethodResponse";
-import { PaymentMethodResponse as PaymentMethodResponseV4} from "../../../../generated/definitions/payment-ecommerce-v4/PaymentMethodResponse";
+import {
+  PaymentMethodResponseDescription,
+  PaymentMethodResponse as PaymentMethodResponseV4,
+} from "../../../../generated/definitions/payment-ecommerce-v4/PaymentMethodResponse";
 export interface PaymentFormFields {
   billCode: string;
   cf: string;
@@ -44,7 +47,7 @@ export interface PaymentMethodAttr {
 }
 
 export type PaymentMethodInfo = {
-  title: string;
+  title: string | PaymentMethodResponseDescription;
   body: string;
   asset?: string;
   icon?: string;

@@ -9,7 +9,10 @@ import {
 import * as React from "react";
 import { useTranslation } from "react-i18next";
 import ClickableFieldContainer from "../../../../components/TextFormField/ClickableFieldContainer";
-import { PaymentInstrumentsType } from "../../models/paymentModel";
+import {
+  PaymentInstrumentsType,
+  PaymentInstrumentsTypeV4,
+} from "../../models/paymentModel";
 import { PaymentMethodStatusEnum } from "../../../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
 import { ImageComponent } from "./PaymentMethodImage";
 
@@ -18,8 +21,8 @@ export const MethodComponentList = ({
   onClick,
   testable,
 }: {
-  methods: Array<PaymentInstrumentsType>;
-  onClick?: (method: PaymentInstrumentsType) => void;
+  methods: Array<PaymentInstrumentsType | PaymentInstrumentsTypeV4>;
+  onClick?: (method: PaymentInstrumentsType | PaymentInstrumentsTypeV4) => void;
   testable?: boolean;
 }) => (
   <>
@@ -37,7 +40,7 @@ export const MethodComponentList = ({
 export const DisabledPaymentMethods = ({
   methods,
 }: {
-  methods: Array<PaymentInstrumentsType>;
+  methods: Array<PaymentInstrumentsType | PaymentInstrumentsTypeV4>;
 }) => {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -72,22 +75,47 @@ const MethodComponent = ({
   onClick,
   testable,
 }: {
-  method: PaymentInstrumentsType;
+  method: PaymentInstrumentsType | PaymentInstrumentsTypeV4;
   onClick?: () => void;
   testable?: boolean;
-}) => (
-  <ClickableFieldContainer
-    dataTestId={testable ? method.paymentTypeCode : undefined}
-    dataTestLabel={testable ? "payment-method" : undefined}
-    title={method.description}
-    onClick={onClick}
-    icon={<ImageComponent {...method} />}
-    endAdornment={
-      method.status === PaymentMethodStatusEnum.ENABLED && (
-        <ArrowForwardIosIcon sx={{ color: "primary.main" }} fontSize="small" />
-      )
-    }
-    disabled={method.status === PaymentMethodStatusEnum.DISABLED}
-    clickable={method.status === PaymentMethodStatusEnum.ENABLED}
-  />
-);
+}) => {
+  const { t } = useTranslation();
+  const isV4 = (
+    m: PaymentInstrumentsType | PaymentInstrumentsTypeV4
+  ): m is PaymentInstrumentsTypeV4 => "feeRange" in m;
+
+  const title =
+    typeof method.description === "string"
+      ? method.description
+      : method.description?.it ?? "";
+
+  const subtitle = isV4(method)
+    ? method.feeRange?.min === method.feeRange?.max
+      ? t("paymentChoicePage.feeSingle", { value: method.feeRange?.min })
+      : t("paymentChoicePage.feeRange", {
+          min: method.feeRange?.min,
+          max: method.feeRange?.max,
+        })
+    : undefined;
+
+  return (
+    <ClickableFieldContainer
+      dataTestId={testable ? method.paymentTypeCode : undefined}
+      dataTestLabel={testable ? "payment-method" : undefined}
+      title={title}
+      subtitle={subtitle}
+      onClick={onClick}
+      icon={<ImageComponent {...method} />}
+      endAdornment={
+        method.status === PaymentMethodStatusEnum.ENABLED && (
+          <ArrowForwardIosIcon
+            sx={{ color: "primary.main" }}
+            fontSize="small"
+          />
+        )
+      }
+      disabled={method.status === PaymentMethodStatusEnum.DISABLED}
+      clickable={method.status === PaymentMethodStatusEnum.ENABLED}
+    />
+  );
+};

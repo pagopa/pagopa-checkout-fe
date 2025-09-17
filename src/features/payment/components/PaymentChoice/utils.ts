@@ -5,10 +5,24 @@ import {
   PaymentInstrumentsTypeV4,
 } from "../../models/paymentModel";
 import { PaymentMethodStatusEnum } from "../../../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
-import { PaymentTypeCodeEnum } from "../../../../../generated/definitions/payment-ecommerce-v4/PaymentMethodResponse";
+import {
+  PaymentMethodResponseDescription,
+  PaymentTypeCodeEnum,
+} from "../../../../../generated/definitions/payment-ecommerce-v4/PaymentMethodResponse";
 
-const isFirstPaymentMethod = (method: PaymentInstrumentsType | PaymentInstrumentsTypeV4) =>
-  method.paymentTypeCode === PaymentCodeTypeEnum.CP;
+const isFirstPaymentMethod = (
+  method: PaymentInstrumentsType | PaymentInstrumentsTypeV4
+) => method.paymentTypeCode === PaymentCodeTypeEnum.CP;
+
+const getDescriptionString = (
+  description: string | PaymentMethodResponseDescription,
+  locale: string = navigator.language.split("-")[0] // lingua browser
+): string => {
+  if (typeof description === "string") {
+    return description;
+  }
+  return description[locale] || Object.values(description)[0] || "";
+};
 
 const compareMethods = (
   a: PaymentInstrumentsType | PaymentInstrumentsTypeV4,
@@ -21,7 +35,11 @@ const compareMethods = (
   }
 
   // If not the first payment method, sort by description
-  return a.description.localeCompare(b.description);
+  // return a.description.localeCompare(b.description);
+  const descA = getDescriptionString(a.description);
+  const descB = getDescriptionString(b.description);
+
+  return descA.localeCompare(descB);
 };
 
 export const getNormalizedMethods = (

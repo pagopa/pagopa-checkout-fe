@@ -207,7 +207,9 @@ export const getPaymentInstruments = async (
     amount: number;
   },
   onError: (e: string) => void,
-  onResponse: (data: Array<PaymentInstrumentsType | PaymentInstrumentsTypeV4>) => void
+  onResponse: (
+    data: Array<PaymentInstrumentsType | PaymentInstrumentsTypeV4>
+  ) => void
 ) => {
   const list = await pipe(
     TE.tryCatch(
