@@ -363,7 +363,9 @@
     "incoming": "Eingang",
     "others": "Sonstige Methoden",
     "showMore": "Alle zeigen",
-    "title": "Wie möchtest du zahlen?"
+    "title": "Wie möchtest du zahlen?",
+    "feeRange": "Gebühr: von {{min}} € bis {{max}} €",
+    "feeSingle": "Gebühr: {{value}} €"
   },
   "paymentMethods": {
     "bpay": "BANCOMAT Pay",

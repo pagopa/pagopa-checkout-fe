@@ -363,7 +363,9 @@
     "incoming": "Coming soon",
     "others": "Other methods",
     "showMore": "Show all",
-    "title": "How do you want to pay?"
+    "title": "How do you want to pay?",
+    "feeRange": "Fee: from {{min}} € to {{max}} €",
+    "feeSingle": "Fee: {{value}} €"
   },
   "paymentMethods": {
     "bpay": "BANCOMAT Pay",

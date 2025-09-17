@@ -364,7 +364,9 @@
     "incoming": "Prihajajo",
     "others": "Drugi načini",
     "showMore": "Pokaži vse",
-    "title": "Kako želite plačati?"
+    "title": "Kako želite plačati?",
+    "feeRange": "Provizija: od {{min}} € do {{max}} €",
+    "feeSingle": "Provizija: {{value}} €"
   },
   "paymentMethods": {
     "bpay": "BANCOMAT Pay",
