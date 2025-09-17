@@ -6,7 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { v4 as uuidV4 } from "uuid";
 import { Typography, Button, InputAdornment, IconButton } from "@mui/material";
 import { t } from "i18next";
-import { Clear, Search } from "@mui/icons-material";
+import { CancelSharp, Search } from "@mui/icons-material";
+import { constVoid } from "fp-ts/function";
 import TextFormField from "../../../../components/TextFormField/TextFormField";
 import InformationModal from "../../../../components/modals/InformationModal";
 import ErrorModal from "../../../../components/modals/ErrorModal";
@@ -124,6 +125,11 @@ export function PaymentChoice(props: {
   const filterPaymentMethods = (p: any) =>
     p.description.toLowerCase().indexOf(paymentMethodFilter.toLowerCase()) > -1;
 
+  const getFilteredPaymentMethods = (paymentMethods: Array<any>) =>
+    paymentMethodFilter === ""
+      ? paymentMethods
+      : paymentMethods.filter(filterPaymentMethods);
+
   const handleClickOnMethod = async (method: PaymentInstrumentsType) => {
     if (!loading) {
       const { paymentTypeCode, id: paymentMethodId } = method;
@@ -151,10 +157,10 @@ export function PaymentChoice(props: {
     [props.amount, props.paymentInstruments]
   );
 
-  const paymentMethodsNotVisible = () =>
+  const arePaymentMethodsVisible = () =>
     paymentMethods.enabled
       .concat(paymentMethods.disabled)
-      .filter(filterPaymentMethods).length === 0 &&
+      .filter(filterPaymentMethods).length > 0 &&
     paymentMethods.enabled.concat(paymentMethods.disabled).length > 0;
 
   return (
@@ -167,7 +173,9 @@ export function PaymentChoice(props: {
       ) : (
         <>
           <TextFormField
-            label={t("paymentChoicePage.filterLabel")}
+            label="paymentChoicePage.filterLabel"
+            variant="outlined"
+            type="text"
             id="paymentMethodsFilter"
             fullWidth
             handleChange={(e) =>
@@ -186,36 +194,29 @@ export function PaymentChoice(props: {
                   edge="end"
                   id="clearFilterPaymentMethod"
                   data-testid="clearFilterPaymentMethod"
+                  sx={{
+                    color: "action.active",
+                  }}
                 >
-                  <Clear />
+                  <CancelSharp />
                 </IconButton>
               </InputAdornment>
             }
             error={false}
             errorText={undefined}
-            type="text"
-            // eslint-disable-next-line @typescript-eslint/no-empty-function
-            handleBlur={() => {}}
+            handleBlur={constVoid}
           />
           <MethodComponentList
-            methods={
-              paymentMethodFilter === ""
-                ? paymentMethods.enabled
-                : paymentMethods.enabled.filter(filterPaymentMethods)
-            }
+            methods={getFilteredPaymentMethods(paymentMethods.enabled)}
             onClick={handleClickOnMethod}
             testable
           />
           <DisabledPaymentMethods
-            methods={
-              paymentMethodFilter === ""
-                ? paymentMethods.disabled
-                : paymentMethods.disabled.filter(filterPaymentMethods)
-            }
+            methods={getFilteredPaymentMethods(paymentMethods.disabled)}
           />
         </>
       )}
-      {paymentMethodsNotVisible() && (
+      {!arePaymentMethodsVisible() && (
         <Typography id="noPaymentMethodsMessage">
           {t("paymentChoicePage.noPaymentMethodsAvailable")}
         </Typography>

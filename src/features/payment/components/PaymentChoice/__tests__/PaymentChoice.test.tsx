@@ -369,6 +369,9 @@ describe("PaymentChoice", () => {
     expect(screen.getByTestId("payment-method-PAYPAL")).toBeInTheDocument();
     // Should show disabled methods separately
     expect(screen.getByTestId("disabled-methods")).toBeInTheDocument();
+    expect(
+      result.container.querySelector("#noPaymentMethodsMessage")
+    ).not.toBeInTheDocument();
 
     // Filter for string 'cart'
     const filterInput = result.container.querySelector(
@@ -420,6 +423,9 @@ describe("PaymentChoice", () => {
     expect(
       screen.queryByTestId("payment-method-PAYPAL")
     ).not.toBeInTheDocument();
+    expect(
+      result.container.querySelector("#noPaymentMethodsMessage")
+    ).not.toBeInTheDocument();
 
     const clearFilter = result.container.querySelector(
       "#clearFilterPaymentMethod"
@@ -431,6 +437,45 @@ describe("PaymentChoice", () => {
     // Should show enabled payment methods
     expect(screen.getByTestId("payment-method-CP")).toBeInTheDocument();
     expect(screen.getByTestId("payment-method-PAYPAL")).toBeInTheDocument();
+    expect(
+      result.container.querySelector("#noPaymentMethodsMessage")
+    ).not.toBeInTheDocument();
+  });
+
+  it("should show no result string when filter doesn't match any payment methods name", async () => {
+    // Mock the useRef to immediately set the ref
+    jest.spyOn(React, "useRef").mockImplementation(() => ({
+      current: { execute: jest.fn(), reset: jest.fn() },
+    }));
+
+    const result = renderWithRouterAndRedux(
+      <PaymentChoice
+        amount={100}
+        paymentInstruments={samplePaymentInstruments}
+        loading={false}
+      />
+    );
+
+    // Wait for loading to finish (component has internal loading state)
+    await waitFor(() => {
+      expect(screen.queryByTestId("checkout-loader")).not.toBeInTheDocument();
+    });
+
+    expect(screen.getByTestId("payment-method-CP")).toBeInTheDocument();
+    expect(screen.queryByTestId("payment-method-PAYPAL")).toBeInTheDocument();
+
+    // Filter for string 'cart'
+    const filterInput = result.container.querySelector(
+      "#paymentMethodsFilter"
+    )!;
+
+    await act(async () => {
+      fireEvent.change(filterInput, { target: { value: "carta" } });
+    });
+    // Should show only card payment methods
+    expect(
+      result.container.querySelector("#noPaymentMethodsMessage")
+    ).toBeInTheDocument();
   });
 
   it("should handle credit card payment method click", async () => {
@@ -703,7 +748,7 @@ describe("PaymentChoice", () => {
     fireEvent.click(getByText("Carte di Credito e Debito"));
   });
 
-  it("should render without crashing with amount greter than 1 milion", () => {
+  it("should render without crashing with amount greater than 1 milion", () => {
     const { container } = renderWithRouterAndRedux(
       <PaymentChoice
         amount={130539492}
