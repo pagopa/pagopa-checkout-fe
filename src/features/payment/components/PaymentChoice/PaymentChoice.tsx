@@ -22,8 +22,9 @@ import {
   PaymentCodeType,
   PaymentCodeTypeEnum,
   PaymentInstrumentsType,
-  PaymentInstrumentsTypeV2,
+  PaymentInstrumentsTypeV4,
 } from "../../models/paymentModel";
+import { PaymentTypeCodeEnum } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 import { setThreshold } from "../../../../redux/slices/threshold";
 import { CheckoutRoutes } from "../../../../routes/models/routeModel";
 import { onErrorActivate } from "../../../../utils/api/transactionsErrorHelper";
@@ -32,9 +33,7 @@ import { getNormalizedMethods } from "./utils";
 
 export function PaymentChoice(props: {
   amount: number;
-  paymentInstruments:
-    | Array<PaymentInstrumentsType>
-    | Array<PaymentInstrumentsTypeV2>;
+  paymentInstruments: Array<PaymentInstrumentsType | PaymentInstrumentsTypeV4>;
   loading?: boolean;
 }) {
   const ref = React.useRef<ReCAPTCHA>(null);
@@ -66,10 +65,10 @@ export function PaymentChoice(props: {
   };
 
   const onSuccess = (
-    paymentTypeCode: PaymentCodeType,
+    paymentTypeCode: PaymentCodeType | PaymentTypeCodeEnum,
     belowThreshold?: boolean
   ) => {
-    const route: string = PaymentMethodRoutes[paymentTypeCode]?.route;
+    const route: string = PaymentMethodRoutes[paymentTypeCode as PaymentCodeType]?.route;
 
     if (belowThreshold !== undefined) {
       dispatch(setThreshold({ belowThreshold }));
@@ -111,19 +110,28 @@ export function PaymentChoice(props: {
     });
   };
 
-  const handleClickOnMethod = async (method: PaymentInstrumentsType) => {
+  const handleClickOnMethod = async (method: PaymentInstrumentsType | PaymentInstrumentsTypeV4) => {
     if (!loading) {
       const { paymentTypeCode, id: paymentMethodId } = method;
+      const currentLanguage = (
+        localStorage.getItem("i18nextLng") ?? "IT"
+      ).toUpperCase();
+      const methodDescription = typeof method.description === 'object'
+        ? method.description[currentLanguage] ?? method.description.IT
+        : method.description;
+
+      const methodAsset = 'asset' in method ? method.asset : (method as PaymentInstrumentsTypeV4).paymentMethodAsset;
+
       setSessionItem(SessionItems.paymentMethodInfo, {
-        title: method.description,
-        asset: method.asset || "",
+        title: methodDescription,
+        asset: methodAsset || "",
       });
 
       setSessionItem(SessionItems.paymentMethod, {
         paymentMethodId,
         paymentTypeCode,
       });
-      if (paymentTypeCode !== PaymentCodeTypeEnum.CP && ref.current) {
+      if (paymentTypeCode !== PaymentCodeTypeEnum.CP && paymentTypeCode !== PaymentTypeCodeEnum.CP && ref.current) {
         await onApmChoice(ref.current, (belowThreshold: boolean) =>
           onSuccess(paymentTypeCode, belowThreshold)
         );
@@ -134,7 +142,7 @@ export function PaymentChoice(props: {
   };
 
   const paymentMethods = React.useMemo(
-    () => getNormalizedMethods(props.paymentInstruments),
+    () => getNormalizedMethods(props.paymentInstruments as any),
     [props.amount, props.paymentInstruments]
   );
 
