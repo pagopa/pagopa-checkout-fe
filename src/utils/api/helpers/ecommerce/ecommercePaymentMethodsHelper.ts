@@ -209,7 +209,9 @@ export const getPaymentInstruments = async (
   onError: (e: string) => void,
   onResponse: (data: Array<PaymentInstrumentsType>) => void
 ) => {
-  const isPaymentMethodsHandlerEnabled = (getSessionItem(SessionItems.enablePaymentMethodsHandler) as string) === "true";
+  const isPaymentMethodsHandlerEnabled =
+    (getSessionItem(SessionItems.enablePaymentMethodsHandler) as string) ===
+    "true";
 
   if (isPaymentMethodsHandlerEnabled) {
     await getPaymentInstrumentsWithHandler(query, onError, onResponse);
@@ -298,7 +300,11 @@ const getPaymentInstrumentsWithHandler = async (
     };
 
     // at least one activation completed -> populate paymentNotice and transferList
-    if (transaction && transaction.payments && transaction.payments.length > 0) {
+    if (
+      transaction &&
+      transaction.payments &&
+      transaction.payments.length > 0
+    ) {
       const firstPayment = transaction.payments[0];
       return {
         ...baseRequest,
