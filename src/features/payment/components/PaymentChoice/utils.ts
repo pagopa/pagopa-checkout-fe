@@ -2,15 +2,17 @@ import {
   PaymentInstrumentsType,
   PaymentCodeTypeEnum,
   PaymentCodeType,
+  PaymentInstrumentsTypeV4,
 } from "../../models/paymentModel";
 import { PaymentMethodStatusEnum } from "../../../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
+import { PaymentTypeCodeEnum } from "../../../../../generated/definitions/payment-ecommerce-v4/PaymentMethodResponse";
 
-const isFirstPaymentMethod = (method: PaymentInstrumentsType) =>
+const isFirstPaymentMethod = (method: PaymentInstrumentsType | PaymentInstrumentsTypeV4) =>
   method.paymentTypeCode === PaymentCodeTypeEnum.CP;
 
 const compareMethods = (
-  a: PaymentInstrumentsType,
-  b: PaymentInstrumentsType
+  a: PaymentInstrumentsType | PaymentInstrumentsTypeV4,
+  b: PaymentInstrumentsType | PaymentInstrumentsTypeV4
 ) => {
   if (isFirstPaymentMethod(a)) {
     return -1;
@@ -23,12 +25,12 @@ const compareMethods = (
 };
 
 export const getNormalizedMethods = (
-  paymentInstruments: Array<PaymentInstrumentsType>
+  paymentInstruments: Array<PaymentInstrumentsType | PaymentInstrumentsTypeV4>
 ) => {
   const { methods, duplicatedMethods } = paymentInstruments.reduce<{
-    foundTypes: Array<PaymentCodeType>;
-    methods: Array<PaymentInstrumentsType>;
-    duplicatedMethods: Array<PaymentInstrumentsType>;
+    foundTypes: Array<PaymentCodeType | PaymentTypeCodeEnum>;
+    methods: Array<PaymentInstrumentsType | PaymentInstrumentsTypeV4>;
+    duplicatedMethods: Array<PaymentInstrumentsType | PaymentInstrumentsTypeV4>;
   }>(
     ({ foundTypes, duplicatedMethods, methods }, method) => {
       if (foundTypes.includes(method.paymentTypeCode)) {
@@ -53,8 +55,8 @@ export const getNormalizedMethods = (
   );
 
   const { enabledMethods, disabledMethods } = methods.reduce<{
-    enabledMethods: Array<PaymentInstrumentsType>;
-    disabledMethods: Array<PaymentInstrumentsType>;
+    enabledMethods: Array<PaymentInstrumentsType | PaymentInstrumentsTypeV4>;
+    disabledMethods: Array<PaymentInstrumentsType | PaymentInstrumentsTypeV4>;
   }>(
     ({ enabledMethods, disabledMethods }, method) =>
       method.status === PaymentMethodStatusEnum.ENABLED

@@ -13,6 +13,7 @@ import {
 import { ErrorsType } from "../../../../utils/errors/checkErrorsModel";
 import {
   PaymentInstrumentsType,
+  PaymentInstrumentsTypeV4,
   PaymentMethod,
   PaymentMethodInfo,
 } from "../../../../features/payment/models/paymentModel";
@@ -206,7 +207,7 @@ export const getPaymentInstruments = async (
     amount: number;
   },
   onError: (e: string) => void,
-  onResponse: (data: Array<PaymentInstrumentsType>) => void
+  onResponse: (data: Array<PaymentInstrumentsType | PaymentInstrumentsTypeV4>) => void
 ) => {
   const list = await pipe(
     TE.tryCatch(
