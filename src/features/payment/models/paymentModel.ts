@@ -3,9 +3,7 @@ import * as t from "io-ts";
 import { SxProps } from "@mui/material";
 import { Theme } from "@emotion/react";
 import { PaymentMethodResponse } from "../../../../generated/definitions/payment-ecommerce/PaymentMethodResponse";
-import { PaymentMethodResponse as PaymentMethodResponseV2 } from "../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
-import { PaymentTypeCodeEnum as PaymentTypeCodeEnumV2 } from "../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
-
+import { PaymentMethodResponse as PaymentMethodResponseV4} from "../../../../generated/definitions/payment-ecommerce-v4/PaymentMethodResponse";
 export interface PaymentFormFields {
   billCode: string;
   cf: string;
@@ -124,10 +122,9 @@ export const PaymentInstruments = t.intersection([
 
 export type PaymentInstrumentsType = t.TypeOf<typeof PaymentInstruments>;
 
-export const PaymentInstrumentsV2 = PaymentMethodResponseV2;
+export const PaymentInstrumentsV4 = PaymentMethodResponseV4;
 
-export type PaymentInstrumentsTypeV2 = t.TypeOf<typeof PaymentInstrumentsV2>;
-
+export type PaymentInstrumentsTypeV4 = t.TypeOf<typeof PaymentInstrumentsV4>;
 export interface PaymentNotice {
   noticeNumber: any;
   fiscalCode: any;
