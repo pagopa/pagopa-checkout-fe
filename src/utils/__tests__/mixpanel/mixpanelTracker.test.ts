@@ -9,9 +9,7 @@ import { MixpanelFlow } from "../../mixpanel/mixpanelEvents";
 import { MixpanelDataEntryType } from "../../mixpanel/mixpanelEvents";
 import { paymentInfo } from "../../../routes/__tests__/_model";
 import { PaymentTypeCodeEnum } from "../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
-import {
-  paymentInfoWIthFormattedAmount,
-} from "../../../routes/__tests__/_model";
+import { paymentInfoWIthFormattedAmount } from "../../../routes/__tests__/_model";
 
 jest.mock("../../storage/sessionStorage", () => ({
   getSessionItem: jest.fn(),

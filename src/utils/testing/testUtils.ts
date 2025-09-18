@@ -14,6 +14,9 @@ export const paymentMethodsMock: Array<PaymentInstrumentsType> = [
     status: PaymentMethodStatusEnum.ENABLED,
     methodManagement: MethodManagementEnum.ONBOARDABLE,
     paymentTypeCode: PaymentTypeCodeEnum.CP,
+    feeRange: undefined,
+    asset: undefined,
+    brandAsset: undefined,
   },
   {
     id: "bancomatpay-id",
@@ -22,6 +25,9 @@ export const paymentMethodsMock: Array<PaymentInstrumentsType> = [
     status: PaymentMethodStatusEnum.ENABLED,
     methodManagement: MethodManagementEnum.ONBOARDABLE,
     paymentTypeCode: PaymentTypeCodeEnum.BPAY,
+    feeRange: undefined,
+    asset: undefined,
+    brandAsset: undefined,
   },
 ];
 
