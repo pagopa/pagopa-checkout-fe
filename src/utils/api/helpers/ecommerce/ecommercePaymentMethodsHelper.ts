@@ -257,8 +257,16 @@ export const getPaymentInstruments = async (
         )
     )
   )();
-  onResponse(list as any as Array<PaymentInstrumentsType>);
-};
+
+  /*SOLO PER TEST*/
+  const normalizedList = (list as Array<PaymentInstrumentsType>).map(pm => ({
+    ...pm,
+    feeRange: pm.feeRange ?? { min: 10, max: 10 }
+  }));
+  /****************/
+  onResponse(normalizedList);
+  //onResponse(list as any as Array<PaymentInstrumentsType>);
+  };
 
 export const npgSessionsFields = async (
   onError: (e: string) => void,

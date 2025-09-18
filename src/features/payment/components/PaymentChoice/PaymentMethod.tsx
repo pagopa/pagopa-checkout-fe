@@ -80,6 +80,7 @@ const MethodComponent = ({
     dataTestId={testable ? method.paymentTypeCode : undefined}
     dataTestLabel={testable ? "payment-method" : undefined}
     title={method.description}
+    feeRange={method.feeRange}
     onClick={onClick}
     icon={<ImageComponent {...method} />}
     endAdornment={

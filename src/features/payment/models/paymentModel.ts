@@ -3,6 +3,7 @@ import * as t from "io-ts";
 import { SxProps } from "@mui/material";
 import { Theme } from "@emotion/react";
 import { PaymentMethodResponse } from "../../../../generated/definitions/payment-ecommerce/PaymentMethodResponse";
+import { FeeRange } from "../../../../generated/definitions/payment-ecommerce-v4/FeeRange";
 
 export interface PaymentFormFields {
   billCode: string;
@@ -113,11 +114,23 @@ export const PaymentCodeType = enumType<PaymentCodeTypeEnum>(
   "PaymentCodeType"
 );
 
+function withDefault<C extends t.Mixed>(codec: C, defaultValue: t.TypeOf<C>) {
+  return new t.Type(
+    codec.name,
+    codec.is,
+    (u, c) => (u === undefined ? t.success(defaultValue) : codec.validate(u, c)),
+    codec.encode
+  );
+}
+
 export const PaymentInstruments = t.intersection([
   t.type({
     paymentTypeCode: PaymentCodeType,
   }),
   PaymentMethodResponse,
+   t.partial({
+      feeRange: withDefault(FeeRange, { min: 10, max: 10 })
+    })
 ]);
 
 export type PaymentInstrumentsType = t.TypeOf<typeof PaymentInstruments>;

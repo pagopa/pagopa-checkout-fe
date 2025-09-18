@@ -365,7 +365,9 @@
     "showMore": "Alle zeigen",
     "title": "Wie möchtest du zahlen?",
     "filterLabel": "Cerca un metodo",
-    "noPaymentMethodsAvailable": "Nessun risultato trovato. Prova a rimuovere i filtri o cerca usando altri termini"
+    "noPaymentMethodsAvailable": "Nessun risultato trovato. Prova a rimuovere i filtri o cerca usando altri termini",
+    "feeRange": "Gebühr: von {{min}} € bis {{max}} €",
+    "feeSingle": "Gebühr: {{value}} €"
   },
   "paymentMethods": {
     "bpay": "BANCOMAT Pay",
