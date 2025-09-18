@@ -107,6 +107,7 @@ export const apiPaymentEcommerceClientWithRetryV3 = createEcommerceClientV3({
   ),
 });
 
+// TODO: check with team if we need a client with retry for V4 as well
 /**
  * Api client for checkout auth service API V1
  */
