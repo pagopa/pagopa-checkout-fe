@@ -9,6 +9,9 @@ import { MixpanelFlow } from "../../mixpanel/mixpanelEvents";
 import { MixpanelDataEntryType } from "../../mixpanel/mixpanelEvents";
 import { paymentInfo } from "../../../routes/__tests__/_model";
 import { PaymentTypeCodeEnum } from "../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
+import {
+  paymentInfoWIthFormattedAmount,
+} from "../../../routes/__tests__/_model";
 
 jest.mock("../../storage/sessionStorage", () => ({
   getSessionItem: jest.fn(),
@@ -48,10 +51,14 @@ describe("getDataEntryTypeFromSessionStorage", () => {
 describe("getPaymentInfoFromSessionStorage", () => {
   it("should return correct PaymentInfo from sessionStorage", () => {
     (getSessionItem as jest.Mock).mockReturnValue(paymentInfo);
+    const normalizeSpaces = (s?: string) => s?.replace(/\s/g, " ") ?? "";
 
     const result = getPaymentInfoFromSessionStorage();
 
-    expect(result).toBe(paymentInfo);
+    expect({
+      ...result,
+      amount: normalizeSpaces(result?.amount),
+    }).toStrictEqual(paymentInfoWIthFormattedAmount);
   });
 
   it("should return undefined if sessionStorage does not contain a valid PaymentInfo object", () => {
