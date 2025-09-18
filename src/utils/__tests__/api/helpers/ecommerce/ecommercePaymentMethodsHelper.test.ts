@@ -11,7 +11,9 @@ import {
 } from "../../../../../utils/testing/testUtils";
 import {
   apiPaymentEcommerceClient,
+  apiPaymentEcommerceClientV2,
   apiPaymentEcommerceClientV3,
+  apiPaymentEcommerceClientV4,
   apiPaymentEcommerceClientWithRetry,
   apiPaymentEcommerceClientWithRetryV2,
   apiPaymentEcommerceClientWithRetryV3,
@@ -43,8 +45,14 @@ jest.mock("../../../../api/client", () => ({
     getSessionPaymentMethod: jest.fn(),
     getAllPaymentMethods: jest.fn(),
   },
+  apiPaymentEcommerceClientV2: {
+    getAllPaymentMethods: jest.fn(),
+  },
   apiPaymentEcommerceClientV3: {
     getAllPaymentMethodsV3: jest.fn(),
+  },
+  apiPaymentEcommerceClientV4: {
+    getAllPaymentMethodsAuth: jest.fn(),
   },
   apiPaymentEcommerceClientWithRetry: {
     createSession: jest.fn(),
