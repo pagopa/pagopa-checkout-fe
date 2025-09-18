@@ -1,17 +1,14 @@
 import { getNormalizedMethods } from "../utils";
-import {
-  PaymentInstrumentsType,
-  PaymentCodeTypeEnum,
-  PaymentCodeType,
-} from "../../../models/paymentModel";
+import { PaymentInstrumentsType } from "../../../models/paymentModel";
 import { PaymentMethodStatusEnum } from "../../../../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
+import { PaymentTypeCodeEnum } from "../../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 
 describe("paymentMethodsUtils", () => {
   // Define some test data
   const createPaymentMethod = (
     id: string,
     description: string,
-    paymentTypeCode: PaymentCodeType,
+    paymentTypeCode: PaymentTypeCodeEnum,
     status: PaymentMethodStatusEnum
   ): PaymentInstrumentsType =>
     ({
@@ -31,35 +28,35 @@ describe("paymentMethodsUtils", () => {
   const cpMethod1 = createPaymentMethod(
     "cp1",
     "Payment Notice",
-    PaymentCodeTypeEnum.CP,
+    PaymentTypeCodeEnum.CP,
     PaymentMethodStatusEnum.ENABLED
   );
 
   const cpMethod2 = createPaymentMethod(
     "cp2",
     "Another Payment Notice",
-    PaymentCodeTypeEnum.CP,
+    PaymentTypeCodeEnum.CP,
     PaymentMethodStatusEnum.ENABLED
   );
 
   const ccMethod = createPaymentMethod(
     "cc1",
     "Credit Card",
-    PaymentCodeTypeEnum.RBPS,
+    PaymentTypeCodeEnum.RBPS,
     PaymentMethodStatusEnum.ENABLED
   );
 
   const ppMethod = createPaymentMethod(
     "pp1",
     "PayPal",
-    PaymentCodeTypeEnum.BPAY,
+    PaymentTypeCodeEnum.BPAY,
     PaymentMethodStatusEnum.ENABLED
   );
 
   const disabledMethod = createPaymentMethod(
     "cc2",
     "Disabled Credit Card",
-    PaymentCodeTypeEnum.RBPS,
+    PaymentTypeCodeEnum.RBPS,
     PaymentMethodStatusEnum.DISABLED
   );
 
@@ -68,21 +65,21 @@ describe("paymentMethodsUtils", () => {
       const cpMethod1 = createPaymentMethod(
         "cp1",
         "Payment Notice",
-        PaymentCodeTypeEnum.CP,
+        PaymentTypeCodeEnum.CP,
         PaymentMethodStatusEnum.ENABLED
       );
 
       const cpMethod2 = createPaymentMethod(
         "cp2",
         "Another Payment Notice",
-        PaymentCodeTypeEnum.CP,
+        PaymentTypeCodeEnum.CP,
         PaymentMethodStatusEnum.ENABLED
       );
 
       const ccMethod = createPaymentMethod(
         "cc1",
         "Credit Card",
-        PaymentCodeTypeEnum.RBPS,
+        PaymentTypeCodeEnum.RBPS,
         PaymentMethodStatusEnum.ENABLED
       );
 
@@ -123,21 +120,21 @@ describe("paymentMethodsUtils", () => {
       const bMethod = createPaymentMethod(
         "b1",
         "B Payment",
-        PaymentCodeTypeEnum.MYBK,
+        PaymentTypeCodeEnum.MYBK,
         PaymentMethodStatusEnum.ENABLED
       );
 
       const aMethod = createPaymentMethod(
         "a1",
         "A Payment",
-        PaymentCodeTypeEnum.RBPP,
+        PaymentTypeCodeEnum.RBPP,
         PaymentMethodStatusEnum.ENABLED
       );
 
       const cMethod = createPaymentMethod(
         "c1",
         "C Payment",
-        PaymentCodeTypeEnum.BPAY,
+        PaymentTypeCodeEnum.BPAY,
         PaymentMethodStatusEnum.ENABLED
       );
 
@@ -155,21 +152,21 @@ describe("paymentMethodsUtils", () => {
       const disabledCpMethod = createPaymentMethod(
         "cp_disabled",
         "Disabled Payment Notice",
-        PaymentCodeTypeEnum.CP,
+        PaymentTypeCodeEnum.CP,
         PaymentMethodStatusEnum.DISABLED
       );
 
       const disabledBMethod = createPaymentMethod(
         "b_disabled",
         "B Disabled",
-        PaymentCodeTypeEnum.CP,
+        PaymentTypeCodeEnum.CP,
         PaymentMethodStatusEnum.DISABLED
       );
 
       const disabledAMethod = createPaymentMethod(
         "a_disabled",
         "A Disabled",
-        PaymentCodeTypeEnum.RBPP,
+        PaymentTypeCodeEnum.RBPP,
         PaymentMethodStatusEnum.ENABLED
       );
 
@@ -208,14 +205,14 @@ describe("paymentMethodsUtils", () => {
       const cpMethod3 = createPaymentMethod(
         "cp3",
         "Third CP Method",
-        PaymentCodeTypeEnum.CP,
+        PaymentTypeCodeEnum.CP,
         PaymentMethodStatusEnum.DISABLED
       );
 
       const ccMethod2 = createPaymentMethod(
         "cc3",
         "Another CC Method",
-        PaymentCodeTypeEnum.RBPS,
+        PaymentTypeCodeEnum.RBPS,
         PaymentMethodStatusEnum.ENABLED
       );
 
@@ -262,14 +259,14 @@ describe("paymentMethodsUtils", () => {
       const cpPayment = createPaymentMethod(
         "cp1",
         "CP Payment",
-        PaymentCodeTypeEnum.CP,
+        PaymentTypeCodeEnum.CP,
         PaymentMethodStatusEnum.ENABLED
       );
 
       const nonCpPayment = createPaymentMethod(
         "non_cp",
         "Non-CP Payment",
-        PaymentCodeTypeEnum.BPAY,
+        PaymentTypeCodeEnum.BPAY,
         PaymentMethodStatusEnum.ENABLED
       );
 
@@ -289,32 +286,32 @@ describe("paymentMethodsUtils", () => {
         createPaymentMethod(
           "non_cp",
           "ZZZ",
-          PaymentCodeTypeEnum.BPAY,
+          PaymentTypeCodeEnum.BPAY,
           PaymentMethodStatusEnum.ENABLED
         ),
         createPaymentMethod(
           "cp",
           "AAA",
-          PaymentCodeTypeEnum.CP,
+          PaymentTypeCodeEnum.CP,
           PaymentMethodStatusEnum.ENABLED
         ),
       ];
 
       const result1 = getNormalizedMethods(methods1);
-      expect(result1.enabled[0].paymentTypeCode).toBe(PaymentCodeTypeEnum.CP);
+      expect(result1.enabled[0].paymentTypeCode).toBe(PaymentTypeCodeEnum.CP);
 
       // Case 2: Two non-CP methods (should be sorted alphabetically)
       const methods2 = [
         createPaymentMethod(
           "b",
           "B Payment",
-          PaymentCodeTypeEnum.BPAY,
+          PaymentTypeCodeEnum.BPAY,
           PaymentMethodStatusEnum.ENABLED
         ),
         createPaymentMethod(
           "a",
           "A Payment",
-          PaymentCodeTypeEnum.MYBK,
+          PaymentTypeCodeEnum.MYBK,
           PaymentMethodStatusEnum.ENABLED
         ),
       ];

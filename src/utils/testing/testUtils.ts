@@ -1,29 +1,27 @@
-import {
-  PaymentCodeTypeEnum,
-  PaymentInstrumentsType,
-} from "../../features/payment/models/paymentModel";
+import { PaymentInstrumentsType } from "../../features/payment/models/paymentModel";
 import { PaymentMethodStatusEnum } from "../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
-import { PaymentMethodManagementTypeEnum } from "../../../generated/definitions/payment-ecommerce/PaymentMethodManagementType";
 import { RptId } from "../../../generated/definitions/payment-ecommerce-v3/RptId";
+import {
+  MethodManagementEnum,
+  PaymentTypeCodeEnum,
+} from "../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 
 export const paymentMethodsMock: Array<PaymentInstrumentsType> = [
   {
     id: "card-id",
-    name: "CARDS",
-    description: "Carte di Credito e Debito",
+    name: { it: "CARDS" },
+    description: { it: "Carte di Credito e Debito" },
     status: PaymentMethodStatusEnum.ENABLED,
-    methodManagement: PaymentMethodManagementTypeEnum.ONBOARDABLE,
-    paymentTypeCode: PaymentCodeTypeEnum.CP,
-    ranges: [],
+    methodManagement: MethodManagementEnum.ONBOARDABLE,
+    paymentTypeCode: PaymentTypeCodeEnum.CP,
   },
   {
     id: "bancomatpay-id",
-    name: "BANCOMATPAY",
-    description: "BancomatPay",
+    name: { it: "BANCOMATPAY" },
+    description: { it: "BancomatPay" },
     status: PaymentMethodStatusEnum.ENABLED,
-    methodManagement: PaymentMethodManagementTypeEnum.ONBOARDABLE,
-    paymentTypeCode: PaymentCodeTypeEnum.BPAY,
-    ranges: [],
+    methodManagement: MethodManagementEnum.ONBOARDABLE,
+    paymentTypeCode: PaymentTypeCodeEnum.BPAY,
   },
 ];
 

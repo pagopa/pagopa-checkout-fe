@@ -1,9 +1,12 @@
-import { enumType } from "@pagopa/ts-commons/lib/types";
 import * as t from "io-ts";
 import { SxProps } from "@mui/material";
 import { Theme } from "@emotion/react";
-import { PaymentMethodResponse } from "../../../../generated/definitions/payment-ecommerce/PaymentMethodResponse";
-import { PaymentMethodResponse as PaymentMethodResponseV4 } from "../../../../generated/definitions/payment-ecommerce-v4/PaymentMethodResponse";
+import {
+  MethodManagementEnum,
+  PaymentTypeCodeEnum,
+} from "../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
+import { FeeRange } from "../../../../generated/definitions/payment-ecommerce-v2/FeeRange";
+
 export interface PaymentFormFields {
   billCode: string;
   cf: string;
@@ -88,43 +91,26 @@ export interface PaymentMethod {
   paymentMethodId: string;
 }
 
-export enum PaymentCodeTypeEnum {
-  KLRN = "KLRN", // Klarna
-  RBPR = "RBPR", // Conto BancoPosta Retail
-  RBPB = "RBPB", // Conto BancoPosta Impresa
-  RBPP = "RBPP", // Paga con Postepay
-  RPIC = "RPIC", // Pago in Conto Intesa
-  RBPS = "RBPS", // SCRIGNO Internet Banking
-  BPAY = "BPAY", // BancomatPay
-  APPL = "APPL", // ApplePay
-  GOOG = "GOOG", // GooglePay
-  MYBK = "MYBK", // MyBank
-  SATY = "SATY", // Satispay
-  CP = "CP", // Carte
-}
+export const MapField = t.record(
+  t.string,
 
-/**
- * Payment method status
- */
-
-export type PaymentCodeType = t.TypeOf<typeof PaymentCodeType>;
-export const PaymentCodeType = enumType<PaymentCodeTypeEnum>(
-  PaymentCodeTypeEnum,
-  "PaymentCodeType"
+  t.string
 );
 
-export const PaymentInstruments = t.intersection([
-  t.type({
-    paymentTypeCode: PaymentCodeType,
-  }),
-  PaymentMethodResponse,
-]);
+export type MapField = t.TypeOf<typeof MapField>;
 
-export type PaymentInstrumentsType = t.TypeOf<typeof PaymentInstruments>;
+export interface PaymentInstrumentsType {
+  id: string;
+  name: MapField;
+  description: MapField;
+  status: string;
+  paymentTypeCode: PaymentTypeCodeEnum;
+  methodManagement: MethodManagementEnum;
+  feeRange?: FeeRange;
+  asset?: string;
+  brandAsset?: MapField;
+}
 
-export const PaymentInstrumentsV4 = PaymentMethodResponseV4;
-
-export type PaymentInstrumentsTypeV4 = t.TypeOf<typeof PaymentInstrumentsV4>;
 export interface PaymentNotice {
   noticeNumber: any;
   fiscalCode: any;

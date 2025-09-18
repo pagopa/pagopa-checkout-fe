@@ -4,15 +4,15 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { PaymentChoice } from "../PaymentChoice";
-import {
-  PaymentCodeTypeEnum,
-  PaymentInstrumentsType,
-} from "../../../models/paymentModel";
+import { PaymentInstrumentsType } from "../../../models/paymentModel";
 import { PaymentMethodStatusEnum } from "../../../../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
-import { PaymentMethodManagementTypeEnum } from "../../../../../../generated/definitions/payment-ecommerce/PaymentMethodManagementType";
 import "whatwg-fetch";
 import * as helperModule from "../../../../../utils/api/helper";
 import * as transactionsErrorHelperModule from "../../../../../utils/api/transactionsErrorHelper";
+import {
+  MethodManagementEnum,
+  PaymentTypeCodeEnum,
+} from "../../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 
 // Define types for helper functions
 type GetFeesFunction = (
@@ -243,30 +243,27 @@ describe("PaymentChoice", () => {
   const samplePaymentInstruments: Array<PaymentInstrumentsType> = [
     {
       id: "card-id",
-      name: "CARDS",
-      description: "Carte di Credito e Debito",
+      name: { it: "CARDS" },
+      description: { it: "Carte di Credito e Debito" },
       status: PaymentMethodStatusEnum.ENABLED,
-      methodManagement: PaymentMethodManagementTypeEnum.ONBOARDABLE,
-      paymentTypeCode: PaymentCodeTypeEnum.CP,
-      ranges: [],
+      methodManagement: MethodManagementEnum.ONBOARDABLE,
+      paymentTypeCode: PaymentTypeCodeEnum.CP,
     },
     {
       id: "paypal-id",
-      name: "PAYPAL",
-      description: "PayPal",
+      name: { it: "PAYPAL" },
+      description: { it: "PayPal" },
       status: PaymentMethodStatusEnum.ENABLED,
-      methodManagement: PaymentMethodManagementTypeEnum.ONBOARDABLE,
-      paymentTypeCode: "PAYPAL" as PaymentCodeTypeEnum,
-      ranges: [],
+      methodManagement: MethodManagementEnum.ONBOARDABLE,
+      paymentTypeCode: PaymentTypeCodeEnum.PPAL,
     },
     {
       id: "disabled-id",
-      name: "DISABLED",
-      description: "Disabled Method",
+      name: { it: "DISABLED" },
+      description: { it: "Disabled Method" },
       status: PaymentMethodStatusEnum.DISABLED,
-      methodManagement: PaymentMethodManagementTypeEnum.ONBOARDABLE,
-      paymentTypeCode: "DISABLED" as PaymentCodeTypeEnum,
-      ranges: [],
+      methodManagement: MethodManagementEnum.ONBOARDABLE,
+      paymentTypeCode: "DISABLED" as PaymentTypeCodeEnum,
     },
   ];
 
@@ -559,12 +556,11 @@ describe("PaymentChoice", () => {
         paymentInstruments={[
           {
             id: "other-id",
-            name: "OTHER",
-            description: "Other Payment Method",
+            name: { it: "OTHER" },
+            description: { it: "Other Payment Method" },
             status: PaymentMethodStatusEnum.ENABLED,
-            methodManagement: PaymentMethodManagementTypeEnum.ONBOARDABLE,
-            paymentTypeCode: "OTHER" as PaymentCodeTypeEnum, // Not in PaymentMethodRoutes
-            ranges: [],
+            methodManagement: MethodManagementEnum.ONBOARDABLE,
+            paymentTypeCode: "OTHER" as PaymentTypeCodeEnum, // Not in PaymentMethodRoutes
           },
         ]}
         loading={false}
