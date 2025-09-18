@@ -24,7 +24,7 @@ import {
   MixpanelFlow,
   MixpanelPaymentPhase,
 } from "../../utils/mixpanel/mixpanelEvents";
-import { PaymentCodeTypeEnum } from "../../features/payment/models/paymentModel";
+import { PaymentTypeCodeEnum } from "../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 import {
   paymentInfo,
   paymentMethod,
@@ -305,7 +305,7 @@ describe("PaymentCheckPage", () => {
           organization_fiscal_code: "77777777777",
           amount: 12000,
           expiration_date: "2021-07-31",
-          payment_method_selected: PaymentCodeTypeEnum.CP,
+          payment_method_selected: PaymentTypeCodeEnum.CP,
           data_entry: MixpanelDataEntryType.MANUAL,
         })
       );
@@ -335,7 +335,7 @@ describe("PaymentCheckPage", () => {
           organization_fiscal_code: "77777777777",
           amount: 12000,
           expiration_date: "2021-07-31",
-          payment_method_selected: PaymentCodeTypeEnum.CP,
+          payment_method_selected: PaymentTypeCodeEnum.CP,
           data_entry: MixpanelDataEntryType.MANUAL,
         })
       );
@@ -365,7 +365,7 @@ describe("PaymentCheckPage", () => {
           organization_fiscal_code: "77777777777",
           amount: 12000,
           expiration_date: "2021-07-31",
-          payment_method_selected: PaymentCodeTypeEnum.CP,
+          payment_method_selected: PaymentTypeCodeEnum.CP,
           data_entry: MixpanelDataEntryType.MANUAL,
         })
       );
@@ -395,7 +395,7 @@ describe("PaymentCheckPage", () => {
           organization_fiscal_code: "77777777777",
           amount: 12000,
           expiration_date: "2021-07-31",
-          payment_method_selected: PaymentCodeTypeEnum.CP,
+          payment_method_selected: PaymentTypeCodeEnum.CP,
           data_entry: MixpanelDataEntryType.MANUAL,
         })
       );

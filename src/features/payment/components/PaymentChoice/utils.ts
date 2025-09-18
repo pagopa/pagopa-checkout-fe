@@ -1,16 +1,9 @@
-import {
-  PaymentInstrumentsType,
-  PaymentCodeTypeEnum,
-  PaymentCodeType,
-  PaymentInstrumentsTypeV4,
-} from "../../models/paymentModel";
+import { getMethodDescriptionForCurrentLanguage } from "../../../../utils/paymentMethods/paymentMethodsHelper";
+import { PaymentInstrumentsType } from "../../models/paymentModel";
 import { PaymentMethodStatusEnum } from "../../../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
 import { PaymentTypeCodeEnum } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 
 const isFirstPaymentMethod = (method: PaymentInstrumentsType) =>
-  method.paymentTypeCode === PaymentCodeTypeEnum.CP;
-
-const isFirstPaymentMethodV4 = (method: PaymentInstrumentsTypeV4) =>
   method.paymentTypeCode === PaymentTypeCodeEnum.CP;
 
 const compareMethods = (
@@ -24,43 +17,20 @@ const compareMethods = (
   }
 
   // If not the first payment method, sort by description
-  return a.description.localeCompare(b.description);
-};
-
-const compareMethodsV4 = (
-  a: PaymentInstrumentsTypeV4,
-  b: PaymentInstrumentsTypeV4
-) => {
-  if (isFirstPaymentMethodV4(a)) {
-    return -1;
-  } else if (isFirstPaymentMethodV4(b)) {
-    return 1;
-  }
-  const currentLanguage = (
-    localStorage.getItem("i18nextLng") ?? "IT"
-  ).toUpperCase();
-  // If not the first payment method, sort by description
-  const aMethodDescription = a.description[currentLanguage] ?? a.description.IT;
-  const bMethodDescription = b.description[currentLanguage] ?? b.description.IT;
-  return aMethodDescription.localeCompare(bMethodDescription);
+  return getMethodDescriptionForCurrentLanguage(a).localeCompare(
+    getMethodDescriptionForCurrentLanguage(b)
+  );
 };
 
 export const getNormalizedMethods = (
-  paymentInstruments:
-    | Array<PaymentInstrumentsType>
-    | Array<PaymentInstrumentsTypeV4>
+  paymentInstruments: Array<PaymentInstrumentsType>
 ) => {
-  const { methods, duplicatedMethods } = (
-    paymentInstruments as Array<
-      PaymentInstrumentsType | PaymentInstrumentsTypeV4
-    >
-  ).reduce<{
-    foundTypes: Array<PaymentCodeType | PaymentTypeCodeEnum>;
-    methods: Array<PaymentInstrumentsType | PaymentInstrumentsTypeV4>;
-    duplicatedMethods: Array<PaymentInstrumentsType | PaymentInstrumentsTypeV4>;
+  const { methods, duplicatedMethods } = paymentInstruments.reduce<{
+    foundTypes: Array<PaymentTypeCodeEnum>;
+    methods: Array<PaymentInstrumentsType>;
+    duplicatedMethods: Array<PaymentInstrumentsType>;
   }>(
-    ({ foundTypes, duplicatedMethods, methods }: any, method: any) => {
-      // TODO check with team if we can avoid using 'any' here
+    ({ foundTypes, duplicatedMethods, methods }, method) => {
       if (foundTypes.includes(method.paymentTypeCode)) {
         return {
           duplicatedMethods: duplicatedMethods.concat(method),
@@ -83,25 +53,19 @@ export const getNormalizedMethods = (
   );
 
   const { enabledMethods, disabledMethods } = methods.reduce<{
-    enabledMethods: Array<PaymentInstrumentsType | PaymentInstrumentsTypeV4>;
-    disabledMethods: Array<PaymentInstrumentsType | PaymentInstrumentsTypeV4>;
+    enabledMethods: Array<PaymentInstrumentsType>;
+    disabledMethods: Array<PaymentInstrumentsType>;
   }>(
-    (
-      { enabledMethods, disabledMethods }: any,
-      method: any // TODO check with team if we can avoid using 'any' here
-    ) =>
+    ({ enabledMethods, disabledMethods }, method) =>
       method.status === PaymentMethodStatusEnum.ENABLED
         ? { disabledMethods, enabledMethods: enabledMethods.concat(method) }
         : { enabledMethods, disabledMethods: disabledMethods.concat(method) },
     { disabledMethods: [], enabledMethods: [] }
   );
 
-  const isV4 = methods.length > 0 && typeof methods[0].description === "object";
-  const sortFunction = isV4 ? compareMethodsV4 : compareMethods;
-
   return {
-    enabled: enabledMethods.slice().sort(sortFunction as any),
-    disabled: disabledMethods.slice().sort(sortFunction as any),
+    enabled: enabledMethods.slice().sort(compareMethods),
+    disabled: disabledMethods.slice().sort(compareMethods),
     duplicatedMethods,
   };
 };

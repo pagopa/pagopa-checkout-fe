@@ -8,11 +8,12 @@ import {
 } from "@mui/material";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
-import ClickableFieldContainer from "../../../../components/TextFormField/ClickableFieldContainer";
 import {
-  PaymentInstrumentsType,
-  PaymentInstrumentsTypeV4,
-} from "../../models/paymentModel";
+  getMethodDescriptionForCurrentLanguage,
+  getMethodNameForCurrentLanguage,
+} from "../../../../utils/paymentMethods/paymentMethodsHelper";
+import ClickableFieldContainer from "../../../../components/TextFormField/ClickableFieldContainer";
+import { PaymentInstrumentsType } from "../../models/paymentModel";
 import { PaymentMethodStatusEnum } from "../../../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
 import { ImageComponent } from "./PaymentMethodImage";
 
@@ -21,8 +22,8 @@ export const MethodComponentList = ({
   onClick,
   testable,
 }: {
-  methods: Array<PaymentInstrumentsType | PaymentInstrumentsTypeV4>;
-  onClick?: (method: PaymentInstrumentsType | PaymentInstrumentsTypeV4) => void;
+  methods: Array<PaymentInstrumentsType>;
+  onClick?: (method: PaymentInstrumentsType) => void;
   testable?: boolean;
 }) => (
   <>
@@ -40,7 +41,7 @@ export const MethodComponentList = ({
 export const DisabledPaymentMethods = ({
   methods,
 }: {
-  methods: Array<PaymentInstrumentsType | PaymentInstrumentsTypeV4>;
+  methods: Array<PaymentInstrumentsType>;
 }) => {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -75,51 +76,29 @@ const MethodComponent = ({
   onClick,
   testable,
 }: {
-  method: PaymentInstrumentsType | PaymentInstrumentsTypeV4;
+  method: PaymentInstrumentsType;
   onClick?: () => void;
   testable?: boolean;
-}) => {
-  const currentLanguage = (
-    localStorage.getItem("i18nextLng") ?? "IT"
-  ).toUpperCase();
-  const methodDescription =
-    typeof method.description === "object"
-      ? method.description[currentLanguage] ?? method.description.IT
-      : method.description;
-
-  const methodName =
-    typeof method.name === "object"
-      ? method.name[currentLanguage] ?? method.name.IT
-      : (method as PaymentInstrumentsType).name;
-
-  const methodAsset =
-    "asset" in method
-      ? method.asset
-      : (method as PaymentInstrumentsTypeV4).paymentMethodAsset;
-
-  return (
-    <ClickableFieldContainer
-      dataTestId={testable ? method.paymentTypeCode : undefined}
-      dataTestLabel={testable ? "payment-method" : undefined}
-      title={methodDescription}
-      onClick={onClick}
-      icon={
-        <ImageComponent
-          asset={methodAsset}
-          name={methodName}
-          disabled={method.status === PaymentMethodStatusEnum.DISABLED}
-        />
-      }
-      endAdornment={
-        method.status === PaymentMethodStatusEnum.ENABLED && (
-          <ArrowForwardIosIcon
-            sx={{ color: "primary.main" }}
-            fontSize="small"
-          />
-        )
-      }
-      disabled={method.status === PaymentMethodStatusEnum.DISABLED}
-      clickable={method.status === PaymentMethodStatusEnum.ENABLED}
-    />
-  );
-};
+}) => (
+  <ClickableFieldContainer
+    dataTestId={testable ? method.paymentTypeCode : undefined}
+    dataTestLabel={testable ? "payment-method" : undefined}
+    title={getMethodDescriptionForCurrentLanguage(method)}
+    onClick={onClick}
+    icon={
+      <ImageComponent
+        {...{
+          asset: method.asset,
+          name: getMethodNameForCurrentLanguage(method),
+        }}
+      />
+    }
+    endAdornment={
+      method.status === PaymentMethodStatusEnum.ENABLED && (
+        <ArrowForwardIosIcon sx={{ color: "primary.main" }} fontSize="small" />
+      )
+    }
+    disabled={method.status === PaymentMethodStatusEnum.DISABLED}
+    clickable={method.status === PaymentMethodStatusEnum.ENABLED}
+  />
+);

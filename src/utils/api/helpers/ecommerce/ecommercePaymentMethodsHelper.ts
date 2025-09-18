@@ -3,6 +3,7 @@ import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/lib/function";
 import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
+import { getEnumFromString } from "../../../../utils/enum/enumerationUtils";
 import {
   apiPaymentEcommerceClient,
   apiPaymentEcommerceClientV2,
@@ -14,10 +15,11 @@ import {
 } from "../../../../utils/api/client";
 import { ErrorsType } from "../../../../utils/errors/checkErrorsModel";
 import {
+  Cart,
   PaymentInstrumentsType,
-  PaymentInstrumentsTypeV4,
   PaymentMethod,
   PaymentMethodInfo,
+  PaymentInfo,
 } from "../../../../features/payment/models/paymentModel";
 import { validateSessionWalletCardFormFields } from "../../../../utils/regex/validators";
 import {
@@ -32,10 +34,15 @@ import { CreateSessionResponse } from "../../../../../generated/definitions/paym
 import { Bundle } from "../../../../../generated/definitions/payment-ecommerce-v2/Bundle";
 import { CalculateFeeResponse } from "../../../../../generated/definitions/payment-ecommerce-v2/CalculateFeeResponse";
 import {
-  PaymentMethodsRequest,
-  UserDeviceEnum,
+  PaymentMethodsRequest as PaymentMethodsRequestV2,
   UserTouchpointEnum,
 } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodsRequest";
+import { PaymentMethodsRequest as PaymentMethodsRequestV4 } from "../../../../../generated/definitions/payment-ecommerce-v4/PaymentMethodsRequest";
+import { PaymentNoticeItem } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentNoticeItem";
+import {
+  MethodManagementEnum,
+  PaymentTypeCodeEnum,
+} from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 
 // ->Promise<Either<string,SessionPaymentMethodResponse>>
 export const retrieveCardData = async ({
@@ -209,34 +216,13 @@ export const calculateFees = async ({
   )();
 };
 
-export const getPaymentInstruments = async (
+const getPaymentMethods = async (
   query: {
     amount: number;
   },
-  onError: (e: string) => void,
-  onResponse: (
-    data: Array<PaymentInstrumentsType | PaymentInstrumentsTypeV4>
-  ) => void
-) => {
-  const isPaymentMethodsHandlerEnabled =
-    (getSessionItem(SessionItems.enablePaymentMethodsHandler) as string) ===
-    "true";
-
-  if (isPaymentMethodsHandlerEnabled) {
-    await getPaymentInstrumentsV2V4(onError, onResponse);
-  } else {
-    await getPaymentInstrumentsV1V3(query, onError, onResponse);
-  }
-};
-
-const getPaymentInstrumentsV1V3 = async (
-  query: {
-    amount: number;
-  },
-  onError: (e: string) => void,
-  onResponse: (data: Array<PaymentInstrumentsType>) => void
-) => {
-  const list = await pipe(
+  onError: (e: string) => void
+) =>
+  pipe(
     TE.tryCatch(
       () =>
         pipe(
@@ -273,7 +259,30 @@ const getPaymentInstrumentsV1V3 = async (
             (myRes) => {
               switch (myRes.status) {
                 case 200:
-                  return myRes.value.paymentMethods;
+                  return myRes.value.paymentMethods?.map(
+                    (p) =>
+                      ({
+                        id: p.id,
+                        name: {
+                          it: p.name,
+                        },
+                        description: {
+                          it: p.description,
+                        },
+                        status: p.status,
+                        paymentTypeCode: getEnumFromString(
+                          PaymentTypeCodeEnum,
+                          p.paymentTypeCode
+                        ),
+                        methodManagement: getEnumFromString(
+                          MethodManagementEnum,
+                          p.methodManagement
+                        ),
+                        feeRange: undefined,
+                        asset: p.asset,
+                        brandAsset: p.brandAssets,
+                      } as PaymentInstrumentsType)
+                  );
                 case 401:
                   onError(ErrorsType.UNAUTHORIZED);
                   return [];
@@ -285,77 +294,9 @@ const getPaymentInstrumentsV1V3 = async (
         )
     )
   )();
-  onResponse(list as Array<PaymentInstrumentsType>);
-};
 
-const getPaymentInstrumentsV2V4 = async (
-  onError: (e: string) => void,
-  onResponse: (
-    data: Array<PaymentInstrumentsType | PaymentInstrumentsTypeV4>
-  ) => void
-) => {
-  const transaction = getSessionItem(
-    SessionItems.transaction
-  ) as NewTransactionResponse | null;
-
-  // build the request payload for the new POST API
-  const buildPostPaymentMethodsRequest = (): PaymentMethodsRequest => {
-    // map client id: if present use CHECKOUT_CART, if not present use CHECKOUT
-    const sessionClientId = transaction?.clientId;
-    const userTouchpointEnum = sessionClientId
-      ? UserTouchpointEnum.CHECKOUT_CART
-      : UserTouchpointEnum.CHECKOUT;
-    // total amount -> sum of all payment amounts from payment notices
-    const totalAmount =
-      transaction && transaction.payments && transaction.payments.length > 0
-        ? transaction.payments.reduce(
-            (sum: number, payment) => sum + Number(payment.amount),
-            0
-          )
-        : 0;
-
-    const baseRequest = {
-      userTouchpoint: userTouchpointEnum,
-      userDevice: UserDeviceEnum.WEB as const, // placeholder/default
-      bin: undefined,
-      totalAmount,
-      allCCp: transaction?.payments[0].isAllCCP,
-      targetKey: undefined,
-    };
-
-    // at least one activation completed -> populate paymentNotice/transferList arrays
-    if (
-      transaction &&
-      transaction.payments &&
-      transaction.payments.length > 0
-    ) {
-      // map paymentNotice
-      const paymentNotice = transaction.payments.map((payment) => ({
-        paymentAmount: payment.amount,
-        primaryCreditorInstitution: payment.rptId.substring(0, 11),
-        ...(payment.transferList && {
-          transferList: payment.transferList.map((transfer) => ({
-            creditorInstitution: transfer.paFiscalCode,
-            digitalStamp: transfer.digitalStamp,
-            transferCategory: transfer.transferCategory,
-          })),
-        }),
-      }));
-
-      return {
-        ...baseRequest,
-        paymentNotice,
-      };
-    }
-
-    // for contexts before at least one activation, paymentNotice is empty array
-    return {
-      ...baseRequest,
-      paymentNotice: [],
-    };
-  };
-
-  const list = await pipe(
+export const getPaymentMethodHandler = async (onError: (e: string) => void) =>
+  pipe(
     TE.tryCatch(
       () =>
         pipe(
@@ -364,14 +305,13 @@ const getPaymentInstrumentsV2V4 = async (
           O.fold(
             () =>
               apiPaymentEcommerceClientV2.getAllPaymentMethods({
-                bearerAuth: "", // TODO check with team
-                body: buildPostPaymentMethodsRequest(),
+                body: buildPaymentInstrumentMethodHandlerSearchRequest(),
               }),
             (bearerAuth) =>
               apiPaymentEcommerceClientV4.getAllPaymentMethodsAuth({
                 bearerAuth,
-                body: buildPostPaymentMethodsRequest() as any, // TODO check with team
-              }) as any // TODO check with team
+                body: buildPaymentInstrumentMethodHandlerSearchRequest() as any as PaymentMethodsRequestV4,
+              })
           )
         ),
       () => {
@@ -384,8 +324,7 @@ const getPaymentInstrumentsV2V4 = async (
         onError(ErrorsType.STATUS_ERROR);
         return [];
       },
-      (myResExt: any) => async () =>
-        // TODO check with team
+      (myResExt) => async () =>
         pipe(
           myResExt,
           E.fold(
@@ -393,11 +332,23 @@ const getPaymentInstrumentsV2V4 = async (
               onError(ErrorsType.GENERIC_ERROR);
               return [];
             },
-            (myRes: any) => {
-              // TODO check with team
+            (myRes) => {
               switch (myRes.status) {
                 case 200:
-                  return myRes.value.paymentMethods;
+                  return myRes.value.paymentMethods.map(
+                    (p) =>
+                      ({
+                        id: p.id,
+                        name: p.name,
+                        description: p.description,
+                        status: p.status,
+                        methodManagement: p.methodManagement,
+                        paymentTypeCode: p.paymentTypeCode,
+                        feeRange: p.feeRange,
+                        asset: p.paymentMethodAsset,
+                        brandAsset: p.paymentMethodsBrandAssets,
+                      } as PaymentInstrumentsType)
+                  );
                 case 401:
                   onError(ErrorsType.UNAUTHORIZED);
                   return [];
@@ -409,37 +360,104 @@ const getPaymentInstrumentsV2V4 = async (
         )
     )
   )();
-  // TODO check with team
-  // decode V4 response to V2 format
-  const transformMethodToV2 = (method: any): PaymentInstrumentsType => {
-    const currentLanguage = (
-      localStorage.getItem("i18nextLng") ?? "IT"
-    ).toUpperCase();
 
-    // check if V4 method (has localized description object)
-    if (typeof method.description === "object" && method.description !== null) {
-      // v4 method -> decode to v2 format using marshall/unmarshall
-      const v4Json = JSON.stringify(method);
-      const baseV2 = JSON.parse(v4Json);
-
-      return {
-        ...baseV2,
-        // convert localized description to current language string
-        description:
-          method.description[currentLanguage] ?? method.description.IT,
-        // convert localized name to current language string
-        name: method.name[currentLanguage] ?? method.name.IT,
-        // map v4 asset property to v2 asset property
-        asset: method.paymentMethodAsset,
-      } as PaymentInstrumentsType;
-    } else {
-      // already v2 format -> return as-is
-      return method as PaymentInstrumentsType;
+const buildPaymentInstrumentMethodHandlerSearchRequest =
+  (): PaymentMethodsRequestV2 => {
+    const transaction = getSessionItem(SessionItems.transaction) as
+      | NewTransactionResponse
+      | undefined;
+    const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
+    const paymentInfo = getSessionItem(SessionItems.paymentInfo) as PaymentInfo;
+    const cartClientId = getSessionItem(SessionItems.cartClientId) as
+      | string
+      | undefined;
+    // eslint-disable-next-line functional/no-let
+    let userTouchpoint = UserTouchpointEnum.CHECKOUT;
+    switch (cartClientId) {
+      case "CHECKOUT":
+        userTouchpoint = UserTouchpointEnum.CHECKOUT;
+        break;
+      case "CHECKOUT_CART":
+      case "WISP_REDIRECT":
+        userTouchpoint = UserTouchpointEnum.CHECKOUT_CART;
+        break;
+      default:
+        userTouchpoint = UserTouchpointEnum.CHECKOUT;
+        break;
     }
+    // eslint-disable-next-line functional/no-let
+    let totalAmount: number;
+    // eslint-disable-next-line functional/no-let
+    let paymentNotices: Array<PaymentNoticeItem>;
+    // eslint-disable-next-line functional/no-let
+    let allCCp: boolean | undefined;
+    // if transaction is activated take amount from transaction object (that is actualizated)
+    if (
+      transaction &&
+      transaction.payments &&
+      transaction.payments.length > 0
+    ) {
+      totalAmount = transaction.payments.reduce(
+        (sum: number, payment) => sum + Number(payment.amount),
+        0
+      );
+      paymentNotices = transaction.payments.map((p) => ({
+        paymentAmount: p.amount,
+        primaryCreditorInstitution: p.rptId.substring(0, 11),
+        transferList: p.transferList.map((t) => ({
+          creditorInstitution: t.paFiscalCode,
+          digitalStamp: t.digitalStamp,
+          transferCategory: t.transferCategory,
+        })),
+      }));
+      allCCp = transaction.payments[0].isAllCCP;
+    }
+    // otherwise check if we are in a cart payment
+    else if (cart) {
+      totalAmount = cart.paymentNotices.reduce(
+        (sum: number, payment) => sum + Number(payment.amount),
+        0
+      );
+      paymentNotices = cart.paymentNotices.map((p) => ({
+        paymentAmount: p.amount,
+        primaryCreditorInstitution: p.fiscalCode,
+      }));
+    }
+    // or in a single payment notice case
+    else {
+      totalAmount = paymentInfo.amount;
+      paymentNotices = [
+        {
+          paymentAmount: paymentInfo.amount,
+          primaryCreditorInstitution: paymentInfo.rptId?.substring(0, 11) ?? "",
+        },
+      ];
+    }
+    return {
+      userTouchpoint,
+      totalAmount,
+      paymentNotice: paymentNotices,
+      allCCp,
+    };
   };
 
-  const transformedList = list.map(transformMethodToV2);
-  onResponse(transformedList);
+export const getPaymentInstruments = async (
+  query: {
+    amount: number;
+  },
+  onError: (e: string) => void,
+  onResponse: (data: Array<PaymentInstrumentsType>) => void
+) => {
+  const list = await pipe(
+    getSessionItem(SessionItems.enablePaymentMethodsHandler) as string,
+    O.fromNullable,
+    O.filter((ff) => ff === "true"),
+    O.foldW(
+      () => getPaymentMethods(query, onError),
+      () => getPaymentMethodHandler(onError)
+    )
+  );
+  onResponse(list as any as Array<PaymentInstrumentsType>);
 };
 
 export const npgSessionsFields = async (

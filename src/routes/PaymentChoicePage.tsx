@@ -16,7 +16,6 @@ import {
   Cart,
   PaymentInfo,
   PaymentInstrumentsType,
-  PaymentInstrumentsTypeV4,
 } from "../features/payment/models/paymentModel";
 import { getPaymentInstruments } from "../utils/api/helper";
 import { getTotalFromCart } from "../utils/cart/cart";
@@ -53,7 +52,7 @@ export default function PaymentChoicePage() {
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
   const [paymentInstruments, setPaymentInstruments] = React.useState<
-    Array<PaymentInstrumentsType | PaymentInstrumentsTypeV4>
+    Array<PaymentInstrumentsType>
   >([]);
 
   const getPaymentMethods = async () => {
@@ -81,9 +80,7 @@ export default function PaymentChoicePage() {
     });
   }, []);
 
-  const onResponse = (
-    list: Array<PaymentInstrumentsType | PaymentInstrumentsTypeV4>
-  ) => {
+  const onResponse = (list: Array<PaymentInstrumentsType>) => {
     setPaymentInstruments(list);
     setInstrumentsLoading(false);
   };
