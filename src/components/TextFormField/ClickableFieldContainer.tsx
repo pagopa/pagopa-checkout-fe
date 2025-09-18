@@ -70,13 +70,15 @@ function ClickableFieldContainer(props: {
             <Skeleton variant="text" width="225px" height="30px" />
           </>
         ) : (
-           <Box sx={{ flex: 1 }}>
+          <Box sx={{ flex: 1 }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>
               {props.icon}
               <Typography
                 variant={props.variant}
                 component="div"
-                sx={props.disabled ? { color: theme.palette.text.disabled } : {}}
+                sx={
+                  props.disabled ? { color: theme.palette.text.disabled } : {}
+                }
               >
                 {props.title || ""}
               </Typography>

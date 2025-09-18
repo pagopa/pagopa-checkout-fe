@@ -29,12 +29,16 @@ import { CalculateFeeRequest } from "../../../../../generated/definitions/paymen
 import { CreateSessionResponse } from "../../../../../generated/definitions/payment-ecommerce/CreateSessionResponse";
 import { Bundle } from "../../../../../generated/definitions/payment-ecommerce-v2/Bundle";
 import { CalculateFeeResponse } from "../../../../../generated/definitions/payment-ecommerce-v2/CalculateFeeResponse";
-import { DisabledReasonEnum, MethodManagementEnum, PaymentMethodResponse, PaymentTypeCodeEnum, StatusEnum } from "../../../../../generated/definitions/payment-ecommerce-v4/PaymentMethodResponse";
+import {
+  DisabledReasonEnum,
+  MethodManagementEnum,
+  PaymentMethodResponse,
+  PaymentTypeCodeEnum,
+  StatusEnum,
+} from "../../../../../generated/definitions/payment-ecommerce-v4/PaymentMethodResponse";
 
-
-
-//mock response paymentmethods
-export const fakePaymentMethods: PaymentMethodResponse[] = [
+// mock response paymentmethods
+export const fakePaymentMethods: Array<PaymentMethodResponse> = [
   {
     id: "1",
     name: { it: "Carta di credito", en: "Credit Card" },
@@ -43,8 +47,9 @@ export const fakePaymentMethods: PaymentMethodResponse[] = [
     validityDateFrom: new Date("2023-01-01"),
     paymentTypeCode: PaymentTypeCodeEnum.CP,
     paymentMethodTypes: ["VISA", "MASTERCARD"],
-    feeRange: { min: 0.99, max: 1.20 },
-    paymentMethodAsset: "https://assets.cdn.platform.pagopa.it/creditcard/generic.png",
+    feeRange: { min: 0.99, max: 1.2 },
+    paymentMethodAsset:
+      "https://assets.cdn.platform.pagopa.it/creditcard/generic.png",
     methodManagement: MethodManagementEnum.ONBOARDABLE,
   },
   {
@@ -55,7 +60,7 @@ export const fakePaymentMethods: PaymentMethodResponse[] = [
     validityDateFrom: new Date("2023-01-01"),
     paymentTypeCode: PaymentTypeCodeEnum.RBPP,
     paymentMethodTypes: ["BANK_ACCOUNT"],
-    feeRange: { min: 0.50, max: 1.00 },
+    feeRange: { min: 0.5, max: 1.0 },
     paymentMethodAsset: "https://example.com/bancoposta.png",
     methodManagement: MethodManagementEnum.ONBOARDABLE,
   },
@@ -67,7 +72,7 @@ export const fakePaymentMethods: PaymentMethodResponse[] = [
     validityDateFrom: new Date("2023-01-01"),
     paymentTypeCode: PaymentTypeCodeEnum.RBPB,
     paymentMethodTypes: ["BANK_ACCOUNT"],
-    feeRange: { min: 0.60, max: 1.10 },
+    feeRange: { min: 0.6, max: 1.1 },
     paymentMethodAsset: "https://example.com/bancoposta-business.png",
     methodManagement: MethodManagementEnum.ONBOARDABLE,
   },
@@ -79,7 +84,7 @@ export const fakePaymentMethods: PaymentMethodResponse[] = [
     validityDateFrom: new Date("2023-01-01"),
     paymentTypeCode: PaymentTypeCodeEnum.RPIC,
     paymentMethodTypes: ["BANK_ACCOUNT"],
-    feeRange: { min: 0.70, max: 1.15 },
+    feeRange: { min: 0.7, max: 1.15 },
     paymentMethodAsset: "https://example.com/intesa.png",
     methodManagement: MethodManagementEnum.ONBOARDABLE,
   },
@@ -91,7 +96,7 @@ export const fakePaymentMethods: PaymentMethodResponse[] = [
     validityDateFrom: new Date("2023-01-01"),
     paymentTypeCode: PaymentTypeCodeEnum.MYBK,
     paymentMethodTypes: ["BANK_TRANSFER"],
-    feeRange: { min: 0.89, max: 1.10 },
+    feeRange: { min: 0.89, max: 1.1 },
     paymentMethodAsset: "https://assets.cdn.platform.pagopa.it/apm/mybank.png",
     methodManagement: MethodManagementEnum.REDIRECT,
     disabledReason: DisabledReasonEnum.METHOD_DISABLED,
@@ -104,8 +109,9 @@ export const fakePaymentMethods: PaymentMethodResponse[] = [
     validityDateFrom: new Date("2023-01-01"),
     paymentTypeCode: PaymentTypeCodeEnum.RBPP,
     paymentMethodTypes: ["PREPAID_CARD"],
-    feeRange: { min: 0.80, max: 1.25 },
-    paymentMethodAsset: "https://assets.cdn.io.italia.it/logos/apps/paga-con-postepay.png",
+    feeRange: { min: 0.8, max: 1.25 },
+    paymentMethodAsset:
+      "https://assets.cdn.io.italia.it/logos/apps/paga-con-postepay.png",
     methodManagement: MethodManagementEnum.ONBOARDABLE,
   },
   {
@@ -116,8 +122,9 @@ export const fakePaymentMethods: PaymentMethodResponse[] = [
     validityDateFrom: new Date("2023-01-01"),
     paymentTypeCode: PaymentTypeCodeEnum.SATY,
     paymentMethodTypes: ["MOBILE_PAYMENT"],
-    feeRange: { min: 0.50, max: 0.90 },
-    paymentMethodAsset:  "https://assets.cdn.io.italia.it/logos/apps/satispay.png",
+    feeRange: { min: 0.5, max: 0.9 },
+    paymentMethodAsset:
+      "https://assets.cdn.io.italia.it/logos/apps/satispay.png",
     methodManagement: MethodManagementEnum.ONBOARDABLE,
   },
   {
@@ -128,12 +135,11 @@ export const fakePaymentMethods: PaymentMethodResponse[] = [
     validityDateFrom: new Date("2023-01-01"),
     paymentTypeCode: PaymentTypeCodeEnum.APPL,
     paymentMethodTypes: ["APPLE_PAY"],
-    feeRange: { min: 0.79, max: 1.30 },
+    feeRange: { min: 0.79, max: 1.3 },
     paymentMethodAsset: "https://example.com/applepay.png",
     methodManagement: MethodManagementEnum.ONBOARDABLE_ONLY,
   },
 ];
-
 
 // ->Promise<Either<string,SessionPaymentMethodResponse>>
 export const retrieveCardData = async ({
@@ -366,7 +372,11 @@ export const getPaymentInstruments = async (
     )
   )();
   console.log("Payment instruments list:", list);
-  onResponse(fakePaymentMethods as any as Array<PaymentInstrumentsType | PaymentInstrumentsTypeV4>);
+  onResponse(
+    fakePaymentMethods as any as Array<
+      PaymentInstrumentsType | PaymentInstrumentsTypeV4
+    >
+  );
 };
 
 export const npgSessionsFields = async (

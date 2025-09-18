@@ -372,7 +372,10 @@ export default function PaymentCheckPage() {
             <WalletIcon brand={paymentMethodInfo.icon} />
           ) : (
             <ImageComponent
-              asset={paymentMethodInfo?.paymentMethodAsset || paymentMethodInfo?.asset}
+              asset={
+                paymentMethodInfo?.paymentMethodAsset ||
+                paymentMethodInfo?.asset
+              }
               name={paymentMethodInfo?.title || ""}
             />
           )

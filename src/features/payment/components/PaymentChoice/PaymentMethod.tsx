@@ -98,14 +98,10 @@ const MethodComponent = ({
         })
     : undefined;
 
-    
   const normalizedMethod = {
     ...method,
-   asset: (method as any).asset || (method as any).paymentMethodAsset,
+    asset: (method as any).asset || (method as any).paymentMethodAsset,
   };
-
-    
-  
 
   return (
     <ClickableFieldContainer
