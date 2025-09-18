@@ -15,28 +15,33 @@ const mixpanelInit = function (): void {
     // eslint-disable-next-line no-console
     console.log("Mixpanel events mock on console log.");
   } else {
-    // initialize mixpanel retrieving info from local storage such as device id and distinct id
-    init("c3db8f517102d7a7ebd670c9da3e05c4", {
-      api_host: "https://api-eu.mixpanel.com",
-      persistence: "localStorage",
-      persistence_name: "app",
-      debug: false,
-      ip: false,
-      property_blacklist: ["$current_url", "$initial_referrer", "$referrer"],
-    });
+    try {
+      // initialize mixpanel retrieving info from local storage such as device id and distinct id
+      init("c3db8f517102d7a7ebd670c9da3e05c4", {
+        api_host: "https://api-eu.mixpanel.com",
+        persistence: "localStorage",
+        persistence_name: "app",
+        debug: false,
+        ip: false,
+        property_blacklist: ["$current_url", "$initial_referrer", "$referrer"],
+      });
 
-    // retrieve device id from local storage initialized mixpanel entity
-    const mp_deviceId = mp.get_property?.("$device_id");
+      // retrieve device id from local storage initialized mixpanel entity
+      const mp_deviceId = mp.get_property?.("$device_id");
 
-    if (!getSessionItem(SessionItems.mixpanelInitialized)) {
-      // reset mixpanel instance, generating new device_id and distinct id
-      mp.reset();
-      setSessionItem(SessionItems.mixpanelInitialized, true);
-    }
+      if (!getSessionItem(SessionItems.mixpanelInitialized)) {
+        // reset mixpanel instance, generating new device_id and distinct id
+        mp.reset();
+        setSessionItem(SessionItems.mixpanelInitialized, true);
+      }
 
-    if (mp_deviceId !== mp.get_property?.("$device_id")) {
-      // set device id to the one retrieved from local storage
-      mp.register({ $device_id: mp_deviceId });
+      if (mp_deviceId !== mp.get_property?.("$device_id")) {
+        // set device id to the one retrieved from local storage
+        mp.register({ $device_id: mp_deviceId });
+      }
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error("Mixapenl init failed: ", err);
     }
   }
 };
@@ -45,6 +50,16 @@ export const mixpanel = {
   track(event_name: string, properties?: any): void {
     if (!isMixpanelReady()) {
       mixpanelInit();
+    }
+
+    if (!isMixpanelReady()) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        "Mixpanel not available, event skipped:",
+        event_name,
+        properties
+      );
+      return;
     }
 
     if (ENV === "DEV") {
