@@ -81,7 +81,6 @@ export default function PaymentChoicePage() {
   }, []);
 
   const onResponse = (list: Array<PaymentInstrumentsType>) => {
-    console.log("LISTA = ", list);
     setPaymentInstruments(list);
     setInstrumentsLoading(false);
   };
