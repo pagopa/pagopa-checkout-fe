@@ -38,6 +38,7 @@ export enum SessionItems {
   enableScheduledMaintenanceBanner = "enableScheduledMaintenanceBanner",
   enablePaymentMethodsHandler = "enablePaymentMethodsHandler",
   counterPolling = "counterPolling",
+  mixpanelInitialized = "mixpanelInitialized",
 }
 const isParsable = (item: SessionItems) =>
   !(
@@ -52,6 +53,7 @@ const isParsable = (item: SessionItems) =>
     item === SessionItems.noticeCodeDataEntry ||
     item === SessionItems.enableScheduledMaintenanceBanner ||
     item === SessionItems.enablePaymentMethodsHandler
+    item === SessionItems.mixpanelInitialized
   );
 
 export const getSessionItem = (item: SessionItems) => {
@@ -125,26 +127,24 @@ export const clearStorage = () => {
   sessionStorage.clear();
 };
 
+const KEYS_TO_PRESERVE = [
+  SessionItems.authToken,
+  SessionItems.enableAuthentication,
+  SessionItems.enableScheduledMaintenanceBanner,
+  SessionItems.mixpanelInitialized,
+] as const;
+
 export const clearStorageAndMaintainAuthData = () => {
-  const authToken = getSessionItem(SessionItems.authToken) as string;
-  const enableAuthentication = getSessionItem(
-    SessionItems.enableAuthentication
-  ) as string;
-  const isScheduledMaintenanceBannerEnabled = getSessionItem(
-    SessionItems.enableScheduledMaintenanceBanner
-  ) as string;
+  const snapshot = Object.fromEntries(
+    KEYS_TO_PRESERVE.map((k) => [k, sessionStorage.getItem(k)])
+  ) as Record<typeof KEYS_TO_PRESERVE[number], string | null>;
+
   sessionStorage.clear();
-  if (authToken != null) {
-    setSessionItem(SessionItems.authToken, authToken);
-  }
-  if (enableAuthentication != null) {
-    setSessionItem(SessionItems.enableAuthentication, enableAuthentication);
-  }
-  if (isScheduledMaintenanceBannerEnabled != null) {
-    setSessionItem(
-      SessionItems.enableScheduledMaintenanceBanner,
-      isScheduledMaintenanceBannerEnabled
-    );
+
+  for (const [k, v] of Object.entries(snapshot)) {
+    if (v !== null) {
+      sessionStorage.setItem(k, v);
+    }
   }
 };
 
