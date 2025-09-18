@@ -363,7 +363,9 @@
     "incoming": "Eingang",
     "others": "Sonstige Methoden",
     "showMore": "Alle zeigen",
-    "title": "Wie möchtest du zahlen?"
+    "title": "Wie möchtest du zahlen?",
+    "filterLabel": "Cerca un metodo",
+    "noPaymentMethodsAvailable": "Nessun risultato trovato. Prova a rimuovere i filtri o cerca usando altri termini"
   },
   "paymentMethods": {
     "bpay": "BANCOMAT Pay",
