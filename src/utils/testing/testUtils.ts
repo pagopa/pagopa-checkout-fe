@@ -15,6 +15,7 @@ export const paymentMethodsMock: Array<PaymentInstrumentsType> = [
     methodManagement: PaymentMethodManagementTypeEnum.ONBOARDABLE,
     paymentTypeCode: PaymentCodeTypeEnum.CP,
     ranges: [],
+    feeRange: { min: 10, max: 10 }
   },
   {
     id: "bancomatpay-id",
@@ -24,6 +25,7 @@ export const paymentMethodsMock: Array<PaymentInstrumentsType> = [
     methodManagement: PaymentMethodManagementTypeEnum.ONBOARDABLE,
     paymentTypeCode: PaymentCodeTypeEnum.BPAY,
     ranges: [],
+    feeRange: { min: 10, max: 10 }
   },
 ];
 

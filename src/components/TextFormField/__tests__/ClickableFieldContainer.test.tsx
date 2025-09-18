@@ -190,4 +190,44 @@ describe("ClickableFieldContainer", () => {
 
     // We can't easily test the exact color, but we can check if the component renders
   });
+
+  const feeSingleMock = { min: 10, max: 10 };
+  const feeRangeMock = { min: 5, max: 15 };
+
+  it("displays feeSingle when min and max are equal", () => {
+    render(
+      <ClickableFieldContainer
+        {...mockProps}
+        feeRange={feeSingleMock}
+      />
+    );
+
+    //Check that the translated feeSingle text is rendered
+    expect(screen.getByText("paymentChoicePage.feeSingle")).toBeInTheDocument();
+  });
+
+  it("displays feeRange when min and max are different", () => {
+    render(
+      <ClickableFieldContainer
+        {...mockProps}
+        feeRange={feeRangeMock}
+      />
+    );
+
+    // Check that the translated feeRange text is rendered
+    expect(screen.getByText("paymentChoicePage.feeRange")).toBeInTheDocument();
+  });
+
+  it("does not render feeRange and feeSingle when feeRange prop is not provided", () => {
+    render(
+      <ClickableFieldContainer
+        {...mockProps}
+      />
+    );
+
+     // Check that no feeRange and feeSingle  text is rendered
+    expect(screen.queryByText("paymentChoicePage.feeSingle")).not.toBeInTheDocument();
+    expect(screen.queryByText("paymentChoicePage.feeRange")).not.toBeInTheDocument();
+  });
 });
+
