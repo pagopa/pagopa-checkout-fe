@@ -5,6 +5,7 @@ import {
   PaymentCodeType,
 } from "../../../models/paymentModel";
 import { PaymentMethodStatusEnum } from "../../../../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
+import { PaymentMethodResponseDescription } from "../../../../../../generated/definitions/payment-ecommerce-v4/PaymentMethodResponse";
 
 describe("paymentMethodsUtils", () => {
   // Define some test data
@@ -240,8 +241,11 @@ describe("paymentMethodsUtils", () => {
       expect(result.enabled[0].id).toBe("cp1");
 
       // Verify the rest are sorted alphabetically
-      const secondDescription = result.enabled[1].description;
-      const thirdDescription = result.enabled[2].description;
+      const getDescriptionString = (desc: string | PaymentMethodResponseDescription): string =>
+      typeof desc === "string" ? desc : desc.it;
+
+      const secondDescription = getDescriptionString(result.enabled[1].description);
+      const thirdDescription = getDescriptionString(result.enabled[2].description);
       expect(secondDescription.localeCompare(thirdDescription) <= 0).toBe(true);
 
       // Check that the expected methods are in duplicatedMethods

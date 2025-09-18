@@ -27,7 +27,7 @@ import {
 import { setThreshold } from "../../../../redux/slices/threshold";
 import { CheckoutRoutes } from "../../../../routes/models/routeModel";
 import { onErrorActivate } from "../../../../utils/api/transactionsErrorHelper";
-import { PaymentTypeCodeEnum } from "../../../../../generated/definitions/payment-ecommerce-v4/PaymentMethodResponse";
+import { PaymentMethodResponseDescription, PaymentTypeCodeEnum } from "../../../../../generated/definitions/payment-ecommerce-v4/PaymentMethodResponse";
 import { DisabledPaymentMethods, MethodComponentList } from "./PaymentMethod";
 import { getNormalizedMethods } from "./utils";
 
@@ -113,6 +113,12 @@ export function PaymentChoice(props: {
     });
   };
 
+  const isDescriptionObject = (
+    description: string | PaymentMethodResponseDescription
+  ): description is PaymentMethodResponseDescription => {
+    return typeof description === "object" && description !== null;
+  };
+
   const handleClickOnMethod = async (
     method: PaymentInstrumentsType | PaymentInstrumentsTypeV4
   ) => {
@@ -121,10 +127,15 @@ export function PaymentChoice(props: {
 
       const assetValue =
         "paymentMethodAsset" in method
-          ? method.paymentMethodAsset // nuova API (V4)
-          : method.asset || ""; // vecchia API
+          ? method.paymentMethodAsset // new API (V4)
+          : method.asset || ""; 
+          
+      const titleValue = isDescriptionObject(method.description)
+        ? method.description.it
+        : method.description;
+      
       setSessionItem(SessionItems.paymentMethodInfo, {
-        title: method.description,
+        title: titleValue,
         asset: assetValue || "",
       });
 

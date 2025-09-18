@@ -5,8 +5,6 @@
 import { Box, Skeleton, Typography, useTheme } from "@mui/material";
 import { SxProps } from "@mui/system";
 import React from "react";
-import { useTranslation } from "react-i18next";
-
 function ClickableFieldContainer(props: {
   title?: string;
   subtitle?: string;
@@ -22,7 +20,6 @@ function ClickableFieldContainer(props: {
   dataTestId?: string;
   dataTestLabel?: string;
 }) {
-  const { t } = useTranslation();
   const theme = useTheme();
   const defaultStyle = {
     display: "flex",
@@ -73,31 +70,29 @@ function ClickableFieldContainer(props: {
             <Skeleton variant="text" width="225px" height="30px" />
           </>
         ) : (
-          <>
-            {props.icon}
-            <Box display="flex" flexDirection="column">
+           <Box sx={{ flex: 1 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>
+              {props.icon}
               <Typography
                 variant={props.variant}
                 component="div"
-                sx={
-                  props.disabled ? { color: theme.palette.text.disabled } : {}
-                }
+                sx={props.disabled ? { color: theme.palette.text.disabled } : {}}
               >
-                {t(props.title || "")}
+                {props.title || ""}
               </Typography>
-              {props.subtitle && (
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={
-                    props.disabled ? { color: theme.palette.text.disabled } : {}
-                  }
-                >
-                  {props.subtitle}
-                </Typography>
-              )}
             </Box>
-          </>
+            {props.subtitle && (
+              <Typography
+                variant="body2"
+                sx={{
+                  mt: 0.5,
+                  color: theme.palette.text.secondary,
+                }}
+              >
+                {props.subtitle || ""}
+              </Typography>
+            )}
+          </Box>
         )}
       </Box>
       {!props.loading && (

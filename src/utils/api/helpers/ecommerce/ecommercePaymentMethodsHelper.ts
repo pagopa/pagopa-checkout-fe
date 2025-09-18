@@ -29,6 +29,111 @@ import { CalculateFeeRequest } from "../../../../../generated/definitions/paymen
 import { CreateSessionResponse } from "../../../../../generated/definitions/payment-ecommerce/CreateSessionResponse";
 import { Bundle } from "../../../../../generated/definitions/payment-ecommerce-v2/Bundle";
 import { CalculateFeeResponse } from "../../../../../generated/definitions/payment-ecommerce-v2/CalculateFeeResponse";
+import { DisabledReasonEnum, MethodManagementEnum, PaymentMethodResponse, PaymentTypeCodeEnum, StatusEnum } from "../../../../../generated/definitions/payment-ecommerce-v4/PaymentMethodResponse";
+
+
+
+//mock response paymentmethods
+export const fakePaymentMethods: PaymentMethodResponse[] = [
+  {
+    id: "1",
+    name: { it: "Carta di credito", en: "Credit Card" },
+    description: { it: "Carta di credito", en: "Credit Card" },
+    status: StatusEnum.ENABLED,
+    validityDateFrom: new Date("2023-01-01"),
+    paymentTypeCode: PaymentTypeCodeEnum.CP,
+    paymentMethodTypes: ["VISA", "MASTERCARD"],
+    feeRange: { min: 0.99, max: 1.20 },
+    paymentMethodAsset: "https://assets.cdn.platform.pagopa.it/creditcard/generic.png",
+    methodManagement: MethodManagementEnum.ONBOARDABLE,
+  },
+  {
+    id: "2",
+    name: { it: "Conto BancoPosta", en: "BancoPosta Account" },
+    description: { it: "Conto BancoPosta", en: "BancoPosta Account" },
+    status: StatusEnum.ENABLED,
+    validityDateFrom: new Date("2023-01-01"),
+    paymentTypeCode: PaymentTypeCodeEnum.RBPP,
+    paymentMethodTypes: ["BANK_ACCOUNT"],
+    feeRange: { min: 0.50, max: 1.00 },
+    paymentMethodAsset: "https://example.com/bancoposta.png",
+    methodManagement: MethodManagementEnum.ONBOARDABLE,
+  },
+  {
+    id: "3",
+    name: { it: "BancoPosta Impresa", en: "BancoPosta Business" },
+    description: { it: "BancoPosta Impresa", en: "BancoPosta Business" },
+    status: StatusEnum.ENABLED,
+    validityDateFrom: new Date("2023-01-01"),
+    paymentTypeCode: PaymentTypeCodeEnum.RBPB,
+    paymentMethodTypes: ["BANK_ACCOUNT"],
+    feeRange: { min: 0.60, max: 1.10 },
+    paymentMethodAsset: "https://example.com/bancoposta-business.png",
+    methodManagement: MethodManagementEnum.ONBOARDABLE,
+  },
+  {
+    id: "4",
+    name: { it: "Conto Intesa Sanpaolo", en: "Intesa Sanpaolo Account" },
+    description: { it: "Conto Intesa Sanpaolo", en: "Intesa Sanpaolo Account" },
+    status: StatusEnum.ENABLED,
+    validityDateFrom: new Date("2023-01-01"),
+    paymentTypeCode: PaymentTypeCodeEnum.RPIC,
+    paymentMethodTypes: ["BANK_ACCOUNT"],
+    feeRange: { min: 0.70, max: 1.15 },
+    paymentMethodAsset: "https://example.com/intesa.png",
+    methodManagement: MethodManagementEnum.ONBOARDABLE,
+  },
+  {
+    id: "5",
+    name: { it: "MyBank", en: "MyBank" },
+    description: { it: "MyBank", en: "MyBank" },
+    status: StatusEnum.DISABLED,
+    validityDateFrom: new Date("2023-01-01"),
+    paymentTypeCode: PaymentTypeCodeEnum.MYBK,
+    paymentMethodTypes: ["BANK_TRANSFER"],
+    feeRange: { min: 0.89, max: 1.10 },
+    paymentMethodAsset: "https://assets.cdn.platform.pagopa.it/apm/mybank.png",
+    methodManagement: MethodManagementEnum.REDIRECT,
+    disabledReason: DisabledReasonEnum.METHOD_DISABLED,
+  },
+  {
+    id: "6",
+    name: { it: "Paga con Postepay", en: "Pay with Postepay" },
+    description: { it: "Paga con Postepay", en: "Pay with Postepay" },
+    status: StatusEnum.ENABLED,
+    validityDateFrom: new Date("2023-01-01"),
+    paymentTypeCode: PaymentTypeCodeEnum.RBPP,
+    paymentMethodTypes: ["PREPAID_CARD"],
+    feeRange: { min: 0.80, max: 1.25 },
+    paymentMethodAsset: "https://assets.cdn.io.italia.it/logos/apps/paga-con-postepay.png",
+    methodManagement: MethodManagementEnum.ONBOARDABLE,
+  },
+  {
+    id: "7",
+    name: { it: "Satispay", en: "Satispay" },
+    description: { it: "Satispay", en: "Satispay" },
+    status: StatusEnum.ENABLED,
+    validityDateFrom: new Date("2023-01-01"),
+    paymentTypeCode: PaymentTypeCodeEnum.SATY,
+    paymentMethodTypes: ["MOBILE_PAYMENT"],
+    feeRange: { min: 0.50, max: 0.90 },
+    paymentMethodAsset:  "https://assets.cdn.io.italia.it/logos/apps/satispay.png",
+    methodManagement: MethodManagementEnum.ONBOARDABLE,
+  },
+  {
+    id: "8",
+    name: { it: "ApplePay", en: "ApplePay" },
+    description: { it: "ApplePay", en: "ApplePay" },
+    status: StatusEnum.ENABLED,
+    validityDateFrom: new Date("2023-01-01"),
+    paymentTypeCode: PaymentTypeCodeEnum.APPL,
+    paymentMethodTypes: ["APPLE_PAY"],
+    feeRange: { min: 0.79, max: 1.30 },
+    paymentMethodAsset: "https://example.com/applepay.png",
+    methodManagement: MethodManagementEnum.ONBOARDABLE_ONLY,
+  },
+];
+
 
 // ->Promise<Either<string,SessionPaymentMethodResponse>>
 export const retrieveCardData = async ({
@@ -260,7 +365,8 @@ export const getPaymentInstruments = async (
         )
     )
   )();
-  onResponse(list as any as Array<PaymentInstrumentsType>);
+  console.log("Payment instruments list:", list);
+  onResponse(fakePaymentMethods as any as Array<PaymentInstrumentsType | PaymentInstrumentsTypeV4>);
 };
 
 export const npgSessionsFields = async (

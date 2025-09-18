@@ -98,6 +98,15 @@ const MethodComponent = ({
         })
     : undefined;
 
+    
+  const normalizedMethod = {
+    ...method,
+   asset: (method as any).asset || (method as any).paymentMethodAsset,
+  };
+
+    
+  
+
   return (
     <ClickableFieldContainer
       dataTestId={testable ? method.paymentTypeCode : undefined}
@@ -105,7 +114,7 @@ const MethodComponent = ({
       title={title}
       subtitle={subtitle}
       onClick={onClick}
-      icon={<ImageComponent {...method} />}
+      icon={<ImageComponent {...normalizedMethod} />}
       endAdornment={
         method.status === PaymentMethodStatusEnum.ENABLED && (
           <ArrowForwardIosIcon
