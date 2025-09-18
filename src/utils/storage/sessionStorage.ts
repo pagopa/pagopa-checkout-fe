@@ -52,7 +52,7 @@ const isParsable = (item: SessionItems) =>
     item === SessionItems.authToken ||
     item === SessionItems.noticeCodeDataEntry ||
     item === SessionItems.enableScheduledMaintenanceBanner ||
-    item === SessionItems.enablePaymentMethodsHandler
+    item === SessionItems.enablePaymentMethodsHandler ||
     item === SessionItems.mixpanelInitialized
   );
 
