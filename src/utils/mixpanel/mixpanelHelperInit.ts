@@ -52,21 +52,20 @@ export const mixpanel = {
       mixpanelInit();
     }
 
-    if (!isMixpanelReady()) {
-      // eslint-disable-next-line no-console
-      console.warn(
-        "Mixpanel not available, event skipped:",
-        event_name,
-        properties
-      );
-      return;
-    }
-
     if (ENV === "DEV") {
       // eslint-disable-next-line no-console
       console.log(event_name, properties);
     } else {
       try {
+        if (!isMixpanelReady()) {
+          // eslint-disable-next-line no-console
+          console.warn(
+            "Mixpanel not available, event skipped:",
+            event_name,
+            properties
+          );
+          return;
+        }
         track(event_name, {
           ...properties,
           ...(ENV === "UAT" && { environment: "UAT" }),
