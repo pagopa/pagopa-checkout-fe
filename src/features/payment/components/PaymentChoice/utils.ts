@@ -59,7 +59,8 @@ export const getNormalizedMethods = (
     methods: Array<PaymentInstrumentsType | PaymentInstrumentsTypeV4>;
     duplicatedMethods: Array<PaymentInstrumentsType | PaymentInstrumentsTypeV4>;
   }>(
-    ({ foundTypes, duplicatedMethods, methods }: any, method: any) => { // TODO check with team if we can avoid using 'any' here
+    ({ foundTypes, duplicatedMethods, methods }: any, method: any) => {
+      // TODO check with team if we can avoid using 'any' here
       if (foundTypes.includes(method.paymentTypeCode)) {
         return {
           duplicatedMethods: duplicatedMethods.concat(method),
@@ -85,7 +86,10 @@ export const getNormalizedMethods = (
     enabledMethods: Array<PaymentInstrumentsType | PaymentInstrumentsTypeV4>;
     disabledMethods: Array<PaymentInstrumentsType | PaymentInstrumentsTypeV4>;
   }>(
-    ({ enabledMethods, disabledMethods }: any, method: any) => // TODO check with team if we can avoid using 'any' here
+    (
+      { enabledMethods, disabledMethods }: any,
+      method: any // TODO check with team if we can avoid using 'any' here
+    ) =>
       method.status === PaymentMethodStatusEnum.ENABLED
         ? { disabledMethods, enabledMethods: enabledMethods.concat(method) }
         : { enabledMethods, disabledMethods: disabledMethods.concat(method) },
