@@ -64,6 +64,10 @@ parameters:
     type: string
     default: ''
 
+  - name: 'api_ecommerce_basepath_v4'
+    type: string
+    default: ''
+
   - name: 'checkout_feature_flags_basepath'
     type: string
     default: ''
