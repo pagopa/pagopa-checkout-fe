@@ -3,6 +3,28 @@ import { PaymentInstrumentsType } from "../../../models/paymentModel";
 import { PaymentMethodStatusEnum } from "../../../../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
 import { PaymentTypeCodeEnum } from "../../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 
+// Mock the paymentMethodsHelper
+jest.mock("../../../../../utils/paymentMethods/paymentMethodsHelper", () => ({
+  getMethodDescriptionForCurrentLanguage: jest.fn((method) => {
+    if (typeof method.description === 'string') {
+      return method.description;
+    }
+    if (typeof method.description === 'object' && method.description?.it) {
+      return method.description.it;
+    }
+    return "Unknown";
+  }),
+  getMethodNameForCurrentLanguage: jest.fn((method) => {
+    if (typeof method.name === 'string') {
+      return method.name;
+    }
+    if (typeof method.name === 'object' && method.name?.it) {
+      return method.name.it;
+    }
+    return "Unknown";
+  }),
+}));
+
 describe("paymentMethodsUtils", () => {
   // Define some test data
   const createPaymentMethod = (
