@@ -11,7 +11,9 @@ import {
 } from "../../../../../utils/testing/testUtils";
 import {
   apiPaymentEcommerceClient,
+  apiPaymentEcommerceClientV2,
   apiPaymentEcommerceClientV3,
+  apiPaymentEcommerceClientV4,
   apiPaymentEcommerceClientWithRetry,
   apiPaymentEcommerceClientWithRetryV2,
   apiPaymentEcommerceClientWithRetryV3,
@@ -35,6 +37,11 @@ jest.mock("../../../../storage/sessionStorage", () => ({
   SessionItems: {
     authToken: "authToken",
     transaction: "transaction",
+    paymentMethod: "paymentMethod",
+    cart: "cart",
+    paymentInfo: "paymentInfo",
+    cartClientId: "cartClientId",
+    enablePaymentMethodsHandler: "enablePaymentMethodsHandler",
   },
 }));
 
@@ -43,8 +50,14 @@ jest.mock("../../../../api/client", () => ({
     getSessionPaymentMethod: jest.fn(),
     getAllPaymentMethods: jest.fn(),
   },
+  apiPaymentEcommerceClientV2: {
+    getAllPaymentMethods: jest.fn(),
+  },
   apiPaymentEcommerceClientV3: {
     getAllPaymentMethodsV3: jest.fn(),
+  },
+  apiPaymentEcommerceClientV4: {
+    getAllPaymentMethodsAuth: jest.fn(),
   },
   apiPaymentEcommerceClientWithRetry: {
     createSession: jest.fn(),
@@ -68,6 +81,8 @@ const createMockSessionItem = (overrides: Record<string, any> = {}) => {
     enablePaymentMethodsHandler: undefined,
     paymentInfo: undefined,
     cartClientId: undefined,
+    transaction: undefined,
+    cart: undefined,
   };
   const merged = { ...defaults, ...overrides };
 
@@ -84,9 +99,43 @@ const createMockSessionItem = (overrides: Record<string, any> = {}) => {
     if (key === "cartClientId") {
       return merged.cartClientId;
     }
+    if (key === "transaction") {
+      return merged.transaction;
+    }
+    if (key === "cart") {
+      return merged.cart;
+    }
     return undefined;
   };
 };
+
+const mockApiHandlerResponse = [
+  {
+    id: "card-id-handler",
+    name: "CARDS Handler",
+    description: "Carte Handler",
+    status: "ENABLED",
+    methodManagement: "ONBOARDABLE",
+    paymentTypeCode: "CP",
+    feeRange: [{ min: 0, max: 100 }],
+    paymentMethodAsset: "asset.png",
+    paymentMethodsBrandAssets: { VISA: "visa.png" },
+  },
+];
+
+const paymentMethodsHandlerMock = [
+  {
+    id: "card-id-handler",
+    name: "CARDS Handler",
+    description: "Carte Handler",
+    status: "ENABLED",
+    methodManagement: "ONBOARDABLE",
+    paymentTypeCode: "CP",
+    feeRange: [{ min: 0, max: 100 }],
+    asset: "asset.png",
+    brandAsset: { VISA: "visa.png" },
+  },
+];
 
 afterEach(() => {
   jest.resetAllMocks();
@@ -416,6 +465,154 @@ describe("Ecommerce payment methods helper - getPaymentInstruments tests", () =>
       mockOnResponse
     );
     expect(mockOnError).toHaveBeenCalledWith(ErrorsType.UNAUTHORIZED);
+  });
+
+  // getPaymentMethodHandler tests
+  it("Should call onResponse with correct data when using handler (V2 API)", async () => {
+    (getSessionItem as jest.Mock).mockImplementation(
+      createMockSessionItem({
+        enablePaymentMethodsHandler: "true",
+        authToken: undefined,
+        paymentInfo: { amount: 1000, rptId: "77777777777302000100000009488" },
+        cartClientId: "CHECKOUT",
+      })
+    );
+
+    (
+      apiPaymentEcommerceClientV2.getAllPaymentMethods as jest.Mock
+    ).mockReturnValue(
+      Promise.resolve({
+        right: {
+          status: 200,
+          value: { paymentMethods: mockApiHandlerResponse },
+        },
+      })
+    );
+
+    await getPaymentInstruments({ amount: 1 }, mockOnError, mockOnResponse);
+
+    expect(mockOnResponse).toHaveBeenCalledWith(paymentMethodsHandlerMock);
+    expect(mockOnError).not.toHaveBeenCalled();
+    expect(
+      apiPaymentEcommerceClientV2.getAllPaymentMethods
+    ).toHaveBeenCalledWith({
+      body: expect.objectContaining({
+        userTouchpoint: "CHECKOUT",
+        totalAmount: 1000,
+      }),
+    });
+  });
+
+  it("Should call onResponse with correct data when using handler (V4 API)", async () => {
+    (getSessionItem as jest.Mock).mockImplementation(
+      createMockSessionItem({
+        enablePaymentMethodsHandler: "true",
+        authToken: "fake-token",
+        cart: {
+          paymentNotices: [{ amount: 2000, fiscalCode: "77777777777" }],
+        },
+      })
+    );
+    (
+      apiPaymentEcommerceClientV4.getAllPaymentMethodsAuth as jest.Mock
+    ).mockReturnValue(
+      Promise.resolve({
+        right: {
+          status: 200,
+          value: { paymentMethods: mockApiHandlerResponse },
+        },
+      })
+    );
+
+    await getPaymentInstruments({ amount: 1 }, mockOnError, mockOnResponse);
+
+    expect(mockOnResponse).toHaveBeenCalledWith(paymentMethodsHandlerMock);
+    expect(mockOnError).not.toHaveBeenCalled();
+    expect(
+      apiPaymentEcommerceClientV4.getAllPaymentMethodsAuth
+    ).toHaveBeenCalledWith({
+      bearerAuth: "fake-token",
+      body: expect.objectContaining({ totalAmount: 2000 }),
+    });
+  });
+
+  it("Should call onError with UNAUTHORIZED when handler V4 API returns 401", async () => {
+    (getSessionItem as jest.Mock).mockImplementation(
+      createMockSessionItem({
+        enablePaymentMethodsHandler: "true",
+        authToken: "fake-token",
+        cart: {
+          paymentNotices: [{ amount: 1200, fiscalCode: "77777777777" }],
+        },
+      })
+    );
+    (
+      apiPaymentEcommerceClientV4.getAllPaymentMethodsAuth as jest.Mock
+    ).mockReturnValue(Promise.resolve({ right: { status: 401 } }));
+    await getPaymentInstruments({ amount: 1200 }, mockOnError, mockOnResponse);
+
+    expect(mockOnResponse).toHaveBeenCalledWith([]);
+    expect(mockOnError).toHaveBeenCalledWith(ErrorsType.UNAUTHORIZED);
+  });
+
+  it("Should call onError with STATUS_ERROR when handler V2 API rejects", async () => {
+    (getSessionItem as jest.Mock).mockImplementation(
+      createMockSessionItem({
+        enablePaymentMethodsHandler: "true",
+        authToken: undefined,
+        cart: {
+          paymentNotices: [{ amount: 1200, fiscalCode: "77777777777" }],
+        },
+      })
+    );
+    (
+      apiPaymentEcommerceClientV2.getAllPaymentMethods as jest.Mock
+    ).mockRejectedValue("API failed");
+
+    await getPaymentInstruments({ amount: 1 }, mockOnError, mockOnResponse);
+
+    expect(mockOnResponse).toHaveBeenCalledWith([]);
+    expect(mockOnError).toHaveBeenCalledWith(ErrorsType.STATUS_ERROR);
+  });
+
+  it("Should call onError with GENERIC_ERROR when handler V2 API returns an Either.left", async () => {
+    (getSessionItem as jest.Mock).mockImplementation(
+      createMockSessionItem({
+        enablePaymentMethodsHandler: "true",
+        authToken: undefined,
+        cart: {
+          paymentNotices: [{ amount: 1200, fiscalCode: "77777777777" }],
+        },
+      })
+    );
+    (
+      apiPaymentEcommerceClientV2.getAllPaymentMethods as jest.Mock
+    ).mockReturnValue(Promise.resolve(E.left(new Error("Either left"))));
+
+    await getPaymentInstruments({ amount: 1 }, mockOnError, mockOnResponse);
+
+    expect(mockOnResponse).toHaveBeenCalledWith([]);
+    expect(mockOnError).toHaveBeenCalledWith(ErrorsType.GENERIC_ERROR);
+  });
+
+  it("Should call onResponse with empty array for other error statuses from handler V4 API", async () => {
+    (getSessionItem as jest.Mock).mockImplementation(
+      createMockSessionItem({
+        enablePaymentMethodsHandler: "true",
+        authToken: "fake-token",
+        cart: {
+          paymentNotices: [{ amount: 2000, fiscalCode: "77777777777" }],
+        },
+      })
+    );
+    (
+      apiPaymentEcommerceClientV4.getAllPaymentMethodsAuth as jest.Mock
+    ).mockReturnValue(Promise.resolve({ right: { status: 500 } }));
+
+    await getPaymentInstruments({ amount: 1 }, mockOnError, mockOnResponse);
+
+    expect(mockOnResponse).toHaveBeenCalledWith([]);
+    expect(mockOnError).not.toHaveBeenCalled();
   });
 });
 
