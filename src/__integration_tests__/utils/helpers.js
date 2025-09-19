@@ -470,3 +470,22 @@ export const checkPspListNames = async (
   await closePspListButton.click();
   return feeNameContents;
 };
+
+export const goToPaymentMethodsPage = async (noticeCode, fiscalCode, email) => {
+  const payNoticeBtnSelector = "#paymentSummaryButtonPay";
+
+  
+  await fillPaymentNotificationForm(noticeCode, fiscalCode);
+
+  
+  const payNoticeBtn = await page.waitForSelector(payNoticeBtnSelector, {
+    visible: true,
+  });
+  await payNoticeBtn.click();
+
+  
+  await fillEmailForm(email);
+
+ 
+};
+

@@ -3,6 +3,7 @@ import * as t from "io-ts";
 import { SxProps } from "@mui/material";
 import { Theme } from "@emotion/react";
 import { PaymentMethodResponse } from "../../../../generated/definitions/payment-ecommerce/PaymentMethodResponse";
+import { FeeRange } from "../../../../generated/definitions/payment-ecommerce-v4/FeeRange";
 
 export interface PaymentFormFields {
   billCode: string;
@@ -118,6 +119,9 @@ export const PaymentInstruments = t.intersection([
     paymentTypeCode: PaymentCodeType,
   }),
   PaymentMethodResponse,
+  t.partial({
+    feeRange: FeeRange,
+  }),
 ]);
 
 export type PaymentInstrumentsType = t.TypeOf<typeof PaymentInstruments>;

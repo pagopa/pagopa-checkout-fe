@@ -190,4 +190,51 @@ describe("ClickableFieldContainer", () => {
 
     // We can't easily test the exact color, but we can check if the component renders
   });
+
+  const feeSingleMock = { min: 10, max: 10 };
+  const feeRangeMock = { min: 5, max: 15 };
+
+  it("displays feeSingle when min and max are equal", () => {
+    render(<ClickableFieldContainer {...mockProps} feeRange={feeSingleMock} />);
+
+    // Check that the translated feeSingle text is rendered
+    expect(screen.getByText("paymentChoicePage.feeSingle")).toBeInTheDocument();
+  });
+
+  it("displays feeRange when min and max are different", () => {
+    render(<ClickableFieldContainer {...mockProps} feeRange={feeRangeMock} />);
+
+    // Check that the translated feeRange text is rendered
+    expect(screen.getByText("paymentChoicePage.feeRange")).toBeInTheDocument();
+  });
+
+  it("does not render feeRange and feeSingle when feeRange prop is not provided", () => {
+    render(<ClickableFieldContainer {...mockProps} />);
+
+    // Check that no feeRange and feeSingle  text is rendered
+    expect(
+      screen.queryByText("paymentChoicePage.feeSingle")
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("paymentChoicePage.feeRange")
+    ).not.toBeInTheDocument();
+  });
+
+  // Test that bottom border is removed when isLast is true
+  it("does not have bottom border when isLast is true", () => {
+    render(<ClickableFieldContainer {...mockProps} isLast={true} />);
+
+    const container = screen.getByText("Test Title").closest(".MuiBox-root");
+    expect(container).toHaveStyle("border-bottom: none");
+  });
+
+  it("has bottom border when isLast is false", () => {
+    render(<ClickableFieldContainer {...mockProps} isLast={false} />);
+    const container = screen
+      .getByText("Test Title")
+      .closest(".MuiBox-root") as HTMLElement;
+    expect(container).toHaveStyle(
+      `border-bottom-color: ${container?.style.borderBottomColor}`
+    );
+  });
 });
