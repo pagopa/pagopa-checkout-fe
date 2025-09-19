@@ -219,4 +219,22 @@ describe("ClickableFieldContainer", () => {
       screen.queryByText("paymentChoicePage.feeRange")
     ).not.toBeInTheDocument();
   });
+
+  // Test that bottom border is removed when isLast is true
+  it("does not have bottom border when isLast is true", () => {
+    render(<ClickableFieldContainer {...mockProps} isLast={true} />);
+
+    const container = screen.getByText("Test Title").closest(".MuiBox-root");
+    expect(container).toHaveStyle("border-bottom: none");
+  });
+
+  it("has bottom border when isLast is false", () => {
+    render(<ClickableFieldContainer {...mockProps} isLast={false} />);
+    const container = screen
+      .getByText("Test Title")
+      .closest(".MuiBox-root") as HTMLElement;
+    expect(container).toHaveStyle(
+      `border-bottom-color: ${container?.style.borderBottomColor}`
+    );
+  });
 });

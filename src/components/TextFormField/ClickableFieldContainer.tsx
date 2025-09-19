@@ -22,6 +22,7 @@ function ClickableFieldContainer(props: {
   loading?: boolean;
   dataTestId?: string;
   dataTestLabel?: string;
+  isLast?: boolean;
 }) {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -30,8 +31,8 @@ function ClickableFieldContainer(props: {
     justifyContent: "space-between",
     alignItems: "center",
     cursor: !props.loading && props.clickable ? "pointer" : "auto",
-    borderBottom: "1px solid",
-    borderBottomColor: "divider",
+    borderBottom: props.isLast ? "none" : "1px solid",
+    borderBottomColor: props.isLast ? "transparent" : "divider",
     pt: 3,
     pb: 3,
     ...props.sx,
