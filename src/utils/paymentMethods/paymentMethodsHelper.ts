@@ -11,12 +11,12 @@ export const getMethodDescriptionForCurrentLanguage = (
   const currentLanguage = localStorage.getItem("i18nextLng") ?? "IT";
 
   // description might be a string instead of an object
-  if (typeof method.description === 'string') {
+  if (typeof method.description === "string") {
     return method.description;
   }
 
   // make sure desc is an object before accessing keys
-  if (typeof method.description !== 'object' || method.description === null) {
+  if (typeof method.description !== "object" || method.description === null) {
     return "";
   }
 
@@ -39,12 +39,12 @@ export const getMethodNameForCurrentLanguage = (
   const currentLanguage = localStorage.getItem("i18nextLng") ?? "IT";
 
   // name might be a string instead of an object
-  if (typeof method.name === 'string') {
+  if (typeof method.name === "string") {
     return method.name;
   }
 
   // make sure name is an object before accessing keys
-  if (typeof method.name !== 'object' || method.name === null) {
+  if (typeof method.name !== "object" || method.name === null) {
     return "";
   }
 
