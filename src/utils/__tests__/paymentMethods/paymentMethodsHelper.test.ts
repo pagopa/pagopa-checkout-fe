@@ -2,7 +2,7 @@ import { PaymentInstrumentsType } from "../../../features/payment/models/payment
 import {
   getMethodDescriptionForCurrentLanguage,
   getMethodNameForCurrentLanguage,
-} from "../paymentMethodsHelper";
+} from "../../paymentMethods/paymentMethodsHelper";
 
 // Mock localStorage
 const localStorageMock = {
