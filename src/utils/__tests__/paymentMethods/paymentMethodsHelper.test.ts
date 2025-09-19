@@ -13,6 +13,7 @@ const localStorageMock = {
   length: 0,
   key: jest.fn(),
 };
+// eslint-disable-next-line functional/immutable-data
 Object.defineProperty(window, "localStorage", { value: localStorageMock });
 
 describe("paymentMethodsHelper", () => {
@@ -92,10 +93,10 @@ describe("paymentMethodsHelper", () => {
 
     it("should handle empty description object by falling back to IT", () => {
       (localStorageMock.getItem as jest.Mock).mockReturnValue("EN");
-      const method = createMockMethod(
-        {} as Record<string, string>,
-        { IT: "Italian Name", EN: "English Name" }
-      );
+      const method = createMockMethod({} as Record<string, string>, {
+        IT: "Italian Name",
+        EN: "English Name",
+      });
 
       const result = getMethodDescriptionForCurrentLanguage(method);
 
