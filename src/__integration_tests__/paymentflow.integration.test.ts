@@ -680,15 +680,15 @@ describe("Payment Methods list tests - Fee rendering", () => {
     // single case
     const expectedSingleText = translation.paymentChoicePage.feeSingle.replace(
       "{{value}}",
-      mockPaymentMethods.paymentMethods[0].feeRange.min.toString()
+      mockPaymentMethods?.paymentMethods[0]?.feeRange?.min?.toString() ?? "0"
     );
     const singleText = await feeElems[0].evaluate(el => el.textContent);
     expect(singleText).toBe(expectedSingleText);
 
     // range case
     const expectedRangeText = translation.paymentChoicePage.feeRange
-      .replace("{{min}}", mockPaymentMethods.paymentMethods[1].feeRange.min.toString())
-      .replace("{{max}}", mockPaymentMethods.paymentMethods[1].feeRange.max.toString());
+      .replace("{{min}}", mockPaymentMethods?.paymentMethods[1]?.feeRange?.min?.toString()?? "10")
+      .replace("{{max}}", mockPaymentMethods.paymentMethods[1]?.feeRange?.max?.toString() ?? "10");
     const rangeText = await feeElems[1].evaluate(el => el.textContent);
     expect(rangeText).toBe(expectedRangeText);
     //missing feeRange
