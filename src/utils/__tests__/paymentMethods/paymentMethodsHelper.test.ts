@@ -100,7 +100,7 @@ describe("paymentMethodsHelper", () => {
 
       const result = getMethodDescriptionForCurrentLanguage(method);
 
-      expect(result).toBe(undefined); // fallback to italian desctription which doesn't exist
+      expect(result).toBe(""); // fallback returns empty string when no description exists
     });
   });
 
