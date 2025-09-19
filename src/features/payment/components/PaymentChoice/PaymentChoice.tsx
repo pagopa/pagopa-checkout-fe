@@ -163,10 +163,13 @@ export function PaymentChoice(props: {
     [props.amount, props.paymentInstruments]
   );
 
-  const arePaymentMethodsVisible = () =>
+  const filterKeyPresent = () =>
+    paymentMethodFilter !== undefined && paymentMethodFilter !== "";
+
+  const noPaymentMethodsVisible = () =>
     paymentMethods.enabled
       .concat(paymentMethods.disabled)
-      .filter(filterPaymentMethods).length > 0 &&
+      .filter(filterPaymentMethods).length === 0 &&
     paymentMethods.enabled.concat(paymentMethods.disabled).length > 0;
 
   return (
@@ -194,19 +197,21 @@ export function PaymentChoice(props: {
               </InputAdornment>
             }
             endAdornment={
-              <InputAdornment position="end">
-                <IconButton
-                  onClick={resetPaymentMethodFilter}
-                  edge="end"
-                  id="clearFilterPaymentMethod"
-                  data-testid="clearFilterPaymentMethod"
-                  sx={{
-                    color: "action.active",
-                  }}
-                >
-                  <CancelSharp />
-                </IconButton>
-              </InputAdornment>
+              filterKeyPresent() && (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={resetPaymentMethodFilter}
+                    edge="end"
+                    id="clearFilterPaymentMethod"
+                    data-testid="clearFilterPaymentMethod"
+                    sx={{
+                      color: "action.active",
+                    }}
+                  >
+                    <CancelSharp />
+                  </IconButton>
+                </InputAdornment>
+              )
             }
             error={false}
             errorText={undefined}
@@ -222,8 +227,8 @@ export function PaymentChoice(props: {
           />
         </>
       )}
-      {!arePaymentMethodsVisible() && (
-        <Stack direction="row" spacing={1} marginTop={2}>
+      {noPaymentMethodsVisible() && (
+        <Stack direction="row" spacing={1} marginTop={3}>
           <InfoOutlined fontSize="inherit" />
           <Typography id="noPaymentMethodsMessage" fontSize={"small"}>
             {t("paymentChoicePage.noPaymentMethodsAvailable")}
