@@ -18,7 +18,7 @@ export const getMethodNameForCurrentLanguage = (
   const currentLanguage = localStorage.getItem("i18nextLng") ?? "IT";
   // case insensitive vs backend response
   const selectedKey =
-    Object.keys(method.description).find(
+    Object.keys(method.name).find(
       (key) => key.toUpperCase() === currentLanguage.toUpperCase()
     ) ?? "IT";
   return method.name[selectedKey] ?? method.name.IT;
