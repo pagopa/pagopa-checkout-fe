@@ -1,8 +1,6 @@
 import { getSessionItem, SessionItems } from "../storage/sessionStorage";
-import {
-  PaymentInfo,
-  PaymentMethod,
-} from "../../features/payment/models/paymentModel";
+import { PaymentMethod } from "../../features/payment/models/paymentModel";
+import { moneyFormat } from "../form/formatters";
 import {
   mixpanelDataEntryTypeFromString,
   MixpanelFlow,
@@ -17,11 +15,21 @@ export function getDataEntryTypeFromSessionStorage() {
 
 export function getPaymentInfoFromSessionStorage() {
   const paymentInfoRaw = getSessionItem(SessionItems.paymentInfo);
-  return typeof paymentInfoRaw === "object" &&
+
+  if (
+    typeof paymentInfoRaw === "object" &&
     paymentInfoRaw !== null &&
     "amount" in paymentInfoRaw
-    ? (paymentInfoRaw as PaymentInfo)
-    : undefined;
+  ) {
+    const convertedAmount = moneyFormat(paymentInfoRaw.amount);
+
+    return {
+      ...paymentInfoRaw,
+      amount: convertedAmount,
+    };
+  }
+
+  return undefined;
 }
 
 export function getFlowFromSessionStorage() {

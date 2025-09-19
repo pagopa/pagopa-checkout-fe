@@ -366,9 +366,9 @@
     "showMore": "Mostra tutti",
     "title": "Come vuoi pagare?",
     "filterLabel": "Cerca un metodo",
-    "noPaymentMethodsAvailable": "Nessun risultato trovato. Prova a rimuovere i filtri o cerca usando altri termini",
     "feeRange": "Commissione: da {{min}} € a {{max}} €",
     "feeSingle": "Commissione: {{value}} €"
+    "noPaymentMethodsAvailable": "Nessun risultato trovato. Prova con un altro termine."
   },
   "paymentMethods": {
     "bpay": "BANCOMAT Pay",

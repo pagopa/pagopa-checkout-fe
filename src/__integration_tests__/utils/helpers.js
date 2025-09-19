@@ -272,7 +272,7 @@ export const fillEmailForm = async (email) => {
 
 export const filterPaymentMethodByName = async (methodFilterName) => {
   const paymentMethodFilterBoxId = `#paymentMethodsFilter`;
-
+  
   const paymentMethodFilterBox = await page.waitForSelector(paymentMethodFilterBoxId);
   await paymentMethodFilterBox.click();
   await page.keyboard.type(methodFilterName);

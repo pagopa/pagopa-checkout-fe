@@ -462,7 +462,6 @@ describe("Filter payment method", () => {
         expect(isCardPaymentMethodsPresent).toBeTruthy();
         expect(isSatispayPaymentMethodsPresent).toBeTruthy();
 
-        await paymentMethodFilterBoxReset?.click();
         await filterPaymentMethodByName("carta");
 
         const paymentMethodsFilteredOutMessage = await noPaymentMethodsMessage();

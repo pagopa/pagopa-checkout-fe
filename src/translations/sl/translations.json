@@ -365,10 +365,10 @@
     "others": "Drugi načini",
     "showMore": "Pokaži vse",
     "title": "Kako želite plačati?",
-    "filterLabel": "Cerca un metodo",
-    "noPaymentMethodsAvailable": "Nessun risultato trovato. Prova a rimuovere i filtri o cerca usando altri termini",
     "feeRange": "Provizija: od {{min}} € do {{max}} €",
     "feeSingle": "Provizija: {{value}} €"
+    "filterLabel": "Poišči metodo",
+    "noPaymentMethodsAvailable": "Ni rezultatov. Poskusite z drugo ključno besedo."
   },
   "paymentMethods": {
     "bpay": "BANCOMAT Pay",

@@ -364,10 +364,10 @@
     "others": "Other methods",
     "showMore": "Show all",
     "title": "How do you want to pay?",
-    "filterLabel": "Cerca un metodo",
-    "noPaymentMethodsAvailable": "Nessun risultato trovato. Prova a rimuovere i filtri o cerca usando altri termini",
     "feeRange": "Fee: from {{min}} € to {{max}} €",
     "feeSingle": "Fee: {{value}} €"
+    "filterLabel": "Search a method",
+    "noPaymentMethodsAvailable": "No results found. Try with another keyword."
   },
   "paymentMethods": {
     "bpay": "BANCOMAT Pay",

@@ -142,6 +142,13 @@ jest.mock("../../../utils/errors/errorsModel", () => {
         ],
       },
     })),
+    ErrorResponses: {
+      INVALID_QRCODE: {
+        title: "INVALID_QRCODE.title",
+        body: "INVALID_QRCODE.body",
+        buttons: [{ title: "button.close" }, { title: "button.help" }],
+      },
+    },
     ErrorModalBtn: {},
   };
 });
@@ -462,5 +469,17 @@ describe("ErrorModal Component", () => {
         payment_phase: MixpanelPaymentPhase.VERIFICA,
       })
     );
+  });
+  it("renders with INVALID_QRCODE custom error", () => {
+    render(
+      <ErrorModal
+        error={ErrorsType.INVALID_QRCODE}
+        open={true}
+        onClose={jest.fn()}
+      />
+    );
+
+    expect(screen.getByText("INVALID_QRCODE.title")).toBeInTheDocument();
+    expect(screen.getByText("INVALID_QRCODE.body")).toBeInTheDocument();
   });
 });
