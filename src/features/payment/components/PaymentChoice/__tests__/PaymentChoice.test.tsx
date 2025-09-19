@@ -108,7 +108,7 @@ jest.mock("react-google-recaptcha", () => ({
 jest.mock("../../../../../routes/models/paymentMethodRoutes", () => ({
   PaymentMethodRoutes: {
     CP: { route: "card-payment" },
-    PAYPAL: { route: "paypal-payment" },
+    PPAL: { route: "paypal-payment" },
   },
 }));
 
@@ -118,6 +118,16 @@ jest.mock("../../../../../routes/models/routeModel", () => ({
     LISTA_PSP: "psp-list",
     ERRORE: "error",
   },
+}));
+
+// Mock paymentMethodsHelper
+jest.mock("../../../../../utils/paymentMethods/paymentMethodsHelper", () => ({
+  getMethodDescriptionForCurrentLanguage: jest.fn((method) => {
+    return method.description?.it || method.description || "Unknown";
+  }),
+  getMethodNameForCurrentLanguage: jest.fn((method) => {
+    return method.name?.it || method.name || "Unknown";
+  }),
 }));
 
 // Mock PaymentMethod components
@@ -130,7 +140,7 @@ jest.mock("../PaymentMethod", () => ({
           data-testid={`payment-method-${method.paymentTypeCode}`}
           onClick={() => onClick(method)}
         >
-          {method.description}
+          {method.description?.it || method.description || "Unknown"}
         </div>
       ))}
     </div>
@@ -142,7 +152,7 @@ jest.mock("../PaymentMethod", () => ({
           key={method.id}
           data-testid={`disabled-method-${method.paymentTypeCode}`}
         >
-          {method.description}
+          {method.description?.it || method.description || "Unknown"}
         </div>
       ))}
     </div>
@@ -372,7 +382,7 @@ describe("PaymentChoice", () => {
 
     // Should show enabled payment methods
     expect(screen.getByTestId("payment-method-CP")).toBeInTheDocument();
-    expect(screen.getByTestId("payment-method-PAYPAL")).toBeInTheDocument();
+    expect(screen.getByTestId("payment-method-PPAL")).toBeInTheDocument();
     // Should show disabled methods separately
     expect(screen.getByTestId("disabled-methods")).toBeInTheDocument();
     expect(
@@ -390,7 +400,7 @@ describe("PaymentChoice", () => {
     // Should show only card payment methods
     expect(screen.getByTestId("payment-method-CP")).toBeInTheDocument();
     expect(
-      screen.queryByTestId("payment-method-PAYPAL")
+      screen.queryByTestId("payment-method-PPAL")
     ).not.toBeInTheDocument();
   });
 
@@ -414,7 +424,7 @@ describe("PaymentChoice", () => {
     });
 
     expect(screen.getByTestId("payment-method-CP")).toBeInTheDocument();
-    expect(screen.queryByTestId("payment-method-PAYPAL")).toBeInTheDocument();
+    expect(screen.queryByTestId("payment-method-PPAL")).toBeInTheDocument();
 
     // Filter for string 'cart'
     const filterInput = result.container.querySelector(
@@ -427,7 +437,7 @@ describe("PaymentChoice", () => {
     // Should show only card payment methods
     expect(screen.getByTestId("payment-method-CP")).toBeInTheDocument();
     expect(
-      screen.queryByTestId("payment-method-PAYPAL")
+      screen.queryByTestId("payment-method-PPAL")
     ).not.toBeInTheDocument();
     expect(
       result.container.querySelector("#noPaymentMethodsMessage")
@@ -442,7 +452,7 @@ describe("PaymentChoice", () => {
     });
     // Should show enabled payment methods
     expect(screen.getByTestId("payment-method-CP")).toBeInTheDocument();
-    expect(screen.getByTestId("payment-method-PAYPAL")).toBeInTheDocument();
+    expect(screen.getByTestId("payment-method-PPAL")).toBeInTheDocument();
     expect(
       result.container.querySelector("#noPaymentMethodsMessage")
     ).not.toBeInTheDocument();
@@ -468,7 +478,7 @@ describe("PaymentChoice", () => {
     });
 
     expect(screen.getByTestId("payment-method-CP")).toBeInTheDocument();
-    expect(screen.queryByTestId("payment-method-PAYPAL")).toBeInTheDocument();
+    expect(screen.queryByTestId("payment-method-PPAL")).toBeInTheDocument();
 
     // Filter for string 'cart'
     const filterInput = result.container.querySelector(
