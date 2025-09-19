@@ -4,9 +4,15 @@ import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidV4 } from "uuid";
-import { Typography, Button, InputAdornment, IconButton, Stack } from "@mui/material";
+import {
+  Typography,
+  Button,
+  InputAdornment,
+  IconButton,
+  Stack,
+} from "@mui/material";
 import { t } from "i18next";
-import { CancelSharp, InfoOutlined, Search, VerticalAlignBottom } from "@mui/icons-material";
+import { CancelSharp, InfoOutlined, Search } from "@mui/icons-material";
 import { constVoid } from "fp-ts/function";
 import TextFormField from "../../../../components/TextFormField/TextFormField";
 import InformationModal from "../../../../components/modals/InformationModal";
@@ -31,7 +37,6 @@ import { CheckoutRoutes } from "../../../../routes/models/routeModel";
 import { onErrorActivate } from "../../../../utils/api/transactionsErrorHelper";
 import { DisabledPaymentMethods, MethodComponentList } from "./PaymentMethod";
 import { getNormalizedMethods } from "./utils";
-import { responsiveProperty } from "@mui/material/styles/cssUtils";
 
 export function PaymentChoice(props: {
   amount: number;
@@ -218,11 +223,11 @@ export function PaymentChoice(props: {
         </>
       )}
       {!arePaymentMethodsVisible() && (
-       <Stack direction="row" spacing={1} marginTop={2}>
-          <InfoOutlined fontSize="inherit"/>
-        <Typography id="noPaymentMethodsMessage" fontSize={"small"}>
-          {t("paymentChoicePage.noPaymentMethodsAvailable")}
-        </Typography>
+        <Stack direction="row" spacing={1} marginTop={2}>
+          <InfoOutlined fontSize="inherit" />
+          <Typography id="noPaymentMethodsMessage" fontSize={"small"}>
+            {t("paymentChoicePage.noPaymentMethodsAvailable")}
+          </Typography>
         </Stack>
       )}
 
