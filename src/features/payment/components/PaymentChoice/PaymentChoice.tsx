@@ -4,9 +4,15 @@ import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidV4 } from "uuid";
-import { Typography, Button, InputAdornment, IconButton } from "@mui/material";
+import {
+  Typography,
+  Button,
+  InputAdornment,
+  IconButton,
+  Stack,
+} from "@mui/material";
 import { t } from "i18next";
-import { CancelSharp, Search } from "@mui/icons-material";
+import { CancelSharp, InfoOutlined, Search } from "@mui/icons-material";
 import { constVoid } from "fp-ts/function";
 import { getMethodDescriptionForCurrentLanguage } from "../../../../utils/paymentMethods/paymentMethodsHelper";
 import TextFormField from "../../../../components/TextFormField/TextFormField";
@@ -157,10 +163,13 @@ export function PaymentChoice(props: {
     [props.amount, props.paymentInstruments]
   );
 
-  const arePaymentMethodsVisible = () =>
+  const filterKeyPresent = () =>
+    paymentMethodFilter !== undefined && paymentMethodFilter !== "";
+
+  const noPaymentMethodsVisible = () =>
     paymentMethods.enabled
       .concat(paymentMethods.disabled)
-      .filter(filterPaymentMethods).length > 0 &&
+      .filter(filterPaymentMethods).length === 0 &&
     paymentMethods.enabled.concat(paymentMethods.disabled).length > 0;
 
   return (
@@ -188,19 +197,21 @@ export function PaymentChoice(props: {
               </InputAdornment>
             }
             endAdornment={
-              <InputAdornment position="end">
-                <IconButton
-                  onClick={resetPaymentMethodFilter}
-                  edge="end"
-                  id="clearFilterPaymentMethod"
-                  data-testid="clearFilterPaymentMethod"
-                  sx={{
-                    color: "action.active",
-                  }}
-                >
-                  <CancelSharp />
-                </IconButton>
-              </InputAdornment>
+              filterKeyPresent() && (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={resetPaymentMethodFilter}
+                    edge="end"
+                    id="clearFilterPaymentMethod"
+                    data-testid="clearFilterPaymentMethod"
+                    sx={{
+                      color: "action.active",
+                    }}
+                  >
+                    <CancelSharp />
+                  </IconButton>
+                </InputAdornment>
+              )
             }
             error={false}
             errorText={undefined}
@@ -216,10 +227,13 @@ export function PaymentChoice(props: {
           />
         </>
       )}
-      {!arePaymentMethodsVisible() && (
-        <Typography id="noPaymentMethodsMessage">
-          {t("paymentChoicePage.noPaymentMethodsAvailable")}
-        </Typography>
+      {noPaymentMethodsVisible() && (
+        <Stack direction="row" spacing={1} marginTop={3}>
+          <InfoOutlined fontSize={"small"} />
+          <Typography id="noPaymentMethodsMessage" fontSize={"16px"}>
+            {t("paymentChoicePage.noPaymentMethodsAvailable")}
+          </Typography>
+        </Stack>
       )}
 
       <Box display="none">
