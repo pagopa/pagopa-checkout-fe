@@ -5,6 +5,14 @@ import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import * as router from "react-router";
+
+// Mock @mui/material styled system
+jest.mock("@mui/material/styles", () => ({
+  ...jest.requireActual("@mui/material/styles"),
+  styled: jest.fn(() => (component: any) => component),
+  useTheme: jest.fn(() => ({})),
+  ThemeProvider: ({ children }: any) => children,
+}));
 import {
   getSessionItem,
   SessionItems,
@@ -46,6 +54,28 @@ jest.mock("react-i18next", () => ({
     components?: Array<any>;
     children?: React.ReactNode;
   }) => <span data-testid="mocked-trans">{i18nKey || "no-key"}</span>,
+}));
+
+// Mock the paymentMethodsHelper
+jest.mock("../../utils/paymentMethods/paymentMethodsHelper", () => ({
+  getMethodDescriptionForCurrentLanguage: jest.fn((method) => {
+    if (typeof method.description === 'string') {
+      return method.description;
+    }
+    if (typeof method.description === 'object' && method.description?.it) {
+      return method.description.it;
+    }
+    return "Unknown";
+  }),
+  getMethodNameForCurrentLanguage: jest.fn((method) => {
+    if (typeof method.name === 'string') {
+      return method.name;
+    }
+    if (typeof method.name === 'object' && method.name?.it) {
+      return method.name.it;
+    }
+    return "Unknown";
+  }),
 }));
 
 // Create a Jest spy for navigation
@@ -119,6 +149,78 @@ jest.mock("../../utils/eventListeners", () => ({
   onBrowserUnload: jest.fn(),
 }));
 
+// Mock PaymentChoice components
+jest.mock("../../features/payment/components/PaymentChoice/PaymentMethod", () => ({
+  MethodComponentList: ({ methods, onClick }: any) => (
+    <div data-testid="method-component-list">
+      {methods.map((method: any) => (
+        <button
+          key={method.id}
+          onClick={() => onClick(method)}
+          data-testid={`payment-method-${method.id}`}
+        >
+          {typeof method.description === 'string' ? method.description : method.description?.it || method.description || 'Unknown'}
+        </button>
+      ))}
+    </div>
+  ),
+  DisabledPaymentMethods: ({ methods }: any) => (
+    <div data-testid="disabled-payment-methods">
+      {methods.map((method: any) => (
+        <div key={method.id} data-testid={`disabled-method-${method.id}`}>
+          {typeof method.description === 'string' ? method.description : method.description?.it || method.description || 'Unknown'}
+        </div>
+      ))}
+    </div>
+  ),
+}));
+
+// Mock CheckoutLoader
+jest.mock("../../components/PageContent/CheckoutLoader", () => ({
+  __esModule: true,
+  default: () => <div data-testid="checkout-loader">Loading...</div>,
+}));
+
+// Mock modals
+jest.mock("../../components/modals/ErrorModal", () => ({
+  __esModule: true,
+  default: ({ open, children, ...props }: any) =>
+    open ? <div data-testid="error-modal" {...props}>{children}</div> : null,
+}));
+
+jest.mock("../../components/modals/InformationModal", () => ({
+  __esModule: true,
+  default: ({ open, children, ...props }: any) =>
+    open ? <div data-testid="information-modal" {...props}>{children}</div> : null,
+}));
+
+// Mock theme context provider
+jest.mock("../../components/themeContextProvider/themeContextProvider", () => ({
+  ThemeContextProvider: ({ children }: any) => children,
+  useThemeContext: () => ({ isDark: false, toggleTheme: jest.fn() }),
+}));
+
+// Mock PageContainer
+jest.mock("../../components/PageContent/PageContainer", () => ({
+  __esModule: true,
+  default: ({ children, title, description, link }: any) => (
+    <div aria-live="polite">
+      <div data-testid="title">{title}</div>
+      <div data-testid="description">
+        {description}
+        {link}
+      </div>
+      {children}
+    </div>
+  ),
+}));
+
+// Mock CancelPayment
+jest.mock("../../components/modals/CancelPayment", () => ({
+  CancelPayment: ({ open, children, ...props }: any) =>
+    open ? <div data-testid="cancel-payment-modal" {...props}>{children}</div> : null,
+}));
+
 // Mock Material UI components
 jest.mock("@mui/material/Box/Box", () => ({
   __esModule: true,
@@ -149,6 +251,65 @@ jest.mock("@mui/material/Box/Box", () => ({
         {children}
       </div>
     );
+  },
+}));
+
+// Mock Material UI components that might be used in PaymentChoice
+jest.mock("@mui/material", () => ({
+  ...jest.requireActual("@mui/material"),
+  Typography: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+  Button: ({ children, onClick, ...props }: any) => (
+    <button onClick={onClick} {...props}>
+      {children}
+    </button>
+  ),
+  InputAdornment: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+  IconButton: ({ children, onClick, ...props }: any) => (
+    <button onClick={onClick} {...props}>
+      {children}
+    </button>
+  ),
+  styled: jest.fn(() => (component: any) => component),
+}));
+
+// Mock @pagopa/mui-italia to prevent styled function issues
+jest.mock("@pagopa/mui-italia", () => ({
+  ThemeProvider: ({ children }: any) => children,
+  theme: {},
+  Illustration: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+}));
+
+// Mock Material UI icons
+jest.mock("@mui/icons-material", () => ({
+  CancelSharp: () => <span>Cancel</span>,
+  Search: () => <span>Search</span>,
+}));
+
+// Mock TextFormField component
+jest.mock("../../components/TextFormField/TextFormField", () => ({
+  __esModule: true,
+  default: ({ handleChange, value, id, endAdornment, ...props }: any) => (
+    <div>
+      <input
+        id={id}
+        value={value}
+        onChange={handleChange}
+        data-testid="text-form-field"
+        {...props}
+      />
+      {endAdornment && <div data-testid="end-adornment">{endAdornment}</div>}
+    </div>
+  ),
+}));
+
+// Mock ClickableFieldContainer
+jest.mock("../../components/TextFormField/ClickableFieldContainer", () => ({
+  __esModule: true,
+  default: ({ children, loading, ...props }: any) => {
+    if (loading) {
+      return <div data-testid="loading-skeleton" />;
+    }
+    return <div {...props}>{children}</div>;
   },
 }));
 
