@@ -229,8 +229,8 @@ export function PaymentChoice(props: {
       )}
       {noPaymentMethodsVisible() && (
         <Stack direction="row" spacing={1} marginTop={3}>
-          <InfoOutlined fontSize="inherit" />
-          <Typography id="noPaymentMethodsMessage" fontSize={"small"}>
+          <InfoOutlined fontSize={"small"} />
+          <Typography id="noPaymentMethodsMessage" fontSize={"16px"}>
             {t("paymentChoicePage.noPaymentMethodsAvailable")}
           </Typography>
         </Stack>
