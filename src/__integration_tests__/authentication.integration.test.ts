@@ -360,6 +360,11 @@ describe("Checkout authentication tests", () => {
       //set item into sessionStorage for pass the route Guard
       sessionStorage.setItem('useremail', 'email');
       sessionStorage.setItem('authToken', 'auth-token-value');
+      // Set up payment context required for payment methods API
+      sessionStorage.setItem('paymentInfo', JSON.stringify({
+        amount: 12015,
+        rptId: '12345678901012345678901234567'
+      }));
     });
     //go to payment methods page
     await page.goto(URL.PAYMENT_METHODS_PAGE, { waitUntil: "networkidle0" });
@@ -390,6 +395,11 @@ describe("Checkout authentication tests", () => {
       //set item into sessionStorage for pass the route Guard
       sessionStorage.setItem('useremail', 'email');
       sessionStorage.setItem('authToken', 'auth-token-value');
+      // Set up payment context required for payment methods API
+      sessionStorage.setItem('paymentInfo', JSON.stringify({
+        amount: 12015,
+        rptId: '12345678901012345678901234567'
+      }));
     });
 
     //set flow success case
@@ -415,8 +425,13 @@ describe("Checkout authentication tests", () => {
       sessionStorage.setItem('useremail', 'email');
       sessionStorage.setItem('authToken', 'auth-token-value');
       sessionStorage.setItem('paymentMethod', '{"paymentMethodId":"method-id","paymentTypeCode":"CP"}');
+      // Set up payment context required for payment methods API
+      sessionStorage.setItem('paymentInfo', JSON.stringify({
+        amount: 12015,
+        rptId: '12345678901012345678901234567'
+      }));
     });
-    
+
     //set flow error case
     await fillPaymentNotificationForm(KORPTIDs.FAIL_UNAUTHORIZED_401, OKPaymentInfo.VALID_FISCAL_CODE);
     await page.waitForNavigation();
@@ -539,7 +554,7 @@ describe("Checkout authentication tests", () => {
 
     //Wait auth-callback page
     await page.waitForSelector('button[aria-label="party-menu-button"]');
-    
+
     console.log("Login completed");
 
     // Complete authenticated payment
@@ -550,7 +565,7 @@ describe("Checkout authentication tests", () => {
           OKPaymentInfo.VALID_CARD_DATA,
           URL.CHECKOUT_URL_AFTER_AUTHORIZATION
     );
-        
+
     expect(apiContainsXRptIdCount).toBe(expectedCount);
   });
 
