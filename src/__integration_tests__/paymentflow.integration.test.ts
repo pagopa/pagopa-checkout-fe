@@ -574,3 +574,114 @@ describe("Checkout Payment - PSP Selection Flow", () => {
     });
 
 });
+
+describe("Checkout Payment - FeeRange rendering", () => {
+  const feeTestCases = [
+    ["it", itTranslation],
+    ["en", enTranslation],
+    ["fr", frTranslation],
+    ["de", deTranslation],
+    ["sl", slTranslation],
+  ];
+
+  it.each(feeTestCases)(
+    "should show feeSingle when min and max are equal in %s",
+    async (lang, translation) => {
+      selectLanguage(lang);
+
+      await page.setRequestInterception(true);
+      page.on("request", request => {
+        if (request.isInterceptResolutionHandled()) return;
+        const url = request.url();
+
+        if (url.includes("/ecommerce/checkout/v2/payment-methods/")) {
+          request.respond({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify({
+              paymentMethods: [
+                {
+                  id: "card-id",
+                  name: "CARDS",
+                  description: "Credit card",
+                  feeRange: { min: 10, max: 10 },
+                  status: "ENABLED",
+                  paymentTypeCode: "CP",
+                  methodManagement: "ONBOARDABLE",
+                },
+              ],
+            }),
+          });
+        } else {
+          request.continue();
+        }
+      });
+
+      await fillAndSubmitCardDataForm(
+        OKPaymentInfo.VALID_NOTICE_CODE,
+        OKPaymentInfo.VALID_FISCAL_CODE,
+        OKPaymentInfo.EMAIL,
+        OKPaymentInfo.VALID_CARD_DATA
+      );
+
+      const feeElem = await page.waitForSelector("#fee-range");
+      const feeText = await feeElem.evaluate(el => el.textContent);
+
+      const expected = translation.paymentChoicePage.feeSingle.replace(
+        "{{value}}",
+        "10"
+      );
+      expect(feeText).toContain(expected);
+    }
+  );
+
+  it.each(feeTestCases)(
+    "should show feeRange when min and max are different in %s",
+    async (lang, translation) => {
+      selectLanguage(lang);
+
+      await page.setRequestInterception(true);
+      page.on("request", request => {
+        if (request.isInterceptResolutionHandled()) return;
+        const url = request.url();
+
+        if (url.includes("/ecommerce/checkout/v2/payment-methods/")) {
+          request.respond({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify({
+              paymentMethods: [
+                {
+                  id: "bancomat-id",
+                  name: "BANCOMAT",
+                  description: "Bancomat",
+                  feeRange: { min: 5, max: 15 },
+                  status: "ENABLED",
+                  paymentTypeCode: "BPAY",
+                  methodManagement: "ONBOARDABLE",
+                },
+              ],
+            }),
+          });
+        } else {
+          request.continue();
+        }
+      });
+
+      await fillAndSubmitCardDataForm(
+        OKPaymentInfo.VALID_NOTICE_CODE,
+        OKPaymentInfo.VALID_FISCAL_CODE,
+        OKPaymentInfo.EMAIL,
+        OKPaymentInfo.VALID_CARD_DATA
+      );
+
+      const feeElem = await page.waitForSelector("#fee-range");
+      const feeText = await feeElem.evaluate(el => el.textContent);
+
+      const expected = translation.paymentChoicePage.feeRange
+        .replace("{{min}}", "5")
+        .replace("{{max}}", "15");
+      expect(feeText).toContain(expected);
+    }
+  );
+});
