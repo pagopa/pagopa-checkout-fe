@@ -536,13 +536,13 @@ describe("Checkout authentication tests", () => {
     expect(apiNotContainsXRptIdCount).toBe(expectedCount);
   });
 
-  it("Should invoke checkout v3 api with x-rpt-ids header", async () => {
+  it("Should invoke checkout v3/v4 api with x-rpt-ids header", async () => {
     let expectedCount = 3; // payment-methods - sessions - transaction
     let apiContainsXRptIdCount = 0;
     
     page.on("request", async (request) => {
       const url = request.url();
-      if (url.includes("checkout/v3")) {
+      if (url.includes("checkout/v3") || url.includes("checkout/v4")) {
         const headers = await request.headers();
         if(headers['x-rpt-ids'] != null)
           apiContainsXRptIdCount ++
