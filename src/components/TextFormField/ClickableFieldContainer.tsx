@@ -74,9 +74,9 @@ function ClickableFieldContainer(props: {
             <Skeleton variant="text" width="225px" height="30px" />
           </>
         ) : (
-          <Box sx={{ flex: 1 }}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>
-              {props.icon}
+          <>
+            {props.icon}
+            <Box display="flex" flexDirection="column">
               <Typography
                 variant={props.variant}
                 component="div"
@@ -84,28 +84,28 @@ function ClickableFieldContainer(props: {
                   props.disabled ? { color: theme.palette.text.disabled } : {}
                 }
               >
-                {props.title || ""}
+                {t(props.title || "")}
               </Typography>
+              {props.feeRange && (
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={
+                    props.disabled ? { color: theme.palette.text.disabled } : {}
+                  }
+                >
+                  {props.feeRange.min === props.feeRange.max
+                    ? t("paymentChoicePage.feeSingle", {
+                        value: props.feeRange.min,
+                      })
+                    : t("paymentChoicePage.feeRange", {
+                        min: props.feeRange.min,
+                        max: props.feeRange.max,
+                      })}
+                </Typography>
+              )}
             </Box>
-            {props.feeRange && (
-              <Typography
-                variant="body2"
-                sx={{
-                  mt: 0.5,
-                  color: theme.palette.text.secondary,
-                }}
-              >
-                {props.feeRange.min === props.feeRange.max
-                  ? t("paymentChoicePage.feeSingle", {
-                      value: props.feeRange.min,
-                    })
-                  : t("paymentChoicePage.feeRange", {
-                      min: props.feeRange.min,
-                      max: props.feeRange.max,
-                    })}
-              </Typography>
-            )}
-          </Box>
+          </>
         )}
       </Box>
       {!props.loading && (
