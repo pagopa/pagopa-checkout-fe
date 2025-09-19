@@ -21,10 +21,7 @@ import { ErrorsType } from "../utils/errors/checkErrorsModel";
 import ErrorModal from "../components/modals/ErrorModal";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
 import PageContainer from "../components/PageContent/PageContainer";
-import {
-  PaymentCodeTypeEnum,
-  PaymentMethod,
-} from "../features/payment/models/paymentModel";
+import { PaymentMethod } from "../features/payment/models/paymentModel";
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { setThreshold } from "../redux/slices/threshold";
 import {
@@ -45,6 +42,7 @@ import {
   MixpanelPaymentPhase,
 } from "../utils/mixpanel/mixpanelEvents";
 import { mixpanel } from "../utils/mixpanel/mixpanelHelperInit";
+import { PaymentTypeCodeEnum } from "../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function PaymentPspListPage() {
@@ -91,7 +89,7 @@ export default function PaymentPspListPage() {
   }, []);
 
   const shouldShowMyBankAlert = () =>
-    paymentMethod?.paymentTypeCode === PaymentCodeTypeEnum.MYBK &&
+    paymentMethod?.paymentTypeCode === PaymentTypeCodeEnum.MYBK &&
     isAlertVisible;
 
   const myBankAlertVisible = shouldShowMyBankAlert();

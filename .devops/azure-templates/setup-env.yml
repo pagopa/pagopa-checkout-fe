@@ -64,6 +64,10 @@ parameters:
     type: string
     default: ''
 
+  - name: 'api_ecommerce_basepath_v4'
+    type: string
+    default: ''
+
   - name: 'checkout_feature_flags_basepath'
     type: string
     default: ''
@@ -109,6 +113,7 @@ steps:
       CHECKOUT_API_ECOMMERCE_BASEPATH=${{ parameters.api_ecommerce_basepath }} \
       CHECKOUT_API_ECOMMERCE_BASEPATH_V2=${{ parameters.api_ecommerce_basepath_v2 }} \
       CHECKOUT_API_ECOMMERCE_BASEPATH_V3=${{ parameters.api_ecommerce_basepath_v3 }} \
+      CHECKOUT_API_ECOMMERCE_BASEPATH_V4=${{ parameters.api_ecommerce_basepath_v4 }} \
       CHECKOUT_API_FEATURE_FLAGS_BASEPATH=${{ parameters.checkout_feature_flags_basepath }} \
       CHECKOUT_PAGOPA_ASSETS_CDN=${{ parameters.pagopa_assets_cdn }} \
       CHECKOUT_PAGOPA_LOGOS_CDN=${{ parameters.pagopa_logos_cdn }} \

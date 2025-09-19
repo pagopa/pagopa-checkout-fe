@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import React from "react";
 import { useFeatureFlagsAll } from "../hooks/useFeatureFlags";
 import { ScheduledMaintenanceBanner } from "../components/commons/ScheduledMaintenanceBanner";
@@ -41,6 +42,14 @@ export default function IndexPage() {
         enabled.toString()
       );
       setIsScheduledMaintenanceBannerEnabled(enabled);
+    }
+
+    if (featureFlags[SessionItems.enablePaymentMethodsHandler] in allFlags) {
+      const enabled = allFlags.isPaymentMethodsHandlerEnabled;
+      setSessionItem(
+        SessionItems.enablePaymentMethodsHandler,
+        enabled.toString()
+      );
     }
   };
 

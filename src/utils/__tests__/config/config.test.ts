@@ -7,6 +7,7 @@ Object.defineProperty(global, "window", {
       CHECKOUT_API_ECOMMERCE_BASEPATH: "/ecommerce",
       CHECKOUT_API_ECOMMERCE_BASEPATH_V2: "/ecommerce/v2",
       CHECKOUT_API_ECOMMERCE_BASEPATH_V3: "/ecommerce/v3",
+      CHECKOUT_API_ECOMMERCE_BASEPATH_V4: "/ecommerce/v4",
       CHECKOUT_API_FEATURE_FLAGS_BASEPATH: "/features",
       CHECKOUT_API_TIMEOUT: "5000",
       CHECKOUT_ENV: "test",
@@ -50,6 +51,7 @@ describe("Config Module", () => {
     expect(config.CHECKOUT_API_ECOMMERCE_BASEPATH).toBe("/ecommerce");
     expect(config.CHECKOUT_API_ECOMMERCE_BASEPATH_V2).toBe("/ecommerce/v2");
     expect(config.CHECKOUT_API_ECOMMERCE_BASEPATH_V3).toBe("/ecommerce/v3");
+    expect(config.CHECKOUT_API_ECOMMERCE_BASEPATH_V4).toBe("/ecommerce/v4");
     expect(config.CHECKOUT_API_FEATURE_FLAGS_BASEPATH).toBe("/features");
     expect(config.CHECKOUT_API_TIMEOUT).toBe(5000);
     expect(config.CHECKOUT_ENV).toBe("test");

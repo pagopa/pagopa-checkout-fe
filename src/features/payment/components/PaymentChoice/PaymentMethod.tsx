@@ -8,6 +8,10 @@ import {
 } from "@mui/material";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
+import {
+  getMethodDescriptionForCurrentLanguage,
+  getMethodNameForCurrentLanguage,
+} from "../../../../utils/paymentMethods/paymentMethodsHelper";
 import ClickableFieldContainer from "../../../../components/TextFormField/ClickableFieldContainer";
 import { PaymentInstrumentsType } from "../../models/paymentModel";
 import { PaymentMethodStatusEnum } from "../../../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
@@ -79,9 +83,16 @@ const MethodComponent = ({
   <ClickableFieldContainer
     dataTestId={testable ? method.paymentTypeCode : undefined}
     dataTestLabel={testable ? "payment-method" : undefined}
-    title={method.description}
+    title={getMethodDescriptionForCurrentLanguage(method)}
     onClick={onClick}
-    icon={<ImageComponent {...method} />}
+    icon={
+      <ImageComponent
+        {...{
+          asset: method.asset,
+          name: getMethodNameForCurrentLanguage(method),
+        }}
+      />
+    }
     endAdornment={
       method.status === PaymentMethodStatusEnum.ENABLED && (
         <ArrowForwardIosIcon sx={{ color: "primary.main" }} fontSize="small" />
