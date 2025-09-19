@@ -3,11 +3,11 @@ import { getNormalizedMethods } from "../../features/payment/components/PaymentC
 
 // Mock the paymentMethodsHelper
 jest.mock("../../utils/paymentMethods/paymentMethodsHelper", () => ({
-  getMethodDescriptionForCurrentLanguage: jest.fn((method) =>
-    method.description?.it || method.description || "Unknown"
+  getMethodDescriptionForCurrentLanguage: jest.fn(
+    (method) => method.description?.it || method.description || "Unknown"
   ),
-  getMethodNameForCurrentLanguage: jest.fn((method) =>
-    method.name?.it || method.name || "Unknown"
+  getMethodNameForCurrentLanguage: jest.fn(
+    (method) => method.name?.it || method.name || "Unknown"
   ),
 }));
 

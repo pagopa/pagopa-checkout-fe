@@ -121,7 +121,9 @@ export function PaymentChoice(props: {
   };
 
   const filterPaymentMethods = (p: PaymentInstrumentsType) =>
-    getMethodDescriptionForCurrentLanguage(p).toLowerCase().indexOf(paymentMethodFilter.toLowerCase()) > -1;
+    getMethodDescriptionForCurrentLanguage(p)
+      .toLowerCase()
+      .indexOf(paymentMethodFilter.toLowerCase()) > -1;
 
   const getFilteredPaymentMethods = (paymentMethods: Array<any>) =>
     paymentMethodFilter === ""

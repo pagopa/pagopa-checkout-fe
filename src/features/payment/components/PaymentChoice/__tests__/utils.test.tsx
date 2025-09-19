@@ -6,19 +6,19 @@ import { PaymentTypeCodeEnum } from "../../../../../../generated/definitions/pay
 // Mock the paymentMethodsHelper
 jest.mock("../../../../../utils/paymentMethods/paymentMethodsHelper", () => ({
   getMethodDescriptionForCurrentLanguage: jest.fn((method) => {
-    if (typeof method.description === 'string') {
+    if (typeof method.description === "string") {
       return method.description;
     }
-    if (typeof method.description === 'object' && method.description?.it) {
+    if (typeof method.description === "object" && method.description?.it) {
       return method.description.it;
     }
     return "Unknown";
   }),
   getMethodNameForCurrentLanguage: jest.fn((method) => {
-    if (typeof method.name === 'string') {
+    if (typeof method.name === "string") {
       return method.name;
     }
-    if (typeof method.name === 'object' && method.name?.it) {
+    if (typeof method.name === "object" && method.name?.it) {
       return method.name.it;
     }
     return "Unknown";

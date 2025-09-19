@@ -122,12 +122,12 @@ jest.mock("../../../../../routes/models/routeModel", () => ({
 
 // Mock paymentMethodsHelper
 jest.mock("../../../../../utils/paymentMethods/paymentMethodsHelper", () => ({
-  getMethodDescriptionForCurrentLanguage: jest.fn((method) => {
-    return method.description?.it || method.description || "Unknown";
-  }),
-  getMethodNameForCurrentLanguage: jest.fn((method) => {
-    return method.name?.it || method.name || "Unknown";
-  }),
+  getMethodDescriptionForCurrentLanguage: jest.fn(
+    (method) => method.description?.it || method.description || "Unknown"
+  ),
+  getMethodNameForCurrentLanguage: jest.fn(
+    (method) => method.name?.it || method.name || "Unknown"
+  ),
 }));
 
 // Mock PaymentMethod components
@@ -399,9 +399,7 @@ describe("PaymentChoice", () => {
     });
     // Should show only card payment methods
     expect(screen.getByTestId("payment-method-CP")).toBeInTheDocument();
-    expect(
-      screen.queryByTestId("payment-method-PPAL")
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("payment-method-PPAL")).not.toBeInTheDocument();
   });
 
   it("should render all payment methods when input text clear icon is clicked", async () => {
@@ -436,9 +434,7 @@ describe("PaymentChoice", () => {
     });
     // Should show only card payment methods
     expect(screen.getByTestId("payment-method-CP")).toBeInTheDocument();
-    expect(
-      screen.queryByTestId("payment-method-PPAL")
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("payment-method-PPAL")).not.toBeInTheDocument();
     expect(
       result.container.querySelector("#noPaymentMethodsMessage")
     ).not.toBeInTheDocument();

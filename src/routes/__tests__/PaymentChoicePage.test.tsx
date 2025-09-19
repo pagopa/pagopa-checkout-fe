@@ -59,19 +59,19 @@ jest.mock("react-i18next", () => ({
 // Mock the paymentMethodsHelper
 jest.mock("../../utils/paymentMethods/paymentMethodsHelper", () => ({
   getMethodDescriptionForCurrentLanguage: jest.fn((method) => {
-    if (typeof method.description === 'string') {
+    if (typeof method.description === "string") {
       return method.description;
     }
-    if (typeof method.description === 'object' && method.description?.it) {
+    if (typeof method.description === "object" && method.description?.it) {
       return method.description.it;
     }
     return "Unknown";
   }),
   getMethodNameForCurrentLanguage: jest.fn((method) => {
-    if (typeof method.name === 'string') {
+    if (typeof method.name === "string") {
       return method.name;
     }
-    if (typeof method.name === 'object' && method.name?.it) {
+    if (typeof method.name === "object" && method.name?.it) {
       return method.name.it;
     }
     return "Unknown";
@@ -150,30 +150,37 @@ jest.mock("../../utils/eventListeners", () => ({
 }));
 
 // Mock PaymentChoice components
-jest.mock("../../features/payment/components/PaymentChoice/PaymentMethod", () => ({
-  MethodComponentList: ({ methods, onClick }: any) => (
-    <div data-testid="method-component-list">
-      {methods.map((method: any) => (
-        <button
-          key={method.id}
-          onClick={() => onClick(method)}
-          data-testid={`payment-method-${method.id}`}
-        >
-          {typeof method.description === 'string' ? method.description : method.description?.it || method.description || 'Unknown'}
-        </button>
-      ))}
-    </div>
-  ),
-  DisabledPaymentMethods: ({ methods }: any) => (
-    <div data-testid="disabled-payment-methods">
-      {methods.map((method: any) => (
-        <div key={method.id} data-testid={`disabled-method-${method.id}`}>
-          {typeof method.description === 'string' ? method.description : method.description?.it || method.description || 'Unknown'}
-        </div>
-      ))}
-    </div>
-  ),
-}));
+jest.mock(
+  "../../features/payment/components/PaymentChoice/PaymentMethod",
+  () => ({
+    MethodComponentList: ({ methods, onClick }: any) => (
+      <div data-testid="method-component-list">
+        {methods.map((method: any) => (
+          <button
+            key={method.id}
+            onClick={() => onClick(method)}
+            data-testid={`payment-method-${method.id}`}
+          >
+            {typeof method.description === "string"
+              ? method.description
+              : method.description?.it || method.description || "Unknown"}
+          </button>
+        ))}
+      </div>
+    ),
+    DisabledPaymentMethods: ({ methods }: any) => (
+      <div data-testid="disabled-payment-methods">
+        {methods.map((method: any) => (
+          <div key={method.id} data-testid={`disabled-method-${method.id}`}>
+            {typeof method.description === "string"
+              ? method.description
+              : method.description?.it || method.description || "Unknown"}
+          </div>
+        ))}
+      </div>
+    ),
+  })
+);
 
 // Mock CheckoutLoader
 jest.mock("../../components/PageContent/CheckoutLoader", () => ({
@@ -185,13 +192,21 @@ jest.mock("../../components/PageContent/CheckoutLoader", () => ({
 jest.mock("../../components/modals/ErrorModal", () => ({
   __esModule: true,
   default: ({ open, children, ...props }: any) =>
-    open ? <div data-testid="error-modal" {...props}>{children}</div> : null,
+    open ? (
+      <div data-testid="error-modal" {...props}>
+        {children}
+      </div>
+    ) : null,
 }));
 
 jest.mock("../../components/modals/InformationModal", () => ({
   __esModule: true,
   default: ({ open, children, ...props }: any) =>
-    open ? <div data-testid="information-modal" {...props}>{children}</div> : null,
+    open ? (
+      <div data-testid="information-modal" {...props}>
+        {children}
+      </div>
+    ) : null,
 }));
 
 // Mock theme context provider
@@ -218,7 +233,11 @@ jest.mock("../../components/PageContent/PageContainer", () => ({
 // Mock CancelPayment
 jest.mock("../../components/modals/CancelPayment", () => ({
   CancelPayment: ({ open, children, ...props }: any) =>
-    open ? <div data-testid="cancel-payment-modal" {...props}>{children}</div> : null,
+    open ? (
+      <div data-testid="cancel-payment-modal" {...props}>
+        {children}
+      </div>
+    ) : null,
 }));
 
 // Mock Material UI components
@@ -263,7 +282,9 @@ jest.mock("@mui/material", () => ({
       {children}
     </button>
   ),
-  InputAdornment: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+  InputAdornment: ({ children, ...props }: any) => (
+    <div {...props}>{children}</div>
+  ),
   IconButton: ({ children, onClick, ...props }: any) => (
     <button onClick={onClick} {...props}>
       {children}
@@ -276,7 +297,9 @@ jest.mock("@mui/material", () => ({
 jest.mock("@pagopa/mui-italia", () => ({
   ThemeProvider: ({ children }: any) => children,
   theme: {},
-  Illustration: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+  Illustration: ({ children, ...props }: any) => (
+    <div {...props}>{children}</div>
+  ),
 }));
 
 // Mock Material UI icons
