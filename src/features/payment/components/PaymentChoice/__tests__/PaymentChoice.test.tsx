@@ -254,6 +254,9 @@ describe("PaymentChoice", () => {
       status: PaymentMethodStatusEnum.ENABLED,
       methodManagement: MethodManagementEnum.ONBOARDABLE,
       paymentTypeCode: PaymentTypeCodeEnum.CP,
+      feeRange: undefined,
+      asset: undefined,
+      brandAsset: undefined,
     },
     {
       id: "paypal-id",
@@ -262,6 +265,9 @@ describe("PaymentChoice", () => {
       status: PaymentMethodStatusEnum.ENABLED,
       methodManagement: MethodManagementEnum.ONBOARDABLE,
       paymentTypeCode: PaymentTypeCodeEnum.PPAL,
+      feeRange: undefined,
+      asset: undefined,
+      brandAsset: undefined,
     },
     {
       id: "disabled-id",
@@ -270,6 +276,9 @@ describe("PaymentChoice", () => {
       status: PaymentMethodStatusEnum.DISABLED,
       methodManagement: MethodManagementEnum.ONBOARDABLE,
       paymentTypeCode: "DISABLED" as PaymentTypeCodeEnum,
+      feeRange: undefined,
+      asset: undefined,
+      brandAsset: undefined,
     },
   ];
 
@@ -700,6 +709,9 @@ describe("PaymentChoice", () => {
             status: PaymentMethodStatusEnum.ENABLED,
             methodManagement: MethodManagementEnum.ONBOARDABLE,
             paymentTypeCode: "OTHER" as PaymentTypeCodeEnum, // Not in PaymentMethodRoutes
+            feeRange: undefined,
+            asset: undefined,
+            brandAsset: undefined,
           },
         ]}
         loading={false}
