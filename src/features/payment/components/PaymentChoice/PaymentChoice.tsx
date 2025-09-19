@@ -120,8 +120,8 @@ export function PaymentChoice(props: {
     }
   };
 
-  const filterPaymentMethods = (p: any) =>
-    p.description.toLowerCase().indexOf(paymentMethodFilter.toLowerCase()) > -1;
+  const filterPaymentMethods = (p: PaymentInstrumentsType) =>
+    getMethodDescriptionForCurrentLanguage(p).toLowerCase().indexOf(paymentMethodFilter.toLowerCase()) > -1;
 
   const getFilteredPaymentMethods = (paymentMethods: Array<any>) =>
     paymentMethodFilter === ""
