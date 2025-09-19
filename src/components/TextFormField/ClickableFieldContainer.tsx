@@ -88,7 +88,7 @@ function ClickableFieldContainer(props: {
               </Typography>
               {props.feeRange && (
                 <Typography
-                  id="fee-range"
+                  data-testid="feeRange"
                   variant="body2"
                   color="text.secondary"
                   sx={
