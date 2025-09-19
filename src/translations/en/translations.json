@@ -365,7 +365,7 @@
     "showMore": "Show all",
     "title": "How do you want to pay?",
     "feeRange": "Fee: from {{min}} € to {{max}} €",
-    "feeSingle": "Fee: {{value}} €"
+    "feeSingle": "Fee: {{value}} €",
     "filterLabel": "Search a method",
     "noPaymentMethodsAvailable": "No results found. Try with another keyword."
   },
