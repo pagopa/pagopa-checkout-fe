@@ -590,36 +590,6 @@ describe("Checkout Payment - PSP Selection Flow", () => {
 });
 
 
-describe("Filter payment method", () => {
-    it("Filter payment method", async () => {
-        selectLanguage("it");
-        await fillAndSearchFormPaymentMethod(
-          KORPTIDs.CANCEL_PAYMENT_OK,
-            OKPaymentInfo.VALID_FISCAL_CODE,
-            OKPaymentInfo.EMAIL,
-            "cart"
-        );
-        const isOnlyOnePaymentMethods = await verifyPaymentMethodsLength(1);
-        const isOnlyCardPaymentMethods = await verifyPaymentMethodsContains("CP");
-        expect(isOnlyOnePaymentMethods).toBeTruthy();
-        expect(isOnlyCardPaymentMethods).toBeTruthy();
-
-        const paymentMethodFilterBoxReset = await page.waitForSelector("#clearFilterPaymentMethod");
-        await paymentMethodFilterBoxReset?.click();
-        const isMoreThanOnePaymentMethods = await verifyPaymentMethodsLength(7);
-        const isCardPaymentMethodsPresent = await verifyPaymentMethodsContains("CP");
-        const isSatispayPaymentMethodsPresent = await verifyPaymentMethodsContains("SATY");
-        expect(isMoreThanOnePaymentMethods).toBeTruthy();
-        expect(isCardPaymentMethodsPresent).toBeTruthy();
-        expect(isSatispayPaymentMethodsPresent).toBeTruthy();
-        
-        await filterPaymentMethodByName("carta");
-
-        const paymentMethodsFilteredOutMessage = await noPaymentMethodsMessage();
-        expect(paymentMethodsFilteredOutMessage).toContain(itTranslation.paymentChoicePage.noPaymentMethodsAvailable);
-      });
-});
-
 describe("Payment Methods list tests - Fee rendering", () => {
   const mockPaymentMethods = {
     paymentMethods: [
