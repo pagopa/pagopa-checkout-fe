@@ -33,6 +33,7 @@ export const MethodComponentList = ({
         method={method}
         key={index}
         onClick={onClick ? () => onClick(method) : undefined}
+        isLast={index === methods.length - 1}
       />
     ))}
   </>
@@ -75,15 +76,18 @@ const MethodComponent = ({
   method,
   onClick,
   testable,
+  isLast,
 }: {
   method: PaymentInstrumentsType;
   onClick?: () => void;
   testable?: boolean;
+  isLast?: boolean;
 }) => (
   <ClickableFieldContainer
     dataTestId={testable ? method.paymentTypeCode : undefined}
     dataTestLabel={testable ? "payment-method" : undefined}
     title={getMethodDescriptionForCurrentLanguage(method)}
+    feeRange={method.feeRange}
     onClick={onClick}
     icon={
       <ImageComponent
@@ -100,5 +104,6 @@ const MethodComponent = ({
     }
     disabled={method.status === PaymentMethodStatusEnum.DISABLED}
     clickable={method.status === PaymentMethodStatusEnum.ENABLED}
+    isLast={isLast}
   />
 );
