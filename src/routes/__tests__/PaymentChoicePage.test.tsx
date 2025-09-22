@@ -61,15 +61,21 @@ jest.mock("../../utils/paymentMethods/paymentMethodsHelper", () => ({
   getMethodDescriptionForCurrentLanguage: jest.fn((method) => {
     // return "Carte" for the test credit card method to match test expectations
     if (
-      (typeof method.description === "string" && method.description === "Carte") ||
-      (typeof method.description === "object" && (method.description.it === "Carte" || method.description.IT === "Carte"))
+      (typeof method.description === "string" &&
+        method.description === "Carte") ||
+      (typeof method.description === "object" &&
+        (method.description.it === "Carte" ||
+          method.description.IT === "Carte"))
     ) {
       return "Carte";
     }
     // return "Paga con Postepay" for the test apm method to match test expectations
     if (
-      (typeof method.description === "string" && method.description === "Paga con Postepay") ||
-      (typeof method.description === "object" && (method.description.it === "Paga con Postepay" || method.description.IT === "Paga con Postepay"))
+      (typeof method.description === "string" &&
+        method.description === "Paga con Postepay") ||
+      (typeof method.description === "object" &&
+        (method.description.it === "Paga con Postepay" ||
+          method.description.IT === "Paga con Postepay"))
     ) {
       return "Paga con Postepay";
     }
@@ -177,9 +183,10 @@ jest.mock(
           >
             {typeof method.description === "string"
               ? method.description
-              : (typeof method.description === "object" && (method.description.it || method.description.IT))
-                ? method.description.it || method.description.IT
-                : "Unknown"}
+              : typeof method.description === "object" &&
+                (method.description.it || method.description.IT)
+              ? method.description.it || method.description.IT
+              : "Unknown"}
           </button>
         ))}
       </div>
@@ -190,9 +197,10 @@ jest.mock(
           <div key={method.id} data-testid={`disabled-method-${method.id}`}>
             {typeof method.description === "string"
               ? method.description
-              : (typeof method.description === "object" && (method.description.it || method.description.IT))
-                ? method.description.it || method.description.IT
-                : "Unknown"}
+              : typeof method.description === "object" &&
+                (method.description.it || method.description.IT)
+              ? method.description.it || method.description.IT
+              : "Unknown"}
           </div>
         ))}
       </div>

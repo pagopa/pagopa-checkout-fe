@@ -123,7 +123,11 @@ jest.mock("../../../../../routes/models/routeModel", () => ({
 // Mock paymentMethodsHelper
 jest.mock("../../../../../utils/paymentMethods/paymentMethodsHelper", () => ({
   getMethodDescriptionForCurrentLanguage: jest.fn(
-    (method) => method.description?.IT || method.description?.it || method.description || "Unknown"
+    (method) =>
+      method.description?.IT ||
+      method.description?.it ||
+      method.description ||
+      "Unknown"
   ),
   getMethodNameForCurrentLanguage: jest.fn(
     (method) => method.name?.IT || method.name?.it || method.name || "Unknown"
@@ -140,7 +144,10 @@ jest.mock("../PaymentMethod", () => ({
           data-testid={`payment-method-${method.paymentTypeCode}`}
           onClick={() => onClick(method)}
         >
-          {method.description?.IT || method.description?.it || method.description || "Unknown"}
+          {method.description?.IT ||
+            method.description?.it ||
+            method.description ||
+            "Unknown"}
         </div>
       ))}
     </div>
@@ -152,7 +159,10 @@ jest.mock("../PaymentMethod", () => ({
           key={method.id}
           data-testid={`disabled-method-${method.paymentTypeCode}`}
         >
-          {method.description?.IT || method.description?.it || method.description || "Unknown"}
+          {method.description?.IT ||
+            method.description?.it ||
+            method.description ||
+            "Unknown"}
         </div>
       ))}
     </div>
