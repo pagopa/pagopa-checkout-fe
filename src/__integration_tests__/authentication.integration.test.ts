@@ -536,7 +536,7 @@ describe("Checkout authentication tests", () => {
     expect(apiNotContainsXRptIdCount).toBe(expectedCount);
   });
 
-  it("Should invoke checkout v3/v4 api with x-rpt-ids header", async () => {
+  it("Should invoke checkout v3/v4 apis with x-rpt-ids header", async () => {
     let expectedCount = 3; // payment-methods - sessions - transaction
     let apiContainsXRptIdCount = 0;
     
