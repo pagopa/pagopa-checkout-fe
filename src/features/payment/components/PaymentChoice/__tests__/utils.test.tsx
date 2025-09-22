@@ -9,8 +9,8 @@ jest.mock("../../../../../utils/paymentMethods/paymentMethodsHelper", () => ({
     if (typeof method.description === "string") {
       return method.description;
     }
-    if (typeof method.description === "object" && method.description?.it) {
-      return method.description.it;
+    if (typeof method.description === "object" && (method.description?.IT || method.description?.it)) {
+      return method.description.IT || method.description.it;
     }
     return "Unknown";
   }),
@@ -18,8 +18,8 @@ jest.mock("../../../../../utils/paymentMethods/paymentMethodsHelper", () => ({
     if (typeof method.name === "string") {
       return method.name;
     }
-    if (typeof method.name === "object" && method.name?.it) {
-      return method.name.it;
+    if (typeof method.name === "object" && (method.name?.IT || method.name?.it)) {
+      return method.name.IT || method.name.it;
     }
     return "Unknown";
   }),

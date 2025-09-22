@@ -309,6 +309,7 @@ export const getPaymentMethodHandler = async (onError: (e: string) => void) =>
               }),
             (bearerAuth) =>
               apiPaymentEcommerceClientV4.getAllPaymentMethodsAuth({
+                "x-rpt-ids": getRptIdsFromSession(),
                 bearerAuth,
                 body: buildPaymentInstrumentMethodHandlerSearchRequest() as any as PaymentMethodsRequestV4,
               })

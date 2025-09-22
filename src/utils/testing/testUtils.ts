@@ -9,8 +9,8 @@ import {
 export const paymentMethodsMock: Array<PaymentInstrumentsType> = [
   {
     id: "card-id",
-    name: { it: "CARDS" },
-    description: { it: "Carte di Credito e Debito" },
+    name: { IT: "CARDS" },
+    description: { IT: "Carte di Credito e Debito" },
     status: PaymentMethodStatusEnum.ENABLED,
     methodManagement: MethodManagementEnum.ONBOARDABLE,
     paymentTypeCode: PaymentTypeCodeEnum.CP,
@@ -20,8 +20,8 @@ export const paymentMethodsMock: Array<PaymentInstrumentsType> = [
   },
   {
     id: "bancomatpay-id",
-    name: { it: "BANCOMATPAY" },
-    description: { it: "BancomatPay" },
+    name: { IT: "BANCOMATPAY" },
+    description: { IT: "BancomatPay" },
     status: PaymentMethodStatusEnum.ENABLED,
     methodManagement: MethodManagementEnum.ONBOARDABLE,
     paymentTypeCode: PaymentTypeCodeEnum.BPAY,

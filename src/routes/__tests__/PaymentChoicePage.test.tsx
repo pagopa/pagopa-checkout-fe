@@ -59,6 +59,20 @@ jest.mock("react-i18next", () => ({
 // Mock the paymentMethodsHelper
 jest.mock("../../utils/paymentMethods/paymentMethodsHelper", () => ({
   getMethodDescriptionForCurrentLanguage: jest.fn((method) => {
+    // return "Carte" for the test credit card method to match test expectations
+    if (
+      (typeof method.description === "string" && method.description === "Carte") ||
+      (typeof method.description === "object" && (method.description.it === "Carte" || method.description.IT === "Carte"))
+    ) {
+      return "Carte";
+    }
+    // return "Paga con Postepay" for the test apm method to match test expectations
+    if (
+      (typeof method.description === "string" && method.description === "Paga con Postepay") ||
+      (typeof method.description === "object" && (method.description.it === "Paga con Postepay" || method.description.IT === "Paga con Postepay"))
+    ) {
+      return "Paga con Postepay";
+    }
     if (typeof method.description === "string") {
       return method.description;
     }
@@ -152,8 +166,8 @@ jest.mock("../../utils/eventListeners", () => ({
 // Mock PaymentChoice components
 jest.mock(
   "../../features/payment/components/PaymentChoice/PaymentMethod",
-  () => ({
-    MethodComponentList: ({ methods, onClick }: any) => (
+  () => {
+    const MethodComponentList = ({ methods, onClick }: any) => (
       <div data-testid="method-component-list">
         {methods.map((method: any) => (
           <button
@@ -163,23 +177,36 @@ jest.mock(
           >
             {typeof method.description === "string"
               ? method.description
-              : method.description?.it || method.description || "Unknown"}
+              : (typeof method.description === "object" && (method.description.it || method.description.IT))
+                ? method.description.it || method.description.IT
+                : "Unknown"}
           </button>
         ))}
       </div>
-    ),
-    DisabledPaymentMethods: ({ methods }: any) => (
+    );
+    const DisabledPaymentMethods = ({ methods }: any) => (
       <div data-testid="disabled-payment-methods">
         {methods.map((method: any) => (
           <div key={method.id} data-testid={`disabled-method-${method.id}`}>
             {typeof method.description === "string"
               ? method.description
-              : method.description?.it || method.description || "Unknown"}
+              : (typeof method.description === "object" && (method.description.it || method.description.IT))
+                ? method.description.it || method.description.IT
+                : "Unknown"}
           </div>
         ))}
       </div>
-    ),
-  })
+    );
+    // export both default and named exports to match the real module's structure
+    // also export PaymentMethod as default and named to match usage in PaymentChoice
+    return {
+      __esModule: true,
+      default: MethodComponentList,
+      MethodComponentList,
+      DisabledPaymentMethods,
+      PaymentMethod: MethodComponentList,
+    };
+  }
 );
 
 // Mock CheckoutLoader
@@ -537,7 +564,7 @@ describe("PaymentChoicePage guest", () => {
     expect(navigate).toHaveBeenCalledWith("/lista-psp");
   });
 
-  test("filter for string 'cart' and check only carte is presnet", async () => {
+  test("filter for string 'cart' and check only carte is present", async () => {
     (getItemLocalStorage as jest.Mock).mockReturnValue("false");
     const result = renderWithReduxProvider(
       <MemoryRouter>
