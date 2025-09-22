@@ -374,8 +374,8 @@ describe("Checkout authentication tests", () => {
   });
 
   it.each([
-    [false, "legacy v1/v3 APIs"],
-    [true, "new v2/v4 APIs"]
+    [false, "legacy v1/v3 API"],
+    [true, "new v2/v4 API"]
   ])("Should redirect to auth-expired page receiving 401 from get payment-methods with enablePaymentMethodsHandler=%s (%s)", async (enableFlag, description) => {
     await page.evaluate((flag) => {
       //set item into sessionStorage for pass the route Guard
