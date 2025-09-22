@@ -264,10 +264,10 @@ const getPaymentMethods = async (
                       ({
                         id: p.id,
                         name: {
-                          it: p.name,
+                          IT: p.name,
                         },
                         description: {
-                          it: p.description,
+                          IT: p.description,
                         },
                         status: p.status,
                         paymentTypeCode: getEnumFromString(

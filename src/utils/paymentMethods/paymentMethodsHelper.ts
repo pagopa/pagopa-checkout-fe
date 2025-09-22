@@ -1,25 +1,36 @@
-import { PaymentInstrumentsType } from "features/payment/models/paymentModel";
+import {
+  MapField,
+  PaymentInstrumentsType,
+} from "features/payment/models/paymentModel";
+
+const italianLanguageKey = "IT";
+
+const getLanguageKey = (mapField: MapField): string => {
+  const currentLanguage =
+    localStorage.getItem("i18nextLng") ?? italianLanguageKey;
+  // case insensitive vs backend response
+  // default key is italian or the first received by the b.e.
+  const defaultKey =
+    Object.keys(mapField).find(
+      (key) => key.toUpperCase() === italianLanguageKey
+    ) ?? Object.keys(mapField)[0];
+  return (
+    Object.keys(mapField).find(
+      (key) => key.toUpperCase() === currentLanguage.toUpperCase()
+    ) ?? defaultKey
+  );
+};
 
 export const getMethodDescriptionForCurrentLanguage = (
   method: PaymentInstrumentsType
 ): string => {
-  const currentLanguage = localStorage.getItem("i18nextLng") ?? "IT";
-  // case insensitive vs backend response
-  const selectedKey =
-    Object.keys(method.description).find(
-      (key) => key.toUpperCase() === currentLanguage.toUpperCase()
-    ) ?? "IT";
-  return method.description[selectedKey] ?? method.description.IT;
+  const languageKey = getLanguageKey(method.description);
+  return method.description[languageKey] ?? method.description.IT;
 };
 
 export const getMethodNameForCurrentLanguage = (
   method: PaymentInstrumentsType
 ): string => {
-  const currentLanguage = localStorage.getItem("i18nextLng") ?? "IT";
-  // case insensitive vs backend response
-  const selectedKey =
-    Object.keys(method.name).find(
-      (key) => key.toUpperCase() === currentLanguage.toUpperCase()
-    ) ?? "IT";
-  return method.name[selectedKey] ?? method.name.IT;
+  const languageKey = getLanguageKey(method.name);
+  return method.name[languageKey] ?? method.name.IT;
 };
