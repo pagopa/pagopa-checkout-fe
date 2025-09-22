@@ -1,4 +1,3 @@
-import { enumType } from "@pagopa/ts-commons/lib/types";
 import * as t from "io-ts";
 import { SxProps } from "@mui/material";
 import { Theme } from "@emotion/react";

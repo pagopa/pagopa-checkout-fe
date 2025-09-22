@@ -6,7 +6,7 @@ import { Box, Skeleton, Typography, useTheme } from "@mui/material";
 import { SxProps } from "@mui/system";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { FeeRange } from "../../../generated/definitions/payment-ecommerce-v4/FeeRange";
+import { FeeRange } from "../../../generated/definitions/payment-ecommerce-v2/FeeRange";
 
 function ClickableFieldContainer(props: {
   title?: string;
