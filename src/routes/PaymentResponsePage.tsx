@@ -206,7 +206,6 @@ export default function PaymentResponsePage() {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              textAlign: "center",
               gap: 2,
               whiteSpace: "pre-line",
             }}
