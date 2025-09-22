@@ -5,6 +5,7 @@ describe("featureFlags", () => {
     expect(featureFlags).toEqual({
       enableAuthentication: "isAuthenticationEnabled",
       enableMaintenance: "isMaintenancePageEnabled",
+      enablePaymentMethodsHandler: "isPaymentMethodsHandlerEnabled",
       enablePspPage: "isPspPickerPageEnabled",
       enableScheduledMaintenanceBanner: "isScheduledMaintenanceBannerEnabled",
     });
