@@ -7,6 +7,7 @@ import { SxProps } from "@mui/system";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { FeeRange } from "../../../generated/definitions/payment-ecommerce-v2/FeeRange";
+import { moneyFormat } from "../../utils/form/formatters";
 
 function ClickableFieldContainer(props: {
   title?: string;
@@ -98,11 +99,11 @@ function ClickableFieldContainer(props: {
                 >
                   {props.feeRange.min === props.feeRange.max
                     ? t("paymentChoicePage.feeSingle", {
-                        value: props.feeRange.min,
+                        value: moneyFormat(props.feeRange.min),
                       })
                     : t("paymentChoicePage.feeRange", {
-                        min: props.feeRange.min,
-                        max: props.feeRange.max,
+                        min: moneyFormat(props.feeRange.min),
+                        max: moneyFormat(props.feeRange.max),
                       })}
                 </Typography>
               )}
