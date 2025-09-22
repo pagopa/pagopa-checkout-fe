@@ -366,7 +366,8 @@
     "showMore": "Pokaži vse",
     "title": "Kako želite plačati?",
     "filterLabel": "Poišči metodo",
-    "noPaymentMethodsAvailable": "Ni rezultatov. Poskusite z drugo ključno besedo."
+    "noPaymentMethodsAvailable": "Ni rezultatov. Poskusite z drugo ključno besedo.",
+    "filterButton": "Filtra"
   },
   "paymentMethods": {
     "bpay": "BANCOMAT Pay",

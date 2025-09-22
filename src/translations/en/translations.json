@@ -365,7 +365,8 @@
     "showMore": "Show all",
     "title": "How do you want to pay?",
     "filterLabel": "Search a method",
-    "noPaymentMethodsAvailable": "No results found. Try with another keyword."
+    "noPaymentMethodsAvailable": "No results found. Try with another keyword.",
+    "filterButton": "Filtra"
   },
   "paymentMethods": {
     "bpay": "BANCOMAT Pay",
