@@ -374,15 +374,15 @@ describe("Checkout authentication tests", () => {
   });
 
   it("Should redirect to auth-expired page receiving 401 from get payment-methods", async () => {
-    //set flow error case first
-    await fillPaymentNotificationForm(KORPTIDs.FAIL_UNAUTHORIZED_401, OKPaymentInfo.VALID_FISCAL_CODE);
-    await page.waitForNavigation();
-
     await page.evaluate(() => {
       //set item into sessionStorage for pass the route Guard
       sessionStorage.setItem('useremail', 'email');
       sessionStorage.setItem('authToken', 'auth-token-value');
     });
+    
+    //set flow error case
+    await fillPaymentNotificationForm(KORPTIDs.FAIL_UNAUTHORIZED_401, OKPaymentInfo.VALID_FISCAL_CODE);
+    await page.waitForNavigation();
 
     //go to payment methods page
     await page.goto(URL.PAYMENT_METHODS_PAGE, { waitUntil: "networkidle0" });
