@@ -12,6 +12,32 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 
+// Mock the config module
+jest.mock("../../config/config", () =>
+  // Return the actual implementation but with our mock for getConfigOrThrow
+  ({
+    // This is the key fix - handle the case when no key is provided
+    getConfigOrThrow: jest.fn((key) => {
+      // Create a mapping of all config values
+      const configValues = {
+        CHECKOUT_ENV: "TEST",
+        // Add other config values as needed
+      } as any;
+
+      // If no key provided, return all config values (this is the important part)
+      if (key === undefined) {
+        return configValues;
+      }
+
+      // Otherwise return the specific config value
+      return configValues[key] || "";
+    }),
+    isTestEnv: jest.fn(() => false),
+    isDevEnv: jest.fn(() => false),
+    isProdEnv: jest.fn(() => true),
+  })
+);
+
 describe("errorsModel", () => {
   beforeEach(() => {
     jest

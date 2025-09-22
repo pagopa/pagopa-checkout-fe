@@ -363,7 +363,9 @@
     "incoming": "Bientôt disponible",
     "others": "Autres moyens de paiement",
     "showMore": "Tout afficher",
-    "title": "Comment voulez-vous payer ?"
+    "title": "Comment voulez-vous payer ?",
+    "filterLabel": "Rechercher un moyen",
+    "noPaymentMethodsAvailable": "Aucun résultat trouvé. Essayez avec un autre mot-clé."
   },
   "paymentMethods": {
     "bpay": "BANCOMAT Pay",

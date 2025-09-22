@@ -363,7 +363,9 @@
     "incoming": "Coming soon",
     "others": "Other methods",
     "showMore": "Show all",
-    "title": "How do you want to pay?"
+    "title": "How do you want to pay?",
+    "filterLabel": "Search a method",
+    "noPaymentMethodsAvailable": "No results found. Try with another keyword."
   },
   "paymentMethods": {
     "bpay": "BANCOMAT Pay",

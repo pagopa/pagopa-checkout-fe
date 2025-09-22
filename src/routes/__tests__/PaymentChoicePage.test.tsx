@@ -352,6 +352,81 @@ describe("PaymentChoicePage guest", () => {
     });
     expect(navigate).toHaveBeenCalledWith("/lista-psp");
   });
+
+  test("filter for string 'cart' and check only carte is presnet", async () => {
+    (getItemLocalStorage as jest.Mock).mockReturnValue("false");
+    const result = renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentChoicePage />
+      </MemoryRouter>
+    );
+    await waitFor(() => {
+      // Query the input fields by their id
+      fireEvent.change(
+        result.container.querySelector("#paymentMethodsFilter")!,
+        { target: { value: "cart" } }
+      );
+    });
+
+    expect(
+      screen.getByText(
+        createSuccessGetPaymentMethodsV1.paymentMethods![0].description
+      )
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByText(
+        createSuccessGetPaymentMethodsV1.paymentMethods![1].description
+      )
+    ).not.toBeInTheDocument();
+  });
+
+  test("filter for string 'cart' and check only carte is present the remove filter and check all payment methods are present", async () => {
+    (getItemLocalStorage as jest.Mock).mockReturnValue("false");
+    const result = renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentChoicePage />
+      </MemoryRouter>
+    );
+    await waitFor(() => {
+      // Query the input fields by their id
+      fireEvent.change(
+        result.container.querySelector("#paymentMethodsFilter")!,
+        { target: { value: "cart" } }
+      );
+    });
+
+    expect(
+      screen.getByText(
+        createSuccessGetPaymentMethodsV1.paymentMethods![0].description
+      )
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByText(
+        createSuccessGetPaymentMethodsV1.paymentMethods![1].description
+      )
+    ).not.toBeInTheDocument();
+
+    await waitFor(() => {
+      // Query the input fields by their id
+      fireEvent.click(
+        result.container.querySelector("#clearFilterPaymentMethod")!
+      );
+    });
+
+    expect(
+      screen.getByText(
+        createSuccessGetPaymentMethodsV1.paymentMethods![0].description
+      )
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByText(
+        createSuccessGetPaymentMethodsV1.paymentMethods![1].description
+      )
+    ).toBeInTheDocument();
+  });
 });
 
 const mockGetSessionItemAuthenticated = (item: SessionItems) => {
