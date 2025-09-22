@@ -601,21 +601,18 @@ describe("Filter payment method", () => {
         );
         const isOnlyOnePaymentMethods = await verifyPaymentMethodsLength(1);
         const isOnlyCardPaymentMethods = await verifyPaymentMethodsContains("CP");
-        expect(isOnlyOnePaymentMethods).toBeTruthy()
-        expect(isOnlyCardPaymentMethods).toBeTruthy()
+        expect(isOnlyOnePaymentMethods).toBeTruthy();
+        expect(isOnlyCardPaymentMethods).toBeTruthy();
 
         const paymentMethodFilterBoxReset = await page.waitForSelector("#clearFilterPaymentMethod");
         await paymentMethodFilterBoxReset?.click();
-
         const isMoreThanOnePaymentMethods = await verifyPaymentMethodsLength(7);
         const isCardPaymentMethodsPresent = await verifyPaymentMethodsContains("CP");
         const isSatispayPaymentMethodsPresent = await verifyPaymentMethodsContains("SATY");
-
         expect(isMoreThanOnePaymentMethods).toBeTruthy();
         expect(isCardPaymentMethodsPresent).toBeTruthy();
         expect(isSatispayPaymentMethodsPresent).toBeTruthy();
-
-        await paymentMethodFilterBoxReset?.click();
+        
         await filterPaymentMethodByName("carta");
 
         const paymentMethodsFilteredOutMessage = await noPaymentMethodsMessage();
