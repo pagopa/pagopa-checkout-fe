@@ -373,13 +373,17 @@ describe("Checkout authentication tests", () => {
     expect(isPaymentMethodsPresents).toBeTruthy();
   });
 
-  it("Should redirect to auth-expired page receiving 401 from get payment-methods", async () => {
-    await page.evaluate(() => {
+  it.each([
+    [false, "legacy v1/v3 APIs"],
+    [true, "new v2/v4 APIs"]
+  ])("Should redirect to auth-expired page receiving 401 from get payment-methods with enablePaymentMethodsHandler=%s (%s)", async (enableFlag, description) => {
+    await page.evaluate((flag) => {
       //set item into sessionStorage for pass the route Guard
       sessionStorage.setItem('useremail', 'email');
       sessionStorage.setItem('authToken', 'auth-token-value');
-    });
-    
+      sessionStorage.setItem('enablePaymentMethodsHandler', flag.toString());
+    }, enableFlag);
+
     //set flow error case
     await fillPaymentNotificationForm(KORPTIDs.FAIL_UNAUTHORIZED_401, OKPaymentInfo.VALID_FISCAL_CODE);
     await page.waitForNavigation();

@@ -264,10 +264,10 @@ const getPaymentMethods = async (
                       ({
                         id: p.id,
                         name: {
-                          it: p.name,
+                          IT: p.name,
                         },
                         description: {
-                          it: p.description,
+                          IT: p.description,
                         },
                         status: p.status,
                         paymentTypeCode: getEnumFromString(
@@ -309,6 +309,7 @@ export const getPaymentMethodHandler = async (onError: (e: string) => void) =>
               }),
             (bearerAuth) =>
               apiPaymentEcommerceClientV4.getAllPaymentMethodsAuth({
+                "x-rpt-ids": getRptIdsFromSession(),
                 bearerAuth,
                 body: buildPaymentInstrumentMethodHandlerSearchRequest() as any as PaymentMethodsRequestV4,
               })
