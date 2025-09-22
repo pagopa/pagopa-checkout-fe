@@ -17,6 +17,7 @@ import {
   verifyPaymentMethodsContains,
   noPaymentMethodsMessage,
   filterPaymentMethodByName,
+  goToPaymentMethodsPage
 } from "./utils/helpers";
 import itTranslation from "../translations/it/translations.json";
 import deTranslation from "../translations/de/translations.json";
@@ -587,3 +588,125 @@ describe("Checkout Payment - PSP Selection Flow", () => {
     });
 
 });
+
+
+describe("Filter payment method", () => {
+    it("Filter payment method", async () => {
+        selectLanguage("it");
+        await fillAndSearchFormPaymentMethod(
+          KORPTIDs.CANCEL_PAYMENT_OK,
+            OKPaymentInfo.VALID_FISCAL_CODE,
+            OKPaymentInfo.EMAIL,
+            "cart"
+        );
+        const isOnlyOnePaymentMethods = await verifyPaymentMethodsLength(1);
+        const isOnlyCardPaymentMethods = await verifyPaymentMethodsContains("CP");
+        expect(isOnlyOnePaymentMethods).toBeTruthy()
+        expect(isOnlyCardPaymentMethods).toBeTruthy()
+
+        const paymentMethodFilterBoxReset = await page.waitForSelector("#clearFilterPaymentMethod");
+        await paymentMethodFilterBoxReset?.click();
+
+        const isMoreThanOnePaymentMethods = await verifyPaymentMethodsLength(7);
+        const isCardPaymentMethodsPresent = await verifyPaymentMethodsContains("CP");
+        const isSatispayPaymentMethodsPresent = await verifyPaymentMethodsContains("SATY");
+
+        expect(isMoreThanOnePaymentMethods).toBeTruthy();
+        expect(isCardPaymentMethodsPresent).toBeTruthy();
+        expect(isSatispayPaymentMethodsPresent).toBeTruthy();
+
+        await paymentMethodFilterBoxReset?.click();
+        await filterPaymentMethodByName("carta");
+
+        const paymentMethodsFilteredOutMessage = await noPaymentMethodsMessage();
+        expect(paymentMethodsFilteredOutMessage).toContain(itTranslation.paymentChoicePage.noPaymentMethodsAvailable);
+      });
+});
+
+describe("Payment Methods list tests - Fee rendering", () => {
+  const mockPaymentMethods = {
+    paymentMethods: [
+      {
+        description: "Carte",
+        id: "3ebea7a1-2e77-4a1b-ac1b-3aca0d67f813",
+        methodManagement: "ONBOARDABLE",
+        name: "Carte",
+        paymentTypeCode: "CP",
+        ranges: [{ max: 999999, min: 0 }],
+        feeRange: { min: 10, max: 10 }, //  single case
+        status: "ENABLED",
+      },
+      {
+        description: "Paga con Postepay",
+        id: "1c12349f-8133-42f3-ad96-7e6527d27a41",
+        methodManagement: "REDIRECT",
+        name: "Paga con Poste Pay",
+        paymentTypeCode: "RBPP",
+        ranges: [{ max: 999999, min: 0 }],
+        feeRange: { min: 5, max: 10 }, //  range case
+        status: "ENABLED",
+      },
+      {
+      description: "MyBank",
+      id: "2c61e6ed-f874-4b30-97ef-bdf89d488ee4",
+      methodManagement: "NOT_ONBOARDABLE",
+      name: "MYBANK",
+      paymentTypeCode: "MYBK",
+      ranges: [{ max: 999999, min: 0 }],// missing feeRange
+      status: "ENABLED",
+    }
+    ]
+  };
+
+  beforeAll(async () => {
+    await page.setRequestInterception(true);
+    page.on("request", (request) => {
+      if (request.url().includes("/ecommerce/checkout/v1/payment-methods")) {
+        request.respond({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify(mockPaymentMethods),
+        });
+      } else {
+        request.continue();
+      }
+    });
+  });
+
+  it.each([
+    ["it", itTranslation],
+    ["en", enTranslation],
+    ["fr", frTranslation],
+    ["de", deTranslation],
+    ["sl", slTranslation],
+  ])("should correctly render feeRange for language %s", async (lang, translation) => {
+    selectLanguage(lang);
+
+    await goToPaymentMethodsPage(
+      KORPTIDs.CANCEL_PAYMENT_OK,
+      OKPaymentInfo.VALID_FISCAL_CODE,
+      OKPaymentInfo.EMAIL
+    );
+
+    await page.waitForSelector('[data-testid="feeRange"]');
+    const feeElems = await page.$$('[data-testid="feeRange"]');
+
+    // single case
+    const expectedSingleText = translation.paymentChoicePage.feeSingle.replace(
+      "{{value}}",
+      mockPaymentMethods?.paymentMethods[0]?.feeRange?.min?.toString() ?? "0"
+    );
+    const singleText = await feeElems[0].evaluate(el => el.textContent);
+    expect(singleText).toBe(expectedSingleText);
+
+    // range case
+    const expectedRangeText = translation.paymentChoicePage.feeRange
+      .replace("{{min}}", mockPaymentMethods?.paymentMethods[1]?.feeRange?.min?.toString()?? "10")
+      .replace("{{max}}", mockPaymentMethods.paymentMethods[1]?.feeRange?.max?.toString() ?? "10");
+    const rangeText = await feeElems[1].evaluate(el => el.textContent);
+    expect(rangeText).toBe(expectedRangeText);
+    //missing feeRange
+    expect(feeElems.length).toBe(2);
+  });
+});
+
