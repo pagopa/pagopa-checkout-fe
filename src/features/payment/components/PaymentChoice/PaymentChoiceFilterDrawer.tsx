@@ -6,6 +6,7 @@ import {
   FormControlLabel,
   FormControl,
   Typography,
+  Checkbox,
 } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -51,6 +52,12 @@ export const PaymentChoiceFilterDrawer = (props: {
     onClose();
   };
 
+  // Handle cancel button click
+  const handleCancel = () => {
+    onSelect(paymentMethodFilter);
+    onClose();
+  };
+
   return (
     <CustomDrawer open={open} onClose={onClose}>
       <Box
@@ -64,7 +71,7 @@ export const PaymentChoiceFilterDrawer = (props: {
         }}
       >
         <Typography variant="h6" component={"div"}>
-          {t("paymentPspListPage.sort")}
+          {t("paymentChoicePage.drawer.title")}
         </Typography>
 
         <FormControl
@@ -78,10 +85,13 @@ export const PaymentChoiceFilterDrawer = (props: {
             }
           }}
         >
+          <Typography variant="body1">
+            {t("paymentChoicePage.drawer.byType")}
+          </Typography>
           <RadioGroup
             tabIndex={0}
-            aria-label="sorting-options"
-            name="sorting-options"
+            aria-label="paymentChoiceDrawer-options"
+            name="paymentChoiceDrawer-options"
             value={paymentMethodFilter}
             onChange={handlePaymentMethodFilterChanging}
           >
@@ -89,9 +99,9 @@ export const PaymentChoiceFilterDrawer = (props: {
               value={PaymentMethodFilterType.CARD}
               control={<Radio />}
               label={
-                <Box id="sort-psp-list-drawer-default-order">
+                <Box id="paymentChoiceDrawer-card">
                   <Typography variant="body1">
-                    {t("paymentPspListPage.drawer.sorting.default")}
+                    {t("paymentChoicePage.drawer.card")}
                   </Typography>
                 </Box>
               }
@@ -102,9 +112,9 @@ export const PaymentChoiceFilterDrawer = (props: {
               value={PaymentMethodFilterType.BALANCE}
               control={<Radio />}
               label={
-                <Box id="sort-psp-list-drawer-order-by-name">
+                <Box id="paymentChoiceDrawer-balance">
                   <Typography variant="body1">
-                    {t("paymentPspListPage.drawer.sorting.name")}
+                    {t("paymentChoicePage.drawer.balance")}
                   </Typography>
                 </Box>
               }
@@ -115,28 +125,63 @@ export const PaymentChoiceFilterDrawer = (props: {
               value={PaymentMethodFilterType.APP_APM}
               control={<Radio />}
               label={
-                <Box id="sort-psp-list-drawer-order-by-amount">
+                <Box id="paymentChoiceDrawer-appApm">
                   <Typography variant="body1">
-                    {t("paymentPspListPage.drawer.sorting.amount")}
+                    {t("paymentChoicePage.drawer.appApm")}
                   </Typography>
                 </Box>
               }
+              sx={{ mb: 2 }}
             />
           </RadioGroup>
         </FormControl>
-
+         <FormControl
+          component="fieldset"
+          sx={{ mt: 2 }}
+          onKeyDown={(e: React.KeyboardEvent<HTMLFieldSetElement>) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+              handleApply();
+            }
+          }}
+        >
+          <Typography variant="body1">
+            {t("paymentChoicePage.drawer.byFunc")}
+          </Typography>
+          <FormControlLabel control={<Checkbox />} 
+            label={
+              <Box id="paymentChoiceDrawer-payByPlan">
+                <Typography variant="body1">
+                  {t("paymentChoicePage.drawer.payByPlan")}
+                </Typography>
+              </Box>
+            }
+          />
+        </FormControl>
         {/* Spacer to push button to bottom */}
         <Box sx={{ flexGrow: 1 }} />
 
         {/* Apply button */}
         <Button
-          id="sort-psp-list-drawer"
+          id="paymentChoiceDrawer-applyFilter"
           variant="contained"
           fullWidth
           onClick={handleApply}
           sx={{ mt: 2 }}
         >
           {t("paymentPspListPage.drawer.showResults")}
+        </Button>
+
+        {/* Cancel button */}
+        <Button
+          id="paymentChoiceDrawer-cancelFilter"
+          variant="outlined"
+          fullWidth
+          onClick={handleCancel}
+          sx={{ mt: 2 }}
+        >
+          {t("paymentPspListPage.drawer.remove")}
         </Button>
       </Box>
     </CustomDrawer>

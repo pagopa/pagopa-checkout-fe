@@ -367,7 +367,18 @@
     "title": "Kako želite plačati?",
     "filterLabel": "Poišči metodo",
     "noPaymentMethodsAvailable": "Ni rezultatov. Poskusite z drugo ključno besedo.",
-    "filterButton": "Filtra"
+    "filterButton": "Filtra",
+    "drawer": {
+      "title": "Filtra Metodi",
+      "byType": "Per tipo",
+      "byFunc": "Per funzionalità",
+      "card": "Carta",
+      "balance": "Conto Corrente",
+      "appApm": "App e altri metodi",
+      "payByPlan": "Pagamento a rate",
+      "showResults": "Mostra risultati",
+      "remove": "Cancella tutti i filtri"
+    }
   },
   "paymentMethods": {
     "bpay": "BANCOMAT Pay",

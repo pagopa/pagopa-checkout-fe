@@ -366,7 +366,18 @@
     "title": "Wie möchtest du zahlen?",
     "filterLabel": "Methode suchen",
     "noPaymentMethodsAvailable": "Kein Ergebnis gefunden. Versuch es mit einem anderen Begriff.",
-    "filterButton": "Filtra"
+    "filterButton": "Filtra",
+    "drawer": {
+      "title": "Filtra Metodi",
+      "byType": "Per tipo",
+      "byFunc": "Per funzionalità",
+      "card": "Carta",
+      "balance": "Conto Corrente",
+      "appApm": "App e altri metodi",
+      "payByPlan": "Pagamento a rate",
+      "showResults": "Mostra risultati",
+      "remove": "Cancella tutti i filtri"
+    }
   },
   "paymentMethods": {
     "bpay": "BANCOMAT Pay",
