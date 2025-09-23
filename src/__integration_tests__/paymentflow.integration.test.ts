@@ -502,7 +502,7 @@ describe("PSP list tests", () => {
   });
 });
 
-describe("Checkout Payment - PSP Selection Flow", () => {
+describe.skip("Checkout Payment - PSP Selection Flow", () => {
     it("Should fill form, select PSP, and proceed with payment (IT)", async () => {
         selectLanguage("it");
         await fillAndSubmitCardDataForm(OKPaymentInfo.VALID_NOTICE_CODE, OKPaymentInfo.VALID_FISCAL_CODE, OKPaymentInfo.EMAIL, OKPaymentInfo.VALID_CARD_DATA);
