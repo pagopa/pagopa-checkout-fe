@@ -502,7 +502,7 @@ describe("PSP list tests", () => {
   });
 });
 
-describe.skip("Checkout Payment - PSP Selection Flow", () => {
+describe("Checkout Payment - PSP Selection Flow", () => {
     it("Should fill form, select PSP, and proceed with payment (IT)", async () => {
         selectLanguage("it");
         await fillAndSubmitCardDataForm(OKPaymentInfo.VALID_NOTICE_CODE, OKPaymentInfo.VALID_FISCAL_CODE, OKPaymentInfo.EMAIL, OKPaymentInfo.VALID_CARD_DATA);
@@ -520,7 +520,7 @@ describe.skip("Checkout Payment - PSP Selection Flow", () => {
             const url = request.url();
 
             if (url.includes('/ecommerce/checkout/v2/payment-methods/') && url.includes('/fees')) {
-                request.respond({
+                return request.respond({
                     status: 200,
                     contentType: 'application/json',
                     body: JSON.stringify({
@@ -556,7 +556,7 @@ describe.skip("Checkout Payment - PSP Selection Flow", () => {
                     }),
                 });
             } else {
-                request.continue();
+                return request.continue();
             }
         });
 
@@ -568,6 +568,7 @@ describe.skip("Checkout Payment - PSP Selection Flow", () => {
         );
 
         expect(await page.url()).toContain(URL.CHECKOUT_URL_PAYMENT_SUMMARY);
+        await page.setRequestInterception(false);
     });
 
 });
