@@ -36,54 +36,6 @@ page.setDefaultNavigationTimeout(20000);
 page.setDefaultTimeout(20000);
 
 beforeAll(async () => {
-  /*
-   * setup request interceptors
-   */
-  page.setRequestInterception(true);
-  page.on('request', request => {
-      if (request.isInterceptResolutionHandled()) return;
-      const url = request.url();
-
-      if (url.includes('/ecommerce/checkout/v2/payment-methods/') && url.includes('/fees')) {
-          return request.respond({
-              status: 200,
-              contentType: 'application/json',
-              body: JSON.stringify({
-                  asset: "https://assets.cdn.platform.pagopa.it/creditcard/generic.png",
-                  belowThreshold: true,
-                  brandAssets: {
-                      AMEX: "https://assets.cdn.platform.pagopa.it/creditcard/amex.png",
-                      DINERS: "https://assets.cdn.platform.pagopa.it/creditcard/diners.png",
-                      MAESTRO: "https://assets.cdn.platform.pagopa.it/creditcard/maestro.png",
-                      MASTERCARD: "https://assets.cdn.platform.pagopa.it/creditcard/mastercard.png",
-                      MC: "https://assets.cdn.platform.pagopa.it/creditcard/mastercard.png",
-                      VISA: "https://assets.cdn.platform.pagopa.it/creditcard/visa.png"
-                  },
-                  bundles: [
-                      {
-                          abi: "33111",
-                          bundleDescription: "Pagamenti con carte",
-                          bundleName: "Worldline Merchant Services Italia S.p.A.",
-                          idBrokerPsp: "05963231005",
-                          idBundle: "98d24e9a-ab8b-48e3-ae84-f0c16c64db3b",
-                          idChannel: "05963231005_01",
-                          idPsp: "BNLIITRR",
-                          onUs: true,
-                          paymentMethod: "CP",
-                          pspBusinessName: "Worldline Merchant Services Italia S.p.A.",
-                          taxPayerFee: 15,
-                          touchpoint: "CHECKOUT"
-                      },
-                  ],
-                  paymentMethodDescription: "payment method description (v2)",
-                  paymentMethodName: "test",
-                  paymentMethodStatus: "ENABLED"
-              }),
-          });
-      } else {
-          return request.continue();
-      }
-  });
   await page.goto(URL.CHECKOUT_URL, { waitUntil: "networkidle0" });
   await page.setViewport({ width: 1200, height: 907 });
 });
@@ -560,6 +512,57 @@ describe("Checkout Payment - PSP Selection Flow", () => {
 
     it("Should mock PSP list with one PSP and proceed with selection", async () => {
         selectLanguage("it");
+
+        await page.setRequestInterception(true);
+
+        page.on('request', request => {
+            if (request.isInterceptResolutionHandled()) {
+              return;
+            }
+            const url = request.url();
+            console.log("request url -> ", url)
+            if (url.includes('/ecommerce/checkout/v2/payment-methods/') && url.includes('/fees')) {
+              console.log("intercepted");
+                return request.respond({
+                    status: 200,
+                    contentType: 'application/json',
+                    body: JSON.stringify({
+                        asset: "https://assets.cdn.platform.pagopa.it/creditcard/generic.png",
+                        belowThreshold: true,
+                        brandAssets: {
+                            AMEX: "https://assets.cdn.platform.pagopa.it/creditcard/amex.png",
+                            DINERS: "https://assets.cdn.platform.pagopa.it/creditcard/diners.png",
+                            MAESTRO: "https://assets.cdn.platform.pagopa.it/creditcard/maestro.png",
+                            MASTERCARD: "https://assets.cdn.platform.pagopa.it/creditcard/mastercard.png",
+                            MC: "https://assets.cdn.platform.pagopa.it/creditcard/mastercard.png",
+                            VISA: "https://assets.cdn.platform.pagopa.it/creditcard/visa.png"
+                        },
+                        bundles: [
+                            {
+                                abi: "33111",
+                                bundleDescription: "Pagamenti con carte",
+                                bundleName: "Worldline Merchant Services Italia S.p.A.",
+                                idBrokerPsp: "05963231005",
+                                idBundle: "98d24e9a-ab8b-48e3-ae84-f0c16c64db3b",
+                                idChannel: "05963231005_01",
+                                idPsp: "BNLIITRR",
+                                onUs: true,
+                                paymentMethod: "CP",
+                                pspBusinessName: "Worldline Merchant Services Italia S.p.A.",
+                                taxPayerFee: 15,
+                                touchpoint: "CHECKOUT"
+                            },
+                        ],
+                        paymentMethodDescription: "payment method description (v2)",
+                        paymentMethodName: "test",
+                        paymentMethodStatus: "ENABLED"
+                    }),
+                });
+            } else {
+                return request.continue();
+            }
+        });
+
         await fillAndSubmitCardDataForm(
             OKPaymentInfo.VALID_NOTICE_CODE,
             OKPaymentInfo.VALID_FISCAL_CODE,
@@ -568,6 +571,10 @@ describe("Checkout Payment - PSP Selection Flow", () => {
         );
 
         expect(await page.url()).toContain(URL.CHECKOUT_URL_PAYMENT_SUMMARY);
+        await cancelPaymentAction();
+        //disable request interception
+        await page.setRequestInterception(false);
+        await page.off('request');
     });
 
 });
