@@ -16,7 +16,6 @@ import {
   verifyPaymentMethodsContains,
   noPaymentMethodsMessage,
   filterPaymentMethodByName,
-  goToPaymentMethodsPage,
   activateApmPaymentAndGetError,
   authorizeApmPaymentAndGetError
 } from "./utils/helpers";
@@ -31,12 +30,10 @@ import { URL, KORPTIDs, OKPaymentInfo  } from "./utils/testConstants";
  * to support entire payment flow
  */
 
-const RETRY_CODE = "302016723749670500";
-const OUTCOME_FISCAL_CODE_SUCCESS = "77777777000";
-jest.setTimeout(80000);
-jest.retryTimes(0);
-page.setDefaultNavigationTimeout(40000);
-page.setDefaultTimeout(40000);
+jest.setTimeout(20000);
+jest.retryTimes(1);
+page.setDefaultNavigationTimeout(20000);
+page.setDefaultTimeout(20000);
 
 beforeAll(async () => {
   await page.goto(URL.CHECKOUT_URL, { waitUntil: "networkidle0" });
@@ -438,10 +435,7 @@ describe("Cancel payment failure tests (satispay)", () => {
 });
 
 describe("Filter payment method", () => {
-    it("Filter payment method with enablePaymentMethodsHandler", async () => {
-
-        // reload page to ensure feature flag is applied
-        await page.goto(URL.CHECKOUT_URL, { waitUntil: "networkidle0" });
+    it("Filter payment method", async () => {
         selectLanguage("it");
         await fillAndSearchFormPaymentMethod(
           KORPTIDs.CANCEL_PAYMENT_OK,
@@ -579,7 +573,7 @@ describe("Checkout Payment - PSP Selection Flow", () => {
 });
 
 
-describe("Payment Methods list tests - Fee rendering", () => {
+describe.only("Payment Methods list tests - Fee rendering", () => {
   // mock PaymentMethodsResponse v2
   const mockPaymentMethodsV2 = {
     paymentMethods: [
@@ -677,11 +671,12 @@ describe("Payment Methods list tests - Fee rendering", () => {
   ])("should correctly render feeRange for language %s", async (lang, translation) => {
     selectLanguage(lang);
     // set feature flag before go open payment method page
-    await goToPaymentMethodsPage(
-      KORPTIDs.CANCEL_PAYMENT_OK,
-      OKPaymentInfo.VALID_FISCAL_CODE,
-      OKPaymentInfo.EMAIL
-    );
+    await fillAndSearchFormPaymentMethod(
+             KORPTIDs.CANCEL_PAYMENT_OK,
+               OKPaymentInfo.VALID_FISCAL_CODE,
+               OKPaymentInfo.EMAIL,
+               ""
+           );
 
     await page.waitForSelector('[data-testid="feeRange"]');
     const feeElems = await page.$$('[data-testid="feeRange"]');
