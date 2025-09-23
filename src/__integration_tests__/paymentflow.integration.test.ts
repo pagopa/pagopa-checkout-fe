@@ -591,34 +591,67 @@ describe("Checkout Payment - PSP Selection Flow", () => {
 
 
 describe.only("Payment Methods list tests - Fee rendering", () => {
-  const mockPaymentMethods = {
+  // mock PaymentMethodsResponse v2
+  const mockPaymentMethodsV2 = {
     paymentMethods: [
       {
-        description: "Carte",
         id: "3ebea7a1-2e77-4a1b-ac1b-3aca0d67f813",
-        methodManagement: "ONBOARDABLE",
-        name: "Carte",
+        name: {
+          "IT": "Carte",
+          "EN": "Cards"
+        },
+        description: {
+          "IT": "Carte di credito, debito e prepagate",
+          "EN": "Credit, debit and prepaid cards"
+        },
+        status: "ENABLED",
+        validityDateFrom: "2023-01-01T00:00:00Z",
         paymentTypeCode: "CP",
-        feeRange: { min: 10, max: 10 }, //  single case
-        status: "ENABLED",
+        paymentMethodTypes: ["CARD"],
+        paymentMethodAsset: "https://assets.cdn.platform.pagopa.it/creditcard/generic.png",
+        methodManagement: "ONBOARDABLE",
+        feeRange: { min: 1000, max: 1000 }, // euroCents - single case
+        paymentMethodsBrandAssets: {
+          "VISA": "https://assets.cdn.platform.pagopa.it/creditcard/visa.png",
+          "MASTERCARD": "https://assets.cdn.platform.pagopa.it/creditcard/mastercard.png"
+        }
       },
       {
-        description: "Paga con Postepay",
         id: "1c12349f-8133-42f3-ad96-7e6527d27a41",
-        methodManagement: "REDIRECT",
-        name: "Paga con Poste Pay",
-        paymentTypeCode: "RBPP",
-        feeRange: { min: 5, max: 10 }, //  range case
+        name: {
+          "IT": "Paga con Postepay",
+          "EN": "Pay with Postepay"
+        },
+        description: {
+          "IT": "Paga con Postepay",
+          "EN": "Pay with Postepay"
+        },
         status: "ENABLED",
+        validityDateFrom: "2023-01-01T00:00:00Z",
+        paymentTypeCode: "RBPP",
+        paymentMethodTypes: ["REDIRECT"],
+        paymentMethodAsset: "https://assets.cdn.platform.pagopa.it/postepay/postepay.png",
+        methodManagement: "REDIRECT",
+        feeRange: { min: 500, max: 1000 } // euroCents - range case
       },
       {
-      description: "MyBank",
-      id: "2c61e6ed-f874-4b30-97ef-bdf89d488ee4",
-      methodManagement: "NOT_ONBOARDABLE",
-      name: "MYBANK",
-      paymentTypeCode: "MYBK",
-      status: "ENABLED",
-    }
+        id: "2c61e6ed-f874-4b30-97ef-bdf89d488ee4",
+        name: {
+          "IT": "MyBank",
+          "EN": "MyBank"
+        },
+        description: {
+          "IT": "MyBank",
+          "EN": "MyBank"
+        },
+        status: "ENABLED",
+        validityDateFrom: "2023-01-01T00:00:00Z",
+        paymentTypeCode: "MYBK",
+        paymentMethodTypes: ["REDIRECT"],
+        paymentMethodAsset: "https://assets.cdn.platform.pagopa.it/mybank/mybank.png",
+        methodManagement: "NOT_ONBOARDABLE"
+        // no feeRange - missing case
+      }
     ]
   };
 
@@ -638,7 +671,7 @@ describe.only("Payment Methods list tests - Fee rendering", () => {
         request.respond({
           status: 200,
           contentType: "application/json",
-          body: JSON.stringify(mockPaymentMethods),
+          body: JSON.stringify(mockPaymentMethodsV2),
         });
       } else {
         request.continue();
@@ -667,18 +700,19 @@ describe.only("Payment Methods list tests - Fee rendering", () => {
     // single case
     const expectedSingleText = translation.paymentChoicePage.feeSingle.replace(
       "{{value}}",
-      numberFormatter.format(Number.parseInt(mockPaymentMethods.paymentMethods[0].feeRange?.min.toString()??"") / Math.pow(10, 2)));
+      numberFormatter.format((mockPaymentMethodsV2.paymentMethods[0].feeRange?.min ?? 0) / 100));
     const singleText = await feeElems[0].evaluate(el => el.textContent);
     expect(singleText).toBe(expectedSingleText);
 
     // range case
     const expectedRangeText = translation.paymentChoicePage.feeRange
-      .replace("{{min}}", numberFormatter.format(Number.parseInt(mockPaymentMethods.paymentMethods[1].feeRange?.min.toString()??"") / Math.pow(10, 2)))
-      .replace("{{max}}", numberFormatter.format(Number.parseInt(mockPaymentMethods.paymentMethods[1].feeRange?.max.toString()??"") / Math.pow(10, 2)));
+      .replace("{{min}}", numberFormatter.format((mockPaymentMethodsV2.paymentMethods[1].feeRange?.min ?? 0) / 100))
+      .replace("{{max}}", numberFormatter.format((mockPaymentMethodsV2.paymentMethods[1].feeRange?.max ?? 0) / 100));
       console.log("expectedRangeText: ",expectedRangeText);
     const rangeText = await feeElems[1].evaluate(el => el.textContent);
     expect(rangeText).toBe(expectedRangeText);
-    //missing feeRange
+
+    // missing feeRange
     expect(feeElems.length).toBe(2);
   });
 });
