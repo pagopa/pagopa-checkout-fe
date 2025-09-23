@@ -662,14 +662,16 @@ describe("Payment Methods list tests - Fee rendering", () => {
     const expectedSingleText = translation.paymentChoicePage.feeSingle.replace(
       "{{value}}",
       mockPaymentMethods?.paymentMethods[0]?.feeRange?.min?.toString() ?? "0"
-    );
+    ).concat(" €");
     const singleText = await feeElems[0].evaluate(el => el.textContent);
     expect(singleText).toBe(expectedSingleText);
 
     // range case
     const expectedRangeText = translation.paymentChoicePage.feeRange
       .replace("{{min}}", mockPaymentMethods?.paymentMethods[1]?.feeRange?.min?.toString()?? "10")
-      .replace("{{max}}", mockPaymentMethods.paymentMethods[1]?.feeRange?.max?.toString() ?? "10");
+      .replace("{{max}}", mockPaymentMethods.paymentMethods[1]?.feeRange?.max?.toString() ?? "10")
+      .concat(" €");
+      console.log("expectedRangeText: ",expectedRangeText);
     const rangeText = await feeElems[1].evaluate(el => el.textContent);
     expect(rangeText).toBe(expectedRangeText);
     //missing feeRange
