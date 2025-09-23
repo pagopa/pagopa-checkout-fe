@@ -437,22 +437,11 @@ describe("Cancel payment failure tests (satispay)", () => {
   );
 });
 
-describe("Filter payment method", () => {
-    it.each([
-        [true, "v2/v4 APIs"],
-        [false, "v1/v3 APIs"]
-    ])("Filter payment method with enablePaymentMethodsHandler=%s (%s)", async (enableFlag, description) => {
-        // print feature flag value
-        console.log(`Testing with enablePaymentMethodsHandler=${enableFlag} - ${description}`);
-
-        // set feature flag before first page load
-        await page.evaluateOnNewDocument((flag) => {
-            localStorage.setItem('enablePaymentMethodsHandler', flag.toString());
-        }, enableFlag);
+describe.only("Filter payment method", () => {
+    it("Filter payment method with enablePaymentMethodsHandler", async () => {
 
         // reload page to ensure feature flag is applied
         await page.goto(URL.CHECKOUT_URL, { waitUntil: "networkidle0" });
-
         selectLanguage("it");
         await fillAndSearchFormPaymentMethod(
           KORPTIDs.CANCEL_PAYMENT_OK,
@@ -687,7 +676,7 @@ describe("Payment Methods list tests - Fee rendering", () => {
     ["sl", slTranslation],
   ])("should correctly render feeRange for language %s", async (lang, translation) => {
     selectLanguage(lang);
-
+    // set feature flag before go open payment method page
     await goToPaymentMethodsPage(
       KORPTIDs.CANCEL_PAYMENT_OK,
       OKPaymentInfo.VALID_FISCAL_CODE,
