@@ -574,9 +574,7 @@ describe("Checkout Payment - PSP Selection Flow", () => {
 
 
 describe("Payment Methods list tests - Fee rendering", () => {
-  // mock PaymentMethodsResponse v2
   
-
   const numberFormatter =
   new Intl.NumberFormat("it-IT", {
     style: "currency",
@@ -595,16 +593,17 @@ describe("Payment Methods list tests - Fee rendering", () => {
     
   ])("should correctly render feeRange for language %s", async (lang, translation) => {
     selectLanguage(lang);
+    console.log("navigate to payment method choose page...");
     await fillAndSearchFormPaymentMethod(
              KORPTIDs.CANCEL_PAYMENT_OK,
                OKPaymentInfo.VALID_FISCAL_CODE,
                OKPaymentInfo.EMAIL,
                ""
            );
-
+    console.log("searching for feeRange elements...");
     await page.waitForSelector('[data-testid="feeRange"]');
     const feeElems = await page.$$('[data-testid="feeRange"]');
-
+    console.log("Found fees elements: ",feeElems.length);
     // single case
     const expectedSingleText = translation.paymentChoicePage.feeSingle.replace(
       "{{value}}",
