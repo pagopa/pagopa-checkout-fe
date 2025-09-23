@@ -39,10 +39,39 @@ export const activatePaymentAndGetError = async (
   fiscalCode,
   email,
   cardData,
-  selectorId
+  selectorId,
+  useApm
 ) => {
   await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
   const errorMessageElem = await page.waitForSelector(selectorId);
+  return await errorMessageElem.evaluate((el) => el.textContent);
+};
+
+export const activateApmPaymentAndGetError = async (
+  noticeCode,
+  fiscalCode,
+  email,
+  selectorId
+) => {
+  await chooseApmMethod(noticeCode, fiscalCode, email, "SATY");
+  const errorMessageElem = await page.waitForSelector(selectorId);
+  return await errorMessageElem.evaluate((el) => el.textContent);
+};
+
+export const authorizeApmPaymentAndGetError = async (
+  noticeCode,
+  fiscalCode,
+  email,
+  paymentTypeCode,
+  errorMessageTitleSelector
+) => {
+  const payBtnSelector = "#paymentCheckPageButtonPay";
+  await chooseApmMethod(noticeCode, fiscalCode, email, paymentTypeCode);
+  const payBtn = await page.waitForSelector(payBtnSelector);
+  await payBtn.click();
+  const errorMessageElem = await page.waitForSelector(
+    errorMessageTitleSelector
+  );
   return await errorMessageElem.evaluate((el) => el.textContent);
 };
 
@@ -181,6 +210,23 @@ export const fillAndSubmitCardDataForm = async (
   await fillEmailForm(email);
   await choosePaymentMethod("CP");
   await fillCardDataForm(cardData);
+  await tryHandlePspPickerPage();
+};
+
+export const chooseApmMethod = async (
+  noticeCode,
+  fiscalCode,
+  email,
+  paymentTypeCode
+) => {
+  const payNoticeBtnSelector = "#paymentSummaryButtonPay";
+  await fillPaymentNotificationForm(noticeCode, fiscalCode);
+  const payNoticeBtn = await page.waitForSelector(payNoticeBtnSelector, {
+    visible: true,
+  });
+  await payNoticeBtn.click();
+  await fillEmailForm(email);
+  await choosePaymentMethod(paymentTypeCode);
   await tryHandlePspPickerPage();
 };
 
