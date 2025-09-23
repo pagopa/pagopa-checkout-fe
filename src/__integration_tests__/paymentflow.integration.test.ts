@@ -592,7 +592,12 @@ describe("Payment Methods list tests - Fee rendering", () => {
     ["sl", slTranslation],
     
   ])("should correctly render feeRange for language %s", async (lang, translation) => {
+    //make sure taht payment method handler ff is enabled
     selectLanguage(lang);
+    await page.evaluate(() => {
+      sessionStorage.setItem('enablePaymentMethodsHandler', "true");
+    });
+
     console.log("navigate to payment method choose page...");
     await fillAndSearchFormPaymentMethod(
              KORPTIDs.CANCEL_PAYMENT_OK,
