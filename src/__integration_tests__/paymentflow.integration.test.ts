@@ -389,7 +389,7 @@ describe("Checkout fails to calculate fee", () => {
   );
 });
 
-describe("Cancel payment tests", () => {
+describe.only("Cancel payment tests", () => {
   it.each([
     ["it", itTranslation],
     ["en", enTranslation],
