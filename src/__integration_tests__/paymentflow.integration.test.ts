@@ -573,7 +573,7 @@ describe("Checkout Payment - PSP Selection Flow", () => {
 });
 
 
-describe.only("Payment Methods list tests - Fee rendering", () => {
+describe("Payment Methods list tests - Fee rendering", () => {
   // mock PaymentMethodsResponse v2
   const mockPaymentMethodsV2 = {
     paymentMethods: [
