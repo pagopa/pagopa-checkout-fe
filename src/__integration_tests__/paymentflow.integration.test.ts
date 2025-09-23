@@ -651,13 +651,13 @@ describe("Payment Methods list tests - Fee rendering", () => {
     await page.setRequestInterception(true);
     page.on("request", (request) => {
       if (request.url().includes("/ecommerce/checkout/v2/payment-methods")) {
-        request.respond({
+        return request.respond({
           status: 200,
           contentType: "application/json",
           body: JSON.stringify(mockPaymentMethodsV2),
         });
       } else {
-        request.continue();
+        return request.continue();
       }
     });
   });
