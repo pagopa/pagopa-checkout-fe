@@ -3,6 +3,12 @@ import { PaymentInstrumentsType } from "../../models/paymentModel";
 import { PaymentMethodStatusEnum } from "../../../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
 import { PaymentTypeCodeEnum } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 
+export const paymentTypeTranslationKeys: Record<string, string> = {
+  CARTE: "paymentChoicePage.drawer.card",
+  CONTO: "paymentChoicePage.drawer.balance",
+  APP:   "paymentChoicePage.drawer.appApm",
+};
+
 const isFirstPaymentMethod = (method: PaymentInstrumentsType) =>
   method.paymentTypeCode === PaymentTypeCodeEnum.CP;
 

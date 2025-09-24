@@ -8,7 +8,7 @@ import {
   Typography,
   Checkbox,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
   PaymentMethodFilter,
@@ -62,6 +62,10 @@ export const PaymentChoiceFilterDrawer = (props: {
     }));
   };
 
+  useEffect(() => {
+    onSelect(paymentMethodFilter);
+  }, [paymentMethodFilter]);
+
   // Handle apply button click
   const handleApply = () => {
     onSelect(paymentMethodFilter);
@@ -70,10 +74,18 @@ export const PaymentChoiceFilterDrawer = (props: {
 
   // Handle cancel button click
   const handleCancel = () => {
-    onSelect(paymentMethodFilter);
-    onClose();
-    
+    const defaultPaymentMethodFilter: PaymentMethodFilter = {
+      paymentType: undefined,  
+      installment: false       
+    };
+    setPaymentMethodFilter(defaultPaymentMethodFilter)
+    onSelect(defaultPaymentMethodFilter);
+    onClose();    
   };
+
+  const isDefaultFilter = 
+  paymentMethodFilter.paymentType == undefined &&
+  paymentMethodFilter.installment === false;
 
   return (
     <CustomDrawer open={open} onClose={onClose}>
@@ -109,7 +121,7 @@ export const PaymentChoiceFilterDrawer = (props: {
             tabIndex={0}
             aria-label="paymentChoiceDrawer-options"
             name="paymentChoiceDrawer-options"
-            value={paymentMethodFilter.paymentType}
+            value={paymentMethodFilter.paymentType || ''}
             onChange={handlePaymentMethodFilterChanging}
           >
             <FormControlLabel
@@ -198,13 +210,14 @@ export const PaymentChoiceFilterDrawer = (props: {
 
         {/* Cancel button */}
         <Button
+          disabled={isDefaultFilter}
           id="paymentChoiceDrawer-cancelFilter"
           variant="outlined"
           fullWidth
           onClick={handleCancel}
           sx={{ mt: 2 }}
         >
-          {t("paymentPspListPage.drawer.remove")}
+          {t("paymentChoicePage.drawer.remove")}
         </Button>
       </Box>
     </CustomDrawer>

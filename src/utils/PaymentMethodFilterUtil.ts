@@ -1,7 +1,7 @@
 export enum PaymentMethodFilterType {
-  CARD = "CARD",
-  BALANCE = "BALANCE",
-  APP_APM = "APP_APM",
+  CARD = "CARTE",
+  BALANCE = "CONTO",
+  APP_APM = "APP",
 }
 
 export type PaymentMethodFilter = {

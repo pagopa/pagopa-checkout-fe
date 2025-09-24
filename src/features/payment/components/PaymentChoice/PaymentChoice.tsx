@@ -10,6 +10,7 @@ import {
   InputAdornment,
   IconButton,
   Stack,
+  Chip,
 } from "@mui/material";
 import { t } from "i18next";
 import {
@@ -39,9 +40,10 @@ import { CheckoutRoutes } from "../../../../routes/models/routeModel";
 import { onErrorActivate } from "../../../../utils/api/transactionsErrorHelper";
 import { PaymentTypeCodeEnum } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 import { DisabledPaymentMethods, MethodComponentList } from "./PaymentMethod";
-import { getNormalizedMethods } from "./utils";
+import { getNormalizedMethods, paymentTypeTranslationKeys } from "./utils";
 import { PaymentChoiceFilterDrawer } from "./PaymentChoiceFilterDrawer";
 import { PaymentMethodFilter } from "utils/PaymentMethodFilterUtil";
+import { ButtonNaked } from "@pagopa/mui-italia";
 
 export function PaymentChoice(props: {
   amount: number;
@@ -145,13 +147,14 @@ export function PaymentChoice(props: {
       .indexOf(paymentMethodFilter.toLowerCase()) > -1;
 
   const filterPaymentMethodsCombined = (p: PaymentInstrumentsType) => {
-    const matchesText = p.description.toLowerCase().includes(paymentMethodFilter.toLowerCase());
-    const matchesType =
-      !paymentMethodFilterState.paymentType || p.paymentTypeCode === "RBPP";
-    const matchesInstallment = true;
-      //!paymentMethodFilterState.installment || p.installment === paymentMethodFilterState.installment;
+    const hasInstallment = p.metadata?.INSTALLMENTS === "true";
 
-    return matchesText && matchesType && matchesInstallment;
+    const matchesText = filterPaymentMethods(p);
+    const matchesType =
+      !paymentMethodFilterState.paymentType || p.paymentMethodTypes?.includes(paymentMethodFilterState.paymentType);
+    const matchesInstallment =
+  !paymentMethodFilterState.installment || hasInstallment === paymentMethodFilterState.installment;
+  return matchesText && matchesType && matchesInstallment;
   };
 
   const getFilteredPaymentMethods = (paymentMethods: Array<PaymentInstrumentsType>) =>
@@ -194,16 +197,19 @@ export function PaymentChoice(props: {
     } else {
       setPaymentMethodFilterState({ paymentType: undefined, installment: false });
     }
-
-    console.log("Filtro selezionato:", filter);
-     console.log("Filtro selezionato:", paymentMethodFilterState);
   };
 
   const noPaymentMethodsVisible = () =>
     paymentMethods.enabled
       .concat(paymentMethods.disabled)
-      .filter(filterPaymentMethods).length === 0 &&
+      .filter(filterPaymentMethodsCombined).length === 0 &&
     paymentMethods.enabled.concat(paymentMethods.disabled).length > 0;
+ const handleClick = () => {
+    console.info('You clicked the Chip.');
+  };
+    const handleDelete = () => {
+    console.info('You clicked the delete icon.');
+  };
 
   return (
     <>
@@ -264,6 +270,22 @@ export function PaymentChoice(props: {
               <FilterList />
             </ButtonNaked>
           </Stack>
+          
+          {paymentMethodFilterState && paymentMethodFilterState.paymentType && 
+          <Chip
+            color="success"
+            sx={{ mt: 2 }} 
+            label={
+              paymentMethodFilterState.paymentType
+                ? t(paymentTypeTranslationKeys[paymentMethodFilterState.paymentType])
+                : ""
+            }
+            onClick={handleClick}
+            onDelete={handleDelete}
+          />
+         
+          }        
+     
           <MethodComponentList
             methods={getFilteredPaymentMethods(paymentMethods.enabled)}
             onClick={handleClickOnMethod}
