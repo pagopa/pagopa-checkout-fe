@@ -132,6 +132,7 @@ const KEYS_TO_PRESERVE = [
   SessionItems.enableAuthentication,
   SessionItems.enableScheduledMaintenanceBanner,
   SessionItems.mixpanelInitialized,
+  SessionItems.enablePaymentMethodsHandler,
 ] as const;
 
 export const clearStorageAndMaintainAuthData = () => {
