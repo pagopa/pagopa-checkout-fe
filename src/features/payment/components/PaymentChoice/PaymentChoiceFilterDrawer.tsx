@@ -34,19 +34,19 @@ export const PaymentChoiceFilterDrawer = (props: {
       : false,
   });
   // Initialize sorting type
-  const [paymentMethodFilter, setPaymentMethodFilter] = React.useState<PaymentMethodFilter>(
-    getInitialFilterSelected()
-  );
+  const [paymentMethodFilter, setPaymentMethodFilter] =
+    React.useState<PaymentMethodFilter>(getInitialFilterSelected());
 
-  const handleInstallmentChanging = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const checked = event.target.checked; 
+  const handleInstallmentChanging = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const checked = event.target.checked;
 
-    setPaymentMethodFilter(prev => ({
-      ...prev,         
-      installment: checked, 
+    setPaymentMethodFilter((prev) => ({
+      ...prev,
+      installment: checked,
     }));
   };
-
 
   // Handle radio selection change
   const handlePaymentMethodFilterChanging = (
@@ -56,7 +56,7 @@ export const PaymentChoiceFilterDrawer = (props: {
     console.log(event);
     const value = event.target.value as PaymentMethodFilterType;
 
-    setPaymentMethodFilter(prev => ({
+    setPaymentMethodFilter((prev) => ({
       ...prev,
       paymentType: value,
     }));
@@ -75,17 +75,17 @@ export const PaymentChoiceFilterDrawer = (props: {
   // Handle cancel button click
   const handleCancel = () => {
     const defaultPaymentMethodFilter: PaymentMethodFilter = {
-      paymentType: undefined,  
-      installment: false       
+      paymentType: undefined,
+      installment: false,
     };
-    setPaymentMethodFilter(defaultPaymentMethodFilter)
+    setPaymentMethodFilter(defaultPaymentMethodFilter);
     onSelect(defaultPaymentMethodFilter);
-    onClose();    
+    onClose();
   };
 
-  const isDefaultFilter = 
-  paymentMethodFilter.paymentType == undefined &&
-  paymentMethodFilter.installment === false;
+  const isDefaultFilter =
+    paymentMethodFilter.paymentType == undefined &&
+    paymentMethodFilter.installment === false;
 
   return (
     <CustomDrawer open={open} onClose={onClose}>
@@ -114,14 +114,14 @@ export const PaymentChoiceFilterDrawer = (props: {
             }
           }}
         >
-          <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+          <Typography variant="body1" sx={{ fontWeight: "bold" }}>
             {t("paymentChoicePage.drawer.byType")}
           </Typography>
           <RadioGroup
             tabIndex={0}
             aria-label="paymentChoiceDrawer-options"
             name="paymentChoiceDrawer-options"
-            value={paymentMethodFilter.paymentType || ''}
+            value={paymentMethodFilter.paymentType || ""}
             onChange={handlePaymentMethodFilterChanging}
           >
             <FormControlLabel
@@ -164,7 +164,7 @@ export const PaymentChoiceFilterDrawer = (props: {
             />
           </RadioGroup>
         </FormControl>
-         <FormControl
+        <FormControl
           component="fieldset"
           sx={{ mt: 2 }}
           onKeyDown={(e: React.KeyboardEvent<HTMLFieldSetElement>) => {
@@ -175,16 +175,16 @@ export const PaymentChoiceFilterDrawer = (props: {
             }
           }}
         >
-          <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+          <Typography variant="body1" sx={{ fontWeight: "bold" }}>
             {t("paymentChoicePage.drawer.byFunc")}
           </Typography>
-          <FormControlLabel 
+          <FormControlLabel
             control={
-              <Checkbox 
+              <Checkbox
                 checked={paymentMethodFilter.installment}
                 onChange={handleInstallmentChanging}
               />
-            } 
+            }
             label={
               <Box id="paymentChoiceDrawer-payByPlan">
                 <Typography variant="body1">

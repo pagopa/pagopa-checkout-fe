@@ -20,6 +20,8 @@ import {
   Search,
 } from "@mui/icons-material";
 import { constVoid } from "fp-ts/function";
+import { PaymentMethodFilter } from "utils/PaymentMethodFilterUtil";
+import { ButtonNaked } from "@pagopa/mui-italia";
 import { getMethodDescriptionForCurrentLanguage } from "../../../../utils/paymentMethods/paymentMethodsHelper";
 import TextFormField from "../../../../components/TextFormField/TextFormField";
 import InformationModal from "../../../../components/modals/InformationModal";
@@ -42,8 +44,6 @@ import { PaymentTypeCodeEnum } from "../../../../../generated/definitions/paymen
 import { DisabledPaymentMethods, MethodComponentList } from "./PaymentMethod";
 import { getNormalizedMethods, paymentTypeTranslationKeys } from "./utils";
 import { PaymentChoiceFilterDrawer } from "./PaymentChoiceFilterDrawer";
-import { PaymentMethodFilter } from "utils/PaymentMethodFilterUtil";
-import { ButtonNaked } from "@pagopa/mui-italia";
 
 export function PaymentChoice(props: {
   amount: number;
@@ -58,10 +58,11 @@ export function PaymentChoice(props: {
   const [pspNotFoundModal, setPspNotFoundModalOpen] = React.useState(false);
   const [paymentMethodFilter, setPaymentMethodFilter] = React.useState("");
 
-  const [paymentMethodFilterState, setPaymentMethodFilterState] = React.useState<PaymentMethodFilter>({
-    paymentType: undefined,
-    installment: false,
-  });
+  const [paymentMethodFilterState, setPaymentMethodFilterState] =
+    React.useState<PaymentMethodFilter>({
+      paymentType: undefined,
+      installment: false,
+    });
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -151,14 +152,17 @@ export function PaymentChoice(props: {
 
     const matchesText = filterPaymentMethods(p);
     const matchesType =
-      !paymentMethodFilterState.paymentType || p.paymentMethodTypes?.includes(paymentMethodFilterState.paymentType);
+      !paymentMethodFilterState.paymentType ||
+      p.paymentMethodTypes?.includes(paymentMethodFilterState.paymentType);
     const matchesInstallment =
-  !paymentMethodFilterState.installment || hasInstallment === paymentMethodFilterState.installment;
-  return matchesText && matchesType && matchesInstallment;
+      !paymentMethodFilterState.installment ||
+      hasInstallment === paymentMethodFilterState.installment;
+    return matchesText && matchesType && matchesInstallment;
   };
 
-  const getFilteredPaymentMethods = (paymentMethods: Array<PaymentInstrumentsType>) =>
-    paymentMethods.filter(filterPaymentMethodsCombined);
+  const getFilteredPaymentMethods = (
+    paymentMethods: Array<PaymentInstrumentsType>
+  ) => paymentMethods.filter(filterPaymentMethodsCombined);
 
   const handleClickOnMethod = async (method: PaymentInstrumentsType) => {
     if (!loading) {
@@ -191,11 +195,13 @@ export function PaymentChoice(props: {
     paymentMethodFilter !== undefined && paymentMethodFilter !== "";
 
   const applyPaymentFilter = (filter: PaymentMethodFilter | null) => {
-    
     if (filter) {
       setPaymentMethodFilterState(filter);
     } else {
-      setPaymentMethodFilterState({ paymentType: undefined, installment: false });
+      setPaymentMethodFilterState({
+        paymentType: undefined,
+        installment: false,
+      });
     }
   };
 
@@ -204,11 +210,11 @@ export function PaymentChoice(props: {
       .concat(paymentMethods.disabled)
       .filter(filterPaymentMethodsCombined).length === 0 &&
     paymentMethods.enabled.concat(paymentMethods.disabled).length > 0;
- const handleClick = () => {
-    console.info('You clicked the Chip.');
+  const handleClick = () => {
+    console.info("You clicked the Chip.");
   };
-    const handleDelete = () => {
-    console.info('You clicked the delete icon.');
+  const handleDelete = () => {
+    console.info("You clicked the delete icon.");
   };
 
   return (
@@ -270,22 +276,33 @@ export function PaymentChoice(props: {
               <FilterList />
             </ButtonNaked>
           </Stack>
-          
-          {paymentMethodFilterState && paymentMethodFilterState.paymentType && 
-          <Chip
-            color="success"
-            sx={{ mt: 2 }} 
-            label={
-              paymentMethodFilterState.paymentType
-                ? t(paymentTypeTranslationKeys[paymentMethodFilterState.paymentType])
-                : ""
-            }
-            onClick={handleClick}
-            onDelete={handleDelete}
-          />
-         
-          }        
-     
+
+          {paymentMethodFilterState && paymentMethodFilterState.paymentType && (
+            <Chip
+              sx={{
+                mt: 2,
+                "&.MuiChip-root": {
+                  backgroundColor: "#E1F5FE", // sfondo
+                  color: "#215C76", // testo
+                },
+                "& .MuiChip-deleteIcon": {
+                  color: "#215C76", // icona "X"
+                },
+              }}
+              label={
+                paymentMethodFilterState.paymentType
+                  ? t(
+                      paymentTypeTranslationKeys[
+                        paymentMethodFilterState.paymentType
+                      ]
+                    )
+                  : ""
+              }
+              onClick={handleClick}
+              onDelete={handleDelete}
+            />
+          )}
+
           <MethodComponentList
             methods={getFilteredPaymentMethods(paymentMethods.enabled)}
             onClick={handleClickOnMethod}

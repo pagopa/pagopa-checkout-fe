@@ -6,7 +6,7 @@ import { PaymentTypeCodeEnum } from "../../../../../generated/definitions/paymen
 export const paymentTypeTranslationKeys: Record<string, string> = {
   CARTE: "paymentChoicePage.drawer.card",
   CONTO: "paymentChoicePage.drawer.balance",
-  APP:   "paymentChoicePage.drawer.appApm",
+  APP: "paymentChoicePage.drawer.appApm",
 };
 
 const isFirstPaymentMethod = (method: PaymentInstrumentsType) =>

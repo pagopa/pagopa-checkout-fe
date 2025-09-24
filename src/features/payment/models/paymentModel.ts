@@ -112,7 +112,6 @@ export interface PaymentInstrumentsType {
   brandAsset?: MapField;
   paymentMethodTypes?: Array<string>;
   metadata?: PaymentMethodResponseMetadata;
-  
 }
 
 export interface PaymentNotice {
