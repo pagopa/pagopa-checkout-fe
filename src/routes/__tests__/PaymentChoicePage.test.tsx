@@ -260,12 +260,8 @@ jest.mock(
   "../../features/payment/components/PaymentChoice/PaymentChoiceFilterDrawer",
   () => ({
     __esModule: true,
-    default: ({ open, children, ...props }: any) =>
-      open ? (
-        <div data-testid="payment-choice-drawer" {...props}>
-          {children}
-        </div>
-      ) : null,
+    PaymentChoiceFilterDrawer: ({ open, children, ...props }: any) =>
+      open ? <div data-testid="payment-choice-drawer" {...props}>{children}</div> : null,
   })
 );
 
@@ -356,17 +352,13 @@ jest.mock("@mui/material", () => ({
   Stack: ({ children, ...props }: any) => <div {...props}>{children}</div>,
   styled: jest.fn(() => (component: any) => component),
 }));
-
-// Mock @pagopa/mui-italia to prevent styled function issues
 jest.mock("@pagopa/mui-italia", () => ({
+  __esModule: true,
   ThemeProvider: ({ children }: any) => children,
   theme: {},
   Illustration: ({ children, ...props }: any) => (
     <div {...props}>{children}</div>
   ),
-}));
-
-jest.mock("@pagopa/mui-italia", () => ({
   ButtonNaked: () => <span>Button</span>,
 }));
 
