@@ -97,7 +97,7 @@ export const PaymentPspListSortingDrawer = (props: {
         }}
       >
         <Typography variant="h6" component={"div"}>
-          {t("paymentChoicePage.drawer.title")}
+          {t("paymentPspListPage.sort")}
         </Typography>
 
         <FormControl
