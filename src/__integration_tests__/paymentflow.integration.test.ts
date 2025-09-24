@@ -1,7 +1,6 @@
 import {
   verifyPaymentAndGetError,
   activatePaymentAndGetError,
-  authorizePaymentAndGetError,
   checkPspDisclaimerBeforeAuthorizePayment,
   checkErrorOnCardDataFormSubmit,
   cancelPaymentOK,
@@ -17,6 +16,8 @@ import {
   verifyPaymentMethodsContains,
   noPaymentMethodsMessage,
   filterPaymentMethodByName,
+  activateApmPaymentAndGetError,
+  authorizeApmPaymentAndGetError
 } from "./utils/helpers";
 import itTranslation from "../translations/it/translations.json";
 import deTranslation from "../translations/de/translations.json";
@@ -29,12 +30,10 @@ import { URL, KORPTIDs, OKPaymentInfo  } from "./utils/testConstants";
  * to support entire payment flow
  */
 
-const RETRY_CODE = "302016723749670500";
-const OUTCOME_FISCAL_CODE_SUCCESS = "77777777000";
-jest.setTimeout(80000);
-jest.retryTimes(3);
-page.setDefaultNavigationTimeout(40000);
-page.setDefaultTimeout(40000);
+jest.setTimeout(20000);
+jest.retryTimes(1);
+page.setDefaultNavigationTimeout(20000);
+page.setDefaultTimeout(20000);
 
 beforeAll(async () => {
   await page.goto(URL.CHECKOUT_URL, { waitUntil: "networkidle0" });
@@ -122,11 +121,10 @@ describe("Checkout payment activation failure tests", () => {
 
   it("Should fail a payment ACTIVATION and get PPT_PSP_SCONOSCIUTO", async () => {
     const errorID = "#iframeCardFormErrorId";
-    const resultMessage = await activatePaymentAndGetError(
+    const resultMessage = await activateApmPaymentAndGetError(
       KORPTIDs.FAIL_ACTIVATE_502_PPT_PSP_SCONOSCIUTO,
       OKPaymentInfo.VALID_FISCAL_CODE,
       OKPaymentInfo.EMAIL,
-      OKPaymentInfo.VALID_CARD_DATA,
       errorID
     );
 
@@ -160,7 +158,7 @@ describe("Checkout payment activation failure tests", () => {
     ["sl", slTranslation]
   ])("Should fail a card payment ACTIVATION and get PPT_WISP_SESSIONE_SCONOSCIUTA", async (lang, translation) => {
     selectLanguage(lang);
-    await fillAndSubmitCardDataForm(KORPTIDs.FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA, OKPaymentInfo.VALID_FISCAL_CODE, OKPaymentInfo.EMAIL, OKPaymentInfo.VALID_CARD_DATA);
+    await fillAndSubmitSatispayPayment(KORPTIDs.FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA, OKPaymentInfo.VALID_FISCAL_CODE, OKPaymentInfo.EMAIL);
     const titleElem = await page.waitForSelector("#sessionExpiredMessageTitle")
     const bodyElem = await page.waitForSelector("#sessionExpiredMessageBody")
     const title = await titleElem.evaluate((el) => el.textContent)
@@ -184,11 +182,11 @@ describe("Auth request failure tests", () => {
     async (lang, translation) => {
       selectLanguage(lang);
       const errorMessageTitleSelector = "#idTitleErrorModalPaymentCheckPage";
-      const resultMessage = await authorizePaymentAndGetError(
+      const resultMessage = await authorizeApmPaymentAndGetError(
         KORPTIDs.FAIL_AUTH_REQUEST_TRANSACTION_ID_NOT_FOUND,
         OKPaymentInfo.VALID_FISCAL_CODE,
         OKPaymentInfo.EMAIL,
-        OKPaymentInfo.VALID_CARD_DATA,
+        "SATY",
         errorMessageTitleSelector
       );
       const closeErrorButton = await page.waitForSelector("#closeError");
@@ -518,11 +516,14 @@ describe("Checkout Payment - PSP Selection Flow", () => {
         await page.setRequestInterception(true);
 
         page.on('request', request => {
-            if (request.isInterceptResolutionHandled()) return;
+            if (request.isInterceptResolutionHandled()) {
+              return;
+            }
             const url = request.url();
-
+            console.log("request url -> ", url)
             if (url.includes('/ecommerce/checkout/v2/payment-methods/') && url.includes('/fees')) {
-                request.respond({
+              console.log("intercepted");
+                return request.respond({
                     status: 200,
                     contentType: 'application/json',
                     body: JSON.stringify({
@@ -558,7 +559,7 @@ describe("Checkout Payment - PSP Selection Flow", () => {
                     }),
                 });
             } else {
-                request.continue();
+                return request.continue();
             }
         });
 
@@ -570,6 +571,69 @@ describe("Checkout Payment - PSP Selection Flow", () => {
         );
 
         expect(await page.url()).toContain(URL.CHECKOUT_URL_PAYMENT_SUMMARY);
+        await cancelPaymentAction();
+        //disable request interception
+        await page.setRequestInterception(false);
+        await page.off('request');
     });
 
 });
+
+
+describe("Payment Methods list tests - Fee rendering", () => {
+  
+  const numberFormatter =
+  new Intl.NumberFormat("it-IT", {
+    style: "currency",
+    currency: "EUR",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+  
+
+  it.each([
+    ["it", itTranslation],
+    ["en", enTranslation],
+    ["fr", frTranslation],
+    ["de", deTranslation],
+    ["sl", slTranslation],
+    
+  ])("should correctly render feeRange for language %s", async (lang, translation) => {
+    //make sure taht payment method handler ff is enabled
+    selectLanguage(lang);
+    await page.evaluate(() => {
+      sessionStorage.setItem('enablePaymentMethodsHandler', "true");
+    });
+
+    console.log("navigate to payment method choose page...");
+    await fillAndSearchFormPaymentMethod(
+             KORPTIDs.CANCEL_PAYMENT_OK,
+               OKPaymentInfo.VALID_FISCAL_CODE,
+               OKPaymentInfo.EMAIL,
+               ""
+           );
+    console.log("searching for feeRange elements...");
+    await page.waitForSelector('[data-testid="feeRange"]');
+    const feeElems = await page.$$('[data-testid="feeRange"]');
+    console.log("Found fees elements: ",feeElems.length);
+    // single case
+    const expectedSingleText = translation.paymentChoicePage.feeSingle.replace(
+      "{{value}}",
+      numberFormatter.format((10)));
+    const singleText = await feeElems[0].evaluate(el => el.textContent);
+    expect(singleText).toBe(expectedSingleText);
+
+    // range case
+    const expectedRangeText = translation.paymentChoicePage.feeRange
+      .replace("{{min}}", numberFormatter.format(0))
+      .replace("{{max}}", numberFormatter.format(9999.99));
+      console.log("expectedRangeText: ",expectedRangeText);
+    const rangeText = await feeElems[1].evaluate(el => el.textContent);
+    expect(rangeText).toBe(expectedRangeText);
+
+    // missing feeRange
+    expect(feeElems.length).toBe(7);
+  });
+});
+
+

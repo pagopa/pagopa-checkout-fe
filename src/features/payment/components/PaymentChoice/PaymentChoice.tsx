@@ -14,6 +14,7 @@ import {
 import { t } from "i18next";
 import { CancelSharp, InfoOutlined, Search } from "@mui/icons-material";
 import { constVoid } from "fp-ts/function";
+import { getMethodDescriptionForCurrentLanguage } from "../../../../utils/paymentMethods/paymentMethodsHelper";
 import TextFormField from "../../../../components/TextFormField/TextFormField";
 import InformationModal from "../../../../components/modals/InformationModal";
 import ErrorModal from "../../../../components/modals/ErrorModal";
@@ -27,14 +28,11 @@ import {
   getReCaptchaKey,
   setSessionItem,
 } from "../../../../utils/storage/sessionStorage";
-import {
-  PaymentCodeType,
-  PaymentCodeTypeEnum,
-  PaymentInstrumentsType,
-} from "../../models/paymentModel";
+import { PaymentInstrumentsType } from "../../models/paymentModel";
 import { setThreshold } from "../../../../redux/slices/threshold";
 import { CheckoutRoutes } from "../../../../routes/models/routeModel";
 import { onErrorActivate } from "../../../../utils/api/transactionsErrorHelper";
+import { PaymentTypeCodeEnum } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 import { DisabledPaymentMethods, MethodComponentList } from "./PaymentMethod";
 import { getNormalizedMethods } from "./utils";
 
@@ -77,7 +75,7 @@ export function PaymentChoice(props: {
   };
 
   const onSuccess = (
-    paymentTypeCode: PaymentCodeType,
+    paymentTypeCode: PaymentTypeCodeEnum,
     belowThreshold?: boolean
   ) => {
     const route: string = PaymentMethodRoutes[paymentTypeCode]?.route;
@@ -128,8 +126,10 @@ export function PaymentChoice(props: {
     }
   };
 
-  const filterPaymentMethods = (p: any) =>
-    p.description.toLowerCase().indexOf(paymentMethodFilter.toLowerCase()) > -1;
+  const filterPaymentMethods = (p: PaymentInstrumentsType) =>
+    getMethodDescriptionForCurrentLanguage(p)
+      .toLowerCase()
+      .indexOf(paymentMethodFilter.toLowerCase()) > -1;
 
   const getFilteredPaymentMethods = (paymentMethods: Array<any>) =>
     paymentMethodFilter === ""
@@ -140,7 +140,7 @@ export function PaymentChoice(props: {
     if (!loading) {
       const { paymentTypeCode, id: paymentMethodId } = method;
       setSessionItem(SessionItems.paymentMethodInfo, {
-        title: method.description,
+        title: getMethodDescriptionForCurrentLanguage(method),
         asset: method.asset || "",
       });
 
@@ -148,7 +148,7 @@ export function PaymentChoice(props: {
         paymentMethodId,
         paymentTypeCode,
       });
-      if (paymentTypeCode !== PaymentCodeTypeEnum.CP && ref.current) {
+      if (paymentTypeCode !== PaymentTypeCodeEnum.CP && ref.current) {
         await onApmChoice(ref.current, (belowThreshold: boolean) =>
           onSuccess(paymentTypeCode, belowThreshold)
         );
