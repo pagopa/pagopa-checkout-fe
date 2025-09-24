@@ -282,11 +282,11 @@ export function PaymentChoice(props: {
               sx={{
                 mt: 2,
                 "&.MuiChip-root": {
-                  backgroundColor: "#E1F5FE", // sfondo
-                  color: "#215C76", // testo
+                  backgroundColor: "#E1F5FE",
+                  color: "#215C76",
                 },
                 "& .MuiChip-deleteIcon": {
-                  color: "#215C76", // icona "X"
+                  color: "#215C76",
                 },
               }}
               label={
