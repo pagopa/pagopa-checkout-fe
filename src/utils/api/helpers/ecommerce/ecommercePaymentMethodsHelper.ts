@@ -449,7 +449,7 @@ const evaluatePaymentMethodHandlerEnabledFF = async (): Promise<boolean> => {
   let featureFlag = getSessionItem(
     SessionItems.enablePaymentMethodsHandler
   ) as string;
-  if (!featureFlag) {
+  if (featureFlag === null || featureFlag === undefined) {
     // ff not found in session storage, invoking ff api
     await evaluateFeatureFlag(
       featureFlags.enablePaymentMethodsHandler,
