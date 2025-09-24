@@ -366,6 +366,8 @@
     "showMore": "Mostra tutti",
     "title": "Come vuoi pagare?",
     "filterLabel": "Cerca un metodo",
+    "feeRange": "Commissione: da {{min}}  a {{max}}",
+    "feeSingle": "Commissione: {{value}}",
     "noPaymentMethodsAvailable": "Nessun risultato trovato. Prova con un altro termine.",
     "filterButton": "Filtra",
     "drawer": {

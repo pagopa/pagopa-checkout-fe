@@ -7,11 +7,9 @@ import {
 import { getSessionItem } from "../../storage/sessionStorage";
 import { MixpanelFlow } from "../../mixpanel/mixpanelEvents";
 import { MixpanelDataEntryType } from "../../mixpanel/mixpanelEvents";
-import {
-  paymentInfo,
-  paymentInfoWIthFormattedAmount,
-} from "../../../routes/__tests__/_model";
-import { PaymentCodeTypeEnum } from "../../../features/payment/models/paymentModel";
+import { paymentInfo } from "../../../routes/__tests__/_model";
+import { PaymentTypeCodeEnum } from "../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
+import { paymentInfoWIthFormattedAmount } from "../../../routes/__tests__/_model";
 
 jest.mock("../../storage/sessionStorage", () => ({
   getSessionItem: jest.fn(),
@@ -97,12 +95,12 @@ describe("getFlowFromSessionStorage", () => {
 
 describe("getPaymentMethodSelectedFromSessionStorage", () => {
   it("should return the correct paymentTypeCode when sessionStorage contains a valid PaymentMethod object", () => {
-    const paymentMethodMock = { paymentTypeCode: PaymentCodeTypeEnum.CP };
+    const paymentMethodMock = { paymentTypeCode: PaymentTypeCodeEnum.CP };
     (getSessionItem as jest.Mock).mockReturnValue(paymentMethodMock);
 
     const result = getPaymentMethodSelectedFromSessionStorage();
 
-    expect(result).toBe(PaymentCodeTypeEnum.CP);
+    expect(result).toBe(PaymentTypeCodeEnum.CP);
   });
 
   it("should return undefined if sessionStorage contains null", () => {

@@ -8,6 +8,10 @@ import {
 } from "@mui/material";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
+import {
+  getMethodDescriptionForCurrentLanguage,
+  getMethodNameForCurrentLanguage,
+} from "../../../../utils/paymentMethods/paymentMethodsHelper";
 import ClickableFieldContainer from "../../../../components/TextFormField/ClickableFieldContainer";
 import { PaymentInstrumentsType } from "../../models/paymentModel";
 import { PaymentMethodStatusEnum } from "../../../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
@@ -29,6 +33,7 @@ export const MethodComponentList = ({
         method={method}
         key={index}
         onClick={onClick ? () => onClick(method) : undefined}
+        isLast={index === methods.length - 1}
       />
     ))}
   </>
@@ -71,17 +76,27 @@ const MethodComponent = ({
   method,
   onClick,
   testable,
+  isLast,
 }: {
   method: PaymentInstrumentsType;
   onClick?: () => void;
   testable?: boolean;
+  isLast?: boolean;
 }) => (
   <ClickableFieldContainer
     dataTestId={testable ? method.paymentTypeCode : undefined}
     dataTestLabel={testable ? "payment-method" : undefined}
-    title={method.description}
+    title={getMethodDescriptionForCurrentLanguage(method)}
+    feeRange={method.feeRange}
     onClick={onClick}
-    icon={<ImageComponent {...method} />}
+    icon={
+      <ImageComponent
+        {...{
+          asset: method.asset,
+          name: getMethodNameForCurrentLanguage(method),
+        }}
+      />
+    }
     endAdornment={
       method.status === PaymentMethodStatusEnum.ENABLED && (
         <ArrowForwardIosIcon sx={{ color: "primary.main" }} fontSize="small" />
@@ -89,5 +104,6 @@ const MethodComponent = ({
     }
     disabled={method.status === PaymentMethodStatusEnum.DISABLED}
     clickable={method.status === PaymentMethodStatusEnum.ENABLED}
+    isLast={isLast}
   />
 );

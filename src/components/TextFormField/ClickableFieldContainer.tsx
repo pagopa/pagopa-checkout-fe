@@ -6,9 +6,12 @@ import { Box, Skeleton, Typography, useTheme } from "@mui/material";
 import { SxProps } from "@mui/system";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { FeeRange } from "../../../generated/definitions/payment-ecommerce-v2/FeeRange";
+import { moneyFormat } from "../../utils/form/formatters";
 
 function ClickableFieldContainer(props: {
   title?: string;
+  feeRange?: FeeRange;
   icon?: React.ReactNode;
   endAdornment?: React.ReactNode;
   clickable?: boolean;
@@ -20,6 +23,7 @@ function ClickableFieldContainer(props: {
   loading?: boolean;
   dataTestId?: string;
   dataTestLabel?: string;
+  isLast?: boolean;
 }) {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -28,8 +32,8 @@ function ClickableFieldContainer(props: {
     justifyContent: "space-between",
     alignItems: "center",
     cursor: !props.loading && props.clickable ? "pointer" : "auto",
-    borderBottom: "1px solid",
-    borderBottomColor: "divider",
+    borderBottom: props.isLast ? "none" : "1px solid",
+    borderBottomColor: props.isLast ? "transparent" : "divider",
     pt: 3,
     pb: 3,
     ...props.sx,
@@ -74,13 +78,36 @@ function ClickableFieldContainer(props: {
         ) : (
           <>
             {props.icon}
-            <Typography
-              variant={props.variant}
-              component="div"
-              sx={props.disabled ? { color: theme.palette.text.disabled } : {}}
-            >
-              {t(props.title || "")}
-            </Typography>
+            <Box display="flex" flexDirection="column">
+              <Typography
+                variant={props.variant}
+                component="div"
+                sx={
+                  props.disabled ? { color: theme.palette.text.disabled } : {}
+                }
+              >
+                {t(props.title || "")}
+              </Typography>
+              {props.feeRange && (
+                <Typography
+                  data-testid="feeRange"
+                  variant="body2"
+                  color="text.secondary"
+                  sx={
+                    props.disabled ? { color: theme.palette.text.disabled } : {}
+                  }
+                >
+                  {props.feeRange.min === props.feeRange.max
+                    ? t("paymentChoicePage.feeSingle", {
+                        value: moneyFormat(props.feeRange.min),
+                      })
+                    : t("paymentChoicePage.feeRange", {
+                        min: moneyFormat(props.feeRange.min),
+                        max: moneyFormat(props.feeRange.max),
+                      })}
+                </Typography>
+              )}
+            </Box>
           </>
         )}
       </Box>
