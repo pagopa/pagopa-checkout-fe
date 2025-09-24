@@ -68,6 +68,17 @@ jest.mock("../../../../api/client", () => ({
   apiPaymentEcommerceClientWithRetryV3: {
     createSessionV3: jest.fn(),
   },
+  apiCheckoutFeatureFlags: {
+    evaluateFeatureFlags: jest.fn(() =>
+      Promise.resolve(
+        E.right({
+          value: {
+            isPaymentMethodsHandlerEnabled: true,
+          },
+        })
+      )
+    ),
+  },
 }));
 
 const mockOnResponse: jest.Mock = jest.fn();
@@ -78,7 +89,7 @@ const mockPspNotFound: jest.Mock = jest.fn();
 const createMockSessionItem = (overrides: Record<string, any> = {}) => {
   const defaults = {
     authToken: undefined,
-    enablePaymentMethodsHandler: undefined,
+    enablePaymentMethodsHandler: "false",
     paymentInfo: undefined,
     cartClientId: undefined,
     transaction: undefined,
@@ -296,7 +307,7 @@ describe("Ecommerce payment methods helper - getPaymentInstruments tests", () =>
     // mock session to ensure we use the v1 API path (no feature flag, no auth token)
     (getSessionItem as jest.Mock).mockImplementation(
       createMockSessionItem({
-        enablePaymentMethodsHandler: undefined, // ff disabled
+        enablePaymentMethodsHandler: false,
         authToken: undefined, // no auth token (v1 api)
       })
     );
@@ -350,7 +361,7 @@ describe("Ecommerce payment methods helper - getPaymentInstruments tests", () =>
     // mock session to ensure we use the v1 api path (no feature flag, no auth token)
     (getSessionItem as jest.Mock).mockImplementation(
       createMockSessionItem({
-        enablePaymentMethodsHandler: undefined, // ff disabled
+        enablePaymentMethodsHandler: false,
         authToken: undefined, // no auth token (v1 api)
       })
     );
@@ -372,7 +383,7 @@ describe("Ecommerce payment methods helper - getPaymentInstruments tests", () =>
     (getSessionItem as jest.Mock).mockImplementation(
       createMockSessionItem({
         authToken: "authToken",
-        enablePaymentMethodsHandler: undefined, // ff disabled
+        enablePaymentMethodsHandler: false,
       })
     );
 
@@ -425,7 +436,7 @@ describe("Ecommerce payment methods helper - getPaymentInstruments tests", () =>
     (getSessionItem as jest.Mock).mockImplementation(
       createMockSessionItem({
         authToken: "authToken",
-        enablePaymentMethodsHandler: undefined, // ff disabled
+        enablePaymentMethodsHandler: false,
       })
     );
     (
@@ -445,7 +456,7 @@ describe("Ecommerce payment methods helper - getPaymentInstruments tests", () =>
     (getSessionItem as jest.Mock).mockImplementation(
       createMockSessionItem({
         authToken: "authToken",
-        enablePaymentMethodsHandler: undefined, // ff disabled
+        enablePaymentMethodsHandler: false,
       })
     );
     (
