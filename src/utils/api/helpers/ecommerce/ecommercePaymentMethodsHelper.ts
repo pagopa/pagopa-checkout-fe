@@ -3,6 +3,7 @@ import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/lib/function";
 import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
+import featureFlags from "../../../../utils/featureFlags";
 import { getEnumFromString } from "../../../../utils/enum/enumerationUtils";
 import {
   apiPaymentEcommerceClient,
@@ -43,6 +44,7 @@ import {
   MethodManagementEnum,
   PaymentTypeCodeEnum,
 } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
+import { evaluateFeatureFlag } from "../checkoutFeatureFlagsHelper";
 
 // ->Promise<Either<string,SessionPaymentMethodResponse>>
 export const retrieveCardData = async ({
@@ -442,6 +444,34 @@ const buildPaymentInstrumentMethodHandlerSearchRequest =
     };
   };
 
+const evaluatePaymentMethodHandlerEnabledFF = async (): Promise<boolean> => {
+  // eslint-disable-next-line functional/no-let
+  let featureFlag = getSessionItem(
+    SessionItems.enablePaymentMethodsHandler
+  ) as string;
+  if (!featureFlag) {
+    // ff not found in session storage, invoking ff api
+    await evaluateFeatureFlag(
+      featureFlags.enablePaymentMethodsHandler,
+      (e: string) => {
+        // eslint-disable-next-line no-console
+        console.error(
+          `Error while getting feature flag ${featureFlags.enablePaymentMethodsHandler}`,
+          e
+        );
+      },
+      (data: { enabled: boolean }) => {
+        setSessionItem(
+          SessionItems.enablePaymentMethodsHandler,
+          data.enabled.toString()
+        );
+        featureFlag = data.enabled.toString();
+      }
+    );
+  }
+  return featureFlag === "true";
+};
+
 export const getPaymentInstruments = async (
   query: {
     amount: number;
@@ -450,9 +480,9 @@ export const getPaymentInstruments = async (
   onResponse: (data: Array<PaymentInstrumentsType>) => void
 ) => {
   const list = await pipe(
-    getSessionItem(SessionItems.enablePaymentMethodsHandler) as string,
+    await evaluatePaymentMethodHandlerEnabledFF(),
     O.fromNullable,
-    O.filter((ff) => ff === "true"),
+    O.filter((ff) => ff),
     O.foldW(
       () => getPaymentMethods(query, onError),
       () => getPaymentMethodHandler(onError)
