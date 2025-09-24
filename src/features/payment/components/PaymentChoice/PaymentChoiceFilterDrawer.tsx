@@ -52,8 +52,6 @@ export const PaymentChoiceFilterDrawer = (props: {
   const handlePaymentMethodFilterChanging = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    // eslint-disable-next-line no-console
-    console.log(event);
     const value = event.target.value as PaymentMethodFilterType;
 
     setPaymentMethodFilter((prev) => ({
@@ -84,8 +82,15 @@ export const PaymentChoiceFilterDrawer = (props: {
   };
 
   const isDefaultFilter =
-    paymentMethodFilter.paymentType == undefined &&
+    paymentMethodFilter.paymentType === undefined &&
     paymentMethodFilter.installment === false;
+
+  const handleEnterKeyDown = (e: React.KeyboardEvent<HTMLFieldSetElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleApply();
+    }
+  };
 
   return (
     <CustomDrawer open={open} onClose={onClose}>
@@ -106,13 +111,7 @@ export const PaymentChoiceFilterDrawer = (props: {
         <FormControl
           component="fieldset"
           sx={{ mt: 2 }}
-          onKeyDown={(e: React.KeyboardEvent<HTMLFieldSetElement>) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-              handleApply();
-            }
-          }}
+          onKeyDown={handleEnterKeyDown}
         >
           <Typography variant="body1" sx={{ fontWeight: "bold" }}>
             {t("paymentChoicePage.drawer.byType")}
@@ -167,13 +166,7 @@ export const PaymentChoiceFilterDrawer = (props: {
         <FormControl
           component="fieldset"
           sx={{ mt: 2 }}
-          onKeyDown={(e: React.KeyboardEvent<HTMLFieldSetElement>) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-              handleApply();
-            }
-          }}
+          onKeyDown={handleEnterKeyDown}
         >
           <Typography variant="body1" sx={{ fontWeight: "bold" }}>
             {t("paymentChoicePage.drawer.byFunc")}

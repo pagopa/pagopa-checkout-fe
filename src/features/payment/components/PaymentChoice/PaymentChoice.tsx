@@ -210,11 +210,12 @@ export function PaymentChoice(props: {
       .concat(paymentMethods.disabled)
       .filter(filterPaymentMethodsCombined).length === 0 &&
     paymentMethods.enabled.concat(paymentMethods.disabled).length > 0;
-  const handleClick = () => {
-    console.info("You clicked the Chip.");
-  };
+
   const handleDelete = () => {
-    console.info("You clicked the delete icon.");
+    setPaymentMethodFilterState({
+      paymentType: undefined,
+      installment: false,
+    });
   };
 
   return (
@@ -298,7 +299,6 @@ export function PaymentChoice(props: {
                     )
                   : ""
               }
-              onClick={handleClick}
               onDelete={handleDelete}
             />
           )}
