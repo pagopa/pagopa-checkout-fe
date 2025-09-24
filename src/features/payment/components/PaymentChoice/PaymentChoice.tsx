@@ -41,6 +41,7 @@ import { PaymentTypeCodeEnum } from "../../../../../generated/definitions/paymen
 import { DisabledPaymentMethods, MethodComponentList } from "./PaymentMethod";
 import { getNormalizedMethods } from "./utils";
 import { PaymentChoiceFilterDrawer } from "./PaymentChoiceFilterDrawer";
+import { PaymentMethodFilter } from "utils/PaymentMethodFilterUtil";
 
 export function PaymentChoice(props: {
   amount: number;
@@ -54,6 +55,11 @@ export function PaymentChoice(props: {
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const [pspNotFoundModal, setPspNotFoundModalOpen] = React.useState(false);
   const [paymentMethodFilter, setPaymentMethodFilter] = React.useState("");
+
+  const [paymentMethodFilterState, setPaymentMethodFilterState] = React.useState<PaymentMethodFilter>({
+    paymentType: undefined,
+    installment: false,
+  });
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -138,10 +144,18 @@ export function PaymentChoice(props: {
       .toLowerCase()
       .indexOf(paymentMethodFilter.toLowerCase()) > -1;
 
-  const getFilteredPaymentMethods = (paymentMethods: Array<any>) =>
-    paymentMethodFilter === ""
-      ? paymentMethods
-      : paymentMethods.filter(filterPaymentMethods);
+  const filterPaymentMethodsCombined = (p: PaymentInstrumentsType) => {
+    const matchesText = p.description.toLowerCase().includes(paymentMethodFilter.toLowerCase());
+    const matchesType =
+      !paymentMethodFilterState.paymentType || p.paymentTypeCode === "RBPP";
+    const matchesInstallment = true;
+      //!paymentMethodFilterState.installment || p.installment === paymentMethodFilterState.installment;
+
+    return matchesText && matchesType && matchesInstallment;
+  };
+
+  const getFilteredPaymentMethods = (paymentMethods: Array<PaymentInstrumentsType>) =>
+    paymentMethods.filter(filterPaymentMethodsCombined);
 
   const handleClickOnMethod = async (method: PaymentInstrumentsType) => {
     if (!loading) {
@@ -173,9 +187,16 @@ export function PaymentChoice(props: {
   const filterKeyPresent = () =>
     paymentMethodFilter !== undefined && paymentMethodFilter !== "";
 
-  const applyPaymentFilter = () => {
-    // eslint-disable-next-line no-console
-    console.log("applyPaymentFilter");
+  const applyPaymentFilter = (filter: PaymentMethodFilter | null) => {
+    
+    if (filter) {
+      setPaymentMethodFilterState(filter);
+    } else {
+      setPaymentMethodFilterState({ paymentType: undefined, installment: false });
+    }
+
+    console.log("Filtro selezionato:", filter);
+     console.log("Filtro selezionato:", paymentMethodFilterState);
   };
 
   const noPaymentMethodsVisible = () =>

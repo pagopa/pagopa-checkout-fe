@@ -34,9 +34,19 @@ export const PaymentChoiceFilterDrawer = (props: {
       : false,
   });
   // Initialize sorting type
-  const [paymentMethodFilter] = React.useState<PaymentMethodFilter>(
+  const [paymentMethodFilter, setPaymentMethodFilter] = React.useState<PaymentMethodFilter>(
     getInitialFilterSelected()
   );
+
+  const handleInstallmentChanging = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const checked = event.target.checked; 
+
+    setPaymentMethodFilter(prev => ({
+      ...prev,         
+      installment: checked, 
+    }));
+  };
+
 
   // Handle radio selection change
   const handlePaymentMethodFilterChanging = (
@@ -44,6 +54,12 @@ export const PaymentChoiceFilterDrawer = (props: {
   ) => {
     // eslint-disable-next-line no-console
     console.log(event);
+    const value = event.target.value as PaymentMethodFilterType;
+
+    setPaymentMethodFilter(prev => ({
+      ...prev,
+      paymentType: value,
+    }));
   };
 
   // Handle apply button click
@@ -56,6 +72,7 @@ export const PaymentChoiceFilterDrawer = (props: {
   const handleCancel = () => {
     onSelect(paymentMethodFilter);
     onClose();
+    
   };
 
   return (
@@ -85,14 +102,14 @@ export const PaymentChoiceFilterDrawer = (props: {
             }
           }}
         >
-          <Typography variant="body1">
+          <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
             {t("paymentChoicePage.drawer.byType")}
           </Typography>
           <RadioGroup
             tabIndex={0}
             aria-label="paymentChoiceDrawer-options"
             name="paymentChoiceDrawer-options"
-            value={paymentMethodFilter}
+            value={paymentMethodFilter.paymentType}
             onChange={handlePaymentMethodFilterChanging}
           >
             <FormControlLabel
@@ -146,10 +163,16 @@ export const PaymentChoiceFilterDrawer = (props: {
             }
           }}
         >
-          <Typography variant="body1">
+          <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
             {t("paymentChoicePage.drawer.byFunc")}
           </Typography>
-          <FormControlLabel control={<Checkbox />} 
+          <FormControlLabel 
+            control={
+              <Checkbox 
+                checked={paymentMethodFilter.installment}
+                onChange={handleInstallmentChanging}
+              />
+            } 
             label={
               <Box id="paymentChoiceDrawer-payByPlan">
                 <Typography variant="body1">
