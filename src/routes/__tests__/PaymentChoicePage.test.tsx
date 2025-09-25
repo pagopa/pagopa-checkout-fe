@@ -5,6 +5,7 @@ import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import * as router from "react-router";
+import * as E from "fp-ts/Either";
 
 // Mock @mui/material styled system
 jest.mock("@mui/material/styles", () => ({
@@ -114,6 +115,17 @@ jest.mock("../../utils/api/client", () => ({
   apiPaymentEcommerceClientV3: {
     getAllPaymentMethodsV3: jest.fn(),
     newTransactionV3: jest.fn(),
+  },
+  apiCheckoutFeatureFlags: {
+    evaluateFeatureFlags: jest.fn(() =>
+      Promise.resolve(
+        E.right({
+          value: {
+            isPaymentMethodsHandlerEnabled: false,
+          },
+        })
+      )
+    ),
   },
 }));
 

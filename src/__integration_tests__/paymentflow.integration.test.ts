@@ -520,9 +520,7 @@ describe("Checkout Payment - PSP Selection Flow", () => {
               return;
             }
             const url = request.url();
-            console.log("request url -> ", url)
             if (url.includes('/ecommerce/checkout/v2/payment-methods/') && url.includes('/fees')) {
-              console.log("intercepted");
                 return request.respond({
                     status: 200,
                     contentType: 'application/json',
@@ -605,17 +603,14 @@ describe("Payment Methods list tests - Fee rendering", () => {
       sessionStorage.setItem('enablePaymentMethodsHandler', "true");
     });
 
-    console.log("navigate to payment method choose page...");
     await fillAndSearchFormPaymentMethod(
              KORPTIDs.CANCEL_PAYMENT_OK,
                OKPaymentInfo.VALID_FISCAL_CODE,
                OKPaymentInfo.EMAIL,
                ""
            );
-    console.log("searching for feeRange elements...");
     await page.waitForSelector('[data-testid="feeRange"]');
     const feeElems = await page.$$('[data-testid="feeRange"]');
-    console.log("Found fees elements: ",feeElems.length);
     // single case
     const expectedSingleText = translation.paymentChoicePage.feeSingle.replace(
       "{{value}}",
@@ -627,7 +622,6 @@ describe("Payment Methods list tests - Fee rendering", () => {
     const expectedRangeText = translation.paymentChoicePage.feeRange
       .replace("{{min}}", numberFormatter.format(0))
       .replace("{{max}}", numberFormatter.format(9999.99));
-      console.log("expectedRangeText: ",expectedRangeText);
     const rangeText = await feeElems[1].evaluate(el => el.textContent);
     expect(rangeText).toBe(expectedRangeText);
 
