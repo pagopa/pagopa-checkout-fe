@@ -62,7 +62,7 @@ export function PaymentChoice(props: {
   const [paymentMethodFilterState, setPaymentMethodFilterState] =
     React.useState<PaymentMethodFilter>({
       paymentType: undefined,
-      installment: false,
+      buyNowPayLater: false,
     });
 
   const navigate = useNavigate();
@@ -149,16 +149,16 @@ export function PaymentChoice(props: {
       .indexOf(paymentMethodFilter.toLowerCase()) > -1;
 
   const filterPaymentMethodsCombined = (p: PaymentInstrumentsType) => {
-    const hasInstallment = p.metadata?.INSTALLMENTS === "true";
+    const hasBuyNowPayLater = p.metadata?.BUY_NOW_PAY_LATER === "true";
 
     const matchesText = filterPaymentMethods(p);
     const matchesType =
       !paymentMethodFilterState.paymentType ||
       p.paymentMethodTypes?.includes(paymentMethodFilterState.paymentType);
-    const matchesInstallment =
-      !paymentMethodFilterState.installment ||
-      hasInstallment === paymentMethodFilterState.installment;
-    return matchesText && matchesType && matchesInstallment;
+    const matchesBuyNowPayLater =
+      !paymentMethodFilterState.buyNowPayLater ||
+      hasBuyNowPayLater === paymentMethodFilterState.buyNowPayLater;
+    return matchesText && matchesType && matchesBuyNowPayLater;
   };
 
   const getFilteredPaymentMethods = (
@@ -201,7 +201,7 @@ export function PaymentChoice(props: {
     } else {
       setPaymentMethodFilterState({
         paymentType: undefined,
-        installment: false,
+        buyNowPayLater: false,
       });
     }
   };
@@ -219,10 +219,10 @@ export function PaymentChoice(props: {
     }));
   };
 
-  const handleDeleteInstallment = () => {
+  const handleDeleteBuyNowPayLater = () => {
     setPaymentMethodFilterState((prevState) => ({
       ...prevState,
-      installment: false,
+      buyNowPayLater: false,
     }));
   };
 
@@ -317,7 +317,7 @@ export function PaymentChoice(props: {
             />
           )}
 
-          {paymentMethodFilterState && paymentMethodFilterState.installment && (
+          {paymentMethodFilterState && paymentMethodFilterState.buyNowPayLater && (
             <Chip
               id="buyNowPayLaterChipFilter"
               sx={{
@@ -331,7 +331,7 @@ export function PaymentChoice(props: {
                 },
               }}
               label={t("paymentChoicePage.drawer.payByPlan")}
-              onDelete={handleDeleteInstallment}
+              onDelete={handleDeleteBuyNowPayLater}
               deleteIcon={<CancelSharp id="removeBuyNowPayLaterFilter" />}
             />
           )}

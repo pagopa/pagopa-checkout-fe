@@ -620,8 +620,8 @@ describe.only("Filter payment method", () => {
         const isOnlyAppPaymentMethods = await verifyPaymentMethodsContains("MYBK");
         expect(isOnlyAppPaymentMethods).toBeTruthy();
 
-        const chipidInstallment = await page.$("#buyNowPayLaterChipFilter");
-        expect(chipidInstallment).not.toBeNull();
+        const chipidBuyNowPayLater = await page.$("#buyNowPayLaterChipFilter");
+        expect(chipidBuyNowPayLater).not.toBeNull();
 
         const applyBtn = await page.waitForSelector("#paymentChoiceDrawer-applyFilter");
         applyBtn?.click();
@@ -653,9 +653,9 @@ describe.only("Filter payment method", () => {
         await filterByTwoType("#paymentChoiceDrawer-card","#paymentChoiceDrawer-payByPlan");
 
         const chip = await page.$("#paymentTypeChipFilter");       
-        const chipidInstallment = await page.$("#buyNowPayLaterChipFilter");
+        const chipidBuyNowPayLater = await page.$("#buyNowPayLaterChipFilter");
         expect(chip).not.toBeNull();
-        expect(chipidInstallment).not.toBeNull();
+        expect(chipidBuyNowPayLater).not.toBeNull();
 
         const applyBtn = await page.waitForSelector("#paymentChoiceDrawer-applyFilter");
         applyBtn?.click();
@@ -709,9 +709,9 @@ describe.only("Filter payment method", () => {
         expect(isOnlyOnePaymentMethods).toBeTruthy();
 
         const chip = await page.$("#paymentTypeChipFilter");       
-        const chipidInstallment = await page.$("#buyNowPayLaterChipFilter");
+        const chipidBuyNowPayLater = await page.$("#buyNowPayLaterChipFilter");
         expect(chip).not.toBeNull();
-        expect(chipidInstallment).not.toBeNull();
+        expect(chipidBuyNowPayLater).not.toBeNull();
 
         const applyBtn = await page.waitForSelector("#paymentChoiceDrawer-applyFilter");
         applyBtn?.click();
@@ -761,11 +761,11 @@ describe.only("Filter payment method", () => {
         const chip = await page.$("#paymentTypeChipFilter");
         expect(chip).not.toBeNull();
 
-        const chipidInstallment = await page.$("#buyNowPayLaterChipFilter");
-        expect(chipidInstallment).not.toBeNull();
+        const chipidBuyNowPayLater = await page.$("#buyNowPayLaterChipFilter");
+        expect(chipidBuyNowPayLater).not.toBeNull();
 
         expect(chip).not.toBeNull();
-        expect(chipidInstallment).not.toBeNull();
+        expect(chipidBuyNowPayLater).not.toBeNull();
 
         const applyBtn = await page.waitForSelector("#paymentChoiceDrawer-applyFilter");
         applyBtn?.click();

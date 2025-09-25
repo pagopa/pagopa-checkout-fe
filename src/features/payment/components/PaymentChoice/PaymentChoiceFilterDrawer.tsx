@@ -28,11 +28,11 @@ export const PaymentChoiceFilterDrawer = (props: {
 
   const paymentMethodFilter = paymentMethodFilterModel;
 
-  const handleInstallmentChanging = (
+  const handleBuyNowPayLaterChanging = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const checked = event.target.checked;
-    onSelect({ ...paymentMethodFilter, installment: checked });
+    onSelect({ ...paymentMethodFilter, buyNowPayLater: checked });
   };
 
   // Handle radio selection change
@@ -57,7 +57,7 @@ export const PaymentChoiceFilterDrawer = (props: {
   const handleCancel = () => {
     const defaultPaymentMethodFilter: PaymentMethodFilter = {
       paymentType: undefined,
-      installment: false,
+      buyNowPayLater: false,
     };
     onSelect(defaultPaymentMethodFilter);
     onClose();
@@ -65,7 +65,7 @@ export const PaymentChoiceFilterDrawer = (props: {
 
   const isDefaultFilter =
     paymentMethodFilter.paymentType === undefined &&
-    paymentMethodFilter.installment === false;
+    paymentMethodFilter.buyNowPayLater === false;
 
   const handleEnterKeyDown = (e: React.KeyboardEvent<HTMLFieldSetElement>) => {
     if (e.key === "Enter") {
@@ -156,8 +156,8 @@ export const PaymentChoiceFilterDrawer = (props: {
           <FormControlLabel
             control={
               <Checkbox
-                checked={paymentMethodFilter.installment}
-                onChange={handleInstallmentChanging}
+                checked={paymentMethodFilter.buyNowPayLater}
+                onChange={handleBuyNowPayLaterChanging}
               />
             }
             label={

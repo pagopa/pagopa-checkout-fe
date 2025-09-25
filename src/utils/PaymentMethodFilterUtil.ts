@@ -6,5 +6,5 @@ export enum PaymentMethodFilterType {
 
 export type PaymentMethodFilter = {
   paymentType?: PaymentMethodFilterType;
-  installment: boolean;
+  buyNowPayLater: boolean;
 };
