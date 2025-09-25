@@ -64,7 +64,9 @@ jest.mock("../../../../../utils/storage/sessionStorage", () => ({
     orderId: "orderId",
     correlationId: "correlationId",
     enablePspPage: "enablePspPage",
+    enablePaymentMethodsHandler: "enablePaymentMethodsHandler",
   },
+  getSessionItem: jest.fn(),
   setSessionItem: jest.fn(),
   getReCaptchaKey: jest.fn(() => "mock-recaptcha-key"),
 }));
