@@ -246,16 +246,33 @@ export const fillAndSearchFormPaymentMethod = async (
   await filterPaymentMethodByName(paymentMethod);
 };
 
-export const filterByCard = async () => {
+export const filterByType = async (id) => {
   //wait 1 sec for f.e. to draws component
   await new Promise((r)=> setTimeout(r, 1000));
   const filterDrawerOpenButton= await page.waitForSelector("#filterDrawerButton", {clickable: true});
   await filterDrawerOpenButton?.click();
-  const filterDrawerCard = await page.waitForSelector("#paymentChoiceDrawer-card", {
+  const filterDrawerCard = await page.waitForSelector(id, {
     clickable: true,
   });
   await filterDrawerCard?.click();
 };
+
+export const filterByTwoType = async (id_1,id_2) => {
+  //wait 1 sec for f.e. to draws component
+  await new Promise((r)=> setTimeout(r, 1000));
+  const filterDrawerOpenButton= await page.waitForSelector("#filterDrawerButton", {clickable: true});
+  await filterDrawerOpenButton?.click();
+  const filterDrawerCard = await page.waitForSelector(id_1, {
+    clickable: true,
+  });
+
+   const filterDrawerCard2 = await page.waitForSelector(id_2, {
+    clickable: true,
+  });
+  await filterDrawerCard?.click();
+  await filterDrawerCard2?.click();
+};
+
 
 
 
@@ -367,6 +384,15 @@ export const verifyPaymentMethodsContains = async (paymentMethodTypeCode) => {
     (elHandles) => elHandles.map((el) => el.getAttribute("data-qaid"))
   );
   return methods.indexOf(paymentMethodTypeCode) > -1;
+};
+
+export const verifyPaymentMethodsNotContains = async (paymentMethodTypeCode) => {
+  await page.waitForSelector("[data-qalabel=payment-method]");
+  const methods = await page.$$eval(
+    "[data-qalabel=payment-method]",
+    (elHandles) => elHandles.map((el) => el.getAttribute("data-qaid"))
+  );
+  return methods.indexOf(paymentMethodTypeCode) <= -1;
 };
 
 export const fillCardDataForm = async (cardData) => {

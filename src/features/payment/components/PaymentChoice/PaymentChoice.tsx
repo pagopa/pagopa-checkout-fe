@@ -212,10 +212,17 @@ export function PaymentChoice(props: {
     paymentMethods.enabled.concat(paymentMethods.disabled).length > 0;
 
   const handleDelete = () => {
-    setPaymentMethodFilterState({
+    setPaymentMethodFilterState((prevState) => ({
+      ...prevState,
       paymentType: undefined,
+    }));
+  };
+
+  const handleDeleteInstallment = () => {
+    setPaymentMethodFilterState((prevState) => ({
+      ...prevState,
       installment: false,
-    });
+    }));
   };
 
   return (
@@ -282,6 +289,7 @@ export function PaymentChoice(props: {
             <Chip
               id="idPaymentType"
               sx={{
+                mr: 1,
                 mt: 2,
                 "&.MuiChip-root": {
                   backgroundColor: "#E1F5FE",
@@ -304,6 +312,24 @@ export function PaymentChoice(props: {
             />
           )}
 
+          {paymentMethodFilterState && paymentMethodFilterState.installment && (
+            <Chip
+              id="idInstallment"
+              sx={{
+                mt: 2,
+                "&.MuiChip-root": {
+                  backgroundColor: "#E1F5FE",
+                  color: "#215C76",
+                },
+                "& .MuiChip-deleteIcon": {
+                  color: "#215C76",
+                },
+              }}
+              label={t("paymentChoicePage.drawer.payByPlan")}
+              onDelete={handleDeleteInstallment}
+            />
+          )}
+
           <MethodComponentList
             methods={getFilteredPaymentMethods(paymentMethods.enabled)}
             onClick={handleClickOnMethod}
@@ -315,7 +341,7 @@ export function PaymentChoice(props: {
           <PaymentChoiceFilterDrawer
             open={drawerOpen}
             onClose={() => setDrawerOpen(false)}
-            paymentMethodFilterModel={paymentMethodFilterState} 
+            paymentMethodFilterModel={paymentMethodFilterState}
             onSelect={applyPaymentFilter}
           />
         </>

@@ -18,7 +18,9 @@ import {
   filterPaymentMethodByName,
   activateApmPaymentAndGetError,
   authorizeApmPaymentAndGetError,
-  filterByCard
+  filterByType,
+  filterByTwoType,
+  verifyPaymentMethodsNotContains
 } from "./utils/helpers";
 import itTranslation from "../translations/it/translations.json";
 import deTranslation from "../translations/de/translations.json";
@@ -474,7 +476,7 @@ describe("Filter payment method", () => {
             OKPaymentInfo.EMAIL,
             ""
         );
-        await filterByCard();
+        await filterByType("#paymentChoiceDrawer-card");
         
         const isOnlyCardPaymentMethods = await verifyPaymentMethodsContains("CP");
       
@@ -486,6 +488,126 @@ describe("Filter payment method", () => {
         expect(chip).not.toBeNull();
         const isOnlyOnePaymentMethods = await verifyPaymentMethodsLength(1);
         expect(isOnlyOnePaymentMethods).toBeTruthy();
+      });
+
+      it("Filter payment method by filter drawer - balance", async () => {
+        selectLanguage("it");
+        await fillAndSearchFormPaymentMethod(
+          KORPTIDs.CANCEL_PAYMENT_OK,
+            OKPaymentInfo.VALID_FISCAL_CODE,
+            OKPaymentInfo.EMAIL,
+            ""
+        );
+        await filterByType("#paymentChoiceDrawer-balance");
+        
+        const isOnlyBalancePaymentMethods = await verifyPaymentMethodsContains("RBPB");
+      
+        expect(isOnlyBalancePaymentMethods).toBeTruthy();
+
+        const chip = await page.$("#idPaymentType");
+        expect(chip).not.toBeNull();
+
+      });
+
+      it("Filter payment method by filter drawer - app", async () => {
+        selectLanguage("it");
+        await fillAndSearchFormPaymentMethod(
+          KORPTIDs.CANCEL_PAYMENT_OK,
+            OKPaymentInfo.VALID_FISCAL_CODE,
+            OKPaymentInfo.EMAIL,
+            ""
+        );
+        await filterByType("#paymentChoiceDrawer-appApm");
+        
+        const isOnlyAppPaymentMethods = await verifyPaymentMethodsContains("SATY");
+      
+        expect(isOnlyAppPaymentMethods).toBeTruthy();
+
+        const chip = await page.$("#idPaymentType");
+        expect(chip).not.toBeNull();
+
+      });
+
+      
+
+      it("Filter payment method by filter drawer - payByPlan", async () => {
+        selectLanguage("it");
+        await fillAndSearchFormPaymentMethod(
+          KORPTIDs.CANCEL_PAYMENT_OK,
+            OKPaymentInfo.VALID_FISCAL_CODE,
+            OKPaymentInfo.EMAIL,
+            ""
+        );
+        await filterByType("#paymentChoiceDrawer-payByPlan");
+        
+        
+        const isOnlyAppPaymentMethods = await verifyPaymentMethodsContains("MYBK");
+      
+        expect(isOnlyAppPaymentMethods).toBeTruthy();
+
+        const chipidInstallment = await page.$("#idInstallment");
+        expect(chipidInstallment).not.toBeNull();
+
+      });
+       it("Filter payment method by filter drawer - payByPlan - card", async () => {
+        selectLanguage("it");
+        await fillAndSearchFormPaymentMethod(
+          KORPTIDs.CANCEL_PAYMENT_OK,
+            OKPaymentInfo.VALID_FISCAL_CODE,
+            OKPaymentInfo.EMAIL,
+            ""
+        );
+        await filterByTwoType("#paymentChoiceDrawer-card","#paymentChoiceDrawer-payByPlan");
+
+  
+        const chip = await page.$("#idPaymentType");       
+        const chipidInstallment = await page.$("#idInstallment");
+        expect(chip).not.toBeNull();
+        expect(chipidInstallment).not.toBeNull();
+
+      });
+
+
+       it("Filter payment method by filter drawer - payByPlan - balance", async () => {
+        selectLanguage("it");
+        await fillAndSearchFormPaymentMethod(
+          KORPTIDs.CANCEL_PAYMENT_OK,
+            OKPaymentInfo.VALID_FISCAL_CODE,
+            OKPaymentInfo.EMAIL,
+            ""
+        );
+        await filterByTwoType("#paymentChoiceDrawer-balance","#paymentChoiceDrawer-payByPlan");
+
+        
+        const isOnlyAppPaymentMethods = await verifyPaymentMethodsContains("MYBK");
+      
+        expect(isOnlyAppPaymentMethods).toBeTruthy();
+
+        const chip = await page.$("#idPaymentType");
+        expect(chip).not.toBeNull();
+
+        const chipidInstallment = await page.$("#idInstallment");
+        expect(chipidInstallment).not.toBeNull();
+
+      });
+
+      it("Filter payment method by filter drawer - payByPlan - app", async () => {
+        selectLanguage("it");
+        await fillAndSearchFormPaymentMethod(
+          KORPTIDs.CANCEL_PAYMENT_OK,
+            OKPaymentInfo.VALID_FISCAL_CODE,
+            OKPaymentInfo.EMAIL,
+            ""
+        );
+        await filterByTwoType("#paymentChoiceDrawer-appApm","#paymentChoiceDrawer-payByPlan");
+
+      
+        const chip = await page.$("#idPaymentType");
+        expect(chip).not.toBeNull();
+
+        const chipidInstallment = await page.$("#idInstallment");
+        expect(chipidInstallment).not.toBeNull();
+
       });
 });
 
