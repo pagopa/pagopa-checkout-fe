@@ -96,7 +96,7 @@ export const PaymentChoiceFilterDrawer = (props: {
           onKeyDown={handleEnterKeyDown}
         >
           <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-            {t("paymentChoicePage.drawer.byType")}
+            {t("paymentChoicePage.drawer.byType").toUpperCase()}
           </Typography>
           <RadioGroup
             tabIndex={0}
@@ -151,7 +151,7 @@ export const PaymentChoiceFilterDrawer = (props: {
           onKeyDown={handleEnterKeyDown}
         >
           <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-            {t("paymentChoicePage.drawer.byFunc")}
+            {t("paymentChoicePage.drawer.byFunc").toUpperCase()}
           </Typography>
           <FormControlLabel
             control={
