@@ -287,7 +287,7 @@ export function PaymentChoice(props: {
 
           {paymentMethodFilterState && paymentMethodFilterState.paymentType && (
             <Chip
-              id="idPaymentType"
+              id="paymentTypeChipFilter"
               sx={{
                 mr: 1,
                 mt: 2,
@@ -309,12 +309,13 @@ export function PaymentChoice(props: {
                   : ""
               }
               onDelete={handleDelete}
+              deleteIcon={<CancelSharp id="removePaymentTypeFilter" />}
             />
           )}
 
           {paymentMethodFilterState && paymentMethodFilterState.installment && (
             <Chip
-              id="idInstallment"
+              id="buyNowPayLaterChipFilter"
               sx={{
                 mt: 2,
                 "&.MuiChip-root": {
@@ -327,6 +328,7 @@ export function PaymentChoice(props: {
               }}
               label={t("paymentChoicePage.drawer.payByPlan")}
               onDelete={handleDeleteInstallment}
+              deleteIcon={<CancelSharp id="removeBuyNowPayLaterFilter" />}
             />
           )}
 
