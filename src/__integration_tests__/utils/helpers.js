@@ -246,6 +246,17 @@ export const fillAndSearchFormPaymentMethod = async (
   await filterPaymentMethodByName(paymentMethod);
 };
 
+export const filterByCard = async () => {
+  const filterDrawerOpenButton = page.waitForSelector("#filterDrawerButton", {
+    clickable: true,
+  });
+  await filterDrawerOpenButton?.click();
+  const filterDrawerCard = page.waitForSelector("#paymentChoiceDrawer-card", {
+    clickable: true,
+  });
+  await filterDrawerCard?.click();
+};
+
 
 
 export const tryHandlePspPickerPage = async ()=>{

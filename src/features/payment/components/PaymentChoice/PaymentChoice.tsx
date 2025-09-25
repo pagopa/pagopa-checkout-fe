@@ -265,7 +265,7 @@ export function PaymentChoice(props: {
               handleBlur={constVoid}
             />
             <ButtonNaked
-              id="sort-psp-list"
+              id="filterDrawerButton"
               component="button"
               style={{ fontWeight: 600, fontSize: "1rem" }}
               color="primary"

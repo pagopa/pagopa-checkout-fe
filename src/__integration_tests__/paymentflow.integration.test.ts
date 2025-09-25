@@ -17,7 +17,8 @@ import {
   noPaymentMethodsMessage,
   filterPaymentMethodByName,
   activateApmPaymentAndGetError,
-  authorizeApmPaymentAndGetError
+  authorizeApmPaymentAndGetError,
+  filterByCard
 } from "./utils/helpers";
 import itTranslation from "../translations/it/translations.json";
 import deTranslation from "../translations/de/translations.json";
@@ -434,8 +435,8 @@ describe("Cancel payment failure tests (satispay)", () => {
   );
 });
 
-describe("Filter payment method", () => {
-    it("Filter payment method", async () => {
+describe.only("Filter payment method", () => {
+    it("Filter payment method by text field", async () => {
         selectLanguage("it");
         await fillAndSearchFormPaymentMethod(
           KORPTIDs.CANCEL_PAYMENT_OK,
@@ -463,6 +464,21 @@ describe("Filter payment method", () => {
 
         const paymentMethodsFilteredOutMessage = await noPaymentMethodsMessage();
         expect(paymentMethodsFilteredOutMessage).toContain(itTranslation.paymentChoicePage.noPaymentMethodsAvailable);
+      });
+
+      it.only("Filter payment method by filter drawer", async () => {
+        selectLanguage("it");
+        await fillAndSearchFormPaymentMethod(
+          KORPTIDs.CANCEL_PAYMENT_OK,
+            OKPaymentInfo.VALID_FISCAL_CODE,
+            OKPaymentInfo.EMAIL,
+            "car"
+        );
+        await filterByCard();
+        const isOnlyOnePaymentMethods = await verifyPaymentMethodsLength(1);
+        const isOnlyCardPaymentMethods = await verifyPaymentMethodsContains("CP");
+        expect(isOnlyOnePaymentMethods).toBeTruthy();
+        expect(isOnlyCardPaymentMethods).toBeTruthy();
       });
 });
 
