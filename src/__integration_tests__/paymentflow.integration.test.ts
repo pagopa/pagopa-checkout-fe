@@ -437,7 +437,23 @@ describe("Cancel payment failure tests (satispay)", () => {
   );
 });
 
-describe("Filter payment method", () => {
+describe.only("Filter payment method", () => {
+
+      it("Filter payment method no filter button", async () => {
+        selectLanguage("it");
+        await page.evaluate(() => {
+            sessionStorage.setItem('enablePaymentMethodsHandler', "false");
+        });
+        await fillAndSearchFormPaymentMethod(
+          KORPTIDs.CANCEL_PAYMENT_OK,
+            OKPaymentInfo.VALID_FISCAL_CODE,
+            OKPaymentInfo.EMAIL,
+            ""
+        );
+        const existsFilterButton = await page.$eval("#filterDrawerButton", () => true).catch(() => false)
+        expect(existsFilterButton).toBeFalsy();
+      });
+
       it("Filter payment method by text field", async () => {
         selectLanguage("it");
         await fillAndSearchFormPaymentMethod(

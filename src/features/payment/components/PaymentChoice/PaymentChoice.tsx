@@ -34,6 +34,7 @@ import { getFees, recaptchaTransaction } from "../../../../utils/api/helper";
 import {
   SessionItems,
   getReCaptchaKey,
+  getSessionItem,
   setSessionItem,
 } from "../../../../utils/storage/sessionStorage";
 import { PaymentInstrumentsType } from "../../models/paymentModel";
@@ -271,18 +272,21 @@ export function PaymentChoice(props: {
               errorText={undefined}
               handleBlur={constVoid}
             />
-            <ButtonNaked
-              id="filterDrawerButton"
-              component="button"
-              style={{ fontWeight: 600, fontSize: "1rem" }}
-              color="primary"
-              onClick={() => {
-                setDrawerOpen(true);
-              }}
-            >
-              {t("paymentChoicePage.filterButton")}
-              <FilterList />
-            </ButtonNaked>
+            {getSessionItem(SessionItems.enablePaymentMethodsHandler) ===
+              "true" && (
+              <ButtonNaked
+                id="filterDrawerButton"
+                component="button"
+                style={{ fontWeight: 600, fontSize: "1rem" }}
+                color="primary"
+                onClick={() => {
+                  setDrawerOpen(true);
+                }}
+              >
+                {t("paymentChoicePage.filterButton")}
+                <FilterList />
+              </ButtonNaked>
+            )}
           </Stack>
 
           {paymentMethodFilterState && paymentMethodFilterState.paymentType && (
