@@ -437,7 +437,7 @@ describe("Cancel payment failure tests (satispay)", () => {
   );
 });
 
-describe.only("Filter payment method", () => {
+describe("Filter payment method", () => {
 
       it("Filter payment method no filter button", async () => {
         selectLanguage("it");
