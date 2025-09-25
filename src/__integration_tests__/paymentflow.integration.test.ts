@@ -435,7 +435,7 @@ describe("Cancel payment failure tests (satispay)", () => {
   );
 });
 
-describe.only("Filter payment method", () => {
+describe("Filter payment method", () => {
     it("Filter payment method by text field", async () => {
         selectLanguage("it");
         await fillAndSearchFormPaymentMethod(
@@ -466,7 +466,7 @@ describe.only("Filter payment method", () => {
         expect(paymentMethodsFilteredOutMessage).toContain(itTranslation.paymentChoicePage.noPaymentMethodsAvailable);
       });
 
-      it.only("Filter payment method by filter drawer", async () => {
+      it("Filter payment method by filter drawer", async () => {
         selectLanguage("it");
         await fillAndSearchFormPaymentMethod(
           KORPTIDs.CANCEL_PAYMENT_OK,

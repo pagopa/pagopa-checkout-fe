@@ -247,11 +247,11 @@ export const fillAndSearchFormPaymentMethod = async (
 };
 
 export const filterByCard = async () => {
-  const filterDrawerOpenButton = page.waitForSelector("#filterDrawerButton", {
-    clickable: true,
-  });
+  //wait 1 sec for f.e. to draws component
+  await new Promise((r)=> setTimeout(r, 1000));
+  const filterDrawerOpenButton= await page.waitForSelector("#filterDrawerButton", {clickable: true});
   await filterDrawerOpenButton?.click();
-  const filterDrawerCard = page.waitForSelector("#paymentChoiceDrawer-card", {
+  const filterDrawerCard = await page.waitForSelector("#paymentChoiceDrawer-card", {
     clickable: true,
   });
   await filterDrawerCard?.click();
