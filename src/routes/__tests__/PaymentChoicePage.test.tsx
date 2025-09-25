@@ -261,7 +261,11 @@ jest.mock(
   () => ({
     __esModule: true,
     PaymentChoiceFilterDrawer: ({ open, children, ...props }: any) =>
-      open ? <div data-testid="payment-choice-drawer" {...props}>{children}</div> : null,
+      open ? (
+        <div data-testid="payment-choice-drawer" {...props}>
+          {children}
+        </div>
+      ) : null,
   })
 );
 
