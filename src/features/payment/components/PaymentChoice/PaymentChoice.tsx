@@ -280,6 +280,7 @@ export function PaymentChoice(props: {
 
           {paymentMethodFilterState && paymentMethodFilterState.paymentType && (
             <Chip
+              id="idPaymentType"
               sx={{
                 mt: 2,
                 "&.MuiChip-root": {
@@ -314,6 +315,7 @@ export function PaymentChoice(props: {
           <PaymentChoiceFilterDrawer
             open={drawerOpen}
             onClose={() => setDrawerOpen(false)}
+            paymentMethodFilterModel={paymentMethodFilterState} 
             onSelect={applyPaymentFilter}
           />
         </>

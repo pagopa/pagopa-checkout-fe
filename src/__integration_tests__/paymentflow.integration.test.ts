@@ -472,13 +472,20 @@ describe("Filter payment method", () => {
           KORPTIDs.CANCEL_PAYMENT_OK,
             OKPaymentInfo.VALID_FISCAL_CODE,
             OKPaymentInfo.EMAIL,
-            "car"
+            ""
         );
         await filterByCard();
-        const isOnlyOnePaymentMethods = await verifyPaymentMethodsLength(1);
+        
         const isOnlyCardPaymentMethods = await verifyPaymentMethodsContains("CP");
-        expect(isOnlyOnePaymentMethods).toBeTruthy();
+      
         expect(isOnlyCardPaymentMethods).toBeTruthy();
+
+        await page.waitForSelector("#idPaymentType");
+
+        const chip = await page.$("#idPaymentType");
+        expect(chip).not.toBeNull();
+        const isOnlyOnePaymentMethods = await verifyPaymentMethodsLength(1);
+        expect(isOnlyOnePaymentMethods).toBeTruthy();
       });
 });
 

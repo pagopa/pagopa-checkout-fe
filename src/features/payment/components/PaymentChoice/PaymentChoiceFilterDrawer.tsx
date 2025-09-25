@@ -20,32 +20,19 @@ import { useSmallDevice } from "../../../../hooks/useSmallDevice";
 export const PaymentChoiceFilterDrawer = (props: {
   open: boolean;
   onClose: () => void;
-  paymentMethodFilterModel?: PaymentMethodFilter;
+  paymentMethodFilterModel: PaymentMethodFilter;
   onSelect: (sortingModel: PaymentMethodFilter | null) => void;
 }) => {
   const { open, onClose, paymentMethodFilterModel, onSelect } = props;
   const { t } = useTranslation();
 
-  // Determine initial sorting type based on provided model
-  const getInitialFilterSelected = (): PaymentMethodFilter => ({
-    paymentType: paymentMethodFilterModel?.paymentType,
-    installment: paymentMethodFilterModel
-      ? paymentMethodFilterModel.installment
-      : false,
-  });
-  // Initialize sorting type
-  const [paymentMethodFilter, setPaymentMethodFilter] =
-    React.useState<PaymentMethodFilter>(getInitialFilterSelected());
+  const paymentMethodFilter = paymentMethodFilterModel;
 
   const handleInstallmentChanging = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const checked = event.target.checked;
-
-    setPaymentMethodFilter((prev) => ({
-      ...prev,
-      installment: checked,
-    }));
+    onSelect({ ...paymentMethodFilter, installment: checked });
   };
 
   // Handle radio selection change
@@ -53,11 +40,7 @@ export const PaymentChoiceFilterDrawer = (props: {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const value = event.target.value as PaymentMethodFilterType;
-
-    setPaymentMethodFilter((prev) => ({
-      ...prev,
-      paymentType: value,
-    }));
+    onSelect({ ...paymentMethodFilter, paymentType: value });
   };
 
   useEffect(() => {
@@ -76,7 +59,6 @@ export const PaymentChoiceFilterDrawer = (props: {
       paymentType: undefined,
       installment: false,
     };
-    setPaymentMethodFilter(defaultPaymentMethodFilter);
     onSelect(defaultPaymentMethodFilter);
     onClose();
   };
