@@ -154,7 +154,7 @@ stages:
               sonar.exclusions=src/**/__tests__/**/*,src/**/__test__/**,**/*.js,src/**/index.ts,src/**/__mocks__/**/*,/src/utils/testing/**
               sonar.tests=src
               sonar.test.inclusions=src/**/__tests__/**/*,src/**/__test__/**
-              sonar.cpd.exclusions=src/**/__tests__/**,src/**/__test__/**,__mocks__/**,/src/utils/testing/**,src/__integration_tests_/**
+              sonar.cpd.exclusions=src/**/__tests__/**,src/**/__test__/**,__mocks__/**,/src/utils/testing/**,src/__integration_tests__/**,
 
         - script: |
             yarn generate
