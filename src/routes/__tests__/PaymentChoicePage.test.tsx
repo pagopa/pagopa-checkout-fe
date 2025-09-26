@@ -5,6 +5,15 @@ import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import * as router from "react-router";
+import * as E from "fp-ts/Either";
+
+// Mock @mui/material styled system
+jest.mock("@mui/material/styles", () => ({
+  ...jest.requireActual("@mui/material/styles"),
+  styled: jest.fn(() => (component: any) => component),
+  useTheme: jest.fn(() => ({})),
+  ThemeProvider: ({ children }: any) => children,
+}));
 import {
   getSessionItem,
   SessionItems,
@@ -48,6 +57,48 @@ jest.mock("react-i18next", () => ({
   }) => <span data-testid="mocked-trans">{i18nKey || "no-key"}</span>,
 }));
 
+// Mock the paymentMethodsHelper
+jest.mock("../../utils/paymentMethods/paymentMethodsHelper", () => ({
+  getMethodDescriptionForCurrentLanguage: jest.fn((method) => {
+    // return "Carte" for the test credit card method to match test expectations
+    if (
+      (typeof method.description === "string" &&
+        method.description === "Carte") ||
+      (typeof method.description === "object" &&
+        (method.description.it === "Carte" ||
+          method.description.IT === "Carte"))
+    ) {
+      return "Carte";
+    }
+    // return "Paga con Postepay" for the test apm method to match test expectations
+    if (
+      (typeof method.description === "string" &&
+        method.description === "Paga con Postepay") ||
+      (typeof method.description === "object" &&
+        (method.description.it === "Paga con Postepay" ||
+          method.description.IT === "Paga con Postepay"))
+    ) {
+      return "Paga con Postepay";
+    }
+    if (typeof method.description === "string") {
+      return method.description;
+    }
+    if (typeof method.description === "object" && method.description?.it) {
+      return method.description.it;
+    }
+    return "Unknown";
+  }),
+  getMethodNameForCurrentLanguage: jest.fn((method) => {
+    if (typeof method.name === "string") {
+      return method.name;
+    }
+    if (typeof method.name === "object" && method.name?.it) {
+      return method.name.it;
+    }
+    return "Unknown";
+  }),
+}));
+
 // Create a Jest spy for navigation
 const navigate = jest.fn();
 
@@ -64,6 +115,17 @@ jest.mock("../../utils/api/client", () => ({
   apiPaymentEcommerceClientV3: {
     getAllPaymentMethodsV3: jest.fn(),
     newTransactionV3: jest.fn(),
+  },
+  apiCheckoutFeatureFlags: {
+    evaluateFeatureFlags: jest.fn(() =>
+      Promise.resolve(
+        E.right({
+          value: {
+            isPaymentMethodsHandlerEnabled: false,
+          },
+        })
+      )
+    ),
   },
 }));
 
@@ -119,6 +181,112 @@ jest.mock("../../utils/eventListeners", () => ({
   onBrowserUnload: jest.fn(),
 }));
 
+// Mock PaymentChoice components
+jest.mock(
+  "../../features/payment/components/PaymentChoice/PaymentMethod",
+  () => {
+    const MethodComponentList = ({ methods, onClick }: any) => (
+      <div data-testid="method-component-list">
+        {methods.map((method: any) => (
+          <button
+            key={method.id}
+            onClick={() => onClick(method)}
+            data-testid={`payment-method-${method.id}`}
+          >
+            {typeof method.description === "string"
+              ? method.description
+              : typeof method.description === "object" &&
+                (method.description.it || method.description.IT)
+              ? method.description.it || method.description.IT
+              : "Unknown"}
+          </button>
+        ))}
+      </div>
+    );
+    const DisabledPaymentMethods = ({ methods }: any) => (
+      <div data-testid="disabled-payment-methods">
+        {methods.map((method: any) => (
+          <div key={method.id} data-testid={`disabled-method-${method.id}`}>
+            {typeof method.description === "string"
+              ? method.description
+              : typeof method.description === "object" &&
+                (method.description.it || method.description.IT)
+              ? method.description.it || method.description.IT
+              : "Unknown"}
+          </div>
+        ))}
+      </div>
+    );
+    // export both default and named exports to match the real module's structure
+    // also export PaymentMethod as default and named to match usage in PaymentChoice
+    return {
+      __esModule: true,
+      default: MethodComponentList,
+      MethodComponentList,
+      DisabledPaymentMethods,
+      PaymentMethod: MethodComponentList,
+    };
+  }
+);
+
+// Mock CheckoutLoader
+jest.mock("../../components/PageContent/CheckoutLoader", () => ({
+  __esModule: true,
+  default: () => <div data-testid="checkout-loader">Loading...</div>,
+}));
+
+// Mock modals
+jest.mock("../../components/modals/ErrorModal", () => ({
+  __esModule: true,
+  default: ({ open, children, ...props }: any) =>
+    open ? (
+      <div data-testid="error-modal" {...props}>
+        {children}
+      </div>
+    ) : null,
+}));
+
+jest.mock("../../components/modals/InformationModal", () => ({
+  __esModule: true,
+  default: ({ open, children, ...props }: any) =>
+    open ? (
+      <div data-testid="information-modal" {...props}>
+        {children}
+      </div>
+    ) : null,
+}));
+
+// Mock theme context provider
+jest.mock("../../components/themeContextProvider/themeContextProvider", () => ({
+  ThemeContextProvider: ({ children }: any) => children,
+  useThemeContext: () => ({ isDark: false, toggleTheme: jest.fn() }),
+}));
+
+// Mock PageContainer
+jest.mock("../../components/PageContent/PageContainer", () => ({
+  __esModule: true,
+  default: ({ children, title, description, link }: any) => (
+    <div aria-live="polite">
+      <div data-testid="title">{title}</div>
+      <div data-testid="description">
+        {description}
+        {link}
+      </div>
+      {children}
+    </div>
+  ),
+}));
+
+// Mock CancelPayment
+jest.mock("../../components/modals/CancelPayment", () => ({
+  CancelPayment: ({ open, children, ...props }: any) =>
+    open ? (
+      <div data-testid="cancel-payment-modal" {...props}>
+        {children}
+      </div>
+    ) : null,
+}));
+
 // Mock Material UI components
 jest.mock("@mui/material/Box/Box", () => ({
   __esModule: true,
@@ -149,6 +317,69 @@ jest.mock("@mui/material/Box/Box", () => ({
         {children}
       </div>
     );
+  },
+}));
+
+// Mock Material UI components that might be used in PaymentChoice
+jest.mock("@mui/material", () => ({
+  ...jest.requireActual("@mui/material"),
+  Typography: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+  Button: ({ children, onClick, ...props }: any) => (
+    <button onClick={onClick} {...props}>
+      {children}
+    </button>
+  ),
+  InputAdornment: ({ children, ...props }: any) => (
+    <div {...props}>{children}</div>
+  ),
+  IconButton: ({ children, onClick, ...props }: any) => (
+    <button onClick={onClick} {...props}>
+      {children}
+    </button>
+  ),
+  styled: jest.fn(() => (component: any) => component),
+}));
+
+// Mock @pagopa/mui-italia to prevent styled function issues
+jest.mock("@pagopa/mui-italia", () => ({
+  ThemeProvider: ({ children }: any) => children,
+  theme: {},
+  Illustration: ({ children, ...props }: any) => (
+    <div {...props}>{children}</div>
+  ),
+}));
+
+// Mock Material UI icons
+jest.mock("@mui/icons-material", () => ({
+  CancelSharp: () => <span>Cancel</span>,
+  Search: () => <span>Search</span>,
+}));
+
+// Mock TextFormField component
+jest.mock("../../components/TextFormField/TextFormField", () => ({
+  __esModule: true,
+  default: ({ handleChange, value, id, endAdornment, ...props }: any) => (
+    <div>
+      <input
+        id={id}
+        value={value}
+        onChange={handleChange}
+        data-testid="text-form-field"
+        {...props}
+      />
+      {endAdornment && <div data-testid="end-adornment">{endAdornment}</div>}
+    </div>
+  ),
+}));
+
+// Mock ClickableFieldContainer
+jest.mock("../../components/TextFormField/ClickableFieldContainer", () => ({
+  __esModule: true,
+  default: ({ children, loading, ...props }: any) => {
+    if (loading) {
+      return <div data-testid="loading-skeleton" />;
+    }
+    return <div {...props}>{children}</div>;
   },
 }));
 
@@ -351,6 +582,81 @@ describe("PaymentChoicePage guest", () => {
         createSuccessGetPaymentMethodsV1.paymentMethods![1].paymentTypeCode,
     });
     expect(navigate).toHaveBeenCalledWith("/lista-psp");
+  });
+
+  test("filter for string 'cart' and check only carte is present", async () => {
+    (getItemLocalStorage as jest.Mock).mockReturnValue("false");
+    const result = renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentChoicePage />
+      </MemoryRouter>
+    );
+    await waitFor(() => {
+      // Query the input fields by their id
+      fireEvent.change(
+        result.container.querySelector("#paymentMethodsFilter")!,
+        { target: { value: "cart" } }
+      );
+    });
+
+    expect(
+      screen.getByText(
+        createSuccessGetPaymentMethodsV1.paymentMethods![0].description
+      )
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByText(
+        createSuccessGetPaymentMethodsV1.paymentMethods![1].description
+      )
+    ).not.toBeInTheDocument();
+  });
+
+  test("filter for string 'cart' and check only carte is present the remove filter and check all payment methods are present", async () => {
+    (getItemLocalStorage as jest.Mock).mockReturnValue("false");
+    const result = renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentChoicePage />
+      </MemoryRouter>
+    );
+    await waitFor(() => {
+      // Query the input fields by their id
+      fireEvent.change(
+        result.container.querySelector("#paymentMethodsFilter")!,
+        { target: { value: "cart" } }
+      );
+    });
+
+    expect(
+      screen.getByText(
+        createSuccessGetPaymentMethodsV1.paymentMethods![0].description
+      )
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByText(
+        createSuccessGetPaymentMethodsV1.paymentMethods![1].description
+      )
+    ).not.toBeInTheDocument();
+
+    await waitFor(() => {
+      // Query the input fields by their id
+      fireEvent.click(
+        result.container.querySelector("#clearFilterPaymentMethod")!
+      );
+    });
+
+    expect(
+      screen.getByText(
+        createSuccessGetPaymentMethodsV1.paymentMethods![0].description
+      )
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByText(
+        createSuccessGetPaymentMethodsV1.paymentMethods![1].description
+      )
+    ).toBeInTheDocument();
   });
 });
 

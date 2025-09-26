@@ -4,8 +4,18 @@ import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidV4 } from "uuid";
-import { Typography, Button } from "@mui/material";
+import {
+  Typography,
+  Button,
+  InputAdornment,
+  IconButton,
+  Stack,
+} from "@mui/material";
 import { t } from "i18next";
+import { CancelSharp, InfoOutlined, Search } from "@mui/icons-material";
+import { constVoid } from "fp-ts/function";
+import { getMethodDescriptionForCurrentLanguage } from "../../../../utils/paymentMethods/paymentMethodsHelper";
+import TextFormField from "../../../../components/TextFormField/TextFormField";
 import InformationModal from "../../../../components/modals/InformationModal";
 import ErrorModal from "../../../../components/modals/ErrorModal";
 import CheckoutLoader from "../../../../components/PageContent/CheckoutLoader";
@@ -18,14 +28,11 @@ import {
   getReCaptchaKey,
   setSessionItem,
 } from "../../../../utils/storage/sessionStorage";
-import {
-  PaymentCodeType,
-  PaymentCodeTypeEnum,
-  PaymentInstrumentsType,
-} from "../../models/paymentModel";
+import { PaymentInstrumentsType } from "../../models/paymentModel";
 import { setThreshold } from "../../../../redux/slices/threshold";
 import { CheckoutRoutes } from "../../../../routes/models/routeModel";
 import { onErrorActivate } from "../../../../utils/api/transactionsErrorHelper";
+import { PaymentTypeCodeEnum } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 import { DisabledPaymentMethods, MethodComponentList } from "./PaymentMethod";
 import { getNormalizedMethods } from "./utils";
 
@@ -39,6 +46,7 @@ export function PaymentChoice(props: {
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
   const [pspNotFoundModal, setPspNotFoundModalOpen] = React.useState(false);
+  const [paymentMethodFilter, setPaymentMethodFilter] = React.useState("");
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -48,6 +56,10 @@ export function PaymentChoice(props: {
       setLoading(false);
     }
   }, [ref.current]);
+
+  const resetPaymentMethodFilter = () => {
+    setPaymentMethodFilter("");
+  };
 
   const onError = (m: string) => {
     setLoading(false);
@@ -63,7 +75,7 @@ export function PaymentChoice(props: {
   };
 
   const onSuccess = (
-    paymentTypeCode: PaymentCodeType,
+    paymentTypeCode: PaymentTypeCodeEnum,
     belowThreshold?: boolean
   ) => {
     const route: string = PaymentMethodRoutes[paymentTypeCode]?.route;
@@ -108,11 +120,27 @@ export function PaymentChoice(props: {
     });
   };
 
+  const filterPaymentMethodsHandler = async (value: string) => {
+    if (!loading) {
+      setPaymentMethodFilter(value);
+    }
+  };
+
+  const filterPaymentMethods = (p: PaymentInstrumentsType) =>
+    getMethodDescriptionForCurrentLanguage(p)
+      .toLowerCase()
+      .indexOf(paymentMethodFilter.toLowerCase()) > -1;
+
+  const getFilteredPaymentMethods = (paymentMethods: Array<any>) =>
+    paymentMethodFilter === ""
+      ? paymentMethods
+      : paymentMethods.filter(filterPaymentMethods);
+
   const handleClickOnMethod = async (method: PaymentInstrumentsType) => {
     if (!loading) {
       const { paymentTypeCode, id: paymentMethodId } = method;
       setSessionItem(SessionItems.paymentMethodInfo, {
-        title: method.description,
+        title: getMethodDescriptionForCurrentLanguage(method),
         asset: method.asset || "",
       });
 
@@ -120,7 +148,7 @@ export function PaymentChoice(props: {
         paymentMethodId,
         paymentTypeCode,
       });
-      if (paymentTypeCode !== PaymentCodeTypeEnum.CP && ref.current) {
+      if (paymentTypeCode !== PaymentTypeCodeEnum.CP && ref.current) {
         await onApmChoice(ref.current, (belowThreshold: boolean) =>
           onSuccess(paymentTypeCode, belowThreshold)
         );
@@ -135,6 +163,15 @@ export function PaymentChoice(props: {
     [props.amount, props.paymentInstruments]
   );
 
+  const filterKeyPresent = () =>
+    paymentMethodFilter !== undefined && paymentMethodFilter !== "";
+
+  const noPaymentMethodsVisible = () =>
+    paymentMethods.enabled
+      .concat(paymentMethods.disabled)
+      .filter(filterPaymentMethods).length === 0 &&
+    paymentMethods.enabled.concat(paymentMethods.disabled).length > 0;
+
   return (
     <>
       {loading && <CheckoutLoader />}
@@ -144,14 +181,61 @@ export function PaymentChoice(props: {
         ))
       ) : (
         <>
+          <TextFormField
+            label="paymentChoicePage.filterLabel"
+            variant="outlined"
+            type="text"
+            id="paymentMethodsFilter"
+            fullWidth
+            handleChange={(e) =>
+              filterPaymentMethodsHandler(e.currentTarget.value)
+            }
+            value={paymentMethodFilter}
+            startAdornment={
+              <InputAdornment position="start">
+                <Search />
+              </InputAdornment>
+            }
+            endAdornment={
+              filterKeyPresent() && (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={resetPaymentMethodFilter}
+                    edge="end"
+                    id="clearFilterPaymentMethod"
+                    data-testid="clearFilterPaymentMethod"
+                    sx={{
+                      color: "action.active",
+                    }}
+                  >
+                    <CancelSharp />
+                  </IconButton>
+                </InputAdornment>
+              )
+            }
+            error={false}
+            errorText={undefined}
+            handleBlur={constVoid}
+          />
           <MethodComponentList
-            methods={paymentMethods.enabled}
+            methods={getFilteredPaymentMethods(paymentMethods.enabled)}
             onClick={handleClickOnMethod}
             testable
           />
-          <DisabledPaymentMethods methods={paymentMethods.disabled} />
+          <DisabledPaymentMethods
+            methods={getFilteredPaymentMethods(paymentMethods.disabled)}
+          />
         </>
       )}
+      {noPaymentMethodsVisible() && (
+        <Stack direction="row" spacing={1} marginTop={3}>
+          <InfoOutlined fontSize={"small"} />
+          <Typography id="noPaymentMethodsMessage" fontSize={"16px"}>
+            {t("paymentChoicePage.noPaymentMethodsAvailable")}
+          </Typography>
+        </Stack>
+      )}
+
       <Box display="none">
         <ReCAPTCHA
           ref={ref}

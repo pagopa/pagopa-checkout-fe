@@ -16,6 +16,11 @@ export const payNotice = async (
   return await message.evaluate((el) => el.textContent);
 };
 
+export const noPaymentMethodsMessage = async () => {
+  const message = await page.waitForSelector("#noPaymentMethodsMessage");
+  return await message.evaluate((el) => el.textContent);
+};
+
 export const clickButtonBySelector = async (selector) => {
   const selectorButton = selector.startsWith("#") ? selector : "#" + selector;
   const button = await page.waitForSelector(selectorButton);
@@ -34,10 +39,39 @@ export const activatePaymentAndGetError = async (
   fiscalCode,
   email,
   cardData,
-  selectorId
+  selectorId,
+  useApm
 ) => {
   await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
   const errorMessageElem = await page.waitForSelector(selectorId);
+  return await errorMessageElem.evaluate((el) => el.textContent);
+};
+
+export const activateApmPaymentAndGetError = async (
+  noticeCode,
+  fiscalCode,
+  email,
+  selectorId
+) => {
+  await chooseApmMethod(noticeCode, fiscalCode, email, "SATY");
+  const errorMessageElem = await page.waitForSelector(selectorId);
+  return await errorMessageElem.evaluate((el) => el.textContent);
+};
+
+export const authorizeApmPaymentAndGetError = async (
+  noticeCode,
+  fiscalCode,
+  email,
+  paymentTypeCode,
+  errorMessageTitleSelector
+) => {
+  const payBtnSelector = "#paymentCheckPageButtonPay";
+  await chooseApmMethod(noticeCode, fiscalCode, email, paymentTypeCode);
+  const payBtn = await page.waitForSelector(payBtnSelector);
+  await payBtn.click();
+  const errorMessageElem = await page.waitForSelector(
+    errorMessageTitleSelector
+  );
   return await errorMessageElem.evaluate((el) => el.textContent);
 };
 
@@ -179,6 +213,41 @@ export const fillAndSubmitCardDataForm = async (
   await tryHandlePspPickerPage();
 };
 
+export const chooseApmMethod = async (
+  noticeCode,
+  fiscalCode,
+  email,
+  paymentTypeCode
+) => {
+  const payNoticeBtnSelector = "#paymentSummaryButtonPay";
+  await fillPaymentNotificationForm(noticeCode, fiscalCode);
+  const payNoticeBtn = await page.waitForSelector(payNoticeBtnSelector, {
+    visible: true,
+  });
+  await payNoticeBtn.click();
+  await fillEmailForm(email);
+  await choosePaymentMethod(paymentTypeCode);
+  await tryHandlePspPickerPage();
+};
+
+export const fillAndSearchFormPaymentMethod = async (
+  noticeCode,
+  fiscalCode,
+  email,
+  paymentMethod
+) => {
+  const payNoticeBtnSelector = "#paymentSummaryButtonPay";
+  await fillPaymentNotificationForm(noticeCode, fiscalCode);
+  const payNoticeBtn = await page.waitForSelector(payNoticeBtnSelector, {
+    visible: true,
+  });
+  await payNoticeBtn.click();
+  await fillEmailForm(email);
+  await filterPaymentMethodByName(paymentMethod);
+};
+
+
+
 export const tryHandlePspPickerPage = async ()=>{
   // wait for page to change, max wait time few seconds
   // this navigation will not happen in all test cases
@@ -247,6 +316,14 @@ export const fillEmailForm = async (email) => {
   await continueBtn.click();
 };
 
+export const filterPaymentMethodByName = async (methodFilterName) => {
+  const paymentMethodFilterBoxId = `#paymentMethodsFilter`;
+  
+  const paymentMethodFilterBox = await page.waitForSelector(paymentMethodFilterBoxId);
+  await paymentMethodFilterBox.click();
+  await page.keyboard.type(methodFilterName);
+};
+
 export const choosePaymentMethod = async (method) => {
   const cardOptionXPath = `[data-qaid=${method}]`;
 
@@ -263,6 +340,24 @@ export const verifyPaymentMethods = async () => {
   return methods.length > 0;
 };
 
+export const verifyPaymentMethodsLength = async (length) => {
+  await page.waitForSelector("[data-qalabel=payment-method]");
+  const methods = await page.$$eval(
+    "[data-qalabel=payment-method]",
+    (elHandles) => elHandles.map((el) => el.getAttribute("data-qaid"))
+  );
+  return methods.length === length;
+};
+
+export const verifyPaymentMethodsContains = async (paymentMethodTypeCode) => {
+  await page.waitForSelector("[data-qalabel=payment-method]");
+  const methods = await page.$$eval(
+    "[data-qalabel=payment-method]",
+    (elHandles) => elHandles.map((el) => el.getAttribute("data-qaid"))
+  );
+  return methods.indexOf(paymentMethodTypeCode) > -1;
+};
+
 export const fillCardDataForm = async (cardData) => {
   const cardNumberInput = "#frame_CARD_NUMBER";
   const expirationDateInput = "#frame_EXPIRATION_DATE";
@@ -272,22 +367,22 @@ export const fillCardDataForm = async (cardData) => {
   const disabledContinueBtnXPath = 'button[type=submit][disabled=""]';
   let iteration = 0;
   let completed = false;
-  while (!completed) {
+  while (!completed && iteration <5) {
     iteration++;
     await page.waitForSelector(cardNumberInput, { visible: true });
-    await page.click(cardNumberInput, { clickCount: 3 });
+    await page.click(cardNumberInput, { clickCount: 4 });
     await page.keyboard.type(cardData.number);
     await page.waitForSelector(expirationDateInput, { visible: true });
-    await page.click(expirationDateInput, { clickCount: 3 });
+    await page.click(expirationDateInput, { clickCount: 4 });
     await page.keyboard.type(cardData.expirationDate);
     await page.waitForSelector(ccvInput, { visible: true });
-    await page.click(ccvInput, { clickCount: 3 });
+    await page.click(ccvInput, { clickCount: 4 });
     await page.keyboard.type(cardData.ccv);
     await page.waitForSelector(holderNameInput, { visible: true });
-    await page.click(holderNameInput, { clickCount: 3 });
+    await page.click(holderNameInput, { clickCount: 4 });
     await page.keyboard.type(cardData.holderName);
     completed = !!!(await page.$(disabledContinueBtnXPath));
-    await new Promise(resolve => setTimeout(resolve, 1000)); 
+    await new Promise(resolve => setTimeout(resolve, 200)); 
   }
   const continueBtn = await page.waitForSelector(continueBtnXPath, {
     visible: true,

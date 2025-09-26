@@ -1,12 +1,10 @@
-import {
-  PaymentInstrumentsType,
-  PaymentCodeTypeEnum,
-  PaymentCodeType,
-} from "../../models/paymentModel";
+import { getMethodDescriptionForCurrentLanguage } from "../../../../utils/paymentMethods/paymentMethodsHelper";
+import { PaymentInstrumentsType } from "../../models/paymentModel";
 import { PaymentMethodStatusEnum } from "../../../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
+import { PaymentTypeCodeEnum } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 
 const isFirstPaymentMethod = (method: PaymentInstrumentsType) =>
-  method.paymentTypeCode === PaymentCodeTypeEnum.CP;
+  method.paymentTypeCode === PaymentTypeCodeEnum.CP;
 
 const compareMethods = (
   a: PaymentInstrumentsType,
@@ -19,14 +17,16 @@ const compareMethods = (
   }
 
   // If not the first payment method, sort by description
-  return a.description.localeCompare(b.description);
+  return getMethodDescriptionForCurrentLanguage(a).localeCompare(
+    getMethodDescriptionForCurrentLanguage(b)
+  );
 };
 
 export const getNormalizedMethods = (
   paymentInstruments: Array<PaymentInstrumentsType>
 ) => {
   const { methods, duplicatedMethods } = paymentInstruments.reduce<{
-    foundTypes: Array<PaymentCodeType>;
+    foundTypes: Array<PaymentTypeCodeEnum>;
     methods: Array<PaymentInstrumentsType>;
     duplicatedMethods: Array<PaymentInstrumentsType>;
   }>(

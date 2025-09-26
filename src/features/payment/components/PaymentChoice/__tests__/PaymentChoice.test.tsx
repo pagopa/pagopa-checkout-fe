@@ -1,18 +1,24 @@
 import React from "react";
 import "@testing-library/jest-dom";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from "@testing-library/react";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { PaymentChoice } from "../PaymentChoice";
-import {
-  PaymentCodeTypeEnum,
-  PaymentInstrumentsType,
-} from "../../../models/paymentModel";
+import { PaymentInstrumentsType } from "../../../models/paymentModel";
 import { PaymentMethodStatusEnum } from "../../../../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
-import { PaymentMethodManagementTypeEnum } from "../../../../../../generated/definitions/payment-ecommerce/PaymentMethodManagementType";
 import "whatwg-fetch";
 import * as helperModule from "../../../../../utils/api/helper";
 import * as transactionsErrorHelperModule from "../../../../../utils/api/transactionsErrorHelper";
+import {
+  MethodManagementEnum,
+  PaymentTypeCodeEnum,
+} from "../../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 
 // Define types for helper functions
 type GetFeesFunction = (
@@ -102,7 +108,7 @@ jest.mock("react-google-recaptcha", () => ({
 jest.mock("../../../../../routes/models/paymentMethodRoutes", () => ({
   PaymentMethodRoutes: {
     CP: { route: "card-payment" },
-    PAYPAL: { route: "paypal-payment" },
+    PPAL: { route: "paypal-payment" },
   },
 }));
 
@@ -112,6 +118,20 @@ jest.mock("../../../../../routes/models/routeModel", () => ({
     LISTA_PSP: "psp-list",
     ERRORE: "error",
   },
+}));
+
+// Mock paymentMethodsHelper
+jest.mock("../../../../../utils/paymentMethods/paymentMethodsHelper", () => ({
+  getMethodDescriptionForCurrentLanguage: jest.fn(
+    (method) =>
+      method.description?.IT ||
+      method.description?.it ||
+      method.description ||
+      "Unknown"
+  ),
+  getMethodNameForCurrentLanguage: jest.fn(
+    (method) => method.name?.IT || method.name?.it || method.name || "Unknown"
+  ),
 }));
 
 // Mock PaymentMethod components
@@ -124,7 +144,10 @@ jest.mock("../PaymentMethod", () => ({
           data-testid={`payment-method-${method.paymentTypeCode}`}
           onClick={() => onClick(method)}
         >
-          {method.description}
+          {method.description?.IT ||
+            method.description?.it ||
+            method.description ||
+            "Unknown"}
         </div>
       ))}
     </div>
@@ -136,7 +159,10 @@ jest.mock("../PaymentMethod", () => ({
           key={method.id}
           data-testid={`disabled-method-${method.paymentTypeCode}`}
         >
-          {method.description}
+          {method.description?.IT ||
+            method.description?.it ||
+            method.description ||
+            "Unknown"}
         </div>
       ))}
     </div>
@@ -243,30 +269,36 @@ describe("PaymentChoice", () => {
   const samplePaymentInstruments: Array<PaymentInstrumentsType> = [
     {
       id: "card-id",
-      name: "CARDS",
-      description: "Carte di Credito e Debito",
+      name: { it: "CARDS" },
+      description: { it: "Carte di Credito e Debito" },
       status: PaymentMethodStatusEnum.ENABLED,
-      methodManagement: PaymentMethodManagementTypeEnum.ONBOARDABLE,
-      paymentTypeCode: PaymentCodeTypeEnum.CP,
-      ranges: [],
+      methodManagement: MethodManagementEnum.ONBOARDABLE,
+      paymentTypeCode: PaymentTypeCodeEnum.CP,
+      feeRange: undefined,
+      asset: undefined,
+      brandAsset: undefined,
     },
     {
       id: "paypal-id",
-      name: "PAYPAL",
-      description: "PayPal",
+      name: { it: "PAYPAL" },
+      description: { it: "PayPal" },
       status: PaymentMethodStatusEnum.ENABLED,
-      methodManagement: PaymentMethodManagementTypeEnum.ONBOARDABLE,
-      paymentTypeCode: "PAYPAL" as PaymentCodeTypeEnum,
-      ranges: [],
+      methodManagement: MethodManagementEnum.ONBOARDABLE,
+      paymentTypeCode: PaymentTypeCodeEnum.PPAL,
+      feeRange: undefined,
+      asset: undefined,
+      brandAsset: undefined,
     },
     {
       id: "disabled-id",
-      name: "DISABLED",
-      description: "Disabled Method",
+      name: { it: "DISABLED" },
+      description: { it: "Disabled Method" },
       status: PaymentMethodStatusEnum.DISABLED,
-      methodManagement: PaymentMethodManagementTypeEnum.ONBOARDABLE,
-      paymentTypeCode: "DISABLED" as PaymentCodeTypeEnum,
-      ranges: [],
+      methodManagement: MethodManagementEnum.ONBOARDABLE,
+      paymentTypeCode: "DISABLED" as PaymentTypeCodeEnum,
+      feeRange: undefined,
+      asset: undefined,
+      brandAsset: undefined,
     },
   ];
 
@@ -337,6 +369,135 @@ describe("PaymentChoice", () => {
 
     // Should show disabled methods separately
     expect(screen.getByTestId("disabled-methods")).toBeInTheDocument();
+  });
+
+  it("should render filtered payment methods when input text in filter box", async () => {
+    // Mock the useRef to immediately set the ref
+    jest.spyOn(React, "useRef").mockImplementation(() => ({
+      current: { execute: jest.fn(), reset: jest.fn() },
+    }));
+
+    const result = renderWithRouterAndRedux(
+      <PaymentChoice
+        amount={100}
+        paymentInstruments={samplePaymentInstruments}
+        loading={false}
+      />
+    );
+
+    // Wait for loading to finish (component has internal loading state)
+    await waitFor(() => {
+      expect(screen.queryByTestId("checkout-loader")).not.toBeInTheDocument();
+    });
+
+    // Should show enabled payment methods
+    expect(screen.getByTestId("payment-method-CP")).toBeInTheDocument();
+    expect(screen.getByTestId("payment-method-PPAL")).toBeInTheDocument();
+    // Should show disabled methods separately
+    expect(screen.getByTestId("disabled-methods")).toBeInTheDocument();
+    expect(
+      result.container.querySelector("#noPaymentMethodsMessage")
+    ).not.toBeInTheDocument();
+
+    // Filter for string 'cart'
+    const filterInput = result.container.querySelector(
+      "#paymentMethodsFilter"
+    )!;
+
+    await act(async () => {
+      fireEvent.change(filterInput, { target: { value: "cart" } });
+    });
+    // Should show only card payment methods
+    expect(screen.getByTestId("payment-method-CP")).toBeInTheDocument();
+    expect(screen.queryByTestId("payment-method-PPAL")).not.toBeInTheDocument();
+  });
+
+  it("should render all payment methods when input text clear icon is clicked", async () => {
+    // Mock the useRef to immediately set the ref
+    jest.spyOn(React, "useRef").mockImplementation(() => ({
+      current: { execute: jest.fn(), reset: jest.fn() },
+    }));
+
+    const result = renderWithRouterAndRedux(
+      <PaymentChoice
+        amount={100}
+        paymentInstruments={samplePaymentInstruments}
+        loading={false}
+      />
+    );
+
+    // Wait for loading to finish (component has internal loading state)
+    await waitFor(() => {
+      expect(screen.queryByTestId("checkout-loader")).not.toBeInTheDocument();
+    });
+
+    expect(screen.getByTestId("payment-method-CP")).toBeInTheDocument();
+    expect(screen.queryByTestId("payment-method-PPAL")).toBeInTheDocument();
+
+    // Filter for string 'cart'
+    const filterInput = result.container.querySelector(
+      "#paymentMethodsFilter"
+    )!;
+
+    await act(async () => {
+      fireEvent.change(filterInput, { target: { value: "cart" } });
+    });
+    // Should show only card payment methods
+    expect(screen.getByTestId("payment-method-CP")).toBeInTheDocument();
+    expect(screen.queryByTestId("payment-method-PPAL")).not.toBeInTheDocument();
+    expect(
+      result.container.querySelector("#noPaymentMethodsMessage")
+    ).not.toBeInTheDocument();
+
+    const clearFilter = result.container.querySelector(
+      "#clearFilterPaymentMethod"
+    )!;
+    // expect(clearFilter).toBeInTheDocument();
+    await act(async () => {
+      fireEvent.click(clearFilter);
+    });
+    // Should show enabled payment methods
+    expect(screen.getByTestId("payment-method-CP")).toBeInTheDocument();
+    expect(screen.getByTestId("payment-method-PPAL")).toBeInTheDocument();
+    expect(
+      result.container.querySelector("#noPaymentMethodsMessage")
+    ).not.toBeInTheDocument();
+  });
+
+  it("should show no result string when filter doesn't match any payment methods name", async () => {
+    // Mock the useRef to immediately set the ref
+    jest.spyOn(React, "useRef").mockImplementation(() => ({
+      current: { execute: jest.fn(), reset: jest.fn() },
+    }));
+
+    const result = renderWithRouterAndRedux(
+      <PaymentChoice
+        amount={100}
+        paymentInstruments={samplePaymentInstruments}
+        loading={false}
+      />
+    );
+
+    // Wait for loading to finish (component has internal loading state)
+    await waitFor(() => {
+      expect(screen.queryByTestId("checkout-loader")).not.toBeInTheDocument();
+    });
+
+    expect(screen.getByTestId("payment-method-CP")).toBeInTheDocument();
+    expect(screen.queryByTestId("payment-method-PPAL")).toBeInTheDocument();
+
+    // Filter for string 'cart'
+    const filterInput = result.container.querySelector(
+      "#paymentMethodsFilter"
+    )!;
+
+    await act(async () => {
+      fireEvent.change(filterInput, { target: { value: "carta" } });
+    });
+    // Should show only card payment methods
+    expect(
+      result.container.querySelector("#noPaymentMethodsMessage")
+    ).toBeInTheDocument();
   });
 
   it("should handle credit card payment method click", async () => {
@@ -559,12 +720,14 @@ describe("PaymentChoice", () => {
         paymentInstruments={[
           {
             id: "other-id",
-            name: "OTHER",
-            description: "Other Payment Method",
+            name: { it: "OTHER" },
+            description: { it: "Other Payment Method" },
             status: PaymentMethodStatusEnum.ENABLED,
-            methodManagement: PaymentMethodManagementTypeEnum.ONBOARDABLE,
-            paymentTypeCode: "OTHER" as PaymentCodeTypeEnum, // Not in PaymentMethodRoutes
-            ranges: [],
+            methodManagement: MethodManagementEnum.ONBOARDABLE,
+            paymentTypeCode: "OTHER" as PaymentTypeCodeEnum, // Not in PaymentMethodRoutes
+            feeRange: undefined,
+            asset: undefined,
+            brandAsset: undefined,
           },
         ]}
         loading={false}
@@ -609,7 +772,7 @@ describe("PaymentChoice", () => {
     fireEvent.click(getByText("Carte di Credito e Debito"));
   });
 
-  it("should render without crashing with amount greter than 1 milion", () => {
+  it("should render without crashing with amount greater than 1 milion", () => {
     const { container } = renderWithRouterAndRedux(
       <PaymentChoice
         amount={130539492}
