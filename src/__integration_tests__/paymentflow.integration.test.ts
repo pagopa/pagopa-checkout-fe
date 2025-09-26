@@ -17,7 +17,10 @@ import {
   noPaymentMethodsMessage,
   filterPaymentMethodByName,
   activateApmPaymentAndGetError,
-  authorizeApmPaymentAndGetError
+  authorizeApmPaymentAndGetError,
+  filterByType,
+  filterByTwoType,
+  verifyPaymentMethodsNotContains
 } from "./utils/helpers";
 import itTranslation from "../translations/it/translations.json";
 import deTranslation from "../translations/de/translations.json";
@@ -435,7 +438,23 @@ describe("Cancel payment failure tests (satispay)", () => {
 });
 
 describe("Filter payment method", () => {
-    it("Filter payment method", async () => {
+
+      it("Filter payment method no filter button", async () => {
+        selectLanguage("it");
+        await page.evaluate(() => {
+            sessionStorage.setItem('enablePaymentMethodsHandler', "false");
+        });
+        await fillAndSearchFormPaymentMethod(
+          KORPTIDs.CANCEL_PAYMENT_OK,
+            OKPaymentInfo.VALID_FISCAL_CODE,
+            OKPaymentInfo.EMAIL,
+            ""
+        );
+        const existsFilterButton = await page.$eval("#filterDrawerButton", () => true).catch(() => false)
+        expect(existsFilterButton).toBeFalsy();
+      });
+
+      it("Filter payment method by text field", async () => {
         selectLanguage("it");
         await fillAndSearchFormPaymentMethod(
           KORPTIDs.CANCEL_PAYMENT_OK,
@@ -453,16 +472,334 @@ describe("Filter payment method", () => {
 
         const isMoreThanOnePaymentMethods = await verifyPaymentMethodsLength(7);
         const isCardPaymentMethodsPresent = await verifyPaymentMethodsContains("CP");
-        const isSatispayPaymentMethodsPresent = await verifyPaymentMethodsContains("SATY");
+        const isAppPaymentMethodsPresent = await verifyPaymentMethodsContains("SATY");
+        const isContoPaymentMethodsPresent = await verifyPaymentMethodsContains("RBPR");
 
         expect(isMoreThanOnePaymentMethods).toBeTruthy();
         expect(isCardPaymentMethodsPresent).toBeTruthy();
-        expect(isSatispayPaymentMethodsPresent).toBeTruthy();
+        expect(isAppPaymentMethodsPresent).toBeTruthy();
+        expect(isContoPaymentMethodsPresent).toBeTruthy();
 
         await filterPaymentMethodByName("carta");
 
         const paymentMethodsFilteredOutMessage = await noPaymentMethodsMessage();
         expect(paymentMethodsFilteredOutMessage).toContain(itTranslation.paymentChoicePage.noPaymentMethodsAvailable);
+      });
+
+      it("Filter payment method by filter drawer", async () => {
+        selectLanguage("it");
+        await fillAndSearchFormPaymentMethod(
+          KORPTIDs.CANCEL_PAYMENT_OK,
+            OKPaymentInfo.VALID_FISCAL_CODE,
+            OKPaymentInfo.EMAIL,
+            ""
+        );
+        await filterByType("#paymentChoiceDrawer-card");
+        
+        const isBalancePaymentMethodsOnFilter = await verifyPaymentMethodsContains("RBPB");
+        const isAppPaymentMethodsPresentOnFilter = await verifyPaymentMethodsContains("SATY");
+        const isCardPaymentMethodsPresentOnFilter = await verifyPaymentMethodsContains("CP");
+
+        expect(isBalancePaymentMethodsOnFilter).toBeFalsy();
+        expect(isAppPaymentMethodsPresentOnFilter).toBeFalsy();
+        expect(isCardPaymentMethodsPresentOnFilter).toBeTruthy();
+
+        await page.waitForSelector("#paymentTypeChipFilter");
+
+        const chip = await page.$("#paymentTypeChipFilter");
+        expect(chip).not.toBeNull();
+
+        const applyBtn = await page.waitForSelector("#paymentChoiceDrawer-applyFilter");
+        applyBtn?.click();
+        //Timeout to wait animation end
+        await new Promise((r) => setTimeout(r,1000));
+        const chipDelete = await page.waitForSelector("#removePaymentTypeFilter");
+        chipDelete?.click();
+        //Timeout to wait animation end
+        await new Promise((r) => setTimeout(r,1000));
+
+        const isCardPaymentMethodsPresent = await verifyPaymentMethodsContains("CP");
+        const isAppPaymentMethodsPresent = await verifyPaymentMethodsContains("SATY");
+        const isContoPaymentMethodsPresent = await verifyPaymentMethodsContains("RBPR");
+
+        expect(isCardPaymentMethodsPresent).toBeTruthy();
+        expect(isAppPaymentMethodsPresent).toBeTruthy();
+        expect(isContoPaymentMethodsPresent).toBeTruthy();
+      });
+
+      it("Filter payment method by filter drawer - balance", async () => {
+        selectLanguage("it");
+        await fillAndSearchFormPaymentMethod(
+          KORPTIDs.CANCEL_PAYMENT_OK,
+            OKPaymentInfo.VALID_FISCAL_CODE,
+            OKPaymentInfo.EMAIL,
+            ""
+        );
+        await filterByType("#paymentChoiceDrawer-balance");
+        
+        const isBalancePaymentMethodsOnFilter = await verifyPaymentMethodsContains("RBPB");
+        const isAppPaymentMethodsPresentOnFilter = await verifyPaymentMethodsContains("SATY");
+        const isCardPaymentMethodsPresentOnFilter = await verifyPaymentMethodsContains("CP");
+
+        expect(isBalancePaymentMethodsOnFilter).toBeTruthy();
+        expect(isAppPaymentMethodsPresentOnFilter).toBeFalsy();
+        expect(isCardPaymentMethodsPresentOnFilter).toBeFalsy();
+
+        const chip = await page.$("#paymentTypeChipFilter");
+        expect(chip).not.toBeNull();
+
+        const applyBtn = await page.waitForSelector("#paymentChoiceDrawer-applyFilter");
+        applyBtn?.click();
+        //Timeout to wait animation end
+        await new Promise((r) => setTimeout(r,1000));
+        const chipDelete = await page.waitForSelector("#removePaymentTypeFilter");
+        chipDelete?.click();
+        //Timeout to wait animation end
+        await new Promise((r) => setTimeout(r,1000));
+
+        const isCardPaymentMethodsPresent = await verifyPaymentMethodsContains("CP");
+        const isAppPaymentMethodsPresent = await verifyPaymentMethodsContains("SATY");
+        const isContoPaymentMethodsPresent = await verifyPaymentMethodsContains("RBPR");
+
+        expect(isCardPaymentMethodsPresent).toBeTruthy();
+        expect(isAppPaymentMethodsPresent).toBeTruthy();
+        expect(isContoPaymentMethodsPresent).toBeTruthy();
+
+      });
+
+      it("Filter payment method by filter drawer - app", async () => {
+        selectLanguage("it");
+        await fillAndSearchFormPaymentMethod(
+          KORPTIDs.CANCEL_PAYMENT_OK,
+            OKPaymentInfo.VALID_FISCAL_CODE,
+            OKPaymentInfo.EMAIL,
+            ""
+        );
+        await filterByType("#paymentChoiceDrawer-appApm");
+        
+        const isCardPaymentMethodsPresentOnFilter = await verifyPaymentMethodsContains("CP");
+        const isAppPaymentMethodsPresentOnFilter = await verifyPaymentMethodsContains("SATY");
+        const isContoPaymentMethodsPresentOnFilter = await verifyPaymentMethodsContains("RBPR");
+
+        expect(isCardPaymentMethodsPresentOnFilter).toBeFalsy();
+        expect(isAppPaymentMethodsPresentOnFilter).toBeTruthy();
+        expect(isContoPaymentMethodsPresentOnFilter).toBeFalsy();
+
+        const chip = await page.$("#paymentTypeChipFilter");
+        expect(chip).not.toBeNull();
+
+        const applyBtn = await page.waitForSelector("#paymentChoiceDrawer-applyFilter");
+        applyBtn?.click();
+        //Timeout to wait animation end
+        await new Promise((r) => setTimeout(r,1000));
+        const chipDelete = await page.waitForSelector("#removePaymentTypeFilter");
+        chipDelete?.click();
+        //Timeout to wait animation end
+        await new Promise((r) => setTimeout(r,1000));
+
+        const isCardPaymentMethodsPresent = await verifyPaymentMethodsContains("CP");
+        const isAppPaymentMethodsPresent = await verifyPaymentMethodsContains("SATY");
+        const isContoPaymentMethodsPresent = await verifyPaymentMethodsContains("RBPR");
+
+        expect(isCardPaymentMethodsPresent).toBeTruthy();
+        expect(isAppPaymentMethodsPresent).toBeTruthy();
+        expect(isContoPaymentMethodsPresent).toBeTruthy();
+
+      });
+
+      it("Filter payment method by filter drawer - payByPlan", async () => {
+        selectLanguage("it");
+        await fillAndSearchFormPaymentMethod(
+          KORPTIDs.CANCEL_PAYMENT_OK,
+            OKPaymentInfo.VALID_FISCAL_CODE,
+            OKPaymentInfo.EMAIL,
+            ""
+        );
+        await filterByType("#paymentChoiceDrawer-payByPlan");
+        
+        const isOnlyAppPaymentMethods = await verifyPaymentMethodsContains("MYBK");
+        expect(isOnlyAppPaymentMethods).toBeTruthy();
+
+        const chipidBuyNowPayLater = await page.$("#buyNowPayLaterChipFilter");
+        expect(chipidBuyNowPayLater).not.toBeNull();
+
+        const applyBtn = await page.waitForSelector("#paymentChoiceDrawer-applyFilter");
+        applyBtn?.click();
+        //Timeout to wait animation end
+        await new Promise((r) => setTimeout(r,1000));
+        const chipDelete = await page.waitForSelector("#removeBuyNowPayLaterFilter");
+        chipDelete?.click();
+        //Timeout to wait animation end
+        await new Promise((r) => setTimeout(r,1000));
+
+        const isCardPaymentMethodsPresent = await verifyPaymentMethodsContains("CP");
+        const isAppPaymentMethodsPresent = await verifyPaymentMethodsContains("SATY");
+        const isContoPaymentMethodsPresent = await verifyPaymentMethodsContains("RBPR");
+
+        expect(isCardPaymentMethodsPresent).toBeTruthy();
+        expect(isAppPaymentMethodsPresent).toBeTruthy();
+        expect(isContoPaymentMethodsPresent).toBeTruthy();
+
+      });
+
+      it("Filter payment method by filter drawer - payByPlan - card", async () => {
+        selectLanguage("it");
+        await fillAndSearchFormPaymentMethod(
+          KORPTIDs.CANCEL_PAYMENT_OK,
+            OKPaymentInfo.VALID_FISCAL_CODE,
+            OKPaymentInfo.EMAIL,
+            ""
+        );
+        await filterByTwoType("#paymentChoiceDrawer-card","#paymentChoiceDrawer-payByPlan");
+
+        const chip = await page.$("#paymentTypeChipFilter");       
+        const chipidBuyNowPayLater = await page.$("#buyNowPayLaterChipFilter");
+        expect(chip).not.toBeNull();
+        expect(chipidBuyNowPayLater).not.toBeNull();
+
+        const applyBtn = await page.waitForSelector("#paymentChoiceDrawer-applyFilter");
+        applyBtn?.click();
+        //Timeout to wait animation end
+        await new Promise((r) => setTimeout(r,1000));
+        const paymentMethodsFilteredOutMessage = await noPaymentMethodsMessage();
+        expect(paymentMethodsFilteredOutMessage).toContain(itTranslation.paymentChoicePage.noPaymentMethodsAvailable);
+        const chipDeleteByPlan = await page.waitForSelector("#removeBuyNowPayLaterFilter");
+        chipDeleteByPlan?.click();
+
+        //Timeout to wait animation end
+        await new Promise((r) => setTimeout(r,1000));
+
+        const isCardPaymentMethodsPresent = await verifyPaymentMethodsContains("CP");
+        const isAppPaymentMethodsPresent = await verifyPaymentMethodsContains("SATY");
+        const isContoPaymentMethodsPresent = await verifyPaymentMethodsContains("RBPR");
+
+        expect(isCardPaymentMethodsPresent).toBeTruthy();
+        expect(isAppPaymentMethodsPresent).toBeFalsy();
+        expect(isContoPaymentMethodsPresent).toBeFalsy();
+
+        const chipDeleteCard = await page.waitForSelector("#removePaymentTypeFilter");
+        chipDeleteCard?.click();
+
+        //Timeout to wait animation end
+        await new Promise((r) => setTimeout(r,1000));
+
+        const isCardPaymentMethodsPresentAll = await verifyPaymentMethodsContains("CP");
+        const isAppPaymentMethodsPresentAll = await verifyPaymentMethodsContains("SATY");
+        const isContoPaymentMethodsPresentAll = await verifyPaymentMethodsContains("RBPR");
+
+        expect(isCardPaymentMethodsPresentAll).toBeTruthy();
+        expect(isAppPaymentMethodsPresentAll).toBeTruthy();
+        expect(isContoPaymentMethodsPresentAll).toBeTruthy();
+      });
+
+      it("Filter payment method by filter drawer - payByPlan - balance", async () => {
+        selectLanguage("it");
+        await fillAndSearchFormPaymentMethod(
+          KORPTIDs.CANCEL_PAYMENT_OK,
+            OKPaymentInfo.VALID_FISCAL_CODE,
+            OKPaymentInfo.EMAIL,
+            ""
+        );
+        await filterByTwoType("#paymentChoiceDrawer-balance","#paymentChoiceDrawer-payByPlan");
+
+        const isOnlyMyBKPaymentMethods = await verifyPaymentMethodsContains("MYBK");
+        const isOnlyOnePaymentMethods = await verifyPaymentMethodsLength(1);
+      
+        expect(isOnlyMyBKPaymentMethods).toBeTruthy();
+        expect(isOnlyOnePaymentMethods).toBeTruthy();
+
+        const chip = await page.$("#paymentTypeChipFilter");       
+        const chipidBuyNowPayLater = await page.$("#buyNowPayLaterChipFilter");
+        expect(chip).not.toBeNull();
+        expect(chipidBuyNowPayLater).not.toBeNull();
+
+        const applyBtn = await page.waitForSelector("#paymentChoiceDrawer-applyFilter");
+        applyBtn?.click();
+        //Timeout to wait animation end
+        await new Promise((r) => setTimeout(r,1000));
+        
+        const chipDeleteByPlan = await page.waitForSelector("#removeBuyNowPayLaterFilter");
+        chipDeleteByPlan?.click();
+
+        //Timeout to wait animation end
+        await new Promise((r) => setTimeout(r,1000));
+
+        const isCardPaymentMethodsPresent = await verifyPaymentMethodsContains("CP");
+        const isAppPaymentMethodsPresent = await verifyPaymentMethodsContains("SATY");
+        const isContoPaymentMethodsPresent = await verifyPaymentMethodsContains("RBPR");
+
+        expect(isCardPaymentMethodsPresent).toBeFalsy();
+        expect(isAppPaymentMethodsPresent).toBeFalsy();
+        expect(isContoPaymentMethodsPresent).toBeTruthy();
+
+        const chipDeleteBalance = await page.waitForSelector("#removePaymentTypeFilter");
+        chipDeleteBalance?.click();
+
+        //Timeout to wait animation end
+        await new Promise((r) => setTimeout(r,1000));
+
+        const isCardPaymentMethodsPresentAll = await verifyPaymentMethodsContains("CP");
+        const isAppPaymentMethodsPresentAll = await verifyPaymentMethodsContains("SATY");
+        const isContoPaymentMethodsPresentAll = await verifyPaymentMethodsContains("RBPR");
+
+        expect(isCardPaymentMethodsPresentAll).toBeTruthy();
+        expect(isAppPaymentMethodsPresentAll).toBeTruthy();
+        expect(isContoPaymentMethodsPresentAll).toBeTruthy();
+
+      });
+
+      it("Filter payment method by filter drawer - payByPlan - app", async () => {
+        selectLanguage("it");
+        await fillAndSearchFormPaymentMethod(
+          KORPTIDs.CANCEL_PAYMENT_OK,
+            OKPaymentInfo.VALID_FISCAL_CODE,
+            OKPaymentInfo.EMAIL,
+            ""
+        );
+        await filterByTwoType("#paymentChoiceDrawer-appApm","#paymentChoiceDrawer-payByPlan");
+
+        const chip = await page.$("#paymentTypeChipFilter");
+        expect(chip).not.toBeNull();
+
+        const chipidBuyNowPayLater = await page.$("#buyNowPayLaterChipFilter");
+        expect(chipidBuyNowPayLater).not.toBeNull();
+
+        expect(chip).not.toBeNull();
+        expect(chipidBuyNowPayLater).not.toBeNull();
+
+        const applyBtn = await page.waitForSelector("#paymentChoiceDrawer-applyFilter");
+        applyBtn?.click();
+        //Timeout to wait animation end
+        await new Promise((r) => setTimeout(r,1000));
+        const paymentMethodsFilteredOutMessage = await noPaymentMethodsMessage();
+        expect(paymentMethodsFilteredOutMessage).toContain(itTranslation.paymentChoicePage.noPaymentMethodsAvailable);
+        const chipDeleteByPlan = await page.waitForSelector("#removeBuyNowPayLaterFilter");
+        chipDeleteByPlan?.click();
+
+        //Timeout to wait animation end
+        await new Promise((r) => setTimeout(r,1000));
+
+        const isCardPaymentMethodsPresent = await verifyPaymentMethodsContains("CP");
+        const isAppPaymentMethodsPresent = await verifyPaymentMethodsContains("SATY");
+        const isContoPaymentMethodsPresent = await verifyPaymentMethodsContains("RBPR");
+
+        expect(isCardPaymentMethodsPresent).toBeFalsy();
+        expect(isAppPaymentMethodsPresent).toBeTruthy();
+        expect(isContoPaymentMethodsPresent).toBeFalsy();
+
+        const chipDeleteCard = await page.waitForSelector("#removePaymentTypeFilter");
+        chipDeleteCard?.click();
+
+        //Timeout to wait animation end
+        await new Promise((r) => setTimeout(r,1000));
+
+        const isCardPaymentMethodsPresentAll = await verifyPaymentMethodsContains("CP");
+        const isAppPaymentMethodsPresentAll = await verifyPaymentMethodsContains("SATY");
+        const isContoPaymentMethodsPresentAll = await verifyPaymentMethodsContains("RBPR");
+
+        expect(isCardPaymentMethodsPresentAll).toBeTruthy();
+        expect(isAppPaymentMethodsPresentAll).toBeTruthy();
+        expect(isContoPaymentMethodsPresentAll).toBeTruthy();
       });
 });
 

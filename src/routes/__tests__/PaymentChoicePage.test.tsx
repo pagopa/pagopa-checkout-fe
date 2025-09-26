@@ -256,6 +256,19 @@ jest.mock("../../components/modals/InformationModal", () => ({
     ) : null,
 }));
 
+jest.mock(
+  "../../features/payment/components/PaymentChoice/PaymentChoiceFilterDrawer",
+  () => ({
+    __esModule: true,
+    PaymentChoiceFilterDrawer: ({ open, children, ...props }: any) =>
+      open ? (
+        <div data-testid="payment-choice-drawer" {...props}>
+          {children}
+        </div>
+      ) : null,
+  })
+);
+
 // Mock theme context provider
 jest.mock("../../components/themeContextProvider/themeContextProvider", () => ({
   ThemeContextProvider: ({ children }: any) => children,
@@ -323,6 +336,9 @@ jest.mock("@mui/material/Box/Box", () => ({
 // Mock Material UI components that might be used in PaymentChoice
 jest.mock("@mui/material", () => ({
   ...jest.requireActual("@mui/material"),
+  Chip: ({ children, onDelete, ...props }: any) => (
+    <div {...props}>{children}</div>
+  ),
   Typography: ({ children, ...props }: any) => <div {...props}>{children}</div>,
   Button: ({ children, onClick, ...props }: any) => (
     <button onClick={onClick} {...props}>
@@ -337,22 +353,25 @@ jest.mock("@mui/material", () => ({
       {children}
     </button>
   ),
+  Stack: ({ children, ...props }: any) => <div {...props}>{children}</div>,
   styled: jest.fn(() => (component: any) => component),
 }));
-
-// Mock @pagopa/mui-italia to prevent styled function issues
 jest.mock("@pagopa/mui-italia", () => ({
+  __esModule: true,
   ThemeProvider: ({ children }: any) => children,
   theme: {},
   Illustration: ({ children, ...props }: any) => (
     <div {...props}>{children}</div>
   ),
+  ButtonNaked: () => <span>Button</span>,
 }));
 
 // Mock Material UI icons
 jest.mock("@mui/icons-material", () => ({
   CancelSharp: () => <span>Cancel</span>,
   Search: () => <span>Search</span>,
+  FilterList: () => <span>FilterList</span>,
+  InfoOutlined: () => <span>InfoOutlined</span>,
 }));
 
 // Mock TextFormField component

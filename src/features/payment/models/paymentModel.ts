@@ -3,6 +3,7 @@ import { SxProps } from "@mui/material";
 import { Theme } from "@emotion/react";
 import {
   MethodManagementEnum,
+  PaymentMethodResponseMetadata,
   PaymentTypeCodeEnum,
 } from "../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 import { FeeRange } from "../../../../generated/definitions/payment-ecommerce-v2/FeeRange";
@@ -109,6 +110,8 @@ export interface PaymentInstrumentsType {
   feeRange?: FeeRange;
   asset?: string;
   brandAsset?: MapField;
+  paymentMethodTypes?: Array<string>;
+  metadata?: PaymentMethodResponseMetadata;
 }
 
 export interface PaymentNotice {

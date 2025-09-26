@@ -350,6 +350,8 @@ export const getPaymentMethodHandler = async (onError: (e: string) => void) =>
                         feeRange: p.feeRange,
                         asset: p.paymentMethodAsset,
                         brandAsset: p.paymentMethodsBrandAssets,
+                        paymentMethodTypes: p.paymentMethodTypes,
+                        metadata: p.metadata,
                       } as PaymentInstrumentsType)
                   );
                 case 401:

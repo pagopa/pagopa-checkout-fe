@@ -368,7 +368,19 @@
     "filterLabel": "Cerca un metodo",
     "feeRange": "Commissione: da {{min}}  a {{max}}",
     "feeSingle": "Commissione: {{value}}",
-    "noPaymentMethodsAvailable": "Nessun risultato trovato. Prova con un altro termine."
+    "noPaymentMethodsAvailable": "Nessun risultato trovato. Prova con un altro termine.",
+    "filterButton": "Filtra",
+    "drawer": {
+      "title": "Filtra Metodi",
+      "byType": "Per tipo",
+      "byFunc": "Per funzionalità",
+      "card": "Carta",
+      "balance": "Conto Corrente",
+      "appApm": "App e altri metodi",
+      "payByPlan": "Pagamento a rate",
+      "showResults": "Mostra risultati",
+      "remove": "Cancella tutti i filtri"
+    }
   },
   "paymentMethods": {
     "bpay": "BANCOMAT Pay",
