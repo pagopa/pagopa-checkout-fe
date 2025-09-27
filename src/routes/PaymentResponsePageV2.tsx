@@ -199,19 +199,20 @@ export default function PaymentResponsePageV2() {
       />
       <Box
         sx={{
+          minHeight: "20dvh",
           display: "flex",
           alignItems: "center",
-          py: 5,
+          justifyContent: "center",
+          px: 2,
         }}
       >
         <Box
           sx={{
-            py: 5,
-            display: "flex",
-            justifyContent: "center",
             width: "100%",
+            display: "flex",
             flexDirection: "column",
             alignItems: "center",
+            gap: 2,
             whiteSpace: "pre-line",
           }}
         >
