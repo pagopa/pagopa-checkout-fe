@@ -18,6 +18,7 @@ export enum CheckoutRoutes {
   SESSIONE_SCADUTA = "sessione-scaduta",
   ERRORE = "errore",
   MAINTENANCE = "maintenance",
+  DEVICE_TEST = "device-test", // TODO remove in final PR
 }
 
 export enum ROUTE_FRAGMENT {
