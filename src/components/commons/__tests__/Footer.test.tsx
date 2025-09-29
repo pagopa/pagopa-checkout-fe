@@ -127,7 +127,7 @@ describe("Footer", () => {
     );
     expect(accessibilityLink).toHaveAttribute(
       "href",
-      "https://form.agid.gov.it/view/db845560-df2d-11ef-8637-9f856ac3da10"
+      "https://form.agid.gov.it/view/d7e5f000-9858-11f0-932b-b1f629ca861e"
     );
     expect(accessibilityLink).toHaveAttribute("target", "_blank");
     expect(accessibilityLink).toHaveAttribute("rel", "noopener noreferrer");

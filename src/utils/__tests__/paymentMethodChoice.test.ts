@@ -1,6 +1,16 @@
 import { PaymentInstrumentsType } from "../../features/payment/models/paymentModel";
 import { getNormalizedMethods } from "../../features/payment/components/PaymentChoice/utils";
 
+// Mock the paymentMethodsHelper
+jest.mock("../../utils/paymentMethods/paymentMethodsHelper", () => ({
+  getMethodDescriptionForCurrentLanguage: jest.fn(
+    (method) => method.description?.it || method.description || "Unknown"
+  ),
+  getMethodNameForCurrentLanguage: jest.fn(
+    (method) => method.name?.it || method.name || "Unknown"
+  ),
+}));
+
 const PaymentCodeTypeEnum = {
   CP: "CP",
   Other1: "Other1",
