@@ -13,7 +13,13 @@ const ENV = getConfigOrThrow().CHECKOUT_ENV;
 const mixpanelInit = function (): void {
   if (ENV === "DEV") {
     // eslint-disable-next-line no-console
-    console.log("Mixpanel events mock on console log.");
+    console.log("Mixpanel mock mode");
+    init("dummy-token", {
+      api_host: "http://localhost:3000/mock-mixpanel",
+      persistence: "localStorage",
+      debug: true,
+      ip: false,
+    });
   } else {
     try {
       // initialize mixpanel retrieving info from local storage such as device id and distinct id
@@ -31,7 +37,7 @@ const mixpanelInit = function (): void {
 
       if (!getSessionItem(SessionItems.mixpanelInitialized)) {
         // reset mixpanel instance, generating new device_id and distinct id
-        mp.reset();
+        // mp.reset();
         setSessionItem(SessionItems.mixpanelInitialized, true);
       }
 
@@ -53,27 +59,29 @@ export const mixpanel = {
     }
 
     if (ENV === "DEV") {
+      const deviceId = mp.get_property?.("$device_id");
       // eslint-disable-next-line no-console
       console.log(event_name, properties);
-    } else {
-      try {
-        if (!isMixpanelReady()) {
-          // eslint-disable-next-line no-console
-          console.warn(
-            "Mixpanel not available, event skipped:",
-            event_name,
-            properties
-          );
-          return;
-        }
-        track(event_name, {
-          ...properties,
-          ...(ENV === "UAT" && { environment: "UAT" }),
-        });
-      } catch (_) {
+      // eslint-disable-next-line no-console
+      console.log("Mixpanel device_id:", deviceId);
+    }
+    try {
+      if (!isMixpanelReady()) {
         // eslint-disable-next-line no-console
-        console.log(event_name, properties);
+        console.warn(
+          "Mixpanel not available, event skipped:",
+          event_name,
+          properties
+        );
+        return;
       }
+      track(event_name, {
+        ...properties,
+        ...(ENV === "UAT" && { environment: "UAT" }),
+      });
+    } catch (_) {
+      // eslint-disable-next-line no-console
+      console.log(event_name, properties);
     }
   },
 };
