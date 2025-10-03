@@ -50,19 +50,22 @@ The table below describes all the Environment variables needed by the applicatio
    ```sh
    yarn generate
    ```
-3. Generate env config file
+3. Inizialize mock-mixpanle
+   in /mock-mixpanel -> yarn install
+
+4. Generate env config file
    ```sh
    yarn dev:env
    ```
-4. Build
+5. Build
    ```sh
    yarn build
    ```
-5. tests
+6. tests
    ```sh
    yarn test
    ```
-6. Linter
+7. Linter
    ```sh
    yarn lint
    ```
