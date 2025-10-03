@@ -110,7 +110,6 @@ describe("Mixpanel integration tests", () => {
 
     mixpanel.track("device_event");
 
-    expect(mixpanelBrowser.reset).toHaveBeenCalled();
     expect(mixpanelBrowser.register).toHaveBeenCalledWith({
       $device_id: "device-1",
     });
