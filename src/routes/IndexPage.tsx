@@ -51,6 +51,14 @@ export default function IndexPage() {
         enabled.toString()
       );
     }
+
+    if (featureFlags[SessionItems.enableWallet] in allFlags) {
+      const enabled = allFlags.isWalletEnabled;
+      setSessionItem(
+        SessionItems.enableWallet,
+        enabled.toString()
+      );
+    }
   };
 
   React.useEffect(() => {

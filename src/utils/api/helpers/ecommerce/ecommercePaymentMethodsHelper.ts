@@ -474,6 +474,34 @@ const evaluatePaymentMethodHandlerEnabledFF = async (): Promise<boolean> => {
   return featureFlag === "true";
 };
 
+const evaluateWalletEnabledFF = async (): Promise<boolean> => {
+  // eslint-disable-next-line functional/no-let
+  let featureFlag = getSessionItem(
+    SessionItems.enableWallet
+  ) as string;
+  if (featureFlag === null || featureFlag === undefined) {
+    // ff not found in session storage, invoking ff api
+    await evaluateFeatureFlag(
+      featureFlags.enableWallet,
+      (e: string) => {
+        // eslint-disable-next-line no-console
+        console.error(
+          `Error while getting feature flag ${featureFlags.enableWallet}`,
+          e
+        );
+      },
+      (data: { enabled: boolean }) => {
+        setSessionItem(
+          SessionItems.enableWallet,
+          data.enabled.toString()
+        );
+        featureFlag = data.enabled.toString();
+      }
+    );
+  }
+  return featureFlag === "true";
+};
+
 export const getPaymentInstruments = async (
   query: {
     amount: number;
