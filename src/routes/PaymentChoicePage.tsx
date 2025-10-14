@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { pipe } from "fp-ts/function";
 import * as B from "fp-ts/boolean";
+import { WalletType } from "features/payment/models/walletModel";
 import { CancelPayment } from "../components/modals/CancelPayment";
 import ErrorModal from "../components/modals/ErrorModal";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
@@ -36,7 +37,6 @@ import {
   getPaymentInfoFromSessionStorage,
 } from "../utils/mixpanel/mixpanelTracker";
 import { CheckoutRoutes } from "./models/routeModel";
-import { WalletType } from "features/payment/models/walletModel";
 
 export default function PaymentChoicePage() {
   const { t } = useTranslation();
@@ -128,7 +128,7 @@ export default function PaymentChoicePage() {
     []
   );
   const handleRetry = React.useCallback(getPaymentMethods, []);
-  const wallets : Array<WalletType> =[
+  const wallets: Array<WalletType> = [
     {
       walletId: "63cd1a15-8ce0-45a5-b5fa-6ee141ef8314",
       userId: "05b47118-ac54-4324-90f0-59a784972184",
@@ -139,21 +139,22 @@ export default function PaymentChoicePage() {
       applications: [
         {
           name: "PAGOPA",
-          status: "ENABLED"
-        }
+          status: "ENABLED",
+        },
       ],
       clients: {
         IO: {
-          status: "ENABLED"
-        }
+          status: "ENABLED",
+        },
       },
       details: {
         type: "PAYPAL",
         pspId: "BCITITMM",
         pspBusinessName: "Intesa Sanpaolo S.p.A",
-        maskedEmail: "b***@icbpi.it"
+        maskedEmail: "b***@icbpi.it",
       },
-      paymentMethodAsset: "https://assets.cdn.platform.pagopa.it/apm/paypal.png"
+      paymentMethodAsset:
+        "https://assets.cdn.platform.pagopa.it/apm/paypal.png",
     },
     {
       walletId: "6540b667-4035-4ca5-915b-1e1c7b5b9b94",
@@ -165,21 +166,22 @@ export default function PaymentChoicePage() {
       applications: [
         {
           name: "PAGOPA",
-          status: "ENABLED"
-        }
+          status: "ENABLED",
+        },
       ],
       clients: {
         IO: {
-          status: "ENABLED"
-        }
+          status: "ENABLED",
+        },
       },
       details: {
         type: "CARDS",
         lastFourDigits: "0014",
         expiryDate: "203012",
-        brand: "MASTERCARD"
+        brand: "MASTERCARD",
       },
-      paymentMethodAsset: "https://assets.cdn.platform.pagopa.it/creditcard/mastercard.png"
+      paymentMethodAsset:
+        "https://assets.cdn.platform.pagopa.it/creditcard/mastercard.png",
     },
     {
       walletId: "27222721-174c-453d-a745-d4892a4d0f22",
@@ -191,22 +193,24 @@ export default function PaymentChoicePage() {
       applications: [
         {
           name: "PAGOPA",
-          status: "ENABLED"
-        }
+          status: "ENABLED",
+        },
       ],
       clients: {
         IO: {
-          status: "ENABLED"
-        }
+          status: "ENABLED",
+        },
       },
       details: {
         type: "PAYPAL",
         pspId: "BCITITMM",
         pspBusinessName: "Intesa Sanpaolo S.p.A",
-        maskedEmail: "b@icbpi.it"
+        maskedEmail: "b@icbpi.it",
       },
-      paymentMethodAsset: "https://assets.cdn.platform.pagopa.it/apm/paypal.png"
-    }];
+      paymentMethodAsset:
+        "https://assets.cdn.platform.pagopa.it/apm/paypal.png",
+    },
+  ];
 
   return (
     <>

@@ -6,12 +6,14 @@ export interface WalletType {
   status: string;
   creationDate: string;
   updateDate: string;
-  applications: [{
-    name: string;
-    status: string;
-  }];
+  applications: [
+    {
+      name: string;
+      status: string;
+    }
+  ];
   clients: {
-    IO: {status: string;};
+    IO: { status: string };
   };
   details: {
     type: string;
@@ -19,7 +21,7 @@ export interface WalletType {
     lastFourDigits?: string;
     expiryDate?: string;
     maskedEmail?: string;
-    pspId?: string,
+    pspId?: string;
     pspBusinessName?: string;
   };
 }
