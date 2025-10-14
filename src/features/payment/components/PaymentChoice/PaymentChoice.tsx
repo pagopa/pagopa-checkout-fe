@@ -4,6 +4,7 @@ import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidV4 } from "uuid";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import {
   Typography,
   Button,
@@ -11,6 +12,7 @@ import {
   IconButton,
   Stack,
   Chip,
+  Divider,
 } from "@mui/material";
 import { t } from "i18next";
 import {
@@ -22,7 +24,7 @@ import {
 import { constVoid } from "fp-ts/function";
 import { PaymentMethodFilter } from "utils/PaymentMethodFilterUtil";
 import { ButtonNaked } from "@pagopa/mui-italia";
-import { getMethodDescriptionForCurrentLanguage } from "../../../../utils/paymentMethods/paymentMethodsHelper";
+import { getMethodDescriptionForCurrentLanguage, getMethodNameForCurrentLanguage } from "../../../../utils/paymentMethods/paymentMethodsHelper";
 import TextFormField from "../../../../components/TextFormField/TextFormField";
 import InformationModal from "../../../../components/modals/InformationModal";
 import ErrorModal from "../../../../components/modals/ErrorModal";
@@ -37,18 +39,22 @@ import {
   getSessionItem,
   setSessionItem,
 } from "../../../../utils/storage/sessionStorage";
-import { PaymentInstrumentsType } from "../../models/paymentModel";
+import { MapField, PaymentInstrumentsType } from "../../models/paymentModel";
 import { setThreshold } from "../../../../redux/slices/threshold";
 import { CheckoutRoutes } from "../../../../routes/models/routeModel";
 import { onErrorActivate } from "../../../../utils/api/transactionsErrorHelper";
-import { PaymentTypeCodeEnum } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
+import { MethodManagementEnum, PaymentTypeCodeEnum } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 import { DisabledPaymentMethods, MethodComponentList } from "./PaymentMethod";
 import { getNormalizedMethods, paymentTypeTranslationKeys } from "./utils";
 import { PaymentChoiceFilterDrawer } from "./PaymentChoiceFilterDrawer";
+import { ImageComponent } from "./PaymentMethodImage";
+import { WalletType } from "features/payment/models/walletModel";
+import { PaymentMethodStatusEnum } from "../../../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
 
 export function PaymentChoice(props: {
   amount: number;
   paymentInstruments: Array<PaymentInstrumentsType>;
+  wallets?: Array<WalletType>; // 🆕 new optional prop for preferred methods
   loading?: boolean;
 }) {
   const ref = React.useRef<ReCAPTCHA>(null);
@@ -225,6 +231,43 @@ export function PaymentChoice(props: {
       buyNowPayLater: false,
     }));
   };
+  function toMapField(value: string, lang: string = "en"): MapField {
+  return { [lang]: value };
+}
+  const mapWalletsToPaymentMethods = (walletsResponse?: Array<WalletType>): PaymentInstrumentsType[] => {
+    if (!walletsResponse) return [];
+    return walletsResponse.map((w) => {
+      const description =
+      w.details.type === "PAYPAL"
+        ? w.details.maskedEmail ?? ""
+        : `${w.details.brand ?? ""} •••• ${w.details.lastFourDigits ?? ""}`;
+      
+      const name = w.details.type === "PAYPAL"
+          ? "PayPal"
+          : w.details.brand ?? "";
+
+      const paymentTypeCode = w.details.type === "PAYPAL" ? PaymentTypeCodeEnum.PPAL : PaymentTypeCodeEnum.CP;
+
+      const status=  w.status === "VALIDATED" ? "ENABLED" : "DISABLED";
+      const asset= w.paymentMethodAsset;    
+      const methodManagement= w.details.type === "PAYPAL"
+          ? MethodManagementEnum.REDIRECT
+          : MethodManagementEnum.ONBOARDABLE;
+      const id = w.paymentMethodId;
+      return {
+      status: status,
+      asset: asset,
+      description: toMapField(description, "en"), 
+      name: toMapField(name, "en"),
+      paymentTypeCode: paymentTypeCode,     
+      methodManagement: methodManagement,
+      id: id,          
+    };
+  });
+  };
+    
+  const walletsToPaymentMethods: PaymentInstrumentsType[] = mapWalletsToPaymentMethods(props.wallets);
+  
 
   return (
     <>
@@ -274,20 +317,63 @@ export function PaymentChoice(props: {
             />
             {getSessionItem(SessionItems.enablePaymentMethodsHandler) ===
               "true" && (
-              <ButtonNaked
-                id="filterDrawerButton"
-                component="button"
-                style={{ fontWeight: 600, fontSize: "1rem" }}
-                color="primary"
-                onClick={() => {
-                  setDrawerOpen(true);
-                }}
-              >
-                {t("paymentChoicePage.filterButton")}
-                <FilterList />
-              </ButtonNaked>
-            )}
+                <ButtonNaked
+                  id="filterDrawerButton"
+                  component="button"
+                  style={{ fontWeight: 600, fontSize: "1rem" }}
+                  color="primary"
+                  onClick={() => {
+                    setDrawerOpen(true);
+                  }}
+                >
+                  {t("paymentChoicePage.filterButton")}
+                  <FilterList />
+                </ButtonNaked>
+              )}
           </Stack>
+
+          {/* --- Preferred (Wallet) Methods Section --- */}
+          {props.wallets && props.wallets.length > 0 && (
+            <>
+            <Box sx={{mt: 4}}>
+            <Typography 
+              variant="h6"
+              component={"p"}
+              sx={{ whiteSpace: "pre-line" }}
+            >
+              Salvati
+            </Typography>
+              <Box>
+                {walletsToPaymentMethods.map((method: PaymentInstrumentsType, index: number) => (
+                  <ClickableFieldContainer
+                    key={method.paymentTypeCode}
+                    title={getMethodDescriptionForCurrentLanguage(method)}
+                    icon={
+                      <ImageComponent
+                        {...{
+                          asset: method.asset,
+                          name: getMethodNameForCurrentLanguage(method),
+                        }}
+                      />
+                    }
+                    //onClick={() => console.log(`Clicked ${method.paymentTypeCode}`)}
+                    onClick={() => handleClickOnMethod}
+                    endAdornment={
+                      method.status === PaymentMethodStatusEnum.ENABLED && (
+                        <ArrowForwardIosIcon sx={{ color: "primary.main" }} fontSize="small" />
+                      )
+                    }
+                    isLast={index === walletsToPaymentMethods.length - 1}
+                    disabled={method.status === "DISABLED"}
+                  />
+                ))}
+              </Box>
+              <Divider sx={{ my: 5 }} />
+            </Box>
+            </>
+          )}
+
+          
 
           {paymentMethodFilterState && paymentMethodFilterState.paymentType && (
             <Chip
@@ -306,10 +392,10 @@ export function PaymentChoice(props: {
               label={
                 paymentMethodFilterState.paymentType
                   ? t(
-                      paymentTypeTranslationKeys[
-                        paymentMethodFilterState.paymentType
-                      ]
-                    )
+                    paymentTypeTranslationKeys[
+                    paymentMethodFilterState.paymentType
+                    ]
+                  )
                   : ""
               }
               onDelete={handleDelete}
