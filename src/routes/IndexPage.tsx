@@ -54,10 +54,7 @@ export default function IndexPage() {
 
     if (featureFlags[SessionItems.enableWallet] in allFlags) {
       const enabled = allFlags.isWalletEnabled;
-      setSessionItem(
-        SessionItems.enableWallet,
-        enabled.toString()
-      );
+      setSessionItem(SessionItems.enableWallet, enabled.toString());
     }
   };
 
