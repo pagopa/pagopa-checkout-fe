@@ -9,6 +9,7 @@ import { Box } from "@mui/material";
 import { pipe } from "fp-ts/function";
 import * as E from "fp-ts/Either";
 import * as O from "fp-ts/Option";
+import { selectMaintenanceEnabled } from "../../redux/slices/maintanancePage";
 import { UserLogout } from "../../components/modals/UserLogout";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks/hooks";
 import {
@@ -37,6 +38,11 @@ import {
 import { UserInfoResponse } from "../../../generated/definitions/checkout-auth-service-v1/UserInfoResponse";
 import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce-v3/NewTransactionResponse";
 import { CancelPayment } from "../../components/modals/CancelPayment";
+import { mixpanel } from "../../utils/mixpanel/mixpanelHelperInit";
+import {
+  MixpanelEventCategory,
+  MixpanelEventsId,
+} from "../../utils/mixpanel/mixpanelEvents";
 
 export default function LoginHeader() {
   const { t } = useTranslation();
@@ -59,6 +65,9 @@ export default function LoginHeader() {
     CheckoutRoutes.SCEGLI_METODO,
   ];
   const loggedUser = useAppSelector(getLoggedUser);
+  const maintenanceEnabled = useAppSelector(
+    selectMaintenanceEnabled
+  ).maintenanceEnabled;
   const ref = React.useRef<ReCAPTCHA>(null);
   const [loading, setLoading] = React.useState(false);
   const [isLoginButtonReady, setLoginButtonReady] = React.useState(false);
@@ -72,6 +81,7 @@ export default function LoginHeader() {
   // the login button should be visible if user is already logged in
   // and user is on pages where he cannot do login
   const showLoginButton = (): boolean =>
+    !maintenanceEnabled &&
     isLoginButtonReady &&
     (loginRoutes.includes(currentPath) || loggedUser.userInfo != null);
 
@@ -107,6 +117,11 @@ export default function LoginHeader() {
 
   const onLogin = async (recaptchaRef: ReCAPTCHA) => {
     setLoading(true);
+    mixpanel.track(MixpanelEventsId.CHK_LOGIN_REQUEST, {
+      EVENT_ID: MixpanelEventsId.CHK_LOGIN_REQUEST,
+      EVENT_CATEGORY: MixpanelEventCategory.TECH,
+      page: window.location.pathname,
+    });
     await proceedToLogin({ recaptchaRef, onError, onResponse });
   };
 
@@ -210,7 +225,7 @@ export default function LoginHeader() {
   }, []);
 
   return (
-    <Box component="div" id="login-header">
+    <Box component="div" data-testid="login-header" id="login-header">
       {loading && <CheckoutLoader />}
       <HeaderAccount
         rootLink={pagoPALink}
@@ -228,6 +243,7 @@ export default function LoginHeader() {
         enableAssistanceButton={false}
         onAssistanceClick={() => {}} // eslint-disable-line @typescript-eslint/no-empty-function
         onLogin={handleClickOnLogin}
+        translationsMap={{ logIn: t("mainPage.header.login") }}
       />
       <Box display="none">
         <ReCAPTCHA

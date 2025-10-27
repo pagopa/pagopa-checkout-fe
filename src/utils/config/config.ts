@@ -18,6 +18,7 @@ export const IConfig = t.interface({
   CHECKOUT_API_ECOMMERCE_BASEPATH: NonEmptyString,
   CHECKOUT_API_ECOMMERCE_BASEPATH_V2: NonEmptyString,
   CHECKOUT_API_ECOMMERCE_BASEPATH_V3: NonEmptyString,
+  CHECKOUT_API_ECOMMERCE_BASEPATH_V4: NonEmptyString,
   CHECKOUT_API_FEATURE_FLAGS_BASEPATH: NonEmptyString,
   CHECKOUT_API_TIMEOUT: t.number,
   CHECKOUT_ENV: NonEmptyString,
@@ -36,32 +37,57 @@ export const IConfig = t.interface({
   CHECKOUT_API_RETRY_DELAY: t.number,
   CHECKOUT_GDI_CHECK_TIMEOUT: t.number,
   CHECKOUT_API_AUTH_SERVICE_BASEPATH_V1: NonEmptyString,
+  CHECKOUT_API_RETRY_NUMBERS_LINEAR: t.number,
 });
+
+// eslint-disable-next-line no-underscore-dangle
+const rawEnv =
+  // eslint-disable-next-line no-underscore-dangle
+  typeof window !== "undefined" && (window as any)._env_
+    ? // eslint-disable-next-line no-underscore-dangle
+      (window as any)._env_
+    : {};
 
 // No need to re-evaluate this object for each call
 const errorOrConfig: t.Validation<IConfig> = IConfig.decode({
   // eslint-disable-next-line no-underscore-dangle
   ...(window as any)._env_,
-  CHECKOUT_API_TIMEOUT: parseInt(
+  /* CHECKOUT_API_TIMEOUT: parseInt(
     // eslint-disable-next-line no-underscore-dangle
     (window as any)._env_.CHECKOUT_API_TIMEOUT,
     10
-  ),
-  CHECKOUT_POLLING_ACTIVATION_INTERVAL: parseInt(
+  ), */
+  CHECKOUT_API_TIMEOUT: parseInt(rawEnv.CHECKOUT_API_TIMEOUT || "10000", 10),
+  /* CHECKOUT_POLLING_ACTIVATION_INTERVAL: parseInt(
     // eslint-disable-next-line no-underscore-dangle
     (window as any)._env_.CHECKOUT_POLLING_ACTIVATION_INTERVAL,
     10
+  ), */
+
+  CHECKOUT_POLLING_ACTIVATION_INTERVAL: parseInt(
+    rawEnv.CHECKOUT_POLLING_ACTIVATION_INTERVAL || "10000",
+    10
   ),
   CHECKOUT_POLLING_ACTIVATION_ATTEMPTS: parseInt(
+    rawEnv.CHECKOUT_POLLING_ACTIVATION_ATTEMPTS || "5",
+    10
+  ),
+
+  /* CHECKOUT_POLLING_ACTIVATION_ATTEMPTS: parseInt(
     // eslint-disable-next-line no-underscore-dangle
     (window as any)._env_.CHECKOUT_POLLING_ACTIVATION_ATTEMPTS,
     10
-  ),
-  CHECKOUT_SURVEY_SHOW: !!parseInt(
+  ), */
+  /* CHECKOUT_SURVEY_SHOW: !!parseInt(
     // eslint-disable-next-line no-underscore-dangle
     (window as any)._env_.CHECKOUT_SURVEY_SHOW,
     2
-  ),
+  ), */
+  // CHECKOUT_SURVEY_SHOW: parseInt(rawEnv.CHECKOUT_SURVEY_SHOW || "0", 10),
+  CHECKOUT_SURVEY_SHOW:
+    rawEnv.CHECKOUT_SURVEY_SHOW === "true" ||
+    rawEnv.CHECKOUT_SURVEY_SHOW === "1",
+
   // eslint-disable-next-line no-underscore-dangle
   CHECKOUT_API_RETRY_NUMBERS: (window as any)._env_.CHECKOUT_API_RETRY_NUMBERS
     ? parseInt(
@@ -69,7 +95,7 @@ const errorOrConfig: t.Validation<IConfig> = IConfig.decode({
         (window as any)._env_.CHECKOUT_API_RETRY_NUMBERS,
         10
       )
-    : 20,
+    : 10,
   // eslint-disable-next-line no-underscore-dangle
   CHECKOUT_API_RETRY_DELAY: (window as any)._env_.CHECKOUT_API_RETRY_DELAY
     ? parseInt(
@@ -83,6 +109,16 @@ const errorOrConfig: t.Validation<IConfig> = IConfig.decode({
     (window as any)._env_.CHECKOUT_GDI_CHECK_TIMEOUT,
     10
   ),
+
+  // eslint-disable-next-line no-underscore-dangle
+  CHECKOUT_API_RETRY_NUMBERS_LINEAR: (window as any)._env_
+    .CHECKOUT_API_RETRY_NUMBERS_LINEAR
+    ? parseInt(
+        // eslint-disable-next-line no-underscore-dangle
+        (window as any)._env_.CHECKOUT_API_RETRY_NUMBERS_LINEAR,
+        10
+      )
+    : 5,
 });
 
 /**

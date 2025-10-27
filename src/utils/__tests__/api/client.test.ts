@@ -4,6 +4,7 @@ describe("API Clients", () => {
     CHECKOUT_API_ECOMMERCE_BASEPATH: "/v1",
     CHECKOUT_API_ECOMMERCE_BASEPATH_V2: "/v2",
     CHECKOUT_API_ECOMMERCE_BASEPATH_V3: "/v3",
+    CHECKOUT_API_ECOMMERCE_BASEPATH_V4: "/v4",
     CHECKOUT_API_FEATURE_FLAGS_BASEPATH: "/feature-flags",
     CHECKOUT_API_AUTH_SERVICE_BASEPATH_V1: "/auth-service",
     CHECKOUT_API_TIMEOUT: 5000,
@@ -15,8 +16,11 @@ describe("API Clients", () => {
 
   jest.mock("../../config/fetch", () => ({
     retryingFetch: jest.fn((_) => jest.fn()),
+    exponetialPollingWithPromisePredicateFetch: jest.fn((_) => jest.fn()),
     constantPollingWithPromisePredicateFetch: jest.fn((_) => jest.fn()),
+    e: jest.fn((_) => jest.fn()),
   }));
+
   /* eslint-disable functional/immutable-data */
   global.fetch = jest.fn().mockResolvedValue({
     json: jest.fn().mockResolvedValue({}),

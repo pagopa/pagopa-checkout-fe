@@ -3,18 +3,24 @@ import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/lib/function";
 import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
+import featureFlags from "../../../../utils/featureFlags";
+import { getEnumFromString } from "../../../../utils/enum/enumerationUtils";
 import {
   apiPaymentEcommerceClient,
+  apiPaymentEcommerceClientV2,
   apiPaymentEcommerceClientV3,
+  apiPaymentEcommerceClientV4,
   apiPaymentEcommerceClientWithRetry,
   apiPaymentEcommerceClientWithRetryV2,
   apiPaymentEcommerceClientWithRetryV3,
 } from "../../../../utils/api/client";
 import { ErrorsType } from "../../../../utils/errors/checkErrorsModel";
 import {
+  Cart,
   PaymentInstrumentsType,
   PaymentMethod,
   PaymentMethodInfo,
+  PaymentInfo,
 } from "../../../../features/payment/models/paymentModel";
 import { validateSessionWalletCardFormFields } from "../../../../utils/regex/validators";
 import {
@@ -28,6 +34,17 @@ import { CalculateFeeRequest } from "../../../../../generated/definitions/paymen
 import { CreateSessionResponse } from "../../../../../generated/definitions/payment-ecommerce/CreateSessionResponse";
 import { Bundle } from "../../../../../generated/definitions/payment-ecommerce-v2/Bundle";
 import { CalculateFeeResponse } from "../../../../../generated/definitions/payment-ecommerce-v2/CalculateFeeResponse";
+import {
+  PaymentMethodsRequest as PaymentMethodsRequestV2,
+  UserTouchpointEnum,
+} from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodsRequest";
+import { PaymentMethodsRequest as PaymentMethodsRequestV4 } from "../../../../../generated/definitions/payment-ecommerce-v4/PaymentMethodsRequest";
+import { PaymentNoticeItem } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentNoticeItem";
+import {
+  MethodManagementEnum,
+  PaymentTypeCodeEnum,
+} from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
+import { evaluateFeatureFlag } from "../checkoutFeatureFlagsHelper";
 
 // ->Promise<Either<string,SessionPaymentMethodResponse>>
 export const retrieveCardData = async ({
@@ -78,7 +95,7 @@ export const retrieveCardData = async ({
         pipe(
           myResExt,
           E.fold(
-            () => [],
+            () => [onError(ErrorsType.GENERIC_ERROR)],
             (myRes) => {
               if (myRes?.status === 200) {
                 const sessionPaymentMethodResponse = myRes?.value;
@@ -201,14 +218,13 @@ export const calculateFees = async ({
   )();
 };
 
-export const getPaymentInstruments = async (
+const getPaymentMethods = async (
   query: {
     amount: number;
   },
-  onError: (e: string) => void,
-  onResponse: (data: Array<PaymentInstrumentsType>) => void
-) => {
-  const list = await pipe(
+  onError: (e: string) => void
+) =>
+  pipe(
     TE.tryCatch(
       () =>
         pipe(
@@ -218,7 +234,7 @@ export const getPaymentInstruments = async (
             () => apiPaymentEcommerceClient.getAllPaymentMethods(query),
             (bearerAuth) =>
               apiPaymentEcommerceClientV3.getAllPaymentMethodsV3({
-                "x-rpt-id": getRptIdsFromSession(),
+                "x-rpt-ids": getRptIdsFromSession(),
                 bearerAuth,
                 ...query,
               })
@@ -238,11 +254,37 @@ export const getPaymentInstruments = async (
         pipe(
           myResExt,
           E.fold(
-            () => [],
+            () => {
+              onError(ErrorsType.GENERIC_ERROR);
+              return [];
+            },
             (myRes) => {
               switch (myRes.status) {
                 case 200:
-                  return myRes.value.paymentMethods;
+                  return myRes.value.paymentMethods?.map(
+                    (p) =>
+                      ({
+                        id: p.id,
+                        name: {
+                          IT: p.name,
+                        },
+                        description: {
+                          IT: p.description,
+                        },
+                        status: p.status,
+                        paymentTypeCode: getEnumFromString(
+                          PaymentTypeCodeEnum,
+                          p.paymentTypeCode
+                        ),
+                        methodManagement: getEnumFromString(
+                          MethodManagementEnum,
+                          p.methodManagement
+                        ),
+                        feeRange: undefined,
+                        asset: p.asset,
+                        brandAsset: p.brandAssets,
+                      } as PaymentInstrumentsType)
+                  );
                 case 401:
                   onError(ErrorsType.UNAUTHORIZED);
                   return [];
@@ -254,6 +296,200 @@ export const getPaymentInstruments = async (
         )
     )
   )();
+
+export const getPaymentMethodHandler = async (onError: (e: string) => void) =>
+  pipe(
+    TE.tryCatch(
+      () =>
+        pipe(
+          getSessionItem(SessionItems.authToken) as string,
+          O.fromNullable,
+          O.fold(
+            () =>
+              apiPaymentEcommerceClientV2.getAllPaymentMethods({
+                body: buildPaymentInstrumentMethodHandlerSearchRequest(),
+              }),
+            (bearerAuth) =>
+              apiPaymentEcommerceClientV4.getAllPaymentMethodsAuth({
+                "x-rpt-ids": getRptIdsFromSession(),
+                bearerAuth,
+                body: buildPaymentInstrumentMethodHandlerSearchRequest() as any as PaymentMethodsRequestV4,
+              })
+          )
+        ),
+      () => {
+        onError(ErrorsType.STATUS_ERROR);
+        return E.toError;
+      }
+    ),
+    TE.fold(
+      () => async () => {
+        onError(ErrorsType.STATUS_ERROR);
+        return [];
+      },
+      (myResExt) => async () =>
+        pipe(
+          myResExt,
+          E.fold(
+            () => {
+              onError(ErrorsType.GENERIC_ERROR);
+              return [];
+            },
+            (myRes) => {
+              switch (myRes.status) {
+                case 200:
+                  return myRes.value.paymentMethods.map(
+                    (p) =>
+                      ({
+                        id: p.id,
+                        name: p.name,
+                        description: p.description,
+                        status: p.status,
+                        methodManagement: p.methodManagement,
+                        paymentTypeCode: p.paymentTypeCode,
+                        feeRange: p.feeRange,
+                        asset: p.paymentMethodAsset,
+                        brandAsset: p.paymentMethodsBrandAssets,
+                        paymentMethodTypes: p.paymentMethodTypes,
+                        metadata: p.metadata,
+                      } as PaymentInstrumentsType)
+                  );
+                case 401:
+                  onError(ErrorsType.UNAUTHORIZED);
+                  return [];
+                default:
+                  return [];
+              }
+            }
+          )
+        )
+    )
+  )();
+
+const buildPaymentInstrumentMethodHandlerSearchRequest =
+  (): PaymentMethodsRequestV2 => {
+    const transaction = getSessionItem(SessionItems.transaction) as
+      | NewTransactionResponse
+      | undefined;
+    const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
+    const paymentInfo = getSessionItem(SessionItems.paymentInfo) as PaymentInfo;
+    const cartClientId = getSessionItem(SessionItems.cartClientId) as
+      | string
+      | undefined;
+    // eslint-disable-next-line functional/no-let
+    let userTouchpoint = UserTouchpointEnum.CHECKOUT;
+    switch (cartClientId) {
+      case "CHECKOUT":
+        userTouchpoint = UserTouchpointEnum.CHECKOUT;
+        break;
+      case "CHECKOUT_CART":
+      case "WISP_REDIRECT":
+        userTouchpoint = UserTouchpointEnum.CHECKOUT_CART;
+        break;
+      default:
+        userTouchpoint = UserTouchpointEnum.CHECKOUT;
+        break;
+    }
+    // eslint-disable-next-line functional/no-let
+    let totalAmount: number;
+    // eslint-disable-next-line functional/no-let
+    let paymentNotices: Array<PaymentNoticeItem>;
+    // eslint-disable-next-line functional/no-let
+    let allCCp: boolean | undefined;
+    // if transaction is activated take amount from transaction object (that is actualizated)
+    if (
+      transaction &&
+      transaction.payments &&
+      transaction.payments.length > 0
+    ) {
+      totalAmount = transaction.payments.reduce(
+        (sum: number, payment) => sum + Number(payment.amount),
+        0
+      );
+      paymentNotices = transaction.payments.map((p) => ({
+        paymentAmount: p.amount,
+        primaryCreditorInstitution: p.rptId.substring(0, 11),
+        transferList: p.transferList.map((t) => ({
+          creditorInstitution: t.paFiscalCode,
+          digitalStamp: t.digitalStamp,
+          transferCategory: t.transferCategory,
+        })),
+      }));
+      allCCp = transaction.payments[0].isAllCCP;
+    }
+    // otherwise check if we are in a cart payment
+    else if (cart) {
+      totalAmount = cart.paymentNotices.reduce(
+        (sum: number, payment) => sum + Number(payment.amount),
+        0
+      );
+      paymentNotices = cart.paymentNotices.map((p) => ({
+        paymentAmount: p.amount,
+        primaryCreditorInstitution: p.fiscalCode,
+      }));
+    }
+    // or in a single payment notice case
+    else {
+      totalAmount = paymentInfo.amount;
+      paymentNotices = [
+        {
+          paymentAmount: paymentInfo.amount,
+          primaryCreditorInstitution: paymentInfo.rptId?.substring(0, 11) ?? "",
+        },
+      ];
+    }
+    return {
+      userTouchpoint,
+      totalAmount,
+      paymentNotice: paymentNotices,
+      allCCp,
+    };
+  };
+
+const evaluatePaymentMethodHandlerEnabledFF = async (): Promise<boolean> => {
+  // eslint-disable-next-line functional/no-let
+  let featureFlag = getSessionItem(
+    SessionItems.enablePaymentMethodsHandler
+  ) as string;
+  if (featureFlag === null || featureFlag === undefined) {
+    // ff not found in session storage, invoking ff api
+    await evaluateFeatureFlag(
+      featureFlags.enablePaymentMethodsHandler,
+      (e: string) => {
+        // eslint-disable-next-line no-console
+        console.error(
+          `Error while getting feature flag ${featureFlags.enablePaymentMethodsHandler}`,
+          e
+        );
+      },
+      (data: { enabled: boolean }) => {
+        setSessionItem(
+          SessionItems.enablePaymentMethodsHandler,
+          data.enabled.toString()
+        );
+        featureFlag = data.enabled.toString();
+      }
+    );
+  }
+  return featureFlag === "true";
+};
+
+export const getPaymentInstruments = async (
+  query: {
+    amount: number;
+  },
+  onError: (e: string) => void,
+  onResponse: (data: Array<PaymentInstrumentsType>) => void
+) => {
+  const list = await pipe(
+    await evaluatePaymentMethodHandlerEnabledFF(),
+    O.fromNullable,
+    O.filter((ff) => ff),
+    O.foldW(
+      () => getPaymentMethods(query, onError),
+      () => getPaymentMethodHandler(onError)
+    )
+  );
   onResponse(list as any as Array<PaymentInstrumentsType>);
 };
 
@@ -284,7 +520,7 @@ export const npgSessionsFields = async (
               }),
             (bearerAuth) =>
               apiPaymentEcommerceClientWithRetryV3.createSessionV3({
-                "x-rpt-id": getRptIdsFromSession(),
+                "x-rpt-ids": getRptIdsFromSession(),
                 bearerAuth,
                 ...payload,
               })

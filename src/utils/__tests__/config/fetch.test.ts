@@ -7,6 +7,7 @@ Object.defineProperty(global, "window", {
       CHECKOUT_API_ECOMMERCE_BASEPATH: "/ecommerce",
       CHECKOUT_API_ECOMMERCE_BASEPATH_V2: "/ecommerce/v2",
       CHECKOUT_API_ECOMMERCE_BASEPATH_V3: "/ecommerce/v3",
+      CHECKOUT_API_ECOMMERCE_BASEPATH_V4: "/ecommerce/v4",
       CHECKOUT_API_FEATURE_FLAGS_BASEPATH: "/features",
       CHECKOUT_API_TIMEOUT: "5000",
       CHECKOUT_ENV: "test",
@@ -25,14 +26,28 @@ Object.defineProperty(global, "window", {
       CHECKOUT_API_RETRY_DELAY: "2000",
       CHECKOUT_GDI_CHECK_TIMEOUT: "5000",
       CHECKOUT_API_AUTH_SERVICE_BASEPATH_V1: "/auth",
+      CHECKOUT_API_RETRY_NUMBERS_LINEAR: "2",
     },
   },
   writable: true,
 });
 
+const generateExpectedDelays = (
+  baseDelay: number,
+  exponent: number,
+  normalAttempts: number,
+  totalAttempts: number
+): Array<number> =>
+  Array.from({ length: totalAttempts }, (_, i) =>
+    i < normalAttempts
+      ? baseDelay
+      : baseDelay * Math.pow(exponent, i - normalAttempts)
+  );
+
 import { Millisecond } from "@pagopa/ts-commons/lib/units";
 import {
   constantPollingWithPromisePredicateFetch,
+  exponetialPollingWithPromisePredicateFetch,
   retryingFetch,
 } from "../../config/fetch";
 
@@ -142,5 +157,94 @@ describe("retryingFetch", () => {
     expect(response.status).toBe(200);
     expect(global.fetch).toHaveBeenCalledTimes(2);
     expect(condition).toHaveBeenCalledTimes(2);
+  });
+
+  it("should use exponetialPollingWithPromisePredicateFetch and retry", async () => {
+    const condition = jest
+      .fn()
+      .mockResolvedValueOnce(true) // first: condition returns true => retry
+      .mockResolvedValue(false); // second: condition false => stop retrying
+
+    global.fetch = jest
+      .fn()
+      .mockResolvedValueOnce(mockResponse503) // first fetch fails
+      .mockResolvedValueOnce(mockResponse200); // second fetch succeeds
+
+    const shouldAbort = Promise.resolve(false);
+
+    const fetchWithRetry = exponetialPollingWithPromisePredicateFetch(
+      shouldAbort,
+      2, // max retries
+      100, // initial delay (will backoff after 1st retry)
+      1000 as Millisecond,
+      condition
+    );
+
+    const response = await fetchWithRetry("https://api.example.com");
+
+    expect(response.status).toBe(200);
+    expect(global.fetch).toHaveBeenCalledTimes(2); // called twice due to retry
+    expect(condition).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe("exponetialPollingWithPromisePredicateFetch backoff behavior", () => {
+  beforeAll(() => {
+    jest.useFakeTimers(); // legacy timers
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
+  const mockResponse200 = {
+    json: jest.fn().mockResolvedValue({}),
+    status: 200,
+  };
+
+  const mockResponse503 = {
+    json: jest.fn().mockResolvedValue({}),
+    status: 503,
+  };
+
+  it("should increase delay exponentially after RETRY_NUMBERS_LINEAR attempts", async () => {
+    const condition = jest
+      .fn()
+      .mockResolvedValueOnce(true)
+      .mockResolvedValueOnce(true)
+      .mockResolvedValue(false);
+
+    const shouldAbort = Promise.resolve(false);
+
+    const fetchMock = jest
+      .fn()
+      .mockResolvedValueOnce(mockResponse503)
+      .mockResolvedValueOnce(mockResponse503)
+      .mockResolvedValueOnce(mockResponse200);
+
+    (global as any).fetch = fetchMock;
+
+    const fetchWithRetry = exponetialPollingWithPromisePredicateFetch(
+      shouldAbort,
+      3,
+      10,
+      1000 as Millisecond,
+      condition
+    );
+
+    const promise = fetchWithRetry("https://api.example.com");
+
+    const expectedDelays = generateExpectedDelays(10, 3, 2, 3);
+    /* eslint-disable functional/no-let */
+    for (let i = 0; i < expectedDelays.length; i++) {
+      jest.advanceTimersByTime(expectedDelays[i]);
+      await jest.runAllTimersAsync();
+      await Promise.resolve();
+    }
+
+    const response = await promise;
+
+    expect(response.status).toBe(200);
+    expect(fetchMock).toHaveBeenCalledTimes(expectedDelays.length);
   });
 });

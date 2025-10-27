@@ -26,7 +26,7 @@ parameters:
 
 
 variables:
-  NODE_VERSION: 14.16.0
+  NODE_VERSION: 18.17.1
   YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
 
 
@@ -40,7 +40,7 @@ pr: none
 # runtime, the pipeline is currently configured to use a Windows hosted image for
 # the build and deploy.
 pool:
-  vmImage: 'windows-2019'
+  vmImage: 'windows-2022'
 
 resources:
   repositories:
@@ -63,7 +63,7 @@ stages:
     jobs:
       - job: make_build
         pool:
-          vmImage: 'ubuntu-latest'
+          vmImage: 'ubuntu-22.04'
         steps:
           - template: templates/node-job-setup/template.yaml@pagopaCommons
             parameters:
@@ -73,6 +73,13 @@ stages:
               #  ex: Build.SourceBranch=refs/heads/release/pagopa-porting --> release/pagopa-porting
               #  ex: Build.SourceBranch=refs/tags/v1.2.3-RELEASE --> v1.2.3-RELEASE
               gitReference: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/tags/', ''), 'refs/heads/', '') }}
+
+          # Update the meta robots tag in src/index.html to prevent indexing in dev environment
+          - script: |
+              sed -i 's/<meta name="robots" content="index, follow">/<meta name="robots" content="noindex, nofollow">/' src/index.html
+              echo "Modified robots meta tag in src/index.html"
+              grep -n "robots" src/index.html
+            displayName: 'Update robots meta tag'
 
           - template: azure-templates/setup-env.yml
             parameters:
@@ -90,11 +97,12 @@ stages:
               api_ecommerce_basepath: '/ecommerce/checkout/v1'
               api_ecommerce_basepath_v2: '/ecommerce/checkout/v2'
               api_ecommerce_basepath_v3: '/ecommerce/checkout/v3'
+              api_ecommerce_basepath_v4: '/ecommerce/checkout/v4'
               checkout_feature_flags_basepath: '/checkout/feature-flags/v1'
               checkout_auth_service_basepath_v1: '/checkout/auth-service/v1'
               pagopa_assets_cdn: 'https://assets.cdn.platform.pagopa.it/payment-methods'
               pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi'
-              survey_show: 0
+              survey_show: 1
               checkout_npg_sdk_url: 'https://stg-ta.nexigroup.com/monetaweb/resources/hfsdk.js'
               checkout_gdi_check_timeout: 20000
               checkout_version: "$(Build.SourceBranchName):$(Build.SourceVersion)"
@@ -137,7 +145,7 @@ stages:
     dependsOn:
       - Deploy_DEV_pagoPA
     pool:
-      vmImage: 'ubuntu-latest'
+      vmImage: 'ubuntu-22.04'
     jobs:
       - job: e2e_tests
         steps:
@@ -166,7 +174,7 @@ stages:
         )
       )
     pool:
-      vmImage: 'ubuntu-latest'
+      vmImage: 'ubuntu-22.04'
     jobs:
       - job: make_release
         steps:
@@ -193,7 +201,7 @@ stages:
     jobs:
       - job: make_build
         pool:
-          vmImage: 'ubuntu-latest'
+          vmImage: 'ubuntu-22.04'
         steps:
           - template: templates/node-job-setup/template.yaml@pagopaCommons
             parameters:
@@ -203,6 +211,13 @@ stages:
               #  ex: Build.SourceBranch=refs/heads/main --> main
               #  ex: Build.SourceBranch=refs/tags/v1.2.3-RELEASE --> v1.2.3-RELEASE
               gitReference: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/tags/', ''), 'refs/heads/', '') }}
+
+          # Update the meta robots tag in src/index.html to prevent indexing in uat environment
+          - script: |
+              sed -i 's/<meta name="robots" content="index, follow">/<meta name="robots" content="noindex, nofollow">/' src/index.html
+              echo "Modified robots meta tag in src/index.html"
+              grep -n "robots" src/index.html
+            displayName: 'Update robots meta tag'
 
           - template: azure-templates/setup-env.yml
             parameters:
@@ -220,11 +235,12 @@ stages:
               api_ecommerce_basepath: '/ecommerce/checkout/v1'
               api_ecommerce_basepath_v2: '/ecommerce/checkout/v2'
               api_ecommerce_basepath_v3: '/ecommerce/checkout/v3'
+              api_ecommerce_basepath_v4: '/ecommerce/checkout/v4'
               checkout_feature_flags_basepath: '/checkout/feature-flags/v1'
               checkout_auth_service_basepath_v1: '/checkout/auth-service/v1'
               pagopa_assets_cdn: 'https://assets.cdn.platform.pagopa.it/payment-methods'
               pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi/'
-              survey_show: 0
+              survey_show: 1
               checkout_npg_sdk_url: 'https://stg-ta.nexigroup.com/monetaweb/resources/hfsdk.js'
               checkout_version: "$(Build.SourceBranchName):$(Build.SourceVersion)"
               checkout_gdi_check_timeout: 20000
@@ -281,7 +297,7 @@ stages:
     dependsOn:
       - Deploy_UAT_pagoPA
     pool:
-      vmImage: 'ubuntu-latest'
+      vmImage: 'ubuntu-22.04'
     jobs:
       - job: e2e_tests
         steps:
@@ -297,7 +313,7 @@ stages:
     jobs:
       - job: make_build
         pool:
-          vmImage: 'ubuntu-latest'
+          vmImage: 'ubuntu-22.04'
         steps:
           - template: templates/node-job-setup/template.yaml@pagopaCommons
             parameters:
@@ -324,11 +340,12 @@ stages:
               api_ecommerce_basepath: '/ecommerce/checkout/v1'
               api_ecommerce_basepath_v2: '/ecommerce/checkout/v2'
               api_ecommerce_basepath_v3: '/ecommerce/checkout/v3'
+              api_ecommerce_basepath_v4: '/ecommerce/checkout/v4'
               checkout_feature_flags_basepath: '/checkout/feature-flags/v1'
               checkout_auth_service_basepath_v1: '/checkout/auth-service/v1'
               pagopa_assets_cdn: 'https://assets.cdn.platform.pagopa.it/payment-methods'
               pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi/'
-              survey_show: 0
+              survey_show: 1
               checkout_npg_sdk_url: 'https://xpay.nexigroup.com/monetaweb/resources/hfsdk.js'
               checkout_version: "$(Build.SourceBranchName):$(Build.SourceVersion)"
               checkout_gdi_check_timeout: 20000

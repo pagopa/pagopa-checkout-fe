@@ -25,6 +25,19 @@ import { ViewOutcomeEnum } from "../utils/transactions/TransactionResultUtil";
 import { Cart } from "../features/payment/models/paymentModel";
 import { NewTransactionResponse } from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { resetThreshold } from "../redux/slices/threshold";
+import {
+  getDataEntryTypeFromSessionStorage,
+  getFlowFromSessionStorage,
+  getPaymentInfoFromSessionStorage,
+  getPaymentMethodSelectedFromSessionStorage,
+} from "../utils/mixpanel/mixpanelTracker";
+import { mixpanel } from "../utils/mixpanel/mixpanelHelperInit";
+import {
+  eventViewOutcomeMap,
+  MixpanelEventCategory,
+  MixpanelEventType,
+  MixpanelPaymentPhase,
+} from "../utils/mixpanel/mixpanelEvents";
 import { ROUTE_FRAGMENT } from "./models/routeModel";
 
 type PrintData = {
@@ -122,10 +135,15 @@ export default function PaymentResponsePageV2() {
   };
 
   useEffect(() => {
-    void checkLogoutAndClearStorage();
-    dispatch(resetThreshold());
-    window.removeEventListener("beforeunload", onBrowserUnload);
-  }, []);
+    const performActions = async () => {
+      await handleOutcomeForMixpanelEvent(outcome);
+      void checkLogoutAndClearStorage();
+      dispatch(resetThreshold());
+      window.removeEventListener("beforeunload", onBrowserUnload);
+    };
+
+    void performActions();
+  }, [outcome]);
 
   const { t } = useTranslation();
 
@@ -135,6 +153,40 @@ export default function PaymentResponsePageV2() {
       (document.title as any) = pageTitle + " - pagoPA";
     }
   }, [outcomeMessage]);
+
+  const handleOutcomeForMixpanelEvent = async (outcome: ViewOutcomeEnum) => {
+    const eventId = eventViewOutcomeMap[outcome];
+    if (!eventId) {
+      return;
+    }
+
+    const paymentInfo = getPaymentInfoFromSessionStorage();
+
+    const baseProps = {
+      EVENT_ID: eventId,
+      organization_name: paymentInfo?.paName,
+      organization_fiscal_code: paymentInfo?.paFiscalCode,
+      amount: paymentInfo?.amount,
+      expiration_date: paymentInfo?.dueDate,
+      data_entry: getDataEntryTypeFromSessionStorage(),
+      payment_phase: MixpanelPaymentPhase.PAGAMENTO,
+    };
+
+    const extraProps =
+      outcome === ViewOutcomeEnum.SUCCESS
+        ? {
+            EVENT_CATEGORY: MixpanelEventCategory.UX,
+            EVENT_TYPE: MixpanelEventType.SCREEN_VIEW,
+            payment_method_selected:
+              getPaymentMethodSelectedFromSessionStorage(),
+            flow: getFlowFromSessionStorage(),
+          }
+        : {
+            EVENT_CATEGORY: MixpanelEventCategory.KO,
+          };
+
+    mixpanel.track(eventId, { ...baseProps, ...extraProps });
+  };
 
   return (
     <PageContainer>
@@ -147,19 +199,20 @@ export default function PaymentResponsePageV2() {
       />
       <Box
         sx={{
+          minHeight: "20dvh",
           display: "flex",
           alignItems: "center",
-          py: 5,
+          justifyContent: "center",
+          px: 2,
         }}
       >
         <Box
           sx={{
-            py: 5,
-            display: "flex",
-            justifyContent: "center",
             width: "100%",
+            display: "flex",
             flexDirection: "column",
             alignItems: "center",
+            gap: 2,
             whiteSpace: "pre-line",
           }}
         >
@@ -215,7 +268,7 @@ export default function PaymentResponsePageV2() {
             </Button>
           </Box>
           {conf.CHECKOUT_SURVEY_SHOW && outcome === ViewOutcomeEnum.SUCCESS && (
-            <Box sx={{ width: "100%" }} px={{ xs: 8, sm: 0 }}>
+            <Box sx={{ width: "100%" }} px={{ xs: 0, sm: 0 }}>
               <SurveyLink />
             </Box>
           )}

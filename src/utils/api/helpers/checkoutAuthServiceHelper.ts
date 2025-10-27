@@ -16,6 +16,11 @@ import {
 } from "../client";
 import { UserInfoResponse } from "../../../../generated/definitions/checkout-auth-service-v1/UserInfoResponse";
 import { AuthRequest } from "../../../../generated/definitions/checkout-auth-service-v1/AuthRequest";
+import { mixpanel } from "../../mixpanel/mixpanelHelperInit";
+import {
+  MixpanelEventCategory,
+  MixpanelEventsId,
+} from "../../mixpanel/mixpanelEvents";
 import { callRecaptcha } from "./recaptchaHelper";
 
 export const proceedToLogin = async ({
@@ -39,7 +44,7 @@ export const proceedToLogin = async ({
         () =>
           apiCheckoutAuthServiceClientV1.authLogin({
             recaptcha: token,
-            "x-rpt-id": getRptIdsFromSession(),
+            "x-rpt-ids": getRptIdsFromSession(),
           }),
         (_e) => {
           onError(ErrorsType.CONNECTION);
@@ -95,7 +100,7 @@ export const authentication = async ({
         () =>
           apiCheckoutAuthServiceClientAuthTokenV1.authenticateWithAuthToken({
             body: decodedRequest,
-            "x-rpt-id": getRptIdsFromSession(),
+            "x-rpt-ids": getRptIdsFromSession(),
           }),
         () => ErrorsType.GENERIC_ERROR
       )
@@ -116,6 +121,11 @@ export const authentication = async ({
             (res) => {
               if (res.status === 200) {
                 onResponse(res.value.authToken);
+                mixpanel.track(MixpanelEventsId.CHK_LOGIN_SUCCESS, {
+                  EVENT_ID: MixpanelEventsId.CHK_LOGIN_SUCCESS,
+                  EVENT_CATEGORY: MixpanelEventCategory.TECH,
+                  page: window.location.pathname,
+                });
                 return TE.right({});
               } else {
                 onError(ErrorsType.CONNECTION);
@@ -159,7 +169,7 @@ export const logoutUser = async ({
         () =>
           apiCheckoutAuthServiceWithRetryV1.authLogout({
             bearerAuth: authToken,
-            "x-rpt-id": getRptIdsFromSession(),
+            "x-rpt-ids": getRptIdsFromSession(),
           }),
         () => ErrorsType.GENERIC_ERROR
       )
@@ -208,7 +218,7 @@ export const retrieveUserInfo = async ({
         () =>
           apiCheckoutAuthServiceWithRetryV1.authUsers({
             bearerAuth: authToken,
-            "x-rpt-id": getRptIdsFromSession(),
+            "x-rpt-ids": getRptIdsFromSession(),
           }),
         () => ErrorsType.GENERIC_ERROR
       )

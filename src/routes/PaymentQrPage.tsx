@@ -10,6 +10,14 @@ import { QrCodeReader } from "../components/QrCodeReader/QrCodeReader";
 import { PaymentFormFields } from "../features/payment/models/paymentModel";
 import { ErrorsType } from "../utils/errors/checkErrorsModel";
 import { qrCodeValidation } from "../utils/regex/validators";
+import {
+  MixpanelDataEntryType,
+  MixpanelEventCategory,
+  MixpanelEventsId,
+  MixpanelEventType,
+} from "../utils/mixpanel/mixpanelEvents";
+import { mixpanel } from "../utils/mixpanel/mixpanelHelperInit";
+import { SessionItems, setSessionItem } from "../utils/storage/sessionStorage";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function PaymentQrPage() {
@@ -19,6 +27,14 @@ export default function PaymentQrPage() {
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const [camBlocked, setCamBlocked] = React.useState(false);
+
+  React.useEffect(() => {
+    mixpanel.track(MixpanelEventsId.CHK_QRCODE_SCAN_SCREEN, {
+      EVENT_ID: MixpanelEventsId.CHK_QRCODE_SCAN_SCREEN,
+      EVENT_CATEGORY: MixpanelEventCategory.UX,
+      EVENT_TYPE: MixpanelEventType.SCREEN_VIEW,
+    });
+  }, []);
 
   const onError = React.useCallback((m: string) => {
     setError(m);
@@ -36,6 +52,10 @@ export default function PaymentQrPage() {
         setLoading(true);
         if (!qrCodeValidation(data)) {
           onError(ErrorsType.INVALID_QRCODE);
+          mixpanel.track(MixpanelEventsId.CHK_PAYMENT_INVALID_CODE_ERROR, {
+            EVENT_ID: MixpanelEventsId.CHK_PAYMENT_INVALID_CODE_ERROR,
+            EVENT_CATEGORY: MixpanelEventCategory.KO,
+          });
         } else {
           void onSubmit({
             billCode: data?.split("|")[2] || "",
@@ -114,7 +134,22 @@ export default function PaymentQrPage() {
         >
           <Button
             variant="text"
-            onClick={() => navigate(`/${CheckoutRoutes.INSERISCI_DATI_AVVISO}`)}
+            onClick={() => {
+              mixpanel.track(
+                MixpanelEventsId.CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY,
+                {
+                  EVENT_ID:
+                    MixpanelEventsId.CHK_QRCODE_SCAN_SCREEN_MANUAL_ENTRY,
+                  EVENT_CATEGORY: MixpanelEventCategory.UX,
+                  EVENT_TYPE: MixpanelEventType.ACTION,
+                }
+              );
+              setSessionItem(
+                SessionItems.noticeCodeDataEntry,
+                MixpanelDataEntryType.MANUAL
+              );
+              navigate(`/${CheckoutRoutes.INSERISCI_DATI_AVVISO}`);
+            }}
           >
             {t("paymentQrPage.navigate")}
             <ArrowForwardIcon

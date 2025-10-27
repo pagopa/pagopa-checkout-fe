@@ -1,10 +1,15 @@
-jest.mock("../../config/mixpanelHelperInit", () => ({
+jest.mock("../../mixpanel/mixpanelHelperInit", () => ({
   mixpanel: { track: jest.fn() },
 }));
 
 jest.mock("../../config/fetch", () => ({
   retryingFetch: jest.fn(() => jest.fn()),
   constantPollingWithPromisePredicateFetch: jest.fn(() => jest.fn()),
+}));
+
+jest.mock("../../config/fetch", () => ({
+  retryingFetch: jest.fn(() => jest.fn()),
+  exponetialPollingWithPromisePredicateFetch: jest.fn(() => jest.fn()),
 }));
 
 import * as E from "fp-ts/Either";

@@ -24,7 +24,10 @@ import {
   recaptchaTransaction,
 } from "../../../../api/helper";
 import { ErrorsType } from "../../../../errors/checkErrorsModel";
-import { getSessionItem } from "../../../../storage/sessionStorage";
+import {
+  getRptIdsFromSession,
+  getSessionItem,
+} from "../../../../storage/sessionStorage";
 import { NewTransactionResponse } from "../../../../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 
 jest.mock("../../../../config/config", () => ({
@@ -151,6 +154,7 @@ describe("Ecommerce transactions helper - activatePayment tests", () => {
 
   it("Should call onResponseActivate when api return correct value on v3 api", async () => {
     mockSetSessionForActivatePayment(true);
+    (getRptIdsFromSession as jest.Mock).mockReturnValueOnce("rptIds");
     (apiPaymentEcommerceClientV3.newTransactionV3 as jest.Mock).mockReturnValue(
       Promise.resolve({
         right: {
@@ -168,6 +172,15 @@ describe("Ecommerce transactions helper - activatePayment tests", () => {
       expect(mockOnResponse).toHaveBeenCalledWith(
         cardPaymentMethodMock.paymentMethodId,
         "orderId"
+      );
+      expect(apiPaymentEcommerceClientV3.newTransactionV3).toHaveBeenCalledWith(
+        {
+          "x-rpt-ids": "rptIds",
+          bearerAuth: "authToken", // Check that the token was passed correctly
+          body: expect.anything(),
+          "x-client-id-from-client": "CHECKOUT",
+          "x-correlation-id": "correlationId",
+        }
       );
     });
   });

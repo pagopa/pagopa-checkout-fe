@@ -11,6 +11,14 @@ import ErrorModal from "../ErrorModal";
 
 import { FaultCategoryEnum } from "../../../../generated/definitions/payment-ecommerce/FaultCategory";
 import { ErrorsType } from "../../../utils/errors/checkErrorsModel";
+import { paymentInfo } from "../../../routes/__tests__/_model";
+import { mixpanel } from "../../../utils/mixpanel/mixpanelHelperInit";
+import {
+  MixpanelDataEntryType,
+  MixpanelEventCategory,
+  MixpanelEventsId,
+  MixpanelPaymentPhase,
+} from "../../../utils/mixpanel/mixpanelEvents";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
@@ -70,72 +78,77 @@ jest.mock("../../../utils/errors/errorsModel", () => {
   );
 
   return {
-    PaymentCategoryResponses: {
+    PaymentCategoryResponses: jest.fn(() => ({
       [FaultCategoryEnum.GENERIC_ERROR]: {
         title: "GENERIC_ERROR.title",
         body: "GENERIC_ERROR.body",
-        buttons: [{ text: "button.close", action: undefined }],
+        buttons: [{ title: "button.close", action: undefined }],
       },
       [FaultCategoryEnum.PAYMENT_UNAVAILABLE]: {
         title: "PAYMENT_UNAVAILABLE.title",
         body: "PAYMENT_UNAVAILABLE.body",
-        buttons: [{ text: "button.close", action: undefined }],
+        buttons: [{ title: "button.close", action: undefined }],
       },
       [FaultCategoryEnum.PAYMENT_EXPIRED]: {
         title: "PAYMENT_EXPIRED.title",
         body: "PAYMENT_EXPIRED.body",
-        buttons: [{ text: "button.close", action: undefined }],
+        buttons: [{ title: "button.close", action: undefined }],
       },
       [FaultCategoryEnum.PAYMENT_DATA_ERROR]: {
         title: "PAYMENT_DATA_ERROR.title",
         body: "ErrorCodeDescription",
         detail: true,
-        buttons: [{ text: "button.close", action: undefined }],
+        buttons: [{ title: "button.close", action: undefined }],
       },
       [FaultCategoryEnum.PAYMENT_DUPLICATED]: {
         title: "PAYMENT_DUPLICATED.title",
         body: "PAYMENT_DUPLICATED.body",
-        buttons: [{ text: "button.close", action: undefined }],
+        buttons: [{ title: "button.close", action: undefined }],
       },
       [FaultCategoryEnum.PAYMENT_UNKNOWN]: {
         title: "PAYMENT_UNKNOWN.title",
         body: "PAYMENT_UNKNOWN.body",
-        buttons: [{ text: "button.close", action: undefined }],
+        buttons: [{ title: "button.close", action: undefined }],
       },
       [FaultCategoryEnum.PAYMENT_CANCELED]: {
         title: "PAYMENT_CANCELED.title",
         body: "PAYMENT_CANCELED.body",
-        buttons: [{ text: "button.close", action: undefined }],
+        buttons: [{ title: "button.close", action: undefined }],
       },
       [FaultCategoryEnum.PAYMENT_ONGOING]: {
         title: "PAYMENT_ONGOING.title",
         body: "PAYMENT_ONGOING.body",
-        buttons: [{ text: "button.close", action: undefined }],
+        buttons: [{ title: "button.close", action: undefined }],
       },
       [FaultCategoryEnum.DOMAIN_UNKNOWN]: {
         title: "DOMAIN_UNKNOWN.title",
         body: "DOMAIN_UNKNOWN.body",
-        buttons: [{ text: "button.close", action: undefined }],
+        buttons: [{ title: "button.close", action: undefined }],
       },
-      // Add these for STATUS_ERROR and TIMEOUT tests
       STATUS_ERROR: {
         title: "STATUS_ERROR.title",
         body: "STATUS_ERROR.body",
         buttons: [
-          { text: "button.close", action: undefined },
-          { text: "button.retry", action: undefined },
+          { title: "button.close", action: undefined },
+          { title: "button.retry", action: undefined },
         ],
       },
       TIMEOUT: {
         title: "TIMEOUT.title",
         body: "TIMEOUT.body",
         buttons: [
-          { text: "button.close", action: undefined },
-          { text: "button.retry", action: undefined },
+          { title: "button.close", action: undefined },
+          { title: "button.retry", action: undefined },
         ],
       },
+    })),
+    ErrorResponses: {
+      INVALID_QRCODE: {
+        title: "INVALID_QRCODE.title",
+        body: "INVALID_QRCODE.body",
+        buttons: [{ title: "button.close" }, { title: "button.help" }],
+      },
     },
-    // Add ErrorModalBtn type export
     ErrorModalBtn: {},
   };
 });
@@ -180,6 +193,17 @@ Object.assign(navigator, {
     writeText: jest.fn().mockImplementation(() => Promise.resolve()),
   },
 });
+
+jest.mock("../../../utils/mixpanel/mixpanelHelperInit", () => ({
+  mixpanel: {
+    track: jest.fn(),
+  },
+}));
+
+jest.mock("../../../utils/mixpanel/mixpanelTracker", () => ({
+  getDataEntryTypeFromSessionStorage: jest.fn(() => "manual"),
+  getPaymentInfoFromSessionStorage: jest.fn(() => paymentInfo),
+}));
 
 describe("ErrorModal Component", () => {
   const mockOnClose = jest.fn();
@@ -424,5 +448,38 @@ describe("ErrorModal Component", () => {
     if (emptyAlertTitle) {
       expect(emptyAlertTitle.textContent).toBe("");
     }
+  });
+
+  it("tracks mixpanel event when modal opens with a known error category", () => {
+    const errorCode = `${FaultCategoryEnum.PAYMENT_DUPLICATED}-DUPLICATE_CODE`;
+
+    render(<ErrorModal error={errorCode} open={true} onClose={mockOnClose} />);
+
+    expect(mixpanel.track).toHaveBeenCalledWith(
+      MixpanelEventsId.PAYMENT_DUPLICATED,
+      expect.objectContaining({
+        EVENT_ID: MixpanelEventsId.PAYMENT_DUPLICATED,
+        EVENT_CATEGORY: MixpanelEventCategory.KO,
+        reason: "DUPLICATE_CODE",
+        data_entry: MixpanelDataEntryType.MANUAL,
+        organization_name: "companyName",
+        organization_fiscal_code: "77777777777",
+        amount: 12000,
+        expiration_date: "2021-07-31",
+        payment_phase: MixpanelPaymentPhase.VERIFICA,
+      })
+    );
+  });
+  it("renders with INVALID_QRCODE custom error", () => {
+    render(
+      <ErrorModal
+        error={ErrorsType.INVALID_QRCODE}
+        open={true}
+        onClose={jest.fn()}
+      />
+    );
+
+    expect(screen.getByText("INVALID_QRCODE.title")).toBeInTheDocument();
+    expect(screen.getByText("INVALID_QRCODE.body")).toBeInTheDocument();
   });
 });
