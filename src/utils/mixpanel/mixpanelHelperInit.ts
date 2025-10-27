@@ -30,6 +30,8 @@ const mixpanelInit = function (): void {
       const mp_deviceId = mp.get_property?.("$device_id");
 
       if (!getSessionItem(SessionItems.mixpanelInitialized)) {
+        // reset mixpanel instance, generating new device_id and distinct id
+        mp.reset();
         setSessionItem(SessionItems.mixpanelInitialized, true);
       }
 
