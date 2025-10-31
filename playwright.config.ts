@@ -7,7 +7,7 @@ export default defineConfig({
   workers: process.env.CI ? 4 : undefined,
   reporter: [["html", { outputFolder: "test-results", open: "never" }]],
   use: {
-    headless: false, // Run tests in headless mode
+    headless: true, // Run tests in headless mode
     viewport: { width: 1280, height: 720 }, // Default viewport size
     actionTimeout: 10000, // Timeout for individual actions (10 seconds)
     screenshot: "only-on-failure",

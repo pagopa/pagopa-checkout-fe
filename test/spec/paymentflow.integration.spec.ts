@@ -28,7 +28,7 @@ import {
   authorizeApmPaymentAndGetError,
   filterByType,
   filterByTwoType,
-} from "./helpers";
+} from "./helpers.js";
 
 const languages = [
   { code: "it", translation: itTranslation },
