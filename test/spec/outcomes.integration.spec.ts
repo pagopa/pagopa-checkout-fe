@@ -1,11 +1,8 @@
 import { test, expect } from "@playwright/test";
 import itTranslation from "../../src/translations/it/translations.json";
-import {
-  URL,
-  KONoticeCodes,
-  OKPaymentInfo,
-} from "../../src/__integration_tests__/utils/testConstants";
-import { clickButtonBySelector, payNotice, selectLanguage } from "./helpers";
+
+import { URL, KONoticeCodes, OKPaymentInfo } from "./testConstants.js";
+import { clickButtonBySelector, payNotice, selectLanguage } from "./helpers.js";
 
 test.beforeEach(async ({ page }) => {
   await page.goto(URL.CHECKOUT_URL);
@@ -16,7 +13,7 @@ test.afterEach(async ({ page }) => {
   await clickButtonBySelector(page, "#closeButton");
 });
 
-const testCases = [
+const testCases: Array<[number, string, string]> = [
   [0, "SUCCESS", KONoticeCodes.OUTCOME_FISCAL_CODE_SUCCESS],
   [1, "GENERIC ERROR", KONoticeCodes.OUTCOME_FISCAL_CODE_GENERIC_ERROR],
   [2, "AUTH ERROR", KONoticeCodes.OUTCOME_FISCAL_CODE_AUTHORIZATION_ERROR],

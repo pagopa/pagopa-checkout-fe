@@ -5,11 +5,7 @@ import deTranslation from "../../src/translations/de/translations.json";
 import frTranslation from "../../src/translations/fr/translations.json";
 import slTranslation from "../../src/translations/sl/translations.json";
 
-import {
-  URL,
-  KORPTIDs,
-  OKPaymentInfo,
-} from "../../src/__integration_tests__/utils/testConstants";
+import { URL, KORPTIDs, OKPaymentInfo } from "./testConstants";
 import {
   verifyPaymentAndGetError,
   activatePaymentAndGetError,
