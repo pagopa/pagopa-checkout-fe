@@ -1,4 +1,8 @@
+import { ContrastOutlined } from '@mui/icons-material';
+import { expect, Page } from '@playwright/test';
+import { Console } from 'console';
 export const payNotice = async (
+  page,
   noticeCode,
   fiscalCode,
   email,
@@ -7,38 +11,47 @@ export const payNotice = async (
 ) => {
   const payBtnSelector = "#paymentCheckPageButtonPay";
   const resultTitleSelector = "#responsePageMessageTitle";
-  await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
-  const payBtn = await page.waitForSelector(payBtnSelector);
+  await fillAndSubmitCardDataForm(page, noticeCode, fiscalCode, email, cardData);
+  const payBtn = await  page.locator(payBtnSelector);
   await payBtn.click();
-  await page.waitForNavigation();
-  await page.goto(checkoutUrlAfterAuth);
-  const message = await page.waitForSelector(resultTitleSelector);
-  return await message.evaluate((el) => el.textContent);
+  //await page.waitForNavigation({ waitUntil: 'networkidle' });
+  await page.goto(checkoutUrlAfterAuth, { waitUntil: 'networkidle' });
+  const message = page.locator(resultTitleSelector);
+  await expect(message).toBeVisible();
+  const text = await message.textContent();
+
+  return text?.trim() ?? '';
 };
 
-export const clickButtonBySelector = async (selector) => {
+export const clickButtonBySelector = async (page, selector) => {
   const selectorButton = selector.startsWith("#") ? selector : "#" + selector;
-  const button = await page.waitForSelector(selectorButton);
+  const button = page.locator(selectorButton);
   await button.click();
 }
 
-export const verifyPaymentAndGetError = async (noticeCode, fiscalCode) => {
+export const verifyPaymentAndGetError = async (page, noticeCode, fiscalCode) => {
   const errorMessageSelector = "#verifyPaymentErrorId";
-  await fillPaymentNotificationForm(noticeCode, fiscalCode);
-  const errorMessageElem = await page.waitForSelector(errorMessageSelector);
-  return await errorMessageElem.evaluate((el) => el.textContent);
+  const errorMessageLocator = page.locator(errorMessageSelector);
+
+  await fillPaymentNotificationForm(page, noticeCode, fiscalCode);
+ 
+  await expect(errorMessageLocator).toBeVisible({ timeout: 8000 });
+
+  return await errorMessageLocator.textContent();
 };
 
 export const activatePaymentAndGetError = async (
+  page,
   noticeCode,
   fiscalCode,
   email,
   cardData,
   selectorId
 ) => {
-  await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
-  const errorMessageElem = await page.waitForSelector(selectorId);
-  return await errorMessageElem.evaluate((el) => el.textContent);
+  await fillAndSubmitCardDataForm(page, noticeCode, fiscalCode, email, cardData);
+  const errorMessageLocator = page.locator(selectorId);
+  await expect(errorMessageLocator).toBeVisible({ timeout: 8000 });
+  return await errorMessageLocator.textContent();
 };
 
 export const authorizePaymentAndGetError = async (
@@ -59,299 +72,315 @@ export const authorizePaymentAndGetError = async (
 };
 
 export const checkPspDisclaimerBeforeAuthorizePayment = async (
+  page,
   noticeCode,
   fiscalCode,
   email,
   cardData
 ) => {
   const pspDisclaimerSelectorById = "#pspDisclaimer";
-  await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
-  const disclaimerElement = await page.waitForSelector(
-    pspDisclaimerSelectorById
-  );
-  return await disclaimerElement.evaluate((el) => el.textContent);
+  await fillAndSubmitCardDataForm(page, noticeCode, fiscalCode, email, cardData);
+  
+  await expect(page.locator(pspDisclaimerSelectorById)).toBeVisible({ timeout: 20000 });
+
+  return await page.locator(pspDisclaimerSelectorById).textContent();
 };
 
 export const checkErrorOnCardDataFormSubmit = async (
+  page,
   noticeCode,
   fiscalCode,
   email,
   cardData
 ) => {
   const errorMessageTitleSelector = "#iframeCardFormErrorTitleId";
-  await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
-  const errorMessageElem = await page.waitForSelector(
-    errorMessageTitleSelector
-  );
-  return await errorMessageElem.evaluate((el) => el.textContent);
+  await fillAndSubmitCardDataForm(page, noticeCode, fiscalCode, email, cardData);
+  const errorMessageElem = page.locator(errorMessageTitleSelector);
+  await expect(errorMessageElem).toBeVisible();
+
+  return await errorMessageElem.textContent();
 };
 
-export const selectKeyboardForm = async () => {
-  const selectFormXPath =
-    "/html/body/div[1]/div/main/div/div[2]/div[2]/div[1]";
-  const selectFormBtn = await page.waitForXPath(selectFormXPath);
+export const selectKeyboardForm = async (page) => {
+  const selectFormXPath = "/html/body/div[1]/div/main/div/div[2]/div[2]/div[1]";
+  const selectFormBtn = page.locator(`xpath=${selectFormXPath}`); 
+  await expect(selectFormBtn).toBeVisible({ timeout: 8000 });
   await selectFormBtn.click();
 };
 
-export const clickLoginButton = async () => {
+export const clickLoginButton = async (page) => {
   //search login button and click it
   console.log("Search login button")
-  const loginHeader = await page.waitForSelector("#login-header");
-  const headerButtons = await loginHeader.$$("button");
-  //Login button is the last on the header
-  const loginBtn = headerButtons.at(-1);
-  console.log("Login button click")
+  const loginHeader = page.locator("#login-header");
+  const loginBtn = loginHeader.locator("button").last();
+
+  console.log("Login button click");
   await loginBtn.click();
 }
 
-export const getUserButton = async () => {
+export const getUserButton = async (page) => {
   //search user button
-  console.log("Search user button")
-  const loginHeader = await page.waitForSelector("#login-header");
-  const headerButtons = await loginHeader.$$("button");
-  // return button with name 
-  let userButton;
-  for(let btn of headerButtons) {
-    const text = await btn.evaluate((el) => el.textContent);
-    if(text === "MarioTest RossiTest") {
-      userButton = btn;
+  console.log("Search user button");
+
+  const buttons = page.locator("#login-header button");
+
+  const count = await buttons.count();
+
+  for (let i = 0; i < count; i++) {
+    const text = await buttons.nth(i).textContent();
+    if (text?.trim() === "MarioTest RossiTest") {
+      return buttons.nth(i);
     }
   }
-  return userButton;
+
+  console.warn("User button not found");
+  return null;
 }
 
-export const tryLoginWithAuthCallbackError = async (noticeCode, fiscalCode) => {
+export const tryLoginWithAuthCallbackError = async (page, noticeCode, fiscalCode) => {
   //flow test error
-  await fillPaymentNotificationForm(noticeCode, fiscalCode);
+  await fillPaymentNotificationForm(page, noticeCode, fiscalCode);
   console.log("MockFlow set with noticeCode: " + noticeCode);
 
   //Login
-  await clickLoginButton();
+  await clickLoginButton(page);
 
   //Wait for error messages
-  const titleErrorElem = await page.waitForSelector("#errorTitle");
-  const titleErrorBody = await page.waitForSelector("#errorBody");
-  const title = await titleErrorElem.evaluate((el) => el.textContent);
-  const body = await titleErrorBody.evaluate((el) => el.textContent);
+  const titleError = page.locator("#errorTitle");
+  const bodyError = page.locator("#errorBody");
 
-  //Error on auth-callback page
+  await titleError.waitFor({ state: "visible" });
+  await bodyError.waitFor({ state: "visible" });
+
+  const title = (await titleError.textContent())?.trim() || "";
+  const body = (await bodyError.textContent())?.trim() || "";
+
+  // URL corrente
   const currentUrl = page.url();
-  
-  return {
-    title,
-    body,
-    currentUrl,
-  }
+
+  return { 
+    title, 
+    body, 
+    currentUrl 
+  };
 }
 
-export const fillPaymentNotificationForm = async (noticeCode, fiscalCode, submit=true) => {
-  const noticeCodeTextInput = "#billCode";
-  const fiscalCodeTextInput = "#cf";
-  const verifyBtn = "#paymentNoticeButtonContinue";
+export const  fillPaymentNotificationForm = async (page, noticeCode, fiscalCode, submit=true) => {
+  const noticeCodeTextInput = page.locator('#billCode');
+  const fiscalCodeTextInput = page.locator('#cf');
+  const verifyBtn = page.locator('#paymentNoticeButtonContinue');
 
-  await selectKeyboardForm();
-  await page.waitForSelector(noticeCodeTextInput);
-  await page.click(noticeCodeTextInput);
-  await page.keyboard.type(noticeCode);
-  await page.waitForSelector(fiscalCodeTextInput);
-  await page.click(fiscalCodeTextInput);
-  await page.keyboard.type(fiscalCode);
-  if(submit){
-    await page.waitForSelector(verifyBtn);
-    await page.click(verifyBtn);
+  await selectKeyboardForm(page);
+ 
+  await expect(noticeCodeTextInput).toBeVisible({ timeout: 8000 });
+  await noticeCodeTextInput.fill(noticeCode);
+
+  await expect(fiscalCodeTextInput).toBeVisible({ timeout: 8000 });
+  await fiscalCodeTextInput.fill(fiscalCode);
+
+  if (submit) {
+    await expect(verifyBtn).toBeVisible({ timeout: 8000 });
+    await verifyBtn.click();
   }
 };
 
 export const fillAndSubmitCardDataForm = async (
+  page,
   noticeCode,
   fiscalCode,
   email,
   cardData
 ) => {
+  
+  await fillPaymentNotificationForm(page, noticeCode, fiscalCode);
+
+  
+  await page.waitForTimeout(500);
   const payNoticeBtnSelector = "#paymentSummaryButtonPay";
-  await fillPaymentNotificationForm(noticeCode, fiscalCode);
-  const payNoticeBtn = await page.waitForSelector(payNoticeBtnSelector, {
-    visible: true,
-  });
+  const payNoticeBtn = page.locator(payNoticeBtnSelector);
+  await expect(payNoticeBtn).toBeVisible({ timeout: 5000 });
   await payNoticeBtn.click();
-  await fillEmailForm(email);
-  await choosePaymentMethod("CP");
-  await fillCardDataForm(cardData);
-  await tryHandlePspPickerPage();
+
+  await fillEmailForm(page, email);
+  await choosePaymentMethod(page, "CP");
+  await fillCardDataForm(page, cardData);
+  await tryHandlePspPickerPage(page);
 };
 
-export const tryHandlePspPickerPage = async ()=>{
+export const tryHandlePspPickerPage = async (page)=>{
   // wait for page to change, max wait time few seconds
   // this navigation will not happen in all test cases
   // so we don't want to waste too much time over it
-  try {
-    await page.waitForNavigation({ timeout: 3000 });
-  } catch (error) {
-    // If the navigation doesn't happen within 3000ms, just log and continue
+  
+ try {
+    await page.waitForNavigation({ timeout: 8000, waitUntil: "load" });
+  } catch {
     console.log("Navigation did not happen within 3000ms. Continuing test.");
   }
 
+
   // this step needs to be skipped during tests
   // in which we trigger an error modal in the previous page
-  if(await page.url().includes("lista-psp")){
-    await selectPspOnPspPickerPage();
+  if ((await page.url()).includes("lista-psp")) {
+    await selectPspOnPspPickerPage(page);
   }
 }
 
-export const selectPspOnPspPickerPage = async () => {
-  try{
-    const pspPickerRadio = await page.waitForSelector("#psp-radio-button-unchecked", {
-      visible: true, timeout: 500
-    });
-    await pspPickerRadio.click();
-  
-    const continueButton = await page.waitForSelector("#paymentPspListPageButtonContinue", {
-      visible: true, timeout: 500
-    });
-    
+export const selectPspOnPspPickerPage = async (page) => {
+   try {
+    const pspPickerRadio = page.locator("#psp-radio-button-unchecked").first();
+    await expect(pspPickerRadio).toBeVisible({ timeout: 5000 });
+    await pspPickerRadio.click();    
+
+    // Attende fino a 5 secondi che il pulsante Continue sia visibile
+    const continueButton = page.locator("#paymentPspListPageButtonContinue");
+    await expect(continueButton).toBeVisible({ timeout: 5000 });
     await continueButton.click();
-  }catch(e){
-    console.log("Buttons not found: this is caused by PSP page immediately navigate to the summary page (if 1 psp available)");
+  } catch (e) {
+    console.log(
+      "Buttons not found: this is caused by PSP page immediately navigating to the summary page (if 1 PSP available)"
+    );
   }
 }
 
 export const fillAndSubmitSatispayPayment = async (
+  page,
   noticeCode,
   fiscalCode,
   email
 ) => {
   const payNoticeBtnSelector = "#paymentSummaryButtonPay";
-  await fillPaymentNotificationForm(noticeCode, fiscalCode);
-  const payNoticeBtn = await page.waitForSelector(payNoticeBtnSelector, {
-    visible: true,
-  });
+  await fillPaymentNotificationForm(page, noticeCode, fiscalCode);
+  const payNoticeBtn = page.locator(payNoticeBtnSelector);
+  await expect(payNoticeBtn).toBeVisible();
   await payNoticeBtn.click();
-  await fillEmailForm(email);
-  await choosePaymentMethod("SATY");
-  await tryHandlePspPickerPage();
+
+  await fillEmailForm(page, email);
+  await choosePaymentMethod(page, "SATY");
+  await tryHandlePspPickerPage(page);
 };
 
-export const fillEmailForm = async (email) => {
-  const emailInput = "#email";
-  const confirmEmailInput = "#confirmEmail";
-  const continueBtnSelector = "#paymentEmailPageButtonContinue";
+export const fillEmailForm = async (page, email) => {
+  const emailInput = page.locator("#email");
+  const confirmEmailInput = page.locator("#confirmEmail");
+  const continueBtn = page.locator("#paymentEmailPageButtonContinue");
 
-  await page.waitForSelector(emailInput);
-  await page.click(emailInput);
-  await page.keyboard.type(email);
+  await emailInput.fill(email);
 
-  await page.waitForSelector(confirmEmailInput);
-  await page.click(confirmEmailInput);
-  await page.keyboard.type(email);
+  await confirmEmailInput.fill(email);
 
-  const continueBtn = await page.waitForSelector(continueBtnSelector);
   await continueBtn.click();
 };
 
-export const choosePaymentMethod = async (method) => {
-  const cardOptionXPath = `[data-qaid=${method}]`;
-
-  const cardOptionBtn = await page.waitForSelector(cardOptionXPath);
+export const choosePaymentMethod = async (page, method) => {
+  const cardOptionBtn = page.locator(`[data-qaid="${method}"]`);
   await cardOptionBtn.click();
 };
 
-export const verifyPaymentMethods = async () => {
-  await page.waitForSelector("[data-qalabel=payment-method]");
-  const methods = await page.$$eval(
-    "[data-qalabel=payment-method]",
-    (elHandles) => elHandles.map((el) => el.getAttribute("data-qaid"))
-  );
-  return methods.length > 0;
+export const verifyPaymentMethods = async (page) => {
+  const methodLocators = page.locator("[data-qalabel=payment-method]");
+  const count = await methodLocators.count();
+  return count > 0;
 };
 
-export const fillCardDataForm = async (cardData) => {
-  const cardNumberInput = "#frame_CARD_NUMBER";
-  const expirationDateInput = "#frame_EXPIRATION_DATE";
-  const ccvInput = "#frame_SECURITY_CODE";
-  const holderNameInput = "#frame_CARDHOLDER_NAME";
-  const continueBtnXPath = "button[type=submit]";
-  const disabledContinueBtnXPath = 'button[type=submit][disabled=""]';
+export const fillCardDataForm = async (page, cardData) => {
+  const cardNumberFrame = page.frameLocator("#frame_CARD_NUMBER");
+  const expirationFrame = page.frameLocator("#frame_EXPIRATION_DATE");
+  const ccvFrame = page.frameLocator("#frame_SECURITY_CODE");
+  const holderFrame = page.frameLocator("#frame_CARDHOLDER_NAME");
+  const continueBtn = page.locator('button[type=submit]');
+  const disabledContinueBtn = page.locator('button[type=submit][disabled]');
+
   let iteration = 0;
   let completed = false;
+
   while (!completed) {
     iteration++;
-    await page.waitForSelector(cardNumberInput, { visible: true });
-    await page.click(cardNumberInput, { clickCount: 3 });
-    await page.keyboard.type(cardData.number);
-    await page.waitForSelector(expirationDateInput, { visible: true });
-    await page.click(expirationDateInput, { clickCount: 3 });
-    await page.keyboard.type(cardData.expirationDate);
-    await page.waitForSelector(ccvInput, { visible: true });
-    await page.click(ccvInput, { clickCount: 3 });
-    await page.keyboard.type(cardData.ccv);
-    await page.waitForSelector(holderNameInput, { visible: true });
-    await page.click(holderNameInput, { clickCount: 3 });
-    await page.keyboard.type(cardData.holderName);
-    completed = !!!(await page.$(disabledContinueBtnXPath));
-    await page.waitForTimeout(1_000);
+
+    await cardNumberFrame.locator('input[name="CARD_NUMBER"]').fill(cardData.number);
+    await expirationFrame.locator('input[name="EXPIRATION_DATE"]').fill(cardData.expirationDate);
+    await ccvFrame.locator('input[name="SECURITY_CODE"]').fill(cardData.ccv);
+    await holderFrame.locator('input[name="CARDHOLDER_NAME"]').fill(cardData.holderName);
+
+
+    completed = !(await disabledContinueBtn.isVisible());
+    if (!completed) {
+      await page.waitForTimeout(1000);
+    }
   }
-  const continueBtn = await page.waitForSelector(continueBtnXPath, {
-    visible: true,
-  });
+
   await continueBtn.click();
 };
 
-export const cancelPaymentAction = async () => {
-  const paymentCheckPageButtonCancel = await page.waitForSelector(
-    "#paymentCheckPageButtonCancel", {clickable: true}
-  );
+export const cancelPaymentAction = async (page) => {
+  const paymentCheckPageButtonCancel = page.locator("#paymentCheckPageButtonCancel");
   await paymentCheckPageButtonCancel.click();
-  const cancPayment = await page.waitForSelector("#confirm", {visible: true});
+
+  const cancPayment = page.locator("#confirm");
   await cancPayment.click();
-  await page.waitForNavigation();
+
+  const redirectButton = page.locator("#redirect-button");
+  await expect(redirectButton).toBeVisible({ timeout: 5000 });
 };
 
+
+  
+
 export const cancelPaymentOK = async (
+  page,
   noticeCode,
   fiscalCode,
   email,
   cardData
 ) => {
-  const resultMessageXPath =
-    "/html/body/div[1]/div/main/div/div/div/div[1]/div";
-  await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
-  const paymentCheckPageButtonCancel = await page.waitForSelector(
-    "#paymentCheckPageButtonCancel"
+  const resultMessageLocator = page.locator(
+    '#main_content > div > div > div > div.MuiBox-root.css-5vb4lz > div'
   );
-  await paymentCheckPageButtonCancel.click();
-  const cancPayment = await page.waitForSelector("#confirm");
-  await cancPayment.click();
-  await page.waitForNavigation();
-  // this new timeout is needed for how react 18 handles the addition of animated content 
-  // to the page. Without it, the resultMessageXPath never resolves
-  await new Promise((r) => setTimeout(r, 200));
-  const message = await page.waitForXPath(resultMessageXPath);
-  return await message.evaluate((el) => el.textContent);
+
+  await fillAndSubmitCardDataForm(page, noticeCode, fiscalCode, email, cardData);  
+ 
+  const cancelButton = page.locator("#paymentCheckPageButtonCancel");
+  await cancelButton.click();
+
+  const confirmButton = page.locator("#confirm");
+  
+
+  await Promise.all([
+    page.waitForNavigation({ waitUntil: "load" }),
+    confirmButton.click(),
+  ]);
+  
+  await expect(resultMessageLocator).toBeVisible();
+  return await resultMessageLocator.textContent();
 };
 
-export const cancelPaymentKO = async (noticeCode, fiscalCode, email) => {
-  await fillAndSubmitSatispayPayment(noticeCode, fiscalCode, email);
-  const paymentCheckPageButtonCancel = await page.waitForSelector(
-    "#paymentCheckPageButtonCancel"
-  );
-  await paymentCheckPageButtonCancel.click();
-  const cancPayment = await page.waitForSelector("#confirm");
-  await cancPayment.click();
-  const message = await page.waitForSelector(
-    "#idTitleErrorModalPaymentCheckPage"
-  );
-  return await message.evaluate((el) => el.textContent);
+
+
+export const cancelPaymentKO = async (page,noticeCode, fiscalCode, email) => {
+  await fillAndSubmitSatispayPayment(page, noticeCode, fiscalCode, email);
+
+  const cancelButton = page.locator("#paymentCheckPageButtonCancel");
+  await cancelButton.click();
+
+  const confirmButton = page.locator("#confirm");
+  await confirmButton.click();
+
+  const errorMessage = page.locator("#idTitleErrorModalPaymentCheckPage");
+  await expect(errorMessage).toBeVisible();
+  return await errorMessage.textContent();
 };
 
-export const closeErrorModal = async () => {
-  const closeErrorBtn = await page.waitForXPath(
-    "/html/body/div[6]/div[3]/div/div/div[2]/div[1]/button"
+export const closeErrorModal = async (page) => {
+  const closeErrorBtn = page.locator(
+    '/html/body/div[6]/div[3]/div/div/div[2]/div[1]/button'
   );
   await closeErrorBtn.click();
 };
 
-export const selectLanguage = async (language) => {
-  await page.select("#languageMenu", language);
+export const selectLanguage = async (page, language) => {
+  const languageMenu = page.locator('#languageMenu');
+  await expect(languageMenu).toBeVisible({ timeout: 10000 });
+  await languageMenu.selectOption(language);
 };
 
 
@@ -359,38 +388,42 @@ export const selectLanguage = async (language) => {
  * utility function to emulate edit psp list and sort. This function has many timeout to allow view transitions to end before try to click CTA buttons
  */
 export const checkPspListFees = async (
+  page,
   noticeCode,
   fiscalCode,
   email,
   cardData
 ) => {
-  const pspEditButtonSelector = "#pspEdit";
-  const pspFeeSortButtonId = "#sortByFee";
+  const pspEditButton = page.locator("#pspEdit");
+  const pspFeeSortButton = page.locator("#sortByFee");
+  const closePspListButton = page.locator("#closePspList");
 
-  await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
+  await fillAndSubmitCardDataForm(page, noticeCode, fiscalCode, email, cardData);
 
-  const pspEditButton = await page.waitForSelector(pspEditButtonSelector, {clickable: true});
+
   await pspEditButton.click();
-  await new Promise((r) => setTimeout(r, 500));
-  const pspFeeSortButton = await page.waitForSelector(pspFeeSortButtonId, {clickable: true});
+
+  await page.waitForTimeout(500);
+
+
   await pspFeeSortButton.click();
-  await new Promise((r) => setTimeout(r, 500));
 
-  // Wait for the elements and get the list of divs
-  const pspElements = await page.$$('.pspFeeValue');
+  await page.waitForTimeout(500);
 
-  // Extract numeric content from each div and return as an array
-  const numericContents = await Promise.all(
-    Array.from(pspElements).map(async (element) => {
-      const text = await element.evaluate((el) => el.textContent);
-      // We want to skip the Dollar, Euro, or any currency placeholder
-      let numbers = text.match(/[\d,]+/g); // This will match sequences of digits and commas
-      let result = numbers ? numbers.join("").replace(",", ".") : ""; // Join the matched numbers if any and replace , as separator with .
-      return parseFloat(result) || 0; // Convert to number, default to 0 if NaN
-    })
-  );
-  const closePspListButton = await page.waitForSelector("#closePspList", { clickable: true});
+  const pspElements = page.locator(".pspFeeValue").first();
+  await expect(pspElements).toBeVisible();
+  const count = await pspElements.count();
+
+  const numericContents = [];
+  for (let i = 0; i < count; i++) {
+    const text = await pspElements.nth(i).textContent();
+    let numbers = text?.match(/[\d,]+/g);
+    let result = numbers ? numbers.join("").replace(",", ".") : "";
+    numericContents.push(parseFloat(result) || 0);
+  }
+
   await closePspListButton.click();
+
   return numericContents;
 };
 
@@ -398,33 +431,165 @@ export const checkPspListFees = async (
  * utility function to emulate edit psp list and sort. This function has many timeout to allow view transitions to end before try to click CTA buttons
  */
 export const checkPspListNames = async (
+  page,
   noticeCode,
   fiscalCode,
   email,
   cardData
 ) => {
-  const pspEditButtonSelector = "#pspEdit";
-  const pspFeeSortButtonId = "#sortByName";
+  const pspEditButton = page.locator("#pspEdit");
+  const pspSortByNameButton = page.locator("#sortByName");
+  const closePspListButton = page.locator("#closePspList");
 
-  await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
+  await fillAndSubmitCardDataForm(page, noticeCode, fiscalCode, email, cardData);
 
-  const pspEditButton = await page.waitForSelector(pspEditButtonSelector, {visible: true, clickable: true});
   await pspEditButton.click();
-  await new Promise((r) => setTimeout(r, 500));
-  const pspFeeSortButton = await page.waitForSelector(pspFeeSortButtonId, {visible: true, clickable: true});
-  await pspFeeSortButton.click();
-  await new Promise((r) => setTimeout(r, 500));
 
-  // Wait for the elements and get the list of divs
-  const pspElements = await page.$$(".pspFeeName");
-  // Extract numeric content from each div and return as an array
-  const feeNameContents = await Promise.all(
-    Array.from(pspElements).map(async (element) => {
-      const text = await element.evaluate((el) => el.textContent);
-        return (text) || ""; 
-    })
-  );
-  const closePspListButton = await page.waitForSelector("#closePspList", {visible: true, clickable: true});
+  await page.waitForTimeout(500);
+
+  await pspSortByNameButton.click();
+  await page.waitForTimeout(500);
+
+  const pspElements = page.locator(".pspFeeName").first();
+  await expect(pspElements).toBeVisible();
+  const count = await pspElements.count();
+  const feeNameContents = [];
+
+  for (let i = 0; i < count; i++) {
+    const text = await pspElements.nth(i).textContent();
+    feeNameContents.push(text?.trim() || "");
+  }
+
   await closePspListButton.click();
+
   return feeNameContents;
 };
+
+
+export const activateApmPaymentAndGetError = async (
+  page,
+  noticeCode,
+  fiscalCode,
+  email,
+  selectorId
+) => {
+  await chooseApmMethod(page, noticeCode, fiscalCode, email, "SATY");
+  const errorMessageElem = page.locator(selectorId);
+  await expect(errorMessageElem).toBeVisible({ timeout: 8000 });
+  return await errorMessageElem.textContent();
+};
+
+export const chooseApmMethod = async (
+  page,
+  noticeCode,
+  fiscalCode,
+  email,
+  paymentTypeCode
+) => {                                  
+  
+  await fillPaymentNotificationForm(page, noticeCode, fiscalCode);
+  const payNoticeBtn = page.locator("#paymentSummaryButtonPay");
+  await payNoticeBtn.click();
+  await fillEmailForm(page, email);
+  await choosePaymentMethod(page, paymentTypeCode);
+  await tryHandlePspPickerPage(page);
+};
+
+export const fillAndSearchFormPaymentMethod = async (
+  page,
+  noticeCode,
+  fiscalCode,
+  email,
+  paymentMethod
+) => {
+ 
+  await fillPaymentNotificationForm(page,noticeCode, fiscalCode);
+  const payNoticeBtn = page.locator("#paymentSummaryButtonPay");
+  await payNoticeBtn.click();
+
+  await fillEmailForm(page,email);
+  await filterPaymentMethodByName(page,paymentMethod);
+};
+
+export const filterPaymentMethodByName = async (page,methodFilterName) => {
+  const paymentMethodFilterBox = page.locator("#paymentMethodsFilter");
+  await paymentMethodFilterBox.fill(methodFilterName);
+};
+
+export const verifyPaymentMethodsLength = async (page, length) => {
+  const methodsLocator = page.locator("[data-qalabel=payment-method]");
+  await expect(methodsLocator.first()).toBeVisible();
+  const count = await methodsLocator.count();
+  return count === length;
+};
+
+export const verifyPaymentMethodsContains = async (page,paymentMethodTypeCode) => {
+  const methodsLocator = page.locator("[data-qalabel=payment-method]");
+  await expect(methodsLocator.first()).toBeVisible();
+  const count = await methodsLocator.count();
+  for (let i = 0; i < count; i++) {
+    const method = await methodsLocator.nth(i).getAttribute("data-qaid");
+    if (method === paymentMethodTypeCode) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+export const noPaymentMethodsMessage = async (page) => {
+  const messageLocator = page.locator("#noPaymentMethodsMessage");
+  await expect(messageLocator).toBeVisible();
+  return await messageLocator.textContent();
+};
+
+export const authorizeApmPaymentAndGetError = async (
+  page,
+  noticeCode,
+  fiscalCode,
+  email,
+  paymentTypeCode,
+  errorMessageTitleSelector
+) => {
+  
+  await chooseApmMethod(page, noticeCode, fiscalCode, email, paymentTypeCode);
+  const payBtn =  page.locator("#paymentCheckPageButtonPay");
+  await payBtn.click();
+
+  const errorMessageElem = page.locator(errorMessageTitleSelector);
+  await expect(errorMessageElem).toBeVisible();
+
+  const errorMessage = await errorMessageElem.evaluate((el) => el.textContent?.trim());
+  return errorMessage ?? "";
+};
+
+export const filterByType = async (page,id) => {
+  //wait 1 sec for f.e. to draws component
+  await new Promise((r) => setTimeout(r, 1000));
+
+  const filterDrawerOpenButton = page.locator("#filterDrawerButton");
+  await filterDrawerOpenButton.click();
+
+  const filterDrawerCard = page.locator(id);
+  await filterDrawerCard.click();
+};
+
+export const filterByTwoType = async (page,id_1,id_2) => {
+  //wait 1 sec for f.e. to draws component
+  await page.waitForTimeout(1000);
+
+  const filterDrawerOpenButton = page.locator("#filterDrawerButton");
+  await filterDrawerOpenButton.click();
+
+  const filterDrawerCard1 = page.locator(id_1);
+  await filterDrawerCard1.click();
+
+  const filterDrawerCard2 = page.locator(id_2);
+  await filterDrawerCard2.click();
+};
+
+export const verifyPaymentMethodsNotContains = async (page,paymentMethodTypeCode) => {
+  const methods = await page.locator("[data-qalabel=payment-method]").allAttributeValues("data-qaid");
+  return !methods.includes(paymentMethodTypeCode);
+};
+
