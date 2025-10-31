@@ -174,35 +174,6 @@ test.describe("Checkout payment activation failure tests", () => {
       expect(body).toContain((translation as any).paymentResponsePage[4].body);
     });
   });
-
-  languages.forEach(({ code: lang, translation }) => {
-    test(`Should fail a card payment ACTIVATION and get PPT_WISP_SESSIONE_SCONOSCIUTA [${lang}]`, async ({
-      page,
-    }) => {
-      await selectLanguage(page, lang);
-      await fillAndSubmitSatispayPayment(
-        page,
-        KORPTIDs.FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA,
-        OKPaymentInfo.VALID_FISCAL_CODE,
-        OKPaymentInfo.EMAIL
-      );
-
-      const titleElem = page.locator("#sessionExpiredMessageTitle");
-      const bodyElem = page.locator("#sessionExpiredMessageBody");
-
-      await expect(titleElem).toBeVisible();
-      await expect(bodyElem).toBeVisible();
-
-      const title = await titleElem.textContent();
-      const body = await bodyElem.textContent();
-
-      expect(page.url()).toContain("/sessione-scaduta");
-      expect(title).toContain(
-        (translation as any).paymentResponsePage[4].title
-      );
-      expect(body).toContain((translation as any).paymentResponsePage[4].body);
-    });
-  });
 });
 
 test.describe("Auth request failure tests", () => {
