@@ -8,6 +8,7 @@
     ],
     "baseUrl": "./src",
     "allowJs": false,
+    "checkJs": false, 
     "jsx": "react",
     "noEmit": true,
     "importHelpers": true,
@@ -31,12 +32,13 @@
     ]
   },
   "include": [
+    "test/spec/**/*.ts",
     "src/**/*.ts",
     "src/**/*.tsx",
     "src/**/*.d.ts",
     "*.ts",
     "*.d.ts"  
-  ],
+, "test/spec/helpers.js"  ],
   "exclude": [
     "node_modules",
     "src/**/__integration_tests__/*"
