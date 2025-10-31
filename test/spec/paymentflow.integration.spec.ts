@@ -1,4 +1,4 @@
-import { test, expect, Page } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 import itTranslation from "../../src/translations/it/translations.json";
 import enTranslation from "../../src/translations/en/translations.json";
 import deTranslation from "../../src/translations/de/translations.json";
@@ -32,15 +32,14 @@ import {
   authorizeApmPaymentAndGetError,
   filterByType,
   filterByTwoType,
-  verifyPaymentMethodsNotContains,
 } from "./helpers";
 
 const languages = [
-  { code: "it", translation: itTranslation } /* ,
+  { code: "it", translation: itTranslation },
   { code: "en", translation: enTranslation },
   { code: "fr", translation: frTranslation },
   { code: "de", translation: deTranslation },
-  { code: "sl", translation: slTranslation }, */,
+  { code: "sl", translation: slTranslation },
 ];
 
 test.describe.configure({ retries: 1 });
@@ -852,7 +851,8 @@ test.describe("PSP list tests", () => {
     expect(Array.isArray(resultMessage)).toBe(true);
     expect(resultMessage.length).toBeGreaterThan(0);
 
-    for (const i = 0; i < resultMessage.length - 1; i++) {
+    // eslint-disable-next-line functional/no-let
+    for (let i = 0; i < resultMessage.length - 1; i++) {
       expect(resultMessage[i]).toBeGreaterThanOrEqual(resultMessage[i + 1]);
     }
 
@@ -872,7 +872,8 @@ test.describe("PSP list tests", () => {
     expect(Array.isArray(resultMessage)).toBe(true);
     expect(resultMessage.length).toBeGreaterThan(0);
 
-    for (const i = 0; i < resultMessage.length - 1; i++) {
+    // eslint-disable-next-line functional/no-let
+    for (let i = 0; i < resultMessage.length - 1; i++) {
       expect(
         resultMessage[i].localeCompare(resultMessage[i + 1])
       ).toBeGreaterThanOrEqual(0);
