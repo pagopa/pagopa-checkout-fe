@@ -533,7 +533,7 @@ stages:
           displayName: 'Playwright install chrmoium'
           workingDirectory: pagopa-checkout-fe
 
-        - script: pwtest:payment-flow
+        - script: yarn pwtest:payment-flow
           displayName: 'Playwright integration Payment Flow tests exec'
           workingDirectory: pagopa-checkout-fe
 

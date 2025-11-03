@@ -7,7 +7,7 @@ export default defineConfig({
   workers: process.env.CI ? 4 : undefined,
   reporter: [["dot"]],
   use: {
-    headless: false, // Run tests in headless mode
+    headless: true, // Run tests in headless mode
     viewport: { width: 1280, height: 720 }, // Default viewport size
     actionTimeout: 0,
     navigationTimeout: 0,
