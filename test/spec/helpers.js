@@ -213,7 +213,7 @@ export const tryHandlePspPickerPage = async (page)=>{
   // so we don't want to waste too much time over it
   
  try {
-    await page.waitForNavigation({ timeout: 8000, waitUntil: "load" });
+    await page.waitForNavigation({ timeout: 3000, waitUntil: "load" });
   } catch {
     console.log("Navigation did not happen within 3000ms. Continuing test.");
   }

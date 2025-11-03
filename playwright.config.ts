@@ -5,14 +5,15 @@ export default defineConfig({
   testMatch: ["test/spec/**/*.spec.ts"],
   retries: 1,
   workers: process.env.CI ? 4 : undefined,
-  reporter: [["html", { outputFolder: "test-results", open: "never" }]],
+  reporter: [["dot"]],
   use: {
-    headless: true, // Run tests in headless mode
+    headless: false, // Run tests in headless mode
     viewport: { width: 1280, height: 720 }, // Default viewport size
-    actionTimeout: 10000, // Timeout for individual actions (10 seconds)
-    screenshot: "only-on-failure",
-    video: "retain-on-failure",
-    trace: "retain-on-failure",
+    actionTimeout: 0,
+    navigationTimeout: 0,
+    screenshot: "off",
+    video: "off",
+    trace: "off",
   },
   projects: [
     {
@@ -21,17 +22,5 @@ export default defineConfig({
         browserName: "chromium",
       },
     },
-    /* {
-      name: "firefox",
-      use: {
-        browserName: "firefox",
-      },
-    },
-    {
-      name: "webkit",
-      use: {
-        browserName: "webkit",
-      },
-    }, */
   ],
 });
