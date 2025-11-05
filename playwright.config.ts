@@ -7,7 +7,14 @@ export default defineConfig({
   workers: 3,
   reporter: [
     ["dot"],
-    ["junit", { outputFile: `test-results/${process.env.PLAYWRIGHT_PROJECT_NAME || "results"}.xml`, }], // reporter globale
+    [
+      "junit",
+      {
+        outputFile: `test-results/${
+          process.env.PLAYWRIGHT_PROJECT_NAME || "results"
+        }.xml`,
+      },
+    ], // reporter globale
   ],
   use: {
     headless: true, // Run tests in headless mode
@@ -29,7 +36,7 @@ export default defineConfig({
       name: "outcomes",
       testMatch: ["test/spec/outcomes.integration.spec.ts"],
       use: { browserName: "chromium" },
-      outputDir: "test-results/outcomes",    
+      outputDir: "test-results/outcomes",
     },
   ],
 });
