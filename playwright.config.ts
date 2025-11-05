@@ -4,7 +4,7 @@ export default defineConfig({
   timeout: 90000, // Global timeout for all tests (90 seconds)
   testMatch: ["test/spec/**/*.spec.ts"],
   retries: 3,
-  workers: 3,
+  workers: 1,
   reporter: [
     ["dot"],
     [
