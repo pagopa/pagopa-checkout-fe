@@ -469,6 +469,10 @@ stages:
           displayName: 'Playwright install chrmoium'
           workingDirectory: pagopa-checkout-fe
 
+        - script: mkdir -p test-results
+          displayName: "Create test-results directory"
+          workingDirectory: pagopa-checkout-fe 
+
         - script: yarn pwtest:outcomes
           displayName: 'Playwright integration Outcome tests exec'
           workingDirectory: pagopa-checkout-fe
@@ -531,6 +535,10 @@ stages:
         
         - script: npx playwright install chromium --with-deps
           displayName: 'Playwright install chrmoium'
+          workingDirectory: pagopa-checkout-fe
+
+        - script: mkdir -p test-results
+          displayName: "Create test-results directory"
           workingDirectory: pagopa-checkout-fe
 
         - script: yarn pwtest:payment-flow

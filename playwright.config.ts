@@ -31,12 +31,14 @@ export default defineConfig({
       testMatch: ["test/spec/paymentflow.integration.spec.ts"],
       use: { browserName: "chromium" },
       outputDir: "test-results/payment-flow",
+      fullyParallel: true,
     },
     {
       name: "outcomes",
       testMatch: ["test/spec/outcomes.integration.spec.ts"],
       use: { browserName: "chromium" },
       outputDir: "test-results/outcomes",
+      fullyParallel: true,
     },
   ],
 });
