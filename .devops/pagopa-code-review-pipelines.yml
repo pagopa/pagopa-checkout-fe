@@ -59,7 +59,10 @@ parameters:
 variables:
   NODE_VERSION: '18.17.1'
   YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
-trigger: none
+trigger:
+ branches:
+  include:
+    - main
 
 
 # Execute agents (jobs) on latest Ubuntu version.
