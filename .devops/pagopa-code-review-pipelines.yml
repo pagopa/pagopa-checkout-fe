@@ -491,6 +491,8 @@ stages:
           workingDirectory: pagopa-checkout-fe
           env:
             PLAYWRIGHT_PROJECT_NAME: outcomes-chromium
+            PLAYWRIGHT_JUNIT_OUTPUT_DIR: test-results
+            PLAYWRIGHT_JUNIT_OUTPUT_NAME: outcomes-chromium.xml
 
         - task: PublishTestResults@2
           displayName: 'Publish Playwright Chromium integration tests results from tests'
@@ -561,6 +563,8 @@ stages:
           workingDirectory: pagopa-checkout-fe
           env:
             PLAYWRIGHT_PROJECT_NAME: outcomes-firefox
+            PLAYWRIGHT_JUNIT_OUTPUT_DIR: test-results
+            PLAYWRIGHT_JUNIT_OUTPUT_NAME: outcomes-firefox.xml
 
         - task: PublishTestResults@2
           displayName: 'Publish Playwright Firefox integration tests results from tests'
@@ -631,6 +635,8 @@ stages:
           workingDirectory: pagopa-checkout-fe
           env:
             PLAYWRIGHT_PROJECT_NAME: outcomes-webkit
+            PLAYWRIGHT_JUNIT_OUTPUT_DIR: test-results
+            PLAYWRIGHT_JUNIT_OUTPUT_NAME: outcomes-webkit.xml
 
         - task: PublishTestResults@2
           displayName: 'Publish Playwright WebKit integration tests results from tests'
@@ -701,6 +707,8 @@ stages:
           workingDirectory: pagopa-checkout-fe
           env:
             PLAYWRIGHT_PROJECT_NAME: payment-flow-chromium
+            PLAYWRIGHT_JUNIT_OUTPUT_DIR: test-results
+            PLAYWRIGHT_JUNIT_OUTPUT_NAME: payment-flow-chromium.xml
 
         - task: PublishTestResults@2
           displayName: 'Publish Playwright Chromium integration tests results'
@@ -771,6 +779,8 @@ stages:
           workingDirectory: pagopa-checkout-fe
           env:
             PLAYWRIGHT_PROJECT_NAME: payment-flow-firefox
+            PLAYWRIGHT_JUNIT_OUTPUT_DIR: test-results
+            PLAYWRIGHT_JUNIT_OUTPUT_NAME: payment-flow-firefox.xml
 
         - task: PublishTestResults@2
           displayName: 'Publish Playwright Firefox integration tests results'
@@ -841,6 +851,8 @@ stages:
           workingDirectory: pagopa-checkout-fe
           env:
             PLAYWRIGHT_PROJECT_NAME: payment-flow-webkit
+            PLAYWRIGHT_JUNIT_OUTPUT_DIR: test-results
+            PLAYWRIGHT_JUNIT_OUTPUT_NAME: payment-flow-webkit.xml
 
         - task: PublishTestResults@2
           displayName: 'Publish Playwright WebKit integration tests results'

@@ -8,14 +8,7 @@ export default defineConfig({
   fullyParallel: false,
   reporter: [
     ["dot"],
-    [
-      "junit",
-      {
-        outputFile: `test-results/${
-          process.env.PLAYWRIGHT_PROJECT_NAME || "results"
-        }.xml`,
-      },
-    ], // reporter globale
+    ["junit"], // reporter globale
   ],
   use: {
     headless: true, // Run tests in headless mode
@@ -31,42 +24,42 @@ export default defineConfig({
       name: "payment-flow-chromium",
       testMatch: ["test/spec/paymentflow.integration.spec.ts"],
       use: { browserName: "chromium" },
-      outputDir: "test-results/payment-flow",
+      outputDir: "test-results",
       fullyParallel: false,
     },
     {
       name: "payment-flow-firefox",
       testMatch: ["test/spec/paymentflow.integration.spec.ts"],
       use: { browserName: "firefox" },
-      outputDir: "test-results/payment-flow",
+      outputDir: "test-results",
       fullyParallel: false,
     },
     {
       name: "payment-flow-webkit",
       testMatch: ["test/spec/paymentflow.integration.spec.ts"],
       use: { browserName: "webkit" },
-      outputDir: "test-results/payment-flow",
+      outputDir: "test-results",
       fullyParallel: false,
     },
     {
       name: "outcomes-chromium",
       testMatch: ["test/spec/outcomes.integration.spec.ts"],
       use: { browserName: "chromium" },
-      outputDir: "test-results/outcomes",
+      outputDir: "test-results",
       fullyParallel: false,
     },
     {
       name: "outcomes-firefox",
       testMatch: ["test/spec/outcomes.integration.spec.ts"],
       use: { browserName: "firefox" },
-      outputDir: "test-results/outcomes",
+      outputDir: "test-results",
       fullyParallel: false,
     },
     {
       name: "outcomes-webkit",
       testMatch: ["test/spec/outcomes.integration.spec.ts"],
       use: { browserName: "webkit" },
-      outputDir: "test-results/outcomes",
+      outputDir: "test-results",
       fullyParallel: false,
     },
   ],
