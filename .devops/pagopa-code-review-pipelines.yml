@@ -484,7 +484,7 @@ stages:
           displayName: 'Publish Playwright Chromium integration tests results from tests'
           inputs:
             testResultsFormat: 'JUnit'
-            testResultsFiles: 'test-results/outcomes-*.xml'
+            testResultsFiles: '**/test-results/outcomes-*.xml'
             searchFolder: '$(System.DefaultWorkingDirectory)'
             failTaskOnFailedTests: true
 
@@ -552,7 +552,75 @@ stages:
           displayName: 'Publish Playwright Firefox integration tests results from tests'
           inputs:
             testResultsFormat: 'JUnit'
-            testResultsFiles: 'test-results/outcomes-*.xml'
+            testResultsFiles: '**/test-results/outcomes-*.xml'
+            searchFolder: '$(System.DefaultWorkingDirectory)'
+            failTaskOnFailedTests: true
+
+  - stage: Playwright_Integration_Tests_Outcome_WebKit
+    condition: and(succeeded(), eq('${{parameters.PLAYWRIGHT_TEST}}', true))
+    pool:
+      vmImage: 'ubuntu-latest'
+    dependsOn: []
+    jobs:
+      - job: outcomes_web_kit
+        timeoutInMinutes: 30
+        steps:
+
+        - checkout: checkout-be-mock
+
+        - script: |
+            cp env.example .env
+            sed -i "s/^NPG_API_KEY=.*$/NPG_API_KEY=$(CHECKOUT-TEST-NPG-API-KEY)/" .env
+            sed -i "s/^PSP_API_KEY=.*$/PSP_API_KEY=$(CHECKOUT-TEST-NPG-API-KEY)/" .env
+          workingDirectory: pagopa-checkout-be-mock
+          displayName: 'Setup env for mock'
+
+        - script: yarn global add node-gyp && yarn install && yarn build
+          workingDirectory: pagopa-checkout-be-mock
+          displayName: 'Setup deps for mock'
+
+        - script: |
+            nohup yarn start &
+          displayName: 'Start backend mock'
+          workingDirectory: pagopa-checkout-be-mock
+
+        - checkout: self
+
+        - template: templates/node-job-setup/template.yaml@pagopaCommons
+          parameters:
+           projectDir: pagopa-checkout-fe
+
+        - script: |
+            export $(grep -v '^#' .env.development | xargs)
+          displayName: 'export envs from .env.development'
+          workingDirectory: pagopa-checkout-fe
+
+        - script: |
+            yarn dev &
+          displayName: 'Start checkout FE'
+          workingDirectory: pagopa-checkout-fe
+
+        - script: while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:1234)" != "200" ]]; do sleep 5; done
+          displayName: 'Wait for backend to be up and running'
+          workingDirectory: pagopa-checkout-fe
+        
+        - script: npx playwright install webkit --with-deps
+          displayName: 'Playwright install webkit'
+          workingDirectory: pagopa-checkout-fe
+
+        - script: mkdir -p test-results
+          displayName: "Create test-results directory"
+          workingDirectory: pagopa-checkout-fe 
+
+        - script: yarn pwtest:outcomes-webkit
+          displayName: 'Playwright webKit integration Outcome tests exec'
+          workingDirectory: pagopa-checkout-fe
+
+        - task: PublishTestResults@2
+          displayName: 'Publish Playwright WebKit integration tests results from tests'
+          inputs:
+            testResultsFormat: 'JUnit'
+            testResultsFiles: '**/test-results/outcomes-*.xml'
             searchFolder: '$(System.DefaultWorkingDirectory)'
             failTaskOnFailedTests: true
 
@@ -617,7 +685,7 @@ stages:
           workingDirectory: pagopa-checkout-fe
 
         - task: PublishTestResults@2
-          displayName: 'Publish Playwright Chromium integration tests results from  tests'
+          displayName: 'Publish Playwright Chromium integration tests results'
           inputs:
             testResultsFormat: 'JUnit'
             testResultsFiles: 'test-results/payment-flow-*.xml'
@@ -685,12 +753,84 @@ stages:
           workingDirectory: pagopa-checkout-fe
 
         - task: PublishTestResults@2
-          displayName: 'Publish Playwright Firefox integration tests firefox results from tests'
+          displayName: 'Publish Playwright Firefox integration tests results'
           inputs:
             testResultsFormat: 'JUnit'
             testResultsFiles: 'test-results/payment-flow-*.xml'
             searchFolder: '$(System.DefaultWorkingDirectory)'
             failTaskOnFailedTests: true
+  
+  - stage: Playwright_Integration_Tests_Payment_Flow_WebKit
+    condition: and(succeeded(), eq('${{parameters.PLAYWRIGHT_TEST}}', true))
+    pool:
+      vmImage: 'ubuntu-latest'
+    dependsOn: []
+    jobs:
+      - job: payment_flow_webkit
+        timeoutInMinutes: 30
+        steps:
+
+        - checkout: checkout-be-mock
+
+        - script: |
+            cp env.example .env
+            sed -i "s/^NPG_API_KEY=.*$/NPG_API_KEY=$(CHECKOUT-TEST-NPG-API-KEY)/" .env
+            sed -i "s/^PSP_API_KEY=.*$/PSP_API_KEY=$(CHECKOUT-TEST-NPG-API-KEY)/" .env
+          workingDirectory: pagopa-checkout-be-mock
+          displayName: 'Setup env for mock'
+
+        - script: yarn global add node-gyp && yarn install && yarn build
+          workingDirectory: pagopa-checkout-be-mock
+          displayName: 'Setup deps for mock'
+
+        - script: |
+            nohup yarn start &
+          displayName: 'Start backend mock'
+          workingDirectory: pagopa-checkout-be-mock
+
+        - checkout: self
+
+        - template: templates/node-job-setup/template.yaml@pagopaCommons
+          parameters:
+           projectDir: pagopa-checkout-fe
+
+        - script: |
+            export $(grep -v '^#' .env.development | xargs)
+          displayName: 'export envs from .env.development'
+          workingDirectory: pagopa-checkout-fe
+
+        - script: |
+            yarn dev &
+          displayName: 'Start checkout FE'
+          workingDirectory: pagopa-checkout-fe
+
+        - script: while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:1234)" != "200" ]]; do sleep 5; done
+          displayName: 'Wait for backend to be up and running'
+          workingDirectory: pagopa-checkout-fe
+        
+        - script: npx playwright install webkit --with-deps
+          displayName: 'Playwright install webkit'
+          workingDirectory: pagopa-checkout-fe
+
+        - script: mkdir -p test-results
+          displayName: "Create test-results directory"
+          workingDirectory: pagopa-checkout-fe
+
+        - script: yarn pwtest:payment-flow-webkit
+          displayName: 'Playwright WebKit integration Payment Flow tests exec'
+          workingDirectory: pagopa-checkout-fe
+
+        - task: PublishTestResults@2
+          displayName: 'Publish Playwright WebKit integration tests results'
+          inputs:
+            testResultsFormat: 'JUnit'
+            testResultsFiles: 'test-results/payment-flow-*.xml'
+            searchFolder: '$(System.DefaultWorkingDirectory)'
+            failTaskOnFailedTests: true
+  
+    
+  
+  
 
 
 
