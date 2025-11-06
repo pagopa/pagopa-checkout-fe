@@ -481,7 +481,7 @@ stages:
           displayName: 'Publish integration tests results from Jest tests'
           inputs:
             testResultsFormat: 'JUnit'
-            testResultsFiles: 'test-results/outcomes-results.xml'
+            testResultsFiles: 'test-results/outcomes.xml'
             searchFolder: '$(System.DefaultWorkingDirectory)'
             failTaskOnFailedTests: true
   
@@ -549,7 +549,7 @@ stages:
           displayName: 'Publish integration tests results from Jest tests'
           inputs:
             testResultsFormat: 'JUnit'
-            testResultsFiles: 'test-results/payment-flow-results.xml'
+            testResultsFiles: 'test-results/payment-flow.xml'
             searchFolder: '$(System.DefaultWorkingDirectory)'
             failTaskOnFailedTests: true
 

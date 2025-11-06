@@ -19,8 +19,8 @@ export default defineConfig({
   use: {
     headless: true, // Run tests in headless mode
     viewport: { width: 1280, height: 907 }, // Default viewport size
-    actionTimeout: 0,
-    navigationTimeout: 0,
+    actionTimeout: 10000,
+    navigationTimeout: 30000,
     screenshot: "off",
     video: "off",
     trace: "off",
