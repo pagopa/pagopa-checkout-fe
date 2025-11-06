@@ -54,19 +54,19 @@ export default defineConfig({
       outputDir: "test-results/outcomes",
       fullyParallel: true,
     },
-     {
+    {
       name: "outcomes-firefox",
       testMatch: ["test/spec/outcomes.integration.spec.ts"],
       use: { browserName: "firefox" },
       outputDir: "test-results/outcomes",
       fullyParallel: true,
     },
-     {
+    {
       name: "outcomes-webkit",
       testMatch: ["test/spec/outcomes.integration.spec.ts"],
       use: { browserName: "webkit" },
       outputDir: "test-results/outcomes",
       fullyParallel: true,
-    }
+    },
   ],
 });
