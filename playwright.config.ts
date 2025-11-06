@@ -27,18 +27,46 @@ export default defineConfig({
   },
   projects: [
     {
-      name: "payment-flow",
+      name: "payment-flow-chromium",
       testMatch: ["test/spec/paymentflow.integration.spec.ts"],
       use: { browserName: "chromium" },
       outputDir: "test-results/payment-flow",
       fullyParallel: true,
     },
     {
-      name: "outcomes",
+      name: "payment-flow-firefox",
+      testMatch: ["test/spec/paymentflow.integration.spec.ts"],
+      use: { browserName: "firefox" },
+      outputDir: "test-results/payment-flow",
+      fullyParallel: true,
+    },
+    {
+      name: "payment-flow-webkit",
+      testMatch: ["test/spec/paymentflow.integration.spec.ts"],
+      use: { browserName: "webkit" },
+      outputDir: "test-results/payment-flow",
+      fullyParallel: true,
+    },
+    {
+      name: "outcomes-chromium",
       testMatch: ["test/spec/outcomes.integration.spec.ts"],
       use: { browserName: "chromium" },
       outputDir: "test-results/outcomes",
       fullyParallel: true,
     },
+     {
+      name: "outcomes-firefox",
+      testMatch: ["test/spec/outcomes.integration.spec.ts"],
+      use: { browserName: "firefox" },
+      outputDir: "test-results/outcomes",
+      fullyParallel: true,
+    },
+     {
+      name: "outcomes-webkit",
+      testMatch: ["test/spec/outcomes.integration.spec.ts"],
+      use: { browserName: "webkit" },
+      outputDir: "test-results/outcomes",
+      fullyParallel: true,
+    }
   ],
 });

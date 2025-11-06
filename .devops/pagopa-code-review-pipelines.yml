@@ -468,7 +468,7 @@ stages:
           displayName: 'Wait for backend to be up and running'
           workingDirectory: pagopa-checkout-fe
         
-        - script: npx playwright install chromium --with-deps
+        - script: npx playwright install --with-deps
           displayName: 'Playwright install chrmoium'
           workingDirectory: pagopa-checkout-fe
 
@@ -484,7 +484,7 @@ stages:
           displayName: 'Publish integration tests results from Jest tests'
           inputs:
             testResultsFormat: 'JUnit'
-            testResultsFiles: 'test-results/outcomes.xml'
+            testResultsFiles: 'test-results/outcomes-*.xml'
             searchFolder: '$(System.DefaultWorkingDirectory)'
             failTaskOnFailedTests: true
   
@@ -536,7 +536,7 @@ stages:
           displayName: 'Wait for backend to be up and running'
           workingDirectory: pagopa-checkout-fe
         
-        - script: npx playwright install chromium --with-deps
+        - script: npx playwright install --with-deps
           displayName: 'Playwright install chrmoium'
           workingDirectory: pagopa-checkout-fe
 
@@ -549,10 +549,10 @@ stages:
           workingDirectory: pagopa-checkout-fe
 
         - task: PublishTestResults@2
-          displayName: 'Publish integration tests results from Jest tests'
+          displayName: 'Publish integration tests results from Playwright tests'
           inputs:
             testResultsFormat: 'JUnit'
-            testResultsFiles: 'test-results/payment-flow.xml'
+            testResultsFiles: 'test-results/payment-flow-*.xml'
             searchFolder: '$(System.DefaultWorkingDirectory)'
             failTaskOnFailedTests: true
 
