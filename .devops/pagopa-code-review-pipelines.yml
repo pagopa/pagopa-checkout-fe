@@ -45,6 +45,16 @@ parameters:
     displayName: 'Experimental integration tests with playwright'
     type: boolean
     default: true
+  
+  - name: 'PLAYWRIGHT_TEST_FIREFOX'
+    displayName: 'Experimental integration tests with playwright firefox'
+    type: boolean
+    default: false
+  
+  - name: 'PLAYWRIGHT_TEST_WEBKIT'
+    displayName: 'Experimental integration tests with playwright webkit'
+    type: boolean
+    default: false
 
   - name: 'FEATURE_FLAGS_TESTS'
     displayName: 'Feature flags integration tests'
@@ -479,6 +489,8 @@ stages:
         - script: yarn pwtest:outcomes-chromium
           displayName: 'Playwright Chromium integration Outcome tests exec'
           workingDirectory: pagopa-checkout-fe
+          env:
+            PLAYWRIGHT_PROJECT_NAME: outcomes-chromium
 
         - task: PublishTestResults@2
           displayName: 'Publish Playwright Chromium integration tests results from tests'
@@ -489,7 +501,7 @@ stages:
             failTaskOnFailedTests: true
 
   - stage: Playwright_Integration_Tests_Outcome_Firefox
-    condition: and(succeeded(), eq('${{parameters.PLAYWRIGHT_TEST}}', true))
+    condition: and(succeeded(), eq('${{parameters.PLAYWRIGHT_TEST_FIREFOX}}', true))
     pool:
       vmImage: 'ubuntu-latest'
     dependsOn: []
@@ -547,6 +559,8 @@ stages:
         - script: yarn pwtest:outcomes-firefox
           displayName: 'Playwright Firefox integration Outcome tests exec'
           workingDirectory: pagopa-checkout-fe
+          env:
+            PLAYWRIGHT_PROJECT_NAME: outcomes-firefox
 
         - task: PublishTestResults@2
           displayName: 'Publish Playwright Firefox integration tests results from tests'
@@ -557,7 +571,7 @@ stages:
             failTaskOnFailedTests: true
 
   - stage: Playwright_Integration_Tests_Outcome_WebKit
-    condition: and(succeeded(), eq('${{parameters.PLAYWRIGHT_TEST}}', true))
+    condition: and(succeeded(), eq('${{parameters.PLAYWRIGHT_TEST_WEBKIT}}', true))
     pool:
       vmImage: 'ubuntu-latest'
     dependsOn: []
@@ -615,6 +629,8 @@ stages:
         - script: yarn pwtest:outcomes-webkit
           displayName: 'Playwright webKit integration Outcome tests exec'
           workingDirectory: pagopa-checkout-fe
+          env:
+            PLAYWRIGHT_PROJECT_NAME: outcomes-webkit
 
         - task: PublishTestResults@2
           displayName: 'Publish Playwright WebKit integration tests results from tests'
@@ -683,17 +699,19 @@ stages:
         - script: yarn pwtest:payment-flow-chromium
           displayName: 'Playwright Chromium integration Payment Flow tests exec'
           workingDirectory: pagopa-checkout-fe
+          env:
+            PLAYWRIGHT_PROJECT_NAME: payment-flow-chromium
 
         - task: PublishTestResults@2
           displayName: 'Publish Playwright Chromium integration tests results'
           inputs:
             testResultsFormat: 'JUnit'
-            testResultsFiles: 'test-results/payment-flow-*.xml'
+            testResultsFiles: '**/test-results/payment-flow-*.xml'
             searchFolder: '$(System.DefaultWorkingDirectory)'
             failTaskOnFailedTests: true
 
   - stage: Playwright_Integration_Tests_Payment_Flow_Firefox
-    condition: and(succeeded(), eq('${{parameters.PLAYWRIGHT_TEST}}', true))
+    condition: and(succeeded(), eq('${{parameters.PLAYWRIGHT_TEST_FIREFOX}}', true))
     pool:
       vmImage: 'ubuntu-latest'
     dependsOn: []
@@ -751,17 +769,19 @@ stages:
         - script: yarn pwtest:payment-flow-firefox
           displayName: 'Playwright Firefox integration Payment Flow tests exec'
           workingDirectory: pagopa-checkout-fe
+          env:
+            PLAYWRIGHT_PROJECT_NAME: payment-flow-firefox
 
         - task: PublishTestResults@2
           displayName: 'Publish Playwright Firefox integration tests results'
           inputs:
             testResultsFormat: 'JUnit'
-            testResultsFiles: 'test-results/payment-flow-*.xml'
+            testResultsFiles: '**/test-results/payment-flow-*.xml'
             searchFolder: '$(System.DefaultWorkingDirectory)'
             failTaskOnFailedTests: true
   
   - stage: Playwright_Integration_Tests_Payment_Flow_WebKit
-    condition: and(succeeded(), eq('${{parameters.PLAYWRIGHT_TEST}}', true))
+    condition: and(succeeded(), eq('${{parameters.PLAYWRIGHT_TEST_WEBKIT}}', true))
     pool:
       vmImage: 'ubuntu-latest'
     dependsOn: []
@@ -819,12 +839,14 @@ stages:
         - script: yarn pwtest:payment-flow-webkit
           displayName: 'Playwright WebKit integration Payment Flow tests exec'
           workingDirectory: pagopa-checkout-fe
+          env:
+            PLAYWRIGHT_PROJECT_NAME: payment-flow-webkit
 
         - task: PublishTestResults@2
           displayName: 'Publish Playwright WebKit integration tests results'
           inputs:
             testResultsFormat: 'JUnit'
-            testResultsFiles: 'test-results/payment-flow-*.xml'
+            testResultsFiles: '**/test-results/payment-flow-*.xml'
             searchFolder: '$(System.DefaultWorkingDirectory)'
             failTaskOnFailedTests: true
   
