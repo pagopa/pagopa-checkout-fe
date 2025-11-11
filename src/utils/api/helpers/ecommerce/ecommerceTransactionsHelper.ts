@@ -351,6 +351,7 @@ export const proceedToPayment = async (
         case "RBPS":
         case "RICO":
         case "KLRN":
+        case "RFPB":
           return O.some({
             detailType: "redirect",
           });

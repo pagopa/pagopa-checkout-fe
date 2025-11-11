@@ -54,4 +54,7 @@ export const PaymentMethodRoutes: PaymentTypecode = {
   RICO: {
     route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
   },
+  RFPB: {
+    route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
+  },
 };
