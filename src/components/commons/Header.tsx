@@ -145,7 +145,6 @@ export default function Header() {
                   style={{ width: "56px", height: "36px" }}
                   aria-hidden="true"
                 />
-                
               </Stack>
               {enablePaymentSummaryButton && (
                 <Button
