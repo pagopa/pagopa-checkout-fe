@@ -32,5 +32,6 @@ export function moneyFormat(
     currency: "EUR",
     minimumFractionDigits: fractionDigits,
     maximumFractionDigits: fractionDigits,
+    useGrouping: true,
   }).format(amount ? amount / Math.pow(10, decimalDigits) : 0);
 }
