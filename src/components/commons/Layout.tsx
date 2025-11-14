@@ -3,6 +3,7 @@ import { Box, SxProps } from "@mui/system";
 import React from "react";
 import Footer from "./Footer";
 import Header from "./Header";
+import SkipToContent from "./SkipToContent";
 
 interface LayoutProps {
   sx?: SxProps;
@@ -21,6 +22,7 @@ export function Layout({ sx, children, fixedFooterPages }: LayoutProps) {
         bgcolor: theme.palette.background.default,
       }}
     >
+      <SkipToContent />
       <Header />
       <Container
         id="main_content"
