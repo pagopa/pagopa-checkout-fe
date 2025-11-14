@@ -22,7 +22,6 @@ import { moneyFormat } from "../../utils/form/formatters";
 import { paymentSubjectTransform } from "../../utils/transformers/paymentTransformers";
 import DrawerDetail from "../Header/DrawerDetail";
 import { evaluateFeatureFlag } from "./../../utils/api/helper";
-import SkipToContent from "./SkipToContent";
 import LoginHeader from "./LoginHeader";
 
 function amountToShow() {
@@ -146,7 +145,7 @@ export default function Header() {
                   style={{ width: "56px", height: "36px" }}
                   aria-hidden="true"
                 />
-                <SkipToContent />
+                
               </Stack>
               {enablePaymentSummaryButton && (
                 <Button
