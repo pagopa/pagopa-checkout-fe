@@ -1,5 +1,8 @@
 # checkout pagoPA
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=pagopa_pagopa-checkout-fe&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=pagopa_pagopa-checkout-fe)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=pagopa_pagopa-checkout-fe&metric=coverage)](https://sonarcloud.io/summary/new_code?id=pagopa_pagopa-checkout-fe)
+
 The repository contains the code implementing IO Pay Portal frontend.
 
 ## About The Project

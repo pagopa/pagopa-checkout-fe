@@ -1,14 +1,12 @@
 import { Theme } from "@emotion/react";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import { SxProps } from "@mui/material";
-import {
-  PaymentCodeType,
-  PaymentMethodAttr,
-} from "features/payment/models/paymentModel";
+import { PaymentMethodAttr } from "features/payment/models/paymentModel";
 import * as React from "react";
+import { PaymentTypeCodeEnum } from "../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 import { CheckoutRoutes } from "./routeModel";
 
-type PaymentTypecode = Record<PaymentCodeType, PaymentMethodAttr>;
+type PaymentTypecode = Record<PaymentTypeCodeEnum, PaymentMethodAttr>;
 
 export const PaymentMethodRoutes: PaymentTypecode = {
   CP: {
@@ -48,6 +46,15 @@ export const PaymentMethodRoutes: PaymentTypecode = {
     route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
   },
   KLRN: {
+    route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
+  },
+  PPAL: {
+    route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
+  },
+  RICO: {
+    route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
+  },
+  RFPB: {
     route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
   },
 };

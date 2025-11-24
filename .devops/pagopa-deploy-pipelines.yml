@@ -97,6 +97,7 @@ stages:
               api_ecommerce_basepath: '/ecommerce/checkout/v1'
               api_ecommerce_basepath_v2: '/ecommerce/checkout/v2'
               api_ecommerce_basepath_v3: '/ecommerce/checkout/v3'
+              api_ecommerce_basepath_v4: '/ecommerce/checkout/v4'
               checkout_feature_flags_basepath: '/checkout/feature-flags/v1'
               checkout_auth_service_basepath_v1: '/checkout/auth-service/v1'
               pagopa_assets_cdn: 'https://assets.cdn.platform.pagopa.it/payment-methods'
@@ -130,7 +131,7 @@ stages:
               azureSubscription: 'DEV-PAGOPA-SERVICE-CONN'
               scriptLocation: inlineScript
               inlineScript: |
-                call az storage blob sync --container $web --account-name pagopadcheckoutsa -s "$(Pipeline.Workspace)\Bundle_DEV" --exclude-path payment-transactions-gateway;ecommerce-fe
+                call az storage blob sync --container $web --account-name pagopadcheckoutsa -s "$(Pipeline.Workspace)\Bundle_DEV" --exclude-path payment-transactions-gateway
 
           - task: AzureCLI@1
             displayName: 'Purge CDN endpoint on DEV'
@@ -234,6 +235,7 @@ stages:
               api_ecommerce_basepath: '/ecommerce/checkout/v1'
               api_ecommerce_basepath_v2: '/ecommerce/checkout/v2'
               api_ecommerce_basepath_v3: '/ecommerce/checkout/v3'
+              api_ecommerce_basepath_v4: '/ecommerce/checkout/v4'
               checkout_feature_flags_basepath: '/checkout/feature-flags/v1'
               checkout_auth_service_basepath_v1: '/checkout/auth-service/v1'
               pagopa_assets_cdn: 'https://assets.cdn.platform.pagopa.it/payment-methods'
@@ -281,7 +283,7 @@ stages:
               azureSubscription: 'UAT-PAGOPA-SERVICE-CONN'
               scriptLocation: inlineScript
               inlineScript: |
-                call az storage blob sync --container $web --account-name pagopaucheckoutsa -s "$(Pipeline.Workspace)\Bundle_UAT" --exclude-path payment-transactions-gateway;ecommerce-fe
+                call az storage blob sync --container $web --account-name pagopaucheckoutsa -s "$(Pipeline.Workspace)\Bundle_UAT" --exclude-path payment-transactions-gateway
 
           - task: AzureCLI@1
             displayName: 'Purge CDN endpoint on UAT'
@@ -338,6 +340,7 @@ stages:
               api_ecommerce_basepath: '/ecommerce/checkout/v1'
               api_ecommerce_basepath_v2: '/ecommerce/checkout/v2'
               api_ecommerce_basepath_v3: '/ecommerce/checkout/v3'
+              api_ecommerce_basepath_v4: '/ecommerce/checkout/v4'
               checkout_feature_flags_basepath: '/checkout/feature-flags/v1'
               checkout_auth_service_basepath_v1: '/checkout/auth-service/v1'
               pagopa_assets_cdn: 'https://assets.cdn.platform.pagopa.it/payment-methods'
@@ -385,7 +388,7 @@ stages:
               azureSubscription: 'PROD-PAGOPA-SERVICE-CONN'
               scriptLocation: inlineScript
               inlineScript: |
-                call az storage blob sync --container $web --account-name pagopapcheckoutsa -s "$(Pipeline.Workspace)\Bundle" --exclude-path payment-transactions-gateway;ecommerce-fe
+                call az storage blob sync --container $web --account-name pagopapcheckoutsa -s "$(Pipeline.Workspace)\Bundle" --exclude-path payment-transactions-gateway
 
           - task: AzureCLI@1
             displayName: 'Purge CDN endpoint on PROD'

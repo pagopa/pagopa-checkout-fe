@@ -363,7 +363,23 @@
     "incoming": "Bientôt disponible",
     "others": "Autres moyens de paiement",
     "showMore": "Tout afficher",
-    "title": "Comment voulez-vous payer ?"
+    "title": "Comment voulez-vous payer ?",
+    "feeRange": "Commission: de {{min}}  à {{max}}",
+    "feeSingle": "Commission: {{value}}",
+    "filterLabel": "Rechercher un moyen",
+    "noPaymentMethodsAvailable": "Aucun résultat trouvé. Essayez avec un autre mot-clé.",
+    "filterButton": "Filtra",
+    "drawer": {
+      "title": "Filtra Metodi",
+      "byType": "Per tipo",
+      "byFunc": "Per funzionalità",
+      "card": "Carta",
+      "balance": "Conto Corrente",
+      "appApm": "App e altri metodi",
+      "payByPlan": "Pagamento a rate",
+      "showResults": "Mostra risultati",
+      "remove": "Cancella tutti i filtri"
+    }
   },
   "paymentMethods": {
     "bpay": "BANCOMAT Pay",

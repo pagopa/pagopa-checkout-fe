@@ -54,7 +54,10 @@ parameters:
 variables:
   NODE_VERSION: '18.17.1'
   YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
-trigger: none
+trigger:
+ branches:
+  include:
+    - main
 
 
 # Execute agents (jobs) on latest Ubuntu version.
@@ -154,7 +157,7 @@ stages:
               sonar.exclusions=src/**/__tests__/**/*,src/**/__test__/**,**/*.js,src/**/index.ts,src/**/__mocks__/**/*,/src/utils/testing/**
               sonar.tests=src
               sonar.test.inclusions=src/**/__tests__/**/*,src/**/__test__/**
-              sonar.cpd.exclusions=src/**/__tests__/**,src/**/__test__/**,__mocks__/**,/src/utils/testing/**
+              sonar.cpd.exclusions=src/**/__tests__/**,src/**/__test__/**,__mocks__/**,/src/utils/testing/**,src/__integration_tests__/**,
 
         - script: |
             yarn generate

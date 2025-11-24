@@ -4,8 +4,10 @@ import "@testing-library/jest-dom";
 import { ThemeProvider, createTheme } from "@mui/material";
 import { MethodComponentList, DisabledPaymentMethods } from "../PaymentMethod"; // Remove MethodComponent from import
 import { PaymentMethodStatusEnum } from "../../../../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
-import { PaymentMethodManagementTypeEnum } from "../../../../../../generated/definitions/payment-ecommerce/PaymentMethodManagementType";
-import { PaymentCodeTypeEnum } from "../../../models/paymentModel";
+import {
+  MethodManagementEnum,
+  PaymentTypeCodeEnum,
+} from "../../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
@@ -77,30 +79,27 @@ jest.mock(
 const mockMethods = [
   {
     id: "card-id",
-    name: "CARDS",
-    description: "Carte di Credito e Debito",
+    name: { it: "CARDS" },
+    description: { it: "Carte di Credito e Debito" },
     status: PaymentMethodStatusEnum.ENABLED,
-    methodManagement: PaymentMethodManagementTypeEnum.ONBOARDABLE,
-    paymentTypeCode: PaymentCodeTypeEnum.CP,
-    ranges: [],
+    methodManagement: MethodManagementEnum.ONBOARDABLE,
+    paymentTypeCode: PaymentTypeCodeEnum.CP,
   },
   {
     id: "paypal-id",
-    name: "PAYPAL",
-    description: "PayPal",
+    name: { it: "PAYPAL" },
+    description: { it: "PayPal" },
     status: PaymentMethodStatusEnum.ENABLED,
-    methodManagement: PaymentMethodManagementTypeEnum.ONBOARDABLE,
-    paymentTypeCode: "PAYPAL" as PaymentCodeTypeEnum,
-    ranges: [],
+    methodManagement: MethodManagementEnum.ONBOARDABLE,
+    paymentTypeCode: "PAYPAL" as PaymentTypeCodeEnum,
   },
   {
     id: "disabled-id",
-    name: "DISABLED",
-    description: "Disabled Method",
+    name: { it: "DISABLED" },
+    description: { it: "Disabled Method" },
     status: PaymentMethodStatusEnum.DISABLED,
-    methodManagement: PaymentMethodManagementTypeEnum.ONBOARDABLE,
-    paymentTypeCode: "DISABLED" as PaymentCodeTypeEnum,
-    ranges: [],
+    methodManagement: MethodManagementEnum.ONBOARDABLE,
+    paymentTypeCode: "DISABLED" as PaymentTypeCodeEnum,
   },
 ];
 
