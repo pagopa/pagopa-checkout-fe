@@ -19,7 +19,7 @@ describe("deviceDetection", () => {
   const mockWindowUndefined = () => {
     const originalWindow = global.window;
     // eslint-disable-next-line functional/immutable-data
-    delete global.window;
+    delete (global as any).window;
     return () => {
       // eslint-disable-next-line functional/immutable-data
       global.window = originalWindow;
