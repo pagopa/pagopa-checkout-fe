@@ -37,6 +37,7 @@ import { CalculateFeeResponse } from "../../../../../generated/definitions/payme
 import {
   PaymentMethodsRequest as PaymentMethodsRequestV2,
   UserTouchpointEnum,
+  UserDeviceEnum,
 } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodsRequest";
 import { PaymentMethodsRequest as PaymentMethodsRequestV4 } from "../../../../../generated/definitions/payment-ecommerce-v4/PaymentMethodsRequest";
 import { PaymentNoticeItem } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentNoticeItem";
@@ -45,6 +46,7 @@ import {
   PaymentTypeCodeEnum,
 } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 import { evaluateFeatureFlag } from "../checkoutFeatureFlagsHelper";
+import { getUserDevice } from "../../../device/deviceDetection";
 
 // ->Promise<Either<string,SessionPaymentMethodResponse>>
 export const retrieveCardData = async ({
@@ -438,8 +440,16 @@ const buildPaymentInstrumentMethodHandlerSearchRequest =
         },
       ];
     }
+
+    // map userDevice based on client type
+    // for IO app: it's set in their API's request body
+    // For Checkout: detect browser (Safari vs others)
+    const clientId = transaction?.clientId || cartClientId || "CHECKOUT";
+    const userDevice = getUserDevice(clientId) as UserDeviceEnum | undefined;
+
     return {
       userTouchpoint,
+      userDevice,
       totalAmount,
       paymentNotice: paymentNotices,
       allCCp,
