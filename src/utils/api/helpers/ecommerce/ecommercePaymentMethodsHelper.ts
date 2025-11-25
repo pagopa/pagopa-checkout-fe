@@ -441,11 +441,8 @@ const buildPaymentInstrumentMethodHandlerSearchRequest =
       ];
     }
 
-    // map userDevice based on client type
-    // for IO app: it's set in their API's request body
-    // For Checkout: detect browser (Safari vs others)
-    const clientId = transaction?.clientId || cartClientId || "CHECKOUT";
-    const userDevice = getUserDevice(clientId) as UserDeviceEnum | undefined;
+    // detect browser type (Safari vs others)
+    const userDevice = getUserDevice() as UserDeviceEnum | undefined;
 
     return {
       userTouchpoint,

@@ -79,54 +79,36 @@ describe("deviceDetection", () => {
   });
 
   describe("getUserDevice", () => {
-    it("Should return IOS when clientId is IO and platform is IOS", () => {
-      const result = getUserDevice("IO", "IOS");
-      expect(result).toBe(UserDeviceValues.IOS);
-    });
-
-    it("Should return ANDROID when clientId is IO and platform is ANDROID", () => {
-      const result = getUserDevice("IO", "ANDROID");
-      expect(result).toBe(UserDeviceValues.ANDROID);
-    });
-
-    it("Should return SAFARI when clientId is CHECKOUT and browser is Safari", () => {
+    it("Should return SAFARI when browser is Safari", () => {
       mockUserAgent(
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Safari/605.1.15"
       );
-      const result = getUserDevice("CHECKOUT");
+      const result = getUserDevice();
       expect(result).toBe(UserDeviceValues.SAFARI);
     });
 
-    it("Should return WEB when clientId is CHECKOUT and browser is Chrome", () => {
+    it("Should return WEB when browser is Chrome", () => {
       mockUserAgent(
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
       );
-      const result = getUserDevice("CHECKOUT");
+      const result = getUserDevice();
       expect(result).toBe(UserDeviceValues.WEB);
     });
 
-    it("Should return WEB when clientId is CHECKOUT_CART and browser is not Safari", () => {
-      mockUserAgent("Firefox");
-      const result = getUserDevice("CHECKOUT_CART");
+    it("Should return WEB when browser is Firefox", () => {
+      mockUserAgent(
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:89.0) Gecko/20100101 Firefox/89.0"
+      );
+      const result = getUserDevice();
       expect(result).toBe(UserDeviceValues.WEB);
     });
 
-    it("Should return WEB when clientId is undefined (default web behavior)", () => {
-      mockUserAgent("Chrome");
-      const result = getUserDevice(undefined);
+    it("Should return WEB when browser is Edge", () => {
+      mockUserAgent(
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.59"
+      );
+      const result = getUserDevice();
       expect(result).toBe(UserDeviceValues.WEB);
-    });
-
-    // undefined/fallback tests
-    it("Should return undefined when clientId is IO but no platform is provided", () => {
-      const result = getUserDevice("IO", undefined);
-      expect(result).toBeUndefined();
-    });
-
-    it("Should return undefined for unknown clientIds", () => {
-      // "UNKNOWN" doesn't match IO (with params) or CHECKOUT logic
-      const result = getUserDevice("UNKNOWN_CLIENT");
-      expect(result).toBeUndefined();
     });
   });
 });
