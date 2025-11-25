@@ -8,6 +8,7 @@ describe("deviceDetection", () => {
   const originalUserAgent = window.navigator.userAgent;
 
   const mockUserAgent = (ua: string) => {
+    // eslint-disable-next-line functional/immutable-data
     Object.defineProperty(window.navigator, "userAgent", {
       value: ua,
       configurable: true,
@@ -17,9 +18,10 @@ describe("deviceDetection", () => {
 
   const mockWindowUndefined = () => {
     const originalWindow = global.window;
-    // @ts-ignore
+    // eslint-disable-next-line functional/immutable-data
     delete global.window;
     return () => {
+      // eslint-disable-next-line functional/immutable-data
       global.window = originalWindow;
     };
   };
@@ -36,6 +38,7 @@ describe("deviceDetection", () => {
     });
 
     it("Should return false if navigator.userAgent is missing", () => {
+      // eslint-disable-next-line functional/immutable-data
       Object.defineProperty(window.navigator, "userAgent", {
         value: undefined,
         configurable: true,
