@@ -94,13 +94,6 @@ jest.mock("../LoginHeader", () => ({
   default: () => <div data-testid="login-header">Login Header Component</div>,
 }));
 
-jest.mock("../SkipToContent", () => ({
-  __esModule: true,
-  default: () => (
-    <div data-testid="skip-to-content">Skip To Content Component</div>
-  ),
-}));
-
 describe("Header Component", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -137,9 +130,6 @@ describe("Header Component", () => {
 
     // Check for logo
     expect(screen.getByAltText("pagoPA")).toBeInTheDocument();
-
-    // Check for SkipToContent
-    expect(screen.getByTestId("skip-to-content")).toBeInTheDocument();
 
     // Payment summary button should not be visible
     expect(
