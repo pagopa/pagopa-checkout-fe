@@ -24,7 +24,6 @@ import {
 import { constVoid } from "fp-ts/function";
 import { PaymentMethodFilter } from "utils/PaymentMethodFilterUtil";
 import { ButtonNaked } from "@pagopa/mui-italia";
-import { WalletType } from "features/payment/models/walletModel";
 import {
   getMethodDescriptionForCurrentLanguage,
   getMethodNameForCurrentLanguage,
@@ -52,6 +51,7 @@ import {
   PaymentTypeCodeEnum,
 } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 import { PaymentMethodStatusEnum } from "../../../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
+import { WalletInfo } from "../../../../../generated/definitions/checkout-wallets-v1/WalletInfo";
 import { DisabledPaymentMethods, MethodComponentList } from "./PaymentMethod";
 import { getNormalizedMethods, paymentTypeTranslationKeys } from "./utils";
 import { PaymentChoiceFilterDrawer } from "./PaymentChoiceFilterDrawer";
@@ -60,7 +60,7 @@ import { ImageComponent } from "./PaymentMethodImage";
 export function PaymentChoice(props: {
   amount: number;
   paymentInstruments: Array<PaymentInstrumentsType>;
-  wallets?: Array<WalletType>; // 🆕 new optional prop for preferred methods
+  wallets?: Array<WalletInfo>; // 🆕 new optional prop for preferred methods
   loading?: boolean;
 }) {
   const ref = React.useRef<ReCAPTCHA>(null);
@@ -240,30 +240,40 @@ export function PaymentChoice(props: {
   function toMapField(value: string, lang: string = "en"): MapField {
     return { [lang]: value };
   }
+
+  const isPaypalDetails = (
+    details: WalletInfo["details"]
+  ): details is {
+    type: string;
+    maskedEmail?: string;
+    pspId: string;
+    pspBusinessName: string;
+  } => details?.type === "PAYPAL";
+
   const mapWalletsToPaymentMethods = (
-    walletsResponse?: Array<WalletType>
+    walletsResponse?: Array<WalletInfo>
   ): Array<PaymentInstrumentsType> => {
     if (!walletsResponse) {
       return [];
     }
     return walletsResponse.map((w) => {
-      const description =
-        w.details.type === "PAYPAL"
-          ? w.details.maskedEmail ?? ""
-          : `${w.details.brand ?? ""} •••• ${w.details.lastFourDigits ?? ""}`;
+      const description = isPaypalDetails(w.details)
+        ? w.details.maskedEmail ?? ""
+        : `${w.details?.brand ?? ""} •••• ${w.details?.lastFourDigits ?? ""}`;
 
-      const name =
-        w.details.type === "PAYPAL" ? "PayPal" : w.details.brand ?? "";
+      const name = isPaypalDetails(w.details)
+        ? "PayPal"
+        : w.details?.brand ?? "";
 
       const paymentTypeCode =
-        w.details.type === "PAYPAL"
+        w.details?.type === "PAYPAL"
           ? PaymentTypeCodeEnum.PPAL
           : PaymentTypeCodeEnum.CP;
 
       const status = w.status === "VALIDATED" ? "ENABLED" : "DISABLED";
       const asset = w.paymentMethodAsset;
       const methodManagement =
-        w.details.type === "PAYPAL"
+        w.details?.type === "PAYPAL"
           ? MethodManagementEnum.REDIRECT
           : MethodManagementEnum.ONBOARDABLE;
       const id = w.paymentMethodId;
@@ -354,7 +364,7 @@ export function PaymentChoice(props: {
                   component={"p"}
                   sx={{ whiteSpace: "pre-line" }}
                 >
-                  Salvati
+                  {t("paymentChoicePage.saved")}
                 </Typography>
                 <Box>
                   {walletsToPaymentMethods.map(
@@ -370,8 +380,7 @@ export function PaymentChoice(props: {
                             }}
                           />
                         }
-                        // onClick={() => console.log(`Clicked ${method.paymentTypeCode}`)}
-                        onClick={() => handleClickOnMethod}
+                        onClick={() => handleClickOnMethod(method)}
                         endAdornment={
                           method.status === PaymentMethodStatusEnum.ENABLED && (
                             <ArrowForwardIosIcon

@@ -7,7 +7,6 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { pipe } from "fp-ts/function";
 import * as B from "fp-ts/boolean";
-import { WalletType } from "features/payment/models/walletModel";
 import { CancelPayment } from "../components/modals/CancelPayment";
 import ErrorModal from "../components/modals/ErrorModal";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
@@ -18,7 +17,10 @@ import {
   PaymentInfo,
   PaymentInstrumentsType,
 } from "../features/payment/models/paymentModel";
-import { getPaymentInstruments } from "../utils/api/helper";
+import {
+  getPaymentInstruments,
+  getWalletInstruments,
+} from "../utils/api/helper";
 import { getTotalFromCart } from "../utils/cart/cart";
 import {
   getSessionItem,
@@ -36,6 +38,9 @@ import {
   getFlowFromSessionStorage,
   getPaymentInfoFromSessionStorage,
 } from "../utils/mixpanel/mixpanelTracker";
+import { WalletInfo } from "../../generated/definitions/checkout-wallets-v1/WalletInfo";
+import { useAppSelector } from "../redux/hooks/hooks";
+import { getLoggedUser } from "../redux/slices/loggedUser";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function PaymentChoicePage() {
@@ -49,6 +54,7 @@ export default function PaymentChoicePage() {
     0;
   const [loading, setLoading] = React.useState(false);
   const [instrumentsLoading, setInstrumentsLoading] = React.useState(false);
+  const [walletsLoading, setWalletsLoading] = React.useState(false);
   const [cancelModalOpen, setCancelModalOpen] = React.useState(false);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
@@ -56,16 +62,37 @@ export default function PaymentChoicePage() {
     Array<PaymentInstrumentsType>
   >([]);
 
+  const [walletInstruments, setWalletInstruments] = React.useState<
+    Array<WalletInfo>
+  >([]);
+
   const getPaymentMethods = async () => {
     setInstrumentsLoading(true);
     await getPaymentInstruments({ amount }, onError, onResponse);
   };
 
+  const getWallets = async () => {
+    setWalletsLoading(true);
+    await getWalletInstruments(onErrorWallet, onResponseWallet);
+  };
+
+  const loggedUser = useAppSelector(getLoggedUser);
+
   React.useEffect(() => {
     if (!paymentInstruments?.length) {
       void getPaymentMethods();
     }
+
+    if (!walletInstruments?.length && loggedUser.userInfo != null) {
+      void getWallets();
+    }
   }, []);
+
+  React.useEffect(() => {
+    if (loggedUser.userInfo == null) {
+      void setWalletInstruments([]);
+    }
+  }, [loggedUser.userInfo]);
 
   React.useEffect(() => {
     const paymentInfo = getPaymentInfoFromSessionStorage();
@@ -106,6 +133,16 @@ export default function PaymentChoicePage() {
     );
   }, []);
 
+  const onResponseWallet = (list: Array<WalletInfo>) => {
+    setWalletInstruments(list);
+    setWalletsLoading(false);
+  };
+
+  const onErrorWallet = React.useCallback((m: string) => {
+    // eslint-disable-next-line no-console
+    console.error("Wallet error:", m);
+  }, []);
+
   const onCancelResponse = React.useCallback(() => {
     setLoading(false);
     navigate(`/${CheckoutRoutes.ANNULLATO}`);
@@ -128,90 +165,6 @@ export default function PaymentChoicePage() {
     []
   );
   const handleRetry = React.useCallback(getPaymentMethods, []);
-  const wallets: Array<WalletType> = [
-    {
-      walletId: "63cd1a15-8ce0-45a5-b5fa-6ee141ef8314",
-      userId: "05b47118-ac54-4324-90f0-59a784972184",
-      paymentMethodId: "9d735400-9450-4f7e-9431-8c1e7fa2a339",
-      status: "VALIDATED",
-      creationDate: "2025-04-02T13:39:48.504628907Z",
-      updateDate: "2025-04-02T13:40:14.388197423Z",
-      applications: [
-        {
-          name: "PAGOPA",
-          status: "ENABLED",
-        },
-      ],
-      clients: {
-        IO: {
-          status: "ENABLED",
-        },
-      },
-      details: {
-        type: "PAYPAL",
-        pspId: "BCITITMM",
-        pspBusinessName: "Intesa Sanpaolo S.p.A",
-        maskedEmail: "b***@icbpi.it",
-      },
-      paymentMethodAsset:
-        "https://assets.cdn.platform.pagopa.it/apm/paypal.png",
-    },
-    {
-      walletId: "6540b667-4035-4ca5-915b-1e1c7b5b9b94",
-      userId: "05b47118-ac54-4324-90f0-59a784972184",
-      paymentMethodId: "f25399bf-c56f-4bd2-adc9-7aef87410609",
-      status: "VALIDATED",
-      creationDate: "2025-06-17T13:12:25.061900455Z",
-      updateDate: "2025-06-17T13:13:09.098212127Z",
-      applications: [
-        {
-          name: "PAGOPA",
-          status: "ENABLED",
-        },
-      ],
-      clients: {
-        IO: {
-          status: "ENABLED",
-        },
-      },
-      details: {
-        type: "CARDS",
-        lastFourDigits: "0014",
-        expiryDate: "203012",
-        brand: "MASTERCARD",
-      },
-      paymentMethodAsset:
-        "https://assets.cdn.platform.pagopa.it/creditcard/mastercard.png",
-    },
-    {
-      walletId: "27222721-174c-453d-a745-d4892a4d0f22",
-      userId: "05b47118-ac54-4324-90f0-59a784972184",
-      paymentMethodId: "0d1450f4-b993-4f89-af5a-1770a45f5d71",
-      status: "VALIDATED",
-      creationDate: "2025-10-10T11:26:04.998280346Z",
-      updateDate: "2025-10-10T11:26:37.198178097Z",
-      applications: [
-        {
-          name: "PAGOPA",
-          status: "ENABLED",
-        },
-      ],
-      clients: {
-        IO: {
-          status: "ENABLED",
-        },
-      },
-      details: {
-        type: "PAYPAL",
-        pspId: "BCITITMM",
-        pspBusinessName: "Intesa Sanpaolo S.p.A",
-        maskedEmail: "b@icbpi.it",
-      },
-      paymentMethodAsset:
-        "https://assets.cdn.platform.pagopa.it/apm/paypal.png",
-    },
-  ];
-
   return (
     <>
       {loading && <CheckoutLoader />}
@@ -234,8 +187,8 @@ export default function PaymentChoicePage() {
           <PaymentChoice
             amount={amount}
             paymentInstruments={paymentInstruments}
-            loading={instrumentsLoading}
-            wallets={wallets}
+            loading={instrumentsLoading && walletsLoading}
+            wallets={walletInstruments}
           />
           <Box py={4} sx={{ width: "100%", height: "100%" }}>
             <Button
@@ -247,7 +200,7 @@ export default function PaymentChoicePage() {
                 height: "100%",
                 minHeight: 45,
               }}
-              disabled={instrumentsLoading}
+              disabled={instrumentsLoading && walletsLoading}
             >
               {t("paymentChoicePage.button")}
             </Button>
