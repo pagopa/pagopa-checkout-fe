@@ -356,6 +356,7 @@
     "transaction": "Provizija"
   },
   "paymentChoicePage": {
+    "saved": "Salvati",
     "bank": "Bančni račun",
     "button": "Nazaj",
     "costs": "Preglednost stroškov.",
