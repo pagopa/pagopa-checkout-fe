@@ -227,13 +227,12 @@ const getDescriptionWallet = (
         paymentMethodId,
         paymentTypeCode,
       });
+      if (paymentTypeCode !== PaymentTypeCodeEnum.CP && ref.current) {
+        await onApmChoice(ref.current, () =>{});
+      }
     console.log(`/${CheckoutRoutes.LISTA_PSP}`);
-
-     await onApmChoice(ref.current, (belowThreshold: boolean) =>
-          onSuccess(paymentTypeCode, belowThreshold)
-        );
-    
-  }
+     navigate(`/${CheckoutRoutes.LISTA_PSP}`);
+    }
 
   const paymentMethods = React.useMemo(
     () => getNormalizedMethods(props.paymentInstruments),
@@ -274,15 +273,6 @@ const getDescriptionWallet = (
     }));
   };
 
-  // const supportedLanguages = ["DE", "EN", "FR", "IT", "SL"];
-
-  /* const toMultilangField = (base: string, translations?: Partial<Record<string, string>>) => {
-    return supportedLanguages.reduce((acc, lang) => {
-      acc[lang] = translations?.[lang] ?? (lang === "IT" ? base : `${base}_${lang}_description`);
-      return acc;
-    }, {} as Record<string, string>);
-  }; */
-
   const isPaypalDetails = (
     details: WalletInfo["details"]
   ): details is {
@@ -291,48 +281,6 @@ const getDescriptionWallet = (
     pspId: string;
     pspBusinessName: string;
   } => details?.type === "PAYPAL";
-
-  /* const mapWalletsToPaymentMethods = (
-    walletsResponse?: Array<WalletInfo>
-  ): Array<PaymentInstrumentsType> => {
-    if (!walletsResponse) {
-      return [];
-    }
-    return walletsResponse.map((w) => {
-      const description = isPaypalDetails(w.details)
-        ? w.details.maskedEmail ?? ""
-        : `${w.details?.brand ?? ""} •••• ${w.details?.lastFourDigits ?? ""}`;
-
-      const name = isPaypalDetails(w.details)
-        ? "PayPal"
-        : w.details?.brand ?? "";
-
-      const paymentTypeCode =
-        w.details?.type === "PAYPAL"
-          ? PaymentTypeCodeEnum.PPAL
-          : PaymentTypeCodeEnum.CP;
-
-      const status = w.status === "VALIDATED" ? "ENABLED" : "DISABLED";
-      const asset = w.paymentMethodAsset;
-      const methodManagement =
-        w.details?.type === "PAYPAL"
-          ? MethodManagementEnum.REDIRECT
-          : MethodManagementEnum.ONBOARDABLE;
-      const id = w.paymentMethodId;
-      return {
-        status,
-        asset,
-        description: toMultilangField(description),
-        name: toMultilangField(name),
-        paymentTypeCode,
-        methodManagement,
-        id,
-      };
-    });
-  }; */
-
-  /* const walletsToPaymentMethods: Array<PaymentInstrumentsType> =
-    mapWalletsToPaymentMethods(props.wallets); */
 
   return (
     <>
