@@ -39,9 +39,10 @@ import {
   getPaymentInfoFromSessionStorage,
 } from "../utils/mixpanel/mixpanelTracker";
 import { WalletInfo } from "../../generated/definitions/checkout-wallets-v1/WalletInfo";
-import { useAppSelector } from "../redux/hooks/hooks";
-import { getLoggedUser } from "../redux/slices/loggedUser";
+//import { useAppSelector } from "../redux/hooks/hooks";
+//import { getLoggedUser } from "../redux/slices/loggedUser";
 import { CheckoutRoutes } from "./models/routeModel";
+//import { createSuccessGetWallets } from "./__tests__/_model";
 
 export default function PaymentChoicePage() {
   const { t } = useTranslation();
@@ -54,7 +55,6 @@ export default function PaymentChoicePage() {
     0;
   const [loading, setLoading] = React.useState(false);
   const [instrumentsLoading, setInstrumentsLoading] = React.useState(false);
-  const [walletsLoading, setWalletsLoading] = React.useState(false);
   const [cancelModalOpen, setCancelModalOpen] = React.useState(false);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
@@ -72,27 +72,32 @@ export default function PaymentChoicePage() {
   };
 
   const getWallets = async () => {
-    setWalletsLoading(true);
     await getWalletInstruments(onErrorWallet, onResponseWallet);
   };
 
-  const loggedUser = useAppSelector(getLoggedUser);
+  //const loggedUser = useAppSelector(getLoggedUser);
 
   React.useEffect(() => {
     if (!paymentInstruments?.length) {
       void getPaymentMethods();
     }
 
-    if (!walletInstruments?.length && loggedUser.userInfo != null) {
+    if (!walletInstruments?.length /* && loggedUser.userInfo != null */) {
       void getWallets();
     }
   }, []);
 
-  React.useEffect(() => {
+  /* React.useEffect(() => {   
     if (loggedUser.userInfo == null) {
-      void setWalletInstruments([]);
+       console.log("LOG set vuoto");
+      //void setWalletInstruments([]);
     }
-  }, [loggedUser.userInfo]);
+    else {
+
+      console.log("LOG set valoer");
+      void getWallets();
+    }
+  }, [loggedUser.userInfo]); */
 
   React.useEffect(() => {
     const paymentInfo = getPaymentInfoFromSessionStorage();
@@ -135,7 +140,6 @@ export default function PaymentChoicePage() {
 
   const onResponseWallet = (list: Array<WalletInfo>) => {
     setWalletInstruments(list);
-    setWalletsLoading(false);
   };
 
   const onErrorWallet = React.useCallback((m: string) => {
@@ -187,7 +191,7 @@ export default function PaymentChoicePage() {
           <PaymentChoice
             amount={amount}
             paymentInstruments={paymentInstruments}
-            loading={instrumentsLoading && walletsLoading}
+            loading={instrumentsLoading}
             wallets={walletInstruments}
           />
           <Box py={4} sx={{ width: "100%", height: "100%" }}>
@@ -200,7 +204,7 @@ export default function PaymentChoicePage() {
                 height: "100%",
                 minHeight: 45,
               }}
-              disabled={instrumentsLoading && walletsLoading}
+              disabled={instrumentsLoading}
             >
               {t("paymentChoicePage.button")}
             </Button>

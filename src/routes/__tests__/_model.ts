@@ -32,6 +32,12 @@ import { PaymentMethodStatusEnum as PaymentMethodStatusEnumV3 } from "../../../g
 import { CalculateFeeResponse } from "../../../generated/definitions/payment-ecommerce-v2/CalculateFeeResponse";
 import { TransactionInfo } from "../../../generated/definitions/payment-ecommerce-v2/TransactionInfo";
 import { SendPaymentResultOutcomeEnum } from "../../../generated/definitions/payment-ecommerce-v3/NewTransactionResponse";
+import { WalletInfo } from "../../../generated/definitions/checkout-wallets-v1/WalletInfo";
+import { WalletStatusEnum } from "../../../generated/definitions/checkout-wallets-v1/WalletStatus";
+import { WalletApplicationInfo } from "../../../generated/definitions/checkout-wallets-v1/WalletApplicationInfo";
+import { WalletClientStatusEnum } from "../../../generated/definitions/checkout-wallets-v1/WalletClientStatus";
+import { WalletInfoDetails } from "../../../generated/definitions/checkout-wallets-v1/WalletInfoDetails";
+import { WalletId } from "../../../generated/definitions/checkout-wallets-v1/WalletId";
 
 export const transactionInfoOK: TransactionInfo = {
   transactionId: "6f7d9be5fbb94ca29bf55972321783e7",
@@ -345,3 +351,47 @@ export const rptId: PaymentFormFields = {
   billCode: "302034567870000000",
   cf: "77777777777",
 };
+
+export const createSuccessGetWallets: Array<WalletInfo> = [
+  {
+    walletId: "11111111-1111-1111-1111-111111111111" as WalletId,
+    paymentMethodId: "pm_1",
+    paymentMethodAsset: "http://logo.cdn/brandLogo1",
+    status: WalletStatusEnum.VALIDATED,
+    creationDate: new Date(),
+    updateDate: new Date(),
+    applications: [
+      { name: "APP1", status: "ENABLED" } as WalletApplicationInfo,
+    ],
+    clients: {
+      IO: { status: WalletClientStatusEnum.ENABLED },
+    },
+    details: {
+      type: "CARDS",
+      brand: "VISA",
+      lastFourDigits: "1234",
+      expiryDate: "203012",
+    } as WalletInfoDetails,
+  },
+
+  {
+    walletId: "22222222-2222-2222-2222-222222222222" as WalletId,
+    paymentMethodId: "pm_2",
+    paymentMethodAsset: "http://logo.cdn/brandLogo2",
+    status: WalletStatusEnum.VALIDATED,
+    creationDate: new Date(),
+    updateDate: new Date(),
+    applications: [
+      { name: "APP2", status: "DISABLED" } as WalletApplicationInfo,
+    ],
+    clients: {
+      IO: { status: WalletClientStatusEnum.DISABLED },
+    },
+    details: {
+      type: "PAYPAL",
+      pspId: "psp_123",
+      pspBusinessName: "PayPal Business",
+      maskedEmail: "test***@***test.it",
+    } as WalletInfoDetails,
+  },
+];

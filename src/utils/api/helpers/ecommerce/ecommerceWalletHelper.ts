@@ -19,6 +19,7 @@ const bearerAuth = pipe(
 import { apiWalletEcommerceClient } from "../../../../utils/api/client";
 import { NewTransactionResponse } from "../../../../../generated/definitions/payment-ecommerce-v2/NewTransactionResponse";
 import { WalletInfo } from "../../../../../generated/definitions/checkout-wallets-v1/WalletInfo";
+import { WalletInfoDetails } from "../../../../../generated/definitions/checkout-wallets-v1/WalletInfoDetails";
 
 export const getWalletInstruments = async (
   onError: (e: string) => void,
@@ -77,3 +78,22 @@ export const getWalletInstruments = async (
         )
     )
   )();
+
+export const isPaypalDetails = (
+  details: WalletInfo["details"]
+): details is {
+  type: string;
+  maskedEmail?: string;
+  pspId: string;
+  pspBusinessName: string;
+} => details?.type === "PAYPAL";
+
+/** Type guard: Card */
+export const isCardDetails = (
+  details: WalletInfoDetails | undefined
+): details is {
+  type: "CARDS";
+  brand: string;
+  lastFourDigits: string;
+  expiryDate: string;
+} => details?.type === "CARDS";

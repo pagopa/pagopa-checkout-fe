@@ -26,6 +26,7 @@ import {
   apiPaymentEcommerceClientV2,
   apiPaymentEcommerceClientV3,
   apiPaymentEcommerceClientWithRetryV2,
+  apiWalletEcommerceClient,
 } from "../../utils/api/client";
 import { mixpanel } from "../../utils/mixpanel/mixpanelHelperInit";
 import {
@@ -38,12 +39,14 @@ import {
   calculateFeeResponse,
   createSuccessGetPaymentMethodsV1,
   createSuccessGetPaymentMethodsV3,
+  createSuccessGetWallets,
   paymentInfo,
   paymentMethod,
   rptId,
   sessionPayment,
   transaction,
 } from "./_model";
+// import { isPaypalDetails } from "../../utils/api/helper";
 // Mock translations and recaptcha
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -103,6 +106,9 @@ jest.mock("../../utils/paymentMethods/paymentMethodsHelper", () => ({
 const navigate = jest.fn();
 
 jest.mock("../../utils/api/client", () => ({
+  apiWalletEcommerceClient: {
+    getCheckoutPaymentWalletsByIdUser: jest.fn(),
+  },
   apiPaymentEcommerceClient: {
     getAllPaymentMethods: jest.fn(),
   },
@@ -468,7 +474,19 @@ describe("PaymentChoicePage guest", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     // (localStorageMock.getItem as jest.Mock).mockReturnValue("true");
+
     (getSessionItem as jest.Mock).mockImplementation(mockGetSessionItemNoAuth);
+    (
+      apiWalletEcommerceClient.getCheckoutPaymentWalletsByIdUser as jest.Mock
+    ).mockResolvedValue(
+      Promise.resolve({
+        right: {
+          status: 200,
+          value: { wallets: createSuccessGetWallets },
+        },
+      })
+    );
+
     (
       apiPaymentEcommerceClient.getAllPaymentMethods as jest.Mock
     ).mockReturnValue(
@@ -479,6 +497,7 @@ describe("PaymentChoicePage guest", () => {
         },
       })
     );
+
     (apiPaymentEcommerceClientV2.newTransaction as jest.Mock).mockReturnValue(
       Promise.resolve({
         right: {
@@ -710,6 +729,17 @@ describe("PaymentChoicePage authenticated", () => {
     (getSessionItem as jest.Mock).mockImplementation(
       mockGetSessionItemAuthenticated
     );
+
+    (
+      apiWalletEcommerceClient.getCheckoutPaymentWalletsByIdUser as jest.Mock
+    ).mockResolvedValue(
+      Promise.resolve({
+        right: {
+          status: 200,
+          value: { wallets: createSuccessGetWallets },
+        },
+      })
+    );
     (
       apiPaymentEcommerceClientV3.getAllPaymentMethodsV3 as jest.Mock
     ).mockReturnValue(
@@ -877,5 +907,34 @@ describe("PaymentChoicePage authenticated", () => {
         }
       );
     });
+  });
+
+  test.only("PaymentChoicePage mostra i wallet", async () => {
+    localStorage.setItem("i18nextLng", "IT");
+    const preloadedState = {
+      loggedUser: {
+        userInfo: { id: "1", name: "Mario" },
+      },
+      threshold: {
+        /* shape corretta */
+      },
+      maintenance: {
+        /* shape corretta */
+      },
+    };
+
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentChoicePage />
+      </MemoryRouter>,
+      { preloadedState }
+    );
+
+    await waitFor(() => {
+      // ad esempio, controlla che il primo wallet appaia nella UI
+      expect(screen.getByText(/Carte/i)).toBeInTheDocument();
+    });
+
+    screen.debug();
   });
 });

@@ -26,7 +26,7 @@ import { PaymentMethodFilter } from "utils/PaymentMethodFilterUtil";
 import { ButtonNaked } from "@pagopa/mui-italia";
 import {
   getMethodDescriptionForCurrentLanguage,
-  getMethodNameForCurrentLanguage,
+  // getMethodNameForCurrentLanguage,
 } from "../../../../utils/paymentMethods/paymentMethodsHelper";
 import TextFormField from "../../../../components/TextFormField/TextFormField";
 import InformationModal from "../../../../components/modals/InformationModal";
@@ -42,16 +42,17 @@ import {
   getSessionItem,
   setSessionItem,
 } from "../../../../utils/storage/sessionStorage";
-import { MapField, PaymentInstrumentsType } from "../../models/paymentModel";
+import { PaymentInstrumentsType } from "../../models/paymentModel";
 import { setThreshold } from "../../../../redux/slices/threshold";
 import { CheckoutRoutes } from "../../../../routes/models/routeModel";
 import { onErrorActivate } from "../../../../utils/api/transactionsErrorHelper";
 import {
-  MethodManagementEnum,
+  // MethodManagementEnum,
   PaymentTypeCodeEnum,
 } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
-import { PaymentMethodStatusEnum } from "../../../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
+// import { PaymentMethodStatusEnum } from "../../../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
 import { WalletInfo } from "../../../../../generated/definitions/checkout-wallets-v1/WalletInfo";
+import { WalletStatusEnum } from "../../../../../generated/definitions/checkout-wallets-v1/WalletStatus";
 import { DisabledPaymentMethods, MethodComponentList } from "./PaymentMethod";
 import { getNormalizedMethods, paymentTypeTranslationKeys } from "./utils";
 import { PaymentChoiceFilterDrawer } from "./PaymentChoiceFilterDrawer";
@@ -60,7 +61,7 @@ import { ImageComponent } from "./PaymentMethodImage";
 export function PaymentChoice(props: {
   amount: number;
   paymentInstruments: Array<PaymentInstrumentsType>;
-  wallets?: Array<WalletInfo>; // 🆕 new optional prop for preferred methods
+  wallets?: Array<WalletInfo>;
   loading?: boolean;
 }) {
   const ref = React.useRef<ReCAPTCHA>(null);
@@ -177,6 +178,17 @@ export function PaymentChoice(props: {
     paymentMethods: Array<PaymentInstrumentsType>
   ) => paymentMethods.filter(filterPaymentMethodsCombined);
 
+const getDescriptionWallet = (
+    method: WalletInfo
+  ) => {
+    const value = isPaypalDetails(method.details)
+                          ? method.details.maskedEmail ?? ""
+                          : `${method.details?.brand ?? ""} •••• ${
+                              method.details?.lastFourDigits ?? ""
+                            }`
+    return value;
+  }
+   
   const handleClickOnMethod = async (method: PaymentInstrumentsType) => {
     if (!loading) {
       const { paymentTypeCode, id: paymentMethodId } = method;
@@ -198,6 +210,30 @@ export function PaymentChoice(props: {
       }
     }
   };
+
+  // eslint-disable-next-line no-console
+  const handleClickOnMethodWallet = async (method: WalletInfo) => {
+
+    setSessionItem(SessionItems.paymentMethodInfo, {
+        title: getDescriptionWallet(method),
+        asset: method.paymentMethodAsset || "",
+    });
+    const paymentMethodId = method.paymentMethodId;
+    const paymentTypeCode =  method.details?.type === "PAYPAL"
+          ? PaymentTypeCodeEnum.PPAL
+          : PaymentTypeCodeEnum.CP;
+
+    setSessionItem(SessionItems.paymentMethod, {
+        paymentMethodId,
+        paymentTypeCode,
+      });
+    console.log(`/${CheckoutRoutes.LISTA_PSP}`);
+
+     await onApmChoice(ref.current, (belowThreshold: boolean) =>
+          onSuccess(paymentTypeCode, belowThreshold)
+        );
+    
+  }
 
   const paymentMethods = React.useMemo(
     () => getNormalizedMethods(props.paymentInstruments),
@@ -237,9 +273,15 @@ export function PaymentChoice(props: {
       buyNowPayLater: false,
     }));
   };
-  function toMapField(value: string, lang: string = "en"): MapField {
-    return { [lang]: value };
-  }
+
+  // const supportedLanguages = ["DE", "EN", "FR", "IT", "SL"];
+
+  /* const toMultilangField = (base: string, translations?: Partial<Record<string, string>>) => {
+    return supportedLanguages.reduce((acc, lang) => {
+      acc[lang] = translations?.[lang] ?? (lang === "IT" ? base : `${base}_${lang}_description`);
+      return acc;
+    }, {} as Record<string, string>);
+  }; */
 
   const isPaypalDetails = (
     details: WalletInfo["details"]
@@ -250,7 +292,7 @@ export function PaymentChoice(props: {
     pspBusinessName: string;
   } => details?.type === "PAYPAL";
 
-  const mapWalletsToPaymentMethods = (
+  /* const mapWalletsToPaymentMethods = (
     walletsResponse?: Array<WalletInfo>
   ): Array<PaymentInstrumentsType> => {
     if (!walletsResponse) {
@@ -280,17 +322,17 @@ export function PaymentChoice(props: {
       return {
         status,
         asset,
-        description: toMapField(description, "en"),
-        name: toMapField(name, "en"),
+        description: toMultilangField(description),
+        name: toMultilangField(name),
         paymentTypeCode,
         methodManagement,
         id,
       };
     });
-  };
+  }; */
 
-  const walletsToPaymentMethods: Array<PaymentInstrumentsType> =
-    mapWalletsToPaymentMethods(props.wallets);
+  /* const walletsToPaymentMethods: Array<PaymentInstrumentsType> =
+    mapWalletsToPaymentMethods(props.wallets); */
 
   return (
     <>
@@ -356,7 +398,7 @@ export function PaymentChoice(props: {
           </Stack>
 
           {/* --- Preferred (Wallet) Methods Section --- */}
-          {props.wallets && props.wallets.length > 0 && (
+          {props.wallets && props.wallets?.length > 0 && (
             <>
               <Box sx={{ mt: 4 }}>
                 <Typography
@@ -367,33 +409,31 @@ export function PaymentChoice(props: {
                   {t("paymentChoicePage.saved")}
                 </Typography>
                 <Box>
-                  {walletsToPaymentMethods.map(
-                    (method: PaymentInstrumentsType, index: number) => (
-                      <ClickableFieldContainer
-                        key={method.paymentTypeCode}
-                        title={getMethodDescriptionForCurrentLanguage(method)}
-                        icon={
-                          <ImageComponent
-                            {...{
-                              asset: method.asset,
-                              name: getMethodNameForCurrentLanguage(method),
-                            }}
+                  {props.wallets.map((method: WalletInfo, index: number) => (
+                    <ClickableFieldContainer
+                      key={method.details?.type}
+                      title={getDescriptionWallet(method)}
+                      icon={
+                        <ImageComponent
+                          {...{
+                            asset: method.paymentMethodAsset,
+                            name: "ff",
+                          }}
+                        />
+                      }
+                      onClick={() => handleClickOnMethodWallet(method)}
+                      endAdornment={
+                        method.status === WalletStatusEnum.VALIDATED && (
+                          <ArrowForwardIosIcon
+                            sx={{ color: "primary.main" }}
+                            fontSize="small"
                           />
-                        }
-                        onClick={() => handleClickOnMethod(method)}
-                        endAdornment={
-                          method.status === PaymentMethodStatusEnum.ENABLED && (
-                            <ArrowForwardIosIcon
-                              sx={{ color: "primary.main" }}
-                              fontSize="small"
-                            />
-                          )
-                        }
-                        isLast={index === walletsToPaymentMethods.length - 1}
-                        disabled={method.status === "DISABLED"}
-                      />
-                    )
-                  )}
+                        )
+                      }
+                      isLast={index === (props.wallets?.length ?? 0) - 1}
+                      disabled={method.status !== WalletStatusEnum.VALIDATED}
+                    />
+                  ))}
                 </Box>
                 <Divider sx={{ my: 5 }} />
               </Box>
