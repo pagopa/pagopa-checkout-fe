@@ -14,6 +14,16 @@ jest.mock("@mui/material/styles", () => ({
   useTheme: jest.fn(() => ({})),
   ThemeProvider: ({ children }: any) => children,
 }));
+
+jest.mock("../../redux/hooks/hooks", () => ({
+  ...jest.requireActual("../../redux/hooks/hooks"),
+  useAppSelector: (selector: any) => {
+    if (selector.name === "getLoggedUser") {
+      return { userInfo: { id: "1", name: "Mario" } };
+    }
+    return selector();
+  },
+}));
 import {
   getSessionItem,
   SessionItems,
@@ -909,32 +919,42 @@ describe("PaymentChoicePage authenticated", () => {
     });
   });
 
-  test.only("PaymentChoicePage mostra i wallet", async () => {
-    localStorage.setItem("i18nextLng", "IT");
-    const preloadedState = {
-      loggedUser: {
-        userInfo: { id: "1", name: "Mario" },
-      },
-      threshold: {
-        /* shape corretta */
-      },
-      maintenance: {
-        /* shape corretta */
-      },
-    };
-
+  test.only("PaymentChoicePage displays the list of wallets", async () => {
     renderWithReduxProvider(
       <MemoryRouter>
         <PaymentChoicePage />
-      </MemoryRouter>,
-      { preloadedState }
+      </MemoryRouter>
     );
 
     await waitFor(() => {
-      // ad esempio, controlla che il primo wallet appaia nella UI
-      expect(screen.getByText(/Carte/i)).toBeInTheDocument();
+      const visaDiv = screen.getByTitle("VISA •••• 1234");
+      expect(visaDiv).toBeInTheDocument();
+
+      // Controlla che ci sia il div con title "test***@***test.it"
+      const emailDiv = screen.getByTitle("test***@***test.it");
+      expect(emailDiv).toBeInTheDocument();
     });
 
     screen.debug();
+  });
+
+  test("Select wallet and navigate to riepilogo-pagamento", async () => {
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentChoicePage />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      const visaDiv = screen.getByTitle("VISA •••• 1234");
+      expect(visaDiv).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      // Query the input fields by their id
+      fireEvent.click(screen.getByTitle("VISA •••• 1234"));
+    });
+
+    expect(navigate).toHaveBeenCalledWith("/lista-psp");
   });
 });

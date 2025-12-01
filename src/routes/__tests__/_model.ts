@@ -355,8 +355,9 @@ export const rptId: PaymentFormFields = {
 export const createSuccessGetWallets: Array<WalletInfo> = [
   {
     walletId: "11111111-1111-1111-1111-111111111111" as WalletId,
-    paymentMethodId: "pm_1",
-    paymentMethodAsset: "http://logo.cdn/brandLogo1",
+    paymentMethodId: "pcf3cc414-3b6f-46f6-a0ae-0f2e96188a56",
+    paymentMethodAsset:
+      "https://assets.cdn.platform.pagopa.it/creditcard/generic.png",
     status: WalletStatusEnum.VALIDATED,
     creationDate: new Date(),
     updateDate: new Date(),
@@ -376,8 +377,9 @@ export const createSuccessGetWallets: Array<WalletInfo> = [
 
   {
     walletId: "22222222-2222-2222-2222-222222222222" as WalletId,
-    paymentMethodId: "pm_2",
-    paymentMethodAsset: "http://logo.cdn/brandLogo2",
+    paymentMethodId: "8f2a657e-4dd1-4f1a-9c48-c9df81203699",
+    paymentMethodAsset:
+      "https://assets.cdn.platform.pagopa.it/creditcard/generic.png",
     status: WalletStatusEnum.VALIDATED,
     creationDate: new Date(),
     updateDate: new Date(),

@@ -178,17 +178,13 @@ export function PaymentChoice(props: {
     paymentMethods: Array<PaymentInstrumentsType>
   ) => paymentMethods.filter(filterPaymentMethodsCombined);
 
-const getDescriptionWallet = (
-    method: WalletInfo
-  ) => {
-    const value = isPaypalDetails(method.details)
-                          ? method.details.maskedEmail ?? ""
-                          : `${method.details?.brand ?? ""} •••• ${
-                              method.details?.lastFourDigits ?? ""
-                            }`
-    return value;
-  }
-   
+  const getDescriptionWallet = (method: WalletInfo) =>
+    isPaypalDetails(method.details)
+      ? method.details.maskedEmail ?? ""
+      : `${method.details?.brand ?? ""} •••• ${
+          method.details?.lastFourDigits ?? ""
+        }`;
+
   const handleClickOnMethod = async (method: PaymentInstrumentsType) => {
     if (!loading) {
       const { paymentTypeCode, id: paymentMethodId } = method;
@@ -213,26 +209,34 @@ const getDescriptionWallet = (
 
   // eslint-disable-next-line no-console
   const handleClickOnMethodWallet = async (method: WalletInfo) => {
-
     setSessionItem(SessionItems.paymentMethodInfo, {
-        title: getDescriptionWallet(method),
-        asset: method.paymentMethodAsset || "",
+      title: getDescriptionWallet(method),
+      asset: method.paymentMethodAsset || "",
     });
     const paymentMethodId = method.paymentMethodId;
-    const paymentTypeCode =  method.details?.type === "PAYPAL"
-          ? PaymentTypeCodeEnum.PPAL
-          : PaymentTypeCodeEnum.CP;
+    const paymentTypeCode =
+      method.details?.type === "PAYPAL"
+        ? PaymentTypeCodeEnum.PPAL
+        : PaymentTypeCodeEnum.CP;
 
     setSessionItem(SessionItems.paymentMethod, {
-        paymentMethodId,
-        paymentTypeCode,
-      });
-      if (paymentTypeCode !== PaymentTypeCodeEnum.CP && ref.current) {
-        await onApmChoice(ref.current, () =>{});
-      }
-    console.log(`/${CheckoutRoutes.LISTA_PSP}`);
-     navigate(`/${CheckoutRoutes.LISTA_PSP}`);
+      paymentMethodId,
+      paymentTypeCode,
+    });
+
+    // eslint-disable-next-line functional/immutable-data
+    PaymentMethodRoutes[paymentTypeCode] = {
+      ...PaymentMethodRoutes[paymentTypeCode],
+      route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
+    };
+    if (ref.current) {
+      await onApmChoice(ref.current, (belowThreshold: boolean) =>
+        onSuccess(paymentTypeCode, belowThreshold)
+      );
+    } else {
+      onSuccess(paymentTypeCode);
     }
+  };
 
   const paymentMethods = React.useMemo(
     () => getNormalizedMethods(props.paymentInstruments),

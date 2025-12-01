@@ -34,4 +34,3 @@ export const getMethodNameForCurrentLanguage = (
   const languageKey = getLanguageKey(method.name);
   return method.name[languageKey] ?? method.name.IT;
 };
-

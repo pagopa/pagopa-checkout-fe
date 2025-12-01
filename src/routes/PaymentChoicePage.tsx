@@ -39,10 +39,9 @@ import {
   getPaymentInfoFromSessionStorage,
 } from "../utils/mixpanel/mixpanelTracker";
 import { WalletInfo } from "../../generated/definitions/checkout-wallets-v1/WalletInfo";
-//import { useAppSelector } from "../redux/hooks/hooks";
-//import { getLoggedUser } from "../redux/slices/loggedUser";
+import { useAppSelector } from "../redux/hooks/hooks";
+import { getLoggedUser } from "../redux/slices/loggedUser";
 import { CheckoutRoutes } from "./models/routeModel";
-//import { createSuccessGetWallets } from "./__tests__/_model";
 
 export default function PaymentChoicePage() {
   const { t } = useTranslation();
@@ -75,29 +74,25 @@ export default function PaymentChoicePage() {
     await getWalletInstruments(onErrorWallet, onResponseWallet);
   };
 
-  //const loggedUser = useAppSelector(getLoggedUser);
+  const loggedUser = useAppSelector(getLoggedUser);
 
   React.useEffect(() => {
     if (!paymentInstruments?.length) {
       void getPaymentMethods();
     }
 
-    if (!walletInstruments?.length /* && loggedUser.userInfo != null */) {
+    if (!walletInstruments?.length && loggedUser.userInfo != null) {
       void getWallets();
     }
   }, []);
 
-  /* React.useEffect(() => {   
+  React.useEffect(() => {
     if (loggedUser.userInfo == null) {
-       console.log("LOG set vuoto");
-      //void setWalletInstruments([]);
-    }
-    else {
-
-      console.log("LOG set valoer");
+      void setWalletInstruments([]);
+    } else {
       void getWallets();
     }
-  }, [loggedUser.userInfo]); */
+  }, [loggedUser.userInfo]);
 
   React.useEffect(() => {
     const paymentInfo = getPaymentInfoFromSessionStorage();
