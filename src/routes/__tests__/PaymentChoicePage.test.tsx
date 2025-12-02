@@ -29,6 +29,7 @@ jest.mock("../../redux/hooks/hooks", () => {
     }),
   };
 });
+
 import {
   getSessionItem,
   SessionItems,
@@ -50,6 +51,7 @@ import {
   MixpanelEventType,
   MixpanelFlow,
 } from "../../utils/mixpanel/mixpanelEvents";
+import { getWalletInstruments } from "../../utils/api/helper";
 import {
   calculateFeeResponse,
   createSuccessGetPaymentMethodsV1,
@@ -61,7 +63,6 @@ import {
   sessionPayment,
   transaction,
 } from "./_model";
-// import { isPaypalDetails } from "../../utils/api/helper";
 // Mock translations and recaptcha
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -934,8 +935,6 @@ describe("PaymentChoicePage authenticated", () => {
     await waitFor(() => {
       const visaDiv = screen.getByTitle("VISA •••• 1234");
       expect(visaDiv).toBeInTheDocument();
-
-      // Controlla che ci sia il div con title "test***@***test.it"
       const emailDiv = screen.getByTitle("test***@***test.it");
       expect(emailDiv).toBeInTheDocument();
     });
@@ -956,7 +955,6 @@ describe("PaymentChoicePage authenticated", () => {
     });
 
     await waitFor(() => {
-      // Query the input fields by their id
       fireEvent.click(screen.getByTitle("VISA •••• 1234"));
     });
 
@@ -979,12 +977,29 @@ describe("PaymentChoicePage authenticated", () => {
     await waitFor(() => {
       const visaDiv = screen.queryByTitle("VISA •••• 1234");
       expect(visaDiv).not.toBeInTheDocument();
-
-      // Controlla che ci sia il div con title "test***@***test.it"
       const emailDiv = screen.queryByTitle("test***@***test.it");
       expect(emailDiv).not.toBeInTheDocument();
     });
 
     screen.debug();
+  });
+
+  it("should call onResponse with wallets when API returns 200", async () => {
+    const onResponse = jest.fn();
+    const onError = jest.fn();
+
+    (
+      apiWalletEcommerceClient.getCheckoutPaymentWalletsByIdUser as jest.Mock
+    ).mockResolvedValue({
+      right: {
+        status: 200,
+        value: { wallets: createSuccessGetWallets },
+      },
+    });
+
+    await getWalletInstruments(onError, onResponse);
+
+    expect(onResponse).toHaveBeenCalledWith(createSuccessGetWallets);
+    expect(onError).not.toHaveBeenCalled();
   });
 });
