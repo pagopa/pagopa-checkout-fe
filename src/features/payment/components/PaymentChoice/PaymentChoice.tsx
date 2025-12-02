@@ -184,6 +184,10 @@ export function PaymentChoice(props: {
       : `${method.details?.brand ?? ""} •••• ${
           method.details?.lastFourDigits ?? ""
         }`;
+const getNameWallet = (method: WalletInfo) =>
+    isPaypalDetails(method.details)
+      ? "PayPal"
+      : `${method.details?.brand ?? ""}`;
 
   const handleClickOnMethod = async (method: PaymentInstrumentsType) => {
     if (!loading) {
@@ -369,10 +373,11 @@ export function PaymentChoice(props: {
                         <ImageComponent
                           {...{
                             asset: method.paymentMethodAsset,
-                            name: "ff",
+                            name: getNameWallet(method)
                           }}
                         />
                       }
+                      dataTestId={`wallet-${index}`}
                       onClick={() => handleClickOnMethodWallet(method)}
                       endAdornment={
                         method.status === WalletStatusEnum.VALIDATED && (

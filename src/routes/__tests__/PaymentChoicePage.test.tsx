@@ -6,6 +6,7 @@ import { MemoryRouter } from "react-router-dom";
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import * as router from "react-router";
 import * as E from "fp-ts/Either";
+import { useAppSelector } from "../../redux/hooks/hooks";
 
 // Mock @mui/material styled system
 jest.mock("@mui/material/styles", () => ({
@@ -15,15 +16,19 @@ jest.mock("@mui/material/styles", () => ({
   ThemeProvider: ({ children }: any) => children,
 }));
 
-jest.mock("../../redux/hooks/hooks", () => ({
-  ...jest.requireActual("../../redux/hooks/hooks"),
-  useAppSelector: (selector: any) => {
-    if (selector.name === "getLoggedUser") {
-      return { userInfo: { id: "1", name: "Mario" } };
-    }
-    return selector();
-  },
-}));
+jest.mock("../../redux/hooks/hooks", () => {
+  const actual = jest.requireActual("../../redux/hooks/hooks");
+
+  return {
+    ...actual,
+    useAppSelector: jest.fn((selector: any) => {
+      if (selector.name === "getLoggedUser") {
+        return { userInfo: { id: "1", name: "Mario" } };
+      }
+      return selector();
+    }),
+  };
+});
 import {
   getSessionItem,
   SessionItems,
@@ -919,7 +924,7 @@ describe("PaymentChoicePage authenticated", () => {
     });
   });
 
-  test.only("PaymentChoicePage displays the list of wallets", async () => {
+  test("PaymentChoicePage displays the list of wallets", async () => {
     renderWithReduxProvider(
       <MemoryRouter>
         <PaymentChoicePage />
@@ -938,6 +943,7 @@ describe("PaymentChoicePage authenticated", () => {
     screen.debug();
   });
 
+  
   test("Select wallet and navigate to riepilogo-pagamento", async () => {
     renderWithReduxProvider(
       <MemoryRouter>
@@ -957,4 +963,30 @@ describe("PaymentChoicePage authenticated", () => {
 
     expect(navigate).toHaveBeenCalledWith("/lista-psp");
   });
+
+  test("PaymentChoicePage not displays the list of wallets", async () => {
+(useAppSelector as jest.Mock).mockImplementation((selector: any) => {
+  if (selector.name === "getLoggedUser") {
+    return { userInfo: null };  // 👈 invece di null
+  }
+  return selector();
+});
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentChoicePage />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      const visaDiv = screen.queryByTitle("VISA •••• 1234");
+      expect(visaDiv).not.toBeInTheDocument();
+
+      // Controlla che ci sia il div con title "test***@***test.it"
+      const emailDiv = screen.queryByTitle("test***@***test.it");
+      expect(emailDiv).not.toBeInTheDocument();
+    });
+
+    screen.debug();
+  });
+
 });
