@@ -51,6 +51,8 @@ import {
   MixpanelEventType,
   MixpanelFlow,
 } from "../../utils/mixpanel/mixpanelEvents";
+import { getWalletInstruments } from "../../utils/api/helper";
+import { ErrorsType } from "../../utils/errors/checkErrorsModel";
 import {
   calculateFeeResponse,
   createSuccessGetPaymentMethodsV1,
@@ -62,8 +64,6 @@ import {
   sessionPayment,
   transaction,
 } from "./_model";
-import { getWalletInstruments } from "../../utils/api/helper";
-import { ErrorsType } from "../../utils/errors/checkErrorsModel";
 // Mock translations and recaptcha
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -985,12 +985,13 @@ describe("PaymentChoicePage authenticated", () => {
     screen.debug();
   });
 
-
   it("should call onResponse with wallets when API returns 200", async () => {
-   const onResponse = jest.fn();
+    const onResponse = jest.fn();
     const onError = jest.fn();
 
-    (apiWalletEcommerceClient.getCheckoutPaymentWalletsByIdUser as jest.Mock).mockResolvedValue({
+    (
+      apiWalletEcommerceClient.getCheckoutPaymentWalletsByIdUser as jest.Mock
+    ).mockResolvedValue({
       right: {
         status: 200,
         value: { wallets: createSuccessGetWallets },
@@ -1001,41 +1002,43 @@ describe("PaymentChoicePage authenticated", () => {
 
     expect(onResponse).toHaveBeenCalledWith(createSuccessGetWallets);
     expect(onError).not.toHaveBeenCalled();
-
   });
 
-
   it("should call onError with UNAUTHORIZED when API returns 401", async () => {
-  const onResponse = jest.fn();
-  const onError = jest.fn();
+    const onResponse = jest.fn();
+    const onError = jest.fn();
 
-   (apiWalletEcommerceClient.getCheckoutPaymentWalletsByIdUser as jest.Mock).mockResolvedValue({
+    (
+      apiWalletEcommerceClient.getCheckoutPaymentWalletsByIdUser as jest.Mock
+    ).mockResolvedValue({
       right: {
         status: 401,
-        value: {  },
+        value: {},
       },
     });
 
-  await getWalletInstruments(onError, onResponse);
+    await getWalletInstruments(onError, onResponse);
 
-  expect(onError).toHaveBeenCalledWith(ErrorsType.UNAUTHORIZED);
-  expect(onResponse).not.toHaveBeenCalled();
-});
+    expect(onError).toHaveBeenCalledWith(ErrorsType.UNAUTHORIZED);
+    expect(onResponse).not.toHaveBeenCalled();
+  });
 
-it("should call onError with STATUS_ERROR 500", async () => {
-  const onResponse = jest.fn();
-  const onError = jest.fn();
+  it("should call onError with STATUS_ERROR 500", async () => {
+    const onResponse = jest.fn();
+    const onError = jest.fn();
 
-   (apiWalletEcommerceClient.getCheckoutPaymentWalletsByIdUser as jest.Mock).mockResolvedValue({
+    (
+      apiWalletEcommerceClient.getCheckoutPaymentWalletsByIdUser as jest.Mock
+    ).mockResolvedValue({
       right: {
         status: 500,
-        value: {  },
+        value: {},
       },
     });
 
-  await getWalletInstruments(onError, onResponse);
+    await getWalletInstruments(onError, onResponse);
 
-  expect(onError).toHaveBeenCalledWith(ErrorsType.STATUS_ERROR);
-  expect(onResponse).not.toHaveBeenCalled();
-});
+    expect(onError).toHaveBeenCalledWith(ErrorsType.STATUS_ERROR);
+    expect(onResponse).not.toHaveBeenCalled();
+  });
 });

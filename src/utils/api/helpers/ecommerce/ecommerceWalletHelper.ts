@@ -20,12 +20,45 @@ import { apiWalletEcommerceClient } from "../../../../utils/api/client";
 import { NewTransactionResponse } from "../../../../../generated/definitions/payment-ecommerce-v2/NewTransactionResponse";
 import { WalletInfo } from "../../../../../generated/definitions/checkout-wallets-v1/WalletInfo";
 import { WalletInfoDetails } from "../../../../../generated/definitions/checkout-wallets-v1/WalletInfoDetails";
+import { evaluateFeatureFlag } from "../checkoutFeatureFlagsHelper";
+import featureFlags from "../../../../utils/featureFlags";
+import { setSessionItem } from "../../../../utils/storage/sessionStorage";
+
+const evaluateWalletEnabledFF = async (): Promise<boolean> => {
+  // eslint-disable-next-line functional/no-let
+  let featureFlag = getSessionItem(SessionItems.enableWallet) as string;
+  if (featureFlag !== null && featureFlag !== undefined) {
+    // ff not found in session storage, invoking ff api
+    await evaluateFeatureFlag(
+      featureFlags.enableWallet,
+      (e: string) => {
+        // eslint-disable-next-line no-console
+        console.error(
+          `Error while getting feature flag ${featureFlags.enableWallet}`,
+          e
+        );
+      },
+      (data: { enabled: boolean }) => {
+        setSessionItem(SessionItems.enableWallet, data.enabled.toString());
+        featureFlag = data.enabled.toString();
+      }
+    );
+  }
+  return featureFlag === "true";
+};
 
 export const getWalletInstruments = async (
   onError: (e: string) => void,
   onResponse: (data: Array<WalletInfo>) => void
-) =>
-  pipe(
+) => {
+  const isEnabled = await evaluateWalletEnabledFF();
+
+  if (!isEnabled) {
+    // Feature flag disabled: return an empty array or use a fallback
+    onResponse([]);
+    return [];
+  }
+  return pipe(
     TE.tryCatch(
       async () =>
         apiWalletEcommerceClient.getCheckoutPaymentWalletsByIdUser({
@@ -78,6 +111,7 @@ export const getWalletInstruments = async (
         )
     )
   )();
+};
 
 export const isPaypalDetails = (
   details: WalletInfo["details"]
