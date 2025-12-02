@@ -969,14 +969,14 @@ describe("Payment Methods list tests - Fee rendering", () => {
 });
 
 describe("Show wallets", () => {
-  it.only.each([
+  it.each([
     ["it", itTranslation],
     ["en", enTranslation],
     ["fr", frTranslation],
     ["de", deTranslation],
     ["sl", slTranslation],
   ])(
-    "Should show up threshold disclaimer (why manage creditcard) for language [%s]",
+    "show list wallet for language [%s]",
     async (lang, translation) => {
       selectLanguage(lang);
       const resultMessage = await showWallets(
