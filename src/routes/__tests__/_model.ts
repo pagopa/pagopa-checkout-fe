@@ -378,8 +378,7 @@ export const createSuccessGetWallets: Array<WalletInfo> = [
   {
     walletId: "22222222-2222-2222-2222-222222222222" as WalletId,
     paymentMethodId: "8f2a657e-4dd1-4f1a-9c48-c9df81203699",
-    paymentMethodAsset:
-      "https://assets.cdn.platform.pagopa.it/apm/paypal.png",
+    paymentMethodAsset: "https://assets.cdn.platform.pagopa.it/apm/paypal.png",
     status: WalletStatusEnum.VALIDATED,
     creationDate: new Date(),
     updateDate: new Date(),

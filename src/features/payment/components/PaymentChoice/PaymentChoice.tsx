@@ -184,7 +184,7 @@ export function PaymentChoice(props: {
       : `${method.details?.brand ?? ""} •••• ${
           method.details?.lastFourDigits ?? ""
         }`;
-const getNameWallet = (method: WalletInfo) =>
+  const getNameWallet = (method: WalletInfo) =>
     isPaypalDetails(method.details)
       ? "PayPal"
       : `${method.details?.brand ?? ""}`;
@@ -373,7 +373,7 @@ const getNameWallet = (method: WalletInfo) =>
                         <ImageComponent
                           {...{
                             asset: method.paymentMethodAsset,
-                            name: getNameWallet(method)
+                            name: getNameWallet(method),
                           }}
                         />
                       }

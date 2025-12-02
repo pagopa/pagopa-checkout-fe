@@ -943,7 +943,6 @@ describe("PaymentChoicePage authenticated", () => {
     screen.debug();
   });
 
-  
   test("Select wallet and navigate to riepilogo-pagamento", async () => {
     renderWithReduxProvider(
       <MemoryRouter>
@@ -965,12 +964,12 @@ describe("PaymentChoicePage authenticated", () => {
   });
 
   test("PaymentChoicePage not displays the list of wallets", async () => {
-(useAppSelector as jest.Mock).mockImplementation((selector: any) => {
-  if (selector.name === "getLoggedUser") {
-    return { userInfo: null };  // 👈 invece di null
-  }
-  return selector();
-});
+    (useAppSelector as jest.Mock).mockImplementation((selector: any) => {
+      if (selector.name === "getLoggedUser") {
+        return { userInfo: null }; // 👈 invece di null
+      }
+      return selector();
+    });
     renderWithReduxProvider(
       <MemoryRouter>
         <PaymentChoicePage />
@@ -988,5 +987,4 @@ describe("PaymentChoicePage authenticated", () => {
 
     screen.debug();
   });
-
 });
