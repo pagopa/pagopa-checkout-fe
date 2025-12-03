@@ -10,9 +10,9 @@ import {
 } from "../../../../utils/storage/sessionStorage";
 
 const bearerAuth = pipe(
-  getSessionItem(SessionItems.transaction) as NewTransactionResponse,
+  getSessionItem(SessionItems.authToken) as NewTransactionResponse,
   O.fromNullable,
-  O.chain((transaction) => O.fromNullable(transaction.authToken)),
+  O.chain((login) => O.fromNullable(login.authToken)),
   O.getOrElse(() => "")
 );
 
@@ -53,7 +53,7 @@ export const getWalletInstruments = async (
   onResponse: (data: Array<WalletInfo>) => void
 ) => {
   const isEnabled = await evaluateWalletEnabledFF();
-  if (!isEnabled) {
+  if (isEnabled) {
     // Feature flag disabled: return an empty array or use a fallback
     onResponse([]);
     return [];
