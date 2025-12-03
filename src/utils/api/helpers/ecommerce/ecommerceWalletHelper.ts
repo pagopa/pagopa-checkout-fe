@@ -53,7 +53,7 @@ export const getWalletInstruments = async (
   onResponse: (data: Array<WalletInfo>) => void
 ) => {
   const isEnabled = await evaluateWalletEnabledFF();
-  if (isEnabled) {
+  if (!isEnabled) {
     // Feature flag disabled: return an empty array or use a fallback
     onResponse([]);
     return [];
