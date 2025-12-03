@@ -23,7 +23,7 @@ const delay: number = 1000;
  */
 export const apiWalletEcommerceClient = creatWalletClient({
   baseUrl: conf.CHECKOUT_PAGOPA_APIM_HOST,
-  basePath: conf.CHECKOUT_API_WALLET_BASEPATH_V4 as string,
+  basePath: conf.CHECKOUT_API_WALLET_BASEPATH_V1 as string,
   fetchApi: retryingFetch(fetch, conf.CHECKOUT_API_TIMEOUT as Millisecond, 3),
 });
 

@@ -26,7 +26,7 @@ Object.defineProperty(global, "window", {
       CHECKOUT_API_RETRY_DELAY: "2000",
       CHECKOUT_GDI_CHECK_TIMEOUT: "5000",
       CHECKOUT_API_AUTH_SERVICE_BASEPATH_V1: "/auth",
-      CHECKOUT_API_WALLET_BASEPATH_V4: "/checkout/payment-wallet/v1",
+      CHECKOUT_API_WALLET_BASEPATH_V1: "/checkout/payment-wallet/v1",
     },
   },
   writable: true,
@@ -78,7 +78,7 @@ describe("Config Module", () => {
     expect(config.CHECKOUT_API_RETRY_DELAY).toBe(2000);
     expect(config.CHECKOUT_GDI_CHECK_TIMEOUT).toBe(5000);
     expect(config.CHECKOUT_API_AUTH_SERVICE_BASEPATH_V1).toBe("/auth");
-    expect(config.CHECKOUT_API_WALLET_BASEPATH_V4).toBe(
+    expect(config.CHECKOUT_API_WALLET_BASEPATH_V1).toBe(
       "/checkout/payment-wallet/v1"
     );
   });
