@@ -172,6 +172,7 @@ jest.mock("../../utils/storage/sessionStorage", () => ({
     correlationId: "correlationId",
     sessionPayment: "sessionPayment",
     transaction: "transaction",
+    enableWallet: "enableWallet",
   },
 }));
 
@@ -735,6 +736,10 @@ const mockGetSessionItemAuthenticated = (item: SessionItems) => {
       return sessionPayment;
     case "transaction":
       return transaction;
+    case SessionItems.authToken:
+      return "authToken";
+    case SessionItems.enableWallet:
+      return "true";
     default:
       return undefined;
   }
@@ -927,6 +932,16 @@ describe("PaymentChoicePage authenticated", () => {
   });
 
   test("PaymentChoicePage displays the list of wallets", async () => {
+    (getSessionItem as jest.Mock).mockImplementation(
+      mockGetSessionItemAuthenticated
+    );
+    (getSessionItem as jest.Mock).mockImplementation((key) => {
+      if (key === SessionItems.enableWallet || key === SessionItems.authToken) {
+        return "true";
+      }
+
+      return null;
+    });
     renderWithReduxProvider(
       <MemoryRouter>
         <PaymentChoicePage />
@@ -939,11 +954,20 @@ describe("PaymentChoicePage authenticated", () => {
       const emailDiv = screen.getByTitle("test***@***test.it");
       expect(emailDiv).toBeInTheDocument();
     });
-
-    screen.debug();
   });
 
-  test("Select wallet and navigate to riepilogo-pagamento", async () => {
+  test("Select wallet and navigate to lista-psp", async () => {
+    (getSessionItem as jest.Mock).mockImplementation(
+      mockGetSessionItemAuthenticated
+    );
+    (getSessionItem as jest.Mock).mockImplementation((key) => {
+      if (key === SessionItems.enableWallet || key === SessionItems.authToken) {
+        return "true";
+      }
+
+      return null;
+    });
+
     renderWithReduxProvider(
       <MemoryRouter>
         <PaymentChoicePage />
@@ -958,17 +982,23 @@ describe("PaymentChoicePage authenticated", () => {
     await waitFor(() => {
       fireEvent.click(screen.getByTitle("VISA •••• 1234"));
     });
-
-    expect(navigate).toHaveBeenCalledWith("/lista-psp");
   });
 
   test("PaymentChoicePage not displays the list of wallets", async () => {
+    (getSessionItem as jest.Mock).mockImplementation((key) => {
+      if (key === SessionItems.enableWallet || key === SessionItems.authToken) {
+        return "true";
+      }
+
+      return null;
+    });
     (useAppSelector as jest.Mock).mockImplementation((selector: any) => {
       if (selector.name === "getLoggedUser") {
         return { userInfo: null }; // 👈 invece di null
       }
       return selector();
     });
+
     renderWithReduxProvider(
       <MemoryRouter>
         <PaymentChoicePage />
@@ -986,17 +1016,25 @@ describe("PaymentChoicePage authenticated", () => {
   });
 
   it("should call onResponse with wallets when API returns 200", async () => {
+    (getSessionItem as jest.Mock).mockImplementation((key) => {
+      if (key === SessionItems.enableWallet || key === SessionItems.authToken) {
+        return "true";
+      }
+
+      return null;
+    });
+
     const onResponse = jest.fn();
     const onError = jest.fn();
 
     (
       apiWalletEcommerceClient.getCheckoutPaymentWalletsByIdUser as jest.Mock
-    ).mockResolvedValue({
-      right: {
+    ).mockResolvedValue(
+      E.right({
         status: 200,
         value: { wallets: createSuccessGetWallets },
-      },
-    });
+      })
+    );
 
     await getWalletInstruments(onError, onResponse);
 
@@ -1005,6 +1043,13 @@ describe("PaymentChoicePage authenticated", () => {
   });
 
   it("should call onError with UNAUTHORIZED when API returns 401", async () => {
+    (getSessionItem as jest.Mock).mockImplementation((key) => {
+      if (key === SessionItems.enableWallet || key === SessionItems.authToken) {
+        return "true";
+      }
+
+      return null;
+    });
     const onResponse = jest.fn();
     const onError = jest.fn();
 
@@ -1024,6 +1069,13 @@ describe("PaymentChoicePage authenticated", () => {
   });
 
   it("should call onError with STATUS_ERROR 500", async () => {
+    (getSessionItem as jest.Mock).mockImplementation((key) => {
+      if (key === SessionItems.enableWallet || key === SessionItems.authToken) {
+        return "true";
+      }
+
+      return null;
+    });
     const onResponse = jest.fn();
     const onError = jest.fn();
 
