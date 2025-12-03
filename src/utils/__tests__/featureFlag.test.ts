@@ -8,6 +8,7 @@ describe("featureFlags", () => {
       enablePaymentMethodsHandler: "isPaymentMethodsHandlerEnabled",
       enablePspPage: "isPspPickerPageEnabled",
       enableScheduledMaintenanceBanner: "isScheduledMaintenanceBannerEnabled",
+      enableWallet: "isPaymentWalletEnabled",
     });
   });
 
@@ -36,6 +37,13 @@ describe("featureFlags", () => {
     expect(featureFlags).toHaveProperty(
       "enableScheduledMaintenanceBanner",
       "isScheduledMaintenanceBannerEnabled"
+    );
+  });
+
+  test("should contain enableWallet flag", () => {
+    expect(featureFlags).toHaveProperty(
+      "enableWallet",
+      "isPaymentWalletEnabled"
     );
   });
 });

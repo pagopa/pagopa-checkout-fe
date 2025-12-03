@@ -1,7 +1,6 @@
 /* eslint-disable sonarjs/no-identical-functions */
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/lib/function";
-import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
 import { ErrorsType } from "../../../../utils/errors/checkErrorsModel";
 import {
@@ -9,15 +8,7 @@ import {
   SessionItems,
 } from "../../../../utils/storage/sessionStorage";
 
-const bearerAuth = pipe(
-  getSessionItem(SessionItems.authToken) as NewTransactionResponse,
-  O.fromNullable,
-  O.chain((login) => O.fromNullable(login.authToken)),
-  O.getOrElse(() => "")
-);
-
 import { apiWalletEcommerceClient } from "../../../../utils/api/client";
-import { NewTransactionResponse } from "../../../../../generated/definitions/payment-ecommerce-v2/NewTransactionResponse";
 import { WalletInfo } from "../../../../../generated/definitions/checkout-wallets-v1/WalletInfo";
 import { WalletInfoDetails } from "../../../../../generated/definitions/checkout-wallets-v1/WalletInfoDetails";
 import { evaluateFeatureFlag } from "../checkoutFeatureFlagsHelper";
@@ -58,6 +49,13 @@ export const getWalletInstruments = async (
     onResponse([]);
     return [];
   }
+
+  const bearerAuth = getSessionItem(SessionItems.authToken) as string;
+  if (!bearerAuth) {
+    onError(ErrorsType.UNAUTHORIZED);
+    return [];
+  }
+
   return pipe(
     TE.tryCatch(
       async () =>
