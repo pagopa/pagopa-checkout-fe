@@ -38,6 +38,7 @@ export const IConfig = t.interface({
   CHECKOUT_GDI_CHECK_TIMEOUT: t.number,
   CHECKOUT_API_AUTH_SERVICE_BASEPATH_V1: NonEmptyString,
   CHECKOUT_API_RETRY_NUMBERS_LINEAR: t.number,
+  CHECKOUT_API_WALLET_BASEPATH_V4: NonEmptyString,
 });
 
 // eslint-disable-next-line no-underscore-dangle

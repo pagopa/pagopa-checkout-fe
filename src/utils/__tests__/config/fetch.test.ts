@@ -27,6 +27,7 @@ Object.defineProperty(global, "window", {
       CHECKOUT_GDI_CHECK_TIMEOUT: "5000",
       CHECKOUT_API_AUTH_SERVICE_BASEPATH_V1: "/auth",
       CHECKOUT_API_RETRY_NUMBERS_LINEAR: "2",
+      CHECKOUT_API_WALLET_BASEPATH_V4: "/checkout/payment-wallet/v1",
     },
   },
   writable: true,

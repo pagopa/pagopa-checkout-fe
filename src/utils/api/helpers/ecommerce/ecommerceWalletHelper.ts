@@ -27,7 +27,8 @@ import { setSessionItem } from "../../../../utils/storage/sessionStorage";
 const evaluateWalletEnabledFF = async (): Promise<boolean> => {
   // eslint-disable-next-line functional/no-let
   let featureFlag = getSessionItem(SessionItems.enableWallet) as string;
-  if (featureFlag !== null && featureFlag !== undefined) {
+
+  if (featureFlag === null && featureFlag === undefined) {
     // ff not found in session storage, invoking ff api
     await evaluateFeatureFlag(
       featureFlags.enableWallet,
@@ -52,7 +53,6 @@ export const getWalletInstruments = async (
   onResponse: (data: Array<WalletInfo>) => void
 ) => {
   const isEnabled = await evaluateWalletEnabledFF();
-
   if (!isEnabled) {
     // Feature flag disabled: return an empty array or use a fallback
     onResponse([]);

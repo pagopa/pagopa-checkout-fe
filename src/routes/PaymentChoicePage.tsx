@@ -80,7 +80,6 @@ export default function PaymentChoicePage() {
     if (!paymentInstruments?.length) {
       void getPaymentMethods();
     }
-
     if (!walletInstruments?.length && loggedUser.userInfo != null) {
       void getWallets();
     }
