@@ -222,10 +222,14 @@ export function PaymentChoice(props: {
       method.details?.type === "PAYPAL"
         ? PaymentTypeCodeEnum.PPAL
         : PaymentTypeCodeEnum.CP;
+    const walletId = method.walletId || "";
+    const walletType = method.details?.type || "";
 
     setSessionItem(SessionItems.paymentMethod, {
       paymentMethodId,
       paymentTypeCode,
+      walletId,
+      walletType,
     });
 
     // eslint-disable-next-line functional/immutable-data
