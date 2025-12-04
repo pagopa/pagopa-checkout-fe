@@ -46,6 +46,7 @@ import { onErrorActivate } from "../../../../utils/api/transactionsErrorHelper";
 import { PaymentTypeCodeEnum } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 import { WalletInfo } from "../../../../../generated/definitions/checkout-wallets-v1/WalletInfo";
 import { WalletStatusEnum } from "../../../../../generated/definitions/checkout-wallets-v1/WalletStatus";
+import { WalletTypeEnum } from "../../../../../generated/definitions/payment-ecommerce-v2/CalculateFeeRequest";
 import { DisabledPaymentMethods, MethodComponentList } from "./PaymentMethod";
 import { getNormalizedMethods, paymentTypeTranslationKeys } from "./utils";
 import { PaymentChoiceFilterDrawer } from "./PaymentChoiceFilterDrawer";
@@ -98,13 +99,13 @@ export function PaymentChoice(props: {
   };
 
   const onSuccess = (
-    paymentTypeCode: PaymentTypeCodeEnum,
+    paymentTypeCode: PaymentTypeCodeEnum | WalletTypeEnum,
     isWallet: boolean,
     belowThreshold?: boolean
   ) => {
     const route: string = isWallet
       ? CheckoutRoutes.RIEPILOGO_PAGAMENTO
-      : PaymentMethodRoutes[paymentTypeCode]?.route;
+      : PaymentMethodRoutes[paymentTypeCode as PaymentTypeCodeEnum]?.route;
 
     if (belowThreshold !== undefined) {
       dispatch(setThreshold({ belowThreshold }));
@@ -214,26 +215,26 @@ export function PaymentChoice(props: {
       asset: method.paymentMethodAsset || "",
     });
     const paymentMethodId = method.paymentMethodId;
-    const paymentTypeCode =
-      method.details?.type === "PAYPAL"
-        ? PaymentTypeCodeEnum.PPAL
-        : PaymentTypeCodeEnum.CP;
+
     const walletId = method.walletId || "";
-    const walletType = method.details?.type || "";
+
+    const walletType =
+      method.details?.type === "PAYPAL"
+        ? WalletTypeEnum.PAYPAL
+        : WalletTypeEnum.CARDS;
 
     setSessionItem(SessionItems.paymentMethod, {
       paymentMethodId,
-      paymentTypeCode,
       walletId,
       walletType,
     });
 
     if (ref.current) {
       await onApmChoice(ref.current, (belowThreshold: boolean) =>
-        onSuccess(paymentTypeCode, true, belowThreshold)
+        onSuccess(walletType, true, belowThreshold)
       );
     } else {
-      onSuccess(paymentTypeCode, true);
+      onSuccess(walletType, true);
     }
   };
 

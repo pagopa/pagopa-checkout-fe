@@ -7,6 +7,7 @@ import {
   PaymentTypeCodeEnum,
 } from "../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 import { FeeRange } from "../../../../generated/definitions/payment-ecommerce-v2/FeeRange";
+import { WalletTypeEnum } from "../../../../generated/definitions/payment-ecommerce-v2/CalculateFeeRequest";
 
 export interface PaymentFormFields {
   billCode: string;
@@ -91,7 +92,7 @@ export interface PaymentMethod {
   paymentTypeCode: string;
   paymentMethodId: string;
   walletId?: string;
-  walletType?: string;
+  walletType?: WalletTypeEnum;
 }
 
 export const MapField = t.record(

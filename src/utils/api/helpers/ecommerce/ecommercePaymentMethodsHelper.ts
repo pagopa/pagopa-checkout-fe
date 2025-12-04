@@ -30,7 +30,10 @@ import {
   setSessionItem,
 } from "../../../../utils/storage/sessionStorage";
 import { NewTransactionResponse } from "../../../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
-import { CalculateFeeRequest } from "../../../../../generated/definitions/payment-ecommerce-v2/CalculateFeeRequest";
+import {
+  CalculateFeeRequest,
+  WalletTypeEnum,
+} from "../../../../../generated/definitions/payment-ecommerce-v2/CalculateFeeRequest";
 import { CreateSessionResponse } from "../../../../../generated/definitions/payment-ecommerce/CreateSessionResponse";
 import { Bundle } from "../../../../../generated/definitions/payment-ecommerce-v2/Bundle";
 import { CalculateFeeResponse } from "../../../../../generated/definitions/payment-ecommerce-v2/CalculateFeeResponse";
@@ -137,7 +140,7 @@ export const calculateFees = async ({
   paymentId: string;
   bin?: string;
   walletId?: string;
-  walletType?: string;
+  walletType?: WalletTypeEnum;
   onError: (e: string) => void;
   onPspNotFound: () => void;
   onResponsePsp: (r: any) => void;
@@ -592,7 +595,7 @@ export const getFees = (
         ?.walletId || "",
     walletType:
       (getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined)
-        ?.walletType || "",
+        ?.walletType ?? undefined,
     onError,
     onPspNotFound,
     onResponsePsp: (resp) => {
