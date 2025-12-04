@@ -1093,4 +1093,24 @@ describe("PaymentChoicePage authenticated", () => {
     expect(onError).toHaveBeenCalledWith(ErrorsType.STATUS_ERROR);
     expect(onResponse).not.toHaveBeenCalled();
   });
+
+  it("should call onError with UNAUTHORIZED", async () => {
+    (getSessionItem as jest.Mock).mockImplementation((key) => {
+      if (key === SessionItems.enableWallet) {
+        return "true";
+      } else if (key === SessionItems.authToken) {
+        return null;
+      }
+
+      return null;
+    });
+    const onResponse = jest.fn();
+    const onError = jest.fn();
+
+    const result = await getWalletInstruments(onError, onResponse);
+
+    expect(onError).toHaveBeenCalledWith(ErrorsType.UNAUTHORIZED);
+    expect(onResponse).not.toHaveBeenCalled();
+    expect(result).toEqual([]);
+  });
 });

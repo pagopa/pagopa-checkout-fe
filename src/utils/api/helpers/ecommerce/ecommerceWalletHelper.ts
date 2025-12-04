@@ -19,7 +19,7 @@ const evaluateWalletEnabledFF = async (): Promise<boolean> => {
   // eslint-disable-next-line functional/no-let
   let featureFlag = getSessionItem(SessionItems.enableWallet) as string;
 
-  if (featureFlag === null && featureFlag === undefined) {
+  if (featureFlag === null || featureFlag === undefined) {
     // ff not found in session storage, invoking ff api
     await evaluateFeatureFlag(
       featureFlags.enableWallet,
