@@ -979,6 +979,9 @@ describe("Show wallets", () => {
     "show list wallet for language [%s]",
     async (lang, translation) => {
       selectLanguage(lang);
+      await page.evaluate(() => {
+      sessionStorage.setItem('enableWallet', "true");
+    });
       const resultMessage = await showWallets(
         KORPTIDs.PSP_ABOVETHRESHOLD,
         OKPaymentInfo.VALID_FISCAL_CODE,
