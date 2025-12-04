@@ -4,6 +4,7 @@ const featureFlags = {
   enableMaintenance: "isMaintenancePageEnabled",
   enableScheduledMaintenanceBanner: "isScheduledMaintenanceBannerEnabled",
   enablePaymentMethodsHandler: "isPaymentMethodsHandlerEnabled",
+  enableWallet: "isPaymentWalletEnabled",
 };
 
 export default featureFlags;
