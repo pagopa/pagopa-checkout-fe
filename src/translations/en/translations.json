@@ -355,6 +355,7 @@
     "transaction": "Fee"
   },
   "paymentChoicePage": {
+    "saved": "Salvati",
     "bank": "Bank account",
     "button": "Back",
     "costs": "Cost transparency.",

@@ -355,6 +355,7 @@
     "transaction": "Gebühr"
   },
   "paymentChoicePage": {
+    "saved": "Salvati",
     "bank": "Bankkonto",
     "button": "Zurück",
     "costs": "Kostentransparenz.",

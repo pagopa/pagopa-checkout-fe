@@ -53,7 +53,7 @@ export default function IndexPage() {
     }
 
     if (featureFlags[SessionItems.enableWallet] in allFlags) {
-      const enabled = allFlags.isWalletEnabled;
+      const enabled = allFlags.isPaymentWalletEnabled;
       setSessionItem(SessionItems.enableWallet, enabled.toString());
     }
   };

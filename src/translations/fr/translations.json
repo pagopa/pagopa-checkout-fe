@@ -355,6 +355,7 @@
     "transaction": "Frais"
   },
   "paymentChoicePage": {
+    "saved": "Salvati",
     "bank": "Compte bancaire",
     "button": "Retour",
     "costs": "Transparence des frais facturés",

@@ -24,6 +24,7 @@ beforeAll(async () => {
             isAuthenticationEnabled: true,
             isMaintenancePageEnabled: true,
             isPspPickerPageEnabled: true,
+            isPaymentWalletEnabled: true,
           },
         ),
       });

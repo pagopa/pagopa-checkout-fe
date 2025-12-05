@@ -553,3 +553,39 @@ export const checkPspListNames = async (
   await closePspListButton.click();
   return feeNameContents;
 };
+
+
+export const showWallets = async (
+  noticeCode,
+  fiscalCode,
+  email,
+  cardData
+) => {
+  const pspDisclaimerSelectorById = "#pspDisclaimer";
+  await fillAndSubmitWallet(noticeCode, fiscalCode, email, cardData);
+  const disclaimerElement = await page.waitForSelector(
+    pspDisclaimerSelectorById
+  );
+  return await disclaimerElement.evaluate((el) => el.textContent);
+};
+
+export const fillAndSubmitWallet = async (
+  noticeCode,
+  fiscalCode,
+  email,
+  cardData
+) => {
+  const payNoticeBtnSelector = "#paymentSummaryButtonPay";
+  await fillPaymentNotificationForm(noticeCode, fiscalCode);
+  const payNoticeBtn = await page.waitForSelector(payNoticeBtnSelector, {
+    visible: true,
+  });
+  await payNoticeBtn.click();
+  await fillEmailForm(email);
+
+  await clickLoginButton();
+  
+  await choosePaymentMethod("wallet-0");
+  //await fillCardDataForm(cardData);
+  await tryHandlePspPickerPage();
+};

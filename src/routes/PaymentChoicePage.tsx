@@ -17,7 +17,10 @@ import {
   PaymentInfo,
   PaymentInstrumentsType,
 } from "../features/payment/models/paymentModel";
-import { getPaymentInstruments } from "../utils/api/helper";
+import {
+  getPaymentInstruments,
+  getWalletInstruments,
+} from "../utils/api/helper";
 import { getTotalFromCart } from "../utils/cart/cart";
 import {
   getSessionItem,
@@ -35,6 +38,9 @@ import {
   getFlowFromSessionStorage,
   getPaymentInfoFromSessionStorage,
 } from "../utils/mixpanel/mixpanelTracker";
+import { WalletInfo } from "../../generated/definitions/checkout-wallets-v1/WalletInfo";
+import { useAppSelector } from "../redux/hooks/hooks";
+import { getLoggedUser } from "../redux/slices/loggedUser";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function PaymentChoicePage() {
@@ -55,16 +61,37 @@ export default function PaymentChoicePage() {
     Array<PaymentInstrumentsType>
   >([]);
 
+  const [walletInstruments, setWalletInstruments] = React.useState<
+    Array<WalletInfo>
+  >([]);
+
   const getPaymentMethods = async () => {
     setInstrumentsLoading(true);
     await getPaymentInstruments({ amount }, onError, onResponse);
   };
 
+  const getWallets = async () => {
+    await getWalletInstruments(onErrorWallet, onResponseWallet);
+  };
+
+  const loggedUser = useAppSelector(getLoggedUser);
+
   React.useEffect(() => {
     if (!paymentInstruments?.length) {
       void getPaymentMethods();
     }
+    if (!walletInstruments?.length && loggedUser.userInfo != null) {
+      void getWallets();
+    }
   }, []);
+
+  React.useEffect(() => {
+    if (loggedUser.userInfo == null) {
+      void setWalletInstruments([]);
+    } else {
+      void getWallets();
+    }
+  }, [loggedUser.userInfo]);
 
   React.useEffect(() => {
     const paymentInfo = getPaymentInfoFromSessionStorage();
@@ -105,6 +132,15 @@ export default function PaymentChoicePage() {
     );
   }, []);
 
+  const onResponseWallet = (list: Array<WalletInfo>) => {
+    setWalletInstruments(list);
+  };
+
+  const onErrorWallet = React.useCallback((m: string) => {
+    // eslint-disable-next-line no-console
+    console.error("Wallet error:", m);
+  }, []);
+
   const onCancelResponse = React.useCallback(() => {
     setLoading(false);
     navigate(`/${CheckoutRoutes.ANNULLATO}`);
@@ -127,7 +163,6 @@ export default function PaymentChoicePage() {
     []
   );
   const handleRetry = React.useCallback(getPaymentMethods, []);
-
   return (
     <>
       {loading && <CheckoutLoader />}
@@ -151,6 +186,7 @@ export default function PaymentChoicePage() {
             amount={amount}
             paymentInstruments={paymentInstruments}
             loading={instrumentsLoading}
+            wallets={walletInstruments}
           />
           <Box py={4} sx={{ width: "100%", height: "100%" }}>
             <Button
