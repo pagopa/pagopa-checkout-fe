@@ -974,5 +974,4 @@ describe("Wallet feature tests", () => {
     expect(noWallets).toBe(true);
     console.log("Individual wallets not visible")
   });
-  });
 });
