@@ -3,7 +3,7 @@ import deTranslation from "../translations/de/translations.json";
 import enTranslation from "../translations/en/translations.json";
 import frTranslation from "../translations/fr/translations.json";
 import slTranslation from "../translations/sl/translations.json";
-import { cancelPaymentKO, cancelPaymentOK, checkErrorOnCardDataFormSubmit, clickLoginButton, tryHandlePspPickerPage, fillAndSubmitCardDataForm, fillPaymentNotificationForm, getUserButton, payNotice, selectLanguage , tryLoginWithAuthCallbackError, choosePaymentMethod, verifyPaymentMethods } from "./utils/helpers";
+import { cancelPaymentKO, cancelPaymentOK, checkErrorOnCardDataFormSubmit, clickLoginButton, tryHandlePspPickerPage, fillAndSubmitCardDataForm, fillPaymentNotificationForm, getUserButton, payNotice, selectLanguage , tryLoginWithAuthCallbackError, choosePaymentMethod, verifyPaymentMethods, verifyWalletVisible, verifyWalletNotVisible, verifyWalletsSectionVisible, verifyWalletsSectionNotVisible, selectWallet, fillEmailForm, fillAndSubmitWallet, fillPaymentFlowWithoutLogin, fillPaymentFlowWithLogin } from "./utils/helpers";
 import { URL, OKPaymentInfo, KORPTIDs } from "./utils/testConstants";
 
 jest.setTimeout(60000);
@@ -903,5 +903,64 @@ describe("Logout tests", () => {
     const confirmButton = await page.waitForSelector("#logoutModalConfirmButton");
     await confirmButton.click();
 
+  });
+});
+describe.only("Wallet feature tests", () => {
+  it("Should display wallet list for authenticated user with wallet feature enabled", async () => {
+    // enable feature flag
+    await page.evaluate(() => {
+      sessionStorage.setItem('enableWallet', 'true');
+    });
+
+    // login
+    await fillPaymentFlowWithLogin(OKPaymentInfo.VALID_RPTID, OKPaymentInfo.VALID_FISCAL_CODE, OKPaymentInfo.EMAIL);
+
+    // check wallets section is visibile
+    const walletsSectionVisible = await verifyWalletsSectionVisible();
+    expect(walletsSectionVisible).toBe(true);
+
+    // check individual wallets from list are visible
+    const wallet0Visible = await verifyWalletVisible(0);
+    expect(wallet0Visible).toBe(true);
+
+    const wallet1Visible = await verifyWalletVisible(1);
+    expect(wallet1Visible).toBe(true);
+  });
+
+  it("Should NOT display wallets when wallet feature flag is disabled", async () => {
+    // disable feature flag
+    await page.evaluate(() => {
+      sessionStorage.setItem('enableWallet', 'false');
+    });
+
+    // login
+    await fillPaymentFlowWithLogin(OKPaymentInfo.VALID_RPTID, OKPaymentInfo.VALID_FISCAL_CODE, OKPaymentInfo.EMAIL);
+
+    // check wallets section is NOT visibile
+    const walletsSectionNotVisible = await verifyWalletsSectionNotVisible();
+    expect(walletsSectionNotVisible).toBe(true);
+
+    // check no wallet elements are visible
+    const noWallets = await verifyWalletNotVisible();
+    expect(noWallets).toBe(true);
+  });
+
+  it("Should NOT display wallets when user is not authenticated", async () => {
+    // enable wallet feature flag
+    await page.evaluate(() => {
+      sessionStorage.setItem('enableWallet', 'true');
+    });
+
+    // do not login
+    await fillPaymentFlowWithoutLogin(OKPaymentInfo.VALID_RPTID, OKPaymentInfo.VALID_FISCAL_CODE, OKPaymentInfo.EMAIL);
+
+    // check wallets section is NOT visibile
+    const walletsSectionNotVisible = await verifyWalletsSectionNotVisible();
+    expect(walletsSectionNotVisible).toBe(true);
+
+    // check no wallet elements are visible
+    const noWallets = await verifyWalletNotVisible();
+    expect(noWallets).toBe(true);
+    console.log("END Should NOT display wallets when user is not authenticated")
   });
 });

@@ -589,3 +589,97 @@ export const fillAndSubmitWallet = async (
   //await fillCardDataForm(cardData);
   await tryHandlePspPickerPage();
 };
+
+export const fillPaymentFlowWithoutLogin = async (
+  noticeCode,
+  fiscalCode,
+  email
+) => {
+  const payNoticeBtnSelector = "#paymentSummaryButtonPay";
+  await fillPaymentNotificationForm(noticeCode, fiscalCode);
+  const payNoticeBtn = await page.waitForSelector(payNoticeBtnSelector, {
+    visible: true,
+  });
+  await payNoticeBtn.click();
+  await fillEmailForm(email);
+  await page.waitForSelector("[data-qalabel=payment-method]", { timeout: 10000 });
+};
+
+export const fillPaymentFlowWithLogin = async (
+  noticeCode,
+  fiscalCode,
+  email
+) => {
+  const payNoticeBtnSelector = "#paymentSummaryButtonPay";
+  await fillPaymentNotificationForm(noticeCode, fiscalCode);
+  const payNoticeBtn = await page.waitForSelector(payNoticeBtnSelector, {
+    visible: true,
+  });
+  await payNoticeBtn.click();
+  await fillEmailForm(email);
+  await clickLoginButton();
+  await page.waitForSelector('button[aria-label="party-menu-button"]');
+  console.log("Login completed");
+  await page.waitForSelector("[data-qalabel=payment-method]", { timeout: 10000 });
+};
+
+export const verifyWalletVisible = async (index) => {
+  const walletSelector = `[data-qaid="wallet-${index}"]`;
+  try {
+    const walletElement = await page.waitForSelector(walletSelector, {
+      visible: true,
+      timeout: 5000
+    });
+
+    const hasVisaText = await page.evaluate(() => {
+      const elements = document.querySelectorAll('.MuiTypography-sidenav');
+      return Array.from(elements).some(el => /VISA.*1334/.test(el.textContent));
+    });
+
+    return walletElement !== null || hasVisaText;
+  } catch (error) {
+    return false;
+  }
+};
+
+export const verifyWalletNotVisible = async () => {
+  try {
+    const walletElements = await page.$$('[data-qaid^="wallet-"]');
+    return walletElements.length === 0;
+  } catch (error) {
+    return true;
+  }
+};
+
+export const verifyWalletsSectionVisible = async () => {
+  try {
+    await page.waitForFunction(() => {
+      const elements = document.querySelectorAll('p.MuiTypography-h6, h6.MuiTypography-root');
+      return Array.from(elements).some(el => el.textContent && el.textContent.trim() === 'Salvati');
+    }, { timeout: 5000 });
+    return true;
+  } catch (error) {
+    console.log('Wallets section not found:', error.message);
+    return false;
+  }
+};
+
+export const verifyWalletsSectionNotVisible = async () => {
+  try {
+    const walletsVisible = await page.evaluate(() => {
+      const elements = document.querySelectorAll('h6.MuiTypography-root, p.MuiTypography-h6');
+      return Array.from(elements).some(el => el.textContent.trim() === 'Salvati');
+    });
+    return !walletsVisible;
+  } catch (error) {
+    return true;
+  }
+};
+
+export const selectWallet = async (index) => {
+  const walletSelector = `[data-qaid="wallet-${index}"]`;
+  const walletBtn = await page.waitForSelector(walletSelector, {
+    visible: true,
+  });
+  await walletBtn.click();
+};
