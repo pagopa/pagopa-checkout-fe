@@ -225,11 +225,6 @@ export function PaymentChoice(props: {
       paymentTypeCode,
     });
 
-    // eslint-disable-next-line functional/immutable-data
-    PaymentMethodRoutes[paymentTypeCode] = {
-      ...PaymentMethodRoutes[paymentTypeCode],
-      route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
-    };
     if (ref.current) {
       await onApmChoice(ref.current, (belowThreshold: boolean) =>
         onSuccess(paymentTypeCode, true, belowThreshold)
