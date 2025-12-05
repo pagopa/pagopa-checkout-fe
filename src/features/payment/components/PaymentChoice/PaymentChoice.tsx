@@ -26,7 +26,6 @@ import { PaymentMethodFilter } from "utils/PaymentMethodFilterUtil";
 import { ButtonNaked } from "@pagopa/mui-italia";
 import {
   getMethodDescriptionForCurrentLanguage,
-  // getMethodNameForCurrentLanguage,
 } from "../../../../utils/paymentMethods/paymentMethodsHelper";
 import TextFormField from "../../../../components/TextFormField/TextFormField";
 import InformationModal from "../../../../components/modals/InformationModal";
@@ -47,7 +46,6 @@ import { setThreshold } from "../../../../redux/slices/threshold";
 import { CheckoutRoutes } from "../../../../routes/models/routeModel";
 import { onErrorActivate } from "../../../../utils/api/transactionsErrorHelper";
 import {
-  // MethodManagementEnum,
   PaymentTypeCodeEnum,
 } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 // import { PaymentMethodStatusEnum } from "../../../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
