@@ -905,11 +905,13 @@ describe("Logout tests", () => {
 
   });
 });
-describe.only("Wallet feature tests", () => {
+
+describe("Wallet feature tests", () => {
   it("Should display wallet list for authenticated user with wallet feature enabled", async () => {
     // enable feature flag
     await page.evaluate(() => {
       sessionStorage.setItem('enableWallet', 'true');
+      console.log("Wallet feature flag enabled")
     });
 
     // login
@@ -918,19 +920,23 @@ describe.only("Wallet feature tests", () => {
     // check wallets section is visibile
     const walletsSectionVisible = await verifyWalletsSectionVisible();
     expect(walletsSectionVisible).toBe(true);
+    console.log("Wallet section visible")
 
     // check individual wallets from list are visible
     const wallet0Visible = await verifyWalletVisible(0);
     expect(wallet0Visible).toBe(true);
+    console.log("First wallet visible")
 
     const wallet1Visible = await verifyWalletVisible(1);
     expect(wallet1Visible).toBe(true);
+    console.log("Second wallet visible")
   });
 
   it("Should NOT display wallets when wallet feature flag is disabled", async () => {
     // disable feature flag
     await page.evaluate(() => {
       sessionStorage.setItem('enableWallet', 'false');
+      console.log("Wallet feature flag disabled")
     });
 
     // login
@@ -939,28 +945,34 @@ describe.only("Wallet feature tests", () => {
     // check wallets section is NOT visibile
     const walletsSectionNotVisible = await verifyWalletsSectionNotVisible();
     expect(walletsSectionNotVisible).toBe(true);
+    console.log("Wallet section not visible")
 
     // check no wallet elements are visible
     const noWallets = await verifyWalletNotVisible();
     expect(noWallets).toBe(true);
+    console.log("Individual wallets not visible")
   });
 
   it("Should NOT display wallets when user is not authenticated", async () => {
     // enable wallet feature flag
     await page.evaluate(() => {
       sessionStorage.setItem('enableWallet', 'true');
+      console.log("Wallet feature flag enabled")
     });
 
     // do not login
     await fillPaymentFlowWithoutLogin(OKPaymentInfo.VALID_RPTID, OKPaymentInfo.VALID_FISCAL_CODE, OKPaymentInfo.EMAIL);
+    console.log("User not authenticated")
 
     // check wallets section is NOT visibile
     const walletsSectionNotVisible = await verifyWalletsSectionNotVisible();
     expect(walletsSectionNotVisible).toBe(true);
+    console.log("Wallet section not visible")
 
     // check no wallet elements are visible
     const noWallets = await verifyWalletNotVisible();
     expect(noWallets).toBe(true);
-    console.log("END Should NOT display wallets when user is not authenticated")
+    console.log("Individual wallets not visible")
+  });
   });
 });
