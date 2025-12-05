@@ -128,12 +128,16 @@ export const retrieveCardData = async ({
 export const calculateFees = async ({
   paymentId,
   bin,
+  walletId,
+  walletType,
   onError,
   onPspNotFound,
   onResponsePsp,
 }: {
   paymentId: string;
   bin?: string;
+  walletId?: string;
+  walletType?: string;
   onError: (e: string) => void;
   onPspNotFound: () => void;
   onResponsePsp: (r: any) => void;
@@ -154,6 +158,8 @@ export const calculateFees = async ({
         })),
       })),
       isAllCCP: transaction.payments[0].isAllCCP,
+      walletId,
+      walletType,
     }))
   );
 
@@ -581,6 +587,12 @@ export const getFees = (
       (getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined)
         ?.paymentMethodId || "",
     bin,
+    walletId:
+      (getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined)
+        ?.walletId || "",
+    walletType:
+      (getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined)
+        ?.walletType || "",
     onError,
     onPspNotFound,
     onResponsePsp: (resp) => {

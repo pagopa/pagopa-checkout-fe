@@ -44,7 +44,6 @@ import { setThreshold } from "../../../../redux/slices/threshold";
 import { CheckoutRoutes } from "../../../../routes/models/routeModel";
 import { onErrorActivate } from "../../../../utils/api/transactionsErrorHelper";
 import { PaymentTypeCodeEnum } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
-// import { PaymentMethodStatusEnum } from "../../../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
 import { WalletInfo } from "../../../../../generated/definitions/checkout-wallets-v1/WalletInfo";
 import { WalletStatusEnum } from "../../../../../generated/definitions/checkout-wallets-v1/WalletStatus";
 import { DisabledPaymentMethods, MethodComponentList } from "./PaymentMethod";
@@ -219,17 +218,16 @@ export function PaymentChoice(props: {
       method.details?.type === "PAYPAL"
         ? PaymentTypeCodeEnum.PPAL
         : PaymentTypeCodeEnum.CP;
+    const walletId = method.walletId || "";
+    const walletType = method.details?.type || "";
 
     setSessionItem(SessionItems.paymentMethod, {
       paymentMethodId,
       paymentTypeCode,
+      walletId,
+      walletType,
     });
 
-    // eslint-disable-next-line functional/immutable-data
-    PaymentMethodRoutes[paymentTypeCode] = {
-      ...PaymentMethodRoutes[paymentTypeCode],
-      route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
-    };
     if (ref.current) {
       await onApmChoice(ref.current, (belowThreshold: boolean) =>
         onSuccess(paymentTypeCode, true, belowThreshold)
