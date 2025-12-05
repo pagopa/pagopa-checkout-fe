@@ -24,9 +24,7 @@ import {
 import { constVoid } from "fp-ts/function";
 import { PaymentMethodFilter } from "utils/PaymentMethodFilterUtil";
 import { ButtonNaked } from "@pagopa/mui-italia";
-import {
-  getMethodDescriptionForCurrentLanguage,
-} from "../../../../utils/paymentMethods/paymentMethodsHelper";
+import { getMethodDescriptionForCurrentLanguage } from "../../../../utils/paymentMethods/paymentMethodsHelper";
 import TextFormField from "../../../../components/TextFormField/TextFormField";
 import InformationModal from "../../../../components/modals/InformationModal";
 import ErrorModal from "../../../../components/modals/ErrorModal";
@@ -45,10 +43,7 @@ import { PaymentInstrumentsType } from "../../models/paymentModel";
 import { setThreshold } from "../../../../redux/slices/threshold";
 import { CheckoutRoutes } from "../../../../routes/models/routeModel";
 import { onErrorActivate } from "../../../../utils/api/transactionsErrorHelper";
-import {
-  PaymentTypeCodeEnum,
-} from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
-// import { PaymentMethodStatusEnum } from "../../../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
+import { PaymentTypeCodeEnum } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 import { WalletInfo } from "../../../../../generated/definitions/checkout-wallets-v1/WalletInfo";
 import { WalletStatusEnum } from "../../../../../generated/definitions/checkout-wallets-v1/WalletStatus";
 import { DisabledPaymentMethods, MethodComponentList } from "./PaymentMethod";
@@ -104,9 +99,12 @@ export function PaymentChoice(props: {
 
   const onSuccess = (
     paymentTypeCode: PaymentTypeCodeEnum,
+    isWallet: boolean,
     belowThreshold?: boolean
   ) => {
-    const route: string = PaymentMethodRoutes[paymentTypeCode]?.route;
+    const route: string = isWallet
+      ? CheckoutRoutes.RIEPILOGO_PAGAMENTO
+      : PaymentMethodRoutes[paymentTypeCode]?.route;
 
     if (belowThreshold !== undefined) {
       dispatch(setThreshold({ belowThreshold }));
@@ -201,10 +199,10 @@ export function PaymentChoice(props: {
       });
       if (paymentTypeCode !== PaymentTypeCodeEnum.CP && ref.current) {
         await onApmChoice(ref.current, (belowThreshold: boolean) =>
-          onSuccess(paymentTypeCode, belowThreshold)
+          onSuccess(paymentTypeCode, false, belowThreshold)
         );
       } else {
-        onSuccess(paymentTypeCode);
+        onSuccess(paymentTypeCode, false);
       }
     }
   };
@@ -230,17 +228,12 @@ export function PaymentChoice(props: {
       walletType,
     });
 
-    // eslint-disable-next-line functional/immutable-data
-    PaymentMethodRoutes[paymentTypeCode] = {
-      ...PaymentMethodRoutes[paymentTypeCode],
-      route: CheckoutRoutes.RIEPILOGO_PAGAMENTO,
-    };
     if (ref.current) {
       await onApmChoice(ref.current, (belowThreshold: boolean) =>
-        onSuccess(paymentTypeCode, belowThreshold)
+        onSuccess(paymentTypeCode, true, belowThreshold)
       );
     } else {
-      onSuccess(paymentTypeCode);
+      onSuccess(paymentTypeCode, true);
     }
   };
 
