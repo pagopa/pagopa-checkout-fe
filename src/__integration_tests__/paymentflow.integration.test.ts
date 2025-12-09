@@ -969,7 +969,7 @@ describe("Payment Methods list tests - Fee rendering", () => {
 });
 
 describe("Show wallets", () => {
-  it.only.each([
+  it.each([
     ["it", itTranslation],
     ["en", enTranslation],
     ["fr", frTranslation],
