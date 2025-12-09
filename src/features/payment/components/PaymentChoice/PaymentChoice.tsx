@@ -99,21 +99,13 @@ export function PaymentChoice(props: {
   };
 
   const onSuccess = (
-<<<<<<< HEAD
     paymentTypeCode: PaymentTypeCodeEnum | WalletTypeEnum,
-=======
-    paymentTypeCode: PaymentTypeCodeEnum,
->>>>>>> c66adc43 (fix: logic for route calculation)
     isWallet: boolean,
     belowThreshold?: boolean
   ) => {
     const route: string = isWallet
       ? CheckoutRoutes.RIEPILOGO_PAGAMENTO
-<<<<<<< HEAD
       : PaymentMethodRoutes[paymentTypeCode as PaymentTypeCodeEnum]?.route;
-=======
-      : PaymentMethodRoutes[paymentTypeCode]?.route;
->>>>>>> c66adc43 (fix: logic for route calculation)
 
     if (belowThreshold !== undefined) {
       dispatch(setThreshold({ belowThreshold }));
@@ -239,17 +231,10 @@ export function PaymentChoice(props: {
 
     if (ref.current) {
       await onApmChoice(ref.current, (belowThreshold: boolean) =>
-<<<<<<< HEAD
         onSuccess(walletType, true, belowThreshold)
       );
     } else {
       onSuccess(walletType, true);
-=======
-        onSuccess(paymentTypeCode, true, belowThreshold)
-      );
-    } else {
-      onSuccess(paymentTypeCode, true);
->>>>>>> c66adc43 (fix: logic for route calculation)
     }
   };
 
