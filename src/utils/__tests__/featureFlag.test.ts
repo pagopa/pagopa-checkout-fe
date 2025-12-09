@@ -8,6 +8,7 @@ describe("featureFlags", () => {
       enablePaymentMethodsHandler: "isPaymentMethodsHandlerEnabled",
       enablePspPage: "isPspPickerPageEnabled",
       enableScheduledMaintenanceBanner: "isScheduledMaintenanceBannerEnabled",
+      enableWallet: "isPaymentWalletEnabled",
     });
   });
 
