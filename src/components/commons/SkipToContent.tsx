@@ -1,33 +1,36 @@
-import { Button } from "@mui/material";
-import React, { useState } from "react";
+import React from "react";
+import { Box } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
-const SkipToContent = () => {
+const SkipToContent: React.FC = () => {
   const { t } = useTranslation();
-  const [isFocused, setIsFocused] = useState(false);
-
-  const handleFocus = () => setIsFocused(true);
-  const handleBlur = () => setIsFocused(false);
-
-  const linkStyle: any = {
-    transition: "opacity 0.2s ease-out",
-    position: "relative",
-    opacity: isFocused ? "1" : "0",
-    zIndex: isFocused ? "1" : "-1",
-  };
-
   return (
-    <div style={{ position: "relative" }}>
-      <Button
-        id="skip-to-content"
-        onClick={() => document.getElementById("main_content")?.focus()}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        style={linkStyle}
-      >
-        {t("mainPage.main.skipToContent")}
-      </Button>
-    </div>
+    <Box
+      component="a"
+      href="#main_content"
+      sx={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        transform: "translateY(-150%)",
+        px: 2,
+        py: 1,
+        bgcolor: "primary.main",
+        color: "primary.contrastText",
+        textDecoration: "none",
+        fontWeight: 600,
+        textAlign: "center",
+        display: "block",
+        zIndex: (theme) => theme.zIndex.tooltip + 1,
+        transition: "transform 0.2s ease-out",
+        "&:focus-visible": {
+          transform: "translateY(0)",
+        },
+      }}
+    >
+      {t("mainPage.main.skipToContent")}
+    </Box>
   );
 };
 
