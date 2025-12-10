@@ -44,7 +44,6 @@ import { setThreshold } from "../../../../redux/slices/threshold";
 import { CheckoutRoutes } from "../../../../routes/models/routeModel";
 import { onErrorActivate } from "../../../../utils/api/transactionsErrorHelper";
 import { PaymentTypeCodeEnum } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
-// import { PaymentMethodStatusEnum } from "../../../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
 import { WalletInfo } from "../../../../../generated/definitions/checkout-wallets-v1/WalletInfo";
 import { WalletStatusEnum } from "../../../../../generated/definitions/checkout-wallets-v1/WalletStatus";
 import { DisabledPaymentMethods, MethodComponentList } from "./PaymentMethod";
