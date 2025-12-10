@@ -976,7 +976,7 @@ describe("PaymentChoicePage authenticated", () => {
     );
 
     await waitFor(() => {
-      const visaDiv = screen.getByTestId("wallet-0");
+      const visaDiv = screen.getByTitle("VISA •••• 1234");
       expect(visaDiv).toBeInTheDocument();
 
       fireEvent.click(visaDiv);

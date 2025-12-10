@@ -373,7 +373,7 @@ export function PaymentChoice(props: {
                           }}
                         />
                       }
-                      data-testid={`wallet-${index}`}
+                      dataTestId={`wallet-${index}`}
                       onClick={() => handleClickOnMethodWallet(method)}
                       endAdornment={
                         method.status === WalletStatusEnum.VALIDATED && (
