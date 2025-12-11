@@ -223,10 +223,15 @@ export function PaymentChoice(props: {
         ? WalletTypeEnum.PAYPAL
         : WalletTypeEnum.CARDS;
 
+    const pspId = isPaypalDetails(method.details)
+      ? method.details.pspId
+      : undefined;
+
     setSessionItem(SessionItems.paymentMethod, {
       paymentMethodId,
       walletId,
       walletType,
+      pspId,
     });
 
     const paymentTypeCode =
