@@ -216,7 +216,7 @@ export function PaymentChoice(props: {
     });
     const paymentMethodId = method.paymentMethodId;
 
-    const walletId = method.walletId || "";
+    const walletId = method.walletId || undefined;
 
     const walletType =
       method.details?.type === "PAYPAL"

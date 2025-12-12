@@ -595,7 +595,7 @@ export const getFees = (
     bin,
     walletId:
       (getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined)
-        ?.walletId || "",
+        ?.walletId ?? undefined,
     walletType:
       (getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined)
         ?.walletType ?? undefined,
