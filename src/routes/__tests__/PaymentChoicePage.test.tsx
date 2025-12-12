@@ -53,6 +53,7 @@ import {
 } from "../../utils/mixpanel/mixpanelEvents";
 import { getWalletInstruments } from "../../utils/api/helper";
 import { ErrorsType } from "../../utils/errors/checkErrorsModel";
+import { WalletTypeEnum } from "../../../generated/definitions/payment-ecommerce-v2/CalculateFeeRequest";
 import {
   calculateFeeResponse,
   createSuccessGetPaymentMethodsV1,
@@ -977,11 +978,17 @@ describe("PaymentChoicePage authenticated", () => {
     await waitFor(() => {
       const visaDiv = screen.getByTitle("VISA •••• 1234");
       expect(visaDiv).toBeInTheDocument();
+
+      fireEvent.click(visaDiv);
     });
 
-    await waitFor(() => {
-      fireEvent.click(screen.getByTitle("VISA •••• 1234"));
-    });
+    expect(setSessionItem).toHaveBeenCalledWith(
+      SessionItems.paymentMethod,
+      expect.objectContaining({
+        walletId: createSuccessGetWallets[0]!.walletId,
+        walletType: WalletTypeEnum.CARDS,
+      })
+    );
   });
 
   test("PaymentChoicePage not displays the list of wallets", async () => {

@@ -1003,7 +1003,6 @@ describe("Show wallets", () => {
       await cancelPaymentAction();
     }
   );
-
-})
+});
 
 
