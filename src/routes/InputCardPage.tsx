@@ -76,6 +76,24 @@ export default function InputCardPage() {
             | undefined
         )?.paymentMethodId || "",
       bin,
+      walletId:
+        (
+          getSessionItem(SessionItems.paymentMethod) as
+            | PaymentMethod
+            | undefined
+        )?.walletId || undefined,
+      walletType:
+        (
+          getSessionItem(SessionItems.paymentMethod) as
+            | PaymentMethod
+            | undefined
+        )?.walletType || undefined,
+      pspId:
+        (
+          getSessionItem(SessionItems.paymentMethod) as
+            | PaymentMethod
+            | undefined
+        )?.pspId || undefined,
       onError,
       onPspNotFound,
       onResponsePsp: (resp) => {

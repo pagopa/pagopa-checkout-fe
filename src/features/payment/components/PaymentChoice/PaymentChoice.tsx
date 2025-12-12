@@ -216,17 +216,22 @@ export function PaymentChoice(props: {
     });
     const paymentMethodId = method.paymentMethodId;
 
-    const walletId = method.walletId || "";
+    const walletId = method.walletId || undefined;
 
     const walletType =
       method.details?.type === "PAYPAL"
         ? WalletTypeEnum.PAYPAL
         : WalletTypeEnum.CARDS;
 
+    const pspId = isPaypalDetails(method.details)
+      ? method.details.pspId
+      : undefined;
+
     setSessionItem(SessionItems.paymentMethod, {
       paymentMethodId,
       walletId,
       walletType,
+      pspId,
     });
 
     const paymentTypeCode =

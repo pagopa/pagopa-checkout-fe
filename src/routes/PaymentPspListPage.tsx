@@ -177,6 +177,9 @@ export default function PaymentPspListPage() {
     void calculateFees({
       paymentId: paymentMethod?.paymentMethodId,
       bin: sessionPaymentMethodResponse?.bin,
+      walletId: paymentMethod?.walletId,
+      walletType: paymentMethod?.walletType,
+      pspId: paymentMethod?.pspId,
       onError,
       onPspNotFound,
       onResponsePsp: onPspListSuccessResponse,

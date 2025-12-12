@@ -54,6 +54,7 @@ export default function PaymentChoicePage() {
     0;
   const [loading, setLoading] = React.useState(false);
   const [instrumentsLoading, setInstrumentsLoading] = React.useState(false);
+  const [walletLoaded, setWalletLoaded] = React.useState(false);
   const [cancelModalOpen, setCancelModalOpen] = React.useState(false);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
@@ -80,15 +81,17 @@ export default function PaymentChoicePage() {
     if (!paymentInstruments?.length) {
       void getPaymentMethods();
     }
-    if (!walletInstruments?.length && loggedUser.userInfo != null) {
-      void getWallets();
-    }
   }, []);
 
   React.useEffect(() => {
     if (loggedUser.userInfo == null) {
-      void setWalletInstruments([]);
-    } else {
+      setWalletInstruments([]);
+      setWalletLoaded(false);
+      return;
+    }
+
+    if (!walletLoaded) {
+      setWalletLoaded(true);
       void getWallets();
     }
   }, [loggedUser.userInfo]);

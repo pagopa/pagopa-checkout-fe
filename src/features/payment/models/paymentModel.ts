@@ -93,6 +93,7 @@ export interface PaymentMethod {
   paymentMethodId: string;
   walletId?: string;
   walletType?: WalletTypeEnum;
+  pspId?: string;
 }
 
 export const MapField = t.record(
