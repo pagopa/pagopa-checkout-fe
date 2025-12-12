@@ -6,6 +6,7 @@ import { MemoryRouter } from "react-router-dom";
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import * as router from "react-router";
 import * as E from "fp-ts/Either";
+import { useAppSelector } from "../../redux/hooks/hooks";
 
 // Mock @mui/material styled system
 jest.mock("@mui/material/styles", () => ({
@@ -14,6 +15,21 @@ jest.mock("@mui/material/styles", () => ({
   useTheme: jest.fn(() => ({})),
   ThemeProvider: ({ children }: any) => children,
 }));
+
+jest.mock("../../redux/hooks/hooks", () => {
+  const actual = jest.requireActual("../../redux/hooks/hooks");
+
+  return {
+    ...actual,
+    useAppSelector: jest.fn((selector: any) => {
+      if (selector.name === "getLoggedUser") {
+        return { userInfo: { id: "1", name: "Mario" } };
+      }
+      return selector();
+    }),
+  };
+});
+
 import {
   getSessionItem,
   SessionItems,
@@ -26,6 +42,7 @@ import {
   apiPaymentEcommerceClientV2,
   apiPaymentEcommerceClientV3,
   apiPaymentEcommerceClientWithRetryV2,
+  apiWalletEcommerceClient,
 } from "../../utils/api/client";
 import { mixpanel } from "../../utils/mixpanel/mixpanelHelperInit";
 import {
@@ -34,10 +51,13 @@ import {
   MixpanelEventType,
   MixpanelFlow,
 } from "../../utils/mixpanel/mixpanelEvents";
+import { getWalletInstruments } from "../../utils/api/helper";
+import { ErrorsType } from "../../utils/errors/checkErrorsModel";
 import {
   calculateFeeResponse,
   createSuccessGetPaymentMethodsV1,
   createSuccessGetPaymentMethodsV3,
+  createSuccessGetWallets,
   paymentInfo,
   paymentMethod,
   rptId,
@@ -103,6 +123,9 @@ jest.mock("../../utils/paymentMethods/paymentMethodsHelper", () => ({
 const navigate = jest.fn();
 
 jest.mock("../../utils/api/client", () => ({
+  apiWalletEcommerceClient: {
+    getCheckoutPaymentWalletsByIdUser: jest.fn(),
+  },
   apiPaymentEcommerceClient: {
     getAllPaymentMethods: jest.fn(),
   },
@@ -149,6 +172,7 @@ jest.mock("../../utils/storage/sessionStorage", () => ({
     correlationId: "correlationId",
     sessionPayment: "sessionPayment",
     transaction: "transaction",
+    enableWallet: "enableWallet",
   },
 }));
 
@@ -468,7 +492,19 @@ describe("PaymentChoicePage guest", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     // (localStorageMock.getItem as jest.Mock).mockReturnValue("true");
+
     (getSessionItem as jest.Mock).mockImplementation(mockGetSessionItemNoAuth);
+    (
+      apiWalletEcommerceClient.getCheckoutPaymentWalletsByIdUser as jest.Mock
+    ).mockResolvedValue(
+      Promise.resolve({
+        right: {
+          status: 200,
+          value: { wallets: createSuccessGetWallets },
+        },
+      })
+    );
+
     (
       apiPaymentEcommerceClient.getAllPaymentMethods as jest.Mock
     ).mockReturnValue(
@@ -479,6 +515,7 @@ describe("PaymentChoicePage guest", () => {
         },
       })
     );
+
     (apiPaymentEcommerceClientV2.newTransaction as jest.Mock).mockReturnValue(
       Promise.resolve({
         right: {
@@ -699,6 +736,10 @@ const mockGetSessionItemAuthenticated = (item: SessionItems) => {
       return sessionPayment;
     case "transaction":
       return transaction;
+    case SessionItems.authToken:
+      return "authToken";
+    case SessionItems.enableWallet:
+      return "true";
     default:
       return undefined;
   }
@@ -709,6 +750,17 @@ describe("PaymentChoicePage authenticated", () => {
     jest.clearAllMocks();
     (getSessionItem as jest.Mock).mockImplementation(
       mockGetSessionItemAuthenticated
+    );
+
+    (
+      apiWalletEcommerceClient.getCheckoutPaymentWalletsByIdUser as jest.Mock
+    ).mockResolvedValue(
+      Promise.resolve({
+        right: {
+          status: 200,
+          value: { wallets: createSuccessGetWallets },
+        },
+      })
     );
     (
       apiPaymentEcommerceClientV3.getAllPaymentMethodsV3 as jest.Mock
@@ -877,5 +929,188 @@ describe("PaymentChoicePage authenticated", () => {
         }
       );
     });
+  });
+
+  test("PaymentChoicePage displays the list of wallets", async () => {
+    (getSessionItem as jest.Mock).mockImplementation(
+      mockGetSessionItemAuthenticated
+    );
+    (getSessionItem as jest.Mock).mockImplementation((key) => {
+      if (key === SessionItems.enableWallet || key === SessionItems.authToken) {
+        return "true";
+      }
+
+      return null;
+    });
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentChoicePage />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      const visaDiv = screen.getByTitle("VISA •••• 1234");
+      expect(visaDiv).toBeInTheDocument();
+      const emailDiv = screen.getByTitle("test***@***test.it");
+      expect(emailDiv).toBeInTheDocument();
+    });
+  });
+
+  test("Select wallet and navigate to lista-psp", async () => {
+    (getSessionItem as jest.Mock).mockImplementation(
+      mockGetSessionItemAuthenticated
+    );
+    (getSessionItem as jest.Mock).mockImplementation((key) => {
+      if (key === SessionItems.enableWallet || key === SessionItems.authToken) {
+        return "true";
+      }
+
+      return null;
+    });
+
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentChoicePage />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      const visaDiv = screen.getByTitle("VISA •••• 1234");
+      expect(visaDiv).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      fireEvent.click(screen.getByTitle("VISA •••• 1234"));
+    });
+  });
+
+  test("PaymentChoicePage not displays the list of wallets", async () => {
+    (getSessionItem as jest.Mock).mockImplementation((key) => {
+      if (key === SessionItems.enableWallet || key === SessionItems.authToken) {
+        return "true";
+      }
+
+      return null;
+    });
+    (useAppSelector as jest.Mock).mockImplementation((selector: any) => {
+      if (selector.name === "getLoggedUser") {
+        return { userInfo: null }; // 👈 invece di null
+      }
+      return selector();
+    });
+
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentChoicePage />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      const visaDiv = screen.queryByTitle("VISA •••• 1234");
+      expect(visaDiv).not.toBeInTheDocument();
+      const emailDiv = screen.queryByTitle("test***@***test.it");
+      expect(emailDiv).not.toBeInTheDocument();
+    });
+
+    screen.debug();
+  });
+
+  it("should call onResponse with wallets when API returns 200", async () => {
+    (getSessionItem as jest.Mock).mockImplementation((key) => {
+      if (key === SessionItems.enableWallet || key === SessionItems.authToken) {
+        return "true";
+      }
+
+      return null;
+    });
+
+    const onResponse = jest.fn();
+    const onError = jest.fn();
+
+    (
+      apiWalletEcommerceClient.getCheckoutPaymentWalletsByIdUser as jest.Mock
+    ).mockResolvedValue(
+      E.right({
+        status: 200,
+        value: { wallets: createSuccessGetWallets },
+      })
+    );
+
+    await getWalletInstruments(onError, onResponse);
+
+    expect(onResponse).toHaveBeenCalledWith(createSuccessGetWallets);
+    expect(onError).not.toHaveBeenCalled();
+  });
+
+  it("should call onError with UNAUTHORIZED when API returns 401", async () => {
+    (getSessionItem as jest.Mock).mockImplementation((key) => {
+      if (key === SessionItems.enableWallet || key === SessionItems.authToken) {
+        return "true";
+      }
+
+      return null;
+    });
+    const onResponse = jest.fn();
+    const onError = jest.fn();
+
+    (
+      apiWalletEcommerceClient.getCheckoutPaymentWalletsByIdUser as jest.Mock
+    ).mockResolvedValue({
+      right: {
+        status: 401,
+        value: {},
+      },
+    });
+
+    await getWalletInstruments(onError, onResponse);
+
+    expect(onError).toHaveBeenCalledWith(ErrorsType.UNAUTHORIZED);
+    expect(onResponse).not.toHaveBeenCalled();
+  });
+
+  it("should call onError with STATUS_ERROR 500", async () => {
+    (getSessionItem as jest.Mock).mockImplementation((key) => {
+      if (key === SessionItems.enableWallet || key === SessionItems.authToken) {
+        return "true";
+      }
+
+      return null;
+    });
+    const onResponse = jest.fn();
+    const onError = jest.fn();
+
+    (
+      apiWalletEcommerceClient.getCheckoutPaymentWalletsByIdUser as jest.Mock
+    ).mockResolvedValue({
+      right: {
+        status: 500,
+        value: {},
+      },
+    });
+
+    await getWalletInstruments(onError, onResponse);
+
+    expect(onError).toHaveBeenCalledWith(ErrorsType.STATUS_ERROR);
+    expect(onResponse).not.toHaveBeenCalled();
+  });
+
+  it("should call onError with UNAUTHORIZED", async () => {
+    (getSessionItem as jest.Mock).mockImplementation((key) => {
+      if (key === SessionItems.enableWallet) {
+        return "true";
+      } else if (key === SessionItems.authToken) {
+        return null;
+      }
+
+      return null;
+    });
+    const onResponse = jest.fn();
+    const onError = jest.fn();
+
+    const result = await getWalletInstruments(onError, onResponse);
+
+    expect(onError).toHaveBeenCalledWith(ErrorsType.UNAUTHORIZED);
+    expect(onResponse).not.toHaveBeenCalled();
+    expect(result).toEqual([]);
   });
 });

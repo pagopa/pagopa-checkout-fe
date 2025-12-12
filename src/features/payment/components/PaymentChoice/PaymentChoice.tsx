@@ -4,6 +4,7 @@ import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidV4 } from "uuid";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import {
   Typography,
   Button,
@@ -11,6 +12,7 @@ import {
   IconButton,
   Stack,
   Chip,
+  Divider,
 } from "@mui/material";
 import { t } from "i18next";
 import {
@@ -42,13 +44,17 @@ import { setThreshold } from "../../../../redux/slices/threshold";
 import { CheckoutRoutes } from "../../../../routes/models/routeModel";
 import { onErrorActivate } from "../../../../utils/api/transactionsErrorHelper";
 import { PaymentTypeCodeEnum } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
+import { WalletInfo } from "../../../../../generated/definitions/checkout-wallets-v1/WalletInfo";
+import { WalletStatusEnum } from "../../../../../generated/definitions/checkout-wallets-v1/WalletStatus";
 import { DisabledPaymentMethods, MethodComponentList } from "./PaymentMethod";
 import { getNormalizedMethods, paymentTypeTranslationKeys } from "./utils";
 import { PaymentChoiceFilterDrawer } from "./PaymentChoiceFilterDrawer";
+import { ImageComponent } from "./PaymentMethodImage";
 
 export function PaymentChoice(props: {
   amount: number;
   paymentInstruments: Array<PaymentInstrumentsType>;
+  wallets?: Array<WalletInfo>;
   loading?: boolean;
 }) {
   const ref = React.useRef<ReCAPTCHA>(null);
@@ -93,9 +99,12 @@ export function PaymentChoice(props: {
 
   const onSuccess = (
     paymentTypeCode: PaymentTypeCodeEnum,
+    isWallet: boolean,
     belowThreshold?: boolean
   ) => {
-    const route: string = PaymentMethodRoutes[paymentTypeCode]?.route;
+    const route: string = isWallet
+      ? CheckoutRoutes.RIEPILOGO_PAGAMENTO
+      : PaymentMethodRoutes[paymentTypeCode]?.route;
 
     if (belowThreshold !== undefined) {
       dispatch(setThreshold({ belowThreshold }));
@@ -165,6 +174,17 @@ export function PaymentChoice(props: {
     paymentMethods: Array<PaymentInstrumentsType>
   ) => paymentMethods.filter(filterPaymentMethodsCombined);
 
+  const getDescriptionWallet = (method: WalletInfo) =>
+    isPaypalDetails(method.details)
+      ? method.details.maskedEmail ?? ""
+      : `${method.details?.brand ?? ""} •••• ${
+          method.details?.lastFourDigits ?? ""
+        }`;
+  const getNameWallet = (method: WalletInfo) =>
+    isPaypalDetails(method.details)
+      ? "PayPal"
+      : `${method.details?.brand ?? ""}`;
+
   const handleClickOnMethod = async (method: PaymentInstrumentsType) => {
     if (!loading) {
       const { paymentTypeCode, id: paymentMethodId } = method;
@@ -179,11 +199,37 @@ export function PaymentChoice(props: {
       });
       if (paymentTypeCode !== PaymentTypeCodeEnum.CP && ref.current) {
         await onApmChoice(ref.current, (belowThreshold: boolean) =>
-          onSuccess(paymentTypeCode, belowThreshold)
+          onSuccess(paymentTypeCode, false, belowThreshold)
         );
       } else {
-        onSuccess(paymentTypeCode);
+        onSuccess(paymentTypeCode, false);
       }
+    }
+  };
+
+  // eslint-disable-next-line no-console
+  const handleClickOnMethodWallet = async (method: WalletInfo) => {
+    setSessionItem(SessionItems.paymentMethodInfo, {
+      title: getDescriptionWallet(method),
+      asset: method.paymentMethodAsset || "",
+    });
+    const paymentMethodId = method.paymentMethodId;
+    const paymentTypeCode =
+      method.details?.type === "PAYPAL"
+        ? PaymentTypeCodeEnum.PPAL
+        : PaymentTypeCodeEnum.CP;
+
+    setSessionItem(SessionItems.paymentMethod, {
+      paymentMethodId,
+      paymentTypeCode,
+    });
+
+    if (ref.current) {
+      await onApmChoice(ref.current, (belowThreshold: boolean) =>
+        onSuccess(paymentTypeCode, true, belowThreshold)
+      );
+    } else {
+      onSuccess(paymentTypeCode, true);
     }
   };
 
@@ -225,6 +271,15 @@ export function PaymentChoice(props: {
       buyNowPayLater: false,
     }));
   };
+
+  const isPaypalDetails = (
+    details: WalletInfo["details"]
+  ): details is {
+    type: string;
+    maskedEmail?: string;
+    pspId: string;
+    pspBusinessName: string;
+  } => details?.type === "PAYPAL";
 
   return (
     <>
@@ -288,6 +343,50 @@ export function PaymentChoice(props: {
               </ButtonNaked>
             )}
           </Stack>
+
+          {/* --- Preferred (Wallet) Methods Section --- */}
+          {props.wallets && props.wallets?.length > 0 && (
+            <>
+              <Box sx={{ mt: 4 }}>
+                <Typography
+                  variant="h6"
+                  component={"p"}
+                  sx={{ whiteSpace: "pre-line" }}
+                >
+                  {t("paymentChoicePage.saved")}
+                </Typography>
+                <Box>
+                  {props.wallets.map((method: WalletInfo, index: number) => (
+                    <ClickableFieldContainer
+                      key={method.details?.type}
+                      title={getDescriptionWallet(method)}
+                      icon={
+                        <ImageComponent
+                          {...{
+                            asset: method.paymentMethodAsset,
+                            name: getNameWallet(method),
+                          }}
+                        />
+                      }
+                      dataTestId={`wallet-${index}`}
+                      onClick={() => handleClickOnMethodWallet(method)}
+                      endAdornment={
+                        method.status === WalletStatusEnum.VALIDATED && (
+                          <ArrowForwardIosIcon
+                            sx={{ color: "primary.main" }}
+                            fontSize="small"
+                          />
+                        )
+                      }
+                      isLast={index === (props.wallets?.length ?? 0) - 1}
+                      disabled={method.status !== WalletStatusEnum.VALIDATED}
+                    />
+                  ))}
+                </Box>
+                <Divider sx={{ my: 5 }} />
+              </Box>
+            </>
+          )}
 
           {paymentMethodFilterState && paymentMethodFilterState.paymentType && (
             <Chip

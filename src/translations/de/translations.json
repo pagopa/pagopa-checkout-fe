@@ -355,6 +355,7 @@
     "transaction": "Gebühr"
   },
   "paymentChoicePage": {
+    "saved": "Gespeicherte",
     "bank": "Bankkonto",
     "button": "Zurück",
     "costs": "Kostentransparenz.",

@@ -355,6 +355,7 @@
     "transaction": "Frais"
   },
   "paymentChoicePage": {
+    "saved": "Enregistrés",
     "bank": "Compte bancaire",
     "button": "Retour",
     "costs": "Transparence des frais facturés",

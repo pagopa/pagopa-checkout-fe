@@ -39,4 +39,11 @@ describe("featureFlags", () => {
       "isScheduledMaintenanceBannerEnabled"
     );
   });
+
+  test("should contain enableWallet flag", () => {
+    expect(featureFlags).toHaveProperty(
+      "enableWallet",
+      "isPaymentWalletEnabled"
+    );
+  });
 });

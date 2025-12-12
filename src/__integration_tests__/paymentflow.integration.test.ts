@@ -20,7 +20,8 @@ import {
   authorizeApmPaymentAndGetError,
   filterByType,
   filterByTwoType,
-  verifyPaymentMethodsNotContains
+  verifyPaymentMethodsNotContains,
+  showWallets
 } from "./utils/helpers";
 import itTranslation from "../translations/it/translations.json";
 import deTranslation from "../translations/de/translations.json";
@@ -966,5 +967,43 @@ describe("Payment Methods list tests - Fee rendering", () => {
     expect(feeElems.length).toBe(7);
   });
 });
+
+describe("Show wallets", () => {
+  it.each([
+    ["it", itTranslation],
+    ["en", enTranslation],
+    ["fr", frTranslation],
+    ["de", deTranslation],
+    ["sl", slTranslation],
+  ])(
+    "show list wallet for language [%s]",
+    async (lang, translation) => {
+      selectLanguage(lang);
+      await page.evaluate(() => {
+      sessionStorage.setItem('enableWallet', "true");
+    });
+    const resultMessage = await showWallets(
+      KORPTIDs.PSP_ABOVETHRESHOLD,
+      OKPaymentInfo.VALID_FISCAL_CODE,
+      OKPaymentInfo.EMAIL,
+      OKPaymentInfo.VALID_CARD_DATA
+    );
+
+    expect(resultMessage).toContain(
+      translation.paymentCheckPage.disclaimer.yourCard
+    );
+
+     const found = await page.evaluate(() => {
+        const elements = document.querySelectorAll('.MuiTypography-sidenav');
+        return Array.from(elements).some(el => /VISA.*1334/.test(el.textContent));
+     });
+
+      expect(found).toBe(true);
+      
+      await cancelPaymentAction();
+    }
+  );
+
+})
 
 

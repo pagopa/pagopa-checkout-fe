@@ -355,6 +355,7 @@
     "transaction": "Fee"
   },
   "paymentChoicePage": {
+    "saved": "Saved",
     "bank": "Bank account",
     "button": "Back",
     "costs": "Cost transparency.",
