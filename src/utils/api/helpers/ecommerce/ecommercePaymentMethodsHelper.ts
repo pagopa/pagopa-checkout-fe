@@ -30,7 +30,10 @@ import {
   setSessionItem,
 } from "../../../../utils/storage/sessionStorage";
 import { NewTransactionResponse } from "../../../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
-import { CalculateFeeRequest } from "../../../../../generated/definitions/payment-ecommerce-v2/CalculateFeeRequest";
+import {
+  CalculateFeeRequest,
+  WalletTypeEnum,
+} from "../../../../../generated/definitions/payment-ecommerce-v2/CalculateFeeRequest";
 import { CreateSessionResponse } from "../../../../../generated/definitions/payment-ecommerce/CreateSessionResponse";
 import { Bundle } from "../../../../../generated/definitions/payment-ecommerce-v2/Bundle";
 import { CalculateFeeResponse } from "../../../../../generated/definitions/payment-ecommerce-v2/CalculateFeeResponse";
@@ -128,12 +131,16 @@ export const retrieveCardData = async ({
 export const calculateFees = async ({
   paymentId,
   bin,
+  walletId,
+  walletType,
   onError,
   onPspNotFound,
   onResponsePsp,
 }: {
   paymentId: string;
   bin?: string;
+  walletId?: string;
+  walletType?: WalletTypeEnum;
   onError: (e: string) => void;
   onPspNotFound: () => void;
   onResponsePsp: (r: any) => void;
@@ -154,6 +161,8 @@ export const calculateFees = async ({
         })),
       })),
       isAllCCP: transaction.payments[0].isAllCCP,
+      walletId,
+      walletType,
     }))
   );
 
@@ -581,6 +590,12 @@ export const getFees = (
       (getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined)
         ?.paymentMethodId || "",
     bin,
+    walletId:
+      (getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined)
+        ?.walletId || "",
+    walletType:
+      (getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined)
+        ?.walletType ?? undefined,
     onError,
     onPspNotFound,
     onResponsePsp: (resp) => {

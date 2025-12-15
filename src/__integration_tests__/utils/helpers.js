@@ -586,6 +586,6 @@ export const fillAndSubmitWallet = async (
   await clickLoginButton();
   
   await choosePaymentMethod("wallet-0");
-  //await fillCardDataForm(cardData);
+
   await tryHandlePspPickerPage();
 };
