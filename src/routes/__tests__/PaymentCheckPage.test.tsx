@@ -3,6 +3,7 @@ import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { screen, fireEvent, waitFor } from "@testing-library/react";
 import * as router from "react-router";
+import { PaymentMethod } from "features/payment/models/paymentModel";
 import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders";
 import PaymentCheckPage from "../PaymentCheckPage";
 import {
@@ -25,6 +26,7 @@ import {
   MixpanelPaymentPhase,
 } from "../../utils/mixpanel/mixpanelEvents";
 import { PaymentTypeCodeEnum } from "../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
+import { WalletTypeEnum } from "../../../generated/definitions/payment-ecommerce-v2/CalculateFeeRequest";
 import {
   paymentInfo,
   paymentMethod,
@@ -125,6 +127,14 @@ const mockGetSessionItem = (item: SessionItems) => {
     default:
       return undefined;
   }
+};
+
+const paymentMethodWallet: PaymentMethod = {
+  ...paymentMethod,
+  paymentMethodId: "WalletID_456",
+  walletId: "WLT_98765",
+  walletType: WalletTypeEnum.PAYPAL,
+  pspId: "PSP_WALLET_DEFAULT",
 };
 
 describe("PaymentCheckPage", () => {
@@ -397,6 +407,45 @@ describe("PaymentCheckPage", () => {
           expiration_date: "2021-07-31",
           payment_method_selected: PaymentTypeCodeEnum.CP,
           data_entry: MixpanelDataEntryType.MANUAL,
+        })
+      );
+    });
+  });
+
+  // TEST AGGIUNTO SPECIFICAMENTE PER VERIFICARE I PARAMETRI DEL WALLET/PSP
+  test("test calculateFees is called with full wallet parameters on psp edit", async () => {
+    // 1. Setup: Sovrascrivi il mock per restituire i dati del Wallet solo per questo test
+    (getSessionItem as jest.Mock).mockImplementation((item: SessionItems) => {
+      if (item === SessionItems.paymentMethod) {
+        return paymentMethodWallet;
+      }
+      return mockGetSessionItem(item);
+    });
+
+    const { container } = renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentCheckPage />{" "}
+      </MemoryRouter>
+    );
+
+    const pspEditButton = container.querySelector("#pspEdit");
+
+    await waitFor(() => {
+      expect(pspEditButton).toBeInTheDocument();
+    });
+    fireEvent.click(pspEditButton!);
+
+    await waitFor(() => {
+      expect(calculateFees).toHaveBeenCalled();
+      expect(calculateFees).toHaveBeenCalledWith(
+        expect.objectContaining({
+          paymentId: paymentMethodWallet.paymentMethodId,
+          walletId: paymentMethodWallet.walletId,
+          walletType: paymentMethodWallet.walletType,
+          pspId: paymentMethodWallet.pspId,
+          onError: expect.any(Function),
+          onPspNotFound: expect.any(Function),
+          onResponsePsp: expect.any(Function),
         })
       );
     });
