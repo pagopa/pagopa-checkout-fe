@@ -3,7 +3,6 @@ import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { screen, fireEvent, waitFor } from "@testing-library/react";
 import * as router from "react-router";
-import { PaymentMethod } from "features/payment/models/paymentModel";
 import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders";
 import PaymentCheckPage from "../PaymentCheckPage";
 import {
@@ -27,6 +26,8 @@ import {
 } from "../../utils/mixpanel/mixpanelEvents";
 import { PaymentTypeCodeEnum } from "../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 import { WalletTypeEnum } from "../../../generated/definitions/payment-ecommerce-v2/CalculateFeeRequest";
+import { CalculateFeeResponse } from "../../../generated/definitions/payment-ecommerce-v2/CalculateFeeResponse";
+import { PaymentMethodStatusEnum } from "../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
 import {
   paymentInfo,
   paymentMethod,
@@ -129,12 +130,21 @@ const mockGetSessionItem = (item: SessionItems) => {
   }
 };
 
-const paymentMethodWallet: PaymentMethod = {
-  ...paymentMethod,
+const paymentMethodWallet = {
+  bin: "bi",
   paymentMethodId: "WalletID_456",
   walletId: "WLT_98765",
   walletType: WalletTypeEnum.PAYPAL,
   pspId: "PSP_WALLET_DEFAULT",
+};
+
+const mockSessionWithWalletPaymentMethod = () => {
+  (getSessionItem as jest.Mock).mockImplementation((item: SessionItems) => {
+    if (item === SessionItems.paymentMethod) {
+      return paymentMethodWallet;
+    }
+    return mockGetSessionItem(item);
+  });
 };
 
 describe("PaymentCheckPage", () => {
@@ -412,14 +422,23 @@ describe("PaymentCheckPage", () => {
     });
   });
 
-  // TEST AGGIUNTO SPECIFICAMENTE PER VERIFICARE I PARAMETRI DEL WALLET/PSP
-  test("test calculateFees is called with full wallet parameters on psp edit", async () => {
-    // 1. Setup: Sovrascrivi il mock per restituire i dati del Wallet solo per questo test
-    (getSessionItem as jest.Mock).mockImplementation((item: SessionItems) => {
-      if (item === SessionItems.paymentMethod) {
-        return paymentMethodWallet;
-      }
-      return mockGetSessionItem(item);
+  // eslint-disable-next-line sonarjs/no-identical-functions
+  test("Should handle success by calling onPspEditResponse", async () => {
+    const onResponseSpy = jest.fn();
+    mockSessionWithWalletPaymentMethod();
+
+    const mockResponseValid: CalculateFeeResponse = {
+      paymentMethodName: "Test Method",
+      paymentMethodDescription: "Descrizione metodo test",
+      paymentMethodStatus: PaymentMethodStatusEnum.ENABLED,
+      bundles: [{ idPsp: "idPsp" }],
+      asset: "test-asset",
+    };
+
+    (calculateFees as jest.Mock).mockImplementationOnce(({ onResponsePsp }) => {
+      onResponseSpy();
+      onResponsePsp(mockResponseValid);
+      return Promise.resolve();
     });
 
     const { container } = renderWithReduxProvider(
@@ -427,16 +446,10 @@ describe("PaymentCheckPage", () => {
         <PaymentCheckPage />{" "}
       </MemoryRouter>
     );
-
-    const pspEditButton = container.querySelector("#pspEdit");
-
-    await waitFor(() => {
-      expect(pspEditButton).toBeInTheDocument();
-    });
-    fireEvent.click(pspEditButton!);
+    fireEvent.click(container.querySelector("#pspEdit")!);
 
     await waitFor(() => {
-      expect(calculateFees).toHaveBeenCalled();
+      expect(onResponseSpy).toHaveBeenCalled();
       expect(calculateFees).toHaveBeenCalledWith(
         expect.objectContaining({
           paymentId: paymentMethodWallet.paymentMethodId,
