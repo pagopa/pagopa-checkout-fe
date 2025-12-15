@@ -597,7 +597,13 @@ describe("PaymentCheckPage", () => {
 
     await waitFor(() => {
       expect(onResponseSpy).toHaveBeenCalled();
-      expect(calculateFees).toHaveBeenCalledWith(
+
+      const callFromClick = (calculateFees as jest.Mock).mock.calls.find(
+        (call) => call[0].paymentId === paymentMethodWallet.paymentMethodId
+      );
+
+      expect(callFromClick).toBeDefined();
+      expect(callFromClick![0]).toEqual(
         expect.objectContaining({
           paymentId: paymentMethodWallet.paymentMethodId,
           bin: sessionPaymentMethodMock.bin,
