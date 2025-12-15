@@ -46,6 +46,7 @@ import { onErrorActivate } from "../../../../utils/api/transactionsErrorHelper";
 import { PaymentTypeCodeEnum } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 import { WalletInfo } from "../../../../../generated/definitions/checkout-wallets-v1/WalletInfo";
 import { WalletStatusEnum } from "../../../../../generated/definitions/checkout-wallets-v1/WalletStatus";
+import { WalletTypeEnum } from "../../../../../generated/definitions/payment-ecommerce-v2/CalculateFeeRequest";
 import { DisabledPaymentMethods, MethodComponentList } from "./PaymentMethod";
 import { getNormalizedMethods, paymentTypeTranslationKeys } from "./utils";
 import { PaymentChoiceFilterDrawer } from "./PaymentChoiceFilterDrawer";
@@ -214,6 +215,14 @@ export function PaymentChoice(props: {
       asset: method.paymentMethodAsset || "",
     });
     const paymentMethodId = method.paymentMethodId;
+
+    const walletId = method.walletId || "";
+
+    const walletType =
+      method.details?.type === "PAYPAL"
+        ? WalletTypeEnum.PAYPAL
+        : WalletTypeEnum.CARDS;
+
     const paymentTypeCode =
       method.details?.type === "PAYPAL"
         ? PaymentTypeCodeEnum.PPAL
@@ -222,6 +231,8 @@ export function PaymentChoice(props: {
     setSessionItem(SessionItems.paymentMethod, {
       paymentMethodId,
       paymentTypeCode,
+      walletId,
+      walletType,
     });
 
     if (ref.current) {

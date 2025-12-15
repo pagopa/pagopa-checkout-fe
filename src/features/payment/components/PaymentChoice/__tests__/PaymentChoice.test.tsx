@@ -19,6 +19,11 @@ import {
   MethodManagementEnum,
   PaymentTypeCodeEnum,
 } from "../../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
+import { WalletInfo } from "../../../../../../generated/definitions/checkout-wallets-v1/WalletInfo";
+import { WalletStatusEnum } from "../../../../../../generated/definitions/checkout-wallets-v1/WalletStatus";
+import { WalletApplicationInfo } from "../../../../../../generated/definitions/checkout-wallets-v1/WalletApplicationInfo";
+import { WalletClientStatusEnum } from "../../../../../../generated/definitions/checkout-wallets-v1/WalletClientStatus";
+import { WalletInfoDetails } from "../../../../../../generated/definitions/checkout-wallets-v1/WalletInfoDetails";
 
 // Define types for helper functions
 type GetFeesFunction = (
@@ -211,14 +216,20 @@ jest.mock("../../../../../components/PageContent/CheckoutLoader", () => ({
 
 jest.mock(
   "../../../../../components/TextFormField/ClickableFieldContainer",
-  () => ({
-    __esModule: true,
-    default: ({ loading }: any) => (
-      <div data-testid="clickable-field" aria-busy={loading}>
-        Loading field
-      </div>
-    ),
-  })
+  () => {
+    const original = jest.requireActual(
+      "../../../../../components/TextFormField/ClickableFieldContainer"
+    );
+
+    return {
+      __esModule: true,
+      default: (props: any) => (
+        <div data-testid="clickable-field" aria-busy={props.loading}>
+          <original.default {...props} />
+        </div>
+      ),
+    };
+  }
 );
 
 jest.mock("../../../../../components/modals/ErrorModal", () => ({
@@ -268,6 +279,21 @@ const renderWithRouterAndRedux = (ui: any, { initialState = {} } = {}) => {
 };
 
 describe("PaymentChoice", () => {
+  const isPaypalDetails = (
+    details: WalletInfo["details"]
+  ): details is {
+    type: string;
+    maskedEmail?: string;
+    pspId: string;
+    pspBusinessName: string;
+  } => details?.type === "PAYPAL";
+
+  const getDescriptionWallet = (method: WalletInfo) =>
+    isPaypalDetails(method.details)
+      ? method.details.maskedEmail ?? ""
+      : `${method.details?.brand ?? ""} •••• ${
+          method.details?.lastFourDigits ?? ""
+        }`;
   const samplePaymentInstruments: Array<PaymentInstrumentsType> = [
     {
       id: "card-id",
@@ -301,6 +327,51 @@ describe("PaymentChoice", () => {
       feeRange: undefined,
       asset: undefined,
       brandAsset: undefined,
+    },
+  ];
+
+  const sampleWallets: Array<WalletInfo> = [
+    {
+      walletId: "11111111-1111-1111-1111-111111111111",
+      paymentMethodId: "cf3cc414-3b6f-46f6-a0ae-0f2e96188a56",
+      paymentMethodAsset:
+        "https://assets.cdn.platform.pagopa.it/creditcard/generic.png",
+      status: WalletStatusEnum.VALIDATED,
+      creationDate: new Date(),
+      updateDate: new Date(),
+      applications: [
+        { name: "APP1", status: "ENABLED" },
+      ] as ReadonlyArray<WalletApplicationInfo>,
+      clients: {
+        IO: { status: WalletClientStatusEnum.ENABLED },
+      },
+      details: {
+        type: "CARDS",
+        brand: "VISA",
+        lastFourDigits: "1334",
+        expiryDate: "203012",
+      } as WalletInfoDetails,
+    },
+    {
+      walletId: "22222222-2222-2222-2222-222222222222",
+      paymentMethodId: "8f2a657e-4dd1-4f1a-9c48-c9df81203699",
+      paymentMethodAsset:
+        "https://assets.cdn.platform.pagopa.it/apm/paypal.png",
+      status: WalletStatusEnum.VALIDATED,
+      creationDate: new Date(),
+      updateDate: new Date(),
+      applications: [
+        { name: "APP2", status: "DISABLED" },
+      ] as ReadonlyArray<WalletApplicationInfo>,
+      clients: {
+        IO: { status: WalletClientStatusEnum.DISABLED },
+      },
+      details: {
+        type: "PAYPAL",
+        pspId: "psp_123",
+        pspBusinessName: "PayPal Business",
+        maskedEmail: "test***@***test.it",
+      } as WalletInfoDetails,
     },
   ];
 
@@ -789,5 +860,121 @@ describe("PaymentChoice", () => {
     // Check for loading fields instead of checkout loader
     const loadingFields = screen.getAllByTestId("clickable-field");
     expect(loadingFields.length).toBeGreaterThan(0);
+  });
+
+  it("should render wallets ", async () => {
+    jest.spyOn(React, "useRef").mockImplementation(() => ({
+      current: { execute: jest.fn(), reset: jest.fn() },
+    }));
+
+    renderWithRouterAndRedux(
+      <PaymentChoice
+        amount={100}
+        paymentInstruments={samplePaymentInstruments}
+        wallets={sampleWallets}
+        loading={false}
+      />
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByTestId("checkout-loader")).not.toBeInTheDocument();
+    });
+
+    sampleWallets.forEach((wallet) => {
+      expect(
+        screen.getByText(getDescriptionWallet(wallet))
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("should handle wallet click (Carte) and navigate to payment summary on success", async () => {
+    mockedGetFees.mockImplementation((onSuccess, _, __) => {
+      onSuccess(true);
+      return Promise.resolve();
+    });
+
+    mockedRecaptchaTransaction.mockImplementation(({ onSuccess }) => {
+      onSuccess("pmId", "orderId");
+      return Promise.resolve();
+    });
+
+    jest.spyOn(React, "useRef").mockImplementation(() => ({
+      current: { execute: jest.fn(), reset: jest.fn() },
+    }));
+
+    const cardWallet = sampleWallets.find((w) => w.details?.type === "CARDS")!;
+    const cardWalletDescription = getDescriptionWallet(cardWallet);
+
+    const { getByText } = renderWithRouterAndRedux(
+      <PaymentChoice
+        amount={100}
+        paymentInstruments={samplePaymentInstruments}
+        wallets={sampleWallets}
+        loading={false}
+      />
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByTestId("checkout-loader")).not.toBeInTheDocument();
+    });
+
+    fireEvent.click(getByText(cardWalletDescription));
+
+    expect(mockedRecaptchaTransaction).toHaveBeenCalledTimes(1);
+
+    expect(mockedGetFees).toHaveBeenCalledWith(
+      expect.any(Function),
+      expect.any(Function),
+      expect.any(Function)
+    );
+
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith("/payment-summary");
+    });
+
+    expect(mockDispatch).toHaveBeenCalledWith({
+      type: "threshold/setThreshold",
+      payload: { belowThreshold: true },
+    });
+  });
+
+  it("should show error modal if recaptchaTransaction fails on wallet click", async () => {
+    mockedRecaptchaTransaction.mockImplementation(({ onError }) => {
+      onError("GENERIC_ERROR", "Something went wrong");
+      return Promise.resolve();
+    });
+
+    jest.spyOn(React, "useRef").mockImplementation(() => ({
+      current: { execute: jest.fn(), reset: jest.fn() },
+    }));
+
+    const cardWalletDescription = getDescriptionWallet(sampleWallets[0]);
+
+    const { getByText } = renderWithRouterAndRedux(
+      <PaymentChoice
+        amount={100}
+        paymentInstruments={samplePaymentInstruments}
+        wallets={sampleWallets}
+        loading={false}
+      />
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByTestId("checkout-loader")).not.toBeInTheDocument();
+    });
+
+    fireEvent.click(getByText(cardWalletDescription));
+
+    await waitFor(() => {
+      const modal = screen.getByTestId("error-modal");
+      expect(modal).toBeInTheDocument();
+      expect(screen.getByTestId("error-message")).toHaveTextContent(
+        "Mock error"
+      );
+    });
+
+    fireEvent.click(screen.getByTestId("close-error-modal"));
+
+    expect(mockNavigate).toHaveBeenCalledWith("/error", { replace: true });
   });
 });
