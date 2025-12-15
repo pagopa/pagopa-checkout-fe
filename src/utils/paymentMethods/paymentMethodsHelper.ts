@@ -6,7 +6,8 @@ import { LanguageEnum } from "../../../generated/definitions/payment-ecommerce/R
 
 const italianLanguageKey = "IT";
 
-export const getLanguage = (): LanguageEnum => (localStorage.getItem("i18nextLng") ?? italianLanguageKey) as LanguageEnum;
+export const getLanguage = (): LanguageEnum =>
+  (localStorage.getItem("i18nextLng") ?? italianLanguageKey) as LanguageEnum;
 
 const getLanguageKey = (mapField: MapField): string => {
   const currentLanguage =
