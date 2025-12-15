@@ -886,4 +886,95 @@ describe("PaymentChoice", () => {
       ).toBeInTheDocument();
     });
   });
+
+  it("should handle wallet click (Carte) and navigate to payment summary on success", async () => {
+    mockedGetFees.mockImplementation((onSuccess, _, __) => {
+      onSuccess(true);
+      return Promise.resolve();
+    });
+
+    mockedRecaptchaTransaction.mockImplementation(({ onSuccess }) => {
+      onSuccess("pmId", "orderId");
+      return Promise.resolve();
+    });
+
+    jest.spyOn(React, "useRef").mockImplementation(() => ({
+      current: { execute: jest.fn(), reset: jest.fn() },
+    }));
+
+    const cardWallet = sampleWallets.find((w) => w.details?.type === "CARDS")!;
+    const cardWalletDescription = getDescriptionWallet(cardWallet);
+
+    const { getByText } = renderWithRouterAndRedux(
+      <PaymentChoice
+        amount={100}
+        paymentInstruments={samplePaymentInstruments}
+        wallets={sampleWallets}
+        loading={false}
+      />
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByTestId("checkout-loader")).not.toBeInTheDocument();
+    });
+
+    fireEvent.click(getByText(cardWalletDescription));
+
+    expect(mockedRecaptchaTransaction).toHaveBeenCalledTimes(1);
+
+    expect(mockedGetFees).toHaveBeenCalledWith(
+      expect.any(Function),
+      expect.any(Function),
+      expect.any(Function)
+    );
+
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith("/payment-summary");
+    });
+
+    expect(mockDispatch).toHaveBeenCalledWith({
+      type: "threshold/setThreshold",
+      payload: { belowThreshold: true },
+    });
+  });
+
+  it("should show error modal if recaptchaTransaction fails on wallet click", async () => {
+    mockedRecaptchaTransaction.mockImplementation(({ onError }) => {
+      onError("GENERIC_ERROR", "Something went wrong");
+      return Promise.resolve();
+    });
+
+    jest.spyOn(React, "useRef").mockImplementation(() => ({
+      current: { execute: jest.fn(), reset: jest.fn() },
+    }));
+
+    const cardWalletDescription = getDescriptionWallet(sampleWallets[0]);
+
+    const { getByText } = renderWithRouterAndRedux(
+      <PaymentChoice
+        amount={100}
+        paymentInstruments={samplePaymentInstruments}
+        wallets={sampleWallets}
+        loading={false}
+      />
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByTestId("checkout-loader")).not.toBeInTheDocument();
+    });
+
+    fireEvent.click(getByText(cardWalletDescription));
+
+    await waitFor(() => {
+      const modal = screen.getByTestId("error-modal");
+      expect(modal).toBeInTheDocument();
+      expect(screen.getByTestId("error-message")).toHaveTextContent(
+        "Mock error"
+      );
+    });
+
+    fireEvent.click(screen.getByTestId("close-error-modal"));
+
+    expect(mockNavigate).toHaveBeenCalledWith("/error", { replace: true });
+  });
 });

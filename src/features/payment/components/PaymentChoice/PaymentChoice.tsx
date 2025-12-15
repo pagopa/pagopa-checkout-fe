@@ -226,18 +226,18 @@ export function PaymentChoice(props: {
     const pspId = isPaypalDetails(method.details)
       ? method.details.pspId
       : undefined;
-
-    setSessionItem(SessionItems.paymentMethod, {
-      paymentMethodId,
-      walletId,
-      walletType,
-      pspId,
-    });
-
     const paymentTypeCode =
       method.details?.type === "PAYPAL"
         ? PaymentTypeCodeEnum.PPAL
         : PaymentTypeCodeEnum.CP;
+
+    setSessionItem(SessionItems.paymentMethod, {
+      paymentMethodId,
+      paymentTypeCode,
+      walletId,
+      walletType,
+      pspId,
+    });
 
     if (ref.current) {
       await onApmChoice(ref.current, (belowThreshold: boolean) =>
