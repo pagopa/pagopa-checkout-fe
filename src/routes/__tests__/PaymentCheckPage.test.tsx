@@ -28,6 +28,8 @@ import { PaymentTypeCodeEnum } from "../../../generated/definitions/payment-ecom
 import { WalletTypeEnum } from "../../../generated/definitions/payment-ecommerce-v2/CalculateFeeRequest";
 import { CalculateFeeResponse } from "../../../generated/definitions/payment-ecommerce-v2/CalculateFeeResponse";
 import { PaymentMethodStatusEnum } from "../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
+import { SessionPaymentMethodResponse } from "../../../generated/definitions/payment-ecommerce/SessionPaymentMethodResponse";
+import { CheckoutRoutes } from "../../routes/models/routeModel";
 import {
   paymentInfo,
   paymentMethod,
@@ -138,6 +140,12 @@ const paymentMethodWallet = {
   pspId: "PSP_WALLET_DEFAULT",
 };
 
+const paymentMethodCard = {
+  bin: "543210",
+  paymentMethodId: "CardID_123",
+  pspId: "PSP_CARD_DEFAULT",
+};
+
 const mockSessionWithWalletPaymentMethod = () => {
   (getSessionItem as jest.Mock).mockImplementation((item: SessionItems) => {
     if (item === SessionItems.paymentMethod) {
@@ -147,6 +155,31 @@ const mockSessionWithWalletPaymentMethod = () => {
   });
 };
 
+const mockSessionPaymentMethod = () => {
+  (getSessionItem as jest.Mock).mockImplementation((item: SessionItems) => {
+    if (item === SessionItems.paymentMethod) {
+      return paymentMethodCard;
+    }
+    return mockGetSessionItem(item);
+  });
+};
+
+const mockResponseValid: CalculateFeeResponse = {
+  paymentMethodName: "Test Method",
+  paymentMethodDescription: "Descrizione metodo test",
+  paymentMethodStatus: PaymentMethodStatusEnum.ENABLED,
+  bundles: [{ idPsp: "idPsp" }],
+  asset: "test-asset",
+};
+
+const onResponseSpy = jest.fn();
+const mockOnResponse = () => {
+  (calculateFees as jest.Mock).mockImplementationOnce(({ onResponsePsp }) => {
+    onResponseSpy();
+    onResponsePsp(mockResponseValid);
+    return Promise.resolve();
+  });
+};
 describe("PaymentCheckPage", () => {
   beforeEach(() => {
     jest.spyOn(router, "useNavigate").mockImplementation(() => navigate);
@@ -422,24 +455,10 @@ describe("PaymentCheckPage", () => {
     });
   });
 
-  // eslint-disable-next-line sonarjs/no-identical-functions
   test("Should handle success by calling onPspEditResponse", async () => {
-    const onResponseSpy = jest.fn();
     mockSessionWithWalletPaymentMethod();
 
-    const mockResponseValid: CalculateFeeResponse = {
-      paymentMethodName: "Test Method",
-      paymentMethodDescription: "Descrizione metodo test",
-      paymentMethodStatus: PaymentMethodStatusEnum.ENABLED,
-      bundles: [{ idPsp: "idPsp" }],
-      asset: "test-asset",
-    };
-
-    (calculateFees as jest.Mock).mockImplementationOnce(({ onResponsePsp }) => {
-      onResponseSpy();
-      onResponsePsp(mockResponseValid);
-      return Promise.resolve();
-    });
+    mockOnResponse();
 
     const { container } = renderWithReduxProvider(
       <MemoryRouter>
@@ -460,6 +479,215 @@ describe("PaymentCheckPage", () => {
           onPspNotFound: expect.any(Function),
           onResponsePsp: expect.any(Function),
         })
+      );
+    });
+  });
+
+  test("should handle missing pspSelected or transaction in totalAmount calculation", async () => {
+    (getSessionItem as jest.Mock).mockImplementation((item: SessionItems) => {
+      if (
+        item === SessionItems.transaction ||
+        item === SessionItems.pspSelected
+      ) {
+        return undefined;
+      }
+      return mockGetSessionItem(item);
+    });
+
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentCheckPage />
+      </MemoryRouter>
+    );
+
+    const totalAmountDisplay = screen.getByText("0,00 €");
+    expect(totalAmountDisplay).toBeInTheDocument();
+  });
+
+  test("Should handle success on PSP edit, calling calculateFees with Card parameters", async () => {
+    mockSessionPaymentMethod();
+
+    const mockResponseValid: CalculateFeeResponse = {
+      paymentMethodName: "Test Card Method",
+      paymentMethodDescription: "Descrizione carta test",
+      paymentMethodStatus: PaymentMethodStatusEnum.ENABLED,
+      bundles: [{ idPsp: "idPsp-card" }],
+      asset: "test-card-asset",
+    };
+
+    (calculateFees as jest.Mock).mockImplementationOnce(({ onResponsePsp }) => {
+      onResponsePsp(mockResponseValid);
+      return Promise.resolve();
+    });
+
+    const { container } = renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentCheckPage />
+      </MemoryRouter>
+    );
+
+    fireEvent.click(container.querySelector("#pspEdit")!);
+
+    await waitFor(() => {
+      expect(calculateFees).toHaveBeenCalledWith(
+        expect.objectContaining({
+          paymentId: paymentMethodCard.paymentMethodId,
+          walletId: undefined,
+          walletType: undefined,
+          pspId: paymentMethodCard.pspId,
+          onResponsePsp: expect.any(Function),
+          onError: expect.any(Function),
+          onPspNotFound: expect.any(Function),
+        })
+      );
+    });
+  });
+
+  test("should do nothing and skip calculateFees if paymentMethod is undefined when clicking PSP edit", async () => {
+    (getSessionItem as jest.Mock).mockImplementation((item: SessionItems) => {
+      if (item === SessionItems.paymentMethod) {
+        return undefined;
+      }
+      return mockGetSessionItem(item);
+    });
+
+    const { container } = renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentCheckPage />
+      </MemoryRouter>
+    );
+    (calculateFees as jest.Mock).mockClear();
+
+    fireEvent.click(container.querySelector("#pspEdit")!);
+
+    await waitFor(() => {
+      expect(calculateFees).not.toHaveBeenCalled();
+    });
+  });
+
+  test("Should handle success by calling onPspEditResponse", async () => {
+    const sessionPaymentMethodMock: SessionPaymentMethodResponse = {
+      sessionId: "session_123",
+      bin: "123456",
+      lastFourDigits: "7890",
+      expiringDate: "12/25",
+      brand: "VISA",
+    };
+
+    // Mock dei session items
+    (getSessionItem as jest.Mock).mockImplementation((item: SessionItems) => {
+      if (item === SessionItems.paymentMethod) {
+        return paymentMethodWallet;
+      }
+      if (item === SessionItems.sessionPaymentMethod) {
+        return sessionPaymentMethodMock;
+      }
+      return mockGetSessionItem(item);
+    });
+
+    mockOnResponse();
+
+    const { container } = renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentCheckPage />
+      </MemoryRouter>
+    );
+
+    fireEvent.click(container.querySelector("#pspEdit")!);
+
+    await waitFor(() => {
+      expect(onResponseSpy).toHaveBeenCalled();
+      expect(calculateFees).toHaveBeenCalledWith(
+        expect.objectContaining({
+          paymentId: paymentMethodWallet.paymentMethodId,
+          bin: sessionPaymentMethodMock.bin,
+          walletId: paymentMethodWallet.walletId,
+          walletType: paymentMethodWallet.walletType,
+          pspId: paymentMethodWallet.pspId,
+          onError: expect.any(Function),
+          onPspNotFound: expect.any(Function),
+          onResponsePsp: expect.any(Function),
+        })
+      );
+    });
+  });
+
+  test("onCancel opens cancel modal", async () => {
+    mockSessionPaymentMethod();
+
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentCheckPage />
+      </MemoryRouter>
+    );
+    (calculateFees as jest.Mock).mockClear();
+
+    fireEvent.click(document.getElementById("paymentCheckPageButtonCancel")!);
+
+    expect(
+      screen.getByText("paymentCheckPage.modal.cancelBody")
+    ).toBeInTheDocument();
+  });
+
+  test("onCancelResponse navigates to ANNULLATO and sets cancelLoading to false", async () => {
+    (cancelPayment as jest.Mock).mockImplementation(
+      (_: any, onCancelResponse: () => void) => {
+        onCancelResponse();
+      }
+    );
+
+    mockSessionPaymentMethod();
+
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentCheckPage />
+      </MemoryRouter>
+    );
+
+    (calculateFees as jest.Mock).mockClear();
+    const cancelButton = document.getElementById(
+      "paymentCheckPageButtonCancel"
+    )!;
+    expect(cancelButton).toBeInTheDocument();
+    expect(cancelButton).toBeEnabled();
+
+    fireEvent.click(cancelButton);
+
+    const confirmButton = document.getElementById("confirm")!;
+    expect(confirmButton).toBeInTheDocument();
+    expect(confirmButton).toBeEnabled();
+
+    fireEvent.click(confirmButton);
+
+    await waitFor(() => {
+      expect(navigate).toHaveBeenCalledWith(`/${CheckoutRoutes.ANNULLATO}`);
+    });
+  });
+
+  test("should open PSP not found modal when PSP not found", async () => {
+    (calculateFees as jest.Mock).mockImplementation(({ onPspNotFound }) => {
+      onPspNotFound();
+    });
+
+    const { container, getByText } = renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentCheckPage />
+      </MemoryRouter>
+    );
+
+    fireEvent.click(container.querySelector("#pspEdit")!);
+
+    await waitFor(() => {
+      expect(getByText("pspUnavailable.title")).toBeInTheDocument();
+      expect(getByText("pspUnavailable.body")).toBeInTheDocument();
+    });
+
+    fireEvent.click(document.getElementById("pspNotFoundCtaId")!);
+
+    await waitFor(() => {
+      expect(navigate).toHaveBeenCalledWith(
+        `/${CheckoutRoutes.SCEGLI_METODO}`,
+        { replace: true }
       );
     });
   });
