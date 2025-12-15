@@ -50,6 +50,7 @@ import {
 } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 import { evaluateFeatureFlag } from "../checkoutFeatureFlagsHelper";
 import { getUserDevice } from "../../../device/deviceDetection";
+import { getLanguage } from "../../../../utils/paymentMethods/paymentMethodsHelper";
 
 // ->Promise<Either<string,SessionPaymentMethodResponse>>
 export const retrieveCardData = async ({
@@ -452,11 +453,12 @@ const buildPaymentInstrumentMethodHandlerSearchRequest =
 
     // detect browser type (Safari vs others)
     const userDevice = getUserDevice() as UserDeviceEnum | undefined;
-
+    const language = getLanguage();
     return {
       userTouchpoint,
       userDevice,
       totalAmount,
+      language,
       paymentNotice: paymentNotices,
       allCCp,
     };
