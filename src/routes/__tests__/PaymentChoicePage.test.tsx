@@ -1001,7 +1001,7 @@ describe("PaymentChoicePage authenticated", () => {
     });
     (useAppSelector as jest.Mock).mockImplementation((selector: any) => {
       if (selector.name === "getLoggedUser") {
-        return { userInfo: null }; // 👈 invece di null
+        return { userInfo: null };
       }
       return selector();
     });
@@ -1119,5 +1119,39 @@ describe("PaymentChoicePage authenticated", () => {
     expect(onError).toHaveBeenCalledWith(ErrorsType.UNAUTHORIZED);
     expect(onResponse).not.toHaveBeenCalled();
     expect(result).toEqual([]);
+  });
+
+  test("should redirect to AUTH_EXPIRED when getPaymentMethods returns UNAUTHORIZED", async () => {
+    (
+      apiPaymentEcommerceClient.getAllPaymentMethods as jest.Mock
+    ).mockReturnValue(
+      Promise.resolve({
+        right: {
+          status: 401,
+          value: {},
+        },
+      })
+    );
+
+    (
+      apiPaymentEcommerceClientV3.getAllPaymentMethodsV3 as jest.Mock
+    ).mockReturnValue(
+      Promise.resolve({
+        right: {
+          status: 401,
+          value: {},
+        },
+      })
+    );
+
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentChoicePage />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(navigate).toHaveBeenCalledWith("/autenticazione-scaduta"); // Verifica il reindirizzamento
+    });
   });
 });
