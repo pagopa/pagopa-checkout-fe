@@ -313,57 +313,59 @@ export const proceedToPayment = async (
   const details = pipe(
     getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined,
     O.fromNullable,
-    O.map((method) => method.paymentTypeCode),
     O.fold(
       () => {
-        // eslint-disable-next-line no-console
-        console.error(
-          "Missing expected `paymentMethod.paymentTypeCode` in session storage!"
-        );
-
         onError(ErrorsType.GENERIC_ERROR);
         return O.none;
       },
-      (x) => O.some(x)
-    ),
-    O.chain((paymentTypeCode) => {
-      switch (paymentTypeCode) {
-        case "CP":
+      (method) => {
+        // if walletId, return WalletAuthRequestDetails
+        if (method.walletId) {
           return O.some({
-            detailType: "cards",
-            orderId:
-              (getSessionItem(SessionItems.orderId) as string | undefined) ||
-              "",
+            detailType: "wallet",
+            walletId: method.walletId,
           });
-        case "MYBK":
-        case "BPAY":
-        case "PPAL":
-        case "APPL":
-        case "SATY":
-        case "GOOG":
-          return O.some({
-            detailType: "apm",
-          });
-        case "RBPR":
-        case "RBPB":
-        case "RBPP":
-        case "RPIC":
-        case "RBPS":
-        case "RICO":
-        case "KLRN":
-        case "RFPB":
-          return O.some({
-            detailType: "redirect",
-          });
-        default:
-          // eslint-disable-next-line no-console
-          console.error("Unhandled payment type code: " + paymentTypeCode);
-          onError(ErrorsType.GENERIC_ERROR);
-          return O.none;
-      }
-    })
-  );
+        }
 
+        switch (method.paymentTypeCode) {
+          case "CP":
+            return O.some({
+              detailType: "cards",
+              orderId:
+                (getSessionItem(SessionItems.orderId) as string | undefined) ||
+                "",
+            });
+          case "MYBK":
+          case "BPAY":
+          case "PPAL":
+          case "APPL":
+          case "SATY":
+          case "GOOG":
+            return O.some({
+              detailType: "apm",
+            });
+          case "RBPR":
+          case "RBPB":
+          case "RBPP":
+          case "RPIC":
+          case "RBPS":
+          case "RICO":
+          case "KLRN":
+          case "RFPB":
+            return O.some({
+              detailType: "redirect",
+            });
+          default:
+            // eslint-disable-next-line no-console
+            console.error(
+              "Unhandled payment type code: " + method.paymentTypeCode
+            );
+            onError(ErrorsType.GENERIC_ERROR);
+            return O.none;
+        }
+      }
+    )
+  );
   const authParam = pipe(
     details,
     O.map((d) => ({

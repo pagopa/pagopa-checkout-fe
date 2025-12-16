@@ -426,4 +426,41 @@ describe("Ecommerce transactions helper - cancelPayment tests", () => {
     await cancelPayment(mockOnError, mockOnResponse);
     expect(mockOnError).toHaveBeenCalledWith(ErrorsType.GENERIC_ERROR, false);
   });
+
+  it("Should call onResponse when paymentMethod has walletId", async () => {
+    const authUrl = "authorizationUrl";
+
+    // Mock paymentMethod con walletId
+    const walletPaymentMethodMock = {
+      walletId: "WALLET_ID",
+      paymentMethodId: "PAYMENT_METHOD_ID",
+      walletType: "PAYPAL",
+    };
+
+    (getSessionItem as jest.Mock).mockReturnValueOnce(walletPaymentMethodMock);
+
+    (
+      apiPaymentEcommerceClientWithRetry.requestTransactionAuthorization as jest.Mock
+    ).mockResolvedValue({
+      right: {
+        status: 200,
+        value: { authorizationUrl: authUrl },
+      },
+    });
+
+    await proceedToPayment(
+      sessionItemTransactionMock as NewTransactionResponse,
+      mockOnError,
+      mockOnResponse
+    );
+
+    expect(mockOnResponse).toHaveBeenCalledWith(authUrl);
+
+    const bodySent = (
+      apiPaymentEcommerceClientWithRetry.requestTransactionAuthorization as jest.Mock
+    ).mock.calls[0][0].body;
+
+    expect(bodySent.details.detailType).toBe("wallet");
+    expect(bodySent.details.walletId).toBe("WALLET_ID");
+  });
 });
