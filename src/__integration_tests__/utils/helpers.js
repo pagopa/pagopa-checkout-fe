@@ -682,4 +682,22 @@ export const selectWallet = async (index) => {
     visible: true,
   });
   await walletBtn.click();
+
+export const payWithWallet = async (
+  noticeCode,
+  fiscalCode,
+  email,
+  walletIndex,
+  checkoutUrlAfterAuth
+) => {
+  const payBtnSelector = "#paymentCheckPageButtonPay";
+  const resultTitleSelector = "#responsePageMessageTitle";
+  await selectWalletAndGetToCheckPage(noticeCode, fiscalCode, email, walletIndex);
+  const payBtn = await page.waitForSelector(payBtnSelector);
+  await payBtn.click();
+  await page.waitForNavigation();
+  await page.goto(checkoutUrlAfterAuth, { waitUntil: "networkidle0" });
+  const message = await page.waitForSelector(resultTitleSelector);
+  return await message.evaluate((el) => el.textContent);
+};
 };

@@ -3,7 +3,7 @@ import deTranslation from "../translations/de/translations.json";
 import enTranslation from "../translations/en/translations.json";
 import frTranslation from "../translations/fr/translations.json";
 import slTranslation from "../translations/sl/translations.json";
-import { cancelPaymentKO, cancelPaymentOK, checkErrorOnCardDataFormSubmit, clickLoginButton, tryHandlePspPickerPage, fillAndSubmitCardDataForm, fillPaymentNotificationForm, getUserButton, payNotice, selectLanguage , tryLoginWithAuthCallbackError, choosePaymentMethod, verifyPaymentMethods, verifyWalletVisible, verifyWalletNotVisible, verifyWalletsSectionVisible, verifyWalletsSectionNotVisible, selectWallet, fillEmailForm, fillAndSubmitWallet, fillPaymentFlowWithoutLogin, fillPaymentFlowWithLogin } from "./utils/helpers";
+import { cancelPaymentKO, cancelPaymentOK, checkErrorOnCardDataFormSubmit, clickLoginButton, tryHandlePspPickerPage, fillAndSubmitCardDataForm, fillPaymentNotificationForm, getUserButton, payNotice, selectLanguage , tryLoginWithAuthCallbackError, choosePaymentMethod, verifyPaymentMethods, verifyWalletVisible, verifyWalletNotVisible, verifyWalletsSectionVisible, verifyWalletsSectionNotVisible, selectWallet, fillEmailForm, fillAndSubmitWallet, fillPaymentFlowWithoutLogin, fillPaymentFlowWithLogin, payWithWallet } from "./utils/helpers";
 import { URL, OKPaymentInfo, KORPTIDs } from "./utils/testConstants";
 
 jest.setTimeout(60000);
@@ -973,5 +973,68 @@ describe("Wallet feature tests", () => {
     const noWallets = await verifyWalletNotVisible();
     expect(noWallets).toBe(true);
     console.log("Individual wallets not visible")
+  });
+
+  it("Should successfully complete payment using a saved wallet", async () => {
+    await page.evaluate(() => {
+      sessionStorage.setItem('enableWallet', 'true');
+      console.log("Wallet feature flag enabled")
+    });
+
+    const resultMessage = await payWithWallet(
+      OKPaymentInfo.VALID_NOTICE_CODE,
+      OKPaymentInfo.VALID_FISCAL_CODE,
+      OKPaymentInfo.EMAIL,
+      0,
+      URL.CHECKOUT_URL_AFTER_AUTHORIZATION
+    );
+
+    expect(resultMessage).toContain(itTranslation.paymentResponsePage[0].title.replace("{{amount}}", "120,15\xa0€"));
+    console.log("Wallet payment completed successfully");
+  });
+
+  it.each([
+    ["it", itTranslation],
+    ["en", enTranslation],
+    ["fr", frTranslation],
+    ["de", deTranslation],
+    ["sl", slTranslation]
+  ])(
+    "Should successfully complete wallet payment for language [%s]",
+    async (lang, translation) => {
+      await selectLanguage(lang);
+      await page.evaluate(() => {
+        sessionStorage.setItem('enableWallet', 'true');
+      });
+
+      const resultMessage = await payWithWallet(
+        OKPaymentInfo.VALID_NOTICE_CODE,
+        OKPaymentInfo.VALID_FISCAL_CODE,
+        OKPaymentInfo.EMAIL,
+        0,
+        URL.CHECKOUT_URL_AFTER_AUTHORIZATION
+      );
+
+      expect(resultMessage).toContain(translation.paymentResponsePage[0].title.replace("{{amount}}", "120,15\xa0€"));
+      console.log(`Wallet payment completed successfully for language: ${lang}`);
+    }
+  );
+
+  it("Should successfully select second wallet and complete payment", async () => {
+    await page.evaluate(() => {
+      sessionStorage.setItem('enableWallet', 'true');
+      console.log("Wallet feature flag enabled")
+    });
+
+    const resultMessage = await payWithWallet(
+      OKPaymentInfo.VALID_NOTICE_CODE,
+      OKPaymentInfo.VALID_FISCAL_CODE,
+      OKPaymentInfo.EMAIL,
+      1,
+      URL.CHECKOUT_URL_AFTER_AUTHORIZATION
+    );
+
+    expect(resultMessage).toContain(itTranslation.paymentResponsePage[0].title.replace("{{amount}}", "120,15\xa0€"));
+    console.log("Second wallet payment completed successfully");
   });
 });
