@@ -41,6 +41,8 @@ import {
   PaymentMethodsRequest as PaymentMethodsRequestV2,
   UserTouchpointEnum,
   UserDeviceEnum,
+  SortByEnum,
+  SortOrderEnum,
 } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodsRequest";
 import { PaymentMethodsRequest as PaymentMethodsRequestV4 } from "../../../../../generated/definitions/payment-ecommerce-v4/PaymentMethodsRequest";
 import { PaymentNoticeItem } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentNoticeItem";
@@ -454,11 +456,17 @@ const buildPaymentInstrumentMethodHandlerSearchRequest =
     // detect browser type (Safari vs others)
     const userDevice = getUserDevice() as UserDeviceEnum | undefined;
     const language = getLanguage();
+    const sortBy = SortByEnum.DESCRIPTION;
+    const sortOrder = SortOrderEnum.ASC;
+    const priorityGroups = ["CP"];
     return {
       userTouchpoint,
       userDevice,
       totalAmount,
       language,
+      sortBy,
+      sortOrder,
+      priorityGroups,
       paymentNotice: paymentNotices,
       allCCp,
     };

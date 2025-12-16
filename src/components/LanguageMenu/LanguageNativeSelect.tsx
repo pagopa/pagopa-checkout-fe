@@ -2,7 +2,6 @@ import { Box, InputBase, NativeSelect, styled, useTheme } from "@mui/material";
 import { visuallyHidden } from "@mui/utils";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { SessionItems } from "../../utils/storage/sessionStorage";
 import supportedLang, { getSortedLang } from "../../translations/lang";
 import { fallbackLang } from "../../translations/i18n";
 
@@ -28,20 +27,7 @@ export default function LanguageNativeSelect() {
     setLang(lang);
     localStorage.setItem("i18nextLng", lang);
     await i18n.changeLanguage(lang);
-    evaluateRefresh();
   }, []);
-
-  const evaluateRefresh = () => {
-    const isPaymentMethodHandlerEnabled =
-      sessionStorage.getItem(SessionItems.enablePaymentMethodsHandler) ===
-      "true";
-    if (isPaymentMethodHandlerEnabled) {
-      const location = window.location.href;
-      if (location.endsWith("scegli-metodo")) {
-        window.location.reload();
-      }
-    }
-  };
 
   const StyledInput = styled(InputBase)(() => ({
     "& .MuiInputBase-input": {

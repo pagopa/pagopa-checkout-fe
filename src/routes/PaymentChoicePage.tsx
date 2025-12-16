@@ -77,13 +77,12 @@ export default function PaymentChoicePage() {
   const loggedUser = useAppSelector(getLoggedUser);
 
   React.useEffect(() => {
-    if (!paymentInstruments?.length) {
-      void getPaymentMethods();
-    }
+    void getPaymentMethods();
+
     if (!walletInstruments?.length && loggedUser.userInfo != null) {
       void getWallets();
     }
-  }, []);
+  }, [localStorage.getItem("i18nextLng")]);
 
   React.useEffect(() => {
     if (loggedUser.userInfo == null) {
