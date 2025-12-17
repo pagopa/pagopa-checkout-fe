@@ -927,7 +927,7 @@ describe("Logout tests", () => {
   });
 });
 
-describe.only("Wallet feature tests", () => {
+describe("Wallet feature tests", () => {
   it("Should display wallet list for authenticated user with wallet feature enabled", async () => {
     console.log("\n=== TEST: Should display wallet list for authenticated user with wallet feature enabled ===");
     await selectLanguage("it");
