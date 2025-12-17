@@ -720,3 +720,24 @@ export const selectWalletAndGetToCheckPage = async (
   await selectWallet(walletIndex);
   await tryHandlePspPickerPage();
 };
+
+export const cancelWalletPayment = async (
+  noticeCode,
+  fiscalCode,
+  email,
+  walletIndex = 0
+) => {
+  const resultMessageXPath =
+    "#main_content > div > div > div > div.MuiBox-root.css-5vb4lz > div";
+  await selectWalletAndGetToCheckPage(noticeCode, fiscalCode, email, walletIndex);
+  const paymentCheckPageButtonCancel = await page.waitForSelector(
+    "#paymentCheckPageButtonCancel"
+  );
+  await paymentCheckPageButtonCancel.click();
+  const cancPayment = await page.waitForSelector("#confirm");
+  await cancPayment.click();
+  await page.waitForNavigation();
+  await new Promise((r) => setTimeout(r, 200));
+  const message = await page.waitForSelector(resultMessageXPath);
+  return await message.evaluate((el) => el.textContent);
+};
