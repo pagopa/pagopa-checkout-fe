@@ -3,7 +3,28 @@ import deTranslation from "../translations/de/translations.json";
 import enTranslation from "../translations/en/translations.json";
 import frTranslation from "../translations/fr/translations.json";
 import slTranslation from "../translations/sl/translations.json";
-import { cancelPaymentKO, cancelPaymentOK, checkErrorOnCardDataFormSubmit, clickLoginButton, tryHandlePspPickerPage, fillAndSubmitCardDataForm, fillPaymentNotificationForm, getUserButton, payNotice, selectLanguage , tryLoginWithAuthCallbackError, choosePaymentMethod, verifyPaymentMethods, verifyWalletVisible, verifyWalletNotVisible, verifyWalletsSectionVisible, verifyWalletsSectionNotVisible, selectWallet, fillEmailForm, fillAndSubmitWallet, fillPaymentFlowWithoutLogin, fillPaymentFlowWithLogin, payWithWallet } from "./utils/helpers";
+import { 
+  cancelPaymentKO, 
+  cancelPaymentOK, 
+  checkErrorOnCardDataFormSubmit, 
+  clickLoginButton, 
+  fillAndSubmitCardDataForm, 
+  fillPaymentNotificationForm, 
+  getUserButton, 
+  payNotice, 
+  selectLanguage, 
+  tryLoginWithAuthCallbackError, 
+  choosePaymentMethod, 
+  verifyPaymentMethods, 
+  verifyWalletVisible, 
+  verifyWalletNotVisible, 
+  verifyWalletsSectionVisible, 
+  verifyWalletsSectionNotVisible, 
+  fillPaymentFlowWithoutLogin, 
+  fillPaymentFlowWithLogin, 
+  payWithWallet, 
+  cancelWalletPayment 
+} from "./utils/helpers";
 import { URL, OKPaymentInfo, KORPTIDs } from "./utils/testConstants";
 
 jest.setTimeout(60000);
@@ -1094,4 +1115,31 @@ describe.only("Wallet feature tests", () => {
     expect(outcomesResponse.outcome).toBe(0);
     console.log("Second wallet payment completed successfully");
   });
+  it.each([
+    ["it", itTranslation],
+    ["en", enTranslation],
+    ["fr", frTranslation],
+    ["de", deTranslation],
+    ["sl", slTranslation]
+  ])(
+    "Should successfully cancel wallet payment for language [%s]",
+    async (lang, translation) => {
+      console.log(`\n=== TEST: Should successfully cancel wallet payment for language [${lang}] ===`);
+      await selectLanguage(lang);
+      await page.evaluate(() => {
+        sessionStorage.setItem('enableWallet', 'true');
+      });
+
+      const resultMessage = await cancelWalletPayment(
+        KORPTIDs.CANCEL_PAYMENT_OK,
+        OKPaymentInfo.VALID_FISCAL_CODE,
+        OKPaymentInfo.EMAIL,
+        0
+      );
+
+      expect(resultMessage).toContain(translation.cancelledPage.body);
+      console.log(`Wallet payment cancelled successfully for language: ${lang}`);
+    }
+  );
 });
+
