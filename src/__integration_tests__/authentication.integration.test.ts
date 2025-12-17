@@ -1000,7 +1000,37 @@ describe.only("Wallet feature tests", () => {
   it("Should successfully complete payment using a saved wallet", async () => {
     await selectLanguage("it");
     let outcomesResponse = null;
+    let authRequestCalled = false;
+    let hasWalletDetail = false;
+    let calculateFeesCalled = false;
 
+    // listen for auth request with wallet details
+    page.on("request", async (request) => {
+      const url = request.url();
+
+      // check POST auth request contains wallet detailType
+      if (url.includes("/ecommerce/checkout/v1/transactions/") && url.includes("/auth-requests") && request.method() === "POST") {
+        authRequestCalled = true;
+        try {
+          const postData = request.postData();
+          if (postData) {
+            const parsedData = JSON.parse(postData);
+            if (parsedData.details && parsedData.details.detailType === "wallet" && parsedData.details.walletId) {
+              hasWalletDetail = true;
+            }
+          }
+        } catch (e) {
+          console.log("Error parsing auth request:", e);
+        }
+      }
+
+      // check calculate fees was called
+      if (url.includes("/ecommerce/checkout/v2/payment-methods/") && url.includes("/fees")) {
+        calculateFeesCalled = true;
+      }
+    });
+
+    // listen for outcomes
     page.on("response", async (response) => {
       const url = response.url();
       if (url.includes("/ecommerce/checkout/v1/transactions/") && url.includes("/outcomes") && response.request().method() === "GET") {
@@ -1029,9 +1059,17 @@ describe.only("Wallet feature tests", () => {
 
     // check outcomes response
     expect(outcomesResponse).not.toBeNull();
-    // @ts-expect-error - outcomesResponse is properly typed at runtime 
+    // @ts-expect-error - outcomesResponse is properly typed at runtime
     expect(outcomesResponse.outcome).toBe(0);
-    console.log("Wallet payment completed successfully");
+
+    // check auth request was made with wallet details
+    expect(authRequestCalled).toBe(true);
+    expect(hasWalletDetail).toBe(true);
+
+    // check calculate fees was called
+    expect(calculateFeesCalled).toBe(true);
+
+    console.log("Wallet payment completed successfully with all API validations");
   });
 
   it.each([
