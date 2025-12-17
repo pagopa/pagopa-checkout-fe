@@ -701,4 +701,22 @@ export const payWithWallet = async (
   const message = await page.waitForSelector(resultTitleSelector);
   return await message.evaluate((el) => el.textContent);
 };
+
+export const selectWalletAndGetToCheckPage = async (
+  noticeCode,
+  fiscalCode,
+  email,
+  walletIndex = 0
+) => {
+  const payNoticeBtnSelector = "#paymentSummaryButtonPay";
+  await fillPaymentNotificationForm(noticeCode, fiscalCode);
+  const payNoticeBtn = await page.waitForSelector(payNoticeBtnSelector, {
+    visible: true,
+  });
+  await payNoticeBtn.click();
+  await fillEmailForm(email);
+  await clickLoginButton();
+  await page.waitForSelector('button[aria-label="party-menu-button"]');
+  await selectWallet(walletIndex);
+  await tryHandlePspPickerPage();
 };
