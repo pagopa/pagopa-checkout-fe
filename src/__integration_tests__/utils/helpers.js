@@ -682,6 +682,7 @@ export const selectWallet = async (index) => {
     visible: true,
   });
   await walletBtn.click();
+};
 
 export const payWithWallet = async (
   noticeCode,
