@@ -76,7 +76,7 @@ resources:
     - repository: checkout-be-mock
       type: github
       name: pagopa/pagopa-checkout-be-mock
-      ref: master
+      ref: CHK-4698-fix-auth-request-for-methods-other-than-cards
       endpoint: 'io-azure-devops-github-ro'
 
 stages:
