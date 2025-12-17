@@ -908,6 +908,7 @@ describe("Logout tests", () => {
 
 describe.only("Wallet feature tests", () => {
   it("Should display wallet list for authenticated user with wallet feature enabled", async () => {
+    await selectLanguage("it");
     // enable feature flag
     await page.evaluate(() => {
       sessionStorage.setItem('enableWallet', 'true');
@@ -976,6 +977,7 @@ describe.only("Wallet feature tests", () => {
   });
 
   it("Should successfully complete payment using a saved wallet", async () => {
+    await selectLanguage("it");
     let outcomesResponse = null;
 
     page.on("response", async (response) => {
@@ -1057,6 +1059,7 @@ describe.only("Wallet feature tests", () => {
   );
 
   it("Should successfully select second wallet and complete payment", async () => {
+    await selectLanguage("it");
     let outcomesResponse = null;
 
     page.on("response", async (response) => {
