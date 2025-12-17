@@ -929,6 +929,7 @@ describe("Logout tests", () => {
 
 describe.only("Wallet feature tests", () => {
   it("Should display wallet list for authenticated user with wallet feature enabled", async () => {
+    console.log("\n=== TEST: Should display wallet list for authenticated user with wallet feature enabled ===");
     await selectLanguage("it");
     // enable feature flag
     await page.evaluate(() => {
@@ -955,6 +956,7 @@ describe.only("Wallet feature tests", () => {
   });
 
   it("Should NOT display wallets when wallet feature flag is disabled", async () => {
+    console.log("\n=== TEST: Should NOT display wallets when wallet feature flag is disabled ===");
     // disable feature flag
     await page.evaluate(() => {
       sessionStorage.setItem('enableWallet', 'false');
@@ -976,6 +978,7 @@ describe.only("Wallet feature tests", () => {
   });
 
   it("Should NOT display wallets when user is not authenticated", async () => {
+    console.log("\n=== TEST: Should NOT display wallets when user is not authenticated ===");
     // enable wallet feature flag
     await page.evaluate(() => {
       sessionStorage.setItem('enableWallet', 'true');
@@ -997,7 +1000,16 @@ describe.only("Wallet feature tests", () => {
     console.log("Individual wallets not visible")
   });
 
+  /**
+   * This test covers:
+   * - enabling wallet feature flag
+   * - completing payment using a saved wallet
+   * - verifying that the auth request contains wallet details
+   * - verifying that the calculate fees API is called
+   * - verifying the outcomes response after payment completion
+   */
   it("Should successfully complete payment using a saved wallet", async () => {
+    console.log("\n=== TEST: Should successfully complete payment using a saved wallet ===");
     await selectLanguage("it");
     let outcomesResponse = null;
     let authRequestCalled = false;
@@ -1072,6 +1084,12 @@ describe.only("Wallet feature tests", () => {
     console.log("Wallet payment completed successfully with all API validations");
   });
 
+  /**
+   * This test covers:
+   * - completing wallet payments for multiple languages
+   * - verifying the outcomes response after payment completion
+   * Note: API call verifications are covered in the previous test
+   */
   it.each([
     ["it", itTranslation],
     ["en", enTranslation],
@@ -1081,6 +1099,7 @@ describe.only("Wallet feature tests", () => {
   ])(
     "Should successfully complete wallet payment for language [%s]",
     async (lang, translation) => {
+      console.log(`\n=== TEST: Should successfully complete wallet payment for language [${lang}] ===`);
       let outcomesResponse = null;
 
       page.on("response", async (response) => {
@@ -1117,7 +1136,14 @@ describe.only("Wallet feature tests", () => {
     }
   );
 
+  /**
+   * This test covers:
+   * - selecting the second wallet from the list and completing payment
+   * - verifying the outcomes response after payment completion
+   * Note: API call verifications are covered in a previous test
+   */
   it("Should successfully select second wallet and complete payment", async () => {
+    console.log("\n=== TEST: Should successfully select second wallet and complete payment ===");
     await selectLanguage("it");
     let outcomesResponse = null;
 
@@ -1153,6 +1179,11 @@ describe.only("Wallet feature tests", () => {
     expect(outcomesResponse.outcome).toBe(0);
     console.log("Second wallet payment completed successfully");
   });
+
+  /**
+   * This test covers:
+   * - cancelling wallet payments for multiple languages
+   */
   it.each([
     ["it", itTranslation],
     ["en", enTranslation],
