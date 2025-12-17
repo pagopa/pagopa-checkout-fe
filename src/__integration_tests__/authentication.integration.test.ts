@@ -976,6 +976,19 @@ describe("Wallet feature tests", () => {
   });
 
   it("Should successfully complete payment using a saved wallet", async () => {
+    let outcomesResponse = null;
+
+    page.on("response", async (response) => {
+      const url = response.url();
+      if (url.includes("/ecommerce/checkout/v1/transactions/") && url.includes("/outcomes") && response.request().method() === "GET") {
+        try {
+          outcomesResponse = await response.json();
+        } catch (e) {
+          console.log("Error parsing outcomes response:", e);
+        }
+      }
+    });
+
     await page.evaluate(() => {
       sessionStorage.setItem('enableWallet', 'true');
       console.log("Wallet feature flag enabled")
@@ -990,6 +1003,11 @@ describe("Wallet feature tests", () => {
     );
 
     expect(resultMessage).toContain(itTranslation.paymentResponsePage[0].title.replace("{{amount}}", "120,15\xa0€"));
+
+    // check outcomes response
+    expect(outcomesResponse).not.toBeNull();
+    // @ts-expect-error - outcomesResponse is properly typed at runtime 
+    expect(outcomesResponse.outcome).toBe(0);
     console.log("Wallet payment completed successfully");
   });
 
@@ -1002,6 +1020,19 @@ describe("Wallet feature tests", () => {
   ])(
     "Should successfully complete wallet payment for language [%s]",
     async (lang, translation) => {
+      let outcomesResponse = null;
+
+      page.on("response", async (response) => {
+        const url = response.url();
+        if (url.includes("/ecommerce/checkout/v1/transactions/") && url.includes("/outcomes") && response.request().method() === "GET") {
+          try {
+            outcomesResponse = await response.json();
+          } catch (e) {
+            console.log("Error parsing outcomes response:", e);
+          }
+        }
+      });
+
       await selectLanguage(lang);
       await page.evaluate(() => {
         sessionStorage.setItem('enableWallet', 'true');
@@ -1016,11 +1047,29 @@ describe("Wallet feature tests", () => {
       );
 
       expect(resultMessage).toContain(translation.paymentResponsePage[0].title.replace("{{amount}}", "120,15\xa0€"));
+
+      // check outcomes response
+      expect(outcomesResponse).not.toBeNull();
+      // @ts-expect-error - outcomesResponse is properly typed at runtime 
+      expect(outcomesResponse.outcome).toBe(0);
       console.log(`Wallet payment completed successfully for language: ${lang}`);
     }
   );
 
   it("Should successfully select second wallet and complete payment", async () => {
+    let outcomesResponse = null;
+
+    page.on("response", async (response) => {
+      const url = response.url();
+      if (url.includes("/ecommerce/checkout/v1/transactions/") && url.includes("/outcomes") && response.request().method() === "GET") {
+        try {
+          outcomesResponse = await response.json();
+        } catch (e) {
+          console.log("Error parsing outcomes response:", e);
+        }
+      }
+    });
+
     await page.evaluate(() => {
       sessionStorage.setItem('enableWallet', 'true');
       console.log("Wallet feature flag enabled")
@@ -1035,6 +1084,11 @@ describe("Wallet feature tests", () => {
     );
 
     expect(resultMessage).toContain(itTranslation.paymentResponsePage[0].title.replace("{{amount}}", "120,15\xa0€"));
+
+    // check outcomes response
+    expect(outcomesResponse).not.toBeNull();
+    // @ts-expect-error - outcomesResponse is properly typed at runtime 
+    expect(outcomesResponse.outcome).toBe(0);
     console.log("Second wallet payment completed successfully");
   });
 });
