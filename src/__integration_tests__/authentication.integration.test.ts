@@ -906,7 +906,7 @@ describe("Logout tests", () => {
   });
 });
 
-describe("Wallet feature tests", () => {
+describe.only("Wallet feature tests", () => {
   it("Should display wallet list for authenticated user with wallet feature enabled", async () => {
     // enable feature flag
     await page.evaluate(() => {
