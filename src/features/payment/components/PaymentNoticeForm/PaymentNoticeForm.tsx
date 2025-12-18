@@ -2,9 +2,11 @@
 /* eslint-disable functional/immutable-data */
 /* eslint-disable @typescript-eslint/no-empty-function */
 
-import { Box, InputAdornment } from "@mui/material";
+import { Box, Grid, InputAdornment } from "@mui/material";
 import { Formik, FormikProps } from "formik";
 import React from "react";
+import { ButtonNaked } from "@pagopa/mui-italia";
+import ClickableFieldContainer from "../../../../components/TextFormField/ClickableFieldContainer";
 import { FormButtons } from "../../../../components/FormButtons/FormButtons";
 import TextFormField from "../../../../components/TextFormField/TextFormField";
 import { cleanSpaces } from "../../../../utils/form/formatters";
@@ -13,6 +15,7 @@ import {
   PaymentFormErrors,
   PaymentFormFields,
 } from "../../models/paymentModel";
+import { CheckOutlined, NotInterestedOutlined, PriorityHighOutlined } from "@mui/icons-material";
 
 export function PaymentNoticeForm(props: {
   defaultValues?: PaymentFormFields;
@@ -22,6 +25,7 @@ export function PaymentNoticeForm(props: {
 }) {
   const formRef = React.useRef<FormikProps<PaymentFormFields>>(null);
   const [disabled, setDisabled] = React.useState(!props.defaultValues?.cf);
+  const [showTransactions, setShowTransactions] = React.useState(false);
 
   const validate = (values: PaymentFormFields) => {
     const errors: PaymentFormErrors = {
@@ -130,6 +134,31 @@ export function PaymentNoticeForm(props: {
           </form>
         )}
       </Formik>
+      <ButtonNaked
+        id="sort-psp-list"
+        component="button"
+        style={{ fontWeight: 600, fontSize: "1rem" }}
+        color="primary"
+        onClick={() => setShowTransactions(!showTransactions)}
+      >
+        {showTransactions ? "chiudi" : "verifica"}
+      </ButtonNaked>
+       {showTransactions && (
+      <Grid>
+      <ClickableFieldContainer
+    title={"cb196b6ee65e490e80c4137c67b6e356 - Non Autorizzata"}
+    icon={<NotInterestedOutlined />}
+  />
+      <ClickableFieldContainer
+    title={"b74df28acbc049b0a9a82c7d9038ecec - Errore ente creditore"}
+    icon={<PriorityHighOutlined />}
+  />
+      <ClickableFieldContainer
+    title={"83aee2a433f74bbc856319ba9f53b78a - Pagata"}
+    icon={<CheckOutlined />}
+  />
+  </Grid>
+)}
     </>
   );
 }
