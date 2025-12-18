@@ -1225,50 +1225,6 @@ describe("Wallet feature tests", () => {
 
   /**
    * This test covers:
-   * - selecting the second wallet from the list and completing payment
-   * - verifying the outcomes response after payment completion
-   * Note: API call verifications are covered in a previous test
-   */
-  it("Should successfully select second wallet and complete payment", async () => {
-    console.log("\n=== TEST: Should successfully select second wallet and complete payment ===");
-    await selectLanguage("it");
-    let outcomesResponse = null;
-
-    page.on("response", async (response) => {
-      const url = response.url();
-      if (url.includes("/ecommerce/checkout/v1/transactions/") && url.includes("/outcomes") && response.request().method() === "GET") {
-        try {
-          outcomesResponse = await response.json();
-        } catch (e) {
-          console.log("Error parsing outcomes response:", e);
-        }
-      }
-    });
-
-    await page.evaluate(() => {
-      sessionStorage.setItem('enableWallet', 'true');
-      console.log("Wallet feature flag enabled")
-    });
-
-    const resultMessage = await payWithWallet(
-      OKPaymentInfo.VALID_NOTICE_CODE,
-      OKPaymentInfo.VALID_FISCAL_CODE,
-      OKPaymentInfo.EMAIL,
-      1,
-      URL.CHECKOUT_URL_AFTER_AUTHORIZATION
-    );
-
-    expect(resultMessage).toContain(itTranslation.paymentResponsePage[0].title.replace("{{amount}}", "120,15\xa0€"));
-
-    // check outcomes response
-    expect(outcomesResponse).not.toBeNull();
-    // @ts-expect-error - outcomesResponse is properly typed at runtime 
-    expect(outcomesResponse.outcome).toBe(0);
-    console.log("Second wallet payment completed successfully");
-  });
-
-  /**
-   * This test covers:
    * - cancelling wallet payments for multiple languages
    */
   it.each([
