@@ -1221,7 +1221,7 @@ describe("Wallet feature tests", () => {
    * - verifying the outcomes response after payment completion
    * - testing across all supported languages
    */
-  it.only.each([
+  it.each([
     ["it", itTranslation],
     ["en", enTranslation],
     ["fr", frTranslation],
