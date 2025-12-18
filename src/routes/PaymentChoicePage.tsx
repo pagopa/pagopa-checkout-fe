@@ -85,7 +85,6 @@ export default function PaymentChoicePage() {
     }
   }, [localStorage.getItem("i18nextLng")]);
 
-
   React.useEffect(() => {
     if (loggedUser.userInfo == null) {
       setWalletInstruments([]);
