@@ -784,6 +784,9 @@ export const selectWalletAndGetToCheckPage = async (
   }
 
   await selectWalletByType(walletType, walletsResponse);
+
+  // return walletsResponse so it can be reused by callers
+  return walletsResponse;
 };
 
 export const cancelWalletPayment = async (
@@ -814,31 +817,9 @@ export const editWalletAndSelectAnother = async (
   initialWalletType,
   newWalletType
 ) => {
-  // listener to capture wallets API response
-  let walletsResponse = null;
-
-  const responseHandler = async (response) => {
-    const url = response.url();
-    if (url.includes('/checkout/payment-wallet/v1/users/wallets') && response.request().method() === 'GET') {
-      try {
-        walletsResponse = await response.json();
-        console.log(`Captured wallets API response with ${walletsResponse.wallets?.length} wallets`);
-      } catch (e) {
-        console.log('Error parsing wallets response:', e);
-      }
-    }
-  };
-
-  page.on('response', responseHandler);
-
   const cardEditButtonSelector = "#cardEdit";
-  await selectWalletAndGetToCheckPage(noticeCode, fiscalCode, email, initialWalletType);
 
-  page.off('response', responseHandler);
-
-  if (!walletsResponse) {
-    throw new Error('Failed to capture wallets API response in editWalletAndSelectAnother');
-  }
+  const walletsResponse = await selectWalletAndGetToCheckPage(noticeCode, fiscalCode, email, initialWalletType);
 
   const cardEditButton = await page.waitForSelector(cardEditButtonSelector, {
     visible: true,
