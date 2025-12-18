@@ -684,16 +684,55 @@ export const selectWallet = async (index) => {
   await walletBtn.click();
 };
 
+export const selectWalletByType = async (walletType, walletsResponse) => {
+  await page.waitForSelector('[data-qaid^="wallet-"]', { timeout: 5000 });
+
+  if (!walletsResponse || !walletsResponse.wallets) {
+    throw new Error('Wallets API response not provided');
+  }
+
+  // find the wallet with the matching type from the API response
+  const walletIndex = walletsResponse.wallets.findIndex(wallet =>
+    wallet.details?.type === walletType
+  );
+
+  if (walletIndex === -1) {
+    throw new Error(`No wallet found with type: ${walletType} in API response`);
+  }
+
+  // choose the correct wallet
+  const walletSelector = `[data-qaid="wallet-${walletIndex}"]`;
+  await page.click(walletSelector);
+
+  // wait for either navigation to PSP page or session storage to update
+  try {
+    await page.waitForNavigation({ timeout: 2000 });
+  } catch (e) {
+    console.log('No navigation occurred');
+  }
+
+  // wait a bit more for session storage to stabilize
+  await new Promise(r => setTimeout(r, 500));
+
+  console.log(`Selected saved wallet with type: ${walletType}`);
+
+  // eventually handle PSP selection
+  if (page.url().includes('/lista-psp')) {
+    console.log('On PSP picker page, selecting PSP');
+    await selectPspOnPspPickerPage();
+  }
+};
+
 export const payWithWallet = async (
   noticeCode,
   fiscalCode,
   email,
-  walletIndex,
-  checkoutUrlAfterAuth
+  checkoutUrlAfterAuth,
+  walletType
 ) => {
   const payBtnSelector = "#paymentCheckPageButtonPay";
   const resultTitleSelector = "#responsePageMessageTitle";
-  await selectWalletAndGetToCheckPage(noticeCode, fiscalCode, email, walletIndex);
+  await selectWalletAndGetToCheckPage(noticeCode, fiscalCode, email, walletType);
   const payBtn = await page.waitForSelector(payBtnSelector);
   await payBtn.click();
   await page.waitForNavigation();
@@ -706,8 +745,25 @@ export const selectWalletAndGetToCheckPage = async (
   noticeCode,
   fiscalCode,
   email,
-  walletIndex = 0
+  walletType
 ) => {
+  // listener to capture wallets API response
+  let walletsResponse = null;
+
+  const responseHandler = async (response) => {
+    const url = response.url();
+    if (url.includes('/checkout/payment-wallet/v1/users/wallets') && response.request().method() === 'GET') {
+      try {
+        walletsResponse = await response.json();
+        console.log(`Captured wallets API response with ${walletsResponse.wallets?.length} wallets`);
+      } catch (e) {
+        console.log('Error parsing wallets response:', e);
+      }
+    }
+  };
+
+  page.on('response', responseHandler);
+
   const payNoticeBtnSelector = "#paymentSummaryButtonPay";
   await fillPaymentNotificationForm(noticeCode, fiscalCode);
   const payNoticeBtn = await page.waitForSelector(payNoticeBtnSelector, {
@@ -717,20 +773,28 @@ export const selectWalletAndGetToCheckPage = async (
   await fillEmailForm(email);
   await clickLoginButton();
   await page.waitForSelector('button[aria-label="party-menu-button"]');
-  console.log(`Selecting saved wallet with index: ${walletIndex}`);
-  await selectWallet(walletIndex);
-  await tryHandlePspPickerPage();
+
+  // wait for wallets to be visible to ensure API has been called
+  await page.waitForSelector('[data-qaid^="wallet-"]', { timeout: 5000 });
+
+  page.off('response', responseHandler);
+
+  if (!walletsResponse) {
+    throw new Error('Failed to capture wallets API response');
+  }
+
+  await selectWalletByType(walletType, walletsResponse);
 };
 
 export const cancelWalletPayment = async (
   noticeCode,
   fiscalCode,
   email,
-  walletIndex = 0
+  walletType
 ) => {
   const resultMessageXPath =
     "#main_content > div > div > div > div.MuiBox-root.css-5vb4lz > div";
-  await selectWalletAndGetToCheckPage(noticeCode, fiscalCode, email, walletIndex);
+  await selectWalletAndGetToCheckPage(noticeCode, fiscalCode, email, walletType);
   const paymentCheckPageButtonCancel = await page.waitForSelector(
     "#paymentCheckPageButtonCancel"
   );
@@ -747,33 +811,59 @@ export const editWalletAndSelectAnother = async (
   noticeCode,
   fiscalCode,
   email,
-  initialWalletIndex,
-  newWalletIndex
+  initialWalletType,
+  newWalletType
 ) => {
+  // listener to capture wallets API response
+  let walletsResponse = null;
+
+  const responseHandler = async (response) => {
+    const url = response.url();
+    if (url.includes('/checkout/payment-wallet/v1/users/wallets') && response.request().method() === 'GET') {
+      try {
+        walletsResponse = await response.json();
+        console.log(`Captured wallets API response with ${walletsResponse.wallets?.length} wallets`);
+      } catch (e) {
+        console.log('Error parsing wallets response:', e);
+      }
+    }
+  };
+
+  page.on('response', responseHandler);
+
   const cardEditButtonSelector = "#cardEdit";
-  await selectWalletAndGetToCheckPage(noticeCode, fiscalCode, email, initialWalletIndex);
+  await selectWalletAndGetToCheckPage(noticeCode, fiscalCode, email, initialWalletType);
+
+  page.off('response', responseHandler);
+
+  if (!walletsResponse) {
+    throw new Error('Failed to capture wallets API response in editWalletAndSelectAnother');
+  }
+
   const cardEditButton = await page.waitForSelector(cardEditButtonSelector, {
     visible: true,
     clickable: true
   });
   console.log("Clicking 'Modifica' (Edit) button to change wallet selection");
   await cardEditButton.click();
-  console.log(`Selecting new saved wallet with index: ${newWalletIndex}`);
-  await selectWallet(newWalletIndex);
-  await tryHandlePspPickerPage();
+
+  // wait for wallets to be visible again after clicking edit
+  await page.waitForSelector('[data-qaid^="wallet-"]', { timeout: 5000 });
+
+  await selectWalletByType(newWalletType, walletsResponse);
 };
 
 export const editWalletSelectAnotherAndPay = async (
   noticeCode,
   fiscalCode,
   email,
-  initialWalletIndex,
-  newWalletIndex,
-  checkoutUrlAfterAuth
+  checkoutUrlAfterAuth,
+  initialWalletType,
+  newWalletType
 ) => {
   const payBtnSelector = "#paymentCheckPageButtonPay";
   const resultTitleSelector = "#responsePageMessageTitle";
-  await editWalletAndSelectAnother(noticeCode, fiscalCode, email, initialWalletIndex, newWalletIndex);
+  await editWalletAndSelectAnother(noticeCode, fiscalCode, email, initialWalletType, newWalletType);
   const payBtn = await page.waitForSelector(payBtnSelector);
   await payBtn.click();
   await page.waitForNavigation();
