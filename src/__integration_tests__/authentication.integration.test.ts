@@ -23,7 +23,8 @@ import {
   fillPaymentFlowWithoutLogin, 
   fillPaymentFlowWithLogin, 
   payWithWallet, 
-  cancelWalletPayment 
+  cancelWalletPayment,
+  editWalletSelectAnotherAndPay
 } from "./utils/helpers";
 import { URL, OKPaymentInfo, KORPTIDs } from "./utils/testConstants";
 
@@ -1208,6 +1209,64 @@ describe("Wallet feature tests", () => {
 
       expect(resultMessage).toContain(translation.cancelledPage.body);
       console.log(`Wallet payment cancelled successfully for language: ${lang}`);
+    }
+  );
+
+  /**
+   * This test covers:
+   * - selecting a wallet and navigating to payment summary page
+   * - clicking the "Modifica" (Edit) button to change wallet selection
+   * - selecting a different wallet (second wallet)
+   * - completing the payment with the newly selected wallet
+   * - verifying the outcomes response after payment completion
+   * - testing across all supported languages
+   */
+  it.only.each([
+    ["it", itTranslation],
+    ["en", enTranslation],
+    ["fr", frTranslation],
+    ["de", deTranslation],
+    ["sl", slTranslation]
+  ])(
+    "Should successfully edit wallet selection and complete payment for language [%s]",
+    async (lang, translation) => {
+      console.log(`\n=== TEST: Should successfully edit wallet selection and complete payment for language [${lang}] ===`);
+      let outcomesResponse = null;
+
+      page.on("response", async (response) => {
+        const url = response.url();
+        if (url.includes("/ecommerce/checkout/v1/transactions/") && url.includes("/outcomes") && response.request().method() === "GET") {
+          try {
+            outcomesResponse = await response.json();
+          } catch (e) {
+            console.log("Error parsing outcomes response:", e);
+          }
+        }
+      });
+
+      await selectLanguage(lang);
+      await page.evaluate(() => {
+        sessionStorage.setItem('enableWallet', 'true');
+        console.log("Wallet feature flag enabled")
+      });
+
+      // select first wallet, click edit button, select second wallet, complete payment
+      const resultMessage = await editWalletSelectAnotherAndPay(
+        OKPaymentInfo.VALID_NOTICE_CODE,
+        OKPaymentInfo.VALID_FISCAL_CODE,
+        OKPaymentInfo.EMAIL,
+        0, // initial wallet index (first wallet)
+        1, // new wallet index (second wallet)
+        URL.CHECKOUT_URL_AFTER_AUTHORIZATION
+      );
+
+      expect(resultMessage).toContain(translation.paymentResponsePage[0].title.replace("{{amount}}", "120,15\xa0€"));
+
+      // check outcomes response
+      expect(outcomesResponse).not.toBeNull();
+      // @ts-expect-error - outcomesResponse is properly typed at runtime
+      expect(outcomesResponse.outcome).toBe(0);
+      console.log(`Wallet edit and payment completed successfully for language: ${lang}`);
     }
   );
 });

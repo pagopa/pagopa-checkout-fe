@@ -717,6 +717,7 @@ export const selectWalletAndGetToCheckPage = async (
   await fillEmailForm(email);
   await clickLoginButton();
   await page.waitForSelector('button[aria-label="party-menu-button"]');
+  console.log(`Selecting saved wallet with index: ${walletIndex}`);
   await selectWallet(walletIndex);
   await tryHandlePspPickerPage();
 };
@@ -739,5 +740,44 @@ export const cancelWalletPayment = async (
   await page.waitForNavigation();
   await new Promise((r) => setTimeout(r, 200));
   const message = await page.waitForSelector(resultMessageXPath);
+  return await message.evaluate((el) => el.textContent);
+};
+
+export const editWalletAndSelectAnother = async (
+  noticeCode,
+  fiscalCode,
+  email,
+  initialWalletIndex,
+  newWalletIndex
+) => {
+  const cardEditButtonSelector = "#cardEdit";
+  await selectWalletAndGetToCheckPage(noticeCode, fiscalCode, email, initialWalletIndex);
+  const cardEditButton = await page.waitForSelector(cardEditButtonSelector, {
+    visible: true,
+    clickable: true
+  });
+  console.log("Clicking 'Modifica' (Edit) button to change wallet selection");
+  await cardEditButton.click();
+  console.log(`Selecting new saved wallet with index: ${newWalletIndex}`);
+  await selectWallet(newWalletIndex);
+  await tryHandlePspPickerPage();
+};
+
+export const editWalletSelectAnotherAndPay = async (
+  noticeCode,
+  fiscalCode,
+  email,
+  initialWalletIndex,
+  newWalletIndex,
+  checkoutUrlAfterAuth
+) => {
+  const payBtnSelector = "#paymentCheckPageButtonPay";
+  const resultTitleSelector = "#responsePageMessageTitle";
+  await editWalletAndSelectAnother(noticeCode, fiscalCode, email, initialWalletIndex, newWalletIndex);
+  const payBtn = await page.waitForSelector(payBtnSelector);
+  await payBtn.click();
+  await page.waitForNavigation();
+  await page.goto(checkoutUrlAfterAuth, { waitUntil: "networkidle0" });
+  const message = await page.waitForSelector(resultTitleSelector);
   return await message.evaluate((el) => el.textContent);
 };
