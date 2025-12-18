@@ -1004,18 +1004,19 @@ describe("Wallet feature tests", () => {
   /**
    * This test covers:
    * - enabling wallet feature flag
-   * - completing payment using a saved wallet
+   * - completing payment using a saved CARDS wallet
    * - verifying that the auth request contains wallet details
-   * - verifying that the calculate fees API is called
+   * - verifying that the calculate fees API is called with empty idPspList for CARDS wallets
    * - verifying the outcomes response after payment completion
    */
-  it("Should successfully complete payment using a saved wallet", async () => {
-    console.log("\n=== TEST: Should successfully complete payment using a saved wallet ===");
+  it("Should successfully complete payment using a saved CARDS wallet", async () => {
+    console.log("\n=== TEST: Should successfully complete payment using a saved CARDS wallet ===");
     await selectLanguage("it");
     let outcomesResponse = null;
     let authRequestCalled = false;
     let hasWalletDetail = false;
     let calculateFeesCalled = false;
+    let calculateFeesIdPspList = null;
 
     // listen for auth request with wallet details
     page.on("request", async (request) => {
@@ -1037,9 +1038,18 @@ describe("Wallet feature tests", () => {
         }
       }
 
-      // check calculate fees was called
-      if (url.includes("/ecommerce/checkout/v2/payment-methods/") && url.includes("/fees")) {
+      // check calculate fees was called and capture idPspList (should be empty for CARDS wallet)
+      if (url.includes("/ecommerce/checkout/v2/payment-methods/") && url.includes("/fees") && request.method() === "POST") {
         calculateFeesCalled = true;
+        try {
+          const postData = request.postData();
+          if (postData) {
+            const parsedData = JSON.parse(postData);
+            calculateFeesIdPspList = parsedData.idPspList;
+          }
+        } catch (e) {
+          console.log("Error parsing calculate fees request:", e);
+        }
       }
     });
 
@@ -1064,8 +1074,8 @@ describe("Wallet feature tests", () => {
       OKPaymentInfo.VALID_NOTICE_CODE,
       OKPaymentInfo.VALID_FISCAL_CODE,
       OKPaymentInfo.EMAIL,
-      0,
-      URL.CHECKOUT_URL_AFTER_AUTHORIZATION
+      URL.CHECKOUT_URL_AFTER_AUTHORIZATION,
+      "CARDS"
     );
 
     expect(resultMessage).toContain(itTranslation.paymentResponsePage[0].title.replace("{{amount}}", "120,15\xa0€"));
@@ -1079,10 +1089,86 @@ describe("Wallet feature tests", () => {
     expect(authRequestCalled).toBe(true);
     expect(hasWalletDetail).toBe(true);
 
-    // check calculate fees was called
+    // check calculate fees was called with empty idPspList for CARDS wallet
     expect(calculateFeesCalled).toBe(true);
+    expect(calculateFeesIdPspList).not.toBeNull();
+    expect(calculateFeesIdPspList).toEqual([]);
 
-    console.log("Wallet payment completed successfully with all API validations");
+    console.log("CARDS wallet payment completed successfully with all API validations");
+  });
+
+  /**
+   * This test covers:
+   * - enabling wallet feature flag
+   * - completing payment using a saved PAYPAL wallet
+   * - verifying that the calculate fees API is called with idPspList containing the pspId for PAYPAL wallets
+   * - verifying the outcomes response after payment completion
+   */
+  it("Should successfully complete payment using a saved PAYPAL wallet", async () => {
+    console.log("\n=== TEST: Should successfully complete payment using a saved PAYPAL wallet ===");
+    await selectLanguage("it");
+    let outcomesResponse = null;
+    let calculateFeesCalled = false;
+    let calculateFeesIdPspList = null;
+
+    // listen for calculate fees request
+    page.on("request", async (request) => {
+      const url = request.url();
+
+      // check calculate fees was called and capture idPspList (for PAYPAL wallet should contain pspId)
+      if (url.includes("/ecommerce/checkout/v2/payment-methods/") && url.includes("/fees") && request.method() === "POST") {
+        calculateFeesCalled = true;
+        try {
+          const postData = request.postData();
+          if (postData) {
+            const parsedData = JSON.parse(postData);
+            calculateFeesIdPspList = parsedData.idPspList;
+          }
+        } catch (e) {
+          console.log("Error parsing calculate fees request:", e);
+        }
+      }
+    });
+
+    // listen for outcomes
+    page.on("response", async (response) => {
+      const url = response.url();
+      if (url.includes("/ecommerce/checkout/v1/transactions/") && url.includes("/outcomes") && response.request().method() === "GET") {
+        try {
+          outcomesResponse = await response.json();
+        } catch (e) {
+          console.log("Error parsing outcomes response:", e);
+        }
+      }
+    });
+
+    await page.evaluate(() => {
+      sessionStorage.setItem('enableWallet', 'true');
+      console.log("Wallet feature flag enabled")
+    });
+
+    const resultMessage = await payWithWallet(
+      OKPaymentInfo.VALID_NOTICE_CODE,
+      OKPaymentInfo.VALID_FISCAL_CODE,
+      OKPaymentInfo.EMAIL,
+      URL.CHECKOUT_URL_AFTER_AUTHORIZATION,
+      "PAYPAL"
+    );
+
+    expect(resultMessage).toContain(itTranslation.paymentResponsePage[0].title.replace("{{amount}}", "120,15\xa0€"));
+
+    // check outcomes response
+    expect(outcomesResponse).not.toBeNull();
+    // @ts-expect-error - outcomesResponse is properly typed at runtime
+    expect(outcomesResponse.outcome).toBe(0);
+
+    // check calculate fees was called with pspId in idPspList for PAYPAL wallet
+    expect(calculateFeesCalled).toBe(true);
+    expect(calculateFeesIdPspList).not.toBeNull();
+    expect(Array.isArray(calculateFeesIdPspList)).toBe(true);
+    expect(calculateFeesIdPspList?.length).toBe(1);
+
+    console.log("PAYPAL wallet payment completed successfully with idPspList validation");
   });
 
   /**
@@ -1123,8 +1209,8 @@ describe("Wallet feature tests", () => {
         OKPaymentInfo.VALID_NOTICE_CODE,
         OKPaymentInfo.VALID_FISCAL_CODE,
         OKPaymentInfo.EMAIL,
-        0,
-        URL.CHECKOUT_URL_AFTER_AUTHORIZATION
+        URL.CHECKOUT_URL_AFTER_AUTHORIZATION,
+        "CARDS"
       );
 
       expect(resultMessage).toContain(translation.paymentResponsePage[0].title.replace("{{amount}}", "120,15\xa0€"));
@@ -1204,7 +1290,7 @@ describe("Wallet feature tests", () => {
         KORPTIDs.CANCEL_PAYMENT_OK,
         OKPaymentInfo.VALID_FISCAL_CODE,
         OKPaymentInfo.EMAIL,
-        0
+        "CARDS"
       );
 
       expect(resultMessage).toContain(translation.cancelledPage.body);
@@ -1214,9 +1300,9 @@ describe("Wallet feature tests", () => {
 
   /**
    * This test covers:
-   * - selecting a wallet and navigating to payment summary page
+   * - selecting a CARDS wallet and navigating to payment summary page
    * - clicking the "Modifica" (Edit) button to change wallet selection
-   * - selecting a different wallet (second wallet)
+   * - selecting a different wallet type (PAYPAL)
    * - completing the payment with the newly selected wallet
    * - verifying the outcomes response after payment completion
    * - testing across all supported languages
@@ -1228,9 +1314,9 @@ describe("Wallet feature tests", () => {
     ["de", deTranslation],
     ["sl", slTranslation]
   ])(
-    "Should successfully edit wallet selection and complete payment for language [%s]",
+    "Should successfully edit wallet selection from CARDS to PAYPAL and complete payment for language [%s]",
     async (lang, translation) => {
-      console.log(`\n=== TEST: Should successfully edit wallet selection and complete payment for language [${lang}] ===`);
+      console.log(`\n=== TEST: Should successfully edit wallet selection from CARDS to PAYPAL for language [${lang}] ===`);
       let outcomesResponse = null;
 
       page.on("response", async (response) => {
@@ -1250,14 +1336,14 @@ describe("Wallet feature tests", () => {
         console.log("Wallet feature flag enabled")
       });
 
-      // select first wallet, click edit button, select second wallet, complete payment
+      // Select CARDS wallet, click edit button, select PAYPAL wallet, complete payment
       const resultMessage = await editWalletSelectAnotherAndPay(
         OKPaymentInfo.VALID_NOTICE_CODE,
         OKPaymentInfo.VALID_FISCAL_CODE,
         OKPaymentInfo.EMAIL,
-        0, // initial wallet index (first wallet)
-        1, // new wallet index (second wallet)
-        URL.CHECKOUT_URL_AFTER_AUTHORIZATION
+        URL.CHECKOUT_URL_AFTER_AUTHORIZATION,
+        "CARDS", // initial wallet type
+        "PAYPAL"  // new wallet type
       );
 
       expect(resultMessage).toContain(translation.paymentResponsePage[0].title.replace("{{amount}}", "120,15\xa0€"));
