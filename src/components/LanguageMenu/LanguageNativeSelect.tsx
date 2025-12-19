@@ -2,8 +2,8 @@ import { Box, InputBase, NativeSelect, styled, useTheme } from "@mui/material";
 import { visuallyHidden } from "@mui/utils";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { fallbackLang } from "../../translations/i18n";
 import supportedLang, { getSortedLang } from "../../translations/lang";
+import { fallbackLang } from "../../translations/i18n";
 
 export default function LanguageNativeSelect() {
   const { i18n, t } = useTranslation();

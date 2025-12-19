@@ -2,8 +2,14 @@ import {
   MapField,
   PaymentInstrumentsType,
 } from "features/payment/models/paymentModel";
+import { LanguageEnum } from "../../../generated/definitions/payment-ecommerce/RequestAuthorizationRequest";
 
 const italianLanguageKey = "IT";
+
+export const getLanguage = (): LanguageEnum =>
+  (
+    localStorage.getItem("i18nextLng") ?? italianLanguageKey
+  ).toUpperCase() as LanguageEnum;
 
 const getLanguageKey = (mapField: MapField): string => {
   const currentLanguage =
