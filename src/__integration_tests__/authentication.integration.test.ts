@@ -3,7 +3,29 @@ import deTranslation from "../translations/de/translations.json";
 import enTranslation from "../translations/en/translations.json";
 import frTranslation from "../translations/fr/translations.json";
 import slTranslation from "../translations/sl/translations.json";
-import { cancelPaymentKO, cancelPaymentOK, checkErrorOnCardDataFormSubmit, clickLoginButton, tryHandlePspPickerPage, fillAndSubmitCardDataForm, fillPaymentNotificationForm, getUserButton, payNotice, selectLanguage , tryLoginWithAuthCallbackError, choosePaymentMethod, verifyPaymentMethods, verifyWalletVisible, verifyWalletNotVisible, verifyWalletsSectionVisible, verifyWalletsSectionNotVisible, selectWallet, fillEmailForm, fillAndSubmitWallet, fillPaymentFlowWithoutLogin, fillPaymentFlowWithLogin } from "./utils/helpers";
+import { 
+  cancelPaymentKO, 
+  cancelPaymentOK, 
+  checkErrorOnCardDataFormSubmit, 
+  clickLoginButton, 
+  fillAndSubmitCardDataForm, 
+  fillPaymentNotificationForm, 
+  getUserButton, 
+  payNotice, 
+  selectLanguage, 
+  tryLoginWithAuthCallbackError, 
+  choosePaymentMethod, 
+  verifyPaymentMethods, 
+  verifyWalletVisible, 
+  verifyWalletNotVisible, 
+  verifyWalletsSectionVisible, 
+  verifyWalletsSectionNotVisible, 
+  fillPaymentFlowWithoutLogin, 
+  fillPaymentFlowWithLogin, 
+  payWithWallet, 
+  cancelWalletPayment,
+  editWalletSelectAnotherAndPay
+} from "./utils/helpers";
 import { URL, OKPaymentInfo, KORPTIDs } from "./utils/testConstants";
 
 jest.setTimeout(60000);
@@ -908,6 +930,8 @@ describe("Logout tests", () => {
 
 describe("Wallet feature tests", () => {
   it("Should display wallet list for authenticated user with wallet feature enabled", async () => {
+    console.log("\n=== TEST: Should display wallet list for authenticated user with wallet feature enabled ===");
+    await selectLanguage("it");
     // enable feature flag
     await page.evaluate(() => {
       sessionStorage.setItem('enableWallet', 'true');
@@ -933,6 +957,7 @@ describe("Wallet feature tests", () => {
   });
 
   it("Should NOT display wallets when wallet feature flag is disabled", async () => {
+    console.log("\n=== TEST: Should NOT display wallets when wallet feature flag is disabled ===");
     // disable feature flag
     await page.evaluate(() => {
       sessionStorage.setItem('enableWallet', 'false');
@@ -954,6 +979,7 @@ describe("Wallet feature tests", () => {
   });
 
   it("Should NOT display wallets when user is not authenticated", async () => {
+    console.log("\n=== TEST: Should NOT display wallets when user is not authenticated ===");
     // enable wallet feature flag
     await page.evaluate(() => {
       sessionStorage.setItem('enableWallet', 'true');
@@ -974,4 +1000,316 @@ describe("Wallet feature tests", () => {
     expect(noWallets).toBe(true);
     console.log("Individual wallets not visible")
   });
+
+  /**
+   * This test covers:
+   * - enabling wallet feature flag
+   * - completing payment using a saved CARDS wallet
+   * - verifying that the auth request contains wallet details
+   * - verifying that the calculate fees API is called with empty idPspList for CARDS wallets
+   * - verifying the outcomes response after payment completion
+   */
+  it("Should successfully complete payment using a saved CARDS wallet", async () => {
+    console.log("\n=== TEST: Should successfully complete payment using a saved CARDS wallet ===");
+    await selectLanguage("it");
+    let outcomesResponse = null;
+    let authRequestCalled = false;
+    let hasWalletDetail = false;
+    let calculateFeesCalled = false;
+    let calculateFeesIdPspList = null;
+
+    // listen for auth request with wallet details
+    page.on("request", async (request) => {
+      const url = request.url();
+
+      // check POST auth request contains wallet detailType
+      if (url.includes("/ecommerce/checkout/v1/transactions/") && url.includes("/auth-requests") && request.method() === "POST") {
+        authRequestCalled = true;
+        try {
+          const postData = request.postData();
+          if (postData) {
+            const parsedData = JSON.parse(postData);
+            if (parsedData.details && parsedData.details.detailType === "wallet" && parsedData.details.walletId) {
+              hasWalletDetail = true;
+            }
+          }
+        } catch (e) {
+          console.log("Error parsing auth request:", e);
+        }
+      }
+
+      // check calculate fees was called and capture idPspList (should be empty for CARDS wallet)
+      if (url.includes("/ecommerce/checkout/v2/payment-methods/") && url.includes("/fees") && request.method() === "POST") {
+        calculateFeesCalled = true;
+        try {
+          const postData = request.postData();
+          if (postData) {
+            const parsedData = JSON.parse(postData);
+            calculateFeesIdPspList = parsedData.idPspList;
+          }
+        } catch (e) {
+          console.log("Error parsing calculate fees request:", e);
+        }
+      }
+    });
+
+    // listen for outcomes
+    page.on("response", async (response) => {
+      const url = response.url();
+      if (url.includes("/ecommerce/checkout/v1/transactions/") && url.includes("/outcomes") && response.request().method() === "GET") {
+        try {
+          outcomesResponse = await response.json();
+        } catch (e) {
+          console.log("Error parsing outcomes response:", e);
+        }
+      }
+    });
+
+    await page.evaluate(() => {
+      sessionStorage.setItem('enableWallet', 'true');
+      console.log("Wallet feature flag enabled")
+    });
+
+    const resultMessage = await payWithWallet(
+      OKPaymentInfo.VALID_NOTICE_CODE,
+      OKPaymentInfo.VALID_FISCAL_CODE,
+      OKPaymentInfo.EMAIL,
+      URL.CHECKOUT_URL_AFTER_AUTHORIZATION,
+      "CARDS"
+    );
+
+    expect(resultMessage).toContain(itTranslation.paymentResponsePage[0].title.replace("{{amount}}", "120,15\xa0€"));
+
+    // check outcomes response
+    expect(outcomesResponse).not.toBeNull();
+    // @ts-expect-error - outcomesResponse is properly typed at runtime
+    expect(outcomesResponse.outcome).toBe(0);
+
+    // check auth request was made with wallet details
+    expect(authRequestCalled).toBe(true);
+    expect(hasWalletDetail).toBe(true);
+
+    // check calculate fees was called with empty idPspList for CARDS wallet
+    expect(calculateFeesCalled).toBe(true);
+    expect(calculateFeesIdPspList).not.toBeNull();
+    expect(calculateFeesIdPspList).toEqual([]);
+
+    console.log("CARDS wallet payment completed successfully with all API validations");
+  });
+
+  /**
+   * This test covers:
+   * - enabling wallet feature flag
+   * - completing payment using a saved PAYPAL wallet
+   * - verifying that the calculate fees API is called with idPspList containing the pspId for PAYPAL wallets
+   * - verifying the outcomes response after payment completion
+   */
+  it("Should successfully complete payment using a saved PAYPAL wallet", async () => {
+    console.log("\n=== TEST: Should successfully complete payment using a saved PAYPAL wallet ===");
+    await selectLanguage("it");
+    let outcomesResponse = null;
+    let calculateFeesCalled = false;
+    let calculateFeesIdPspList = null;
+
+    // listen for calculate fees request
+    page.on("request", async (request) => {
+      const url = request.url();
+
+      // check calculate fees was called and capture idPspList (for PAYPAL wallet should contain pspId)
+      if (url.includes("/ecommerce/checkout/v2/payment-methods/") && url.includes("/fees") && request.method() === "POST") {
+        calculateFeesCalled = true;
+        try {
+          const postData = request.postData();
+          if (postData) {
+            const parsedData = JSON.parse(postData);
+            calculateFeesIdPspList = parsedData.idPspList;
+          }
+        } catch (e) {
+          console.log("Error parsing calculate fees request:", e);
+        }
+      }
+    });
+
+    // listen for outcomes
+    page.on("response", async (response) => {
+      const url = response.url();
+      if (url.includes("/ecommerce/checkout/v1/transactions/") && url.includes("/outcomes") && response.request().method() === "GET") {
+        try {
+          outcomesResponse = await response.json();
+        } catch (e) {
+          console.log("Error parsing outcomes response:", e);
+        }
+      }
+    });
+
+    await page.evaluate(() => {
+      sessionStorage.setItem('enableWallet', 'true');
+      console.log("Wallet feature flag enabled")
+    });
+
+    const resultMessage = await payWithWallet(
+      OKPaymentInfo.VALID_NOTICE_CODE,
+      OKPaymentInfo.VALID_FISCAL_CODE,
+      OKPaymentInfo.EMAIL,
+      URL.CHECKOUT_URL_AFTER_AUTHORIZATION,
+      "PAYPAL"
+    );
+
+    expect(resultMessage).toContain(itTranslation.paymentResponsePage[0].title.replace("{{amount}}", "120,15\xa0€"));
+
+    // check outcomes response
+    expect(outcomesResponse).not.toBeNull();
+    // @ts-expect-error - outcomesResponse is properly typed at runtime
+    expect(outcomesResponse.outcome).toBe(0);
+
+    // check calculate fees was called with pspId in idPspList for PAYPAL wallet
+    expect(calculateFeesCalled).toBe(true);
+    expect(calculateFeesIdPspList).not.toBeNull();
+    expect(Array.isArray(calculateFeesIdPspList)).toBe(true);
+    expect(calculateFeesIdPspList?.length).toBe(1);
+
+    console.log("PAYPAL wallet payment completed successfully with idPspList validation");
+  });
+
+  /**
+   * This test covers:
+   * - completing wallet payments for multiple languages
+   * - verifying the outcomes response after payment completion
+   * Note: API call verifications are covered in the previous test
+   */
+  it.each([
+    ["it", itTranslation],
+    ["en", enTranslation],
+    ["fr", frTranslation],
+    ["de", deTranslation],
+    ["sl", slTranslation]
+  ])(
+    "Should successfully complete wallet payment for language [%s]",
+    async (lang, translation) => {
+      console.log(`\n=== TEST: Should successfully complete wallet payment for language [${lang}] ===`);
+      let outcomesResponse = null;
+
+      page.on("response", async (response) => {
+        const url = response.url();
+        if (url.includes("/ecommerce/checkout/v1/transactions/") && url.includes("/outcomes") && response.request().method() === "GET") {
+          try {
+            outcomesResponse = await response.json();
+          } catch (e) {
+            console.log("Error parsing outcomes response:", e);
+          }
+        }
+      });
+
+      await selectLanguage(lang);
+      await page.evaluate(() => {
+        sessionStorage.setItem('enableWallet', 'true');
+      });
+
+      const resultMessage = await payWithWallet(
+        OKPaymentInfo.VALID_NOTICE_CODE,
+        OKPaymentInfo.VALID_FISCAL_CODE,
+        OKPaymentInfo.EMAIL,
+        URL.CHECKOUT_URL_AFTER_AUTHORIZATION,
+        "CARDS"
+      );
+
+      expect(resultMessage).toContain(translation.paymentResponsePage[0].title.replace("{{amount}}", "120,15\xa0€"));
+
+      // check outcomes response
+      expect(outcomesResponse).not.toBeNull();
+      // @ts-expect-error - outcomesResponse is properly typed at runtime 
+      expect(outcomesResponse.outcome).toBe(0);
+      console.log(`Wallet payment completed successfully for language: ${lang}`);
+    }
+  );
+
+  /**
+   * This test covers:
+   * - cancelling wallet payments for multiple languages
+   */
+  it.each([
+    ["it", itTranslation],
+    ["en", enTranslation],
+    ["fr", frTranslation],
+    ["de", deTranslation],
+    ["sl", slTranslation]
+  ])(
+    "Should successfully cancel wallet payment for language [%s]",
+    async (lang, translation) => {
+      console.log(`\n=== TEST: Should successfully cancel wallet payment for language [${lang}] ===`);
+      await selectLanguage(lang);
+      await page.evaluate(() => {
+        sessionStorage.setItem('enableWallet', 'true');
+      });
+
+      const resultMessage = await cancelWalletPayment(
+        KORPTIDs.CANCEL_PAYMENT_OK,
+        OKPaymentInfo.VALID_FISCAL_CODE,
+        OKPaymentInfo.EMAIL,
+        "CARDS"
+      );
+
+      expect(resultMessage).toContain(translation.cancelledPage.body);
+      console.log(`Wallet payment cancelled successfully for language: ${lang}`);
+    }
+  );
+
+  /**
+   * This test covers:
+   * - selecting a CARDS wallet and navigating to payment summary page
+   * - clicking the "Modifica" (Edit) button to change wallet selection
+   * - selecting a different wallet type (PAYPAL)
+   * - completing the payment with the newly selected wallet
+   * - verifying the outcomes response after payment completion
+   * - testing across all supported languages
+   */
+  it.each([
+    ["it", itTranslation],
+    ["en", enTranslation],
+    ["fr", frTranslation],
+    ["de", deTranslation],
+    ["sl", slTranslation]
+  ])(
+    "Should successfully edit wallet selection from CARDS to PAYPAL and complete payment for language [%s]",
+    async (lang, translation) => {
+      console.log(`\n=== TEST: Should successfully edit wallet selection from CARDS to PAYPAL for language [${lang}] ===`);
+      let outcomesResponse = null;
+
+      page.on("response", async (response) => {
+        const url = response.url();
+        if (url.includes("/ecommerce/checkout/v1/transactions/") && url.includes("/outcomes") && response.request().method() === "GET") {
+          try {
+            outcomesResponse = await response.json();
+          } catch (e) {
+            console.log("Error parsing outcomes response:", e);
+          }
+        }
+      });
+
+      await selectLanguage(lang);
+      await page.evaluate(() => {
+        sessionStorage.setItem('enableWallet', 'true');
+        console.log("Wallet feature flag enabled")
+      });
+
+      // Select CARDS wallet, click edit button, select PAYPAL wallet, complete payment
+      const resultMessage = await editWalletSelectAnotherAndPay(
+        OKPaymentInfo.VALID_NOTICE_CODE,
+        OKPaymentInfo.VALID_FISCAL_CODE,
+        OKPaymentInfo.EMAIL,
+        URL.CHECKOUT_URL_AFTER_AUTHORIZATION,
+        "CARDS", // initial wallet type
+        "PAYPAL"  // new wallet type
+      );
+
+      expect(resultMessage).toContain(translation.paymentResponsePage[0].title.replace("{{amount}}", "120,15\xa0€"));
+
+      // check outcomes response
+      expect(outcomesResponse).not.toBeNull();
+      // @ts-expect-error - outcomesResponse is properly typed at runtime
+      expect(outcomesResponse.outcome).toBe(0);
+      console.log(`Wallet edit and payment completed successfully for language: ${lang}`);
+    }
+  );
 });
+
