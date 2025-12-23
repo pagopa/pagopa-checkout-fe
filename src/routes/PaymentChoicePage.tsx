@@ -54,10 +54,12 @@ export default function PaymentChoicePage() {
     0;
   const [loading, setLoading] = React.useState(false);
   const [instrumentsLoading, setInstrumentsLoading] = React.useState(false);
-  const [walletLoaded, setWalletLoaded] = React.useState(false);
+  const walletFetchedLangRef = React.useRef<string | null>(null);
   const [cancelModalOpen, setCancelModalOpen] = React.useState(false);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
+  const { i18n } = useTranslation();
+  const currentLang = i18n.language;
   const [paymentInstruments, setPaymentInstruments] = React.useState<
     Array<PaymentInstrumentsType>
   >([]);
@@ -79,24 +81,20 @@ export default function PaymentChoicePage() {
 
   React.useEffect(() => {
     void getPaymentMethods();
-
-    if (!walletInstruments?.length && loggedUser.userInfo != null) {
-      void getWallets();
-    }
-  }, [localStorage.getItem("i18nextLng")]);
+  }, [currentLang]);
 
   React.useEffect(() => {
     if (loggedUser.userInfo == null) {
       setWalletInstruments([]);
-      setWalletLoaded(false);
+      walletFetchedLangRef.current = null; 
       return;
     }
 
-    if (!walletLoaded) {
-      setWalletLoaded(true);
+    if (walletFetchedLangRef.current !== currentLang) {
+      walletFetchedLangRef.current = currentLang;
       void getWallets();
     }
-  }, [loggedUser.userInfo]);
+  }, [loggedUser.userInfo, currentLang]);
 
   React.useEffect(() => {
     const paymentInfo = getPaymentInfoFromSessionStorage();
