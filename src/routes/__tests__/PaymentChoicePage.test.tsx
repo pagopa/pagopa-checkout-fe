@@ -67,7 +67,13 @@ import {
 } from "./_model";
 // Mock translations and recaptcha
 jest.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
+  useTranslation: () => ({
+    t: (key: string) => key,
+    i18n: {
+      language: "it",
+      changeLanguage: jest.fn(),
+    },
+  }),
   Trans: ({
     i18nKey,
   }: {
