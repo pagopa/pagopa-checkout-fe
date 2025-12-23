@@ -86,7 +86,7 @@ export default function PaymentChoicePage() {
   React.useEffect(() => {
     if (loggedUser.userInfo == null) {
       setWalletInstruments([]);
-      walletFetchedLangRef.current = null; 
+      walletFetchedLangRef.current = null;
       return;
     }
 
