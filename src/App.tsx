@@ -2,9 +2,10 @@
 import CssBaseline from "@mui/material/CssBaseline";
 import React, { useContext } from "react";
 import { useTranslation } from "react-i18next";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route } from "react-router-dom";
 import * as TE from "fp-ts/TaskEither";
 import { pipe } from "fp-ts/function";
+import { ApmRoutes } from "@elastic/apm-rum-react";
 import { useAppDispatch, useAppSelector } from "./redux/hooks/hooks";
 import {
   selectMaintenanceEnabled,
@@ -46,8 +47,14 @@ import MaintenancePage from "./routes/MaintenancePage";
 import MaintenanceGuard from "./components/commons/MaintenanceGuard";
 import featureFlags from "./utils/featureFlags";
 import { useFeatureFlagsAll } from "./hooks/useFeatureFlags";
+import { initializeApm } from "./utils/elastic/apmInitializer";
 
 export function App() {
+  const apm = initializeApm();
+  // eslint-disable-next-line no-console
+  console.log(`APM enabled -> : ${apm.isEnabled()}`);
+  // eslint-disable-next-line no-console
+  console.log(`APM active -> : ${apm.isActive()}`);
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
@@ -157,7 +164,7 @@ export function App() {
             {maintenanceEnabled ? (
               <MaintenancePage />
             ) : (
-              <Routes>
+              <ApmRoutes>
                 <Route path="/" element={<PaymentOutlet />}>
                   <Route path={CheckoutRoutes.ROOT} element={<IndexPage />} />
                   <Route
@@ -288,7 +295,7 @@ export function App() {
                   <Route path="*" element={<Navigate replace to="/" />} />
                 </Route>
                 <Route path="*" element={<Navigate replace to="/" />} />
-              </Routes>
+              </ApmRoutes>
             )}
           </Layout>
         </BrowserRouter>

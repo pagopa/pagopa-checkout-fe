@@ -62,7 +62,8 @@
     "react-redux": "^9.2.0",
     "react-router-dom": "^6.29.0",
     "set-value": "^4.0.1",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "@elastic/apm-rum-react": "^2.0.6"
   },
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.17.7",
