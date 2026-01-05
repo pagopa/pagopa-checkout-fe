@@ -480,8 +480,8 @@ export default function PaymentCheckPage() {
 
       {!!pspSelected && (
         <PspPrivacyInfo
-          termsLink="https://www.pagopa.gov.it/it/prestatori-servizi-di-pagamento/elenco-PSP-attivi/"
-          privacyLink="https://www.pagopa.gov.it/it/prestatori-servizi-di-pagamento/elenco-PSP-attivi/"
+          termsLink="https://www.pagopa.gov.it/it/prestatori-servizi-di-pagamento/trasparenza-bancaria/"
+          privacyLink="https://www.pagopa.gov.it/it/prestatori-servizi-di-pagamento/trasparenza-bancaria/"
           pspName={pspSelected.pspBusinessName || ""}
         />
       )}
