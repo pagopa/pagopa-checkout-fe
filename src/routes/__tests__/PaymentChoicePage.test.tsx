@@ -7,6 +7,7 @@ import { fireEvent, screen, waitFor } from "@testing-library/react";
 import * as router from "react-router";
 import * as E from "fp-ts/Either";
 import { useAppSelector } from "../../redux/hooks/hooks";
+import * as helper from "../../utils/api/helper";
 
 // Mock @mui/material styled system
 jest.mock("@mui/material/styles", () => ({
@@ -1158,6 +1159,62 @@ describe("PaymentChoicePage authenticated", () => {
 
     await waitFor(() => {
       expect(navigate).toHaveBeenCalledWith("/autenticazione-scaduta"); // Verifica il reindirizzamento
+    });
+  });
+
+  test("getWallets called only once, getPaymentMethods called on each language change", async () => {
+    (getSessionItem as jest.Mock).mockImplementation((key) => {
+      if (key === SessionItems.enableWallet || key === SessionItems.authToken) {
+        return "true";
+      }
+
+      return null;
+    });
+    (useAppSelector as jest.Mock).mockImplementation((selector: any) => {
+      if (selector.name === "getLoggedUser") {
+        return { userInfo: { id: "1", name: "Mario" } };
+      }
+      return selector();
+    });
+    const getWalletSpy = jest.spyOn(helper, "getWalletInstruments");
+    const getPaymentSpy = jest.spyOn(helper, "getPaymentInstruments");
+    // eslint-disable-next-line functional/no-let
+    let currentLang = "it";
+    (window.localStorage.getItem as jest.Mock).mockImplementation((key) => {
+      if (key === "i18nextLng") {
+        return currentLang;
+      }
+      return null;
+    });
+
+    const { rerender } = renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentChoicePage />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(getWalletSpy).toHaveBeenCalledTimes(1);
+      expect(getPaymentSpy).toHaveBeenCalledTimes(1);
+    });
+
+    currentLang = "en";
+    rerender(
+      <MemoryRouter>
+        <PaymentChoicePage />
+      </MemoryRouter>
+    );
+
+    currentLang = "fr";
+    rerender(
+      <MemoryRouter>
+        <PaymentChoicePage />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(getWalletSpy).toHaveBeenCalledTimes(1);
+      expect(getPaymentSpy).toHaveBeenCalledTimes(3);
     });
   });
 });
