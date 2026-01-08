@@ -79,10 +79,6 @@ export default function PaymentChoicePage() {
 
   React.useEffect(() => {
     void getPaymentMethods();
-
-    if (!walletInstruments?.length && loggedUser.userInfo != null) {
-      void getWallets();
-    }
   }, [localStorage.getItem("i18nextLng")]);
 
   React.useEffect(() => {
