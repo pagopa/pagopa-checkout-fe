@@ -25,22 +25,8 @@ import InformationModal from "../components/modals/InformationModal";
 export default function IFrameCardPage() {
   const navigate = useNavigate();
   const [loading] = React.useState(false);
-  const [hideCancelButton, setHideCancelButton] = React.useState(false);
   const [cvvModalOpen, setCvvModalOpen] = React.useState(false);
   const handleClose = () => setCvvModalOpen(false);
-
-  React.useEffect(() => {
-    setHideCancelButton(
-      !!pipe(
-        getSessionItem(SessionItems.transaction),
-        NewTransactionResponse.decode,
-        E.fold(
-          () => undefined,
-          (transaction) => transaction.transactionId
-        )
-      )
-    );
-  }, []);
 
   React.useEffect(() => {
     const paymentInfo = getPaymentInfoFromSessionStorage();
@@ -72,7 +58,6 @@ export default function IFrameCardPage() {
       <Box sx={{ mt: 6 }}>
         <IframeCardForm
           onCancel={onCancel}
-          hideCancel={hideCancelButton}
           loading={loading}
         />
       </Box>
