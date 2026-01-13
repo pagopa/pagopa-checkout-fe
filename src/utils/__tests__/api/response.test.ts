@@ -121,7 +121,7 @@ describe("response.ts polling predicate", () => {
     const predicate = await getFreshPredicate();
     await expect(predicate(mkRes(200, true))).resolves.toBe(false);
   });
-  
+
   it("should retry on 200 when isFinalStatus=false", async () => {
     const predicate = await getFreshPredicate();
     await expect(predicate(mkRes(200, false))).resolves.toBe(true);
