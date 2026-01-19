@@ -37,19 +37,19 @@ variables:
   YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
   ${{ if eq(parameters['CHECKOUT_USE_FRONTDOOR_CDN'], true) }}:
     # Front Door CDN
-    DEV_STORAGE_BLOB_SYNC: az storage blob sync --container $web --account-name pagopadweucheckoutcdnsa -s "$(Pipeline.Workspace)\Bundle_DEV" --exclude-path payment-transactions-gateway
+    DEV_STORAGE_BLOB_SYNC: az storage blob sync --container $web --account-name pagopadweucheckoutcdnsa -s "$(Pipeline.Workspace)\Bundle_DEV"
     DEV_PURGE_CDN_COMMAND: az afd endpoint purge -g pagopa-d-checkout-fe-rg --endpoint-name pagopa-d-weu-checkout-cdn-endpoint --profile-name pagopa-d-weu-checkout-cdn-profile --content-paths "/*"
-    UAT_STORAGE_BLOB_SYNC: az storage blob sync --container $web --account-name pagopauweucheckoutcdnsa -s "$(Pipeline.Workspace)\Bundle_UAT" --exclude-path payment-transactions-gateway
+    UAT_STORAGE_BLOB_SYNC: az storage blob sync --container $web --account-name pagopauweucheckoutcdnsa -s "$(Pipeline.Workspace)\Bundle_UAT"
     UAT_PURGE_CDN_COMMAND: az afd endpoint purge -g pagopa-u-checkout-fe-rg --endpoint-name pagopa-u-weu-checkout-cdn-endpoint --profile-name pagopa-u-weu-checkout-cdn-profile --content-paths "/*"
-    PROD_STORAGE_BLOB_SYNC: az storage blob sync --container $web --account-name pagopapweucheckoutcdnsa -s "$(Pipeline.Workspace)\Bundle" --exclude-path payment-transactions-gateway
+    PROD_STORAGE_BLOB_SYNC: az storage blob sync --container $web --account-name pagopapweucheckoutcdnsa -s "$(Pipeline.Workspace)\Bundle"
     PROD_PURGE_CDN_COMMAND: az afd endpoint purge -g pagopa-p-checkout-fe-rg --endpoint-name pagopa-p-weu-checkout-cdn-endpoint --profile-name pagopa-p-weu-checkout-cdn-profile --content-paths "/*"
   ${{ else }}:
     # Classic CDN
-    DEV_STORAGE_BLOB_SYNC: az storage blob sync --container $web --account-name pagopadcheckoutsa -s "$(Pipeline.Workspace)\Bundle_DEV" --exclude-path payment-transactions-gateway
+    DEV_STORAGE_BLOB_SYNC: az storage blob sync --container $web --account-name pagopadcheckoutsa -s "$(Pipeline.Workspace)\Bundle_DEV"
     DEV_PURGE_CDN_COMMAND: az cdn endpoint purge -g pagopa-d-checkout-fe-rg -n pagopa-d-checkout-cdn-endpoint --profile-name pagopa-d-checkout-cdn-profile --content-paths "/*"
-    UAT_STORAGE_BLOB_SYNC: az storage blob sync --container $web --account-name pagopaucheckoutsa -s "$(Pipeline.Workspace)\Bundle_UAT" --exclude-path payment-transactions-gateway
+    UAT_STORAGE_BLOB_SYNC: az storage blob sync --container $web --account-name pagopaucheckoutsa -s "$(Pipeline.Workspace)\Bundle_UAT"
     UAT_PURGE_CDN_COMMAND: az cdn endpoint purge -g pagopa-u-checkout-fe-rg -n pagopa-u-checkout-cdn-endpoint --profile-name pagopa-u-checkout-cdn-profile --content-paths "/*"
-    PROD_STORAGE_BLOB_SYNC: az storage blob sync --container $web --account-name pagopapcheckoutsa -s "$(Pipeline.Workspace)\Bundle" --exclude-path payment-transactions-gateway
+    PROD_STORAGE_BLOB_SYNC: az storage blob sync --container $web --account-name pagopapcheckoutsa -s "$(Pipeline.Workspace)\Bundle"
     PROD_PURGE_CDN_COMMAND: az cdn endpoint purge -g pagopa-p-checkout-fe-rg -n pagopa-p-checkout-cdn-endpoint --profile-name pagopa-p-checkout-cdn-profile --content-paths "/*"
 
 
