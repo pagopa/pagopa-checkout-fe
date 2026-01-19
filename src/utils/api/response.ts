@@ -56,11 +56,7 @@ const ecommerceClientWithPollingV1: EcommerceClientV1 = createClientV1({
         return false;
       }
 
-      if (r.status === 404) {
-        return true;
-      }
-
-      if (r.status >= 500 && r.status < 600) {
+      if (r.status === 404 || (r.status >= 500 && r.status < 600)) {
         return true;
       }
 
