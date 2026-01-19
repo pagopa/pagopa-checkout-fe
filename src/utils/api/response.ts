@@ -60,6 +60,10 @@ const ecommerceClientWithPollingV1: EcommerceClientV1 = createClientV1({
         return true;
       }
 
+      if (r.status >= 500 && r.status < 600) {
+        return true;
+      }
+
       if (r.status === 200) {
         const { isFinalStatus } = (await r
           .clone()

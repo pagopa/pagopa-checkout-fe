@@ -139,10 +139,10 @@ describe("response.ts polling predicate", () => {
     await expect(predicate(mkRes(422, false))).resolves.toBe(false);
   });
 
-  it("should stop on 5xx errors", async () => {
+  it("should not stop on 5xx errors", async () => {
     const predicate = await getFreshPredicate();
-    await expect(predicate(mkRes(500, false))).resolves.toBe(false);
-    await expect(predicate(mkRes(502, false))).resolves.toBe(false);
-    await expect(predicate(mkRes(503, false))).resolves.toBe(false);
+    await expect(predicate(mkRes(500, false))).resolves.toBe(true);
+    await expect(predicate(mkRes(502, false))).resolves.toBe(true);
+    await expect(predicate(mkRes(503, false))).resolves.toBe(true);
   });
 });
