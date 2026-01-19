@@ -21,7 +21,6 @@ import {
   MixpanelPaymentPhase,
 } from "../../utils/mixpanel/mixpanelEvents";
 import { mixpanel } from "../../utils/mixpanel/mixpanelHelperInit";
-import { PaymentTypeCodeEnum } from "../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 import {
   paymentMethod,
   paymentMethodInfo,
@@ -460,7 +459,7 @@ describe("PaymentPspListPage - session missing values", () => {
           organization_fiscal_code: "77777777777",
           amount: 12000,
           expiration_date: "2021-07-31",
-          payment_method_selected: PaymentTypeCodeEnum.CP,
+          payment_method_selected: "CP",
           data_entry: MixpanelDataEntryType.MANUAL,
         })
       );

@@ -26,7 +26,6 @@ import {
   MixpanelFlow,
   MixpanelPaymentPhase,
 } from "../../utils/mixpanel/mixpanelEvents";
-import { PaymentTypeCodeEnum } from "../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 import {
   paymentMethod,
   paymentMethodInfo,
@@ -294,7 +293,7 @@ describe("PaymentResponsePage — with cart", () => {
           organization_fiscal_code: "77777777777",
           amount: 12000,
           expiration_date: "2021-07-31",
-          payment_method_selected: PaymentTypeCodeEnum.CP,
+          payment_method_selected: "CP",
           data_entry: MixpanelDataEntryType.MANUAL,
         })
       );

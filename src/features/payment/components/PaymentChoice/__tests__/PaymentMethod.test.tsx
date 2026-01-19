@@ -4,10 +4,7 @@ import "@testing-library/jest-dom";
 import { ThemeProvider, createTheme } from "@mui/material";
 import { MethodComponentList, DisabledPaymentMethods } from "../PaymentMethod"; // Remove MethodComponent from import
 import { PaymentMethodStatusEnum } from "../../../../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
-import {
-  MethodManagementEnum,
-  PaymentTypeCodeEnum,
-} from "../../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
+import { MethodManagementEnum } from "../../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
@@ -83,7 +80,7 @@ const mockMethods = [
     description: { it: "Carte di Credito e Debito" },
     status: PaymentMethodStatusEnum.ENABLED,
     methodManagement: MethodManagementEnum.ONBOARDABLE,
-    paymentTypeCode: PaymentTypeCodeEnum.CP,
+    paymentTypeCode: "CP",
   },
   {
     id: "paypal-id",
@@ -91,7 +88,7 @@ const mockMethods = [
     description: { it: "PayPal" },
     status: PaymentMethodStatusEnum.ENABLED,
     methodManagement: MethodManagementEnum.ONBOARDABLE,
-    paymentTypeCode: "PAYPAL" as PaymentTypeCodeEnum,
+    paymentTypeCode: "PAYPAL",
   },
   {
     id: "disabled-id",
@@ -99,7 +96,7 @@ const mockMethods = [
     description: { it: "Disabled Method" },
     status: PaymentMethodStatusEnum.DISABLED,
     methodManagement: MethodManagementEnum.ONBOARDABLE,
-    paymentTypeCode: "DISABLED" as PaymentTypeCodeEnum,
+    paymentTypeCode: "DISABLED",
   },
 ];
 

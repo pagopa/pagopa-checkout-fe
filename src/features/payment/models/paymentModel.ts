@@ -4,7 +4,6 @@ import { Theme } from "@emotion/react";
 import {
   MethodManagementEnum,
   PaymentMethodResponseMetadata,
-  PaymentTypeCodeEnum,
 } from "../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 import { FeeRange } from "../../../../generated/definitions/payment-ecommerce-v2/FeeRange";
 import { WalletTypeEnum } from "../../../../generated/definitions/payment-ecommerce-v2/CalculateFeeRequest";
@@ -109,7 +108,7 @@ export interface PaymentInstrumentsType {
   name: MapField;
   description: MapField;
   status: string;
-  paymentTypeCode: PaymentTypeCodeEnum;
+  paymentTypeCode: string;
   methodManagement: MethodManagementEnum;
   feeRange?: FeeRange;
   asset?: string;
