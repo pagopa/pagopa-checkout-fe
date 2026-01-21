@@ -24,7 +24,6 @@ import {
   MixpanelFlow,
   MixpanelPaymentPhase,
 } from "../../utils/mixpanel/mixpanelEvents";
-import { PaymentTypeCodeEnum } from "../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 import { WalletTypeEnum } from "../../../generated/definitions/payment-ecommerce-v2/CalculateFeeRequest";
 import { CalculateFeeResponse } from "../../../generated/definitions/payment-ecommerce-v2/CalculateFeeResponse";
 import { PaymentMethodStatusEnum } from "../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
@@ -358,7 +357,7 @@ describe("PaymentCheckPage", () => {
           organization_fiscal_code: "77777777777",
           amount: 12000,
           expiration_date: "2021-07-31",
-          payment_method_selected: PaymentTypeCodeEnum.CP,
+          payment_method_selected: "CP",
           data_entry: MixpanelDataEntryType.MANUAL,
         })
       );
@@ -388,7 +387,7 @@ describe("PaymentCheckPage", () => {
           organization_fiscal_code: "77777777777",
           amount: 12000,
           expiration_date: "2021-07-31",
-          payment_method_selected: PaymentTypeCodeEnum.CP,
+          payment_method_selected: "CP",
           data_entry: MixpanelDataEntryType.MANUAL,
         })
       );
@@ -418,7 +417,7 @@ describe("PaymentCheckPage", () => {
           organization_fiscal_code: "77777777777",
           amount: 12000,
           expiration_date: "2021-07-31",
-          payment_method_selected: PaymentTypeCodeEnum.CP,
+          payment_method_selected: "CP",
           data_entry: MixpanelDataEntryType.MANUAL,
         })
       );
@@ -448,7 +447,7 @@ describe("PaymentCheckPage", () => {
           organization_fiscal_code: "77777777777",
           amount: 12000,
           expiration_date: "2021-07-31",
-          payment_method_selected: PaymentTypeCodeEnum.CP,
+          payment_method_selected: "CP",
           data_entry: MixpanelDataEntryType.MANUAL,
         })
       );
