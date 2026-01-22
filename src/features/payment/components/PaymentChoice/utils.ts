@@ -1,7 +1,6 @@
 import { getMethodDescriptionForCurrentLanguage } from "../../../../utils/paymentMethods/paymentMethodsHelper";
 import { PaymentInstrumentsType } from "../../models/paymentModel";
 import { PaymentMethodStatusEnum } from "../../../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
-import { PaymentTypeCodeEnum } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 
 export const paymentTypeTranslationKeys: Record<string, string> = {
   CARTE: "paymentChoicePage.drawer.card",
@@ -10,7 +9,7 @@ export const paymentTypeTranslationKeys: Record<string, string> = {
 };
 
 const isFirstPaymentMethod = (method: PaymentInstrumentsType) =>
-  method.paymentTypeCode === PaymentTypeCodeEnum.CP;
+  method.paymentTypeCode === "CP";
 
 const compareMethods = (
   a: PaymentInstrumentsType,
@@ -32,7 +31,7 @@ export const getNormalizedMethods = (
   paymentInstruments: Array<PaymentInstrumentsType>
 ) => {
   const { methods, duplicatedMethods } = paymentInstruments.reduce<{
-    foundTypes: Array<PaymentTypeCodeEnum>;
+    foundTypes: Array<string>;
     methods: Array<PaymentInstrumentsType>;
     duplicatedMethods: Array<PaymentInstrumentsType>;
   }>(

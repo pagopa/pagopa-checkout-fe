@@ -1,10 +1,7 @@
 import { PaymentInstrumentsType } from "../../features/payment/models/paymentModel";
 import { PaymentMethodStatusEnum } from "../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
 import { RptId } from "../../../generated/definitions/payment-ecommerce-v3/RptId";
-import {
-  MethodManagementEnum,
-  PaymentTypeCodeEnum,
-} from "../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
+import { MethodManagementEnum } from "../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 
 export const paymentMethodsMock: Array<PaymentInstrumentsType> = [
   {
@@ -13,7 +10,7 @@ export const paymentMethodsMock: Array<PaymentInstrumentsType> = [
     description: { IT: "Carte di Credito e Debito" },
     status: PaymentMethodStatusEnum.ENABLED,
     methodManagement: MethodManagementEnum.ONBOARDABLE,
-    paymentTypeCode: PaymentTypeCodeEnum.CP,
+    paymentTypeCode: "CP",
     asset: undefined,
     brandAsset: undefined,
   },
@@ -23,7 +20,7 @@ export const paymentMethodsMock: Array<PaymentInstrumentsType> = [
     description: { IT: "BancomatPay" },
     status: PaymentMethodStatusEnum.ENABLED,
     methodManagement: MethodManagementEnum.ONBOARDABLE,
-    paymentTypeCode: PaymentTypeCodeEnum.BPAY,
+    paymentTypeCode: "BPAY",
     asset: undefined,
     brandAsset: undefined,
   },

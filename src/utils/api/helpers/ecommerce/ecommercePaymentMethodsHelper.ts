@@ -46,10 +46,7 @@ import {
 } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodsRequest";
 import { PaymentMethodsRequest as PaymentMethodsRequestV4 } from "../../../../../generated/definitions/payment-ecommerce-v4/PaymentMethodsRequest";
 import { PaymentNoticeItem } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentNoticeItem";
-import {
-  MethodManagementEnum,
-  PaymentTypeCodeEnum,
-} from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
+import { MethodManagementEnum } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 import { evaluateFeatureFlag } from "../checkoutFeatureFlagsHelper";
 import { getUserDevice } from "../../../device/deviceDetection";
 import { getLanguage } from "../../../../utils/paymentMethods/paymentMethodsHelper";
@@ -289,10 +286,7 @@ const getPaymentMethods = async (
                           IT: p.description,
                         },
                         status: p.status,
-                        paymentTypeCode: getEnumFromString(
-                          PaymentTypeCodeEnum,
-                          p.paymentTypeCode
-                        ),
+                        paymentTypeCode: p.paymentTypeCode,
                         methodManagement: getEnumFromString(
                           MethodManagementEnum,
                           p.methodManagement
