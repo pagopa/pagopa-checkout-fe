@@ -15,10 +15,7 @@ import { PaymentMethodStatusEnum } from "../../../../../../generated/definitions
 import "whatwg-fetch";
 import * as helperModule from "../../../../../utils/api/helper";
 import * as transactionsErrorHelperModule from "../../../../../utils/api/transactionsErrorHelper";
-import {
-  MethodManagementEnum,
-  PaymentTypeCodeEnum,
-} from "../../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
+import { MethodManagementEnum } from "../../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 import { WalletInfo } from "../../../../../../generated/definitions/checkout-wallets-v1/WalletInfo";
 import { WalletStatusEnum } from "../../../../../../generated/definitions/checkout-wallets-v1/WalletStatus";
 import { WalletApplicationInfo } from "../../../../../../generated/definitions/checkout-wallets-v1/WalletApplicationInfo";
@@ -301,7 +298,7 @@ describe("PaymentChoice", () => {
       description: { it: "Carte di Credito e Debito" },
       status: PaymentMethodStatusEnum.ENABLED,
       methodManagement: MethodManagementEnum.ONBOARDABLE,
-      paymentTypeCode: PaymentTypeCodeEnum.CP,
+      paymentTypeCode: "CP",
       feeRange: undefined,
       asset: undefined,
       brandAsset: undefined,
@@ -312,7 +309,7 @@ describe("PaymentChoice", () => {
       description: { it: "PayPal" },
       status: PaymentMethodStatusEnum.ENABLED,
       methodManagement: MethodManagementEnum.ONBOARDABLE,
-      paymentTypeCode: PaymentTypeCodeEnum.PPAL,
+      paymentTypeCode: "PPAL",
       feeRange: undefined,
       asset: undefined,
       brandAsset: undefined,
@@ -323,7 +320,7 @@ describe("PaymentChoice", () => {
       description: { it: "Disabled Method" },
       status: PaymentMethodStatusEnum.DISABLED,
       methodManagement: MethodManagementEnum.ONBOARDABLE,
-      paymentTypeCode: "DISABLED" as PaymentTypeCodeEnum,
+      paymentTypeCode: "DISABLED",
       feeRange: undefined,
       asset: undefined,
       brandAsset: undefined,
@@ -797,7 +794,7 @@ describe("PaymentChoice", () => {
             description: { it: "Other Payment Method" },
             status: PaymentMethodStatusEnum.ENABLED,
             methodManagement: MethodManagementEnum.ONBOARDABLE,
-            paymentTypeCode: "OTHER" as PaymentTypeCodeEnum, // Not in PaymentMethodRoutes
+            paymentTypeCode: "OTHER", // Not in PaymentMethodRoutes
             feeRange: undefined,
             asset: undefined,
             brandAsset: undefined,

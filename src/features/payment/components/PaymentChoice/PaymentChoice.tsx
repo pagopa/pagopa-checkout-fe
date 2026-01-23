@@ -43,7 +43,6 @@ import { PaymentInstrumentsType } from "../../models/paymentModel";
 import { setThreshold } from "../../../../redux/slices/threshold";
 import { CheckoutRoutes } from "../../../../routes/models/routeModel";
 import { onErrorActivate } from "../../../../utils/api/transactionsErrorHelper";
-import { PaymentTypeCodeEnum } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 import { WalletInfo } from "../../../../../generated/definitions/checkout-wallets-v1/WalletInfo";
 import { WalletStatusEnum } from "../../../../../generated/definitions/checkout-wallets-v1/WalletStatus";
 import { WalletTypeEnum } from "../../../../../generated/definitions/payment-ecommerce-v2/CalculateFeeRequest";
@@ -99,7 +98,7 @@ export function PaymentChoice(props: {
   };
 
   const onSuccess = (
-    paymentTypeCode: PaymentTypeCodeEnum,
+    paymentTypeCode: string,
     isWallet: boolean,
     belowThreshold?: boolean
   ) => {
@@ -198,7 +197,7 @@ export function PaymentChoice(props: {
         paymentMethodId,
         paymentTypeCode,
       });
-      if (paymentTypeCode !== PaymentTypeCodeEnum.CP && ref.current) {
+      if (paymentTypeCode !== "CP" && ref.current) {
         await onApmChoice(ref.current, (belowThreshold: boolean) =>
           onSuccess(paymentTypeCode, false, belowThreshold)
         );
@@ -226,10 +225,7 @@ export function PaymentChoice(props: {
     const pspId = isPaypalDetails(method.details)
       ? method.details.pspId
       : undefined;
-    const paymentTypeCode =
-      method.details?.type === "PAYPAL"
-        ? PaymentTypeCodeEnum.PPAL
-        : PaymentTypeCodeEnum.CP;
+    const paymentTypeCode = method.details?.type === "PAYPAL" ? "PPAL" : "CP";
 
     setSessionItem(SessionItems.paymentMethod, {
       paymentMethodId,
