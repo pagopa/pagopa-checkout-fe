@@ -50,14 +50,25 @@ const ecommerceClientWithPollingV1: EcommerceClientV1 = createClientV1({
     timeout,
     async (r: Response): Promise<boolean> => {
       counter.increment();
+
       if (counter.getValue() === retries) {
         counter.reset();
         return false;
       }
-      const { isFinalStatus } = (await r
-        .clone()
-        .json()) as TransactionOutcomeInfo;
-      return !(r.status === 200 && isFinalStatus);
+
+      if (r.status === 404 || (r.status >= 500 && r.status < 600)) {
+        return true;
+      }
+
+      if (r.status === 200) {
+        const { isFinalStatus } = (await r
+          .clone()
+          .json()) as TransactionOutcomeInfo;
+        return !isFinalStatus;
+      }
+
+      counter.reset();
+      return false;
     }
   ),
   basePath: config.CHECKOUT_API_ECOMMERCE_BASEPATH,
