@@ -121,4 +121,28 @@ describe("response.ts polling predicate", () => {
     const predicate = await getFreshPredicate();
     await expect(predicate(mkRes(200, true))).resolves.toBe(false);
   });
+
+  it("should retry on 200 when isFinalStatus=false", async () => {
+    const predicate = await getFreshPredicate();
+    await expect(predicate(mkRes(200, false))).resolves.toBe(true);
+  });
+
+  it("should retry on 404", async () => {
+    const predicate = await getFreshPredicate();
+    await expect(predicate(mkRes(404, true))).resolves.toBe(true);
+  });
+  it("should stop on other 4xx errors", async () => {
+    const predicate = await getFreshPredicate();
+    await expect(predicate(mkRes(400, false))).resolves.toBe(false);
+    await expect(predicate(mkRes(401, false))).resolves.toBe(false);
+    await expect(predicate(mkRes(403, false))).resolves.toBe(false);
+    await expect(predicate(mkRes(422, false))).resolves.toBe(false);
+  });
+
+  it("should not stop on 5xx errors", async () => {
+    const predicate = await getFreshPredicate();
+    await expect(predicate(mkRes(500, false))).resolves.toBe(true);
+    await expect(predicate(mkRes(502, false))).resolves.toBe(true);
+    await expect(predicate(mkRes(503, false))).resolves.toBe(true);
+  });
 });
