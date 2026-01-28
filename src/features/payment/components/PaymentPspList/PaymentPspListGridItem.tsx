@@ -60,7 +60,7 @@ export const PaymentPSPListGridItem = ({
       }}
     >
       {/* Left side with psp name and onUs info */}
-      <Grid item xs={9}>
+      <Grid size={{ xs: 9 }}>
         <Box>
           <Typography variant="sidenav" className="pspFeeName">
             {pspItem.pspBusinessName}
@@ -83,7 +83,7 @@ export const PaymentPSPListGridItem = ({
       </Grid>
 
       {/* Right side with fee and radiobox */}
-      <Grid item xs={3} sx={styles.priceSelectionSection}>
+      <Grid size={{ xs: 3 }} sx={styles.priceSelectionSection}>
         <Typography
           className="pspFeeValue"
           variant="sidenav"

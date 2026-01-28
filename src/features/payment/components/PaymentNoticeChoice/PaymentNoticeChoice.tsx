@@ -83,7 +83,7 @@ export function PaymentNoticeChoice() {
         tabIndex={0}
         role="link"
       >
-        <Grid item xs={9}>
+        <Grid size={{ xs: 9 }}>
           <Box
             sx={{
               display: "flex",
@@ -117,8 +117,7 @@ export function PaymentNoticeChoice() {
           </Box>
         </Grid>
         <Grid
-          item
-          xs={3}
+          size={{ xs: 3 }}
           sx={{ display: "flex", justifyContent: "flex-end", pr: 2 }}
         >
           <ArrowForwardIosIcon
@@ -143,7 +142,7 @@ export function PaymentNoticeChoice() {
         tabIndex={0}
         role="link"
       >
-        <Grid item xs={9}>
+        <Grid size={{ xs: 9 }}>
           <Box
             sx={{
               display: "flex",
@@ -173,8 +172,7 @@ export function PaymentNoticeChoice() {
           </Box>
         </Grid>
         <Grid
-          item
-          xs={3}
+          size={{ xs: 3 }}
           sx={{ display: "flex", justifyContent: "flex-end", pr: 2 }}
         >
           <ArrowForwardIosIcon
