@@ -78,7 +78,12 @@ function ClickableFieldContainer(props: {
         ) : (
           <>
             {props.icon}
-            <Box display="flex" flexDirection="column" width="100%" textAlign="left">
+            <Box
+              display="flex"
+              flexDirection="column"
+              width="100%"
+              textAlign="left"
+            >
               <Typography
                 variant={props.variant}
                 component="div"
