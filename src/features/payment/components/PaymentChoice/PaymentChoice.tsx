@@ -1,5 +1,4 @@
 /* eslint-disable sonarjs/cognitive-complexity */
-import Box from "@mui/material/Box/Box";
 import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useNavigate } from "react-router-dom";
@@ -13,6 +12,7 @@ import {
   Stack,
   Chip,
   Divider,
+  Box,
 } from "@mui/material";
 import { t } from "i18next";
 import {
