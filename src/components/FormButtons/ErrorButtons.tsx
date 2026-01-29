@@ -25,7 +25,8 @@ export function ErrorButtons(props: {
         {props.buttonsDetail.map((button, index) => (
           <Grid
             key={index}
-            size={{ xs: 12, sm: 5 }}
+            xs={12}
+            sm={5}
             style={useSmallDevice() ? { paddingTop: 0 } : {}}
           >
             <Button
