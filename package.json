@@ -65,7 +65,9 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "@babel/core": "^7.28.6",
     "@babel/plugin-transform-modules-commonjs": "^7.17.7",
+    "@babel/preset-env": "^7.28.6",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
@@ -82,6 +84,7 @@
     "@typescript-eslint/parser": "^4.8.2",
     "auto-changelog": "^2.2.1",
     "axios": "^0.26.0",
+    "babel-jest": "^30.2.0",
     "danger": "^10.5.3",
     "danger-plugin-digitalcitizenship": "^1.0.0",
     "dotenv": "^16.0.0",
