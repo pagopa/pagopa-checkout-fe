@@ -174,37 +174,44 @@ jest.mock("../PaymentMethod", () => ({
 }));
 
 // Mock Material UI components
-jest.mock("@mui/material", () => ({
-  __esModule: true,
-  default: ({ children, justifyContent, ...props }: any) => {
-    // Filter out MUI-specific props
-    const filteredProps = Object.entries(props).reduce((acc, [key, value]) => {
-      // Only include props that are valid HTML attributes
-      if (
-        ![
-          "display",
-          "alignItems",
-          "flexDirection",
-          "width",
-          "height",
-          "padding",
-          "margin",
-          "sx",
-        ].includes(key)
-      ) {
-        // eslint-disable-next-line functional/immutable-data
-        acc[key] = value;
-      }
-      return acc;
-    }, {} as Record<string, any>);
+jest.mock("@mui/material", () => {
+  const actual = jest.requireActual("@mui/material");
+  return {
+    ...actual,
+    __esModule: true,
+    default: ({ children, justifyContent, ...props }: any) => {
+      // Filter out MUI-specific props
+      const filteredProps = Object.entries(props).reduce(
+        (acc, [key, value]) => {
+          // Only include props that are valid HTML attributes
+          if (
+            ![
+              "display",
+              "alignItems",
+              "flexDirection",
+              "width",
+              "height",
+              "padding",
+              "margin",
+              "sx",
+            ].includes(key)
+          ) {
+            // eslint-disable-next-line functional/immutable-data
+            acc[key] = value;
+          }
+          return acc;
+        },
+        {} as Record<string, any>
+      );
 
-    return (
-      <div data-testid="box" {...filteredProps}>
-        {children}
-      </div>
-    );
-  },
-}));
+      return (
+        <div data-testid="box" {...filteredProps}>
+          {children}
+        </div>
+      );
+    },
+  };
+});
 
 jest.mock("../../../../../components/PageContent/CheckoutLoader", () => ({
   __esModule: true,
