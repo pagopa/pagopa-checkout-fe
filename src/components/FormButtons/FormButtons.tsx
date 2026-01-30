@@ -39,7 +39,7 @@ export function FormButtons(props: {
         container
         spacing={2}
       >
-        <Grid xs={4} style={useSmallDevice() ? { paddingTop: 0 } : {}}>
+        <Grid xs={4} style={useSmallDevice() ? { paddingTop: 0 } : {}} item>
           <LoadingButton
             variant="outlined"
             onClick={props.handleCancel}
@@ -66,6 +66,7 @@ export function FormButtons(props: {
         <Grid
           xs={props.hideCancel ? 12 : 8}
           style={useSmallDevice() ? { paddingTop: 0 } : {}}
+          item
         >
           <LoadingButton
             type={props.type}

@@ -28,6 +28,7 @@ export function ErrorButtons(props: {
             xs={12}
             sm={5}
             style={useSmallDevice() ? { paddingTop: 0 } : {}}
+            item
           >
             <Button
               id="closeError"
