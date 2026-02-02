@@ -23,11 +23,50 @@ parameters:
       - minor
       - patch
     default: minor
+  - name: 'CHECKOUT_USE_FRONTDOOR_CDN'
+    displayName: 'Deploy to Front Door CDN'
+    type: boolean
+    default: false
+    values:
+      - false
+      - true
 
 
 variables:
   NODE_VERSION: 18.17.1
   YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
+  ${{ if eq(parameters['CHECKOUT_USE_FRONTDOOR_CDN'], true) }}:
+    # Front Door CDN
+    CDN_TYPE: afd
+    ENDPOINT_FLAG: --endpoint-name
+    DEV_STORAGE_ACCOUNT: pagopadweucheckoutcdnsa
+    DEV_CDN_RG: pagopa-d-checkout-fe-rg
+    DEV_CDN_PROFILE: pagopa-d-weu-checkout-cdn-profile
+    DEV_CDN_ENDPOINT: pagopa-d-weu-checkout-cdn-endpoint
+    UAT_STORAGE_ACCOUNT: pagopauweucheckoutcdnsa
+    UAT_CDN_RG: pagopa-u-checkout-fe-rg
+    UAT_CDN_PROFILE: pagopa-u-weu-checkout-cdn-profile
+    UAT_CDN_ENDPOINT: pagopa-u-weu-checkout-cdn-endpoint
+    PROD_STORAGE_ACCOUNT: pagopapweucheckoutcdnsa
+    PROD_CDN_RG: pagopa-p-checkout-fe-rg
+    PROD_CDN_PROFILE: pagopa-p-weu-checkout-cdn-profile
+    PROD_CDN_ENDPOINT: pagopa-p-weu-checkout-cdn-endpoint
+  ${{ else }}:
+    # Classic CDN
+    CDN_TYPE: cdn
+    ENDPOINT_FLAG: -n
+    DEV_STORAGE_ACCOUNT: pagopadcheckoutsa
+    DEV_CDN_RG: pagopa-d-checkout-fe-rg
+    DEV_CDN_PROFILE: pagopa-d-checkout-cdn-profile
+    DEV_CDN_ENDPOINT: pagopa-d-checkout-cdn-endpoint
+    UAT_STORAGE_ACCOUNT: pagopaucheckoutsa
+    UAT_CDN_RG: pagopa-u-checkout-fe-rg
+    UAT_CDN_PROFILE: pagopa-u-checkout-cdn-profile
+    UAT_CDN_ENDPOINT: pagopa-u-checkout-cdn-endpoint
+    PROD_STORAGE_ACCOUNT: pagopapcheckoutsa
+    PROD_CDN_RG: pagopa-p-checkout-fe-rg
+    PROD_CDN_PROFILE: pagopa-p-checkout-cdn-profile
+    PROD_CDN_ENDPOINT: pagopa-p-checkout-cdn-endpoint
 
 
 # Only manual activations are intended
@@ -132,7 +171,7 @@ stages:
               azureSubscription: 'DEV-PAGOPA-SERVICE-CONN'
               scriptLocation: inlineScript
               inlineScript: |
-                call az storage blob sync --container $web --account-name pagopadcheckoutsa -s "$(Pipeline.Workspace)\Bundle_DEV" --exclude-path payment-transactions-gateway
+                call az storage blob sync --container $web --account-name ${{ variables.DEV_STORAGE_ACCOUNT }} -s "$(Pipeline.Workspace)\Bundle_DEV"
 
           - task: AzureCLI@1
             displayName: 'Purge CDN endpoint on DEV'
@@ -140,7 +179,7 @@ stages:
               azureSubscription: 'DEV-PAGOPA-SERVICE-CONN'
               scriptLocation: inlineScript
               inlineScript: |
-                call az cdn endpoint purge -g pagopa-d-checkout-fe-rg -n pagopa-d-checkout-cdn-endpoint --profile-name pagopa-d-checkout-cdn-profile --content-paths "/*"
+                call az ${{ variables.CDN_TYPE }} endpoint purge -g ${{ variables.DEV_CDN_RG }} ${{ variables.ENDPOINT_FLAG }} ${{ variables.DEV_CDN_ENDPOINT }} --profile-name ${{ variables.DEV_CDN_PROFILE }} --content-paths "/*"
 
   - stage: End_to_End_Tests_DEV
     dependsOn:
@@ -285,7 +324,7 @@ stages:
               azureSubscription: 'UAT-PAGOPA-SERVICE-CONN'
               scriptLocation: inlineScript
               inlineScript: |
-                call az storage blob sync --container $web --account-name pagopaucheckoutsa -s "$(Pipeline.Workspace)\Bundle_UAT" --exclude-path payment-transactions-gateway
+                call az storage blob sync --container $web --account-name ${{ variables.UAT_STORAGE_ACCOUNT }} -s "$(Pipeline.Workspace)\Bundle_UAT"
 
           - task: AzureCLI@1
             displayName: 'Purge CDN endpoint on UAT'
@@ -293,7 +332,7 @@ stages:
               azureSubscription: 'UAT-PAGOPA-SERVICE-CONN'
               scriptLocation: inlineScript
               inlineScript: |
-                call az cdn endpoint purge -g pagopa-u-checkout-fe-rg -n pagopa-u-checkout-cdn-endpoint --profile-name pagopa-u-checkout-cdn-profile --content-paths "/*"
+                call az ${{ variables.CDN_TYPE }} endpoint purge -g ${{ variables.UAT_CDN_RG }} ${{ variables.ENDPOINT_FLAG }} ${{ variables.UAT_CDN_ENDPOINT }} --profile-name ${{ variables.UAT_CDN_PROFILE }} --content-paths "/*"
 
   - stage: End_to_End_Tests_UAT
     dependsOn:
@@ -391,7 +430,7 @@ stages:
               azureSubscription: 'PROD-PAGOPA-SERVICE-CONN'
               scriptLocation: inlineScript
               inlineScript: |
-                call az storage blob sync --container $web --account-name pagopapcheckoutsa -s "$(Pipeline.Workspace)\Bundle" --exclude-path payment-transactions-gateway
+                call az storage blob sync --container $web --account-name ${{ variables.PROD_STORAGE_ACCOUNT }} -s "$(Pipeline.Workspace)\Bundle"
 
           - task: AzureCLI@1
             displayName: 'Purge CDN endpoint on PROD'
@@ -399,4 +438,4 @@ stages:
               azureSubscription: 'PROD-PAGOPA-SERVICE-CONN'
               scriptLocation: inlineScript
               inlineScript: |
-                call az cdn endpoint purge -g pagopa-p-checkout-fe-rg -n pagopa-p-checkout-cdn-endpoint --profile-name pagopa-p-checkout-cdn-profile --content-paths "/*"
+                call az ${{ variables.CDN_TYPE }} endpoint purge -g ${{ variables.PROD_CDN_RG }} ${{ variables.ENDPOINT_FLAG }} ${{ variables.PROD_CDN_ENDPOINT }} --profile-name ${{ variables.PROD_CDN_PROFILE }} --content-paths "/*"
