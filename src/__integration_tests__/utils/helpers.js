@@ -618,7 +618,7 @@ export const fillPaymentFlowWithLogin = async (
   await payNoticeBtn.click();
   await fillEmailForm(email);
   await clickLoginButton();
-  await page.waitForSelector('button[aria-label="party-menu-button"]');
+  await page.waitForSelector('button[aria-label^="Area utente"]');
   console.log("Login completed");
   await page.waitForSelector("[data-qalabel=payment-method]", { timeout: 10000 });
 };
@@ -772,7 +772,7 @@ export const selectWalletAndGetToCheckPage = async (
   await payNoticeBtn.click();
   await fillEmailForm(email);
   await clickLoginButton();
-  await page.waitForSelector('button[aria-label="party-menu-button"]');
+  await page.waitForSelector('button[aria-label^="Area utente"]');
 
   // wait for wallets to be visible to ensure API has been called
   await page.waitForSelector('[data-qaid^="wallet-"]', { timeout: 5000 });

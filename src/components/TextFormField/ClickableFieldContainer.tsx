@@ -2,8 +2,15 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable functional/immutable-data */
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { Box, ButtonBase, Skeleton, Typography, useTheme } from "@mui/material";
-import { SxProps } from "@mui/system";
+import {
+  Box,
+  ButtonBase,
+  Skeleton,
+  SxProps,
+  Theme,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { FeeRange } from "../../../generated/definitions/payment-ecommerce-v2/FeeRange";
@@ -16,7 +23,7 @@ function ClickableFieldContainer(props: {
   endAdornment?: React.ReactNode;
   clickable?: boolean;
   onClick?: () => void;
-  sx?: SxProps;
+  sx?: SxProps<Theme>;
   itemSx?: SxProps;
   variant?: "body2" | "sidenav";
   disabled?: boolean;
