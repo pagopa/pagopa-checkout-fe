@@ -333,7 +333,7 @@ jest.mock("../../components/modals/CancelPayment", () => ({
 }));
 
 // Mock Material UI components
-jest.mock("@mui/material/Box/Box", () => ({
+jest.mock("@mui/material", () => ({
   __esModule: true,
   default: ({ children, justifyContent, ...props }: any) => {
     // Filter out MUI-specific props

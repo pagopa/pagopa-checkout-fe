@@ -50,6 +50,7 @@ import { App } from "../../App";
 
 // Mock MUI Italia theme
 jest.mock("@pagopa/mui-italia", () => ({
+  __esModule: true,
   theme: {
     palette: {
       background: { paper: "#fff", default: "#fff" },
