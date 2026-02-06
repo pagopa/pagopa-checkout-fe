@@ -1,7 +1,17 @@
 import React from "react";
-import { Box, Grid, Typography, useTheme } from "@mui/material";
+import {
+  Box,
+  Grid,
+  Typography,
+  useTheme,
+  Radio,
+  FormControlLabel,
+} from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { RadioButtonChecked, RadioButtonUnchecked } from "@mui/icons-material";
+import {
+  RadioButtonChecked,
+  RadioButtonUnchecked,
+} from "@mui/icons-material";
 import { Bundle } from "../../../../../generated/definitions/payment-ecommerce/Bundle";
 import { moneyFormat } from "../../../../utils/form/formatters";
 import pspUserOnUsIcon from "../../../../assets/images/psp-user-on-us.svg";
@@ -29,81 +39,100 @@ const styles = {
 
 interface PSPListItemProps {
   pspItem: Bundle;
-  handleClick: (event?: React.MouseEvent<HTMLDivElement>) => void;
   isSelected: boolean;
 }
 
 export const PaymentPSPListGridItem = ({
   pspItem,
-  handleClick,
-  isSelected = false,
+  isSelected,
 }: PSPListItemProps) => {
   const { palette } = useTheme();
   const { t } = useTranslation();
-  return (
-    <Grid
-      id={pspItem.idPsp}
-      tabIndex={0}
-      container
-      onClick={handleClick}
-      sx={{
-        ...styles.pspListItem,
-        borderColor: palette.divider,
-        "&:hover": { color: palette.primary.dark, borderColor: "currentColor" },
-      }}
-      onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
-        if (e.key === "Enter") {
-          e.preventDefault();
-          // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-          !!handleClick && handleClick();
-        }
-      }}
-    >
-      {/* Left side with psp name and onUs info */}
-      <Grid xs={9}>
-        <Box>
-          <Typography variant="sidenav" className="pspFeeName">
-            {pspItem.pspBusinessName}
-          </Typography>
-          {pspItem.onUs && (
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 0 }}>
-              <img
-                src={pspUserOnUsIcon}
-                alt="Icona psp on us"
-                width={24}
-                height="auto"
-                aria-hidden="true"
-              />
-              <Typography variant="body2" style={styles.alreadyClient}>
-                {t("paymentPspListPage.alreadyClient")}
-              </Typography>
-            </Box>
-          )}
-        </Box>
-      </Grid>
 
-      {/* Right side with fee and radiobox */}
-      <Grid xs={3} sx={styles.priceSelectionSection}>
-        <Typography
-          className="pspFeeValue"
-          variant="sidenav"
-          component={"div"}
-          style={{ fontWeight: 600, color: palette.primary.main }}
-        >
-          {moneyFormat(pspItem.taxPayerFee || 0)}
-        </Typography>
-        {isSelected ? (
-          <RadioButtonChecked
-            id="psp-radio-button-checked"
-            style={{ color: palette.primary.main }}
+  const id = String(pspItem.idPsp);
+
+  return (
+    <Grid item xs={12}>
+      <FormControlLabel
+        sx={{
+          m: 0,
+          width: "100%",
+          display: "flex",
+          alignItems: "stretch",
+          "& .MuiFormControlLabel-label": {
+            width: "100%",
+            display: "block",
+          },
+        }}
+        value={id}
+        control={
+          <Radio
+            inputProps={{
+              id,
+              "aria-label": pspItem.pspBusinessName ?? "PSP",
+            }}
+            icon={<RadioButtonUnchecked />}
+            checkedIcon={<RadioButtonChecked />}
+            sx={{
+              display: "none",
+            }}
           />
-        ) : (
-          <RadioButtonUnchecked
-            id="psp-radio-button-unchecked"
-            style={{ color: palette.action.active }}
-          />
-        )}
-      </Grid>
+        }
+        label={
+          <Grid
+            container
+            sx={{
+              ...styles.pspListItem,
+              borderColor: palette.divider,
+              "&:hover": {
+                color: palette.primary.dark,
+                borderColor: "currentColor",
+              },
+            }}
+          >
+            {/* Left side */}
+            <Grid item xs={9}>
+              <Box>
+                <Typography variant="sidenav" className="pspFeeName">
+                  {pspItem.pspBusinessName}
+                </Typography>
+
+                {pspItem.onUs && (
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1}}>
+                    <img
+                      src={pspUserOnUsIcon}
+                      alt="Icona psp on us"
+                      width={24}
+                      height="auto"
+                    />
+                    <Typography variant="body2" style={styles.alreadyClient}>
+                      {t("paymentPspListPage.alreadyClient")}
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
+            </Grid>
+
+            {/* Right side */}
+            <Grid item xs={3} sx={{...styles.priceSelectionSection}}>
+              <Typography
+                className="pspFeeValue"
+                variant="sidenav"
+                component="div"
+                style={{ fontWeight: 600, color: palette.primary.main}}
+              >
+                {moneyFormat(pspItem.taxPayerFee || 0)}
+              </Typography>
+
+              {isSelected ? (
+                <RadioButtonChecked style={{ color: palette.primary.main }} />
+              ) : (
+                <RadioButtonUnchecked style={{ color: palette.action.active }} />
+              )}
+            </Grid>
+          </Grid>
+        }
+      />
     </Grid>
   );
 };

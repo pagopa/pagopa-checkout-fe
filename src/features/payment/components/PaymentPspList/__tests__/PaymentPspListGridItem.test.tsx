@@ -82,7 +82,6 @@ describe("PaymentPSPListGridItem", () => {
         <PaymentPSPListGridItem
           isSelected={false}
           pspItem={mockPspItem}
-          handleClick={jest.fn()}
         />
       </ThemeProvider>
     );
@@ -100,7 +99,6 @@ describe("PaymentPSPListGridItem", () => {
       <ThemeProvider theme={theme}>
         <PaymentPSPListGridItem
           pspItem={mockPspItem}
-          handleClick={jest.fn()}
           isSelected={true}
         />
       </ThemeProvider>
@@ -117,7 +115,6 @@ describe("PaymentPSPListGridItem", () => {
       <ThemeProvider theme={theme}>
         <PaymentPSPListGridItem
           pspItem={mockPspItem}
-          handleClick={jest.fn()}
           isSelected={false}
         />
       </ThemeProvider>
@@ -138,7 +135,6 @@ describe("PaymentPSPListGridItem", () => {
         <PaymentPSPListGridItem
           isSelected={false}
           pspItem={mockPspItem}
-          handleClick={handleClickMock}
         />
       </ThemeProvider>
     );
@@ -158,7 +154,6 @@ describe("PaymentPSPListGridItem", () => {
         <PaymentPSPListGridItem
           isSelected={false}
           pspItem={mockPspItem}
-          handleClick={handleClickMock}
         />
       </ThemeProvider>
     );
@@ -176,7 +171,6 @@ describe("PaymentPSPListGridItem", () => {
         <PaymentPSPListGridItem
           isSelected={false}
           pspItem={mockPspItem}
-          handleClick={jest.fn()}
         />
       </ThemeProvider>
     );
@@ -190,7 +184,6 @@ describe("PaymentPSPListGridItem", () => {
         <PaymentPSPListGridItem
           isSelected={false}
           pspItem={mockPspItem}
-          handleClick={jest.fn()}
         />
       </ThemeProvider>
     );
@@ -204,7 +197,6 @@ describe("PaymentPSPListGridItem", () => {
         <PaymentPSPListGridItem
           isSelected={false}
           pspItem={{ ...mockPspItem, onUs: false }}
-          handleClick={jest.fn()}
         />
       </ThemeProvider>
     );
