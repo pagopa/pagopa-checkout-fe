@@ -8,10 +8,7 @@ import {
   FormControlLabel,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import {
-  RadioButtonChecked,
-  RadioButtonUnchecked,
-} from "@mui/icons-material";
+import { RadioButtonChecked, RadioButtonUnchecked } from "@mui/icons-material";
 import { Bundle } from "../../../../../generated/definitions/payment-ecommerce/Bundle";
 import { moneyFormat } from "../../../../utils/form/formatters";
 import pspUserOnUsIcon from "../../../../assets/images/psp-user-on-us.svg";
@@ -98,7 +95,7 @@ export const PaymentPSPListGridItem = ({
                 </Typography>
 
                 {pspItem.onUs && (
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1}}>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                     <img
                       src={pspUserOnUsIcon}
                       alt="Icona psp on us"
@@ -114,12 +111,12 @@ export const PaymentPSPListGridItem = ({
             </Grid>
 
             {/* Right side */}
-            <Grid item xs={3} sx={{...styles.priceSelectionSection}}>
+            <Grid item xs={3} sx={{ ...styles.priceSelectionSection }}>
               <Typography
                 className="pspFeeValue"
                 variant="sidenav"
                 component="div"
-                style={{ fontWeight: 600, color: palette.primary.main}}
+                style={{ fontWeight: 600, color: palette.primary.main }}
               >
                 {moneyFormat(pspItem.taxPayerFee || 0)}
               </Typography>
@@ -127,7 +124,9 @@ export const PaymentPSPListGridItem = ({
               {isSelected ? (
                 <RadioButtonChecked style={{ color: palette.primary.main }} />
               ) : (
-                <RadioButtonUnchecked style={{ color: palette.action.active }} />
+                <RadioButtonUnchecked
+                  style={{ color: palette.action.active }}
+                />
               )}
             </Grid>
           </Grid>

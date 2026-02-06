@@ -79,10 +79,7 @@ describe("PaymentPSPListGridItem", () => {
   it("renders PSP item details correctly", () => {
     render(
       <ThemeProvider theme={theme}>
-        <PaymentPSPListGridItem
-          isSelected={false}
-          pspItem={mockPspItem}
-        />
+        <PaymentPSPListGridItem isSelected={false} pspItem={mockPspItem} />
       </ThemeProvider>
     );
 
@@ -97,10 +94,7 @@ describe("PaymentPSPListGridItem", () => {
   it("displays checked radio button when isSelected is true", () => {
     render(
       <ThemeProvider theme={theme}>
-        <PaymentPSPListGridItem
-          pspItem={mockPspItem}
-          isSelected={true}
-        />
+        <PaymentPSPListGridItem pspItem={mockPspItem} isSelected={true} />
       </ThemeProvider>
     );
 
@@ -113,10 +107,7 @@ describe("PaymentPSPListGridItem", () => {
   it("displays unchecked radio button when isSelected is false", () => {
     render(
       <ThemeProvider theme={theme}>
-        <PaymentPSPListGridItem
-          pspItem={mockPspItem}
-          isSelected={false}
-        />
+        <PaymentPSPListGridItem pspItem={mockPspItem} isSelected={false} />
       </ThemeProvider>
     );
 
@@ -132,10 +123,7 @@ describe("PaymentPSPListGridItem", () => {
     const handleClickMock = jest.fn();
     render(
       <ThemeProvider theme={theme}>
-        <PaymentPSPListGridItem
-          isSelected={false}
-          pspItem={mockPspItem}
-        />
+        <PaymentPSPListGridItem isSelected={false} pspItem={mockPspItem} />
       </ThemeProvider>
     );
 
@@ -151,10 +139,7 @@ describe("PaymentPSPListGridItem", () => {
     const handleClickMock = jest.fn();
     render(
       <ThemeProvider theme={theme}>
-        <PaymentPSPListGridItem
-          isSelected={false}
-          pspItem={mockPspItem}
-        />
+        <PaymentPSPListGridItem isSelected={false} pspItem={mockPspItem} />
       </ThemeProvider>
     );
 
@@ -168,10 +153,7 @@ describe("PaymentPSPListGridItem", () => {
   it("formats the taxPayerFee correctly", () => {
     render(
       <ThemeProvider theme={theme}>
-        <PaymentPSPListGridItem
-          isSelected={false}
-          pspItem={mockPspItem}
-        />
+        <PaymentPSPListGridItem isSelected={false} pspItem={mockPspItem} />
       </ThemeProvider>
     );
 
@@ -181,10 +163,7 @@ describe("PaymentPSPListGridItem", () => {
   it("renders onUs icon when pspItem.onUs is true", () => {
     render(
       <ThemeProvider theme={theme}>
-        <PaymentPSPListGridItem
-          isSelected={false}
-          pspItem={mockPspItem}
-        />
+        <PaymentPSPListGridItem isSelected={false} pspItem={mockPspItem} />
       </ThemeProvider>
     );
 

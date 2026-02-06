@@ -15,13 +15,15 @@ export const PaymentPSPListGrid = ({
   currentSelectedPsp,
 }: PSPGridProps) => {
   const selectedId = currentSelectedPsp?.idPsp ?? "";
-  return(
+  return (
     <RadioGroup
       name="psp-selector"
       value={selectedId}
       onChange={(_, value) => {
         const found = pspList.find((p) => p.idPsp === value);
-        if (found) onPspSelected(found);
+        if (found) {
+          onPspSelected(found);
+        }
       }}
     >
       <Grid container>
@@ -34,5 +36,5 @@ export const PaymentPSPListGrid = ({
         ))}
       </Grid>
     </RadioGroup>
-  )
+  );
 };
