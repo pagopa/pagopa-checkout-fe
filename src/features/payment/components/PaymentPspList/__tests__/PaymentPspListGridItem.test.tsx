@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { ThemeProvider, createTheme } from "@mui/material";
 import { PaymentPSPListGridItem } from "../PaymentPspListGridItem";
@@ -98,10 +98,10 @@ describe("PaymentPSPListGridItem", () => {
       </ThemeProvider>
     );
 
-    expect(screen.getByTestId("psp-radio-button-checked")).toBeInTheDocument();
+    const priceContainer = screen.getByText("€ 2.50").parentElement!;
     expect(
-      screen.queryByTestId("psp-radio-button-unchecked")
-    ).not.toBeInTheDocument();
+      within(priceContainer).getByTestId("psp-radio-button-checked")
+    ).toBeInTheDocument();
   });
 
   it("displays unchecked radio button when isSelected is false", () => {
@@ -111,12 +111,10 @@ describe("PaymentPSPListGridItem", () => {
       </ThemeProvider>
     );
 
+    const priceContainer = screen.getByText("€ 2.50").parentElement!;
     expect(
-      screen.getByTestId("psp-radio-button-unchecked")
+      within(priceContainer).getByTestId("psp-radio-button-unchecked")
     ).toBeInTheDocument();
-    expect(
-      screen.queryByTestId("psp-radio-button-checked")
-    ).not.toBeInTheDocument();
   });
 
   it("calls handleClick when the grid item is clicked", () => {

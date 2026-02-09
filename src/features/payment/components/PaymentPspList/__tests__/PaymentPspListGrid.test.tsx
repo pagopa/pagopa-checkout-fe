@@ -1,21 +1,39 @@
+/* eslint-disable functional/immutable-data */
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { ThemeProvider, createTheme } from "@mui/material";
+import userEvent from "@testing-library/user-event";
 import { PaymentPSPListGrid } from "../PaymentPspListGrid";
 import { PaymentPSPListGridItem } from "../PaymentPspListGridItem";
 
-jest.mock("../PaymentPspListGridItem", () => ({
-  PaymentPSPListGridItem: jest.fn(({ pspItem, isSelected, handleClick }) => (
-    <div
-      data-testid={`psp-item-${pspItem.idPsp || pspItem.pspBusinessName}`}
-      data-selected={isSelected}
-      onClick={handleClick}
-    >
-      {pspItem.pspBusinessName}
-    </div>
-  )),
-}));
+const useRealGridItemRef = { current: false };
+
+jest.mock("../PaymentPspListGridItem", () => {
+  const actual = jest.requireActual("../PaymentPspListGridItem");
+  return {
+    __esModule: true,
+    PaymentPSPListGridItem: jest.fn((props) => {
+      if (useRealGridItemRef.current) {
+        return actual.PaymentPSPListGridItem(props);
+      }
+
+      const { pspItem, isSelected } = props;
+      return (
+        <label>
+          <input
+            type="radio"
+            name="psp-selector"
+            aria-label={pspItem.pspBusinessName}
+            value={String(pspItem.idPsp ?? "")}
+            defaultChecked={isSelected}
+          />
+          <span data-selected={isSelected}>{pspItem.pspBusinessName}</span>
+        </label>
+      );
+    }),
+  };
+});
 
 const theme = createTheme();
 
@@ -44,6 +62,7 @@ const mockPspList = [
 describe("PaymentPSPListGrid", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    useRealGridItemRef.current = false;
   });
 
   it("renders all PSP items from the list", () => {
@@ -63,7 +82,6 @@ describe("PaymentPSPListGrid", () => {
       expect.objectContaining({
         pspItem: mockPspList[0],
         isSelected: false,
-        handleClick: expect.any(Function),
       }),
       expect.anything()
     );
@@ -109,8 +127,11 @@ describe("PaymentPSPListGrid", () => {
     );
   });
 
-  it("calls onPspSelected with the correct PSP when an item is clicked", () => {
+  it("calls onPspSelected with the correct PSP when an item is clicked", async () => {
+    useRealGridItemRef.current = true;
+    const user = userEvent.setup();
     const onPspSelectedMock = jest.fn();
+
     render(
       <ThemeProvider theme={theme}>
         <PaymentPSPListGrid
@@ -120,12 +141,12 @@ describe("PaymentPSPListGrid", () => {
       </ThemeProvider>
     );
 
-    // Click on the second PSP item
-    fireEvent.click(screen.getByText("PSP Two"));
+    await user.click(screen.getByLabelText("PSP Two"));
 
-    // Verify onPspSelected was called with the correct PSP
     expect(onPspSelectedMock).toHaveBeenCalledTimes(1);
     expect(onPspSelectedMock).toHaveBeenCalledWith(mockPspList[1]);
+
+    useRealGridItemRef.current = false;
   });
 
   it("handles PSP items without idPsp", () => {
@@ -158,7 +179,6 @@ describe("PaymentPSPListGrid", () => {
     expect(PaymentPSPListGridItem).toHaveBeenCalledWith(
       expect.objectContaining({
         pspItem: pspListWithoutIds[0],
-        handleClick: expect.any(Function),
       }),
       expect.anything()
     );
@@ -166,7 +186,6 @@ describe("PaymentPSPListGrid", () => {
     expect(PaymentPSPListGridItem).toHaveBeenCalledWith(
       expect.objectContaining({
         pspItem: pspListWithoutIds[1],
-        handleClick: expect.any(Function),
       }),
       expect.anything()
     );
