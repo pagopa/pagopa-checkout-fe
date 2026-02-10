@@ -294,6 +294,7 @@ export const tryHandlePspPickerPage = async ()=>{
   }
 }
 
+/*
 export const selectPspOnPspPickerPage = async () => {
   try{
     const pspPickerRadio = await page.waitForSelector("#psp-radio-button-unchecked", {
@@ -310,6 +311,30 @@ export const selectPspOnPspPickerPage = async () => {
     console.log("Buttons not found: this is caused by PSP page immediately navigate to the summary page (if 1 psp available)");
   }
 }
+*/
+
+export const selectPspOnPspPickerPage = async () => {
+  try {
+    const firstPspCard = await page.waitForSelector("label.MuiFormControlLabel-root", {
+      visible: true,
+      timeout: 500,
+    });
+
+    await firstPspCard.click();
+
+    const continueButton = await page.waitForSelector("#paymentPspListPageButtonContinue", {
+      visible: true,
+      timeout: 500,
+    });
+
+    await continueButton.click();
+  } catch (e) {
+    console.log(
+      "Buttons not found: this is caused by PSP page immediately navigate to the summary page (if 1 psp available)"
+    );
+  }
+};
+
 
 export const fillAndSubmitSatispayPayment = async (
   noticeCode,
