@@ -332,11 +332,7 @@ export default function DonationPage() {
             {`${t("donationPage.portfolio")}, `}
           </Typography>
           {`${t("donationPage.click")} `}
-          <Typography
-            variant="body1"
-            component={"h1"}
-            sx={{ fontWeight: 600 }}
-          >
+          <Typography variant="body1" component={"h1"} sx={{ fontWeight: 600 }}>
             {`${t("donationPage.payNotice")} `}
           </Typography>
           {t("donationPage.code")}
