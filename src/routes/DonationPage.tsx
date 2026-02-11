@@ -334,7 +334,7 @@ export default function DonationPage() {
           {`${t("donationPage.click")} `}
           <Typography
             variant="body1"
-            component={"span"}
+            component={"h1"}
             sx={{ fontWeight: 600 }}
           >
             {`${t("donationPage.payNotice")} `}
