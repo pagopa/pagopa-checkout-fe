@@ -217,6 +217,7 @@ export default function PaymentResponsePage() {
             />
             <Typography
               variant="h6"
+              component="h1"
               py={3}
               textAlign="center"
               id="responsePageMessageTitle"

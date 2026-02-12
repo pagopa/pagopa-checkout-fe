@@ -60,7 +60,7 @@ export default function AuthExpiredPage() {
           justifyContent="space-between"
           alignItems="center"
         >
-          <Typography variant="h6" component="div" id="errorTitle">
+          <Typography variant="h6" component="h1" id="errorTitle">
             {t("authExpiredPage.title")}
           </Typography>
           <Typography variant="body2" component="div" id="errorBody">
