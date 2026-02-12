@@ -133,7 +133,7 @@ describe("PageContainer Component", () => {
     // Check if Typography has correct variant and component
     const typographyElement = screen.getByTestId("typography-component");
     expect(typographyElement).toHaveAttribute("data-variant", "h4");
-    expect(typographyElement).toHaveAttribute("data-component", "div");
+    expect(typographyElement).toHaveAttribute("data-component", "h1");
   });
 
   it("renders description correctly", () => {
