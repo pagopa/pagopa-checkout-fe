@@ -33,8 +33,13 @@ export default function LanguageNativeSelect() {
     "& .MuiInputBase-input": {
       padding: 0,
       fontSize: theme.typography.caption.fontSize,
-      color: theme.palette.text.primary,
+      color: theme.palette.common.black,
       height: "auto",
+      "&:focus": {
+        fontWeight: "bold",
+        outline: `2px solid ${theme.palette.text.primary}`,
+        borderRadius: "4px",
+      },
     },
   }));
 
