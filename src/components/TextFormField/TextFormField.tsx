@@ -1,6 +1,5 @@
 /* eslint-disable functional/immutable-data */
-import { TextField } from "@mui/material";
-import { SxProps } from "@mui/system";
+import { SxProps, TextField, Theme } from "@mui/material";
 import React, { FocusEventHandler, FormEventHandler } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -13,7 +12,7 @@ interface TextFormFieldProps {
   type: string;
   variant?: "outlined" | "standard" | "filled" | undefined;
   style?: React.CSSProperties;
-  sx?: SxProps;
+  sx?: SxProps<Theme>;
   value?: string | number;
   endAdornment?: React.ReactNode;
   startAdornment?: React.ReactNode;

@@ -307,7 +307,7 @@ describe("Checkout authentication tests", () => {
     await clickLoginButton();
 
     //Wait auth-callback page
-    await page.waitForSelector('button[aria-label="party-menu-button"]');
+    await page.waitForSelector('button[aria-label^="Area utente"]');
 
     console.log("Login completed");
 
@@ -329,7 +329,7 @@ describe("Checkout authentication tests", () => {
     await clickLoginButton();
 
     //Wait auth-callback page
-    await page.waitForSelector('button[aria-label="party-menu-button"]');
+    await page.waitForSelector('button[aria-label^="Area utente"]');
 
     console.log("Login completed");
 
@@ -352,7 +352,7 @@ describe("Checkout authentication tests", () => {
     await clickLoginButton();
 
     //Wait auth-callback page
-    await page.waitForSelector('button[aria-label="party-menu-button"]');
+    await page.waitForSelector('button[aria-label^="Area utente"]');
     console.log("Login completed");
 
     //Check if user button is present into login header
@@ -506,7 +506,7 @@ describe("Checkout authentication tests", () => {
     await clickLoginButton();
 
     //Wait auth-callback page
-    await page.waitForSelector('button[aria-label="party-menu-button"]');
+    await page.waitForSelector('button[aria-label^="Area utente"]');
     
     console.log("Login completed");
 
@@ -543,7 +543,7 @@ describe("Checkout authentication tests", () => {
     await clickLoginButton();
 
     //Wait auth-callback page
-    await page.waitForSelector('button[aria-label="party-menu-button"]');
+    await page.waitForSelector('button[aria-label^="Area utente"]');
     
     console.log("Login completed");
 
@@ -579,7 +579,7 @@ describe("Checkout authentication tests", () => {
     await clickLoginButton();
 
     //Wait auth-callback page
-    await page.waitForSelector('button[aria-label="party-menu-button"]');
+    await page.waitForSelector('button[aria-label^="Area utente"]');
 
     console.log("Login completed");
 
@@ -615,7 +615,7 @@ describe("Logout tests", () => {
     await clickLoginButton();
 
     //Wait auth-callback page
-    await page.waitForSelector('button[aria-label="party-menu-button"]');
+    await page.waitForSelector('button[aria-label^="Area utente"]');
 
     console.log("Login completed");
     const userButton = await getUserButton();
@@ -647,7 +647,7 @@ describe("Logout tests", () => {
     await clickLoginButton();
 
     //Wait auth-callback page
-    await page.waitForSelector('button[aria-label="party-menu-button"]');
+    await page.waitForSelector('button[aria-label^="Area utente"]');
 
     console.log("Login completed");
 
@@ -690,7 +690,7 @@ describe("Logout tests", () => {
     await clickLoginButton();
 
     //Wait auth-callback page
-    await page.waitForSelector('button[aria-label="party-menu-button"]');
+    await page.waitForSelector('button[aria-label^="Area utente"]');
 
     console.log("Login completed");
 
@@ -732,7 +732,7 @@ describe("Logout tests", () => {
     await clickLoginButton();
 
     //Wait auth-callback page
-    await page.waitForSelector('button[aria-label="party-menu-button"]');
+    await page.waitForSelector('button[aria-label^="Area utente"]');
 
     console.log("Login completed");
 
@@ -770,7 +770,7 @@ describe("Logout tests", () => {
     await clickLoginButton();
 
     //Wait auth-callback page
-    await page.waitForSelector('button[aria-label="party-menu-button"]');
+    await page.waitForSelector('button[aria-label^="Area utente"]');
 
     console.log("Login completed");
 
@@ -807,7 +807,7 @@ describe("Logout tests", () => {
     await clickLoginButton();
 
     //Wait auth-callback page
-    await page.waitForSelector('button[aria-label="party-menu-button"]');
+    await page.waitForSelector('button[aria-label^="Area utente"]');
 
     console.log("Login completed");
 
@@ -843,7 +843,7 @@ describe("Logout tests", () => {
     await clickLoginButton();
 
     //Wait auth-callback page
-    await page.waitForSelector('button[aria-label="party-menu-button"]');
+    await page.waitForSelector('button[aria-label^="Area utente"]');
 
     console.log("Login completed");
     await fillAndSubmitCardDataForm(KORPTIDs.FAIL_ACTIVATE_502_PPT_WISP_SESSIONE_SCONOSCIUTA, OKPaymentInfo.VALID_FISCAL_CODE, OKPaymentInfo.EMAIL, OKPaymentInfo.VALID_CARD_DATA);
@@ -873,7 +873,7 @@ describe("Logout tests", () => {
     await clickLoginButton();
 
     //Wait auth-callback page
-    await page.waitForSelector('button[aria-label="party-menu-button"]');
+    await page.waitForSelector('button[aria-label^="Area utente"]');
 
     console.log("Login completed");
     
@@ -907,7 +907,7 @@ describe("Logout tests", () => {
     await clickLoginButton();
 
     //Wait auth-callback page
-    await page.waitForSelector('button[aria-label="party-menu-button"]');
+    await page.waitForSelector('button[aria-label^="Area utente"]');
 
     console.log("Login completed");
 

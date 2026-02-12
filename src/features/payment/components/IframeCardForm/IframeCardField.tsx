@@ -6,8 +6,9 @@ import {
   InputLabel,
   useTheme,
   Skeleton,
+  Theme,
+  SxProps,
 } from "@mui/material";
-import { SxProps } from "@mui/system";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Field } from "../../../../../generated/definitions/payment-ecommerce/Field";
@@ -31,11 +32,11 @@ const getSrcFromFieldsByID = (
 ) => fields.find((field) => field.id === id)?.src;
 
 interface Styles {
-  formControl: SxProps;
-  label: SxProps;
-  box: SxProps;
+  formControl: SxProps<Theme>;
+  label: SxProps<Theme>;
+  box: SxProps<Theme>;
   iframe: React.CSSProperties;
-  skeleton: SxProps;
+  skeleton: SxProps<Theme>;
   fieldStatusIcon: React.CSSProperties;
 }
 
