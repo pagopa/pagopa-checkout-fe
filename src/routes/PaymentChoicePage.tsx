@@ -175,7 +175,7 @@ export default function PaymentChoicePage() {
             href={`https://www.pagopa.gov.it/it/cittadini/trasparenza-costi/?amount=${amount}`}
             target="_blank"
             rel="noopener noreferrer"
-            style={{ fontWeight: 600, textDecoration: "none" }}
+            style={{ fontWeight: 600 }}
             title={t("paymentChoicePage.costs")}
           >
             {t("paymentChoicePage.costs")}

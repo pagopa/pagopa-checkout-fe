@@ -18,7 +18,6 @@ const SkipToContent: React.FC = () => {
         py: 1,
         bgcolor: "primary.main",
         color: "primary.contrastText",
-        textDecoration: "none",
         fontWeight: 600,
         textAlign: "center",
         display: "block",

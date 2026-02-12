@@ -518,7 +518,7 @@ export default function PaymentCheckPage() {
             href={`https://www.pagopa.gov.it/it/cittadini/trasparenza-costi/?amount=${amount}`}
             target="_blank"
             rel="noopener noreferrer"
-            sx={{ fontWeight: 600, textDecoration: "none" }}
+            sx={{ fontWeight: 600 }}
           >
             {t("paymentCheckPage.modal.link")}
           </Link>
