@@ -142,7 +142,7 @@ export const PspListSortLabel = ({
   fieldName,
   onClick,
   orderingModel,
-  children
+  children,
 }: PspListSortLabelProps) => {
   const direction = orderingModel.direction === "asc" ? "desc" : "asc";
   const [isMouseOver, setIsMouseOver] = useState(false);
