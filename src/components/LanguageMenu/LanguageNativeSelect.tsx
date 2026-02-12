@@ -35,6 +35,11 @@ export default function LanguageNativeSelect() {
       fontSize: theme.typography.caption.fontSize,
       color: theme.palette.text.primary,
       height: "auto",
+      "&:focus": {
+        fontWeight: "bold",
+        outline: `2px solid ${theme.palette.text.primary}`,
+        borderRadius: "4px",
+      },
     },
   }));
 
