@@ -38,11 +38,6 @@ export default function LanguageNativeSelect() {
       "&:hover": {
         textDecoration: "underline",
       },
-      "&:focus": {
-        fontWeight: "bold",
-        outline: `2px solid ${theme.palette.text.primary}`,
-        borderRadius: "4px",
-      },
     },
   }));
 
