@@ -572,4 +572,56 @@ describe("PspListSortLabel Component - sorting", () => {
       expect(mockOnClick).toHaveBeenCalled();
     }
   });
+  describe("PspListSortLabel Component - ariaLabel", () => {
+    const mockOnClick = jest.fn();
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it("renders the correct aria-label on the TableCell", () => {
+      render(
+        <PspListSortLabel
+          id="test-sort"
+          fieldName="pspBusinessName"
+          onClick={mockOnClick}
+          orderingModel={{
+            fieldName: "pspBusinessName",
+            direction: "asc",
+          }}
+          ariaLabel="Sort by PSP name"
+        >
+          Test Label
+        </PspListSortLabel>
+      );
+
+      const tableCell = screen.getByText("Test Label").closest("div");
+
+      if (tableCell) {
+        expect(tableCell).toHaveAttribute("aria-label", "Sort by PSP name");
+      }
+    });
+
+    it("allows querying by aria-label", () => {
+      render(
+        <PspListSortLabel
+          id="test-sort"
+          fieldName="pspBusinessName"
+          onClick={mockOnClick}
+          orderingModel={{
+            fieldName: "pspBusinessName",
+            direction: "asc",
+          }}
+          ariaLabel="Sort by PSP name"
+        >
+          Test Label
+        </PspListSortLabel>
+      );
+
+      const element = screen.getByLabelText("Sort by PSP name");
+
+      expect(element).toBeInTheDocument();
+      expect(element).toHaveAttribute("role", "button");
+    });
+  });
 });

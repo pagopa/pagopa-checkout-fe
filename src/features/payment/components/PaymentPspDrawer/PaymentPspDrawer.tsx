@@ -137,7 +137,7 @@ type PspListSortLabelProps = {
   onClick: (sortingOrd: PspOrderingModel) => void;
   orderingModel: PspOrderingModel;
   children: React.ReactNode;
-  ariaLabel: string;
+  ariaLabel?: string;
 };
 
 export const PspListSortLabel = ({
