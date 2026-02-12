@@ -1,5 +1,4 @@
-import { Box, Typography } from "@mui/material";
-import { CSSProperties } from "@mui/material/styles/createTypography";
+import { Box, SxProps, Theme, Typography } from "@mui/material";
 import React, { useEffect } from "react";
 import { Trans, useTranslation } from "react-i18next";
 
@@ -8,7 +7,7 @@ export default function PageContainer(props: {
   description?: string;
   children?: React.ReactNode;
   link?: React.ReactNode;
-  childrenSx?: CSSProperties;
+  childrenSx?: SxProps<Theme>;
 }) {
   const { t } = useTranslation();
 

@@ -40,7 +40,7 @@ export default function LanguageNativeSelect() {
 
   return (
     <>
-      <Box sx={visuallyHidden}>{t("ariaLabels.languageMenu")}</Box>
+      <Box sx={{ ...visuallyHidden }}>{t("ariaLabels.languageMenu")}</Box>
       <NativeSelect
         id="languageMenu"
         defaultValue={lang in supportedLang ? lang : fallbackLang}
