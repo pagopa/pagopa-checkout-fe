@@ -15,7 +15,8 @@
     "informationDialog": "Information",
     "informationLink": "To learn more about the campaign",
     "languageMenu": "Selected language",
-    "loading": "Loading"
+    "loading": "Loading",
+    "applySorting": "Apply selected order"
   },
   "cancelledPage": {
     "body": "The operation was canceled",
@@ -166,7 +167,7 @@
       },
       "disclaimer": "The amount is updated automatically, therefore you will always pay what is due and avoid arrears or other interest."
     },
-    "main":{
+    "main": {
       "skipToContent": "Go to content"
     }
   },
@@ -224,7 +225,7 @@
     },
     "title": "Enter your email"
   },
-  "findOutMoreModal":{
+  "findOutMoreModal": {
     "title": "What to do if the payment fails?",
     "section1Title": "1. Pay the notice",
     "section1ContentRow1": "Remember to pay the notice by the deadline set by the issuing authority.",
@@ -330,7 +331,7 @@
     "disclaimer": {
       "cheaper": "Suggested because least expensive",
       "yourCard": "Suggested because you are already a customer",
-      "psp":"By continuing, you accept the <terms>Terms and Conditions of Use</terms> and confirm that you have read the <privacy>Privacy Policy</privacy> of <psp>{{pspName}}</psp>"
+      "psp": "By continuing, you accept the <terms>Terms and Conditions of Use</terms> and confirm that you have read the <privacy>Privacy Policy</privacy> of <psp>{{pspName}}</psp>"
     },
     "drawer": {
       "body": "This list contains all the operators compatible with your method, even if you are not their customer.",
@@ -430,9 +431,9 @@
     "sort": "Sort",
     "drawer": {
       "sorting": {
-        "default": "Default",
+        "default": "Random order",
         "name": "By name",
-        "amount": "By amount"
+        "amount": "Lowest to highest amount"
       },
       "showResults": "Show results"
     }
@@ -507,7 +508,7 @@
   },
   "maintenancePage": {
     "title": "We're working for you",
-    "subtitle": "pagoPa is currently not available due to scheduled maintenance."   ,
+    "subtitle": "pagoPa is currently not available due to scheduled maintenance.",
     "closeButton": "Close",
     "detailsButton": "Find out more"
   },

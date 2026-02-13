@@ -11,7 +11,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { CustomDrawer } from "../../../../components/modals/CustomDrawer";
 import { useSmallDevice } from "../../../../hooks/useSmallDevice";
-import { PspOrderingModel } from "./../../../../utils/SortUtil";
+import { PspOrderingModel } from "../../../../utils/SortUtil";
 
 // Define an enum for the sorting type
 export enum PaymentPspSortingType {
@@ -168,6 +168,7 @@ export const PaymentPspListSortingDrawer = (props: {
           fullWidth
           onClick={handleApply}
           sx={{ mt: 2 }}
+          aria-label={t("ariaLabels.applySorting")}
         >
           {t("paymentPspListPage.drawer.showResults")}
         </Button>
