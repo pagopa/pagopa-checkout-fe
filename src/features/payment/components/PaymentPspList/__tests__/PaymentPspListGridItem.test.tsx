@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { ThemeProvider, createTheme } from "@mui/material";
 import { PaymentPSPListGridItem } from "../PaymentPspListGridItem";
@@ -79,11 +79,7 @@ describe("PaymentPSPListGridItem", () => {
   it("renders PSP item details correctly", () => {
     render(
       <ThemeProvider theme={theme}>
-        <PaymentPSPListGridItem
-          isSelected={false}
-          pspItem={mockPspItem}
-          handleClick={jest.fn()}
-        />
+        <PaymentPSPListGridItem isSelected={false} pspItem={mockPspItem} />
       </ThemeProvider>
     );
 
@@ -98,48 +94,34 @@ describe("PaymentPSPListGridItem", () => {
   it("displays checked radio button when isSelected is true", () => {
     render(
       <ThemeProvider theme={theme}>
-        <PaymentPSPListGridItem
-          pspItem={mockPspItem}
-          handleClick={jest.fn()}
-          isSelected={true}
-        />
+        <PaymentPSPListGridItem pspItem={mockPspItem} isSelected={true} />
       </ThemeProvider>
     );
 
-    expect(screen.getByTestId("psp-radio-button-checked")).toBeInTheDocument();
+    const priceContainer = screen.getByText("€ 2.50").parentElement!;
     expect(
-      screen.queryByTestId("psp-radio-button-unchecked")
-    ).not.toBeInTheDocument();
+      within(priceContainer).getByTestId("psp-radio-button-checked")
+    ).toBeInTheDocument();
   });
 
   it("displays unchecked radio button when isSelected is false", () => {
     render(
       <ThemeProvider theme={theme}>
-        <PaymentPSPListGridItem
-          pspItem={mockPspItem}
-          handleClick={jest.fn()}
-          isSelected={false}
-        />
+        <PaymentPSPListGridItem pspItem={mockPspItem} isSelected={false} />
       </ThemeProvider>
     );
 
+    const priceContainer = screen.getByText("€ 2.50").parentElement!;
     expect(
-      screen.getByTestId("psp-radio-button-unchecked")
+      within(priceContainer).getByTestId("psp-radio-button-unchecked")
     ).toBeInTheDocument();
-    expect(
-      screen.queryByTestId("psp-radio-button-checked")
-    ).not.toBeInTheDocument();
   });
 
   it("calls handleClick when the grid item is clicked", () => {
     const handleClickMock = jest.fn();
     render(
       <ThemeProvider theme={theme}>
-        <PaymentPSPListGridItem
-          isSelected={false}
-          pspItem={mockPspItem}
-          handleClick={handleClickMock}
-        />
+        <PaymentPSPListGridItem isSelected={false} pspItem={mockPspItem} />
       </ThemeProvider>
     );
 
@@ -155,11 +137,7 @@ describe("PaymentPSPListGridItem", () => {
     const handleClickMock = jest.fn();
     render(
       <ThemeProvider theme={theme}>
-        <PaymentPSPListGridItem
-          isSelected={false}
-          pspItem={mockPspItem}
-          handleClick={handleClickMock}
-        />
+        <PaymentPSPListGridItem isSelected={false} pspItem={mockPspItem} />
       </ThemeProvider>
     );
 
@@ -173,11 +151,7 @@ describe("PaymentPSPListGridItem", () => {
   it("formats the taxPayerFee correctly", () => {
     render(
       <ThemeProvider theme={theme}>
-        <PaymentPSPListGridItem
-          isSelected={false}
-          pspItem={mockPspItem}
-          handleClick={jest.fn()}
-        />
+        <PaymentPSPListGridItem isSelected={false} pspItem={mockPspItem} />
       </ThemeProvider>
     );
 
@@ -187,11 +161,7 @@ describe("PaymentPSPListGridItem", () => {
   it("renders onUs icon when pspItem.onUs is true", () => {
     render(
       <ThemeProvider theme={theme}>
-        <PaymentPSPListGridItem
-          isSelected={false}
-          pspItem={mockPspItem}
-          handleClick={jest.fn()}
-        />
+        <PaymentPSPListGridItem isSelected={false} pspItem={mockPspItem} />
       </ThemeProvider>
     );
 
@@ -204,7 +174,6 @@ describe("PaymentPSPListGridItem", () => {
         <PaymentPSPListGridItem
           isSelected={false}
           pspItem={{ ...mockPspItem, onUs: false }}
-          handleClick={jest.fn()}
         />
       </ThemeProvider>
     );
