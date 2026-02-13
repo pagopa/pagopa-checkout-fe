@@ -160,6 +160,7 @@ function ErrorModal(props: {
       open={props.open}
       onClose={props.onClose}
       aria-live="assertive"
+      role="alert"
     >
       <DialogTitle sx={{ p: 0 }}>
         <Typography
@@ -177,6 +178,7 @@ function ErrorModal(props: {
         </Typography>
         {showDetail(body) && (
           <Alert
+            role="presentation"
             severity="info"
             sx={{
               display: "flex",
