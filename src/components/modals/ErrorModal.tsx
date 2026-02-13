@@ -178,6 +178,7 @@ function ErrorModal(props: {
         </Typography>
         {showDetail(body) && (
           <Alert
+            role="presentation"
             severity="info"
             sx={{
               display: "flex",
