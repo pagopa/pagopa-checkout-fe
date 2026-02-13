@@ -4,6 +4,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import {
   Box,
+  ButtonBase,
   Skeleton,
   SxProps,
   Theme,
@@ -35,6 +36,7 @@ function ClickableFieldContainer(props: {
   const theme = useTheme();
   const defaultStyle = {
     display: "flex",
+    width: "100%",
     justifyContent: "space-between",
     alignItems: "center",
     cursor: !props.loading && props.clickable ? "pointer" : "auto",
@@ -42,6 +44,11 @@ function ClickableFieldContainer(props: {
     borderBottomColor: props.isLast ? "transparent" : "divider",
     pt: 3,
     pb: 3,
+    "&:focus-visible": {
+      outlineStyle: "solid",
+      outlineWidth: "1px",
+      outlineColor: theme.palette.primary.main,
+    },
     ...props.sx,
   };
 
@@ -51,24 +58,18 @@ function ClickableFieldContainer(props: {
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === "Enter" && props.onClick) {
-      props.onClick();
-    }
-  };
-
   return (
-    <Box
+    <ButtonBase
       data-qaid={props.dataTestId}
       data-qalabel={props.dataTestLabel}
       sx={defaultStyle}
       onClick={props.clickable ? handleClick : undefined}
-      onKeyDown={props.clickable ? handleKeyDown : undefined}
       {...(props.clickable ? { tabIndex: 0 } : {})}
     >
       <Box
         sx={{
           display: "flex",
+          width: "100%",
           alignItems: "center",
           gap: 3,
           pl: 2,
@@ -84,7 +85,12 @@ function ClickableFieldContainer(props: {
         ) : (
           <>
             {props.icon}
-            <Box display="flex" flexDirection="column">
+            <Box
+              display="flex"
+              flexDirection="column"
+              width="100%"
+              textAlign="left"
+            >
               <Typography
                 variant={props.variant}
                 component="div"
@@ -129,7 +135,7 @@ function ClickableFieldContainer(props: {
           {props.endAdornment}
         </Box>
       )}
-    </Box>
+    </ButtonBase>
   );
 }
 
