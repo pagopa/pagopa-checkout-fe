@@ -128,7 +128,7 @@ describe("PrivacyInfo Component", () => {
     expect(privacyLink).toHaveAttribute("target", "_blank");
     expect(privacyLink).toHaveAttribute("rel", "noreferrer");
     expect(privacyLink).toHaveStyle("font-weight: 600");
-    expect(privacyLink).toHaveStyle("text-decoration: none");
+    expect(privacyLink).toHaveStyle("text-decoration: underline");
 
     const termsLink = screen
       .getByTestId("terms-link")
@@ -190,6 +190,6 @@ describe("PrivacyInfo Component", () => {
     );
     expect(donationTermsLink).toHaveAttribute("rel", "noopener noreferrer");
     expect(donationTermsLink).toHaveStyle("font-weight: 600");
-    expect(donationTermsLink).toHaveStyle("text-decoration: none");
+    expect(donationTermsLink).toHaveStyle("text-decoration: underline");
   });
 });
