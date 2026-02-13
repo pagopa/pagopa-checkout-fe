@@ -9,7 +9,12 @@ const PrivacyLink = (props: {
 }) => {
   const { href, children, rel = "noreferrer" } = props;
   return (
-    <Link href={href} target="_blank" rel={rel} sx={{ fontWeight: 600, textDecoration: "underline" }}>
+    <Link
+      href={href}
+      target="_blank"
+      rel={rel}
+      sx={{ fontWeight: 600, textDecoration: "underline" }}
+    >
       {children}
     </Link>
   );
