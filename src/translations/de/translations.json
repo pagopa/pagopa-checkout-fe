@@ -15,7 +15,8 @@
     "informationDialog": "Informationen",
     "informationLink": "Weitere Informationen zum Programm",
     "languageMenu": "Eingestellte Sprache",
-    "loading": "Laden..."
+    "loading": "Laden...",
+    "applySorting": "Gewählte Reihenfolge anwenden"
   },
   "cancelledPage": {
     "body": "Der Vorgang wurde abgebrochen",
@@ -166,7 +167,7 @@
       },
       "disclaimer": "Der Betrag wird automatisch aktualisiert, damit du stets den zu zahlenden Betrag begleichst und Verzugsgebühren oder Zinsen vermeidest."
     },
-    "main":{
+    "main": {
       "skipToContent": "Zum Inhalt springen"
     }
   },
@@ -224,7 +225,7 @@
     },
     "title": "Gib deine E-Mail-Adresse ein"
   },
-  "findOutMoreModal":{
+  "findOutMoreModal": {
     "title": "Was tun, wenn die Zahlung nicht erfolgreich ist?",
     "section1Title": "1. Bezahle die Zahlungsaufforderung",
     "section1ContentRow1": "Denke daran, die Zahlungsaufforderung innerhalb der vom Amt festgelegten Fristen zu bezahlen.",
@@ -330,7 +331,7 @@
     "disclaimer": {
       "cheaper": "Vorgeschlagen, weil kostengünstigste Möglichkeit",
       "yourCard": "Vorgeschlagen, weil du bereits Kunde bist",
-      "psp":"Mit dem Fortfahren akzeptieren <terms>Sie die Nutzungsbedingungen und bestätigen</terms> die <privacy>Datenschutzerklärung</> von <psp>{{pspName}}</psp> gelesen zu haben."
+      "psp": "Mit dem Fortfahren akzeptieren <terms>Sie die Nutzungsbedingungen und bestätigen</terms> die <privacy>Datenschutzerklärung</> von <psp>{{pspName}}</psp> gelesen zu haben."
     },
     "drawer": {
       "body": "Hier sind alle mit deiner Methode kompatiblen Anbieter aufgelistet, auch wenn du nicht Kunde bei ihnen bist.",
@@ -430,9 +431,9 @@
     "sort": "Sortieren",
     "drawer": {
       "sorting": {
-        "default": "Standard",
+        "default": "Zufällige Reihenfolge",
         "name": "Nach Name",
-        "amount": "Nach Betrag"
+        "amount": "Vom niedrigsten zum höchsten Betrag"
       },
       "showResults": "Ergebnisse anzeigen"
     }
@@ -507,7 +508,7 @@
   },
   "maintenancePage": {
     "title": "Wir arbeiten für dich",
-    "subtitle": "pagoPa ist derzeit aufgrund geplanter Wartungsarbeiten nicht verfügbar."   ,
+    "subtitle": "pagoPa ist derzeit aufgrund geplanter Wartungsarbeiten nicht verfügbar.",
     "closeButton": "Schließen",
     "detailsButton": "Mehr erfahren"
   },

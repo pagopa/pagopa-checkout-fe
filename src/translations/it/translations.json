@@ -15,7 +15,8 @@
     "informationDialog": "Informazioni",
     "informationLink": "Per saperne di più sulla campagna di",
     "languageMenu": "Lingua impostata",
-    "loading": "Caricamento"
+    "loading": "Caricamento",
+    "applySorting": "Applica l’ordine selezionato"
   },
   "cancelledPage": {
     "body": "L'operazione è stata annullata",
@@ -167,7 +168,7 @@
       },
       "disclaimer": "L’importo è aggiornato in automatico, così paghi sempre quanto dovuto ed eviti more o altri interessi."
     },
-    "main":{
+    "main": {
       "skipToContent": "Vai ai contenuti"
     }
   },
@@ -225,7 +226,7 @@
     },
     "title": "Inserisci la tua email"
   },
-  "findOutMoreModal":{
+  "findOutMoreModal": {
     "title": "Cosa fare se il pagamento non va a buon fine?",
     "section1Title": "1. Paga l'avviso",
     "section1ContentRow1": "Ricorda di pagare l'avviso entro le scadenze previste dall'ente.",
@@ -331,7 +332,7 @@
     "disclaimer": {
       "cheaper": "Suggerito perché il più economico",
       "yourCard": "Suggerito perché sei già cliente",
-      "psp":"Proseguendo accetti i <terms>Termini e condizioni d'uso</terms> e dichiari di aver letto l'<privacy>Informativa Privacy</privacy> di <psp>{{pspName}}</psp>"
+      "psp": "Proseguendo accetti i <terms>Termini e condizioni d'uso</terms> e dichiari di aver letto l'<privacy>Informativa Privacy</privacy> di <psp>{{pspName}}</psp>"
     },
     "drawer": {
       "body": "In questa lista trovi tutti i gestori compatibili con il tuo metodo, anche se non sei loro cliente.",
@@ -431,9 +432,9 @@
     "sort": "Ordina",
     "drawer": {
       "sorting": {
-        "default": "Default",
+        "default": "Ordine casuale",
         "name": "Per nome",
-        "amount": "Per importo"
+        "amount": "Dall’importo più basso al più alto"
       },
       "showResults": "Mostra risultati"
     },
@@ -510,7 +511,7 @@
   },
   "maintenancePage": {
     "title": "Stiamo lavorando per te",
-    "subtitle": "pagoPa non è al momento disponibile a causa di una manutenzione programmata."   ,
+    "subtitle": "pagoPa non è al momento disponibile a causa di una manutenzione programmata.",
     "closeButton": "Chiudi",
     "detailsButton": "Scopri di più"
   }
