@@ -363,7 +363,7 @@
     "description": "Pour en savoir plus sur les méthodes et les frais appliqués par les opérateurs adhérents, voir la page  ",
     "incoming": "Bientôt disponible",
     "others": "Autres moyens de paiement",
-    "showMore": "Tout afficher",
+    "showMore": "Afficher tous les modes de paiement",
     "title": "Comment voulez-vous payer ?",
     "feeRange": "Commission: de {{min}}  à {{max}}",
     "feeSingle": "Commission: {{value}}",

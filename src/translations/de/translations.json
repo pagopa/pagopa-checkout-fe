@@ -363,7 +363,7 @@
     "description": "Mehr über die Methoden und Gebühren der teilnehmenden Anbieter erfährst du auf der Seite ",
     "incoming": "Eingang",
     "others": "Sonstige Methoden",
-    "showMore": "Alle zeigen",
+    "showMore": "Alle Zahlungsarten anzeigen",
     "title": "Wie möchtest du zahlen?",
     "feeRange": "Gebühr: von {{min}}  bis {{max}}",
     "feeSingle": "Gebühr: {{value}}",
