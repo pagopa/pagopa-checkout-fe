@@ -338,7 +338,9 @@
         "amount": "Frais",
         "name": "Opérateur"
       },
-      "title": "Avec quel opérateur voulez-vous payer ?"
+      "title": "Avec quel opérateur voulez-vous payer ?",
+      "pspNameAccessibilityLabel": "Ordina in ordine alfabetico per nome del gestore",
+      "taxFeeAccessibilityLabel": "Ordina per l'importo di commissione più basso"
     },
     "email": "Envoyer le résultat à:",
     "modal": {
