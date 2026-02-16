@@ -64,6 +64,7 @@ function ClickableFieldContainer(props: {
       data-qalabel={props.dataTestLabel}
       sx={defaultStyle}
       onClick={props.clickable ? handleClick : undefined}
+      disabled={props.disabled}
       {...(props.clickable ? { tabIndex: 0 } : {})}
     >
       <Box
