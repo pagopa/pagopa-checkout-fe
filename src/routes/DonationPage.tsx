@@ -242,7 +242,7 @@ export default function DonationPage() {
             <Grid container spacing={3} mb={6}>
               {selectedEntity.slices?.map((slice, index) => (
                 <React.Fragment key={index}>
-                  <Grid item xs={4}>
+                  <Grid xs={4}>
                     <Button
                       variant={
                         selectedSlice === slice ? "contained" : "outlined"
