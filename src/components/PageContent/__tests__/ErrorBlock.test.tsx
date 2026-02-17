@@ -14,27 +14,18 @@ describe("ErrorBlock", () => {
       />
     );
 
-    const img = screen.getByRole("img", { name: "error-image" });
-    expect(img).toBeInTheDocument();
-    // jsdom non carica davvero immagini, ma l'attributo src lo possiamo verificare:
-    expect(img).toHaveAttribute("src", "/img.svg");
+    expect(screen.getByRole("img", { name: "error-image" })).toHaveAttribute(
+      "src",
+      "/img.svg"
+    );
 
-    // il titolo è un h1
     expect(
       screen.getByRole("heading", { level: 1, name: "Titolo errore" })
-    ).toBeInTheDocument();
+    ).toHaveAttribute("id", "error-title");
 
-    expect(screen.getByText("Testo descrittivo")).toBeInTheDocument();
-
-    // id default (testIdPrefix="error")
-    expect(screen.getByRole("heading", { level: 1 })).toHaveAttribute(
-      "id",
-      "error-title"
-    );
-    expect(screen.getByText("Testo descrittivo")).toHaveAttribute(
-      "id",
-      "error-body"
-    );
+    const bodyEl = document.getElementById("error-body");
+    expect(bodyEl).toBeInTheDocument();
+    expect(bodyEl).toHaveTextContent("Testo descrittivo");
   });
 
   it("does not render actions container when actions is not provided", () => {
