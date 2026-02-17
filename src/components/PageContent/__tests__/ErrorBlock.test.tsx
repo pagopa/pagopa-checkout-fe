@@ -29,7 +29,7 @@ describe("ErrorBlock", () => {
   });
 
   it("does not render actions container when actions is not provided", () => {
-    const { container } = render(
+    render(
       <ErrorBlock
         imageSrc="/img.svg"
         imageAlt="error-image"
@@ -38,11 +38,8 @@ describe("ErrorBlock", () => {
       />
     );
 
-    // Non avendo un testid sul Box, verifichiamo in modo robusto che non ci sia alcun bottone/testo azione
+    expect(screen.queryByTestId("error-actions")).not.toBeInTheDocument();
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
-
-    // opzionale: snapshot per avere un controllo sul markup
-    expect(container).toMatchSnapshot();
   });
 
   it("renders actions when provided", () => {
@@ -56,6 +53,7 @@ describe("ErrorBlock", () => {
       />
     );
 
+    expect(screen.getByTestId("error-actions")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Riprova" })).toBeInTheDocument();
   });
 

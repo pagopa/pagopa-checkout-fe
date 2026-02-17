@@ -55,6 +55,7 @@ export function ErrorBlock({
           gap={2}
           sx={{ mt: 2 }}
           alignItems="center"
+          data-testid={`${testIdPrefix}-actions`}
         >
           {actions}
         </Box>
