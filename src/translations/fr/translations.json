@@ -12,7 +12,7 @@
     "editCard": "Modifier les données de la carte",
     "editDonation": "Modifier l’organisation destinataire du don",
     "editPsp": "Modifier PSP",
-    "informationDialog": "Informations",
+    "informationDialog": "Informations sur le montant",
     "informationLink": "Pour en savoir plus sur la campagne de",
     "languageMenu": "Langue sélectionnée",
     "loading": "Chargement en cours"
@@ -363,7 +363,7 @@
     "description": "Pour en savoir plus sur les méthodes et les frais appliqués par les opérateurs adhérents, voir la page  ",
     "incoming": "Bientôt disponible",
     "others": "Autres moyens de paiement",
-    "showMore": "Tout afficher",
+    "showMore": "Méthodes non disponibles",
     "title": "Comment voulez-vous payer ?",
     "feeRange": "Commission: de {{min}}  à {{max}}",
     "feeSingle": "Commission: {{value}}",
