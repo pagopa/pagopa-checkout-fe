@@ -148,6 +148,19 @@ export default function IframeCardForm(props: Props) {
   };
 
   React.useEffect(() => {
+    const onMessage = (event: MessageEvent) => {
+      const { event: eventName, id } = event.data;
+      if (eventName === "FIELD_FOCUSSED") {
+        setActiveField(id);
+      } else if (eventName === "FIELD_BLURRED") {
+        setActiveField(undefined);
+      }
+    };
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, []);
+
+  React.useEffect(() => {
     if (!form) {
       const onResponse = (body: CreateSessionResponse) => {
         setSessionItem(SessionItems.orderId, body.orderId);

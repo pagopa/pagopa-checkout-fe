@@ -185,9 +185,10 @@ const useStyles = (props: Props): Styles => {
       display: "flex",
       position: "absolute",
       alignItems: "center",
-      width: "10%%",
+      width: "10%",
       justifySelf: "flex-end",
       cursor: "initial",
+      right: 0,
     },
   };
 };
@@ -198,13 +199,12 @@ const useBorderStyles = ({ isValid, activeField, id }: Props) => {
   const errorColor = palette.error.dark;
   const focusColor = palette.primary.main;
 
-  // Default styles for neutral state or undefined validity
-  if (activeField === undefined || isValid === undefined) {
+  if (isValid === false) {
     return {
-      labelColor: palette.text.secondary,
-      boxColor: palette.grey[500],
-      hoverShadowWidth: "1px",
-      hoverShadowColor: palette.text.primary,
+      labelColor: errorColor,
+      boxColor: errorColor,
+      hoverShadowWidth: "2px",
+      hoverShadowColor: errorColor,
     };
   }
 
@@ -220,9 +220,9 @@ const useBorderStyles = ({ isValid, activeField, id }: Props) => {
 
   // Inactive focus
   return {
-    labelColor: isValid ? palette.text.secondary : errorColor,
-    boxColor: isValid ? palette.grey[500] : errorColor,
-    hoverShadowWidth: "2px",
-    hoverShadowColor: isValid ? palette.text.primary : errorColor,
+    labelColor: palette.text.secondary,
+    boxColor: palette.grey[500],
+    hoverShadowWidth: "1px",
+    hoverShadowColor: palette.text.primary,
   };
 };
