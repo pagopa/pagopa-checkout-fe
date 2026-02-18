@@ -338,7 +338,9 @@
         "amount": "Gebühr",
         "name": "Anbieter"
       },
-      "title": "Über welchen Anbieter möchtest du zahlen?"
+      "title": "Über welchen Anbieter möchtest du zahlen?",
+      "pspNameAccessibilityLabel": "Ordina in ordine alfabetico per nome del gestore",
+      "taxFeeAccessibilityLabel": "Ordina per l'importo di commissione più basso"
     },
     "email": "Sende Bestätigung an:",
     "modal": {
