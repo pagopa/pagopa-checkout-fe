@@ -364,7 +364,7 @@
     "description": "Če želite izvedeti več o načinih in stroških, ki jih uporabljajo sodelujoči upravljavci, obiščite spletno stran ",
     "incoming": "Prihajajo",
     "others": "Drugi načini",
-    "showMore": "Pokaži vse",
+    "showMore": "Nedosegljive metode",
     "title": "Kako želite plačati?",
     "feeRange": "Provizija: od {{min}}  do {{max}}",
     "feeSingle": "Provizija: {{value}}",
