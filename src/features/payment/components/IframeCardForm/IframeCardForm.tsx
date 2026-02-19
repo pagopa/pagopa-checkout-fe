@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Typography, Button } from "@mui/material";
 import * as O from "fp-ts/Option";
 import * as B from "fp-ts/boolean";
 import { pipe } from "fp-ts/function";
@@ -6,7 +6,7 @@ import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { Typography, Button } from "@mui/material";
+import { getConfigOrThrow } from "../../../../utils/config/config";
 import { CreateSessionResponse } from "../../../../../generated/definitions/payment-ecommerce/CreateSessionResponse";
 import { SessionPaymentMethodResponse } from "../../../../../generated/definitions/payment-ecommerce/SessionPaymentMethodResponse";
 import { FormButtons } from "../../../../components/FormButtons/FormButtons";
@@ -149,8 +149,21 @@ export default function IframeCardForm(props: Props) {
 
   React.useEffect(() => {
     const onMessage = (event: MessageEvent) => {
+      const config = getConfigOrThrow();
+      const npgWebOrigin = new URL(config.CHECKOUT_NPG_SDK_URL).origin;
+
+      if (event.origin !== npgWebOrigin) {
+        return;
+      }
+
+      if (typeof event.data !== "object" || !event.data) {
+        return;
+      }
       const { event: eventName, id } = event.data;
-      if (eventName === "FIELD_FOCUSSED") {
+      if (
+        eventName === "FIELD_FOCUSSED" &&
+        Object.keys(IdFields).includes(id)
+      ) {
         setActiveField(id);
       } else if (eventName === "FIELD_BLURRED") {
         setActiveField(undefined);
