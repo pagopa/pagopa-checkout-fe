@@ -35,6 +35,9 @@ export default function LanguageNativeSelect() {
       fontSize: theme.typography.caption.fontSize,
       color: theme.palette.text.primary,
       height: "auto",
+      "&:hover": {
+        textDecoration: "underline",
+      },
     },
   }));
 

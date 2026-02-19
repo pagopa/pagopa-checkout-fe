@@ -48,9 +48,12 @@ export default function Footer(props: { fixedPages: Array<string> }) {
             href="https://form.agid.gov.it/view/d7e5f000-9858-11f0-932b-b1f629ca861e"
             target="_blank"
             rel="noopener noreferrer"
-            style={{
+            sx={{
               color: theme.palette.text.primary,
               textDecoration: "none",
+              "&:hover": {
+                textDecoration: "underline",
+              },
             }}
             title={t("mainPage.footer.accessibility")}
           >
@@ -61,9 +64,12 @@ export default function Footer(props: { fixedPages: Array<string> }) {
             href="https://www.pagopa.gov.it/it/helpdesk/"
             target="_blank"
             rel="noopener noreferrer"
-            style={{
+            sx={{
               color: theme.palette.text.primary,
               textDecoration: "none",
+              "&:hover": {
+                textDecoration: "underline",
+              },
             }}
             title={t("mainPage.footer.help")}
           >
@@ -74,9 +80,12 @@ export default function Footer(props: { fixedPages: Array<string> }) {
             href="https://checkout.pagopa.it/privacypolicy/it.html#termini-e-condizioni-di-uso"
             target="_blank"
             rel="noopener noreferrer"
-            style={{
+            sx={{
               color: theme.palette.text.primary,
               textDecoration: "none",
+              "&:hover": {
+                textDecoration: "underline",
+              },
             }}
             title={t("mainPage.footer.privacy")}
           >
@@ -87,9 +96,12 @@ export default function Footer(props: { fixedPages: Array<string> }) {
             href="https://checkout.pagopa.it/termini-di-servizio"
             target="_blank"
             rel="noopener noreferrer"
-            style={{
+            sx={{
               color: theme.palette.text.primary,
               textDecoration: "none",
+              "&:hover": {
+                textDecoration: "underline",
+              },
             }}
             title={t("mainPage.footer.terms")}
           >
@@ -100,9 +112,12 @@ export default function Footer(props: { fixedPages: Array<string> }) {
             href="https://status.platform.pagopa.it/"
             target="_blank"
             rel="noopener noreferrer"
-            style={{
+            sx={{
               color: theme.palette.text.primary,
               textDecoration: "none",
+              "&:hover": {
+                textDecoration: "underline",
+              },
             }}
             title={t("mainPage.footer.platformStatus")}
           >

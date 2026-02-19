@@ -51,6 +51,13 @@ const themeLight = createTheme({
         },
       },
     },
+    MuiLink: {
+      styleOverrides: {
+        root: {
+          textDecoration: "underline",
+        },
+      },
+    },
   },
 });
 
@@ -192,6 +199,13 @@ const themeDark = createTheme({
           "& .MuiSvgIcon-root.MuiTableSortLabel-icon": {
             color: darkTheme.palette.common.white,
           },
+        },
+      },
+    },
+    MuiLink: {
+      styleOverrides: {
+        root: {
+          textDecoration: "underline",
         },
       },
     },
