@@ -142,7 +142,7 @@ const useStyles = (props: Props): Styles => {
       margin: "dense",
       marginY: 3,
       borderRadius: "4px",
-      boxShadow: `0 0 0 1px ${borderStyle.boxColor}`,
+      boxShadow: `0 0 0 ${borderStyle.borderWidth} ${borderStyle.boxColor}`,
       transition: "box-shadow 0.1s ease-in",
       "&:hover": {
         boxShadow: `0 0 0 ${borderStyle.hoverShadowWidth} ${borderStyle.hoverShadowColor}`,
@@ -203,6 +203,7 @@ const useBorderStyles = ({ isValid, activeField, id }: Props) => {
     return {
       labelColor: errorColor,
       boxColor: errorColor,
+      borderWidth: activeField === id ? "2px" : "1px",
       hoverShadowWidth: "2px",
       hoverShadowColor: errorColor,
     };
@@ -213,6 +214,7 @@ const useBorderStyles = ({ isValid, activeField, id }: Props) => {
     return {
       labelColor: focusColor,
       boxColor: focusColor,
+      borderWidth: "2px",
       hoverShadowWidth: "2px",
       hoverShadowColor: focusColor,
     };
@@ -222,6 +224,7 @@ const useBorderStyles = ({ isValid, activeField, id }: Props) => {
   return {
     labelColor: palette.text.secondary,
     boxColor: palette.grey[500],
+    borderWidth: "1px",
     hoverShadowWidth: "1px",
     hoverShadowColor: palette.text.primary,
   };
