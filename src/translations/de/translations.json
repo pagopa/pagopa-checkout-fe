@@ -16,7 +16,10 @@
     "informationLink": "Weitere Informationen zum Programm",
     "languageMenu": "Eingestellte Sprache",
     "loading": "Laden...",
-    "applySorting": "Gewählte Reihenfolge anwenden"
+    "applySorting": "Gewählte Reihenfolge anwenden",
+    "sortingDefault": "Standardsortierung",
+    "sortingName": "Sortierung nach Name",
+    "sortingAmount": "Sortierung nach Betrag"
   },
   "cancelledPage": {
     "body": "Der Vorgang wurde abgebrochen",
@@ -431,11 +434,11 @@
     "sort": "Sortieren",
     "drawer": {
       "sorting": {
-        "default": "Zufällige Reihenfolge",
+        "default": "Standard",
         "name": "Nach Name",
-        "amount": "Vom niedrigsten zum höchsten Betrag"
+        "amount": "Nach Betrag"
       },
-      "showResults": "Ergebnisse anzeigen"
+      "showResults": "Anwenden"
     }
   },
   "paymentQrPage": {

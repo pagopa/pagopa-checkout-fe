@@ -120,7 +120,11 @@ export const PaymentPspListSortingDrawer = (props: {
           >
             <FormControlLabel
               value={PaymentPspSortingType.DEFAULT}
-              control={<Radio />}
+              control={
+                <Radio
+                  inputProps={{ "aria-label": t("ariaLabels.sortingDefault") }}
+                />
+              }
               label={
                 <Box id="sort-psp-list-drawer-default-order">
                   <Typography variant="body1">
@@ -133,7 +137,11 @@ export const PaymentPspListSortingDrawer = (props: {
 
             <FormControlLabel
               value={PaymentPspSortingType.NAME}
-              control={<Radio />}
+              control={
+                <Radio
+                  inputProps={{ "aria-label": t("ariaLabels.sortingName") }}
+                />
+              }
               label={
                 <Box id="sort-psp-list-drawer-order-by-name">
                   <Typography variant="body1">
@@ -146,7 +154,11 @@ export const PaymentPspListSortingDrawer = (props: {
 
             <FormControlLabel
               value={PaymentPspSortingType.AMOUNT}
-              control={<Radio />}
+              control={
+                <Radio
+                  inputProps={{ "aria-label": t("ariaLabels.sortingAmount") }}
+                />
+              }
               label={
                 <Box id="sort-psp-list-drawer-order-by-amount">
                   <Typography variant="body1">

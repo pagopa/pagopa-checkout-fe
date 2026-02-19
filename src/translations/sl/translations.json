@@ -16,7 +16,10 @@
     "informationLink": "Izvedite več o kampanji",
     "languageMenu": "Nastavljen jezik",
     "loading": "Nalaganje",
-    "applySorting": "Uporabi izbrani vrstni red"
+    "applySorting": "Uporabi izbrani vrstni red",
+    "sortingDefault": "Privzeto razvrščanje",
+    "sortingName": "Razvrščanje po imenu",
+    "sortingAmount": "Razvrščanje po znesku"
   },
   "cancelledPage": {
     "body": "Postopek je bil preklican",
@@ -431,11 +434,11 @@
     "sort": "Razvrsti",
     "drawer": {
       "sorting": {
-        "default": "Naključni vrstni red",
+        "default": "Privzeto",
         "name": "Po imenu",
-        "amount": "Od najnižjega do najvišjega zneska"
+        "amount": "Po znesku"
       },
-      "showResults": "Prikaži rezultate"
+      "showResults": "Uporabi"
     },
     "myBankAlertTitle": "Ne najdete svoje banke?",
     "myBankAlertBody": "Ne skrbite: v naslednjih korakih jo boste morali izbrati."

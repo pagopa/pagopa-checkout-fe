@@ -16,7 +16,10 @@
     "informationLink": "To learn more about the campaign",
     "languageMenu": "Selected language",
     "loading": "Loading",
-    "applySorting": "Apply selected order"
+    "applySorting": "Apply selected order",
+    "sortingDefault": "Default order",
+    "sortingName": "Order by name",
+    "sortingAmount": "Order by amount"
   },
   "cancelledPage": {
     "body": "The operation was canceled",
@@ -431,11 +434,11 @@
     "sort": "Sort",
     "drawer": {
       "sorting": {
-        "default": "Random order",
+        "default": "Default",
         "name": "By name",
-        "amount": "Lowest to highest amount"
+        "amount": "By amount"
       },
-      "showResults": "Show results"
+      "showResults": "Apply"
     }
   },
   "paymentQrPage": {

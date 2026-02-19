@@ -16,7 +16,10 @@
     "informationLink": "Per saperne di più sulla campagna di",
     "languageMenu": "Lingua impostata",
     "loading": "Caricamento",
-    "applySorting": "Applica l’ordine selezionato"
+    "applySorting": "Applica l’ordine selezionato",
+    "sortingDefault": "Ordinamento Predefinito",
+    "sortingName": "Ordinamento Per nome",
+    "sortingAmount": "Ordinamento Per importo"
   },
   "cancelledPage": {
     "body": "L'operazione è stata annullata",
@@ -432,11 +435,11 @@
     "sort": "Ordina",
     "drawer": {
       "sorting": {
-        "default": "Ordine casuale",
+        "default": "Predefinito",
         "name": "Per nome",
-        "amount": "Dall’importo più basso al più alto"
+        "amount": "Per importo"
       },
-      "showResults": "Mostra risultati"
+      "showResults": "Applica"
     },
     "myBankAlertTitle": "Non trovi la tua banca?",
     "myBankAlertBody": "Non preoccuparti: dovrai selezionarla nei passaggi successivi."
