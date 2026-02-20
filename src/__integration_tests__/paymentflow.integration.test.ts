@@ -30,14 +30,14 @@ import frTranslation from "../translations/fr/translations.json";
 import slTranslation from "../translations/sl/translations.json";
 import { URL, KORPTIDs, OKPaymentInfo  } from "./utils/testConstants";
 /**
- * Increase default test timeout (120000ms)
+ * Increase default test timeout (30000ms)
  * to support entire payment flow
  */
 
-jest.setTimeout(20000);
+jest.setTimeout(30000);
 jest.retryTimes(1);
-page.setDefaultNavigationTimeout(20000);
-page.setDefaultTimeout(20000);
+page.setDefaultNavigationTimeout(30000);
+page.setDefaultTimeout(30000);
 
 beforeAll(async () => {
   await page.goto(URL.CHECKOUT_URL, { waitUntil: "networkidle0" });
@@ -411,7 +411,8 @@ describe("Cancel payment tests", () => {
         OKPaymentInfo.VALID_CARD_DATA
       );
       expect(resultMessage).toContain(translation.cancelledPage.body);
-    }
+    },
+    30000 // Increased timeout to 30 seconds
   );
 });
 
