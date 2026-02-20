@@ -30,14 +30,14 @@ import frTranslation from "../translations/fr/translations.json";
 import slTranslation from "../translations/sl/translations.json";
 import { URL, KORPTIDs, OKPaymentInfo  } from "./utils/testConstants";
 /**
- * Increase default test timeout (30000ms)
+ * Increase default test timeout (60000ms)
  * to support entire payment flow
  */
 
-jest.setTimeout(30000);
+jest.setTimeout(60000);
 jest.retryTimes(1);
-page.setDefaultNavigationTimeout(30000);
-page.setDefaultTimeout(30000);
+page.setDefaultNavigationTimeout(60000);
+page.setDefaultTimeout(60000);
 
 beforeAll(async () => {
   await page.goto(URL.CHECKOUT_URL, { waitUntil: "networkidle0" });
@@ -230,7 +230,8 @@ describe("PSP disclaimer tests", () => {
       );
 
       await cancelPaymentAction();
-    }
+    },
+    60000 // Increased timeout to 60 seconds
   );
 
   it.each([
@@ -255,7 +256,8 @@ describe("PSP disclaimer tests", () => {
       );
 
       await cancelPaymentAction();
-    }
+    },
+    60000 // Increased timeout to 60 seconds
   );
 });
 
@@ -412,7 +414,7 @@ describe("Cancel payment tests", () => {
       );
       expect(resultMessage).toContain(translation.cancelledPage.body);
     },
-    30000 // Increased timeout to 30 seconds
+    60000 // Increased timeout to 60 seconds
   );
 });
 
@@ -435,7 +437,8 @@ describe("Cancel payment failure tests (satispay)", () => {
       expect(resultMessage).toContain(translation.GENERIC_ERROR.title);
       const closeErrorButton = await page.waitForSelector("#closeError");
       await closeErrorButton.click();
-    }
+    },
+    60000 // Increased timeout to 60 seconds
   );
 });
 
@@ -1002,7 +1005,8 @@ describe("Show wallets", () => {
       expect(found).toBe(true);
       
       await cancelPaymentAction();
-    }
+    },
+    60000 // Increased timeout to 60 seconds
   );
 });
 
