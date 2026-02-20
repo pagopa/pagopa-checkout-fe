@@ -101,8 +101,7 @@ export const checkPspDisclaimerBeforeAuthorizePayment = async (
   const pspDisclaimerSelectorById = "#pspDisclaimer";
   await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
   const disclaimerElement = await page.waitForSelector(
-    pspDisclaimerSelectorById,
-    { timeout: 30000 }
+    pspDisclaimerSelectorById
   );
   return await disclaimerElement.evaluate((el) => el.textContent);
 };
@@ -430,12 +429,12 @@ export const fillCardDataForm = async (cardData) => {
 
 export const cancelPaymentAction = async () => {
   const paymentCheckPageButtonCancel = await page.waitForSelector(
-    "#paymentCheckPageButtonCancel", {clickable: true, timeout: 30000}
+    "#paymentCheckPageButtonCancel", {clickable: true}
   );
   await paymentCheckPageButtonCancel.click();
-  const cancPayment = await page.waitForSelector("#confirm", {visible: true, timeout: 30000});
+  const cancPayment = await page.waitForSelector("#confirm", {visible: true});
   await cancPayment.click();
-  await page.waitForSelector("#redirect-button", { timeout: 30000 });
+  await page.waitForSelector("#redirect-button");
 };
 
 export const cancelPaymentOK = async (
@@ -444,36 +443,32 @@ export const cancelPaymentOK = async (
   email,
   cardData
 ) => {
-  const resultMessageXPath =
-    "#main_content > div > div > div > div.MuiBox-root.css-5vb4lz > div";
+  const resultMessageSelector = "#cancelledPageBody";
   await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
   const paymentCheckPageButtonCancel = await page.waitForSelector(
-    "#paymentCheckPageButtonCancel",
-    { timeout: 30000 }
+    "#paymentCheckPageButtonCancel"
   );
   await paymentCheckPageButtonCancel.click();
-  const cancPayment = await page.waitForSelector("#confirm", { timeout: 30000 });
+  const cancPayment = await page.waitForSelector("#confirm");
   await cancPayment.click();
-  await page.waitForNavigation({ timeout: 30000 });
+  await page.waitForNavigation();
   // this new timeout is needed for how react 18 handles the addition of animated content 
-  // to the page. Without it, the resultMessageXPath never resolves
+  // to the page. Without it, the resultMessageSelector never resolves
   await new Promise((r) => setTimeout(r, 200));
-  const message = await page.waitForSelector(resultMessageXPath, { timeout: 30000 });
+  const message = await page.waitForSelector(resultMessageSelector);
   return await message.evaluate((el) => el.textContent);
 };
 
 export const cancelPaymentKO = async (noticeCode, fiscalCode, email) => {
   await fillAndSubmitSatispayPayment(noticeCode, fiscalCode, email);
   const paymentCheckPageButtonCancel = await page.waitForSelector(
-    "#paymentCheckPageButtonCancel",
-    { timeout: 30000 }
+    "#paymentCheckPageButtonCancel"
   );
   await paymentCheckPageButtonCancel.click();
-  const cancPayment = await page.waitForSelector("#confirm", { timeout: 30000 });
+  const cancPayment = await page.waitForSelector("#confirm");
   await cancPayment.click();
   const message = await page.waitForSelector(
-    "#idTitleErrorModalPaymentCheckPage",
-    { timeout: 30000 }
+    "#idTitleErrorModalPaymentCheckPage"
   );
   return await message.evaluate((el) => el.textContent);
 };
@@ -568,8 +563,7 @@ export const showWallets = async (
   const pspDisclaimerSelectorById = "#pspDisclaimer";
   await fillAndSubmitWallet(noticeCode, fiscalCode, email, cardData);
   const disclaimerElement = await page.waitForSelector(
-    pspDisclaimerSelectorById,
-    { timeout: 30000 }
+    pspDisclaimerSelectorById
   );
   return await disclaimerElement.evaluate((el) => el.textContent);
 };
@@ -584,7 +578,6 @@ export const fillAndSubmitWallet = async (
   await fillPaymentNotificationForm(noticeCode, fiscalCode);
   const payNoticeBtn = await page.waitForSelector(payNoticeBtnSelector, {
     visible: true,
-    timeout: 30000
   });
   await payNoticeBtn.click();
   await fillEmailForm(email);
@@ -801,8 +794,7 @@ export const cancelWalletPayment = async (
   email,
   walletType
 ) => {
-  const resultMessageXPath =
-    "#main_content > div > div > div > div.MuiBox-root.css-5vb4lz > div";
+  const resultMessageSelector = "#cancelledPageBody";
   await selectWalletAndGetToCheckPage(noticeCode, fiscalCode, email, walletType);
   const paymentCheckPageButtonCancel = await page.waitForSelector(
     "#paymentCheckPageButtonCancel"
@@ -812,7 +804,7 @@ export const cancelWalletPayment = async (
   await cancPayment.click();
   await page.waitForNavigation();
   await new Promise((r) => setTimeout(r, 200));
-  const message = await page.waitForSelector(resultMessageXPath);
+  const message = await page.waitForSelector(resultMessageSelector);
   return await message.evaluate((el) => el.textContent);
 };
 

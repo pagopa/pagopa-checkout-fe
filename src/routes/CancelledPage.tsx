@@ -68,7 +68,7 @@ export default function CancelledPage() {
           style={{ width: "80px", height: "80px" }}
         />
         <Box mt={3} mb={3}>
-          <Typography variant="h6" component="h1">
+          <Typography variant="h6" component="h1" id="cancelledPageBody">
             {t("cancelledPage.body")}
           </Typography>
         </Box>
