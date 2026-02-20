@@ -20,7 +20,7 @@ export default function PageContainer(props: {
   return (
     <Box mt={3} mb={6} aria-live="polite">
       {!!props.title && (
-        <Typography variant="h4" component={"div"}>
+        <Typography variant="h4" component={"h1"}>
           {t(props.title)}
         </Typography>
       )}

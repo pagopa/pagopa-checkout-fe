@@ -2,9 +2,10 @@ import React, { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
-import { Box, Button, CircularProgress, Typography } from "@mui/material";
+import { Box, Button, CircularProgress } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import ReCAPTCHA from "react-google-recaptcha";
+import { ErrorBlock } from "../components/PageContent/ErrorBlock";
 import { onBrowserUnload } from "../utils/eventListeners";
 import PageContainer from "../components/PageContent/PageContainer";
 import ko from "../assets/images/response-umbrella.svg";
@@ -146,67 +147,36 @@ export default function AuthCallback() {
         </Box>
       )}
       {!loading && (
-        <Box
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          sx={{ mt: 15 }}
-        >
-          <img
-            src={ko}
-            alt="ko-image"
-            style={{ width: "80px", height: "80px" }}
-          />
-          <Box
-            mt={3}
-            mb={3}
-            gap={2}
-            display="flex"
-            flexDirection="column"
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            <Typography variant="h6" component="div" id="errorTitle">
-              {t("authCallbackPage.title")}
-            </Typography>
-            <Typography variant="body2" component="div" id="errorBody">
-              {t("authCallbackPage.body")}
-            </Typography>
-          </Box>
-          <Box
-            display={"flex"}
-            flexDirection={"column"}
-            gap={2}
-            sx={{ mt: 2 }}
-            alignItems={"center"}
-          >
-            {storedFeatureFlag && (
+        <ErrorBlock
+          imageSrc={ko}
+          imageAlt="ko"
+          title={t("authCallbackPage.title")}
+          body={t("authCallbackPage.body")}
+          testIdPrefix="auth-callback"
+          actions={
+            <>
+              {storedFeatureFlag && (
+                <Button
+                  type="button"
+                  variant="contained"
+                  id="auth-retry-button"
+                  onClick={handleClickOnLogin}
+                  style={{ height: "100%", minHeight: 45 }}
+                >
+                  {t("authCallbackPage.buttons.retry")}
+                </Button>
+              )}
               <Button
                 type="button"
-                variant="contained"
-                id="auth-retry-button"
-                onClick={handleClickOnLogin}
-                style={{
-                  height: "100%",
-                  minHeight: 45,
-                }}
+                variant="text"
+                onClick={returnToOriginPage}
+                style={{ height: "100%", minHeight: 45 }}
               >
-                {t("authCallbackPage.buttons.retry")}
+                {t("authCallbackPage.buttons.continueWithoutLogin")}
               </Button>
-            )}
-            <Button
-              type="button"
-              variant="text"
-              onClick={returnToOriginPage}
-              style={{
-                height: "100%",
-                minHeight: 45,
-              }}
-            >
-              {t("authCallbackPage.buttons.continueWithoutLogin")}
-            </Button>
-          </Box>
-        </Box>
+            </>
+          }
+        />
       )}
     </PageContainer>
   );
