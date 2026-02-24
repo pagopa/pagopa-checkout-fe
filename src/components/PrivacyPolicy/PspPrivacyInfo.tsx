@@ -13,7 +13,7 @@ const PrivacyLink = (props: {
       href={href}
       target="_blank"
       rel={rel}
-      sx={{ fontWeight: 600, textDecoration: "underline" }}
+      sx={{ fontWeight: 600 }}
     >
       {children}
     </Link>

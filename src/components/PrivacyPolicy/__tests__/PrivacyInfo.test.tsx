@@ -69,8 +69,9 @@ jest.mock("@mui/material", () => ({
     </div>
   ),
   Link: ({ children, href, target, rel, style, sx }: any) => {
-    // Combine style and sx props for testing
-    const combinedStyle = { ...(style || {}), ...(sx || {}) };
+    // Combine style and sx props for testing, and apply theme default
+    const themeDefault = { textDecoration: "underline" };
+    const combinedStyle = { ...themeDefault, ...(style || {}), ...(sx || {}) };
 
     return (
       <a

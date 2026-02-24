@@ -54,7 +54,11 @@ const themeLight = createTheme({
     MuiLink: {
       styleOverrides: {
         root: {
+          color: "#0073E6",
           textDecoration: "underline",
+          "&:hover": {
+            color: "#0062C3",
+          },
         },
       },
     },
@@ -205,7 +209,11 @@ const themeDark = createTheme({
     MuiLink: {
       styleOverrides: {
         root: {
+          color: "#0073E6",
           textDecoration: "underline",
+          "&:hover": {
+            color: "#0062C3",
+          },
         },
       },
     },

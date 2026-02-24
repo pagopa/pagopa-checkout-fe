@@ -33,10 +33,11 @@ export default function LanguageNativeSelect() {
     "& .MuiInputBase-input": {
       padding: 0,
       fontSize: theme.typography.caption.fontSize,
-      color: theme.palette.text.primary,
+      color: "#0073E6",
       height: "auto",
+      textDecoration: "underline",
       "&:hover": {
-        textDecoration: "underline",
+        color: "#0062C3",
       },
     },
   }));
@@ -51,7 +52,7 @@ export default function LanguageNativeSelect() {
         onChange={(e) => changeLanguageHandler(e.target.value)}
         sx={{
           "& .MuiNativeSelect-icon": {
-            color: theme.palette.text.primary,
+            color: "#0073E6",
           },
         }}
         aria-label={currentLanguageLabel(
