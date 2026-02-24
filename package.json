@@ -43,7 +43,6 @@
     "@pagopa/openapi-codegen-ts": "^13.2.0",
     "@reduxjs/toolkit": "^1.7.2",
     "@types/dotenv": "^8.2.0",
-    "@types/mixpanel-browser": "^2.35.6",
     "abort-controller": "^3.0.0",
     "card-validator": "^8.1.1",
     "formik": "^2.2.9",
