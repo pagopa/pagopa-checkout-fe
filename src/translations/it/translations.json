@@ -12,7 +12,7 @@
     "editCard": "Modifica dati carta",
     "editDonation": "Modifica ente donazione",
     "editPsp": "Modifica PSP",
-    "informationDialog": "Informazioni",
+    "informationDialog": "Informazione sull’importo",
     "informationLink": "Per saperne di più sulla campagna di",
     "languageMenu": "Lingua impostata",
     "loading": "Caricamento"
@@ -364,7 +364,7 @@
     "description": "Per saperne di più sui metodi e i costi applicati dai gestori aderenti, visita la pagina ",
     "incoming": "In arrivo",
     "others": "Altri metodi",
-    "showMore": "Mostra tutti",
+    "showMore": "Metodi non disponibili",
     "title": "Come vuoi pagare?",
     "filterLabel": "Cerca un metodo",
     "feeRange": "Commissione: da {{min}}  a {{max}}",
