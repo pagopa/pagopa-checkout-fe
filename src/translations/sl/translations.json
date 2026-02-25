@@ -215,7 +215,7 @@
     },
     "formErrors": {
       "invalid": "Vnesite veljaven elektronski naslov",
-      "notEqual": "Elektronska naslova se morata ujemati",
+      "notEqual": "E-poštna naslova se ne ujemata",
       "required": "Zahtevano polje"
     },
     "formFields": {
