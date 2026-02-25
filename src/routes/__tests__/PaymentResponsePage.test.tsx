@@ -4,6 +4,7 @@ import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import * as router from "react-router";
 import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { Cart } from "features/payment/models/paymentModel";
 import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders";
 import {
   clearStorage,
@@ -35,7 +36,6 @@ import {
   sessionPayment,
   cart,
 } from "./_model";
-import { Cart } from "features/payment/models/paymentModel";
 
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -405,17 +405,11 @@ describe("PaymentResponsePage — with cart", () => {
     );
 
     await waitFor(() => {
-      expect(
-        screen.getByText("paymentResponsePage.17.title")
-      ).toBeVisible();
+      expect(screen.getByText("paymentResponsePage.17.title")).toBeVisible();
     });
 
-    fireEvent.click(
-      screen.getByText("paymentResponsePage.buttons.continue")
-    );
+    fireEvent.click(screen.getByText("paymentResponsePage.buttons.continue"));
 
-    expect(window.location.replace).toHaveBeenCalledWith(
-      "http://waitingUrl"
-    );
+    expect(window.location.replace).toHaveBeenCalledWith("http://waitingUrl");
   });
 });
