@@ -15,7 +15,11 @@
     "informationDialog": "Informations sur le montant",
     "informationLink": "Pour en savoir plus sur la campagne de",
     "languageMenu": "Langue sélectionnée",
-    "loading": "Chargement en cours"
+    "loading": "Chargement en cours",
+    "applySorting": "Appliquer l’ordre sélectionné",
+    "sortingDefault": "Ordre par défaut",
+    "sortingName": "Ordre par nom",
+    "sortingAmount": "Ordre par montant"
   },
   "cancelledPage": {
     "body": "L'opération a été annulée",
@@ -166,7 +170,7 @@
       },
       "disclaimer": "Le montant est mis à jour automatiquement : vous payez toujours à temps, sans pénalités ni intérêts de retard."
     },
-    "main":{
+    "main": {
       "skipToContent": "Aller au contenu"
     }
   },
@@ -224,7 +228,7 @@
     },
     "title": "Saisir votre e-mail"
   },
-  "findOutMoreModal":{
+  "findOutMoreModal": {
     "title": "Que faire si le paiement échoue?",
     "section1Title": "1. Payez l’avis",
     "section1ContentRow1": "N’oubliez pas de payer l’avis avant les échéances fixées par l’organisme.",
@@ -330,7 +334,7 @@
     "disclaimer": {
       "cheaper": "Conseillé comme le moins cher",
       "yourCard": "Conseillé aux clients déjà inscrits",
-      "psp":"En continuant, vous acceptez les  <terms>Conditions générales d'utilisation</terms> et vous confirmez avoir lu la <privacy>Politique de confidentialité</privacy> de <psp>{{pspName}}</psp>"
+      "psp": "En continuant, vous acceptez les  <terms>Conditions générales d'utilisation</terms> et vous confirmez avoir lu la <privacy>Politique de confidentialité</privacy> de <psp>{{pspName}}</psp>"
     },
     "drawer": {
       "body": "Cette liste vous indique tous les opérateur compatibles avec votre moyen de paiement, même si vous ne faites pas partie de leurs clients.",
@@ -434,7 +438,7 @@
         "name": "Par nom",
         "amount": "Par montant"
       },
-      "showResults": "Afficher les résultats"
+      "showResults": "Appliquer"
     },
     "myBankAlertTitle": "Vous ne trouvez pas votre banque ?",
     "myBankAlertBody": "Pas d'inquiétude : vous pourrez la sélectionner lors des prochaines étapeshgh."
@@ -502,9 +506,9 @@
       "cancelButton": "Non, rester connecté"
     }
   },
-   "maintenancePage": {
+  "maintenancePage": {
     "title": "Nous travaillons pour vous",
-    "subtitle": "pagoPa n'est pas disponible pour le moment en raison d'une maintenance programmée."   ,
+    "subtitle": "pagoPa n'est pas disponible pour le moment en raison d'une maintenance programmée.",
     "closeButton": "Fermer",
     "detailsButton": "En savoir plus"
   },

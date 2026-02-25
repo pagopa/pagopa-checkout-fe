@@ -15,6 +15,9 @@ jest.mock("react-i18next", () => ({
         "paymentPspListPage.drawer.sorting.amount": "Order by Amount",
         "paymentPspListPage.drawer.showResults": "Apply",
         "ariaLabels.close": "Close",
+        "ariaLabels.sortingDefault": "Sorting Default",
+        "ariaLabels.sortingName": "Sorting Name",
+        "ariaLabels.sortingAmount": "Sorting Amount",
       };
       return translations[key] || key;
     },
@@ -75,6 +78,17 @@ describe("PaymentPspListSortingDrawer", () => {
     // Default option should be selected
     const defaultRadio = screen.getByLabelText("Default Order");
     expect(defaultRadio).toBeChecked();
+
+    // Check aria-labels
+    expect(
+      screen.getByRole("radio", { name: "Sorting Default" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("radio", { name: "Sorting Name" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("radio", { name: "Sorting Amount" })
+    ).toBeInTheDocument();
   });
 
   it("initializes with correct sorting type based on provided model - Name", () => {

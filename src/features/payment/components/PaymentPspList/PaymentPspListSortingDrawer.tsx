@@ -11,7 +11,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { CustomDrawer } from "../../../../components/modals/CustomDrawer";
 import { useSmallDevice } from "../../../../hooks/useSmallDevice";
-import { PspOrderingModel } from "./../../../../utils/SortUtil";
+import { PspOrderingModel } from "../../../../utils/SortUtil";
 
 // Define an enum for the sorting type
 export enum PaymentPspSortingType {
@@ -120,7 +120,11 @@ export const PaymentPspListSortingDrawer = (props: {
           >
             <FormControlLabel
               value={PaymentPspSortingType.DEFAULT}
-              control={<Radio />}
+              control={
+                <Radio
+                  inputProps={{ "aria-label": t("ariaLabels.sortingDefault") }}
+                />
+              }
               label={
                 <Box id="sort-psp-list-drawer-default-order">
                   <Typography variant="body1">
@@ -133,7 +137,11 @@ export const PaymentPspListSortingDrawer = (props: {
 
             <FormControlLabel
               value={PaymentPspSortingType.NAME}
-              control={<Radio />}
+              control={
+                <Radio
+                  inputProps={{ "aria-label": t("ariaLabels.sortingName") }}
+                />
+              }
               label={
                 <Box id="sort-psp-list-drawer-order-by-name">
                   <Typography variant="body1">
@@ -146,7 +154,11 @@ export const PaymentPspListSortingDrawer = (props: {
 
             <FormControlLabel
               value={PaymentPspSortingType.AMOUNT}
-              control={<Radio />}
+              control={
+                <Radio
+                  inputProps={{ "aria-label": t("ariaLabels.sortingAmount") }}
+                />
+              }
               label={
                 <Box id="sort-psp-list-drawer-order-by-amount">
                   <Typography variant="body1">
@@ -168,6 +180,7 @@ export const PaymentPspListSortingDrawer = (props: {
           fullWidth
           onClick={handleApply}
           sx={{ mt: 2 }}
+          aria-label={t("ariaLabels.applySorting")}
         >
           {t("paymentPspListPage.drawer.showResults")}
         </Button>
