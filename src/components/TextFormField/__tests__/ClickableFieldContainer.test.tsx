@@ -1,6 +1,7 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
+import userEvent from "@testing-library/user-event";
 import ClickableFieldContainer from "../ClickableFieldContainer";
 
 // Mock the react-i18next hook
@@ -15,6 +16,9 @@ describe("ClickableFieldContainer", () => {
     title: "Test Title",
     onClick: jest.fn(),
   };
+
+  const getContainerButton = () =>
+    screen.getByRole("button", { name: /Test Title/i });
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -47,26 +51,24 @@ describe("ClickableFieldContainer", () => {
   it("calls onClick when clicked and clickable is true", () => {
     render(<ClickableFieldContainer {...mockProps} clickable={true} />);
 
-    const container = screen.getByText("Test Title").closest(".MuiBox-root");
-    fireEvent.click(container!);
+    fireEvent.click(getContainerButton());
 
     expect(mockProps.onClick).toHaveBeenCalledTimes(1);
   });
 
   it("does not call onClick when clicked and clickable is false", () => {
     render(<ClickableFieldContainer {...mockProps} clickable={false} />);
-
-    const container = screen.getByText("Test Title").closest(".MuiBox-root");
-    fireEvent.click(container!);
-
+    fireEvent.click(getContainerButton());
     expect(mockProps.onClick).not.toHaveBeenCalled();
   });
 
-  it("calls onClick when Enter key is pressed and clickable is true", () => {
+  it("calls onClick when Enter key is pressed and clickable is true", async () => {
+    const user = userEvent.setup();
     render(<ClickableFieldContainer {...mockProps} clickable={true} />);
 
-    const container = screen.getByText("Test Title").closest(".MuiBox-root");
-    fireEvent.keyDown(container!, { key: "Enter" });
+    const button = getContainerButton();
+    button.focus();
+    await user.keyboard("{Enter}");
 
     expect(mockProps.onClick).toHaveBeenCalledTimes(1);
   });
@@ -74,8 +76,8 @@ describe("ClickableFieldContainer", () => {
   it("does not call onClick when other keys are pressed", () => {
     render(<ClickableFieldContainer {...mockProps} clickable={true} />);
 
-    const container = screen.getByText("Test Title").closest(".MuiBox-root");
-    fireEvent.keyDown(container!, { key: "Space" });
+    const button = getContainerButton();
+    fireEvent.keyDown(button, { key: "Escape" });
 
     expect(mockProps.onClick).not.toHaveBeenCalled();
   });
@@ -143,8 +145,7 @@ describe("ClickableFieldContainer", () => {
   it("sets tabIndex to 0 when clickable is true", () => {
     render(<ClickableFieldContainer {...mockProps} clickable={true} />);
 
-    const container = document.querySelector(".MuiBox-root");
-    expect(container).toHaveAttribute("tabindex", "0");
+    expect(getContainerButton()).toHaveAttribute("tabindex", "0");
   });
 
   it("does not set tabIndex when clickable is false", () => {
@@ -157,8 +158,7 @@ describe("ClickableFieldContainer", () => {
   it("renders with data-qaid attribute", () => {
     render(<ClickableFieldContainer {...mockProps} dataTestId="test-id" />);
 
-    const container = document.querySelector(".MuiBox-root");
-    expect(container).toHaveAttribute("data-qaid", "test-id");
+    expect(getContainerButton()).toHaveAttribute("data-qaid", "test-id");
   });
 
   it("renders with data-qalabel attribute", () => {
@@ -166,8 +166,7 @@ describe("ClickableFieldContainer", () => {
       <ClickableFieldContainer {...mockProps} dataTestLabel="test-label" />
     );
 
-    const container = document.querySelector(".MuiBox-root");
-    expect(container).toHaveAttribute("data-qalabel", "test-label");
+    expect(getContainerButton()).toHaveAttribute("data-qalabel", "test-label");
   });
 
   it("renders without title", () => {
