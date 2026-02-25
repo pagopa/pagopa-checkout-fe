@@ -12,7 +12,7 @@
     "editCard": "Karteninformationen ändern",
     "editDonation": "Spendenorganisation ändern",
     "editPsp": "Zahlungsdienstleister ändern",
-    "informationDialog": "Informationen",
+    "informationDialog": "Informationen über den zu zahlenden Betrag",
     "informationLink": "Weitere Informationen zum Programm",
     "languageMenu": "Eingestellte Sprache",
     "loading": "Laden..."
@@ -363,7 +363,7 @@
     "description": "Mehr über die Methoden und Gebühren der teilnehmenden Anbieter erfährst du auf der Seite ",
     "incoming": "Eingang",
     "others": "Sonstige Methoden",
-    "showMore": "Alle zeigen",
+    "showMore": "Nicht verfügbare Methoden",
     "title": "Wie möchtest du zahlen?",
     "feeRange": "Gebühr: von {{min}}  bis {{max}}",
     "feeSingle": "Gebühr: {{value}}",
