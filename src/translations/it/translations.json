@@ -220,7 +220,7 @@
     },
     "formErrors": {
       "invalid": "Inserisci un indirizzo email valido",
-      "notEqual": "Gli indirizzi email devono coincidere",
+      "notEqual": "Gli indirizzi email non coincidono",
       "required": "Campo obbligatorio"
     },
     "formFields": {
