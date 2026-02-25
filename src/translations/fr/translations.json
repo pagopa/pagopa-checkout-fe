@@ -215,7 +215,7 @@
     },
     "formErrors": {
       "invalid": "Saisir une adresse e-mail valide",
-      "notEqual": "Les adresses e-mail saisies ne correspondent pas",
+      "notEqual": "Les adresses e-mail ne correspondent pas",
       "required": "Champ obligatoire"
     },
     "formFields": {

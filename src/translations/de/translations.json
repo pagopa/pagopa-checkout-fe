@@ -215,7 +215,7 @@
     },
     "formErrors": {
       "invalid": "Gib eine gültige E-Mail-Adresse ein",
-      "notEqual": "Die eingegebenen E-Mail-Adressen stimmen nicht überein.",
+      "notEqual": "Die E-Mail-Adressen stimmen nicht überein",
       "required": "Pflichtfeld"
     },
     "formFields": {

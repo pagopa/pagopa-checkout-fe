@@ -215,7 +215,7 @@
     },
     "formErrors": {
       "invalid": "Enter a valid email address",
-      "notEqual": "The email addresses entered do not match",
+      "notEqual": "The email addresses do not match",
       "required": "Required field"
     },
     "formFields": {
