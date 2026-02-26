@@ -205,6 +205,18 @@ jest.mock("../../../utils/mixpanel/mixpanelTracker", () => ({
   getPaymentInfoFromSessionStorage: jest.fn(() => paymentInfo),
 }));
 
+const getDialogAlert = () => {
+  const dialogs = screen
+    .getAllByRole("alert")
+    .filter((el) => el.classList.contains("MuiDialog-root"));
+  if (dialogs.length !== 1) {
+    throw new Error(
+      `Expected exactly 1 MuiDialog-root alert, got ${dialogs.length}`
+    );
+  }
+  return dialogs[0];
+};
+
 describe("ErrorModal Component", () => {
   const mockOnClose = jest.fn();
   const mockOnRetry = jest.fn();
@@ -249,7 +261,9 @@ describe("ErrorModal Component", () => {
     render(<ErrorModal error={errorCode} open={true} onClose={mockOnClose} />);
 
     // Check if error details are shown
-    const alertElement = screen.getByRole("alert");
+    const dialog = getDialogAlert();
+    const alertElement = within(dialog).getByRole("alert");
+
     expect(alertElement).toBeInTheDocument();
 
     // Look for the error code within the alert
@@ -404,7 +418,8 @@ describe("ErrorModal Component", () => {
     );
 
     // Check if error ID is applied correctly
-    const alertElement = screen.getByRole("alert");
+    const dialog = getDialogAlert();
+    const alertElement = within(dialog).getByRole("alert");
     const errorTitle = within(alertElement).getByText("INVALID_CARD_NUMBER");
     expect(errorTitle.id).toBe("custom-error-id");
   });
@@ -440,7 +455,8 @@ describe("ErrorModal Component", () => {
     expect(screen.getByText("ErrorCodeDescription")).toBeInTheDocument();
 
     // Check if there's an alert with no title content
-    const alertElement = screen.getByRole("alert");
+    const dialog = getDialogAlert();
+    const alertElement = within(dialog).getByRole("alert");
     const emptyAlertTitle = within(alertElement).queryByRole("heading");
 
     // If the component renders an empty heading for the alert title,
