@@ -4,6 +4,7 @@ import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import * as router from "react-router";
 import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { Cart } from "features/payment/models/paymentModel";
 import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders";
 import {
   clearStorage,
@@ -358,4 +359,57 @@ describe("PaymentResponsePage — with cart", () => {
       });
     }
   );
+});
+
+describe("PaymentResponsePage — with cart", () => {
+  beforeEach(() => {
+    jest.spyOn(router, "useNavigate").mockReset();
+    jest.spyOn(router, "useNavigate").mockImplementation(() => navigate);
+    (getSessionItem as jest.Mock).mockImplementation(
+      mockGetSessionItemWithCart
+    );
+  });
+
+  const cartWithWaiting: Cart = {
+    ...cart,
+    returnUrls: {
+      ...cart.returnUrls,
+      returnWaitingUrl: "http://waitingUrl",
+    },
+  };
+
+  it("redirects to waitingUrl when outcome is TAKING_CHARGE", async () => {
+    (getSessionItem as jest.Mock).mockImplementation((key) => {
+      if (key === SessionItems.cart) {
+        return cartWithWaiting;
+      }
+      return undefined;
+    });
+
+    const transactionOutcomeInfo = {
+      outcome: Number(ViewOutcomeEnum.TAKING_CHARGE),
+      isFinalStatus: true,
+      totalAmount: 1000,
+      fees: 100,
+    };
+
+    (callServices as jest.Mock).mockImplementation(async (cb: any) => {
+      cb(transactionOutcomeInfo);
+      return Promise.resolve();
+    });
+
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentResponsePage />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText("paymentResponsePage.17.title")).toBeVisible();
+    });
+
+    fireEvent.click(screen.getByText("paymentResponsePage.buttons.continue"));
+
+    expect(window.location.replace).toHaveBeenCalledWith("http://waitingUrl");
+  });
 });
