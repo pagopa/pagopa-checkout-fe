@@ -9,18 +9,25 @@ interface PSPGridProps {
   currentSelectedPsp?: Bundle;
 }
 
+const getPspValue = (psp: Bundle, index: number) =>
+  String(psp.idPsp ?? `pspItem-${index}`);
+
 export const PaymentPSPListGrid = ({
   pspList,
   onPspSelected,
   currentSelectedPsp,
 }: PSPGridProps) => {
-  const selectedId = currentSelectedPsp?.idPsp ?? "";
+  const selectedId =
+    currentSelectedPsp != null ? String(currentSelectedPsp.idPsp ?? "") : "";
+
   return (
     <RadioGroup
       name="psp-selector"
       value={selectedId}
       onChange={(_, value) => {
-        const found = pspList.find((p) => p.idPsp === value);
+        const found = pspList.find(
+          (p, index) => getPspValue(p, index) === value
+        );
         if (found) {
           onPspSelected(found);
         }
@@ -31,7 +38,8 @@ export const PaymentPSPListGrid = ({
           <PaymentPSPListGridItem
             key={pspItem.idPsp ?? `pspItem-${index}`}
             pspItem={pspItem}
-            isSelected={pspItem.idPsp === selectedId}
+            radioValue={getPspValue(pspItem, index)}
+            isSelected={getPspValue(pspItem, index) === selectedId}
           />
         ))}
       </Grid>

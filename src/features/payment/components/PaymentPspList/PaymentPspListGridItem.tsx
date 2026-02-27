@@ -14,15 +14,6 @@ import { moneyFormat } from "../../../../utils/form/formatters";
 import pspUserOnUsIcon from "../../../../assets/images/psp-user-on-us.svg";
 
 const styles = {
-  pspListItem: {
-    width: "100%",
-    borderRadius: "8px",
-    borderWidth: "1px",
-    padding: "16px",
-    marginTop: "10px",
-    borderStyle: "solid",
-    cursor: "pointer",
-  },
   alreadyClient: {
     color: "#5517E3",
   },
@@ -37,57 +28,75 @@ const styles = {
 interface PSPListItemProps {
   pspItem: Bundle;
   isSelected: boolean;
+  radioValue: string;
 }
 
 export const PaymentPSPListGridItem = ({
   pspItem,
   isSelected,
+  radioValue,
 }: PSPListItemProps) => {
   const { palette } = useTheme();
   const { t } = useTranslation();
 
-  const id = String(pspItem.idPsp);
+  const inputId = `psp-radio-${radioValue}`;
 
   return (
     <Grid item xs={12}>
       <FormControlLabel
+        value={radioValue}
+        labelPlacement="start"
+        tabIndex={0}
         sx={{
           m: 0,
+          mt: "10px",
           width: "100%",
           display: "flex",
-          alignItems: "stretch",
+          alignItems: "center",
+          justifyContent: "space-between",
+          borderRadius: "8px",
+          borderWidth: "1px",
+          borderStyle: "solid",
+          borderColor: isSelected ? palette.primary.main : palette.divider,
+          padding: "16px",
+          cursor: "pointer",
+
+          "&:hover": {
+            color: palette.primary.dark,
+            borderColor: "currentColor",
+          },
+
+          "&:focus-within": {
+            outline: `2px solid ${palette.primary.main}`,
+            outlineOffset: 2,
+          },
+
           "& .MuiFormControlLabel-label": {
             width: "100%",
             display: "block",
           },
         }}
-        value={id}
         control={
           <Radio
+            tabIndex={-1}
             inputProps={{
-              id,
+              id: inputId,
               "aria-label": pspItem.pspBusinessName ?? "PSP",
             }}
-            icon={<RadioButtonUnchecked />}
-            checkedIcon={<RadioButtonChecked />}
+            icon={
+              <RadioButtonUnchecked data-testid="psp-radio-button-unchecked" />
+            }
+            checkedIcon={
+              <RadioButtonChecked data-testid="psp-radio-button-checked" />
+            }
             sx={{
-              display: "none",
+              ml: 2,
+              alignSelf: "center",
             }}
           />
         }
         label={
-          <Grid
-            container
-            sx={{
-              ...styles.pspListItem,
-              borderColor: palette.divider,
-              "&:hover": {
-                color: palette.primary.dark,
-                borderColor: "currentColor",
-              },
-            }}
-          >
-            {/* Left side */}
+          <Grid container>
             <Grid item xs={9}>
               <Box>
                 <Typography variant="sidenav" className="pspFeeName">
@@ -98,7 +107,8 @@ export const PaymentPSPListGridItem = ({
                   <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                     <img
                       src={pspUserOnUsIcon}
-                      alt="Icona psp on us"
+                      alt=""
+                      aria-hidden="true"
                       width={24}
                       height="auto"
                     />
@@ -110,7 +120,6 @@ export const PaymentPSPListGridItem = ({
               </Box>
             </Grid>
 
-            {/* Right side */}
             <Grid item xs={3} sx={{ ...styles.priceSelectionSection }}>
               <Typography
                 className="pspFeeValue"
@@ -120,14 +129,6 @@ export const PaymentPSPListGridItem = ({
               >
                 {moneyFormat(pspItem.taxPayerFee || 0)}
               </Typography>
-
-              {isSelected ? (
-                <RadioButtonChecked style={{ color: palette.primary.main }} />
-              ) : (
-                <RadioButtonUnchecked
-                  style={{ color: palette.action.active }}
-                />
-              )}
             </Grid>
           </Grid>
         }
