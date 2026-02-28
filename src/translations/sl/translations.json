@@ -342,7 +342,9 @@
         "amount": "Provizija",
         "name": "Ponudnik"
       },
-      "title": "Pri katerem ponudniku želite plačevati?"
+      "title": "Pri katerem ponudniku želite plačevati?",
+      "pspNameAccessibilityLabel": "Ordina in ordine alfabetico per nome del gestore",
+      "taxFeeAccessibilityLabel": "Ordina per l'importo di commissione più basso"
     },
     "email": "Rezultat pošlji na:",
     "modal": {
