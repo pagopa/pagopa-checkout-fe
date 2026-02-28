@@ -1005,4 +1005,3 @@ describe("Show wallets", () => {
   );
 });
 
-

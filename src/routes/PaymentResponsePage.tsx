@@ -213,10 +213,12 @@ export default function PaymentResponsePage() {
             <img
               src={outcomeMessage?.icon}
               alt="cancelled"
+              aria-hidden="true"
               style={{ width: "80px", height: "80px" }}
             />
             <Typography
               variant="h6"
+              component="h1"
               py={3}
               textAlign="center"
               id="responsePageMessageTitle"
