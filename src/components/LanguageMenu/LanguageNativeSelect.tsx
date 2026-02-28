@@ -25,8 +25,12 @@ export default function LanguageNativeSelect() {
     "& .MuiInputBase-input": {
       padding: 0,
       fontSize: theme.typography.caption.fontSize,
-      color: theme.palette.text.primary,
+      color: "#0073E6",
       height: "auto",
+      textDecoration: "underline",
+      "&:hover": {
+        color: "#0062C3",
+      }, 
       "&:focus": {
         fontWeight: "bold",
         outline: `2px solid ${theme.palette.text.primary}`,
@@ -44,7 +48,7 @@ export default function LanguageNativeSelect() {
         onChange={(e) => changeLanguageHandler(e.target.value)}
         sx={{
           "& .MuiNativeSelect-icon": {
-            color: theme.palette.text.primary,
+            color: "#0073E6",
           },
         }}
         inputProps={{

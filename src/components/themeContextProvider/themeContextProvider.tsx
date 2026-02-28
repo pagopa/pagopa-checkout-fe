@@ -51,6 +51,17 @@ const themeLight = createTheme({
         },
       },
     },
+    MuiLink: {
+      styleOverrides: {
+        root: {
+          color: "#0073E6",
+          textDecoration: "underline",
+          "&:hover": {
+            color: "#0062C3",
+          },
+        },
+      },
+    },
   },
 });
 
@@ -191,6 +202,17 @@ const themeDark = createTheme({
         root: {
           "& .MuiSvgIcon-root.MuiTableSortLabel-icon": {
             color: darkTheme.palette.common.white,
+          },
+        },
+      },
+    },
+    MuiLink: {
+      styleOverrides: {
+        root: {
+          color: "#0073E6",
+          textDecoration: "underline",
+          "&:hover": {
+            color: "#0062C3",
           },
         },
       },
