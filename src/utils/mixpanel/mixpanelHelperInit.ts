@@ -1,4 +1,4 @@
-import mp, { get_distinct_id, init, track } from "mixpanel-browser";
+import mp from "mixpanel-browser";
 import * as E from "fp-ts/Either";
 import { pipe } from "fp-ts/function";
 import { getConfigOrThrow } from "../config/config";
@@ -17,7 +17,7 @@ const mixpanelInit = function (): void {
   } else {
     try {
       // initialize mixpanel retrieving info from local storage such as device id and distinct id
-      init("c3db8f517102d7a7ebd670c9da3e05c4", {
+      mp.init("c3db8f517102d7a7ebd670c9da3e05c4", {
         api_host: "https://api-eu.mixpanel.com",
         persistence: "localStorage",
         persistence_name: "app",
@@ -64,7 +64,7 @@ export const mixpanel = {
           );
           return;
         }
-        track(event_name, {
+        mp.track(event_name, {
           ...properties,
           ...(ENV === "UAT" && { environment: "UAT" }),
         });
@@ -78,7 +78,7 @@ export const mixpanel = {
 
 const isMixpanelReady = (): boolean =>
   pipe(
-    E.tryCatch(() => get_distinct_id(), E.toError),
+    E.tryCatch(() => mp.get_distinct_id(), E.toError),
     E.map((id): boolean => {
       const hasDistinctId = typeof id === "string" && id.length > 0;
       const mixpanelInitialized =
