@@ -18,14 +18,14 @@ jest.mock("../PaymentPspListGridItem", () => {
         return actual.PaymentPSPListGridItem(props);
       }
 
-      const { pspItem, isSelected } = props;
+      const { pspItem, isSelected, radioValue } = props;
       return (
         <label>
           <input
             type="radio"
             name="psp-selector"
             aria-label={pspItem.pspBusinessName}
-            value={String(pspItem.idPsp ?? "")}
+            value={radioValue}
             defaultChecked={isSelected}
           />
           <span data-selected={isSelected}>{pspItem.pspBusinessName}</span>
@@ -34,6 +34,19 @@ jest.mock("../PaymentPspListGridItem", () => {
     }),
   };
 });
+
+jest.mock("react-i18next", () => ({
+  useTranslation: () => ({ t: (key: string) => key }),
+}));
+
+jest.mock("../../../../../utils/form/formatters", () => ({
+  moneyFormat: (value: number) => `€ ${value.toFixed(2)}`,
+}));
+
+jest.mock(
+  "../../../../../assets/images/psp-user-on-us.svg",
+  () => "pspUserOnUsIcon"
+);
 
 const theme = createTheme();
 
@@ -235,5 +248,33 @@ describe("PaymentPSPListGrid", () => {
         expect.anything()
       );
     });
+  });
+
+  it("allows selecting a PSP with keyboard (Enter/Space) when the row is focused", async () => {
+    useRealGridItemRef.current = true;
+    const user = userEvent.setup();
+
+    const Wrapper = () => {
+      const [sel, setSel] = React.useState<any>(undefined);
+      return (
+        <ThemeProvider theme={theme}>
+          <PaymentPSPListGrid
+            pspList={mockPspList}
+            currentSelectedPsp={sel}
+            onPspSelected={setSel}
+          />
+        </ThemeProvider>
+      );
+    };
+
+    render(<Wrapper />);
+
+    await user.tab();
+    await user.keyboard("{Enter}");
+    expect(screen.getByLabelText("PSP One")).toBeChecked();
+
+    await user.tab();
+    await user.keyboard(" ");
+    expect(screen.getByLabelText("PSP Two")).toBeChecked();
   });
 });

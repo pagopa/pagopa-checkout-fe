@@ -17,8 +17,16 @@ export const PaymentPSPListGrid = ({
   onPspSelected,
   currentSelectedPsp,
 }: PSPGridProps) => {
-  const selectedId =
-    currentSelectedPsp != null ? String(currentSelectedPsp.idPsp ?? "") : "";
+  const selectedId = (() => {
+    if (currentSelectedPsp == null) {
+      return "";
+    }
+    if (currentSelectedPsp.idPsp != null) {
+      return String(currentSelectedPsp.idPsp);
+    }
+    const idx = pspList.indexOf(currentSelectedPsp);
+    return idx >= 0 ? getPspValue(currentSelectedPsp, idx) : "";
+  })();
 
   return (
     <RadioGroup

@@ -76,6 +76,16 @@ export const PaymentPSPListGridItem = ({
             display: "block",
           },
         }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            (
+              e.currentTarget.querySelector(
+                'input[type="radio"]'
+              ) as HTMLInputElement | null
+            )?.click();
+          }
+        }}
         control={
           <Radio
             tabIndex={-1}
@@ -93,6 +103,7 @@ export const PaymentPSPListGridItem = ({
               ml: 2,
               alignSelf: "center",
             }}
+            checked={isSelected}
           />
         }
         label={
@@ -109,6 +120,7 @@ export const PaymentPSPListGridItem = ({
                       src={pspUserOnUsIcon}
                       alt=""
                       aria-hidden="true"
+                      data-testid="psp-on-us-icon"
                       width={24}
                       height="auto"
                     />

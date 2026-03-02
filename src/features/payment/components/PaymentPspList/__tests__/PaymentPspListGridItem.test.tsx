@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, fireEvent, within } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { ThemeProvider, createTheme } from "@mui/material";
 import { PaymentPSPListGridItem } from "../PaymentPspListGridItem";
@@ -10,14 +10,9 @@ jest.mock("@mui/material", () => {
     ...originalModule,
     useTheme: jest.fn(() => ({
       palette: {
-        primary: {
-          main: "#007bff",
-          dark: "#0056b3",
-        },
+        primary: { main: "#007bff", dark: "#0056b3" },
         divider: "#cccccc",
-        action: {
-          active: "#888888",
-        },
+        action: { active: "#888888" },
       },
     })),
   };
@@ -26,46 +21,30 @@ jest.mock("@mui/material", () => {
 jest.mock("@mui/icons-material/RadioButtonChecked", () => ({
   __esModule: true,
   default: function MockRadioButtonChecked(props: any) {
-    return (
-      <div
-        data-testid="psp-radio-button-checked"
-        id="psp-radio-button-checked"
-        {...props}
-      />
-    );
+    return <div data-testid="psp-radio-button-checked" {...props} />;
   },
 }));
 
 jest.mock("@mui/icons-material/RadioButtonUnchecked", () => ({
   __esModule: true,
   default: function MockRadioButtonUnchecked(props: any) {
-    return (
-      <div
-        data-testid="psp-radio-button-unchecked"
-        id="psp-radio-button-unchecked"
-        {...props}
-      />
-    );
+    return <div data-testid="psp-radio-button-unchecked" {...props} />;
   },
 }));
 
 jest.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
+  useTranslation: () => ({ t: (key: string) => key }),
 }));
 
 jest.mock("../../../../../utils/form/formatters", () => ({
   moneyFormat: (value: number) => `€ ${value.toFixed(2)}`,
 }));
 
-// Mock static assets
 jest.mock(
   "../../../../../assets/images/psp-user-on-us.svg",
   () => "pspUserOnUsIcon"
 );
 
-// Sample PSP item data
 const mockPspItem = {
   idPsp: "psp123",
   pspBusinessName: "Test PSP",
@@ -79,7 +58,11 @@ describe("PaymentPSPListGridItem", () => {
   it("renders PSP item details correctly", () => {
     render(
       <ThemeProvider theme={theme}>
-        <PaymentPSPListGridItem isSelected={false} pspItem={mockPspItem} />
+        <PaymentPSPListGridItem
+          isSelected={false}
+          pspItem={mockPspItem}
+          radioValue={String(mockPspItem.idPsp)}
+        />
       </ThemeProvider>
     );
 
@@ -87,85 +70,38 @@ describe("PaymentPSPListGridItem", () => {
     expect(
       screen.getByText("paymentPspListPage.alreadyClient")
     ).toBeInTheDocument();
-    expect(screen.getByText("€ 2.50")).toBeInTheDocument(); // Formatted fee
-    expect(screen.getByAltText("Icona psp on us")).toBeInTheDocument();
+    expect(screen.getByText("€ 2.50")).toBeInTheDocument();
+    expect(screen.getByTestId("psp-on-us-icon")).toBeInTheDocument();
   });
 
   it("displays checked radio button when isSelected is true", () => {
     render(
       <ThemeProvider theme={theme}>
-        <PaymentPSPListGridItem pspItem={mockPspItem} isSelected={true} />
+        <PaymentPSPListGridItem
+          pspItem={mockPspItem}
+          isSelected={true}
+          radioValue={String(mockPspItem.idPsp)}
+        />
       </ThemeProvider>
     );
 
-    const priceContainer = screen.getByText("€ 2.50").parentElement!;
-    expect(
-      within(priceContainer).getByTestId("psp-radio-button-checked")
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("psp-radio-button-checked")).toBeInTheDocument();
   });
 
   it("displays unchecked radio button when isSelected is false", () => {
     render(
       <ThemeProvider theme={theme}>
-        <PaymentPSPListGridItem pspItem={mockPspItem} isSelected={false} />
+        <PaymentPSPListGridItem
+          pspItem={mockPspItem}
+          isSelected={false}
+          radioValue={String(mockPspItem.idPsp)}
+        />
       </ThemeProvider>
     );
 
-    const priceContainer = screen.getByText("€ 2.50").parentElement!;
     expect(
-      within(priceContainer).getByTestId("psp-radio-button-unchecked")
+      screen.getByTestId("psp-radio-button-unchecked")
     ).toBeInTheDocument();
-  });
-
-  it("calls handleClick when the grid item is clicked", () => {
-    const handleClickMock = jest.fn();
-    render(
-      <ThemeProvider theme={theme}>
-        <PaymentPSPListGridItem isSelected={false} pspItem={mockPspItem} />
-      </ThemeProvider>
-    );
-
-    // Find the grid container by ID
-    const gridItem = screen.getByText("Test PSP").closest("div[id]");
-    if (gridItem) {
-      fireEvent.click(gridItem);
-      expect(handleClickMock).toHaveBeenCalledTimes(1);
-    }
-  });
-
-  it("calls handleClick when Enter key is pressed", () => {
-    const handleClickMock = jest.fn();
-    render(
-      <ThemeProvider theme={theme}>
-        <PaymentPSPListGridItem isSelected={false} pspItem={mockPspItem} />
-      </ThemeProvider>
-    );
-
-    const gridItem = screen.getByText("Test PSP").closest("div[id]");
-    if (gridItem) {
-      fireEvent.keyDown(gridItem, { key: "Enter" });
-      expect(handleClickMock).toHaveBeenCalledTimes(1);
-    }
-  });
-
-  it("formats the taxPayerFee correctly", () => {
-    render(
-      <ThemeProvider theme={theme}>
-        <PaymentPSPListGridItem isSelected={false} pspItem={mockPspItem} />
-      </ThemeProvider>
-    );
-
-    expect(screen.getByText("€ 2.50")).toBeInTheDocument();
-  });
-
-  it("renders onUs icon when pspItem.onUs is true", () => {
-    render(
-      <ThemeProvider theme={theme}>
-        <PaymentPSPListGridItem isSelected={false} pspItem={mockPspItem} />
-      </ThemeProvider>
-    );
-
-    expect(screen.getByAltText("Icona psp on us")).toBeInTheDocument();
   });
 
   it("does not render onUs icon when pspItem.onUs is false", () => {
@@ -174,10 +110,28 @@ describe("PaymentPSPListGridItem", () => {
         <PaymentPSPListGridItem
           isSelected={false}
           pspItem={{ ...mockPspItem, onUs: false }}
+          radioValue={String(mockPspItem.idPsp)}
         />
       </ThemeProvider>
     );
 
-    expect(screen.queryByAltText("Icona psp on us")).toBeNull();
+    expect(screen.queryByTestId("psp-on-us-icon")).toBeNull();
+  });
+
+  it("sets a stable input id based on radioValue", () => {
+    render(
+      <ThemeProvider theme={theme}>
+        <PaymentPSPListGridItem
+          isSelected={false}
+          pspItem={mockPspItem}
+          radioValue={String(mockPspItem.idPsp)}
+        />
+      </ThemeProvider>
+    );
+
+    expect(screen.getByLabelText("Test PSP")).toHaveAttribute(
+      "id",
+      `psp-radio-${String(mockPspItem.idPsp)}`
+    );
   });
 });
