@@ -15,7 +15,11 @@
     "informationDialog": "Informacije o znesku",
     "informationLink": "Izvedite več o kampanji",
     "languageMenu": "Nastavljen jezik",
-    "loading": "Nalaganje"
+    "loading": "Nalaganje",
+    "applySorting": "Uporabi izbrani vrstni red",
+    "sortingDefault": "Privzeto razvrščanje",
+    "sortingName": "Razvrščanje po imenu",
+    "sortingAmount": "Razvrščanje po znesku"
   },
   "cancelledPage": {
     "body": "Postopek je bil preklican",
@@ -149,10 +153,10 @@
       "help": "Pomoč",
       "privacy": "Zasebnost",
       "terms": "Pogoji",
-      "platformStatus":"Stanje platforme",
+      "platformStatus": "Stanje platforme",
       "pagoPA": "Obiščite spletno stran pagoPA"
     },
-    "header": { 
+    "header": {
       "login": "Prijava",
       "logout": "Izhod",
       "detail": {
@@ -166,7 +170,7 @@
       },
       "disclaimer": "Znesek se samodejno posodobi, zato vedno plačate le kar dolgujete in se izognete zamudnim ali drugim obrestim."
     },
-    "main":{
+    "main": {
       "skipToContent": "Preskoči na vsebino"
     }
   },
@@ -215,7 +219,7 @@
     },
     "formErrors": {
       "invalid": "Vnesite veljaven elektronski naslov",
-      "notEqual": "Elektronska naslova se morata ujemati",
+      "notEqual": "E-poštna naslova se ne ujemata",
       "required": "Zahtevano polje"
     },
     "formFields": {
@@ -224,7 +228,7 @@
     },
     "title": "Vnesite svoj elektronki naslov"
   },
-  "findOutMoreModal":{
+  "findOutMoreModal": {
     "title": "Kaj storiti, če plačilo ni uspešno?",
     "section1Title": "1. Plačaj obvestilo",
     "section1ContentRow1": "Ne pozabi plačati obvestila v predvidenem roku, ki ga določi organ.",
@@ -330,8 +334,7 @@
     "disclaimer": {
       "cheaper": "Priporočeno, ker je najcenejše",
       "yourCard": "Priporočeno, ker ste že stranka",
-      "psp":"Z nadaljevanjem sprejemate <terms>Pogoje uporabe</terms> in potrjujete, da ste prebrali <privacy>Politiko zasebnosti družbe</privacy> <psp>{{pspName}}</psp>"
-
+      "psp": "Z nadaljevanjem sprejemate <terms>Pogoje uporabe</terms> in potrjujete, da ste prebrali <privacy>Politiko zasebnosti družbe</privacy> <psp>{{pspName}}</psp>"
     },
     "drawer": {
       "body": "Na tem seznamu boste našli vse ponudnike, ki so združljivi z vašim načinom, tudi če niste njihova stranka.",
@@ -435,7 +438,7 @@
         "name": "Po imenu",
         "amount": "Po znesku"
       },
-      "showResults": "Prikaži rezultate"
+      "showResults": "Uporabi"
     },
     "myBankAlertTitle": "Ne najdete svoje banke?",
     "myBankAlertBody": "Ne skrbite: v naslednjih korakih jo boste morali izbrati."
@@ -510,7 +513,7 @@
   },
   "maintenancePage": {
     "title": "Delamo za vas",
-    "subtitle": "pagoPa trenutno ni na voljo zaradi načrtovanega vzdrževanja."   ,
+    "subtitle": "pagoPa trenutno ni na voljo zaradi načrtovanega vzdrževanja.",
     "closeButton": "Zapri",
     "detailsButton": "Izvedi več"
   },
