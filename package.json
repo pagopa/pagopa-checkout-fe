@@ -63,6 +63,9 @@
     "set-value": "^4.0.1",
     "uuid": "^9.0.1"
   },
+    "dependenciesComments": {
+    "mixpanel-browser": "Version is now pinned because v2.74.x onwards requires node 20"
+  },
   "devDependencies": {
     "@babel/core": "^7.28.6",
     "@babel/plugin-transform-modules-commonjs": "^7.17.7",
