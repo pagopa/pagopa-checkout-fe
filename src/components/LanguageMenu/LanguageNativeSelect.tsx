@@ -30,7 +30,7 @@ export default function LanguageNativeSelect() {
       textDecoration: "underline",
       "&:hover": {
         color: "#0062C3",
-      }, 
+      },
       "&:focus": {
         fontWeight: "bold",
         outline: `2px solid ${theme.palette.text.primary}`,
