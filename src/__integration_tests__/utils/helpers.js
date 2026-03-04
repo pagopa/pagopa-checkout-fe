@@ -249,10 +249,11 @@ export const fillAndSearchFormPaymentMethod = async (
 export const filterByType = async (id) => {
   //wait 1 sec for f.e. to draws component
   await new Promise((r)=> setTimeout(r, 1000));
-  const filterDrawerOpenButton= await page.waitForSelector("#filterDrawerButton", {clickable: true});
+  const filterDrawerOpenButton= await page.waitForSelector("#filterDrawerButton", {visible: true});
   await filterDrawerOpenButton?.click();
+  await new Promise((r)=> setTimeout(r, 500));
   const filterDrawerCard = await page.waitForSelector(id, {
-    clickable: true,
+    visible: true,
   });
   await filterDrawerCard?.click();
 };
@@ -260,14 +261,15 @@ export const filterByType = async (id) => {
 export const filterByTwoType = async (id_1,id_2) => {
   //wait 1 sec for f.e. to draws component
   await new Promise((r)=> setTimeout(r, 1000));
-  const filterDrawerOpenButton= await page.waitForSelector("#filterDrawerButton", {clickable: true});
+  const filterDrawerOpenButton= await page.waitForSelector("#filterDrawerButton", {visilbe: true});
   await filterDrawerOpenButton?.click();
+  await new Promise((r)=> setTimeout(r, 500));
   const filterDrawerCard = await page.waitForSelector(id_1, {
-    clickable: true,
+    visible: true,
   });
 
    const filterDrawerCard2 = await page.waitForSelector(id_2, {
-    clickable: true,
+    visible: true,
   });
   await filterDrawerCard?.click();
   await filterDrawerCard2?.click();
