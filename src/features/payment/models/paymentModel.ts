@@ -130,6 +130,7 @@ interface ReturnUrls {
   returnOkUrl: string;
   returnCancelUrl: string;
   returnErrorUrl: string;
+  returnWaitingUrl?: string;
 }
 
 export interface Cart {
