@@ -1,5 +1,5 @@
 /* eslint-disable functional/immutable-data */
-import mixpanelBrowser, { get_distinct_id } from "mixpanel-browser";
+import mixpanelBrowser from "mixpanel-browser";
 import { mixpanel } from "../../mixpanel/mixpanelHelperInit";
 import { SessionItems } from "../../storage/sessionStorage";
 
@@ -55,26 +55,18 @@ jest.mock("../../storage/sessionStorage", () => {
 });
 
 jest.mock("mixpanel-browser", () => {
-  const track = jest.fn();
-  const init = jest.fn();
-  const reset = jest.fn();
-  const get_distinct_id = jest.fn(() => "distinct-1");
-
   const defaultExport = {
     get_property: jest.fn(() => "device-1"),
     register: jest.fn(),
-    reset,
-    track,
-    init,
+    reset: jest.fn(),
+    track: jest.fn(),
+    init: jest.fn(),
+    get_distinct_id: jest.fn(() => "distinct-1"),
   };
 
   return {
     __esModule: true,
     default: defaultExport,
-    init,
-    track,
-    reset,
-    get_distinct_id,
   };
 });
 
@@ -93,9 +85,11 @@ describe("Mixpanel integration tests", () => {
   });
 
   it("should call mixpanelInit when isMixpanelReady is false", () => {
-    (get_distinct_id as jest.Mock).mockImplementationOnce(() => {
-      throw new Error("no distinct id");
-    });
+    (mixpanelBrowser.get_distinct_id as jest.Mock).mockImplementationOnce(
+      () => {
+        throw new Error("no distinct id");
+      }
+    );
 
     mixpanel.track("init_event");
 
@@ -116,7 +110,9 @@ describe("Mixpanel integration tests", () => {
   });
 
   it("does NOT init when isMixpanelReady === true (distinct id present and flag 'true')", () => {
-    (get_distinct_id as jest.Mock).mockReturnValueOnce("distinct-123");
+    (mixpanelBrowser.get_distinct_id as jest.Mock).mockReturnValueOnce(
+      "distinct-123"
+    );
     sessionStorage.setItem(SessionItems.mixpanelInitialized, "true");
 
     mixpanel.track("ready_event");
@@ -126,7 +122,7 @@ describe("Mixpanel integration tests", () => {
   });
 
   it("calls init when distinct id is empty string (hasDistinctId === false)", () => {
-    (get_distinct_id as jest.Mock).mockReturnValueOnce("");
+    (mixpanelBrowser.get_distinct_id as jest.Mock).mockReturnValueOnce("");
     sessionStorage.setItem(SessionItems.mixpanelInitialized, "true");
 
     mixpanel.track("empty_distinct");
@@ -135,7 +131,9 @@ describe("Mixpanel integration tests", () => {
   });
 
   it("calls init when mixpanelInitialized flag is not 'true'", () => {
-    (get_distinct_id as jest.Mock).mockReturnValueOnce("distinct-123");
+    (mixpanelBrowser.get_distinct_id as jest.Mock).mockReturnValueOnce(
+      "distinct-123"
+    );
 
     mixpanel.track("no_flag_event");
 
