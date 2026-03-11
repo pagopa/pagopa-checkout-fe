@@ -18,13 +18,12 @@ const SkipToContent: React.FC = () => {
         py: 1,
         bgcolor: "primary.main",
         color: "primary.contrastText",
-        textDecoration: "none",
         fontWeight: 600,
         textAlign: "center",
         display: "block",
         zIndex: (theme) => theme.zIndex.tooltip + 1,
         transition: "transform 0.2s ease-out",
-        "&:focus-visible": {
+        "&:focus, &:focus-visible": {
           transform: "translateY(0)",
         },
       }}

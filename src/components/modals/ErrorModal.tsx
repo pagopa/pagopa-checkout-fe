@@ -145,6 +145,7 @@ function ErrorModal(props: {
 
   return (
     <Dialog
+      role="alert"
       PaperProps={{
         style: {
           ...props.style,

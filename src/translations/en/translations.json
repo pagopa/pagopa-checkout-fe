@@ -12,10 +12,14 @@
     "editCard": "Change card details",
     "editDonation": "Change donation institution",
     "editPsp": "Change payment service provider (PSP)",
-    "informationDialog": "Information",
+    "informationDialog": "Information on the amount",
     "informationLink": "To learn more about the campaign",
     "languageMenu": "Selected language",
-    "loading": "Loading"
+    "loading": "Loading",
+    "applySorting": "Apply selected order",
+    "sortingDefault": "Default order",
+    "sortingName": "Order by name",
+    "sortingAmount": "Order by amount"
   },
   "cancelledPage": {
     "body": "The operation was canceled",
@@ -166,7 +170,7 @@
       },
       "disclaimer": "The amount is updated automatically, therefore you will always pay what is due and avoid arrears or other interest."
     },
-    "main":{
+    "main": {
       "skipToContent": "Go to content"
     }
   },
@@ -215,7 +219,7 @@
     },
     "formErrors": {
       "invalid": "Enter a valid email address",
-      "notEqual": "The email addresses must match",
+      "notEqual": "The email addresses do not match",
       "required": "Required field"
     },
     "formFields": {
@@ -224,7 +228,7 @@
     },
     "title": "Enter your email"
   },
-  "findOutMoreModal":{
+  "findOutMoreModal": {
     "title": "What to do if the payment fails?",
     "section1Title": "1. Pay the notice",
     "section1ContentRow1": "Remember to pay the notice by the deadline set by the issuing authority.",
@@ -330,7 +334,7 @@
     "disclaimer": {
       "cheaper": "Suggested because least expensive",
       "yourCard": "Suggested because you are already a customer",
-      "psp":"By continuing, you accept the <terms>Terms and Conditions of Use</terms> and confirm that you have read the <privacy>Privacy Policy</privacy> of <psp>{{pspName}}</psp>"
+      "psp": "By continuing, you accept the <terms>Terms and Conditions of Use</terms> and confirm that you have read the <privacy>Privacy Policy</privacy> of <psp>{{pspName}}</psp>"
     },
     "drawer": {
       "body": "This list contains all the operators compatible with your method, even if you are not their customer.",
@@ -365,7 +369,7 @@
     "description": "To learn more about the methods and costs applied by the participating operators, visit the page ",
     "incoming": "Coming soon",
     "others": "Other methods",
-    "showMore": "Show all",
+    "showMore": "Unavailable methods",
     "title": "How do you want to pay?",
     "feeRange": "Fee: from {{min}}  to {{max}}",
     "feeSingle": "Fee: {{value}}",
@@ -436,7 +440,7 @@
         "name": "By name",
         "amount": "By amount"
       },
-      "showResults": "Show results"
+      "showResults": "Apply"
     }
   },
   "paymentQrPage": {
@@ -509,7 +513,7 @@
   },
   "maintenancePage": {
     "title": "We're working for you",
-    "subtitle": "pagoPa is currently not available due to scheduled maintenance."   ,
+    "subtitle": "pagoPa is currently not available due to scheduled maintenance.",
     "closeButton": "Close",
     "detailsButton": "Find out more"
   },
