@@ -64,6 +64,7 @@ export default function KOPage() {
         <img
           src={ko}
           alt="ko-image"
+          aria-hidden="true"
           style={{ width: "80px", height: "80px" }}
         />
         <Box
@@ -75,7 +76,7 @@ export default function KOPage() {
           justifyContent="space-between"
           alignItems="center"
         >
-          <Typography variant="h6" component="div" id="koPageTitle">
+          <Typography variant="h6" component="h1" id="koPageTitle">
             {t("koPage.title")}
           </Typography>
           <Typography variant="body2" component="div" id="koPageBody">

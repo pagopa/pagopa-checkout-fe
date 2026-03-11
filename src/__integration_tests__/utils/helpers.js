@@ -249,10 +249,11 @@ export const fillAndSearchFormPaymentMethod = async (
 export const filterByType = async (id) => {
   //wait 1 sec for f.e. to draws component
   await new Promise((r)=> setTimeout(r, 1000));
-  const filterDrawerOpenButton= await page.waitForSelector("#filterDrawerButton", {clickable: true});
+  const filterDrawerOpenButton= await page.waitForSelector("#filterDrawerButton", {visible: true});
   await filterDrawerOpenButton?.click();
+  await new Promise((r)=> setTimeout(r, 500));
   const filterDrawerCard = await page.waitForSelector(id, {
-    clickable: true,
+    visible: true,
   });
   await filterDrawerCard?.click();
 };
@@ -260,14 +261,15 @@ export const filterByType = async (id) => {
 export const filterByTwoType = async (id_1,id_2) => {
   //wait 1 sec for f.e. to draws component
   await new Promise((r)=> setTimeout(r, 1000));
-  const filterDrawerOpenButton= await page.waitForSelector("#filterDrawerButton", {clickable: true});
+  const filterDrawerOpenButton= await page.waitForSelector("#filterDrawerButton", {visilbe: true});
   await filterDrawerOpenButton?.click();
+  await new Promise((r)=> setTimeout(r, 500));
   const filterDrawerCard = await page.waitForSelector(id_1, {
-    clickable: true,
+    visible: true,
   });
 
    const filterDrawerCard2 = await page.waitForSelector(id_2, {
-    clickable: true,
+    visible: true,
   });
   await filterDrawerCard?.click();
   await filterDrawerCard2?.click();
@@ -449,8 +451,7 @@ export const cancelPaymentOK = async (
   email,
   cardData
 ) => {
-  const resultMessageXPath =
-    "#main_content > div > div > div > div.MuiBox-root.css-5vb4lz > div";
+  const resultMessageSelector = "#cancelledPageBody";
   await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
   const paymentCheckPageButtonCancel = await page.waitForSelector(
     "#paymentCheckPageButtonCancel"
@@ -460,9 +461,9 @@ export const cancelPaymentOK = async (
   await cancPayment.click();
   await page.waitForNavigation();
   // this new timeout is needed for how react 18 handles the addition of animated content 
-  // to the page. Without it, the resultMessageXPath never resolves
+  // to the page. Without it, the resultMessageSelector never resolves
   await new Promise((r) => setTimeout(r, 200));
-  const message = await page.waitForSelector(resultMessageXPath);
+  const message = await page.waitForSelector(resultMessageSelector);
   return await message.evaluate((el) => el.textContent);
 };
 
@@ -801,8 +802,7 @@ export const cancelWalletPayment = async (
   email,
   walletType
 ) => {
-  const resultMessageXPath =
-    "#main_content > div > div > div > div.MuiBox-root.css-5vb4lz > div";
+  const resultMessageSelector = "#cancelledPageBody";
   await selectWalletAndGetToCheckPage(noticeCode, fiscalCode, email, walletType);
   const paymentCheckPageButtonCancel = await page.waitForSelector(
     "#paymentCheckPageButtonCancel"
@@ -812,7 +812,7 @@ export const cancelWalletPayment = async (
   await cancPayment.click();
   await page.waitForNavigation();
   await new Promise((r) => setTimeout(r, 200));
-  const message = await page.waitForSelector(resultMessageXPath);
+  const message = await page.waitForSelector(resultMessageSelector);
   return await message.evaluate((el) => el.textContent);
 };
 
