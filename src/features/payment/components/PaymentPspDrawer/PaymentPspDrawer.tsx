@@ -70,6 +70,7 @@ export const PaymentPspDrawer = (props: {
             fieldName="pspBusinessName"
             onClick={setSortingOrd}
             orderingModel={sortingOrd}
+            ariaLabel={t("paymentCheckPage.drawer.pspNameAccessibilityLabel")}
           >
             {t("paymentCheckPage.drawer.header.name")}
           </PspListSortLabel>
@@ -78,6 +79,7 @@ export const PaymentPspDrawer = (props: {
             fieldName="taxPayerFee"
             onClick={setSortingOrd}
             orderingModel={sortingOrd}
+            ariaLabel={t("paymentCheckPage.drawer.taxFeeAccessibilityLabel")}
           >
             {t("paymentCheckPage.drawer.header.amount")}
           </PspListSortLabel>
@@ -135,6 +137,7 @@ type PspListSortLabelProps = {
   onClick: (sortingOrd: PspOrderingModel) => void;
   orderingModel: PspOrderingModel;
   children: React.ReactNode;
+  ariaLabel?: string;
 };
 
 export const PspListSortLabel = ({
@@ -143,6 +146,7 @@ export const PspListSortLabel = ({
   onClick,
   orderingModel,
   children,
+  ariaLabel,
 }: PspListSortLabelProps) => {
   const direction = orderingModel.direction === "asc" ? "desc" : "asc";
   const [isMouseOver, setIsMouseOver] = useState(false);
@@ -175,7 +179,8 @@ export const PspListSortLabel = ({
       sx={{ cursor: "pointer" }}
       component="div"
       padding="none"
-      aria-hidden="true"
+      aria-label={ariaLabel}
+      role="button"
       onClick={() =>
         onClick({
           fieldName,
