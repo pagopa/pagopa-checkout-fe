@@ -64,6 +64,7 @@ export default function KOPage() {
         <img
           src={ko}
           alt="ko-image"
+          aria-hidden="true"
           style={{ width: "80px", height: "80px" }}
         />
         <Box

@@ -342,7 +342,9 @@
         "amount": "Fee",
         "name": "Operator"
       },
-      "title": "Which operator do you want to use for payment?"
+      "title": "Which operator do you want to use for payment?",
+      "pspNameAccessibilityLabel": "Ordina in ordine alfabetico per nome del gestore",
+      "taxFeeAccessibilityLabel": "Ordina per l'importo di commissione più basso"
     },
     "email": "Send the result to:",
     "modal": {

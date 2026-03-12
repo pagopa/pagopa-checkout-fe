@@ -166,7 +166,7 @@ function ErrorModal(props: {
         <Typography
           id={props.titleId}
           variant="h6"
-          component={"div"}
+          component={"h1"}
           sx={{ mb: 2 }}
         >
           {t(title)}
