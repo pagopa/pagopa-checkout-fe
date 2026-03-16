@@ -1,6 +1,6 @@
 {
   "name": "io-pay-portal-frontend",
-  "version": "4.47.0",
+  "version": "4.48.0",
   "scripts": {
     "type-check": "tsc",
     "generate": "npm-run-all generate:*",
@@ -63,7 +63,7 @@
     "set-value": "^4.0.1",
     "uuid": "^9.0.1"
   },
-    "dependenciesComments": {
+  "dependenciesComments": {
     "mixpanel-browser": "Version is now pinned because v2.74.x onwards requires node 20"
   },
   "devDependencies": {
