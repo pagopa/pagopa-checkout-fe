@@ -21,6 +21,37 @@ import {
 } from "../../utils/mixpanel/mixpanelEvents";
 import { paymentInfo, sessionPayment, transaction } from "./_model";
 
+jest.mock("../../utils/config/config", () => ({
+  getConfigOrThrow: jest.fn(() => ({
+    CHECKOUT_PM_HOST: "https://test.host",
+    CHECKOUT_PM_API_BASEPATH: "/api",
+    CHECKOUT_API_ECOMMERCE_BASEPATH: "/ecommerce",
+    CHECKOUT_API_ECOMMERCE_BASEPATH_V2: "/ecommerce/v2",
+    CHECKOUT_API_ECOMMERCE_BASEPATH_V3: "/ecommerce/v3",
+    CHECKOUT_API_ECOMMERCE_BASEPATH_V4: "/ecommerce/v4",
+    CHECKOUT_API_FEATURE_FLAGS_BASEPATH: "/feature-flags",
+    CHECKOUT_API_TIMEOUT: 10000,
+    CHECKOUT_ENV: "test",
+    CHECKOUT_PAGOPA_APIM_HOST: "https://test.apim.host",
+    CHECKOUT_PAGOPA_ASSETS_CDN: "https://test.assets.cdn",
+    CHECKOUT_PAGOPA_LOGOS_CDN: "https://test.logos.cdn",
+    CHECKOUT_API_PAYMENT_ACTIVATIONS_BASEPATH: "/activations",
+    CHECKOUT_API_PAYMENT_TRANSACTIONS_BASEPATH: "/transactions",
+    CHECKOUT_POLLING_ACTIVATION_INTERVAL: 10000,
+    CHECKOUT_POLLING_ACTIVATION_ATTEMPTS: 5,
+    CHECKOUT_RECAPTCHA_SITE_KEY: "test-recaptcha-key",
+    CHECKOUT_DONATIONS_URL: "https://test.donations.url",
+    CHECKOUT_SURVEY_SHOW: false,
+    CHECKOUT_NPG_SDK_URL: "https://test.npg.sdk.url",
+    CHECKOUT_API_RETRY_NUMBERS: 10,
+    CHECKOUT_API_RETRY_DELAY: 3000,
+    CHECKOUT_GDI_CHECK_TIMEOUT: 5000,
+    CHECKOUT_API_AUTH_SERVICE_BASEPATH_V1: "/auth/v1",
+    CHECKOUT_API_RETRY_NUMBERS_LINEAR: 5,
+    CHECKOUT_API_WALLET_BASEPATH_V1: "/wallet/v1",
+  })),
+}));
+
 // Create a Jest spy for navigation
 const navigate = jest.fn();
 

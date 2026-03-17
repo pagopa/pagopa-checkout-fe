@@ -145,6 +145,7 @@ function ErrorModal(props: {
 
   return (
     <Dialog
+      role="alert"
       PaperProps={{
         style: {
           ...props.style,
@@ -165,7 +166,7 @@ function ErrorModal(props: {
         <Typography
           id={props.titleId}
           variant="h6"
-          component={"div"}
+          component={"h1"}
           sx={{ mb: 2 }}
         >
           {t(title)}
@@ -177,7 +178,6 @@ function ErrorModal(props: {
         </Typography>
         {showDetail(body) && (
           <Alert
-            role="alert"
             severity="info"
             sx={{
               display: "flex",
