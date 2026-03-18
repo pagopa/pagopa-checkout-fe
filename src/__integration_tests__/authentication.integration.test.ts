@@ -113,8 +113,8 @@ describe("Checkout authentication tests", () => {
     const currentUrl = await page.evaluate(() => location.href);
     console.log("Current url: " + currentUrl);
 
-    const titleErrorElem = await page.waitForSelector("#errorTitle");
-    const titleErrorBody = await page.waitForSelector("#errorBody");
+    const titleErrorElem = await page.waitForSelector("#auth-callback-title");
+    const titleErrorBody = await page.waitForSelector("#auth-callback-body");
     const title = await titleErrorElem.evaluate((el) => el.textContent);
     const body = await titleErrorBody.evaluate((el) => el.textContent);
 
@@ -139,8 +139,8 @@ describe("Checkout authentication tests", () => {
     const currentUrl = await page.evaluate(() => location.href);
     console.log("Current url: " + currentUrl);
 
-    const titleErrorElem = await page.waitForSelector("#errorTitle");
-    const titleErrorBody = await page.waitForSelector("#errorBody");
+    const titleErrorElem = await page.waitForSelector("#auth-callback-title");
+    const titleErrorBody = await page.waitForSelector("#auth-callback-body");
     const title = await titleErrorElem.evaluate((el) => el.textContent);
     const body = await titleErrorBody.evaluate((el) => el.textContent);
 
@@ -161,8 +161,8 @@ describe("Checkout authentication tests", () => {
 
     await clickLoginButton();
 
-    const titleErrorElem = await page.waitForSelector("#errorTitle");
-    const titleErrorBody = await page.waitForSelector("#errorBody");
+    const titleErrorElem = await page.waitForSelector("#auth-callback-title");
+    const titleErrorBody = await page.waitForSelector("#auth-callback-body");
     const title = await titleErrorElem.evaluate((el) => el.textContent);
     const body = await titleErrorBody.evaluate((el) => el.textContent);
 
@@ -412,7 +412,7 @@ describe("Checkout authentication tests", () => {
 
     //go to payment methods page
     await page.goto(URL.PAYMENT_METHODS_PAGE, { waitUntil: "networkidle0" });
-    await page.waitForSelector("#errorTitle");
+    await page.waitForSelector("#auth-expired-title");
     expect(page.url()).toContain("/autenticazione-scaduta");
   });
 
@@ -464,7 +464,7 @@ describe("Checkout authentication tests", () => {
 
     //go to payment methods page and select card payment
     await page.goto(URL.INSERT_CARD_PAGE, { waitUntil: "networkidle0" });
-    await page.waitForSelector("#errorTitle");
+    await page.waitForSelector("#auth-expired-title");
     expect(page.url()).toContain("/autenticazione-scaduta");
   });
 
