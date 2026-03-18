@@ -280,8 +280,8 @@ describe("Checkout authentication tests", () => {
     await page.waitForNavigation();
     await clickLoginButton();
 
-    const titleErrorElem = await page.waitForSelector("#errorTitle");
-    const titleErrorBody = await page.waitForSelector("#errorBody");
+    const titleErrorElem = await page.waitForSelector("#auth-callback-title");
+    const titleErrorBody = await page.waitForSelector("#auth-callback-body");
     const title = await titleErrorElem.evaluate((el) => el.textContent);
     const body = await titleErrorBody.evaluate((el) => el.textContent);
 
