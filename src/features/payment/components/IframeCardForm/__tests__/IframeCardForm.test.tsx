@@ -616,9 +616,8 @@ describe("IframeCardForm", () => {
     );
   });
 
-  it("should navigate directly to LISTA_PSP when enablePspPage is true, skipping retrieveCardData", async () => {
-    localStorageMock.setItem("enablePspPage", "true");
-
+  // Shared setup for enablePspPage tests
+  const setupEnablePspPageTest = () => {
     const mockSessionResponse = setupSimpleMockSessionResponse();
     (helper.npgSessionsFields as jest.Mock).mockImplementation(
       (_onError, onResponse) => {
@@ -646,6 +645,11 @@ describe("IframeCardForm", () => {
       }, 10);
       return { confirmData: jest.fn() };
     });
+  };
+
+  it("should navigate directly to LISTA_PSP when enablePspPage is true, skipping retrieveCardData", async () => {
+    localStorageMock.setItem("enablePspPage", "true");
+    setupEnablePspPageTest();
 
     render(<IframeCardForm onCancel={mockOnCancel} />);
 
@@ -665,20 +669,7 @@ describe("IframeCardForm", () => {
 
   it("should call retrieveCardData and getFees when enablePspPage is false", async () => {
     localStorageMock.setItem("enablePspPage", "false");
-
-    const mockSessionResponse = setupSimpleMockSessionResponse();
-    (helper.npgSessionsFields as jest.Mock).mockImplementation(
-      (_onError, onResponse) => {
-        onResponse(mockSessionResponse);
-      }
-    );
-
-    (helper.recaptchaTransaction as jest.Mock).mockImplementation(
-      ({ onSuccess }) => {
-        onSuccess("payment123", "order123");
-        return Promise.resolve();
-      }
-    );
+    setupEnablePspPageTest();
 
     (helper.retrieveCardData as jest.Mock).mockImplementation(
       ({ onResponseSessionPaymentMethod }) => {
@@ -694,20 +685,6 @@ describe("IframeCardForm", () => {
 
     (helper.getFees as jest.Mock).mockImplementation((onSuccess) => {
       onSuccess(false);
-    });
-
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    (global.Build as jest.Mock).mockImplementationOnce((config) => {
-      if (config.onAllFieldsLoaded) {
-        setTimeout(() => config.onAllFieldsLoaded(), 0);
-      }
-      setTimeout(() => {
-        if (config.onReadyForPayment) {
-          config.onReadyForPayment();
-        }
-      }, 10);
-      return { confirmData: jest.fn() };
     });
 
     render(<IframeCardForm onCancel={mockOnCancel} />);
