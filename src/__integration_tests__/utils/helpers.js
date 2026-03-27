@@ -112,10 +112,13 @@ export const checkErrorOnCardDataFormSubmit = async (
   email,
   cardData
 ) => {
-  const errorMessageTitleSelector = "#iframeCardFormErrorTitleId";
+  const iframeErrorSelector = "#iframeCardFormErrorTitleId";
+  const pspListErrorSelector = "#pspListTitleError";
   await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
+  // When enablePspPage is active, the error may appear on the PSP list page
+  // instead of the card form page
   const errorMessageElem = await page.waitForSelector(
-    errorMessageTitleSelector
+    `${iframeErrorSelector}, ${pspListErrorSelector}`
   );
   return await errorMessageElem.evaluate((el) => el.textContent);
 };
