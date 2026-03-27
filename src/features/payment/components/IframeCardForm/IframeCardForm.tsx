@@ -122,7 +122,7 @@ export default function IframeCardForm(props: Props) {
       return;
     }
 
-    retrieveCardData({
+    void retrieveCardData({
       paymentId: paymentMethodId,
       orderId,
       onError,
@@ -134,7 +134,7 @@ export default function IframeCardForm(props: Props) {
           O.chain((resp) => O.fromNullable(resp.bin)),
           O.fold(
             () => onError(ErrorsType.GENERIC_ERROR),
-            () => void getFees(onSuccess, onPspNotFound, onError, resp.bin)
+            () => getFees(onSuccess, onPspNotFound, onError, resp.bin)
           )
         );
       },
