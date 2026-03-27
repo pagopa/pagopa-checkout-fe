@@ -134,7 +134,7 @@ export default function IframeCardForm(props: Props) {
           O.chain((resp) => O.fromNullable(resp.bin)),
           O.fold(
             () => onError(ErrorsType.GENERIC_ERROR),
-            () => getFees(onSuccess, onPspNotFound, onError, resp.bin)
+            () => void getFees(onSuccess, onPspNotFound, onError, resp.bin)
           )
         );
       },
