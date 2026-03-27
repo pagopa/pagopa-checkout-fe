@@ -616,8 +616,110 @@ describe("IframeCardForm", () => {
     );
   });
 
-  it.skip("should handle successful payment flow", async () => {
-    // TODO
+  it("should navigate directly to LISTA_PSP when enablePspPage is true, skipping retrieveCardData", async () => {
+    localStorageMock.setItem("enablePspPage", "true");
+
+    const mockSessionResponse = setupSimpleMockSessionResponse();
+    (helper.npgSessionsFields as jest.Mock).mockImplementation(
+      (_onError, onResponse) => {
+        onResponse(mockSessionResponse);
+      }
+    );
+
+    // Mock recaptchaTransaction to call onSuccess (which is retrievePaymentSession)
+    (helper.recaptchaTransaction as jest.Mock).mockImplementation(
+      ({ onSuccess }) => {
+        onSuccess("payment123", "order123");
+      }
+    );
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    (global.Build as jest.Mock).mockImplementationOnce((config) => {
+      if (config.onAllFieldsLoaded) {
+        setTimeout(() => config.onAllFieldsLoaded(), 0);
+      }
+      // Trigger onReadyForPayment after a tick to simulate READY_FOR_PAYMENT
+      setTimeout(() => {
+        if (config.onReadyForPayment) {
+          config.onReadyForPayment();
+        }
+      }, 0);
+      return { confirmData: jest.fn() };
+    });
+
+    const createBuildConfig = require("../../../../../utils/buildConfig").default;
+    (createBuildConfig as jest.Mock).mockImplementationOnce((callbacks: any) => callbacks);
+
+    render(<IframeCardForm onCancel={mockOnCancel} />);
+
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith(`/${CheckoutRoutes.LISTA_PSP}`);
+    });
+
+    expect(helper.retrieveCardData).not.toHaveBeenCalled();
+    expect(helper.getFees).not.toHaveBeenCalled();
+  });
+
+  it("should call retrieveCardData and getFees when enablePspPage is false", async () => {
+    localStorageMock.setItem("enablePspPage", "false");
+
+    const mockSessionResponse = setupSimpleMockSessionResponse();
+    (helper.npgSessionsFields as jest.Mock).mockImplementation(
+      (_onError, onResponse) => {
+        onResponse(mockSessionResponse);
+      }
+    );
+
+    (helper.recaptchaTransaction as jest.Mock).mockImplementation(
+      ({ onSuccess }) => {
+        onSuccess("payment123", "order123");
+      }
+    );
+
+    (helper.retrieveCardData as jest.Mock).mockImplementation(
+      ({ onResponseSessionPaymentMethod }) => {
+        onResponseSessionPaymentMethod({
+          sessionId: "session123",
+          bin: "123456",
+          lastFourDigits: "9876",
+          expiringDate: "1230",
+          brand: "VISA",
+        });
+      }
+    );
+
+    (helper.getFees as jest.Mock).mockImplementation((onSuccess) => {
+      onSuccess(false);
+    });
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    (global.Build as jest.Mock).mockImplementationOnce((config) => {
+      if (config.onAllFieldsLoaded) {
+        setTimeout(() => config.onAllFieldsLoaded(), 0);
+      }
+      setTimeout(() => {
+        if (config.onReadyForPayment) {
+          config.onReadyForPayment();
+        }
+      }, 0);
+      return { confirmData: jest.fn() };
+    });
+
+    const createBuildConfig = require("../../../../../utils/buildConfig").default;
+    (createBuildConfig as jest.Mock).mockImplementationOnce((callbacks: any) => callbacks);
+
+    render(<IframeCardForm onCancel={mockOnCancel} />);
+
+    await waitFor(() => {
+      expect(helper.retrieveCardData).toHaveBeenCalled();
+    });
+
+    expect(helper.getFees).toHaveBeenCalled();
+    expect(mockNavigate).toHaveBeenCalledWith(
+      `/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`
+    );
   });
 
   it("should handle cancel button click", () => {
