@@ -616,6 +616,30 @@ describe("IframeCardForm", () => {
     );
   });
 
+  // Helper to mock Build with createBuildConfig passthrough for enablePspPage tests
+  const setupBuildWithPassthrough = () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    (global.Build as jest.Mock).mockImplementationOnce((config) => {
+      if (config.onAllFieldsLoaded) {
+        setTimeout(() => config.onAllFieldsLoaded(), 0);
+      }
+      setTimeout(() => {
+        if (config.onReadyForPayment) {
+          config.onReadyForPayment();
+        }
+      }, 0);
+      return { confirmData: jest.fn() };
+    });
+
+    const createBuildConfigMock =
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      require("../../../../../utils/buildConfig").default;
+    (createBuildConfigMock as jest.Mock).mockImplementationOnce(
+      (callbacks: any) => callbacks
+    );
+  };
+
   it("should navigate directly to LISTA_PSP when enablePspPage is true, skipping retrieveCardData", async () => {
     localStorageMock.setItem("enablePspPage", "true");
 
@@ -626,30 +650,13 @@ describe("IframeCardForm", () => {
       }
     );
 
-    // Mock recaptchaTransaction to call onSuccess (which is retrievePaymentSession)
     (helper.recaptchaTransaction as jest.Mock).mockImplementation(
       ({ onSuccess }) => {
         onSuccess("payment123", "order123");
       }
     );
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    (global.Build as jest.Mock).mockImplementationOnce((config) => {
-      if (config.onAllFieldsLoaded) {
-        setTimeout(() => config.onAllFieldsLoaded(), 0);
-      }
-      // Trigger onReadyForPayment after a tick to simulate READY_FOR_PAYMENT
-      setTimeout(() => {
-        if (config.onReadyForPayment) {
-          config.onReadyForPayment();
-        }
-      }, 0);
-      return { confirmData: jest.fn() };
-    });
-
-    const createBuildConfig = require("../../../../../utils/buildConfig").default;
-    (createBuildConfig as jest.Mock).mockImplementationOnce((callbacks: any) => callbacks);
+    setupBuildWithPassthrough();
 
     render(<IframeCardForm onCancel={mockOnCancel} />);
 
@@ -693,22 +700,7 @@ describe("IframeCardForm", () => {
       onSuccess(false);
     });
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    (global.Build as jest.Mock).mockImplementationOnce((config) => {
-      if (config.onAllFieldsLoaded) {
-        setTimeout(() => config.onAllFieldsLoaded(), 0);
-      }
-      setTimeout(() => {
-        if (config.onReadyForPayment) {
-          config.onReadyForPayment();
-        }
-      }, 0);
-      return { confirmData: jest.fn() };
-    });
-
-    const createBuildConfig = require("../../../../../utils/buildConfig").default;
-    (createBuildConfig as jest.Mock).mockImplementationOnce((callbacks: any) => callbacks);
+    setupBuildWithPassthrough();
 
     render(<IframeCardForm onCancel={mockOnCancel} />);
 
