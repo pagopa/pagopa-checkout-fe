@@ -104,12 +104,7 @@ export default function IframeCardForm(props: Props) {
 
   const onSuccess = (belowThreshold: boolean) => {
     dispatch(setThreshold({ belowThreshold }));
-
-    if (localStorage.getItem(SessionItems.enablePspPage) === "true") {
-      navigate(`/${CheckoutRoutes.LISTA_PSP}`);
-    } else {
-      navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
-    }
+    navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
   };
 
   const onPspNotFound = () => {
@@ -118,8 +113,16 @@ export default function IframeCardForm(props: Props) {
     ref.current?.reset();
   };
 
-  const retrievePaymentSession = (paymentMethodId: string, orderId: string) =>
-    retrieveCardData({
+  const retrievePaymentSession = (paymentMethodId: string, orderId: string) => {
+    // When enablePspPage is active, skip getFees here and let
+    // PaymentPspListPage handle it to avoid a duplicate POST /fees call
+    if (localStorage.getItem(SessionItems.enablePspPage) === "true") {
+      setLoading(false);
+      navigate(`/${CheckoutRoutes.LISTA_PSP}`);
+      return;
+    }
+
+    void retrieveCardData({
       paymentId: paymentMethodId,
       orderId,
       onError,
@@ -136,6 +139,7 @@ export default function IframeCardForm(props: Props) {
         );
       },
     });
+  };
 
   const onChange = (id: FieldId, status: FieldStatus) => {
     if (Object.keys(IdFields).includes(id)) {
