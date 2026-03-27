@@ -256,7 +256,7 @@ jest.mock("../../../../../utils/storage/sessionStorage", () => ({
 
 jest.mock("../../../../../utils/buildConfig", () => ({
   __esModule: true,
-  default: jest.fn(() => ({})),
+  default: jest.fn((callbacks: any) => callbacks),
 }));
 
 jest.mock("../../../../../utils/eventListeners", () => ({
@@ -616,30 +616,6 @@ describe("IframeCardForm", () => {
     );
   });
 
-  // Helper to mock Build with createBuildConfig passthrough for enablePspPage tests
-  const setupBuildWithPassthrough = () => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    (global.Build as jest.Mock).mockImplementationOnce((config) => {
-      if (config.onAllFieldsLoaded) {
-        setTimeout(() => config.onAllFieldsLoaded(), 0);
-      }
-      setTimeout(() => {
-        if (config.onReadyForPayment) {
-          config.onReadyForPayment();
-        }
-      }, 0);
-      return { confirmData: jest.fn() };
-    });
-
-    const createBuildConfigMock =
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      require("../../../../../utils/buildConfig").default;
-    (createBuildConfigMock as jest.Mock).mockImplementationOnce(
-      (callbacks: any) => callbacks
-    );
-  };
-
   it("should navigate directly to LISTA_PSP when enablePspPage is true, skipping retrieveCardData", async () => {
     localStorageMock.setItem("enablePspPage", "true");
 
@@ -653,16 +629,35 @@ describe("IframeCardForm", () => {
     (helper.recaptchaTransaction as jest.Mock).mockImplementation(
       ({ onSuccess }) => {
         onSuccess("payment123", "order123");
+        return Promise.resolve();
       }
     );
 
-    setupBuildWithPassthrough();
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    (global.Build as jest.Mock).mockImplementationOnce((config) => {
+      if (config.onAllFieldsLoaded) {
+        setTimeout(() => config.onAllFieldsLoaded(), 0);
+      }
+      setTimeout(() => {
+        if (config.onReadyForPayment) {
+          config.onReadyForPayment();
+        }
+      }, 10);
+      return { confirmData: jest.fn() };
+    });
 
     render(<IframeCardForm onCancel={mockOnCancel} />);
 
-    await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith(`/${CheckoutRoutes.LISTA_PSP}`);
-    });
+    await waitFor(
+      () => {
+        expect(helper.recaptchaTransaction).toHaveBeenCalledTimes(1);
+        expect(mockNavigate).toHaveBeenCalledWith(
+          `/${CheckoutRoutes.LISTA_PSP}`
+        );
+      },
+      { timeout: 3000 }
+    );
 
     expect(helper.retrieveCardData).not.toHaveBeenCalled();
     expect(helper.getFees).not.toHaveBeenCalled();
@@ -681,6 +676,7 @@ describe("IframeCardForm", () => {
     (helper.recaptchaTransaction as jest.Mock).mockImplementation(
       ({ onSuccess }) => {
         onSuccess("payment123", "order123");
+        return Promise.resolve();
       }
     );
 
@@ -700,13 +696,29 @@ describe("IframeCardForm", () => {
       onSuccess(false);
     });
 
-    setupBuildWithPassthrough();
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    (global.Build as jest.Mock).mockImplementationOnce((config) => {
+      if (config.onAllFieldsLoaded) {
+        setTimeout(() => config.onAllFieldsLoaded(), 0);
+      }
+      setTimeout(() => {
+        if (config.onReadyForPayment) {
+          config.onReadyForPayment();
+        }
+      }, 10);
+      return { confirmData: jest.fn() };
+    });
 
     render(<IframeCardForm onCancel={mockOnCancel} />);
 
-    await waitFor(() => {
-      expect(helper.retrieveCardData).toHaveBeenCalled();
-    });
+    await waitFor(
+      () => {
+        expect(helper.recaptchaTransaction).toHaveBeenCalledTimes(1);
+        expect(helper.retrieveCardData).toHaveBeenCalled();
+      },
+      { timeout: 3000 }
+    );
 
     expect(helper.getFees).toHaveBeenCalled();
     expect(mockNavigate).toHaveBeenCalledWith(
