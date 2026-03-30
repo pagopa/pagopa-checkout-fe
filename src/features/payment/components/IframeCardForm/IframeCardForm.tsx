@@ -54,6 +54,54 @@ const initialFieldsState: FormStatus = Object.values(
   {} as FormStatus
 );
 
+export interface RetrievePaymentSessionDeps {
+  paymentMethodId: string;
+  orderId: string;
+  onError: (m: string) => void;
+  onSuccess: (belowThreshold: boolean) => void;
+  onPspNotFound: () => void;
+  navigate: (path: string) => void;
+  setLoading: (loading: boolean) => void;
+}
+
+export const retrievePaymentSessionFn = (deps: RetrievePaymentSessionDeps) => {
+  const {
+    paymentMethodId,
+    orderId,
+    onError,
+    onSuccess,
+    onPspNotFound,
+    navigate,
+    setLoading,
+  } = deps;
+
+  // When enablePspPage is active, skip getFees here and let
+  // PaymentPspListPage handle it to avoid a duplicate POST /fees call
+  if (localStorage.getItem(SessionItems.enablePspPage) === "true") {
+    setLoading(false);
+    navigate(`/${CheckoutRoutes.LISTA_PSP}`);
+    return;
+  }
+
+  void retrieveCardData({
+    paymentId: paymentMethodId,
+    orderId,
+    onError,
+    onResponseSessionPaymentMethod: (resp) => {
+      pipe(
+        resp,
+        SessionPaymentMethodResponse.decode,
+        O.fromEither,
+        O.chain((r) => O.fromNullable(r.bin)),
+        O.fold(
+          () => onError(ErrorsType.GENERIC_ERROR),
+          () => void getFees(onSuccess, onPspNotFound, onError, resp.bin)
+        )
+      );
+    },
+  });
+};
+
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export default function IframeCardForm(props: Props) {
   const { onCancel, hideCancel } = props;
@@ -113,33 +161,16 @@ export default function IframeCardForm(props: Props) {
     ref.current?.reset();
   };
 
-  const retrievePaymentSession = (paymentMethodId: string, orderId: string) => {
-    // When enablePspPage is active, skip getFees here and let
-    // PaymentPspListPage handle it to avoid a duplicate POST /fees call
-    if (localStorage.getItem(SessionItems.enablePspPage) === "true") {
-      setLoading(false);
-      navigate(`/${CheckoutRoutes.LISTA_PSP}`);
-      return;
-    }
-
-    void retrieveCardData({
-      paymentId: paymentMethodId,
+  const retrievePaymentSession = (paymentMethodId: string, orderId: string) =>
+    retrievePaymentSessionFn({
+      paymentMethodId,
       orderId,
       onError,
-      onResponseSessionPaymentMethod: (resp) => {
-        pipe(
-          resp,
-          SessionPaymentMethodResponse.decode,
-          O.fromEither,
-          O.chain((resp) => O.fromNullable(resp.bin)),
-          O.fold(
-            () => onError(ErrorsType.GENERIC_ERROR),
-            () => getFees(onSuccess, onPspNotFound, onError, resp.bin)
-          )
-        );
-      },
+      onSuccess,
+      onPspNotFound,
+      navigate,
+      setLoading,
     });
-  };
 
   const onChange = (id: FieldId, status: FieldStatus) => {
     if (Object.keys(IdFields).includes(id)) {
