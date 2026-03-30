@@ -260,6 +260,7 @@ export default function PaymentPspListPage() {
           open={errorModalOpen}
           onClose={() => {
             setErrorModalOpen(false);
+            navigate(`/${CheckoutRoutes.ERRORE}`, { replace: true });
           }}
           titleId="pspListTitleError"
           bodyId="pspListBodyError"
