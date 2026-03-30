@@ -54,7 +54,9 @@ export const activateApmPaymentAndGetError = async (
   selectorId
 ) => {
   await chooseApmMethod(noticeCode, fiscalCode, email, "SATY");
-  const errorMessageElem = await page.waitForSelector(selectorId);
+  const pspListErrorSelector = "#pspListErrorId";
+  const combinedSelector = `${selectorId}, ${pspListErrorSelector}`;
+  const errorMessageElem = await page.waitForSelector(combinedSelector);
   return await errorMessageElem.evaluate((el) => el.textContent);
 };
 
