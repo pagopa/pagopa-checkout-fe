@@ -1,16 +1,37 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 
 import { Box, InputAdornment } from "@mui/material";
-import { Formik, FormikProps } from "formik";
+import { Formik, FormikProps, useFormikContext } from "formik";
 import React from "react";
 import { FormButtons } from "../../../../components/FormButtons/FormButtons";
 import TextFormField from "../../../../components/TextFormField/TextFormField";
 import { getFormErrorIcon } from "../../../../utils/form/validators";
 import { emailValidation } from "../../../../utils/regex/validators";
-import {
-  PaymentEmailFormErrors,
-  PaymentEmailFormFields,
-} from "../../models/paymentModel";
+import { PaymentEmailFormFields } from "../../models/paymentModel";
+
+const FocusError = () => {
+  const { errors, submitCount, isSubmitting, isValidating } =
+    useFormikContext();
+  const [lastFocusSubmitCount, setLastFocusSubmitCount] = React.useState(0);
+
+  React.useEffect(() => {
+    if (submitCount > lastFocusSubmitCount && !isSubmitting && !isValidating) {
+      const errorKeys = Object.keys(errors);
+      if (errorKeys.length > 0) {
+        const selector = errorKeys.map((key) => `[name="${key}"]`).join(",");
+        const firstErrorElement = document.querySelector(
+          selector
+        ) as HTMLElement;
+        if (firstErrorElement) {
+          firstErrorElement.focus();
+        }
+      }
+      setLastFocusSubmitCount(submitCount);
+    }
+  }, [submitCount, isSubmitting, isValidating, errors, lastFocusSubmitCount]);
+
+  return null;
+};
 
 export function PaymentEmailForm(props: {
   defaultValues?: PaymentEmailFormFields;
@@ -18,36 +39,27 @@ export function PaymentEmailForm(props: {
   onSubmit: (emailInfo: PaymentEmailFormFields) => void;
 }) {
   const formRef = React.useRef<FormikProps<PaymentEmailFormFields>>(null);
-  const [disabled, setDisabled] = React.useState(
-    !props.defaultValues?.email || !props.defaultValues?.confirmEmail
-  );
 
-  const validate = (values: PaymentEmailFormFields) => {
-    const errors: PaymentEmailFormErrors = {
-      ...(values.email
-        ? {
-            ...(emailValidation(values.email)
+  const validate = (values: PaymentEmailFormFields) => ({
+    ...(values.email
+      ? {
+        ...(emailValidation(values.email)
+          ? {}
+          : { email: "paymentEmailPage.formErrors.invalid" }),
+      }
+      : { email: "paymentEmailPage.formErrors.required" }),
+    ...(values.confirmEmail
+      ? {
+        ...(emailValidation(values.confirmEmail)
+          ? {
+            ...(values.email === values.confirmEmail
               ? {}
-              : { email: "paymentEmailPage.formErrors.invalid" }),
+              : { confirmEmail: "paymentEmailPage.formErrors.notEqual" }),
           }
-        : { email: "paymentEmailPage.formErrors.required" }),
-      ...(values.confirmEmail
-        ? {
-            ...(emailValidation(values.confirmEmail)
-              ? {
-                  ...(values.email === values.confirmEmail
-                    ? {}
-                    : { confirmEmail: "paymentEmailPage.formErrors.notEqual" }),
-                }
-              : { confirmEmail: "paymentEmailPage.formErrors.invalid" }),
-          }
-        : { confirmEmail: "paymentEmailPage.formErrors.required" }),
-    };
-
-    setDisabled(!!(errors.email || errors.confirmEmail));
-
-    return errors;
-  };
+          : { confirmEmail: "paymentEmailPage.formErrors.invalid" }),
+      }
+      : { confirmEmail: "paymentEmailPage.formErrors.required" }),
+  });
 
   return (
     <>
@@ -71,8 +83,10 @@ export function PaymentEmailForm(props: {
           values,
         }) => (
           <form onSubmit={handleSubmit}>
+            <FocusError />
             <Box>
               <TextFormField
+                required
                 fullWidth
                 variant="outlined"
                 errorText={errors.email}
@@ -91,6 +105,7 @@ export function PaymentEmailForm(props: {
                 }
               />
               <TextFormField
+                required
                 fullWidth
                 variant="outlined"
                 errorText={errors.confirmEmail}
@@ -116,7 +131,7 @@ export function PaymentEmailForm(props: {
               submitTitle="paymentEmailPage.formButtons.submit"
               cancelTitle="paymentEmailPage.formButtons.back"
               idSubmit="paymentEmailPageButtonContinue"
-              disabledSubmit={disabled}
+              disabledSubmit={false}
               handleSubmit={() => handleSubmit()}
               handleCancel={props.onCancel}
             />
