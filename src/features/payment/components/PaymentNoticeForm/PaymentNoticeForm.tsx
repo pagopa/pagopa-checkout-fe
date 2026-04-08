@@ -1,39 +1,15 @@
-/* eslint-disable sonarjs/no-identical-functions */
 /* eslint-disable functional/immutable-data */
 /* eslint-disable @typescript-eslint/no-empty-function */
 
 import { Box, InputAdornment } from "@mui/material";
-import { Formik, FormikProps, useFormikContext } from "formik";
+import { Formik, FormikProps } from "formik";
 import React from "react";
+import FocusError from "../../../../components/FocusError/FocusError";
 import { FormButtons } from "../../../../components/FormButtons/FormButtons";
 import TextFormField from "../../../../components/TextFormField/TextFormField";
 import { cleanSpaces } from "../../../../utils/form/formatters";
 import { getFormValidationIcon } from "../../../../utils/form/validators";
 import { PaymentFormFields } from "../../models/paymentModel";
-
-const FocusError = () => {
-  const { errors, submitCount, isSubmitting, isValidating } =
-    useFormikContext();
-  const [lastFocusSubmitCount, setLastFocusSubmitCount] = React.useState(0);
-
-  React.useEffect(() => {
-    if (submitCount > lastFocusSubmitCount && !isSubmitting && !isValidating) {
-      const errorKeys = Object.keys(errors);
-      if (errorKeys.length > 0) {
-        const selector = errorKeys.map((key) => `[name="${key}"]`).join(",");
-        const firstErrorElement = document.querySelector(
-          selector
-        ) as HTMLElement;
-        if (firstErrorElement) {
-          firstErrorElement.focus();
-        }
-      }
-      setLastFocusSubmitCount(submitCount);
-    }
-  }, [submitCount, isSubmitting, isValidating, errors, lastFocusSubmitCount]);
-
-  return null;
-};
 
 export function PaymentNoticeForm(props: {
   defaultValues?: PaymentFormFields;

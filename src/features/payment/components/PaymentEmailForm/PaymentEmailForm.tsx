@@ -1,37 +1,14 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 
 import { Box, InputAdornment } from "@mui/material";
-import { Formik, FormikProps, useFormikContext } from "formik";
+import { Formik, FormikProps } from "formik";
 import React from "react";
+import FocusError from "../../../../components/FocusError/FocusError";
 import { FormButtons } from "../../../../components/FormButtons/FormButtons";
 import TextFormField from "../../../../components/TextFormField/TextFormField";
 import { getFormErrorIcon } from "../../../../utils/form/validators";
 import { emailValidation } from "../../../../utils/regex/validators";
 import { PaymentEmailFormFields } from "../../models/paymentModel";
-
-const FocusError = () => {
-  const { errors, submitCount, isSubmitting, isValidating } =
-    useFormikContext();
-  const [lastFocusSubmitCount, setLastFocusSubmitCount] = React.useState(0);
-
-  React.useEffect(() => {
-    if (submitCount > lastFocusSubmitCount && !isSubmitting && !isValidating) {
-      const errorKeys = Object.keys(errors);
-      if (errorKeys.length > 0) {
-        const selector = errorKeys.map((key) => `[name="${key}"]`).join(",");
-        const firstErrorElement = document.querySelector(
-          selector
-        ) as HTMLElement;
-        if (firstErrorElement) {
-          firstErrorElement.focus();
-        }
-      }
-      setLastFocusSubmitCount(submitCount);
-    }
-  }, [submitCount, isSubmitting, isValidating, errors, lastFocusSubmitCount]);
-
-  return null;
-};
 
 export function PaymentEmailForm(props: {
   defaultValues?: PaymentEmailFormFields;
