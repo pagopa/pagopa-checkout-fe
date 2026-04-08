@@ -140,14 +140,25 @@ export default function PaymentResponsePage() {
 
   const showFinalResult = (outcome: ViewOutcomeEnum) => {
     const message = responseOutcome[outcome];
-    const redirectTo =
-      outcome === "0"
-        ? cart
-          ? cart.returnUrls.returnOkUrl
-          : "/"
-        : cart
-        ? cart.returnUrls.returnErrorUrl
-        : "/";
+
+    const getRedirectUrl = (outcome: ViewOutcomeEnum, cart?: Cart): string => {
+      if (!cart) {
+        return "/";
+      }
+      switch (outcome) {
+        case ViewOutcomeEnum.SUCCESS: // case "0"
+          return cart.returnUrls.returnOkUrl;
+        case ViewOutcomeEnum.TAKING_CHARGE: // case "17"
+          return cart.returnUrls.returnWaitingUrl
+            ? cart.returnUrls.returnWaitingUrl
+            : cart.returnUrls.returnErrorUrl;
+        default:
+          return cart.returnUrls.returnErrorUrl;
+      }
+    };
+
+    const redirectTo = getRedirectUrl(outcome, cart);
+
     setOutcomeMessage(message);
     setCartInformation({
       redirectUrl: redirectTo,
