@@ -43,21 +43,21 @@ export function PaymentEmailForm(props: {
   const validate = (values: PaymentEmailFormFields) => ({
     ...(values.email
       ? {
-        ...(emailValidation(values.email)
-          ? {}
-          : { email: "paymentEmailPage.formErrors.invalid" }),
-      }
+          ...(emailValidation(values.email)
+            ? {}
+            : { email: "paymentEmailPage.formErrors.invalid" }),
+        }
       : { email: "paymentEmailPage.formErrors.required" }),
     ...(values.confirmEmail
       ? {
-        ...(emailValidation(values.confirmEmail)
-          ? {
-            ...(values.email === values.confirmEmail
-              ? {}
-              : { confirmEmail: "paymentEmailPage.formErrors.notEqual" }),
-          }
-          : { confirmEmail: "paymentEmailPage.formErrors.invalid" }),
-      }
+          ...(emailValidation(values.confirmEmail)
+            ? {
+                ...(values.email === values.confirmEmail
+                  ? {}
+                  : { confirmEmail: "paymentEmailPage.formErrors.notEqual" }),
+              }
+            : { confirmEmail: "paymentEmailPage.formErrors.invalid" }),
+        }
       : { confirmEmail: "paymentEmailPage.formErrors.required" }),
   });
 

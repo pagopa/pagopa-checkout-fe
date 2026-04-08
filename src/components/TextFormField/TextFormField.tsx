@@ -20,15 +20,15 @@ interface TextFormFieldProps {
   disabled?: boolean;
   readOnly?: boolean;
   inputMode?:
-  | "search"
-  | "text"
-  | "none"
-  | "tel"
-  | "url"
-  | "email"
-  | "numeric"
-  | "decimal"
-  | undefined;
+    | "search"
+    | "text"
+    | "none"
+    | "tel"
+    | "url"
+    | "email"
+    | "numeric"
+    | "decimal"
+    | undefined;
   autoComplete?: string;
   handleChange: FormEventHandler<HTMLInputElement | HTMLTextAreaElement>;
   handleBlur: FocusEventHandler<HTMLInputElement | HTMLTextAreaElement>;
@@ -67,7 +67,7 @@ function TextFormField(props: TextFormFieldProps) {
         inputMode: props.inputMode,
       }}
       FormHelperTextProps={{
-        role: props.error ? 'alert' : undefined
+        role: props.error ? "alert" : undefined,
       }}
     />
   );
