@@ -403,6 +403,7 @@ describe("PaymentResponsePageV2", () => {
       returnUrls: {
         returnOkUrl: "/custom-cart-ok",
         returnErrorUrl: "/custom-cart-error",
+        returnWaitingUrl: "/custom-cart-waiting",
       },
     };
 
@@ -466,8 +467,10 @@ describe("PaymentResponsePageV2", () => {
           screen.getByText("paymentResponsePage.buttons.continue")
         );
         const expectedUrl =
-          outcomeVal === ViewOutcomeEnum.SUCCESS.toString() // Compare string with string
+          outcomeVal === ViewOutcomeEnum.SUCCESS.toString()
             ? cartData.returnUrls.returnOkUrl
+            : outcomeVal === ViewOutcomeEnum.TAKING_CHARGE.toString()
+            ? cartData.returnUrls.returnWaitingUrl
             : cartData.returnUrls.returnErrorUrl;
         expect(window.location.replace).toHaveBeenCalledWith(expectedUrl);
       }
