@@ -280,7 +280,7 @@ stages:
               checkout_feature_flags_basepath: '/checkout/feature-flags/v1'
               checkout_auth_service_basepath_v1: '/checkout/auth-service/v1'
               pagopa_assets_cdn: 'https://assets.cdn.platform.pagopa.it/payment-methods'
-              pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi/'
+              pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi'
               survey_show: 1
               checkout_npg_sdk_url: 'https://stg-ta.nexigroup.com/monetaweb/resources/hfsdk.js'
               checkout_version: "$(Build.SourceBranchName):$(Build.SourceVersion)"
@@ -386,7 +386,7 @@ stages:
               checkout_feature_flags_basepath: '/checkout/feature-flags/v1'
               checkout_auth_service_basepath_v1: '/checkout/auth-service/v1'
               pagopa_assets_cdn: 'https://assets.cdn.platform.pagopa.it/payment-methods'
-              pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi/'
+              pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi'
               survey_show: 1
               checkout_npg_sdk_url: 'https://xpay.nexigroup.com/monetaweb/resources/hfsdk.js'
               checkout_version: "$(Build.SourceBranchName):$(Build.SourceVersion)"
