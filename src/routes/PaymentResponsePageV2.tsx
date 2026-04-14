@@ -88,12 +88,28 @@ export default function PaymentResponsePageV2() {
 
   const cart = getSessionItem(SessionItems.cart) as Cart | undefined;
 
+  const getRedirectUrl = (outcome: ViewOutcomeEnum, cart?: Cart): string => {
+    if (!cart) {
+      return "/";
+    }
+
+    switch (outcome) {
+      case ViewOutcomeEnum.SUCCESS:
+        return cart.returnUrls.returnOkUrl;
+
+      case ViewOutcomeEnum.TAKING_CHARGE:
+        return (
+          cart.returnUrls.returnWaitingUrl ?? cart.returnUrls.returnErrorUrl
+        );
+
+      default:
+        return cart.returnUrls.returnErrorUrl;
+    }
+  };
+
   const getCartReturnUrl = (outcome: ViewOutcomeEnum) =>
     ({
-      redirectUrl:
-        outcome === ViewOutcomeEnum.SUCCESS
-          ? cart?.returnUrls.returnOkUrl || "/"
-          : cart?.returnUrls.returnErrorUrl || "/",
+      redirectUrl: getRedirectUrl(outcome, cart),
       isCart: cart != null,
     } as CartInformation);
 
