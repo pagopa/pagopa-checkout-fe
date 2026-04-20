@@ -7,6 +7,7 @@ interface TextFormFieldProps {
   fullWidth: boolean;
   errorText: string | undefined;
   error: boolean;
+  required?: boolean;
   label: string;
   id: string;
   type: string;
@@ -38,6 +39,7 @@ function TextFormField(props: TextFormFieldProps) {
 
   return (
     <TextField
+      required={props.required}
       fullWidth={props.fullWidth}
       margin="dense"
       disabled={props.disabled}
@@ -63,6 +65,9 @@ function TextFormField(props: TextFormFieldProps) {
       }}
       inputProps={{
         inputMode: props.inputMode,
+      }}
+      FormHelperTextProps={{
+        role: props.error ? "alert" : undefined,
       }}
     />
   );
