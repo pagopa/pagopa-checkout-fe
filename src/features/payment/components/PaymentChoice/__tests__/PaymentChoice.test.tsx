@@ -282,6 +282,15 @@ const renderWithRouterAndRedux = (ui: any, { initialState = {} } = {}) => {
   return render(<Provider store={store}>{ui}</Provider>);
 };
 
+// Helper to mock useRef with a resolved recaptcha token
+const mockUseRefWithToken = () =>
+  jest.spyOn(React, "useRef").mockImplementation(() => ({
+    current: {
+      execute: jest.fn().mockResolvedValue("token"),
+      reset: jest.fn(),
+    },
+  }));
+
 describe("PaymentChoice", () => {
   const isPaypalDetails = (
     details: WalletInfo["details"]
@@ -784,12 +793,7 @@ describe("PaymentChoice", () => {
     });
 
     // Mock the useRef to immediately set the ref
-    jest.spyOn(React, "useRef").mockImplementation(() => ({
-      current: {
-        execute: jest.fn().mockResolvedValue("token"),
-        reset: jest.fn(),
-      },
-    }));
+    mockUseRefWithToken();
 
     renderWithRouterAndRedux(
       <PaymentChoice
@@ -998,12 +1002,7 @@ describe("PaymentChoice", () => {
       return Promise.resolve();
     });
 
-    jest.spyOn(React, "useRef").mockImplementation(() => ({
-      current: {
-        execute: jest.fn().mockResolvedValue("token"),
-        reset: jest.fn(),
-      },
-    }));
+    mockUseRefWithToken();
 
     renderWithRouterAndRedux(
       <PaymentChoice
@@ -1042,12 +1041,7 @@ describe("PaymentChoice", () => {
       return Promise.resolve();
     });
 
-    jest.spyOn(React, "useRef").mockImplementation(() => ({
-      current: {
-        execute: jest.fn().mockResolvedValue("token"),
-        reset: jest.fn(),
-      },
-    }));
+    mockUseRefWithToken();
 
     renderWithRouterAndRedux(
       <PaymentChoice

@@ -6,7 +6,10 @@ import {
   waitFor,
   act,
 } from "@testing-library/react";
-import IframeCardForm, { retrievePaymentSessionFn, handleSessionPaymentMethodResponse } from "../IframeCardForm";
+import IframeCardForm, {
+  retrievePaymentSessionFn,
+  handleSessionPaymentMethodResponse,
+} from "../IframeCardForm";
 import { IdFields } from "../types";
 import * as helper from "../../../../../utils/api/helper";
 import * as sessionStorage from "../../../../../utils/storage/sessionStorage";
@@ -365,6 +368,34 @@ const setupSimpleMockSessionResponse = () => ({
     form: [{ id: "CARD_NUMBER", label: "Card Number" }],
   },
 });
+
+// Helper to mock retrieveCardData with a valid VISA response
+const mockRetrieveCardDataWithVisa = () =>
+  (helper.retrieveCardData as jest.Mock).mockImplementation(
+    ({ onResponseSessionPaymentMethod }) => {
+      onResponseSessionPaymentMethod({
+        sessionId: "session123",
+        bin: "123456",
+        lastFourDigits: "9876",
+        expiringDate: "1230",
+        brand: "VISA",
+      });
+    }
+  );
+
+// Helper to mock retrieveCardData with a valid MASTERCARD response
+const mockRetrieveCardDataWithMastercard = () =>
+  (helper.retrieveCardData as jest.Mock).mockImplementation(
+    ({ onResponseSessionPaymentMethod }) => {
+      onResponseSessionPaymentMethod({
+        sessionId: "session123",
+        bin: "654321",
+        lastFourDigits: "1111",
+        expiringDate: "1225",
+        brand: "MASTERCARD",
+      });
+    }
+  );
 
 describe("IframeCardForm", () => {
   const mockOnCancel = jest.fn();
@@ -852,17 +883,7 @@ describe("retrievePaymentSessionFn", () => {
   it("should call retrieveCardData and getFees when enablePspPage is false", () => {
     localStorageMock.setItem("enablePspPage", "false");
 
-    (helper.retrieveCardData as jest.Mock).mockImplementation(
-      ({ onResponseSessionPaymentMethod }) => {
-        onResponseSessionPaymentMethod({
-          sessionId: "session123",
-          bin: "123456",
-          lastFourDigits: "9876",
-          expiringDate: "1230",
-          brand: "VISA",
-        });
-      }
-    );
+    mockRetrieveCardDataWithVisa();
 
     (helper.getFees as jest.Mock).mockImplementation((onSuccess) => {
       onSuccess(false);
@@ -887,17 +908,7 @@ describe("retrievePaymentSessionFn", () => {
 
   it("should call retrieveCardData when enablePspPage is not set in localStorage", () => {
     // localStorage does not have enablePspPage set (returns null)
-    (helper.retrieveCardData as jest.Mock).mockImplementation(
-      ({ onResponseSessionPaymentMethod }) => {
-        onResponseSessionPaymentMethod({
-          sessionId: "session123",
-          bin: "123456",
-          lastFourDigits: "9876",
-          expiringDate: "1230",
-          brand: "VISA",
-        });
-      }
-    );
+    mockRetrieveCardDataWithVisa();
 
     (helper.getFees as jest.Mock).mockImplementation((onSuccess) => {
       onSuccess(true);
@@ -987,17 +998,7 @@ describe("retrievePaymentSessionFn", () => {
   it("should call getFees with onPspNotFound when decode succeeds and bin is present", () => {
     localStorageMock.setItem("enablePspPage", "false");
 
-    (helper.retrieveCardData as jest.Mock).mockImplementation(
-      ({ onResponseSessionPaymentMethod }) => {
-        onResponseSessionPaymentMethod({
-          sessionId: "session123",
-          bin: "654321",
-          lastFourDigits: "1111",
-          expiringDate: "1225",
-          brand: "MASTERCARD",
-        });
-      }
-    );
+    mockRetrieveCardDataWithMastercard();
 
     const mockOnPspNotFound = jest.fn();
     (helper.getFees as jest.Mock).mockImplementation(
@@ -1024,17 +1025,7 @@ describe("retrievePaymentSessionFn", () => {
   it("should call getFees with onError when getFees triggers error callback", () => {
     localStorageMock.setItem("enablePspPage", "false");
 
-    (helper.retrieveCardData as jest.Mock).mockImplementation(
-      ({ onResponseSessionPaymentMethod }) => {
-        onResponseSessionPaymentMethod({
-          sessionId: "session123",
-          bin: "654321",
-          lastFourDigits: "1111",
-          expiringDate: "1225",
-          brand: "MASTERCARD",
-        });
-      }
-    );
+    mockRetrieveCardDataWithMastercard();
 
     const mockOnError = jest.fn();
     (helper.getFees as jest.Mock).mockImplementation(
