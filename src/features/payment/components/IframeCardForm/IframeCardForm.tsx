@@ -64,6 +64,28 @@ export interface RetrievePaymentSessionDeps {
   setLoading: (loading: boolean) => void;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const handleSessionPaymentMethodResponse = (
+  resp: any,
+  onError: (m: string) => void,
+  onSuccess: (belowThreshold: boolean) => void,
+  onPspNotFound: () => void
+) => {
+  const decoded = SessionPaymentMethodResponse.decode(resp);
+  const maybeBin = pipe(
+    decoded,
+    O.fromEither,
+    O.chain((r) => O.fromNullable(r.bin))
+  );
+  pipe(
+    maybeBin,
+    O.fold(
+      () => onError(ErrorsType.GENERIC_ERROR),
+      () => void getFees(onSuccess, onPspNotFound, onError, resp.bin)
+    )
+  );
+};
+
 export const retrievePaymentSessionFn = (deps: RetrievePaymentSessionDeps) => {
   const {
     paymentMethodId,
@@ -88,15 +110,11 @@ export const retrievePaymentSessionFn = (deps: RetrievePaymentSessionDeps) => {
     orderId,
     onError,
     onResponseSessionPaymentMethod: (resp) => {
-      pipe(
+      handleSessionPaymentMethodResponse(
         resp,
-        SessionPaymentMethodResponse.decode,
-        O.fromEither,
-        O.chain((r) => O.fromNullable(r.bin)),
-        O.fold(
-          () => onError(ErrorsType.GENERIC_ERROR),
-          () => void getFees(onSuccess, onPspNotFound, onError, resp.bin)
-        )
+        onError,
+        onSuccess,
+        onPspNotFound
       );
     },
   });

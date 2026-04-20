@@ -981,4 +981,97 @@ describe("PaymentChoice", () => {
 
     expect(mockNavigate).toHaveBeenCalledWith("/error", { replace: true });
   });
+
+  it("should call getFees when enablePspPage is explicitly false on APM choice", async () => {
+    jest.clearAllMocks();
+
+    // Set enablePspPage to "false" (non-null, non-"true" value)
+    localStorage.setItem("enablePspPage", "false");
+
+    mockedRecaptchaTransaction.mockImplementation(({ onSuccess }) => {
+      onSuccess("pmId", "orderId");
+      return Promise.resolve();
+    });
+
+    mockedGetFees.mockImplementation((onSuccess) => {
+      onSuccess(true);
+      return Promise.resolve();
+    });
+
+    jest.spyOn(React, "useRef").mockImplementation(() => ({
+      current: {
+        execute: jest.fn().mockResolvedValue("token"),
+        reset: jest.fn(),
+      },
+    }));
+
+    renderWithRouterAndRedux(
+      <PaymentChoice
+        amount={100}
+        paymentInstruments={samplePaymentInstruments}
+        loading={false}
+      />
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByTestId("checkout-loader")).not.toBeInTheDocument();
+    });
+
+    // Click on PayPal (non-CP method) to trigger onApmChoice
+    fireEvent.click(screen.getByText("PayPal"));
+
+    await waitFor(() => {
+      expect(mockedRecaptchaTransaction).toHaveBeenCalled();
+      expect(mockedGetFees).toHaveBeenCalled();
+    });
+
+    // Should navigate to the PayPal route, NOT to psp-list
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith("/paypal-payment");
+    });
+  });
+
+  it("should navigate to PSP list when enablePspPage is true on APM choice", async () => {
+    jest.clearAllMocks();
+
+    // Set enablePspPage to "true"
+    localStorage.setItem("enablePspPage", "true");
+
+    mockedRecaptchaTransaction.mockImplementation(({ onSuccess }) => {
+      onSuccess("pmId", "orderId");
+      return Promise.resolve();
+    });
+
+    jest.spyOn(React, "useRef").mockImplementation(() => ({
+      current: {
+        execute: jest.fn().mockResolvedValue("token"),
+        reset: jest.fn(),
+      },
+    }));
+
+    renderWithRouterAndRedux(
+      <PaymentChoice
+        amount={100}
+        paymentInstruments={samplePaymentInstruments}
+        loading={false}
+      />
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByTestId("checkout-loader")).not.toBeInTheDocument();
+    });
+
+    // Click on PayPal (non-CP method) to trigger onApmChoice
+    fireEvent.click(screen.getByText("PayPal"));
+
+    await waitFor(() => {
+      expect(mockedRecaptchaTransaction).toHaveBeenCalled();
+    });
+
+    // Should navigate to psp-list and NOT call getFees
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith("/psp-list");
+    });
+    expect(mockedGetFees).not.toHaveBeenCalled();
+  });
 });

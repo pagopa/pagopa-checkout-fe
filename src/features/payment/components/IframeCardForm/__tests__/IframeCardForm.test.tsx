@@ -6,7 +6,7 @@ import {
   waitFor,
   act,
 } from "@testing-library/react";
-import IframeCardForm, { retrievePaymentSessionFn } from "../IframeCardForm";
+import IframeCardForm, { retrievePaymentSessionFn, handleSessionPaymentMethodResponse } from "../IframeCardForm";
 import { IdFields } from "../types";
 import * as helper from "../../../../../utils/api/helper";
 import * as sessionStorage from "../../../../../utils/storage/sessionStorage";
@@ -883,5 +883,283 @@ describe("retrievePaymentSessionFn", () => {
     expect(helper.retrieveCardData).toHaveBeenCalled();
     expect(helper.getFees).toHaveBeenCalled();
     expect(mockOnSuccess).toHaveBeenCalledWith(false);
+  });
+
+  it("should call retrieveCardData when enablePspPage is not set in localStorage", () => {
+    // localStorage does not have enablePspPage set (returns null)
+    (helper.retrieveCardData as jest.Mock).mockImplementation(
+      ({ onResponseSessionPaymentMethod }) => {
+        onResponseSessionPaymentMethod({
+          sessionId: "session123",
+          bin: "123456",
+          lastFourDigits: "9876",
+          expiringDate: "1230",
+          brand: "VISA",
+        });
+      }
+    );
+
+    (helper.getFees as jest.Mock).mockImplementation((onSuccess) => {
+      onSuccess(true);
+    });
+
+    const mockOnSuccess = jest.fn();
+    const mockSetLoading = jest.fn();
+
+    retrievePaymentSessionFn({
+      paymentMethodId: "pm123",
+      orderId: "order123",
+      onError: jest.fn(),
+      onSuccess: mockOnSuccess,
+      onPspNotFound: jest.fn(),
+      navigate: mockNavigate,
+      setLoading: mockSetLoading,
+    });
+
+    expect(mockSetLoading).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
+    expect(helper.retrieveCardData).toHaveBeenCalled();
+    expect(helper.getFees).toHaveBeenCalled();
+    expect(mockOnSuccess).toHaveBeenCalledWith(true);
+  });
+
+  it("should call onError with GENERIC_ERROR when decode fails (invalid response)", () => {
+    localStorageMock.setItem("enablePspPage", "false");
+
+    (helper.retrieveCardData as jest.Mock).mockImplementation(
+      ({ onResponseSessionPaymentMethod }) => {
+        // Pass an invalid response that will fail io-ts decode
+        onResponseSessionPaymentMethod({ invalid: "data" });
+      }
+    );
+
+    const mockOnError = jest.fn();
+
+    retrievePaymentSessionFn({
+      paymentMethodId: "pm123",
+      orderId: "order123",
+      onError: mockOnError,
+      onSuccess: jest.fn(),
+      onPspNotFound: jest.fn(),
+      navigate: mockNavigate,
+      setLoading: jest.fn(),
+    });
+
+    expect(helper.retrieveCardData).toHaveBeenCalled();
+    expect(mockOnError).toHaveBeenCalledWith(ErrorsType.GENERIC_ERROR);
+    expect(helper.getFees).not.toHaveBeenCalled();
+  });
+
+  it("should call onError with GENERIC_ERROR when decode succeeds but bin is undefined", () => {
+    localStorageMock.setItem("enablePspPage", "false");
+
+    (helper.retrieveCardData as jest.Mock).mockImplementation(
+      ({ onResponseSessionPaymentMethod }) => {
+        // Pass a response where bin is missing/undefined
+        // Since bin is required in the io-ts type, decode will fail
+        // and O.fromEither will return None
+        onResponseSessionPaymentMethod({
+          sessionId: "session123",
+          lastFourDigits: "9876",
+          expiringDate: "1230",
+          brand: "VISA",
+        });
+      }
+    );
+
+    const mockOnError = jest.fn();
+
+    retrievePaymentSessionFn({
+      paymentMethodId: "pm123",
+      orderId: "order123",
+      onError: mockOnError,
+      onSuccess: jest.fn(),
+      onPspNotFound: jest.fn(),
+      navigate: mockNavigate,
+      setLoading: jest.fn(),
+    });
+
+    expect(helper.retrieveCardData).toHaveBeenCalled();
+    expect(mockOnError).toHaveBeenCalledWith(ErrorsType.GENERIC_ERROR);
+    expect(helper.getFees).not.toHaveBeenCalled();
+  });
+
+  it("should call getFees with onPspNotFound when decode succeeds and bin is present", () => {
+    localStorageMock.setItem("enablePspPage", "false");
+
+    (helper.retrieveCardData as jest.Mock).mockImplementation(
+      ({ onResponseSessionPaymentMethod }) => {
+        onResponseSessionPaymentMethod({
+          sessionId: "session123",
+          bin: "654321",
+          lastFourDigits: "1111",
+          expiringDate: "1225",
+          brand: "MASTERCARD",
+        });
+      }
+    );
+
+    const mockOnPspNotFound = jest.fn();
+    (helper.getFees as jest.Mock).mockImplementation(
+      (_onSuccess, onPspNotFound) => {
+        onPspNotFound();
+      }
+    );
+
+    retrievePaymentSessionFn({
+      paymentMethodId: "pm123",
+      orderId: "order123",
+      onError: jest.fn(),
+      onSuccess: jest.fn(),
+      onPspNotFound: mockOnPspNotFound,
+      navigate: mockNavigate,
+      setLoading: jest.fn(),
+    });
+
+    expect(helper.retrieveCardData).toHaveBeenCalled();
+    expect(helper.getFees).toHaveBeenCalled();
+    expect(mockOnPspNotFound).toHaveBeenCalled();
+  });
+
+  it("should call getFees with onError when getFees triggers error callback", () => {
+    localStorageMock.setItem("enablePspPage", "false");
+
+    (helper.retrieveCardData as jest.Mock).mockImplementation(
+      ({ onResponseSessionPaymentMethod }) => {
+        onResponseSessionPaymentMethod({
+          sessionId: "session123",
+          bin: "654321",
+          lastFourDigits: "1111",
+          expiringDate: "1225",
+          brand: "MASTERCARD",
+        });
+      }
+    );
+
+    const mockOnError = jest.fn();
+    (helper.getFees as jest.Mock).mockImplementation(
+      (_onSuccess, _onPspNotFound, onError) => {
+        onError("FEE_ERROR");
+      }
+    );
+
+    retrievePaymentSessionFn({
+      paymentMethodId: "pm123",
+      orderId: "order123",
+      onError: mockOnError,
+      onSuccess: jest.fn(),
+      onPspNotFound: jest.fn(),
+      navigate: mockNavigate,
+      setLoading: jest.fn(),
+    });
+
+    expect(helper.retrieveCardData).toHaveBeenCalled();
+    expect(helper.getFees).toHaveBeenCalled();
+    expect(mockOnError).toHaveBeenCalledWith("FEE_ERROR");
+  });
+});
+
+describe("handleSessionPaymentMethodResponse", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("should call onError with GENERIC_ERROR when response fails decode", () => {
+    const mockOnError = jest.fn();
+    const mockOnSuccess = jest.fn();
+    const mockOnPspNotFound = jest.fn();
+
+    handleSessionPaymentMethodResponse(
+      { invalid: "data" },
+      mockOnError,
+      mockOnSuccess,
+      mockOnPspNotFound
+    );
+
+    expect(mockOnError).toHaveBeenCalledWith(ErrorsType.GENERIC_ERROR);
+    expect(helper.getFees).not.toHaveBeenCalled();
+  });
+
+  it("should call onError with GENERIC_ERROR when response has no bin field", () => {
+    const mockOnError = jest.fn();
+    const mockOnSuccess = jest.fn();
+    const mockOnPspNotFound = jest.fn();
+
+    // Missing bin field causes decode to fail
+    handleSessionPaymentMethodResponse(
+      {
+        sessionId: "session123",
+        lastFourDigits: "9876",
+        expiringDate: "1230",
+        brand: "VISA",
+      },
+      mockOnError,
+      mockOnSuccess,
+      mockOnPspNotFound
+    );
+
+    expect(mockOnError).toHaveBeenCalledWith(ErrorsType.GENERIC_ERROR);
+    expect(helper.getFees).not.toHaveBeenCalled();
+  });
+
+  it("should call getFees when decode succeeds and bin is present", () => {
+    const mockOnError = jest.fn();
+    const mockOnSuccess = jest.fn();
+    const mockOnPspNotFound = jest.fn();
+
+    (helper.getFees as jest.Mock).mockImplementation((onSuccess) => {
+      onSuccess(true);
+    });
+
+    handleSessionPaymentMethodResponse(
+      {
+        sessionId: "session123",
+        bin: "123456",
+        lastFourDigits: "9876",
+        expiringDate: "1230",
+        brand: "VISA",
+      },
+      mockOnError,
+      mockOnSuccess,
+      mockOnPspNotFound
+    );
+
+    expect(mockOnError).not.toHaveBeenCalled();
+    expect(helper.getFees).toHaveBeenCalledWith(
+      mockOnSuccess,
+      mockOnPspNotFound,
+      mockOnError,
+      "123456"
+    );
+    expect(mockOnSuccess).toHaveBeenCalledWith(true);
+  });
+
+  it("should call getFees with onPspNotFound when psp is not found", () => {
+    const mockOnError = jest.fn();
+    const mockOnSuccess = jest.fn();
+    const mockOnPspNotFound = jest.fn();
+
+    (helper.getFees as jest.Mock).mockImplementation(
+      (_onSuccess, onPspNotFound) => {
+        onPspNotFound();
+      }
+    );
+
+    handleSessionPaymentMethodResponse(
+      {
+        sessionId: "session123",
+        bin: "654321",
+        lastFourDigits: "1111",
+        expiringDate: "1225",
+        brand: "MASTERCARD",
+      },
+      mockOnError,
+      mockOnSuccess,
+      mockOnPspNotFound
+    );
+
+    expect(mockOnError).not.toHaveBeenCalled();
+    expect(helper.getFees).toHaveBeenCalled();
+    expect(mockOnPspNotFound).toHaveBeenCalled();
   });
 });
