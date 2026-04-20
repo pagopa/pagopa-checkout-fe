@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-identical-functions */
 import React from "react";
 import "@testing-library/jest-dom";
 import {
@@ -281,15 +282,6 @@ const renderWithRouterAndRedux = (ui: any, { initialState = {} } = {}) => {
   const store = createTestStore(initialState);
   return render(<Provider store={store}>{ui}</Provider>);
 };
-
-// Helper to mock useRef with a resolved recaptcha token
-const mockUseRefWithToken = () =>
-  jest.spyOn(React, "useRef").mockImplementation(() => ({
-    current: {
-      execute: jest.fn().mockResolvedValue("token"),
-      reset: jest.fn(),
-    },
-  }));
 
 describe("PaymentChoice", () => {
   const isPaypalDetails = (
@@ -793,7 +785,12 @@ describe("PaymentChoice", () => {
     });
 
     // Mock the useRef to immediately set the ref
-    mockUseRefWithToken();
+    jest.spyOn(React, "useRef").mockImplementation(() => ({
+      current: {
+        execute: jest.fn().mockResolvedValue("token"),
+        reset: jest.fn(),
+      },
+    }));
 
     renderWithRouterAndRedux(
       <PaymentChoice
@@ -1002,7 +999,12 @@ describe("PaymentChoice", () => {
       return Promise.resolve();
     });
 
-    mockUseRefWithToken();
+    jest.spyOn(React, "useRef").mockImplementation(() => ({
+      current: {
+        execute: jest.fn().mockResolvedValue("token"),
+        reset: jest.fn(),
+      },
+    }));
 
     renderWithRouterAndRedux(
       <PaymentChoice
@@ -1041,7 +1043,12 @@ describe("PaymentChoice", () => {
       return Promise.resolve();
     });
 
-    mockUseRefWithToken();
+    jest.spyOn(React, "useRef").mockImplementation(() => ({
+      current: {
+        execute: jest.fn().mockResolvedValue("token"),
+        reset: jest.fn(),
+      },
+    }));
 
     renderWithRouterAndRedux(
       <PaymentChoice

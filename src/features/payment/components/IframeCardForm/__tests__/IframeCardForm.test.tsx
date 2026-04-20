@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-identical-functions */
 import React from "react";
 import {
   render,
@@ -368,34 +369,6 @@ const setupSimpleMockSessionResponse = () => ({
     form: [{ id: "CARD_NUMBER", label: "Card Number" }],
   },
 });
-
-// Helper to mock retrieveCardData with a valid VISA response
-const mockRetrieveCardDataWithVisa = () =>
-  (helper.retrieveCardData as jest.Mock).mockImplementation(
-    ({ onResponseSessionPaymentMethod }) => {
-      onResponseSessionPaymentMethod({
-        sessionId: "session123",
-        bin: "123456",
-        lastFourDigits: "9876",
-        expiringDate: "1230",
-        brand: "VISA",
-      });
-    }
-  );
-
-// Helper to mock retrieveCardData with a valid MASTERCARD response
-const mockRetrieveCardDataWithMastercard = () =>
-  (helper.retrieveCardData as jest.Mock).mockImplementation(
-    ({ onResponseSessionPaymentMethod }) => {
-      onResponseSessionPaymentMethod({
-        sessionId: "session123",
-        bin: "654321",
-        lastFourDigits: "1111",
-        expiringDate: "1225",
-        brand: "MASTERCARD",
-      });
-    }
-  );
 
 describe("IframeCardForm", () => {
   const mockOnCancel = jest.fn();
@@ -883,7 +856,17 @@ describe("retrievePaymentSessionFn", () => {
   it("should call retrieveCardData and getFees when enablePspPage is false", () => {
     localStorageMock.setItem("enablePspPage", "false");
 
-    mockRetrieveCardDataWithVisa();
+    (helper.retrieveCardData as jest.Mock).mockImplementation(
+      ({ onResponseSessionPaymentMethod }) => {
+        onResponseSessionPaymentMethod({
+          sessionId: "session123",
+          bin: "123456",
+          lastFourDigits: "9876",
+          expiringDate: "1230",
+          brand: "VISA",
+        });
+      }
+    );
 
     (helper.getFees as jest.Mock).mockImplementation((onSuccess) => {
       onSuccess(false);
@@ -908,7 +891,17 @@ describe("retrievePaymentSessionFn", () => {
 
   it("should call retrieveCardData when enablePspPage is not set in localStorage", () => {
     // localStorage does not have enablePspPage set (returns null)
-    mockRetrieveCardDataWithVisa();
+    (helper.retrieveCardData as jest.Mock).mockImplementation(
+      ({ onResponseSessionPaymentMethod }) => {
+        onResponseSessionPaymentMethod({
+          sessionId: "session123",
+          bin: "123456",
+          lastFourDigits: "9876",
+          expiringDate: "1230",
+          brand: "VISA",
+        });
+      }
+    );
 
     (helper.getFees as jest.Mock).mockImplementation((onSuccess) => {
       onSuccess(true);
@@ -998,7 +991,17 @@ describe("retrievePaymentSessionFn", () => {
   it("should call getFees with onPspNotFound when decode succeeds and bin is present", () => {
     localStorageMock.setItem("enablePspPage", "false");
 
-    mockRetrieveCardDataWithMastercard();
+    (helper.retrieveCardData as jest.Mock).mockImplementation(
+      ({ onResponseSessionPaymentMethod }) => {
+        onResponseSessionPaymentMethod({
+          sessionId: "session123",
+          bin: "654321",
+          lastFourDigits: "1111",
+          expiringDate: "1225",
+          brand: "MASTERCARD",
+        });
+      }
+    );
 
     const mockOnPspNotFound = jest.fn();
     (helper.getFees as jest.Mock).mockImplementation(
@@ -1025,7 +1028,17 @@ describe("retrievePaymentSessionFn", () => {
   it("should call getFees with onError when getFees triggers error callback", () => {
     localStorageMock.setItem("enablePspPage", "false");
 
-    mockRetrieveCardDataWithMastercard();
+    (helper.retrieveCardData as jest.Mock).mockImplementation(
+      ({ onResponseSessionPaymentMethod }) => {
+        onResponseSessionPaymentMethod({
+          sessionId: "session123",
+          bin: "654321",
+          lastFourDigits: "1111",
+          expiringDate: "1225",
+          brand: "MASTERCARD",
+        });
+      }
+    );
 
     const mockOnError = jest.fn();
     (helper.getFees as jest.Mock).mockImplementation(
