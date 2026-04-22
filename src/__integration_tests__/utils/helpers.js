@@ -54,7 +54,9 @@ export const activateApmPaymentAndGetError = async (
   selectorId
 ) => {
   await chooseApmMethod(noticeCode, fiscalCode, email, "SATY");
-  const errorMessageElem = await page.waitForSelector(selectorId);
+  const pspListErrorSelector = "#pspListErrorId";
+  const combinedSelector = `${selectorId}, ${pspListErrorSelector}`;
+  const errorMessageElem = await page.waitForSelector(combinedSelector);
   return await errorMessageElem.evaluate((el) => el.textContent);
 };
 
@@ -112,10 +114,13 @@ export const checkErrorOnCardDataFormSubmit = async (
   email,
   cardData
 ) => {
-  const errorMessageTitleSelector = "#iframeCardFormErrorTitleId";
+  const iframeErrorSelector = "#iframeCardFormErrorTitleId";
+  const pspListErrorSelector = "#pspListTitleError";
   await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
+  // When enablePspPage is active, the error may appear on the PSP list page
+  // instead of the card form page
   const errorMessageElem = await page.waitForSelector(
-    errorMessageTitleSelector
+    `${iframeErrorSelector}, ${pspListErrorSelector}`
   );
   return await errorMessageElem.evaluate((el) => el.textContent);
 };

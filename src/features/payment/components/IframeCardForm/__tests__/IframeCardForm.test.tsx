@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-identical-functions */
 import React from "react";
 import {
   render,
@@ -6,7 +7,10 @@ import {
   waitFor,
   act,
 } from "@testing-library/react";
-import IframeCardForm from "../IframeCardForm";
+import IframeCardForm, {
+  retrievePaymentSessionFn,
+  handleSessionPaymentMethodResponse,
+} from "../IframeCardForm";
 import { IdFields } from "../types";
 import * as helper from "../../../../../utils/api/helper";
 import * as sessionStorage from "../../../../../utils/storage/sessionStorage";
@@ -256,7 +260,7 @@ jest.mock("../../../../../utils/storage/sessionStorage", () => ({
 
 jest.mock("../../../../../utils/buildConfig", () => ({
   __esModule: true,
-  default: jest.fn(() => ({})),
+  default: jest.fn((callbacks: any) => callbacks),
 }));
 
 jest.mock("../../../../../utils/eventListeners", () => ({
@@ -519,35 +523,20 @@ describe("IframeCardForm", () => {
     });
   });
 
-  it.skip("should handle PSP not found scenario", async () => {
+  it("should handle PSP not found scenario", async () => {
     // Mock the API response
     const mockSessionResponse = setupSimpleMockSessionResponse();
 
-    (helper.npgSessionsFields as jest.Mock).mockImplementation(
-      (_onError, onResponse) => {
-        onResponse(mockSessionResponse);
-      }
-    );
+    // eslint-disable-next-line functional/no-let
+    let capturedBuildConfig: any = {};
 
-    // Set up a synchronous chain of mocks to avoid timing issues
-    // eslint-disable-next-line functional/no-let
-    let onReadyForPaymentCallback: jest.Mock = jest.fn();
-    // eslint-disable-next-line functional/no-let
-    let onSuccessCallback: jest.Mock = jest.fn();
-    // eslint-disable-next-line functional/no-let
-    let onPspNotFoundCallback: jest.Mock = jest.fn();
-
-    // Mock Build
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     (global.Build as jest.Mock).mockImplementationOnce((config) => {
-      // Store callback for later manual triggering
-      if (config.onReadyForPayment) {
-        onReadyForPaymentCallback = jest
-          .fn()
-          .mockImplementation(config.onReadyForPayment);
+      capturedBuildConfig = config;
+      if (config.onAllFieldsLoaded) {
+        setTimeout(() => config.onAllFieldsLoaded(), 0);
       }
-
       return {
         confirmData: jest.fn((callback) => {
           if (callback) {
@@ -557,67 +546,63 @@ describe("IframeCardForm", () => {
       };
     });
 
-    // Mock recaptcha transaction
-    (helper.recaptchaTransaction as jest.Mock).mockImplementationOnce(
+    (helper.npgSessionsFields as jest.Mock).mockImplementation(
+      (_onError, onResponse) => {
+        onResponse(mockSessionResponse);
+      }
+    );
+
+    // Mock recaptchaTransaction to call onSuccess which triggers retrievePaymentSession
+    (helper.recaptchaTransaction as jest.Mock).mockImplementation(
       ({ onSuccess }) => {
-        onSuccessCallback = jest
-          .fn()
-          .mockImplementation(() => onSuccess("payment123", "order123"));
+        onSuccess("payment123", "order123");
       }
     );
 
-    // Mock retrieveCardData
-    (helper.retrieveCardData as jest.Mock).mockImplementationOnce(
+    // Mock retrieveCardData to return a valid response with bin
+    (helper.retrieveCardData as jest.Mock).mockImplementation(
       ({ onResponseSessionPaymentMethod }) => {
-        setTimeout(() => onResponseSessionPaymentMethod({ bin: "123456" }), 10);
+        onResponseSessionPaymentMethod({
+          sessionId: "session123",
+          bin: "123456",
+          lastFourDigits: "9876",
+          expiringDate: "1230",
+          brand: "VISA",
+        });
       }
     );
 
-    // Mock getFees
-    (helper.getFees as jest.Mock).mockImplementationOnce(
+    // Mock getFees to trigger onPspNotFound
+    (helper.getFees as jest.Mock).mockImplementation(
       (_onSuccess, onPspNotFound) => {
-        onPspNotFoundCallback = jest.fn().mockImplementation(onPspNotFound);
+        onPspNotFound();
       }
     );
 
-    // Render the component
     render(<IframeCardForm onCancel={mockOnCancel} />);
 
     // Wait for the component to render
     await waitFor(mockIframeFieldCardNumber);
 
-    // Manually trigger the callbacks in sequence
-    act(() => {
-      onReadyForPaymentCallback();
-      onSuccessCallback();
+    // Trigger onReadyForPayment from the Build config
+    await act(async () => {
+      capturedBuildConfig.onReadyForPayment();
     });
 
-    // Wait a bit for the retrieveCardData to complete
-    await new Promise((resolve) => setTimeout(resolve, 20));
-
-    // Trigger PSP not found
-    act(() => {
-      onPspNotFoundCallback();
-    });
-
-    // Now the information modal should be visible
+    // Now the information modal should be visible (PSP not found)
     await waitFor(() => {
       expect(screen.getByTestId("information-modal")).toBeInTheDocument();
     });
 
-    // Close the modal
-    const closeButton = screen.getByTestId("close-info-modal");
-    fireEvent.click(closeButton);
+    // Close the modal via the button inside InformationModal children
+    const pspNotFoundCta = screen.getByText("pspUnavailable.cta.primary");
+    fireEvent.click(pspNotFoundCta);
 
-    // Check navigation
+    // Check navigation to SCEGLI_METODO
     expect(mockNavigate).toHaveBeenCalledWith(
       `/${CheckoutRoutes.SCEGLI_METODO}`,
       { replace: true }
     );
-  });
-
-  it.skip("should handle successful payment flow", async () => {
-    // TODO
   });
 
   it("should handle cancel button click", () => {
@@ -656,8 +641,77 @@ describe("IframeCardForm", () => {
     });
   });
 
-  it.skip("should handle form submission error", async () => {
-    // TODO
+  it("should handle form submission error when buildInstance is undefined", async () => {
+    // Mock the API response
+    const mockSessionResponse = setupMockSessionResponse();
+
+    // Mock Build to return an instance whose confirmData throws
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    (global.Build as jest.Mock).mockImplementationOnce((config) => {
+      if (config.onAllFieldsLoaded) {
+        setTimeout(() => config.onAllFieldsLoaded(), 0);
+      }
+      return {
+        confirmData: jest.fn(() => {
+          throw new Error("confirmData failed");
+        }),
+      };
+    });
+
+    (helper.npgSessionsFields as jest.Mock).mockImplementation(
+      (_onError, onResponse) => {
+        onResponse(mockSessionResponse);
+      }
+    );
+
+    const { rerender } = render(<IframeCardForm onCancel={mockOnCancel} />);
+
+    // Wait for the component to render and fields to be loaded
+    await waitFor(() => {
+      expect(
+        screen.getByTestId("iframe-field-CARD_NUMBER")
+      ).toBeInTheDocument();
+    });
+
+    // Wait for onAllFieldsLoaded to fire (setTimeout 0)
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 10));
+    });
+
+    // Get the onChange handler from the Build constructor and set all fields valid
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const buildConfig = (global.Build as jest.Mock).mock.calls[0][0];
+    const onChangeHandler = buildConfig.onChange;
+
+    if (onChangeHandler) {
+      Object.values(IdFields).forEach((fieldId) => {
+        act(() => {
+          onChangeHandler(fieldId, {
+            isValid: true,
+            errorCode: null,
+            errorMessage: null,
+          });
+        });
+      });
+    }
+
+    rerender(<IframeCardForm onCancel={mockOnCancel} />);
+
+    // Submit the form — confirmData will throw, triggering the catch block
+    const submitButton = screen.getByTestId("submit-button");
+    await act(async () => {
+      fireEvent.click(submitButton);
+    });
+
+    // The catch block calls onError(ErrorsType.GENERIC_ERROR) which opens the error modal
+    await waitFor(() => {
+      expect(screen.getByTestId("error-modal")).toBeInTheDocument();
+      expect(screen.getByTestId("error-message")).toHaveTextContent(
+        ErrorsType.GENERIC_ERROR
+      );
+    });
   });
 
   it("should handle field status changes", async () => {
@@ -823,5 +877,420 @@ describe("IframeCardForm", () => {
     expect(mockNavigate).toHaveBeenCalledWith(`/${CheckoutRoutes.ERRORE}`, {
       replace: true,
     });
+  });
+
+  it("should handle non-UNAUTHORIZED npgSessionsError (generic error branch)", async () => {
+    // When onNpgSessionsError receives a non-UNAUTHORIZED error,
+    // B.fold should call onError(m) which opens the error modal
+    (helper.npgSessionsFields as jest.Mock).mockImplementation((onError) => {
+      // Pass a generic error string (not UNAUTHORIZED)
+      onError("SOME_OTHER_ERROR");
+    });
+
+    render(<IframeCardForm onCancel={mockOnCancel} />);
+
+    // The error modal should be shown with the generic error
+    await waitFor(() => {
+      expect(screen.getByTestId("error-modal")).toBeInTheDocument();
+      expect(screen.getByTestId("error-message")).toHaveTextContent(
+        "SOME_OTHER_ERROR"
+      );
+    });
+  });
+
+  it("should handle window message events for field focus and blur", async () => {
+    const mockSessionResponse = setupMockSessionResponse();
+
+    (helper.npgSessionsFields as jest.Mock).mockImplementation(
+      (_onError, onResponse) => {
+        onResponse(mockSessionResponse);
+      }
+    );
+
+    render(<IframeCardForm onCancel={mockOnCancel} />);
+
+    await waitFor(mockIframeFieldCardNumber);
+
+    // Simulate FIELD_FOCUSSED message from NPG iframe
+    act(() => {
+      window.dispatchEvent(
+        new MessageEvent("message", {
+          origin: "https://test.npg.sdk.url",
+          data: { event: "FIELD_FOCUSSED", id: "CARD_NUMBER" },
+        })
+      );
+    });
+
+    // Simulate FIELD_BLURRED message from NPG iframe
+    act(() => {
+      window.dispatchEvent(
+        new MessageEvent("message", {
+          origin: "https://test.npg.sdk.url",
+          data: { event: "FIELD_BLURRED", id: "CARD_NUMBER" },
+        })
+      );
+    });
+
+    // Simulate message from wrong origin (should be ignored)
+    act(() => {
+      window.dispatchEvent(
+        new MessageEvent("message", {
+          origin: "https://wrong.origin.com",
+          data: { event: "FIELD_FOCUSSED", id: "CARD_NUMBER" },
+        })
+      );
+    });
+
+    // Simulate message with non-object data (should be ignored)
+    act(() => {
+      window.dispatchEvent(
+        new MessageEvent("message", {
+          origin: "https://test.npg.sdk.url",
+          data: "not-an-object",
+        })
+      );
+    });
+  });
+});
+
+describe("retrievePaymentSessionFn", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    localStorageMock.clear();
+  });
+
+  it("should navigate to LISTA_PSP and skip retrieveCardData when enablePspPage is true", () => {
+    localStorageMock.setItem("enablePspPage", "true");
+
+    const mockSetLoading = jest.fn();
+
+    retrievePaymentSessionFn({
+      paymentMethodId: "pm123",
+      orderId: "order123",
+      onError: jest.fn(),
+      onSuccess: jest.fn(),
+      onPspNotFound: jest.fn(),
+      navigate: mockNavigate,
+      setLoading: mockSetLoading,
+    });
+
+    expect(mockSetLoading).toHaveBeenCalledWith(false);
+    expect(mockNavigate).toHaveBeenCalledWith(`/${CheckoutRoutes.LISTA_PSP}`);
+    expect(helper.retrieveCardData).not.toHaveBeenCalled();
+    expect(helper.getFees).not.toHaveBeenCalled();
+  });
+
+  it("should call retrieveCardData and getFees when enablePspPage is false", () => {
+    localStorageMock.setItem("enablePspPage", "false");
+
+    (helper.retrieveCardData as jest.Mock).mockImplementation(
+      ({ onResponseSessionPaymentMethod }) => {
+        onResponseSessionPaymentMethod({
+          sessionId: "session123",
+          bin: "123456",
+          lastFourDigits: "9876",
+          expiringDate: "1230",
+          brand: "VISA",
+        });
+      }
+    );
+
+    (helper.getFees as jest.Mock).mockImplementation((onSuccess) => {
+      onSuccess(false);
+    });
+
+    const mockOnSuccess = jest.fn();
+
+    retrievePaymentSessionFn({
+      paymentMethodId: "pm123",
+      orderId: "order123",
+      onError: jest.fn(),
+      onSuccess: mockOnSuccess,
+      onPspNotFound: jest.fn(),
+      navigate: mockNavigate,
+      setLoading: jest.fn(),
+    });
+
+    expect(helper.retrieveCardData).toHaveBeenCalled();
+    expect(helper.getFees).toHaveBeenCalled();
+    expect(mockOnSuccess).toHaveBeenCalledWith(false);
+  });
+
+  it("should call retrieveCardData when enablePspPage is not set in localStorage", () => {
+    // localStorage does not have enablePspPage set (returns null)
+    (helper.retrieveCardData as jest.Mock).mockImplementation(
+      ({ onResponseSessionPaymentMethod }) => {
+        onResponseSessionPaymentMethod({
+          sessionId: "session123",
+          bin: "123456",
+          lastFourDigits: "9876",
+          expiringDate: "1230",
+          brand: "VISA",
+        });
+      }
+    );
+
+    (helper.getFees as jest.Mock).mockImplementation((onSuccess) => {
+      onSuccess(true);
+    });
+
+    const mockOnSuccess = jest.fn();
+    const mockSetLoading = jest.fn();
+
+    retrievePaymentSessionFn({
+      paymentMethodId: "pm123",
+      orderId: "order123",
+      onError: jest.fn(),
+      onSuccess: mockOnSuccess,
+      onPspNotFound: jest.fn(),
+      navigate: mockNavigate,
+      setLoading: mockSetLoading,
+    });
+
+    expect(mockSetLoading).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
+    expect(helper.retrieveCardData).toHaveBeenCalled();
+    expect(helper.getFees).toHaveBeenCalled();
+    expect(mockOnSuccess).toHaveBeenCalledWith(true);
+  });
+
+  it("should call onError with GENERIC_ERROR when decode fails (invalid response)", () => {
+    localStorageMock.setItem("enablePspPage", "false");
+
+    (helper.retrieveCardData as jest.Mock).mockImplementation(
+      ({ onResponseSessionPaymentMethod }) => {
+        // Pass an invalid response that will fail io-ts decode
+        onResponseSessionPaymentMethod({ invalid: "data" });
+      }
+    );
+
+    const mockOnError = jest.fn();
+
+    retrievePaymentSessionFn({
+      paymentMethodId: "pm123",
+      orderId: "order123",
+      onError: mockOnError,
+      onSuccess: jest.fn(),
+      onPspNotFound: jest.fn(),
+      navigate: mockNavigate,
+      setLoading: jest.fn(),
+    });
+
+    expect(helper.retrieveCardData).toHaveBeenCalled();
+    expect(mockOnError).toHaveBeenCalledWith(ErrorsType.GENERIC_ERROR);
+    expect(helper.getFees).not.toHaveBeenCalled();
+  });
+
+  it("should call onError with GENERIC_ERROR when decode succeeds but bin is undefined", () => {
+    localStorageMock.setItem("enablePspPage", "false");
+
+    (helper.retrieveCardData as jest.Mock).mockImplementation(
+      ({ onResponseSessionPaymentMethod }) => {
+        // Pass a response where bin is missing/undefined
+        // Since bin is required in the io-ts type, decode will fail
+        // and O.fromEither will return None
+        onResponseSessionPaymentMethod({
+          sessionId: "session123",
+          lastFourDigits: "9876",
+          expiringDate: "1230",
+          brand: "VISA",
+        });
+      }
+    );
+
+    const mockOnError = jest.fn();
+
+    retrievePaymentSessionFn({
+      paymentMethodId: "pm123",
+      orderId: "order123",
+      onError: mockOnError,
+      onSuccess: jest.fn(),
+      onPspNotFound: jest.fn(),
+      navigate: mockNavigate,
+      setLoading: jest.fn(),
+    });
+
+    expect(helper.retrieveCardData).toHaveBeenCalled();
+    expect(mockOnError).toHaveBeenCalledWith(ErrorsType.GENERIC_ERROR);
+    expect(helper.getFees).not.toHaveBeenCalled();
+  });
+
+  it("should call getFees with onPspNotFound when decode succeeds and bin is present", () => {
+    localStorageMock.setItem("enablePspPage", "false");
+
+    (helper.retrieveCardData as jest.Mock).mockImplementation(
+      ({ onResponseSessionPaymentMethod }) => {
+        onResponseSessionPaymentMethod({
+          sessionId: "session123",
+          bin: "654321",
+          lastFourDigits: "1111",
+          expiringDate: "1225",
+          brand: "MASTERCARD",
+        });
+      }
+    );
+
+    const mockOnPspNotFound = jest.fn();
+    (helper.getFees as jest.Mock).mockImplementation(
+      (_onSuccess, onPspNotFound) => {
+        onPspNotFound();
+      }
+    );
+
+    retrievePaymentSessionFn({
+      paymentMethodId: "pm123",
+      orderId: "order123",
+      onError: jest.fn(),
+      onSuccess: jest.fn(),
+      onPspNotFound: mockOnPspNotFound,
+      navigate: mockNavigate,
+      setLoading: jest.fn(),
+    });
+
+    expect(helper.retrieveCardData).toHaveBeenCalled();
+    expect(helper.getFees).toHaveBeenCalled();
+    expect(mockOnPspNotFound).toHaveBeenCalled();
+  });
+
+  it("should call getFees with onError when getFees triggers error callback", () => {
+    localStorageMock.setItem("enablePspPage", "false");
+
+    (helper.retrieveCardData as jest.Mock).mockImplementation(
+      ({ onResponseSessionPaymentMethod }) => {
+        onResponseSessionPaymentMethod({
+          sessionId: "session123",
+          bin: "654321",
+          lastFourDigits: "1111",
+          expiringDate: "1225",
+          brand: "MASTERCARD",
+        });
+      }
+    );
+
+    const mockOnError = jest.fn();
+    (helper.getFees as jest.Mock).mockImplementation(
+      (_onSuccess, _onPspNotFound, onError) => {
+        onError("FEE_ERROR");
+      }
+    );
+
+    retrievePaymentSessionFn({
+      paymentMethodId: "pm123",
+      orderId: "order123",
+      onError: mockOnError,
+      onSuccess: jest.fn(),
+      onPspNotFound: jest.fn(),
+      navigate: mockNavigate,
+      setLoading: jest.fn(),
+    });
+
+    expect(helper.retrieveCardData).toHaveBeenCalled();
+    expect(helper.getFees).toHaveBeenCalled();
+    expect(mockOnError).toHaveBeenCalledWith("FEE_ERROR");
+  });
+});
+
+describe("handleSessionPaymentMethodResponse", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("should call onError with GENERIC_ERROR when response fails decode", () => {
+    const mockOnError = jest.fn();
+    const mockOnSuccess = jest.fn();
+    const mockOnPspNotFound = jest.fn();
+
+    handleSessionPaymentMethodResponse(
+      { invalid: "data" },
+      mockOnError,
+      mockOnSuccess,
+      mockOnPspNotFound
+    );
+
+    expect(mockOnError).toHaveBeenCalledWith(ErrorsType.GENERIC_ERROR);
+    expect(helper.getFees).not.toHaveBeenCalled();
+  });
+
+  it("should call onError with GENERIC_ERROR when response has no bin field", () => {
+    const mockOnError = jest.fn();
+    const mockOnSuccess = jest.fn();
+    const mockOnPspNotFound = jest.fn();
+
+    // Missing bin field causes decode to fail
+    handleSessionPaymentMethodResponse(
+      {
+        sessionId: "session123",
+        lastFourDigits: "9876",
+        expiringDate: "1230",
+        brand: "VISA",
+      },
+      mockOnError,
+      mockOnSuccess,
+      mockOnPspNotFound
+    );
+
+    expect(mockOnError).toHaveBeenCalledWith(ErrorsType.GENERIC_ERROR);
+    expect(helper.getFees).not.toHaveBeenCalled();
+  });
+
+  it("should call getFees when decode succeeds and bin is present", () => {
+    const mockOnError = jest.fn();
+    const mockOnSuccess = jest.fn();
+    const mockOnPspNotFound = jest.fn();
+
+    (helper.getFees as jest.Mock).mockImplementation((onSuccess) => {
+      onSuccess(true);
+    });
+
+    handleSessionPaymentMethodResponse(
+      {
+        sessionId: "session123",
+        bin: "123456",
+        lastFourDigits: "9876",
+        expiringDate: "1230",
+        brand: "VISA",
+      },
+      mockOnError,
+      mockOnSuccess,
+      mockOnPspNotFound
+    );
+
+    expect(mockOnError).not.toHaveBeenCalled();
+    expect(helper.getFees).toHaveBeenCalledWith(
+      mockOnSuccess,
+      mockOnPspNotFound,
+      mockOnError,
+      "123456"
+    );
+    expect(mockOnSuccess).toHaveBeenCalledWith(true);
+  });
+
+  it("should call getFees with onPspNotFound when psp is not found", () => {
+    const mockOnError = jest.fn();
+    const mockOnSuccess = jest.fn();
+    const mockOnPspNotFound = jest.fn();
+
+    (helper.getFees as jest.Mock).mockImplementation(
+      (_onSuccess, onPspNotFound) => {
+        onPspNotFound();
+      }
+    );
+
+    handleSessionPaymentMethodResponse(
+      {
+        sessionId: "session123",
+        bin: "654321",
+        lastFourDigits: "1111",
+        expiringDate: "1225",
+        brand: "MASTERCARD",
+      },
+      mockOnError,
+      mockOnSuccess,
+      mockOnPspNotFound
+    );
+
+    expect(mockOnError).not.toHaveBeenCalled();
+    expect(helper.getFees).toHaveBeenCalled();
+    expect(mockOnPspNotFound).toHaveBeenCalled();
   });
 });

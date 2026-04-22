@@ -54,6 +54,72 @@ const initialFieldsState: FormStatus = Object.values(
   {} as FormStatus
 );
 
+export interface RetrievePaymentSessionDeps {
+  paymentMethodId: string;
+  orderId: string;
+  onError: (m: string) => void;
+  onSuccess: (belowThreshold: boolean) => void;
+  onPspNotFound: () => void;
+  navigate: (path: string) => void;
+  setLoading: (loading: boolean) => void;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const handleSessionPaymentMethodResponse = (
+  resp: any,
+  onError: (m: string) => void,
+  onSuccess: (belowThreshold: boolean) => void,
+  onPspNotFound: () => void
+) => {
+  const decoded = SessionPaymentMethodResponse.decode(resp);
+  const maybeBin = pipe(
+    decoded,
+    O.fromEither,
+    O.chain((r) => O.fromNullable(r.bin))
+  );
+  pipe(
+    maybeBin,
+    O.fold(
+      () => onError(ErrorsType.GENERIC_ERROR),
+      () => void getFees(onSuccess, onPspNotFound, onError, resp.bin)
+    )
+  );
+};
+
+export const retrievePaymentSessionFn = (deps: RetrievePaymentSessionDeps) => {
+  const {
+    paymentMethodId,
+    orderId,
+    onError,
+    onSuccess,
+    onPspNotFound,
+    navigate,
+    setLoading,
+  } = deps;
+
+  // When enablePspPage is active, skip getFees here and let
+  // PaymentPspListPage handle it to avoid a duplicate POST /fees call
+  if (localStorage.getItem(SessionItems.enablePspPage) === "true") {
+    setLoading(false);
+    navigate(`/${CheckoutRoutes.LISTA_PSP}`);
+    return;
+  }
+
+  void retrieveCardData({
+    paymentId: paymentMethodId,
+    orderId,
+    onError,
+    onResponseSessionPaymentMethod: (resp) => {
+      handleSessionPaymentMethodResponse(
+        resp,
+        onError,
+        onSuccess,
+        onPspNotFound
+      );
+    },
+  });
+};
+
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export default function IframeCardForm(props: Props) {
   const { onCancel, hideCancel } = props;
@@ -104,12 +170,7 @@ export default function IframeCardForm(props: Props) {
 
   const onSuccess = (belowThreshold: boolean) => {
     dispatch(setThreshold({ belowThreshold }));
-
-    if (localStorage.getItem(SessionItems.enablePspPage) === "true") {
-      navigate(`/${CheckoutRoutes.LISTA_PSP}`);
-    } else {
-      navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
-    }
+    navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
   };
 
   const onPspNotFound = () => {
@@ -119,22 +180,14 @@ export default function IframeCardForm(props: Props) {
   };
 
   const retrievePaymentSession = (paymentMethodId: string, orderId: string) =>
-    retrieveCardData({
-      paymentId: paymentMethodId,
+    retrievePaymentSessionFn({
+      paymentMethodId,
       orderId,
       onError,
-      onResponseSessionPaymentMethod: (resp) => {
-        pipe(
-          resp,
-          SessionPaymentMethodResponse.decode,
-          O.fromEither,
-          O.chain((resp) => O.fromNullable(resp.bin)),
-          O.fold(
-            () => onError(ErrorsType.GENERIC_ERROR),
-            () => getFees(onSuccess, onPspNotFound, onError, resp.bin)
-          )
-        );
-      },
+      onSuccess,
+      onPspNotFound,
+      navigate,
+      setLoading,
     });
 
   const onChange = (id: FieldId, status: FieldStatus) => {
