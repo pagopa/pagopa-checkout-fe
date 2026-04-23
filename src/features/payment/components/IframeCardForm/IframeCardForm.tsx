@@ -241,11 +241,28 @@ export default function IframeCardForm(props: Props) {
   const handleSubmit = (e: React.FormEvent) => {
     try {
       e.preventDefault();
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      buildInstance.confirmData(() => setLoading(true));
+      if (formIsValid(formStatus)) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        buildInstance.confirmData(() => setLoading(true));
+      } else {
+        focusOnError();
+      }
     } catch (e) {
       onError(ErrorsType.GENERIC_ERROR);
+    }
+  };
+
+  const focusOnError = () => {
+    for (const fieldId of Object.keys(IdFields)) {
+      const fieldStatus = formStatus[fieldId as FieldId];
+      if (fieldStatus?.isValid === false) {
+        const iframe = document.getElementById(`frame_${fieldId}`);
+        if (iframe && iframe instanceof HTMLIFrameElement) {
+          iframe.focus();
+          break;
+        }
+      }
     }
   };
 
@@ -317,7 +334,7 @@ export default function IframeCardForm(props: Props) {
           type="submit"
           submitTitle="paymentNoticePage.formButtons.submit"
           cancelTitle="paymentNoticePage.formButtons.cancel"
-          disabledSubmit={loading || !formIsValid(formStatus)}
+          disabledSubmit={loading}
           handleSubmit={handleSubmit}
           handleCancel={onCancel}
           hideCancel={hideCancel}
