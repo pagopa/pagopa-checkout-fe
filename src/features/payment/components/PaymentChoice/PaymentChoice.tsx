@@ -139,6 +139,13 @@ export function PaymentChoice(props: {
     await recaptchaTransaction({
       recaptchaRef,
       onSuccess: async () => {
+        // When enablePspPage is active, skip getFees here and let
+        // PaymentPspListPage handle it to avoid a duplicate POST /fees call
+        if (localStorage.getItem(SessionItems.enablePspPage) === "true") {
+          setLoading(false);
+          navigate(`/${CheckoutRoutes.LISTA_PSP}`);
+          return;
+        }
         await getFees(onSuccess, onPspNotFound, onError);
       },
       onError: (faultCodeCategory, faultCodeDetail) =>
