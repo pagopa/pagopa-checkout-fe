@@ -90,7 +90,6 @@ export function IframeCardField(props: Props) {
         <iframe
           ref={iframeRef}
           aria-label={label + " " + t("inputCardPage.formFields.required")}
-          role="textbox"
           id={`frame_${id}`}
           seamless
           style={styles.iframe}
