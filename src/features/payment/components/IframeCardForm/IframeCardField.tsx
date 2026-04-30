@@ -108,7 +108,7 @@ export function IframeCardField(props: Props) {
           error
           id={`frame_${id}_hint`}
           aria-hidden={isValid}
-          aria-live="assertive"
+          aria-live="polite"
           role="alert"
         >
           {t(`errorMessageNPG.${errorCode}`, {
