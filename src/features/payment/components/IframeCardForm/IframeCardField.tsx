@@ -54,6 +54,8 @@ export function IframeCardField(props: Props) {
 
   const styles = useStyles(props);
 
+  const iframeRef = React.createRef<HTMLIFrameElement>();
+
   // function to set SRC to the iframe el avoids firefox back button bug
   const setSrcOnIframe = (src: string) => {
     const iframeEl: HTMLIFrameElement | null = document.getElementById(
@@ -86,8 +88,8 @@ export function IframeCardField(props: Props) {
       </InputLabel>
       <Box sx={styles.box} aria-busy={!isAllFieldsLoaded}>
         <iframe
+          ref={iframeRef}
           aria-label={label + " " + t("inputCardPage.formFields.required")}
-          role="textbox"
           id={`frame_${id}`}
           seamless
           style={styles.iframe}
@@ -106,7 +108,8 @@ export function IframeCardField(props: Props) {
           error
           id={`frame_${id}_hint`}
           aria-hidden={isValid}
-          aria-live="assertive"
+          aria-live="polite"
+          role="alert"
         >
           {t(`errorMessageNPG.${errorCode}`, {
             defaultValue: errorMessage,

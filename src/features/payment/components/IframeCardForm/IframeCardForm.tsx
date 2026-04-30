@@ -292,16 +292,53 @@ export default function IframeCardForm(props: Props) {
   }, [form?.orderId]);
 
   const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const nextFormStatus = Object.values(IdFields).reduce<FormStatus>(
+      (acc, fieldId) => ({
+        ...acc,
+        [fieldId]:
+          formStatus[fieldId].isValid === true
+            ? formStatus[fieldId]
+            : {
+                isValid: false,
+                errorCode: "REQUIRED",
+                errorMessage: t("inputCardPage.formFields.required"),
+              },
+      }),
+      {} as FormStatus
+    );
+
+    setFormStatus(nextFormStatus);
+
+    if (!formIsValid(nextFormStatus)) {
+      focusOnError(nextFormStatus);
+      return;
+    }
+
     try {
-      e.preventDefault();
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       buildInstance.confirmData(() => setLoading(true));
-    } catch (e) {
+    } catch {
       onError(ErrorsType.GENERIC_ERROR);
     }
   };
 
+  const focusOnError = (status: FormStatus = formStatus) => {
+    for (const fieldId of Object.values(IdFields)) {
+      const fieldStatus = status[fieldId];
+
+      if (fieldStatus?.isValid === false) {
+        const iframe = document.getElementById(`frame_${fieldId}`);
+
+        if (iframe instanceof HTMLIFrameElement) {
+          iframe.focus();
+          break;
+        }
+      }
+    }
+  };
   const { t } = useTranslation();
 
   return (
@@ -370,7 +407,7 @@ export default function IframeCardForm(props: Props) {
           type="submit"
           submitTitle="paymentNoticePage.formButtons.submit"
           cancelTitle="paymentNoticePage.formButtons.cancel"
-          disabledSubmit={loading || !formIsValid(formStatus)}
+          disabledSubmit={loading}
           handleSubmit={handleSubmit}
           handleCancel={onCancel}
           hideCancel={hideCancel}
