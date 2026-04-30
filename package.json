@@ -61,7 +61,7 @@
     "react-redux": "^9.2.0",
     "react-router-dom": "^6.29.0",
     "set-value": "^4.0.1",
-    "uuid": "^9.0.1"
+    "uuid": "^14.0.0"
   },
   "dependenciesComments": {
     "mixpanel-browser": "Version is now pinned because v2.74.x onwards requires node 20"
