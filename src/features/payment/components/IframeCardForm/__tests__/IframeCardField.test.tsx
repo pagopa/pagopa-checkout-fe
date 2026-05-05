@@ -67,12 +67,14 @@ describe("IframeCardField Component", () => {
   };
 
   it("renders component with correct props", () => {
-    renderWithTheme(<IframeCardField {...defaultProps} />);
+    const { container } = renderWithTheme(
+      <IframeCardField {...defaultProps} />
+    );
 
     expect(screen.getByText("Card Number")).toBeInTheDocument();
 
     // Get iframe by role
-    const iframe = screen.getByRole("textbox");
+    const iframe = container.querySelector(`#frame_${defaultProps.id}`);
     expect(iframe).toBeInTheDocument();
   });
 
@@ -153,7 +155,12 @@ describe("IframeCardField Component", () => {
     // or test the component with the actual styling logic
 
     renderWithTheme(
-      <IframeCardField {...defaultProps} activeField={IdFields.CARD_NUMBER} />
+      <IframeCardField
+        {...defaultProps}
+        errorMessage="Invalid card number"
+        activeField={IdFields.CARD_NUMBER}
+        isValid={false}
+      />
     );
 
     // Check if the label exists and has the correct attributes that would indicate focus
@@ -165,10 +172,11 @@ describe("IframeCardField Component", () => {
     expect(formControl).toBeInTheDocument();
 
     // Check if the component is rendered with the active field matching the id
-    expect(screen.getByRole("textbox")).toHaveAttribute(
-      "id",
-      "frame_CARD_NUMBER"
-    );
+    const alert = screen.getByRole("alert");
+
+    expect(alert).toBeInTheDocument();
+    expect(alert).toHaveAttribute("id", "frame_CARD_NUMBER_hint");
+    expect(alert).toHaveTextContent("Invalid card number");
   });
 
   it("applies error styles when field is invalid", () => {
@@ -213,9 +221,11 @@ describe("IframeCardField Component", () => {
   });
 
   it("sets correct ARIA attributes", () => {
-    renderWithTheme(<IframeCardField {...defaultProps} />);
+    const { container } = renderWithTheme(
+      <IframeCardField {...defaultProps} />
+    );
 
-    const iframe = screen.getByRole("textbox");
+    const iframe = container.querySelector(`#frame_${defaultProps.id}`);
     expect(iframe).toHaveAttribute("aria-label", "Card Number required");
 
     const label = screen.getByText("Card Number");
@@ -299,7 +309,7 @@ describe("IframeCardField Component", () => {
   });
 
   it("applies custom styles when provided", () => {
-    renderWithTheme(
+    const { container } = renderWithTheme(
       <IframeCardField
         {...defaultProps}
         style={{
@@ -309,7 +319,7 @@ describe("IframeCardField Component", () => {
       />
     );
 
-    const iframe = screen.getByRole("textbox");
+    const iframe = container.querySelector(`#frame_${defaultProps.id}`);
     expect(iframe).toHaveStyle("background-color: lightblue");
     expect(iframe).toHaveStyle("padding: 10px");
   });
