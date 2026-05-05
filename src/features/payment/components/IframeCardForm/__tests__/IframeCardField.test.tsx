@@ -234,7 +234,8 @@ describe("IframeCardField Component", () => {
 
     const errorMessage = screen.getByText("Invalid card number");
     expect(errorMessage).toHaveAttribute("aria-hidden", "false");
-    expect(errorMessage).toHaveAttribute("aria-live", "assertive");
+    expect(errorMessage).toHaveAttribute("aria-live", "polite");
+    expect(errorMessage).toHaveAttribute("role", "alert");
   });
 
   // Fix for the "sets aria-busy attribute on loading state" test
