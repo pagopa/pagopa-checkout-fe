@@ -5,7 +5,6 @@ import { ScheduledMaintenanceBanner } from "../components/commons/ScheduledMaint
 import { onBrowserUnload } from "../utils/eventListeners";
 import { resetThreshold } from "../redux/slices/threshold";
 import PageContainer from "../components/PageContent/PageContainer";
-import PrivacyInfo from "../components/PrivacyPolicy/PrivacyInfo";
 import { PaymentNoticeChoice } from "../features/payment/components/PaymentNoticeChoice/PaymentNoticeChoice";
 import { useAppDispatch } from "../redux/hooks/hooks";
 import {
