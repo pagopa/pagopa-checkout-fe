@@ -73,7 +73,6 @@ export default function IndexPage() {
         childrenSx={{ mt: 6 }}
       >
         <PaymentNoticeChoice />
-        <PrivacyInfo />
       </PageContainer>
     </>
   );
