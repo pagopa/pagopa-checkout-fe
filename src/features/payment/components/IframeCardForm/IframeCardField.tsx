@@ -87,7 +87,6 @@ export function IframeCardField(props: Props) {
       <Box sx={styles.box} aria-busy={!isAllFieldsLoaded}>
         <iframe
           aria-label={label + " " + t("inputCardPage.formFields.required")}
-          role="textbox"
           id={`frame_${id}`}
           seamless
           style={styles.iframe}
@@ -106,7 +105,8 @@ export function IframeCardField(props: Props) {
           error
           id={`frame_${id}_hint`}
           aria-hidden={isValid}
-          aria-live="assertive"
+          aria-live="polite"
+          role="alert"
         >
           {t(`errorMessageNPG.${errorCode}`, {
             defaultValue: errorMessage,
