@@ -307,6 +307,9 @@ export default function PaymentCheckPage() {
       void calculateFees({
         paymentId: paymentMethod?.paymentMethodId,
         bin: sessionPaymentMethodResponse?.bin,
+        walletId: paymentMethod?.walletId,
+        walletType: paymentMethod?.walletType,
+        pspId: paymentMethod?.pspId,
         onError,
         onPspNotFound,
         onResponsePsp: onPspEditResponse,
@@ -477,8 +480,8 @@ export default function PaymentCheckPage() {
 
       {!!pspSelected && (
         <PspPrivacyInfo
-          termsLink="https://www.pagopa.gov.it/it/prestatori-servizi-di-pagamento/elenco-PSP-attivi/"
-          privacyLink="https://www.pagopa.gov.it/it/prestatori-servizi-di-pagamento/elenco-PSP-attivi/"
+          termsLink="https://www.pagopa.gov.it/it/prestatori-servizi-di-pagamento/trasparenza-bancaria/"
+          privacyLink="https://www.pagopa.gov.it/it/prestatori-servizi-di-pagamento/trasparenza-bancaria/"
           pspName={pspSelected.pspBusinessName || ""}
         />
       )}
@@ -515,7 +518,7 @@ export default function PaymentCheckPage() {
             href={`https://www.pagopa.gov.it/it/cittadini/trasparenza-costi/?amount=${amount}`}
             target="_blank"
             rel="noopener noreferrer"
-            sx={{ fontWeight: 600, textDecoration: "none" }}
+            sx={{ fontWeight: 600 }}
           >
             {t("paymentCheckPage.modal.link")}
           </Link>

@@ -82,8 +82,10 @@ describe("LanguageNativeSelect Component", () => {
     expect(options[0].selected).toBe(true);
     expect(options[0].value).toBe("en");
 
-    // Check if the hidden accessibility label is present
-    expect(screen.getByText("Language Menu")).toBeTruthy();
+    // Check if the select has the correct accessible name
+    expect(
+      screen.getByRole("combobox", { name: "Language Menu" })
+    ).toBeTruthy();
   });
 
   it("renders all language options", () => {
@@ -107,7 +109,7 @@ describe("LanguageNativeSelect Component", () => {
     expect(options[2].textContent).toBe("Français");
   });
 
-  it("changes language when a different option is selected", () => {
+  it("changes language when a different option is selected", async () => {
     render(<LanguageNativeSelect />);
 
     // Get the select element
@@ -116,11 +118,13 @@ describe("LanguageNativeSelect Component", () => {
     // Change the selection to Italian
     fireEvent.change(selectElement, { target: { value: "it" } });
 
-    // Verify localStorage was updated
-    expect(localStorageMock.setItem).toHaveBeenCalledWith("i18nextLng", "it");
+    await waitFor(() => {
+      // Verify localStorage was updated
+      expect(localStorageMock.setItem).toHaveBeenCalledWith("i18nextLng", "it");
 
-    // Verify changeLanguage was called with 'it'
-    expect(changeLanguageMock).toHaveBeenCalledWith("it");
+      // Verify changeLanguage was called with 'it'
+      expect(changeLanguageMock).toHaveBeenCalledWith("it");
+    });
   });
 
   it("uses fallback language when current language is not supported", () => {
@@ -160,9 +164,10 @@ describe("LanguageNativeSelect Component", () => {
     // Check if the select has an id
     expect(selectElement.id).toBe("languageMenu");
 
-    // Check if the hidden accessibility label is present
-    const accessibilityLabel = screen.getByText("Language Menu");
-    expect(accessibilityLabel).toBeTruthy();
+    // Check if the select has the correct accessible name
+    expect(
+      screen.getByRole("combobox", { name: "Language Menu" })
+    ).toBeTruthy();
   });
 
   it("updates state and calls handlers when language changes", () => {

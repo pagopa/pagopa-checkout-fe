@@ -1,6 +1,6 @@
 import React from "react";
 import "@testing-library/jest-dom";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { PaymentEmailForm } from "../PaymentEmailForm";
 
@@ -10,12 +10,12 @@ jest.mock("../../../../../utils/regex/validators", () => ({
 }));
 
 jest.mock("../../../../../components/FormButtons/FormButtons", () => ({
-  FormButtons: ({ handleSubmit, handleCancel, disabledSubmit }: any) => (
+  FormButtons: ({ handleSubmit, handleCancel }: any) => (
     <div data-testid="form-buttons">
       <button
         data-testid="submit-button"
         onClick={handleSubmit}
-        disabled={disabledSubmit}
+        disabled={false}
       >
         Submit
       </button>
@@ -81,7 +81,7 @@ describe("PaymentEmailForm", () => {
     expect((screen.getByTestId("confirmEmail") as HTMLInputElement).value).toBe(
       ""
     );
-    expect(screen.getByTestId("submit-button")).toBeDisabled();
+    expect(screen.getByTestId("submit-button")).not.toBeDisabled();
   });
 
   it("renders with provided default values", () => {
@@ -161,33 +161,6 @@ describe("PaymentEmailForm", () => {
     expect(screen.getByTestId("confirmEmail-error")).toHaveTextContent(
       "paymentEmailPage.formErrors.notEqual"
     );
-  });
-
-  it("enables submit button when form is valid", async () => {
-    // Create a component with controlled state for testing
-    const TestWrapper = () => {
-      const [disabled, setDisabled] = React.useState(true);
-
-      React.useEffect(() => {
-        // Simulate the button becoming enabled
-        setTimeout(() => setDisabled(false), 0);
-      }, []);
-
-      return (
-        <div>
-          <button data-testid="submit-button" disabled={disabled}>
-            Submit
-          </button>
-        </div>
-      );
-    };
-
-    render(<TestWrapper />);
-
-    // Wait for the button to become enabled
-    await waitFor(() => {
-      expect(screen.getByTestId("submit-button")).not.toBeDisabled();
-    });
   });
 
   it("calls onSubmit with form values when submitted", async () => {

@@ -10,6 +10,7 @@ jest.mock("../../utils/config/config", () => ({
     CHECKOUT_API_ECOMMERCE_BASEPATH_V4: "/v4",
     CHECKOUT_API_FEATURE_FLAGS_BASEPATH: "/feature-flags",
     CHECKOUT_API_AUTH_SERVICE_BASEPATH_V1: "/auth-service",
+    CHECKOUT_API_WALLET_BASEPATH_V1: "/v1",
   })),
 }));
 
@@ -49,6 +50,7 @@ import { App } from "../../App";
 
 // Mock MUI Italia theme
 jest.mock("@pagopa/mui-italia", () => ({
+  __esModule: true,
   theme: {
     palette: {
       background: { paper: "#fff", default: "#fff" },

@@ -9,3 +9,4 @@ export * from "./helpers/donationHelper";
 export * from "./helpers/ecommerce/ecommercePaymentMethodsHelper";
 export * from "./helpers/ecommerce/ecommercePaymentRequestsHelper";
 export * from "./helpers/ecommerce/ecommerceTransactionsHelper";
+export * from "./helpers/ecommerce/ecommerceWalletHelper";

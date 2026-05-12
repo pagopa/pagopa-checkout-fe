@@ -156,9 +156,7 @@ describe("PaymentEmailPage", () => {
     const addressDiff = screen.getByText(
       "paymentEmailPage.formErrors.notEqual"
     );
-    const submit = screen.getByText("paymentEmailPage.formButtons.submit");
     expect(addressDiff).toBeVisible();
-    expect(submit).toBeDisabled();
   });
 
   test("test back", async () => {

@@ -86,7 +86,7 @@ describe("PaymentNoticeForm", () => {
     });
   });
 
-  it("renders form with empty values when no defaultValues provided", async () => {
+  it("renders form with empty values when no defaultValues provided and submit button always active [a11y]", async () => {
     await act(async () => {
       render(<PaymentNoticeForm {...defaultProps} />);
     });
@@ -96,7 +96,7 @@ describe("PaymentNoticeForm", () => {
 
     expect(billCodeInput).toHaveValue("");
     expect(cfInput).toHaveValue("");
-    expect(screen.getByTestId("submit-button")).toBeDisabled();
+    expect(screen.getByTestId("submit-button")).not.toBeDisabled();
   });
 
   it("renders form with defaultValues when provided", async () => {
@@ -269,11 +269,6 @@ describe("PaymentNoticeForm", () => {
   it("calls onSubmit with form values when form is submitted", async () => {
     const onSubmit = jest.fn();
 
-    // Create a spy to mock the validate function behavior
-    const validateSpy = jest.spyOn(React, "useState");
-    // Force the disabled state to be false
-    validateSpy.mockImplementationOnce(() => [false, jest.fn()]);
-
     await act(async () => {
       render(
         <PaymentNoticeForm
@@ -301,9 +296,6 @@ describe("PaymentNoticeForm", () => {
       billCode: "123456789012345678",
       cf: "12345678901",
     });
-
-    // Clean up
-    validateSpy.mockRestore();
   });
 
   it("displays loading state on submit button when loading prop is true", async () => {
@@ -315,46 +307,5 @@ describe("PaymentNoticeForm", () => {
       "data-loading",
       "true"
     );
-  });
-
-  it("initializes disabled state based on defaultValues", async () => {
-    // Test with valid default values
-    const validateSpy = jest.spyOn(React, "useState");
-    // Force the disabled state to be false for valid values
-    validateSpy.mockImplementationOnce(() => [false, jest.fn()]);
-
-    const { unmount } = render(
-      <PaymentNoticeForm
-        {...defaultProps}
-        defaultValues={{
-          billCode: "123456789012345678",
-          cf: "12345678901",
-        }}
-      />
-    );
-
-    expect(screen.getByTestId("submit-button")).not.toBeDisabled();
-
-    unmount();
-    validateSpy.mockRestore();
-
-    // Test with invalid default values
-    const validateSpy2 = jest.spyOn(React, "useState");
-    // Force the disabled state to be true for invalid values
-    validateSpy2.mockImplementationOnce(() => [true, jest.fn()]);
-
-    render(
-      <PaymentNoticeForm
-        {...defaultProps}
-        defaultValues={{
-          billCode: "123",
-          cf: "",
-        }}
-      />
-    );
-
-    expect(screen.getByTestId("submit-button")).toBeDisabled();
-
-    validateSpy2.mockRestore();
   });
 });

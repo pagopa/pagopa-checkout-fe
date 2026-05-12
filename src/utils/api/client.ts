@@ -1,5 +1,6 @@
 import { Millisecond } from "@pagopa/ts-commons/lib/units";
 import { DeferredPromise } from "@pagopa/ts-commons/lib/promises";
+import { createClient as creatWalletClient } from "../../../generated/definitions/checkout-wallets-v1/client";
 import { createClient as createEcommerceClient } from "../../../generated/definitions/payment-ecommerce/client";
 import { createClient as createEcommerceClientV3 } from "../../../generated/definitions/payment-ecommerce-v3/client";
 import { createClient as createEcommerceClientV2 } from "../../../generated/definitions/payment-ecommerce-v2/client";
@@ -16,6 +17,15 @@ import {
 const conf = getConfigOrThrow();
 const retries: number = 10;
 const delay: number = 1000;
+
+/**
+ * Api client for payment ecommerce API V1
+ */
+export const apiWalletEcommerceClient = creatWalletClient({
+  baseUrl: conf.CHECKOUT_PAGOPA_APIM_HOST,
+  basePath: conf.CHECKOUT_API_WALLET_BASEPATH_V1 as string,
+  fetchApi: retryingFetch(fetch, conf.CHECKOUT_API_TIMEOUT as Millisecond, 3),
+});
 
 /**
  * Api client for payment ecommerce API V1

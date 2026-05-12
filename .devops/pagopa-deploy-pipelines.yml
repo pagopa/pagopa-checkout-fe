@@ -24,10 +24,24 @@ parameters:
       - patch
     default: minor
 
-
 variables:
   NODE_VERSION: 18.17.1
   YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
+  # Front Door CDN params
+  CDN_TYPE: afd
+  ENDPOINT_FLAG: --endpoint-name
+  DEV_STORAGE_ACCOUNT: pagopadweucheckoutcdnsa
+  DEV_CDN_RG: pagopa-d-checkout-fe-rg
+  DEV_CDN_PROFILE: pagopa-d-weu-checkout-cdn-profile
+  DEV_CDN_ENDPOINT: pagopa-d-weu-checkout-cdn-endpoint
+  UAT_STORAGE_ACCOUNT: pagopauweucheckoutcdnsa
+  UAT_CDN_RG: pagopa-u-checkout-fe-rg
+  UAT_CDN_PROFILE: pagopa-u-weu-checkout-cdn-profile
+  UAT_CDN_ENDPOINT: pagopa-u-weu-checkout-cdn-endpoint
+  PROD_STORAGE_ACCOUNT: pagopapweucheckoutcdnsa
+  PROD_CDN_RG: pagopa-p-checkout-fe-rg
+  PROD_CDN_PROFILE: pagopa-p-weu-checkout-cdn-profile
+  PROD_CDN_ENDPOINT: pagopa-p-weu-checkout-cdn-endpoint
 
 
 # Only manual activations are intended
@@ -98,6 +112,7 @@ stages:
               api_ecommerce_basepath_v2: '/ecommerce/checkout/v2'
               api_ecommerce_basepath_v3: '/ecommerce/checkout/v3'
               api_ecommerce_basepath_v4: '/ecommerce/checkout/v4'
+              api_checkout_wallet_basepath_v1: '/checkout/payment-wallet/v1'
               checkout_feature_flags_basepath: '/checkout/feature-flags/v1'
               checkout_auth_service_basepath_v1: '/checkout/auth-service/v1'
               pagopa_assets_cdn: 'https://assets.cdn.platform.pagopa.it/payment-methods'
@@ -131,7 +146,7 @@ stages:
               azureSubscription: 'DEV-PAGOPA-SERVICE-CONN'
               scriptLocation: inlineScript
               inlineScript: |
-                call az storage blob sync --container $web --account-name pagopadcheckoutsa -s "$(Pipeline.Workspace)\Bundle_DEV" --exclude-path payment-transactions-gateway;ecommerce-fe
+                call az storage blob sync --container $web --account-name ${{ variables.DEV_STORAGE_ACCOUNT }} -s "$(Pipeline.Workspace)\Bundle_DEV"
 
           - task: AzureCLI@1
             displayName: 'Purge CDN endpoint on DEV'
@@ -139,7 +154,7 @@ stages:
               azureSubscription: 'DEV-PAGOPA-SERVICE-CONN'
               scriptLocation: inlineScript
               inlineScript: |
-                call az cdn endpoint purge -g pagopa-d-checkout-fe-rg -n pagopa-d-checkout-cdn-endpoint --profile-name pagopa-d-checkout-cdn-profile --content-paths "/*"
+                call az ${{ variables.CDN_TYPE }} endpoint purge -g ${{ variables.DEV_CDN_RG }} ${{ variables.ENDPOINT_FLAG }} ${{ variables.DEV_CDN_ENDPOINT }} --profile-name ${{ variables.DEV_CDN_PROFILE }} --content-paths "/*"
 
   - stage: End_to_End_Tests_DEV
     dependsOn:
@@ -236,10 +251,11 @@ stages:
               api_ecommerce_basepath_v2: '/ecommerce/checkout/v2'
               api_ecommerce_basepath_v3: '/ecommerce/checkout/v3'
               api_ecommerce_basepath_v4: '/ecommerce/checkout/v4'
+              api_checkout_wallet_basepath_v1: '/checkout/payment-wallet/v1'
               checkout_feature_flags_basepath: '/checkout/feature-flags/v1'
               checkout_auth_service_basepath_v1: '/checkout/auth-service/v1'
               pagopa_assets_cdn: 'https://assets.cdn.platform.pagopa.it/payment-methods'
-              pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi/'
+              pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi'
               survey_show: 1
               checkout_npg_sdk_url: 'https://stg-ta.nexigroup.com/monetaweb/resources/hfsdk.js'
               checkout_version: "$(Build.SourceBranchName):$(Build.SourceVersion)"
@@ -283,7 +299,7 @@ stages:
               azureSubscription: 'UAT-PAGOPA-SERVICE-CONN'
               scriptLocation: inlineScript
               inlineScript: |
-                call az storage blob sync --container $web --account-name pagopaucheckoutsa -s "$(Pipeline.Workspace)\Bundle_UAT" --exclude-path payment-transactions-gateway;ecommerce-fe
+                call az storage blob sync --container $web --account-name ${{ variables.UAT_STORAGE_ACCOUNT }} -s "$(Pipeline.Workspace)\Bundle_UAT"
 
           - task: AzureCLI@1
             displayName: 'Purge CDN endpoint on UAT'
@@ -291,7 +307,7 @@ stages:
               azureSubscription: 'UAT-PAGOPA-SERVICE-CONN'
               scriptLocation: inlineScript
               inlineScript: |
-                call az cdn endpoint purge -g pagopa-u-checkout-fe-rg -n pagopa-u-checkout-cdn-endpoint --profile-name pagopa-u-checkout-cdn-profile --content-paths "/*"
+                call az ${{ variables.CDN_TYPE }} endpoint purge -g ${{ variables.UAT_CDN_RG }} ${{ variables.ENDPOINT_FLAG }} ${{ variables.UAT_CDN_ENDPOINT }} --profile-name ${{ variables.UAT_CDN_PROFILE }} --content-paths "/*"
 
   - stage: End_to_End_Tests_UAT
     dependsOn:
@@ -341,10 +357,11 @@ stages:
               api_ecommerce_basepath_v2: '/ecommerce/checkout/v2'
               api_ecommerce_basepath_v3: '/ecommerce/checkout/v3'
               api_ecommerce_basepath_v4: '/ecommerce/checkout/v4'
+              api_checkout_wallet_basepath_v1: '/checkout/payment-wallet/v1'
               checkout_feature_flags_basepath: '/checkout/feature-flags/v1'
               checkout_auth_service_basepath_v1: '/checkout/auth-service/v1'
               pagopa_assets_cdn: 'https://assets.cdn.platform.pagopa.it/payment-methods'
-              pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi/'
+              pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi'
               survey_show: 1
               checkout_npg_sdk_url: 'https://xpay.nexigroup.com/monetaweb/resources/hfsdk.js'
               checkout_version: "$(Build.SourceBranchName):$(Build.SourceVersion)"
@@ -388,7 +405,7 @@ stages:
               azureSubscription: 'PROD-PAGOPA-SERVICE-CONN'
               scriptLocation: inlineScript
               inlineScript: |
-                call az storage blob sync --container $web --account-name pagopapcheckoutsa -s "$(Pipeline.Workspace)\Bundle" --exclude-path payment-transactions-gateway;ecommerce-fe
+                call az storage blob sync --container $web --account-name ${{ variables.PROD_STORAGE_ACCOUNT }} -s "$(Pipeline.Workspace)\Bundle"
 
           - task: AzureCLI@1
             displayName: 'Purge CDN endpoint on PROD'
@@ -396,4 +413,4 @@ stages:
               azureSubscription: 'PROD-PAGOPA-SERVICE-CONN'
               scriptLocation: inlineScript
               inlineScript: |
-                call az cdn endpoint purge -g pagopa-p-checkout-fe-rg -n pagopa-p-checkout-cdn-endpoint --profile-name pagopa-p-checkout-cdn-profile --content-paths "/*"
+                call az ${{ variables.CDN_TYPE }} endpoint purge -g ${{ variables.PROD_CDN_RG }} ${{ variables.ENDPOINT_FLAG }} ${{ variables.PROD_CDN_ENDPOINT }} --profile-name ${{ variables.PROD_CDN_PROFILE }} --content-paths "/*"

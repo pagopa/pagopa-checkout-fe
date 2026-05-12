@@ -9,12 +9,7 @@ const PrivacyLink = (props: {
 }) => {
   const { href, children, rel = "noreferrer" } = props;
   return (
-    <Link
-      href={href}
-      target="_blank"
-      rel={rel}
-      style={{ fontWeight: 600, textDecoration: "none" }}
-    >
+    <Link href={href} target="_blank" rel={rel} sx={{ fontWeight: 600 }}>
       {children}
     </Link>
   );
@@ -42,7 +37,7 @@ export default function PrivacyInfo(props: { showDonationPrivacy?: boolean }) {
                   <Link
                     href="https://www.pagopa.gov.it/it/privacy-policy-donazioni-ucraina/"
                     rel="noopener noreferrer"
-                    sx={{ fontWeight: 600, textDecoration: "none" }}
+                    sx={{ fontWeight: 600 }}
                   />
                 ),
               }}

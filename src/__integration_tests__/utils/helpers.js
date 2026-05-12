@@ -54,7 +54,9 @@ export const activateApmPaymentAndGetError = async (
   selectorId
 ) => {
   await chooseApmMethod(noticeCode, fiscalCode, email, "SATY");
-  const errorMessageElem = await page.waitForSelector(selectorId);
+  const pspListErrorSelector = "#pspListErrorId";
+  const combinedSelector = `${selectorId}, ${pspListErrorSelector}`;
+  const errorMessageElem = await page.waitForSelector(combinedSelector);
   return await errorMessageElem.evaluate((el) => el.textContent);
 };
 
@@ -112,10 +114,13 @@ export const checkErrorOnCardDataFormSubmit = async (
   email,
   cardData
 ) => {
-  const errorMessageTitleSelector = "#iframeCardFormErrorTitleId";
+  const iframeErrorSelector = "#iframeCardFormErrorTitleId";
+  const pspListErrorSelector = "#pspListTitleError";
   await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
+  // When enablePspPage is active, the error may appear on the PSP list page
+  // instead of the card form page
   const errorMessageElem = await page.waitForSelector(
-    errorMessageTitleSelector
+    `${iframeErrorSelector}, ${pspListErrorSelector}`
   );
   return await errorMessageElem.evaluate((el) => el.textContent);
 };
@@ -162,8 +167,8 @@ export const tryLoginWithAuthCallbackError = async (noticeCode, fiscalCode) => {
   await clickLoginButton();
 
   //Wait for error messages
-  const titleErrorElem = await page.waitForSelector("#errorTitle");
-  const titleErrorBody = await page.waitForSelector("#errorBody");
+  const titleErrorElem = await page.waitForSelector("#auth-callback-title");
+  const titleErrorBody = await page.waitForSelector("#auth-callback-body");
   const title = await titleErrorElem.evaluate((el) => el.textContent);
   const body = await titleErrorBody.evaluate((el) => el.textContent);
 
@@ -249,10 +254,11 @@ export const fillAndSearchFormPaymentMethod = async (
 export const filterByType = async (id) => {
   //wait 1 sec for f.e. to draws component
   await new Promise((r)=> setTimeout(r, 1000));
-  const filterDrawerOpenButton= await page.waitForSelector("#filterDrawerButton", {clickable: true});
+  const filterDrawerOpenButton= await page.waitForSelector("#filterDrawerButton", {visible: true});
   await filterDrawerOpenButton?.click();
+  await new Promise((r)=> setTimeout(r, 500));
   const filterDrawerCard = await page.waitForSelector(id, {
-    clickable: true,
+    visible: true,
   });
   await filterDrawerCard?.click();
 };
@@ -260,14 +266,15 @@ export const filterByType = async (id) => {
 export const filterByTwoType = async (id_1,id_2) => {
   //wait 1 sec for f.e. to draws component
   await new Promise((r)=> setTimeout(r, 1000));
-  const filterDrawerOpenButton= await page.waitForSelector("#filterDrawerButton", {clickable: true});
+  const filterDrawerOpenButton= await page.waitForSelector("#filterDrawerButton", {visilbe: true});
   await filterDrawerOpenButton?.click();
+  await new Promise((r)=> setTimeout(r, 500));
   const filterDrawerCard = await page.waitForSelector(id_1, {
-    clickable: true,
+    visible: true,
   });
 
    const filterDrawerCard2 = await page.waitForSelector(id_2, {
-    clickable: true,
+    visible: true,
   });
   await filterDrawerCard?.click();
   await filterDrawerCard2?.click();
@@ -295,21 +302,27 @@ export const tryHandlePspPickerPage = async ()=>{
 }
 
 export const selectPspOnPspPickerPage = async () => {
-  try{
-    const pspPickerRadio = await page.waitForSelector("#psp-radio-button-unchecked", {
-      visible: true, timeout: 500
+  try {
+    const firstPspCard = await page.waitForSelector("label.MuiFormControlLabel-root", {
+      visible: true,
+      timeout: 500,
     });
-    await pspPickerRadio.click();
-  
+
+    await firstPspCard.click();
+
     const continueButton = await page.waitForSelector("#paymentPspListPageButtonContinue", {
-      visible: true, timeout: 500
+      visible: true,
+      timeout: 500,
     });
-    
+
     await continueButton.click();
-  }catch(e){
-    console.log("Buttons not found: this is caused by PSP page immediately navigate to the summary page (if 1 psp available)");
+  } catch (e) {
+    console.log(
+      "Buttons not found: this is caused by PSP page immediately navigate to the summary page (if 1 psp available)"
+    );
   }
-}
+};
+
 
 export const fillAndSubmitSatispayPayment = async (
   noticeCode,
@@ -443,8 +456,7 @@ export const cancelPaymentOK = async (
   email,
   cardData
 ) => {
-  const resultMessageXPath =
-    "#main_content > div > div > div > div.MuiBox-root.css-5vb4lz > div";
+  const resultMessageSelector = "#cancelledPageBody";
   await fillAndSubmitCardDataForm(noticeCode, fiscalCode, email, cardData);
   const paymentCheckPageButtonCancel = await page.waitForSelector(
     "#paymentCheckPageButtonCancel"
@@ -454,9 +466,9 @@ export const cancelPaymentOK = async (
   await cancPayment.click();
   await page.waitForNavigation();
   // this new timeout is needed for how react 18 handles the addition of animated content 
-  // to the page. Without it, the resultMessageXPath never resolves
+  // to the page. Without it, the resultMessageSelector never resolves
   await new Promise((r) => setTimeout(r, 200));
-  const message = await page.waitForSelector(resultMessageXPath);
+  const message = await page.waitForSelector(resultMessageSelector);
   return await message.evaluate((el) => el.textContent);
 };
 
@@ -552,4 +564,302 @@ export const checkPspListNames = async (
   const closePspListButton = await page.waitForSelector("#closePspList", {visible: true, clickable: true});
   await closePspListButton.click();
   return feeNameContents;
+};
+
+
+export const showWallets = async (
+  noticeCode,
+  fiscalCode,
+  email,
+  cardData
+) => {
+  const pspDisclaimerSelectorById = "#pspDisclaimer";
+  await fillAndSubmitWallet(noticeCode, fiscalCode, email, cardData);
+  const disclaimerElement = await page.waitForSelector(
+    pspDisclaimerSelectorById
+  );
+  return await disclaimerElement.evaluate((el) => el.textContent);
+};
+
+export const fillAndSubmitWallet = async (
+  noticeCode,
+  fiscalCode,
+  email,
+  cardData
+) => {
+  const payNoticeBtnSelector = "#paymentSummaryButtonPay";
+  await fillPaymentNotificationForm(noticeCode, fiscalCode);
+  const payNoticeBtn = await page.waitForSelector(payNoticeBtnSelector, {
+    visible: true,
+  });
+  await payNoticeBtn.click();
+  await fillEmailForm(email);
+
+  await clickLoginButton();
+  
+  await choosePaymentMethod("wallet-0");
+
+  await tryHandlePspPickerPage();
+};
+
+export const fillPaymentFlowWithoutLogin = async (
+  noticeCode,
+  fiscalCode,
+  email
+) => {
+  const payNoticeBtnSelector = "#paymentSummaryButtonPay";
+  await fillPaymentNotificationForm(noticeCode, fiscalCode);
+  const payNoticeBtn = await page.waitForSelector(payNoticeBtnSelector, {
+    visible: true,
+  });
+  await payNoticeBtn.click();
+  await fillEmailForm(email);
+  await page.waitForSelector("[data-qalabel=payment-method]", { timeout: 10000 });
+};
+
+export const fillPaymentFlowWithLogin = async (
+  noticeCode,
+  fiscalCode,
+  email
+) => {
+  const payNoticeBtnSelector = "#paymentSummaryButtonPay";
+  await fillPaymentNotificationForm(noticeCode, fiscalCode);
+  const payNoticeBtn = await page.waitForSelector(payNoticeBtnSelector, {
+    visible: true,
+  });
+  await payNoticeBtn.click();
+  await fillEmailForm(email);
+  await clickLoginButton();
+  await page.waitForSelector('button[aria-label^="Area utente"]');
+  console.log("Login completed");
+  await page.waitForSelector("[data-qalabel=payment-method]", { timeout: 10000 });
+};
+
+export const verifyWalletVisible = async (index) => {
+  const walletSelector = `[data-qaid="wallet-${index}"]`;
+  try {
+    const walletElement = await page.waitForSelector(walletSelector, {
+      visible: true,
+      timeout: 5000
+    });
+
+    const hasVisaText = await page.evaluate(() => {
+      const elements = document.querySelectorAll('.MuiTypography-sidenav');
+      return Array.from(elements).some(el => /VISA.*1334/.test(el.textContent));
+    });
+
+    return walletElement !== null || hasVisaText;
+  } catch (error) {
+    return false;
+  }
+};
+
+export const verifyWalletNotVisible = async () => {
+  try {
+    const walletElements = await page.$$('[data-qaid^="wallet-"]');
+    return walletElements.length === 0;
+  } catch (error) {
+    return true;
+  }
+};
+
+export const verifyWalletsSectionVisible = async () => {
+  try {
+    await page.waitForFunction(() => {
+      const elements = document.querySelectorAll('p.MuiTypography-h6, h6.MuiTypography-root');
+      return Array.from(elements).some(el => el.textContent && el.textContent.trim() === 'Salvati');
+    }, { timeout: 5000 });
+    return true;
+  } catch (error) {
+    console.log('Wallets section not found:', error.message);
+    return false;
+  }
+};
+
+export const verifyWalletsSectionNotVisible = async () => {
+  try {
+    const walletsVisible = await page.evaluate(() => {
+      const elements = document.querySelectorAll('h6.MuiTypography-root, p.MuiTypography-h6');
+      return Array.from(elements).some(el => el.textContent.trim() === 'Salvati');
+    });
+    return !walletsVisible;
+  } catch (error) {
+    return true;
+  }
+};
+
+export const selectWallet = async (index) => {
+  const walletSelector = `[data-qaid="wallet-${index}"]`;
+  const walletBtn = await page.waitForSelector(walletSelector, {
+    visible: true,
+  });
+  await walletBtn.click();
+};
+
+export const selectWalletByType = async (walletType, walletsResponse) => {
+  await page.waitForSelector('[data-qaid^="wallet-"]', { timeout: 5000 });
+
+  if (!walletsResponse || !walletsResponse.wallets) {
+    throw new Error('Wallets API response not provided');
+  }
+
+  // find the wallet with the matching type from the API response
+  const walletIndex = walletsResponse.wallets.findIndex(wallet =>
+    wallet.details?.type === walletType
+  );
+
+  if (walletIndex === -1) {
+    throw new Error(`No wallet found with type: ${walletType} in API response`);
+  }
+
+  // choose the correct wallet
+  const walletSelector = `[data-qaid="wallet-${walletIndex}"]`;
+  await page.click(walletSelector);
+
+  // wait for either navigation to PSP page or session storage to update
+  try {
+    await page.waitForNavigation({ timeout: 2000 });
+  } catch (e) {
+    console.log('No navigation occurred');
+  }
+
+  // wait a bit more for session storage to stabilize
+  await new Promise(r => setTimeout(r, 500));
+
+  console.log(`Selected saved wallet with type: ${walletType}`);
+
+  // eventually handle PSP selection
+  if (page.url().includes('/lista-psp')) {
+    console.log('On PSP picker page, selecting PSP');
+    await selectPspOnPspPickerPage();
+  }
+};
+
+export const payWithWallet = async (
+  noticeCode,
+  fiscalCode,
+  email,
+  checkoutUrlAfterAuth,
+  walletType
+) => {
+  const payBtnSelector = "#paymentCheckPageButtonPay";
+  const resultTitleSelector = "#responsePageMessageTitle";
+  await selectWalletAndGetToCheckPage(noticeCode, fiscalCode, email, walletType);
+  const payBtn = await page.waitForSelector(payBtnSelector);
+  await payBtn.click();
+  await page.waitForNavigation();
+  await page.goto(checkoutUrlAfterAuth, { waitUntil: "networkidle0" });
+  const message = await page.waitForSelector(resultTitleSelector);
+  return await message.evaluate((el) => el.textContent);
+};
+
+export const selectWalletAndGetToCheckPage = async (
+  noticeCode,
+  fiscalCode,
+  email,
+  walletType
+) => {
+  // listener to capture wallets API response
+  let walletsResponse = null;
+
+  const responseHandler = async (response) => {
+    const url = response.url();
+    if (url.includes('/checkout/payment-wallet/v1/users/wallets') && response.request().method() === 'GET') {
+      try {
+        walletsResponse = await response.json();
+        console.log(`Captured wallets API response with ${walletsResponse.wallets?.length} wallets`);
+      } catch (e) {
+        console.log('Error parsing wallets response:', e);
+      }
+    }
+  };
+
+  page.on('response', responseHandler);
+
+  const payNoticeBtnSelector = "#paymentSummaryButtonPay";
+  await fillPaymentNotificationForm(noticeCode, fiscalCode);
+  const payNoticeBtn = await page.waitForSelector(payNoticeBtnSelector, {
+    visible: true,
+  });
+  await payNoticeBtn.click();
+  await fillEmailForm(email);
+  await clickLoginButton();
+  await page.waitForSelector('button[aria-label^="Area utente"]');
+
+  // wait for wallets to be visible to ensure API has been called
+  await page.waitForSelector('[data-qaid^="wallet-"]', { timeout: 5000 });
+
+  page.off('response', responseHandler);
+
+  if (!walletsResponse) {
+    throw new Error('Failed to capture wallets API response');
+  }
+
+  await selectWalletByType(walletType, walletsResponse);
+
+  // return walletsResponse so it can be reused by callers
+  return walletsResponse;
+};
+
+export const cancelWalletPayment = async (
+  noticeCode,
+  fiscalCode,
+  email,
+  walletType
+) => {
+  const resultMessageSelector = "#cancelledPageBody";
+  await selectWalletAndGetToCheckPage(noticeCode, fiscalCode, email, walletType);
+  const paymentCheckPageButtonCancel = await page.waitForSelector(
+    "#paymentCheckPageButtonCancel"
+  );
+  await paymentCheckPageButtonCancel.click();
+  const cancPayment = await page.waitForSelector("#confirm");
+  await cancPayment.click();
+  await page.waitForNavigation();
+  await new Promise((r) => setTimeout(r, 200));
+  const message = await page.waitForSelector(resultMessageSelector);
+  return await message.evaluate((el) => el.textContent);
+};
+
+export const editWalletAndSelectAnother = async (
+  noticeCode,
+  fiscalCode,
+  email,
+  initialWalletType,
+  newWalletType
+) => {
+  const cardEditButtonSelector = "#cardEdit";
+
+  const walletsResponse = await selectWalletAndGetToCheckPage(noticeCode, fiscalCode, email, initialWalletType);
+
+  const cardEditButton = await page.waitForSelector(cardEditButtonSelector, {
+    visible: true,
+    clickable: true
+  });
+  console.log("Clicking 'Modifica' (Edit) button to change wallet selection");
+  await cardEditButton.click();
+
+  // wait for wallets to be visible again after clicking edit
+  await page.waitForSelector('[data-qaid^="wallet-"]', { timeout: 5000 });
+
+  await selectWalletByType(newWalletType, walletsResponse);
+};
+
+export const editWalletSelectAnotherAndPay = async (
+  noticeCode,
+  fiscalCode,
+  email,
+  checkoutUrlAfterAuth,
+  initialWalletType,
+  newWalletType
+) => {
+  const payBtnSelector = "#paymentCheckPageButtonPay";
+  const resultTitleSelector = "#responsePageMessageTitle";
+  await editWalletAndSelectAnother(noticeCode, fiscalCode, email, initialWalletType, newWalletType);
+  const payBtn = await page.waitForSelector(payBtnSelector);
+  await payBtn.click();
+  await page.waitForNavigation();
+  await page.goto(checkoutUrlAfterAuth, { waitUntil: "networkidle0" });
+  const message = await page.waitForSelector(resultTitleSelector);
+  return await message.evaluate((el) => el.textContent);
 };

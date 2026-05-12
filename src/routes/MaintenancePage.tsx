@@ -52,7 +52,7 @@ export default function MaintenancePage() {
             },
           }}
         >
-          <Typography variant="h6" component="div" id="id_maintenance">
+          <Typography variant="h6" component="h1" id="id_maintenance">
             {t("maintenancePage.title")}
           </Typography>
           <Typography
