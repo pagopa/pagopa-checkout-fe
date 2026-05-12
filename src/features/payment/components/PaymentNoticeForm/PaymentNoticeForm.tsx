@@ -1,18 +1,15 @@
-/* eslint-disable sonarjs/no-identical-functions */
 /* eslint-disable functional/immutable-data */
 /* eslint-disable @typescript-eslint/no-empty-function */
 
 import { Box, InputAdornment } from "@mui/material";
 import { Formik, FormikProps } from "formik";
 import React from "react";
+import FocusError from "../../../../components/FocusError/FocusError";
 import { FormButtons } from "../../../../components/FormButtons/FormButtons";
 import TextFormField from "../../../../components/TextFormField/TextFormField";
 import { cleanSpaces } from "../../../../utils/form/formatters";
 import { getFormValidationIcon } from "../../../../utils/form/validators";
-import {
-  PaymentFormErrors,
-  PaymentFormFields,
-} from "../../models/paymentModel";
+import { PaymentFormFields } from "../../models/paymentModel";
 
 export function PaymentNoticeForm(props: {
   defaultValues?: PaymentFormFields;
@@ -21,30 +18,23 @@ export function PaymentNoticeForm(props: {
   loading: boolean;
 }) {
   const formRef = React.useRef<FormikProps<PaymentFormFields>>(null);
-  const [disabled, setDisabled] = React.useState(!props.defaultValues?.cf);
 
-  const validate = (values: PaymentFormFields) => {
-    const errors: PaymentFormErrors = {
-      ...(values.billCode
-        ? {
-            ...(/\b^\d{18}$\b/.test(values.billCode)
-              ? {}
-              : { billCode: "paymentNoticePage.formErrors.minCode" }),
-          }
-        : { billCode: "paymentNoticePage.formErrors.required" }),
-      ...(values.cf
-        ? {
-            ...(/\b^\d{11}$\b/.test(values.cf)
-              ? {}
-              : { cf: "paymentNoticePage.formErrors.minCf" }),
-          }
-        : { cf: "paymentNoticePage.formErrors.required" }),
-    };
-
-    setDisabled(!!(errors.billCode || errors.cf));
-
-    return errors;
-  };
+  const validate = (values: PaymentFormFields) => ({
+    ...(values.billCode
+      ? {
+          ...(/\b^\d{18}$\b/.test(values.billCode)
+            ? {}
+            : { billCode: "paymentNoticePage.formErrors.minCode" }),
+        }
+      : { billCode: "paymentNoticePage.formErrors.required" }),
+    ...(values.cf
+      ? {
+          ...(/\b^\d{11}$\b/.test(values.cf)
+            ? {}
+            : { cf: "paymentNoticePage.formErrors.minCf" }),
+        }
+      : { cf: "paymentNoticePage.formErrors.required" }),
+  });
 
   return (
     <>
@@ -67,9 +57,11 @@ export function PaymentNoticeForm(props: {
           handleSubmit,
           values,
         }) => (
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} data-testid="paymentNoticeForm-form">
+            <FocusError />
             <Box>
               <TextFormField
+                required
                 fullWidth
                 variant="outlined"
                 errorText={errors.billCode}
@@ -95,6 +87,7 @@ export function PaymentNoticeForm(props: {
                 }
               />
               <TextFormField
+                required
                 fullWidth
                 variant="outlined"
                 errorText={errors.cf}
@@ -122,7 +115,7 @@ export function PaymentNoticeForm(props: {
               cancelTitle="paymentNoticePage.formButtons.cancel"
               idCancel="paymentNoticeButtonCancel"
               idSubmit="paymentNoticeButtonContinue"
-              disabledSubmit={disabled}
+              disabledSubmit={false}
               loadingSubmit={props.loading}
               handleSubmit={() => handleSubmit()}
               handleCancel={props.onCancel}

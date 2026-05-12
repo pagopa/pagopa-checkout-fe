@@ -6,8 +6,9 @@ import {
   InputLabel,
   useTheme,
   Skeleton,
+  Theme,
+  SxProps,
 } from "@mui/material";
-import { SxProps } from "@mui/system";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Field } from "../../../../../generated/definitions/payment-ecommerce/Field";
@@ -31,11 +32,11 @@ const getSrcFromFieldsByID = (
 ) => fields.find((field) => field.id === id)?.src;
 
 interface Styles {
-  formControl: SxProps;
-  label: SxProps;
-  box: SxProps;
+  formControl: SxProps<Theme>;
+  label: SxProps<Theme>;
+  box: SxProps<Theme>;
   iframe: React.CSSProperties;
-  skeleton: SxProps;
+  skeleton: SxProps<Theme>;
   fieldStatusIcon: React.CSSProperties;
 }
 
@@ -86,7 +87,6 @@ export function IframeCardField(props: Props) {
       <Box sx={styles.box} aria-busy={!isAllFieldsLoaded}>
         <iframe
           aria-label={label + " " + t("inputCardPage.formFields.required")}
-          role="textbox"
           id={`frame_${id}`}
           seamless
           style={styles.iframe}
@@ -105,7 +105,8 @@ export function IframeCardField(props: Props) {
           error
           id={`frame_${id}_hint`}
           aria-hidden={isValid}
-          aria-live="assertive"
+          aria-live="polite"
+          role="alert"
         >
           {t(`errorMessageNPG.${errorCode}`, {
             defaultValue: errorMessage,
@@ -141,7 +142,7 @@ const useStyles = (props: Props): Styles => {
       margin: "dense",
       marginY: 3,
       borderRadius: "4px",
-      boxShadow: `0 0 0 1px ${borderStyle.boxColor}`,
+      boxShadow: `0 0 0 ${borderStyle.borderWidth} ${borderStyle.boxColor}`,
       transition: "box-shadow 0.1s ease-in",
       "&:hover": {
         boxShadow: `0 0 0 ${borderStyle.hoverShadowWidth} ${borderStyle.hoverShadowColor}`,
@@ -184,9 +185,10 @@ const useStyles = (props: Props): Styles => {
       display: "flex",
       position: "absolute",
       alignItems: "center",
-      width: "10%%",
+      width: "10%",
       justifySelf: "flex-end",
       cursor: "initial",
+      right: 0,
     },
   };
 };
@@ -197,13 +199,13 @@ const useBorderStyles = ({ isValid, activeField, id }: Props) => {
   const errorColor = palette.error.dark;
   const focusColor = palette.primary.main;
 
-  // Default styles for neutral state or undefined validity
-  if (activeField === undefined || isValid === undefined) {
+  if (isValid === false) {
     return {
-      labelColor: palette.text.secondary,
-      boxColor: palette.grey[500],
-      hoverShadowWidth: "1px",
-      hoverShadowColor: palette.text.primary,
+      labelColor: errorColor,
+      boxColor: errorColor,
+      borderWidth: activeField === id ? "2px" : "1px",
+      hoverShadowWidth: "2px",
+      hoverShadowColor: errorColor,
     };
   }
 
@@ -212,6 +214,7 @@ const useBorderStyles = ({ isValid, activeField, id }: Props) => {
     return {
       labelColor: focusColor,
       boxColor: focusColor,
+      borderWidth: "2px",
       hoverShadowWidth: "2px",
       hoverShadowColor: focusColor,
     };
@@ -219,9 +222,10 @@ const useBorderStyles = ({ isValid, activeField, id }: Props) => {
 
   // Inactive focus
   return {
-    labelColor: isValid ? palette.text.secondary : errorColor,
-    boxColor: isValid ? palette.grey[500] : errorColor,
-    hoverShadowWidth: "2px",
-    hoverShadowColor: isValid ? palette.text.primary : errorColor,
+    labelColor: palette.text.secondary,
+    boxColor: palette.grey[500],
+    borderWidth: "1px",
+    hoverShadowWidth: "1px",
+    hoverShadowColor: palette.text.primary,
   };
 };

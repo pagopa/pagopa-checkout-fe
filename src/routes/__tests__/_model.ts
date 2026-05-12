@@ -32,6 +32,12 @@ import { PaymentMethodStatusEnum as PaymentMethodStatusEnumV3 } from "../../../g
 import { CalculateFeeResponse } from "../../../generated/definitions/payment-ecommerce-v2/CalculateFeeResponse";
 import { TransactionInfo } from "../../../generated/definitions/payment-ecommerce-v2/TransactionInfo";
 import { SendPaymentResultOutcomeEnum } from "../../../generated/definitions/payment-ecommerce-v3/NewTransactionResponse";
+import { WalletInfo } from "../../../generated/definitions/checkout-wallets-v1/WalletInfo";
+import { WalletStatusEnum } from "../../../generated/definitions/checkout-wallets-v1/WalletStatus";
+import { WalletApplicationInfo } from "../../../generated/definitions/checkout-wallets-v1/WalletApplicationInfo";
+import { WalletClientStatusEnum } from "../../../generated/definitions/checkout-wallets-v1/WalletClientStatus";
+import { WalletInfoDetails } from "../../../generated/definitions/checkout-wallets-v1/WalletInfoDetails";
+import { WalletId } from "../../../generated/definitions/checkout-wallets-v1/WalletId";
 
 export const transactionInfoOK: TransactionInfo = {
   transactionId: "6f7d9be5fbb94ca29bf55972321783e7",
@@ -345,3 +351,48 @@ export const rptId: PaymentFormFields = {
   billCode: "302034567870000000",
   cf: "77777777777",
 };
+
+export const createSuccessGetWallets: Array<WalletInfo> = [
+  {
+    walletId: "11111111-1111-1111-1111-111111111111" as WalletId,
+    paymentMethodId: "pcf3cc414-3b6f-46f6-a0ae-0f2e96188a56",
+    paymentMethodAsset:
+      "https://assets.cdn.platform.pagopa.it/creditcard/generic.png",
+    status: WalletStatusEnum.VALIDATED,
+    creationDate: new Date(),
+    updateDate: new Date(),
+    applications: [
+      { name: "APP1", status: "ENABLED" } as WalletApplicationInfo,
+    ],
+    clients: {
+      IO: { status: WalletClientStatusEnum.ENABLED },
+    },
+    details: {
+      type: "CARDS",
+      brand: "VISA",
+      lastFourDigits: "1234",
+      expiryDate: "203012",
+    } as WalletInfoDetails,
+  },
+
+  {
+    walletId: "22222222-2222-2222-2222-222222222222" as WalletId,
+    paymentMethodId: "8f2a657e-4dd1-4f1a-9c48-c9df81203699",
+    paymentMethodAsset: "https://assets.cdn.platform.pagopa.it/apm/paypal.png",
+    status: WalletStatusEnum.VALIDATED,
+    creationDate: new Date(),
+    updateDate: new Date(),
+    applications: [
+      { name: "APP2", status: "DISABLED" } as WalletApplicationInfo,
+    ],
+    clients: {
+      IO: { status: WalletClientStatusEnum.DISABLED },
+    },
+    details: {
+      type: "PAYPAL",
+      pspId: "psp_123",
+      pspBusinessName: "PayPal Business",
+      maskedEmail: "test***@***test.it",
+    } as WalletInfoDetails,
+  },
+];

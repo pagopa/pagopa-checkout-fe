@@ -4,9 +4,9 @@ import { Theme } from "@emotion/react";
 import {
   MethodManagementEnum,
   PaymentMethodResponseMetadata,
-  PaymentTypeCodeEnum,
 } from "../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 import { FeeRange } from "../../../../generated/definitions/payment-ecommerce-v2/FeeRange";
+import { WalletTypeEnum } from "../../../../generated/definitions/payment-ecommerce-v2/CalculateFeeRequest";
 
 export interface PaymentFormFields {
   billCode: string;
@@ -90,6 +90,9 @@ export interface PaymentId {
 export interface PaymentMethod {
   paymentTypeCode: string;
   paymentMethodId: string;
+  walletId?: string;
+  walletType?: WalletTypeEnum;
+  pspId?: string;
 }
 
 export const MapField = t.record(
@@ -105,7 +108,7 @@ export interface PaymentInstrumentsType {
   name: MapField;
   description: MapField;
   status: string;
-  paymentTypeCode: PaymentTypeCodeEnum;
+  paymentTypeCode: string;
   methodManagement: MethodManagementEnum;
   feeRange?: FeeRange;
   asset?: string;
@@ -127,6 +130,7 @@ interface ReturnUrls {
   returnOkUrl: string;
   returnCancelUrl: string;
   returnErrorUrl: string;
+  returnWaitingUrl?: string;
 }
 
 export interface Cart {

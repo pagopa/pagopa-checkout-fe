@@ -1,11 +1,12 @@
-import { Container, useTheme } from "@mui/material";
-import { Box, SxProps } from "@mui/system";
+import { Container, SxProps, Theme, useTheme } from "@mui/material";
+import { Box } from "@mui/system";
 import React from "react";
 import Footer from "./Footer";
 import Header from "./Header";
+import SkipToContent from "./SkipToContent";
 
 interface LayoutProps {
-  sx?: SxProps;
+  sx?: SxProps<Theme>;
   children?: React.ReactNode;
   fixedFooterPages: Array<string>;
 }
@@ -21,6 +22,7 @@ export function Layout({ sx, children, fixedFooterPages }: LayoutProps) {
         bgcolor: theme.palette.background.default,
       }}
     >
+      <SkipToContent />
       <Header />
       <Container
         id="main_content"

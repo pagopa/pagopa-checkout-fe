@@ -99,6 +99,10 @@ export function App() {
           enabled.toString()
         );
       }
+      if (featureFlags[SessionItems.enableWallet] in allFlags) {
+        const enabled = allFlags.isPaymentWalletEnabled;
+        setSessionItem(SessionItems.enableWallet, enabled.toString());
+      }
     }),
     TE.fold(
       (err) => async () => {

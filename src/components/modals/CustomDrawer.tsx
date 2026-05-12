@@ -35,7 +35,6 @@ export function CustomDrawer(props: {
               color: "custom.drawer.icon.color.main",
               p: 0,
             }}
-            aria-hidden="true"
           >
             <CloseIcon />
           </IconButton>

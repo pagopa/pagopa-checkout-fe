@@ -1,6 +1,5 @@
 /* eslint-disable functional/immutable-data */
-import { TextField } from "@mui/material";
-import { SxProps } from "@mui/system";
+import { SxProps, TextField, Theme } from "@mui/material";
 import React, { FocusEventHandler, FormEventHandler } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -8,12 +7,13 @@ interface TextFormFieldProps {
   fullWidth: boolean;
   errorText: string | undefined;
   error: boolean;
+  required?: boolean;
   label: string;
   id: string;
   type: string;
   variant?: "outlined" | "standard" | "filled" | undefined;
   style?: React.CSSProperties;
-  sx?: SxProps;
+  sx?: SxProps<Theme>;
   value?: string | number;
   endAdornment?: React.ReactNode;
   startAdornment?: React.ReactNode;
@@ -39,6 +39,7 @@ function TextFormField(props: TextFormFieldProps) {
 
   return (
     <TextField
+      required={props.required}
       fullWidth={props.fullWidth}
       margin="dense"
       disabled={props.disabled}
@@ -64,6 +65,9 @@ function TextFormField(props: TextFormFieldProps) {
       }}
       inputProps={{
         inputMode: props.inputMode,
+      }}
+      FormHelperTextProps={{
+        role: props.error ? "alert" : undefined,
       }}
     />
   );

@@ -42,7 +42,6 @@ import {
   MixpanelPaymentPhase,
 } from "../utils/mixpanel/mixpanelEvents";
 import { mixpanel } from "../utils/mixpanel/mixpanelHelperInit";
-import { PaymentTypeCodeEnum } from "../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 import { CheckoutRoutes } from "./models/routeModel";
 
 export default function PaymentPspListPage() {
@@ -89,8 +88,7 @@ export default function PaymentPspListPage() {
   }, []);
 
   const shouldShowMyBankAlert = () =>
-    paymentMethod?.paymentTypeCode === PaymentTypeCodeEnum.MYBK &&
-    isAlertVisible;
+    paymentMethod?.paymentTypeCode === "MYBK" && isAlertVisible;
 
   const myBankAlertVisible = shouldShowMyBankAlert();
 
@@ -177,6 +175,9 @@ export default function PaymentPspListPage() {
     void calculateFees({
       paymentId: paymentMethod?.paymentMethodId,
       bin: sessionPaymentMethodResponse?.bin,
+      walletId: paymentMethod?.walletId,
+      walletType: paymentMethod?.walletType,
+      pspId: paymentMethod?.pspId,
       onError,
       onPspNotFound,
       onResponsePsp: onPspListSuccessResponse,
@@ -259,6 +260,7 @@ export default function PaymentPspListPage() {
           open={errorModalOpen}
           onClose={() => {
             setErrorModalOpen(false);
+            navigate(`/${CheckoutRoutes.ERRORE}`, { replace: true });
           }}
           titleId="pspListTitleError"
           bodyId="pspListBodyError"

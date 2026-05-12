@@ -37,6 +37,7 @@ export enum SessionItems {
   noticeCodeDataEntry = "noticeCodeDataEntry",
   enableScheduledMaintenanceBanner = "enableScheduledMaintenanceBanner",
   enablePaymentMethodsHandler = "enablePaymentMethodsHandler",
+  enableWallet = "enableWallet",
   counterPolling = "counterPolling",
   mixpanelInitialized = "mixpanelInitialized",
 }
@@ -53,6 +54,7 @@ const isParsable = (item: SessionItems) =>
     item === SessionItems.noticeCodeDataEntry ||
     item === SessionItems.enableScheduledMaintenanceBanner ||
     item === SessionItems.enablePaymentMethodsHandler ||
+    item === SessionItems.enableWallet ||
     item === SessionItems.mixpanelInitialized
   );
 
@@ -133,6 +135,7 @@ const KEYS_TO_PRESERVE = [
   SessionItems.enableScheduledMaintenanceBanner,
   SessionItems.mixpanelInitialized,
   SessionItems.enablePaymentMethodsHandler,
+  SessionItems.enableWallet,
 ] as const;
 
 export const clearStorageAndMaintainAuthData = () => {

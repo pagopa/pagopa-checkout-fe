@@ -242,7 +242,7 @@ export default function DonationPage() {
             <Grid container spacing={3} mb={6}>
               {selectedEntity.slices?.map((slice, index) => (
                 <React.Fragment key={index}>
-                  <Grid item xs={4}>
+                  <Grid xs={4}>
                     <Button
                       variant={
                         selectedSlice === slice ? "contained" : "outlined"
@@ -332,11 +332,7 @@ export default function DonationPage() {
             {`${t("donationPage.portfolio")}, `}
           </Typography>
           {`${t("donationPage.click")} `}
-          <Typography
-            variant="body1"
-            component={"span"}
-            sx={{ fontWeight: 600 }}
-          >
+          <Typography variant="body1" component={"h1"} sx={{ fontWeight: 600 }}>
             {`${t("donationPage.payNotice")} `}
           </Typography>
           {t("donationPage.code")}

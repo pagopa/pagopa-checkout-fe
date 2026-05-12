@@ -21,7 +21,7 @@ export function ScheduledMaintenanceBanner() {
             href="https://status.platform.pagopa.it/it/maintenance/619923" // TODO: understand whether the status page link is dynamic, in order to move it to the environment configuration.
             target="_blank"
             rel="noreferrer"
-            style={{ fontWeight: 600, textDecoration: "none" }}
+            sx={{ fontWeight: 600 }}
           >
             {t("ScheduledMaintenanceBanner.linkTextKey")}
           </Link>

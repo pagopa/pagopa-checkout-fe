@@ -30,21 +30,26 @@ import {
   setSessionItem,
 } from "../../../../utils/storage/sessionStorage";
 import { NewTransactionResponse } from "../../../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
-import { CalculateFeeRequest } from "../../../../../generated/definitions/payment-ecommerce-v2/CalculateFeeRequest";
+import {
+  CalculateFeeRequest,
+  WalletTypeEnum,
+} from "../../../../../generated/definitions/payment-ecommerce-v2/CalculateFeeRequest";
 import { CreateSessionResponse } from "../../../../../generated/definitions/payment-ecommerce/CreateSessionResponse";
 import { Bundle } from "../../../../../generated/definitions/payment-ecommerce-v2/Bundle";
 import { CalculateFeeResponse } from "../../../../../generated/definitions/payment-ecommerce-v2/CalculateFeeResponse";
 import {
   PaymentMethodsRequest as PaymentMethodsRequestV2,
   UserTouchpointEnum,
+  UserDeviceEnum,
+  SortByEnum,
+  SortOrderEnum,
 } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodsRequest";
 import { PaymentMethodsRequest as PaymentMethodsRequestV4 } from "../../../../../generated/definitions/payment-ecommerce-v4/PaymentMethodsRequest";
 import { PaymentNoticeItem } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentNoticeItem";
-import {
-  MethodManagementEnum,
-  PaymentTypeCodeEnum,
-} from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
+import { MethodManagementEnum } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 import { evaluateFeatureFlag } from "../checkoutFeatureFlagsHelper";
+import { getUserDevice } from "../../../device/deviceDetection";
+import { getLanguage } from "../../../../utils/paymentMethods/paymentMethodsHelper";
 
 // ->Promise<Either<string,SessionPaymentMethodResponse>>
 export const retrieveCardData = async ({
@@ -126,12 +131,18 @@ export const retrieveCardData = async ({
 export const calculateFees = async ({
   paymentId,
   bin,
+  walletId,
+  walletType,
+  pspId,
   onError,
   onPspNotFound,
   onResponsePsp,
 }: {
   paymentId: string;
   bin?: string;
+  walletId?: string;
+  walletType?: WalletTypeEnum;
+  pspId?: string;
   onError: (e: string) => void;
   onPspNotFound: () => void;
   onResponsePsp: (r: any) => void;
@@ -152,6 +163,9 @@ export const calculateFees = async ({
         })),
       })),
       isAllCCP: transaction.payments[0].isAllCCP,
+      walletId,
+      walletType,
+      idPspList: pspId ? [pspId] : [],
     }))
   );
 
@@ -272,10 +286,7 @@ const getPaymentMethods = async (
                           IT: p.description,
                         },
                         status: p.status,
-                        paymentTypeCode: getEnumFromString(
-                          PaymentTypeCodeEnum,
-                          p.paymentTypeCode
-                        ),
+                        paymentTypeCode: p.paymentTypeCode,
                         methodManagement: getEnumFromString(
                           MethodManagementEnum,
                           p.methodManagement
@@ -438,9 +449,21 @@ const buildPaymentInstrumentMethodHandlerSearchRequest =
         },
       ];
     }
+
+    // detect browser type (Safari vs others)
+    const userDevice = getUserDevice() as UserDeviceEnum | undefined;
+    const language = getLanguage();
+    const sortBy = SortByEnum.DESCRIPTION;
+    const sortOrder = SortOrderEnum.ASC;
+    const priorityGroups = ["CP"];
     return {
       userTouchpoint,
+      userDevice,
       totalAmount,
+      language,
+      sortBy,
+      sortOrder,
+      priorityGroups,
       paymentNotice: paymentNotices,
       allCCp,
     };
@@ -574,6 +597,15 @@ export const getFees = (
       (getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined)
         ?.paymentMethodId || "",
     bin,
+    walletId:
+      (getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined)
+        ?.walletId ?? undefined,
+    walletType:
+      (getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined)
+        ?.walletType ?? undefined,
+    pspId:
+      (getSessionItem(SessionItems.paymentMethod) as PaymentMethod | undefined)
+        ?.pspId ?? undefined,
     onError,
     onPspNotFound,
     onResponsePsp: (resp) => {

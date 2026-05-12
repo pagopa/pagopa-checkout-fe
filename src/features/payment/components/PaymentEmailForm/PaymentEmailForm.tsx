@@ -3,14 +3,12 @@
 import { Box, InputAdornment } from "@mui/material";
 import { Formik, FormikProps } from "formik";
 import React from "react";
+import FocusError from "../../../../components/FocusError/FocusError";
 import { FormButtons } from "../../../../components/FormButtons/FormButtons";
 import TextFormField from "../../../../components/TextFormField/TextFormField";
 import { getFormErrorIcon } from "../../../../utils/form/validators";
 import { emailValidation } from "../../../../utils/regex/validators";
-import {
-  PaymentEmailFormErrors,
-  PaymentEmailFormFields,
-} from "../../models/paymentModel";
+import { PaymentEmailFormFields } from "../../models/paymentModel";
 
 export function PaymentEmailForm(props: {
   defaultValues?: PaymentEmailFormFields;
@@ -18,36 +16,27 @@ export function PaymentEmailForm(props: {
   onSubmit: (emailInfo: PaymentEmailFormFields) => void;
 }) {
   const formRef = React.useRef<FormikProps<PaymentEmailFormFields>>(null);
-  const [disabled, setDisabled] = React.useState(
-    !props.defaultValues?.email || !props.defaultValues?.confirmEmail
-  );
 
-  const validate = (values: PaymentEmailFormFields) => {
-    const errors: PaymentEmailFormErrors = {
-      ...(values.email
-        ? {
-            ...(emailValidation(values.email)
-              ? {}
-              : { email: "paymentEmailPage.formErrors.invalid" }),
-          }
-        : { email: "paymentEmailPage.formErrors.required" }),
-      ...(values.confirmEmail
-        ? {
-            ...(emailValidation(values.confirmEmail)
-              ? {
-                  ...(values.email === values.confirmEmail
-                    ? {}
-                    : { confirmEmail: "paymentEmailPage.formErrors.notEqual" }),
-                }
-              : { confirmEmail: "paymentEmailPage.formErrors.invalid" }),
-          }
-        : { confirmEmail: "paymentEmailPage.formErrors.required" }),
-    };
-
-    setDisabled(!!(errors.email || errors.confirmEmail));
-
-    return errors;
-  };
+  const validate = (values: PaymentEmailFormFields) => ({
+    ...(values.email
+      ? {
+          ...(emailValidation(values.email)
+            ? {}
+            : { email: "paymentEmailPage.formErrors.invalid" }),
+        }
+      : { email: "paymentEmailPage.formErrors.required" }),
+    ...(values.confirmEmail
+      ? {
+          ...(emailValidation(values.confirmEmail)
+            ? {
+                ...(values.email === values.confirmEmail
+                  ? {}
+                  : { confirmEmail: "paymentEmailPage.formErrors.notEqual" }),
+              }
+            : { confirmEmail: "paymentEmailPage.formErrors.invalid" }),
+        }
+      : { confirmEmail: "paymentEmailPage.formErrors.required" }),
+  });
 
   return (
     <>
@@ -71,8 +60,10 @@ export function PaymentEmailForm(props: {
           values,
         }) => (
           <form onSubmit={handleSubmit}>
+            <FocusError />
             <Box>
               <TextFormField
+                required
                 fullWidth
                 variant="outlined"
                 errorText={errors.email}
@@ -91,6 +82,7 @@ export function PaymentEmailForm(props: {
                 }
               />
               <TextFormField
+                required
                 fullWidth
                 variant="outlined"
                 errorText={errors.confirmEmail}
@@ -116,7 +108,7 @@ export function PaymentEmailForm(props: {
               submitTitle="paymentEmailPage.formButtons.submit"
               cancelTitle="paymentEmailPage.formButtons.back"
               idSubmit="paymentEmailPageButtonContinue"
-              disabledSubmit={disabled}
+              disabledSubmit={false}
               handleSubmit={() => handleSubmit()}
               handleCancel={props.onCancel}
             />
