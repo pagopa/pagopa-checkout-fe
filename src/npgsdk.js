@@ -1,37 +1,48 @@
-// Implementazione con chiamata API e supporto per hash multipli
+/**
+ * NPG SDK loader with Subresource Integrity (SRI) check.
+ *
+ * Fetches the SDK integrity hash from the APIM endpoint, then loads
+ * the NPG SDK script with the integrity attribute for PCI SAQ-A compliance.
+ * The SDK is served through Front Door (same origin) so no cross origin
+ * attribute is needed.
+ *
+ * Permissive fallback: if the hash fetch fails or SRI validation fails,
+ * the SDK is loaded without integrity to avoid blocking the payment flow.
+ */
 const loadNpgSDK = async () => {
+  const sdkUrl = window._env_.CHECKOUT_NPG_SDK_URL;
+  const integrityUrl = window._env_.CHECKOUT_NPG_SDK_INTEGRITY_URL;
+
+  // fallback: load SDK without SRI (used when hash is unavailable or SRI fails)
+  const loadWithoutIntegrity = () => {
+    const script = document.createElement("script");
+    script.setAttribute("src", sdkUrl);
+    script.setAttribute("type", "text/javascript");
+    script.setAttribute("charset", "UTF-8");
+    document.head.appendChild(script);
+  };
+
   try {
-    // Chiamata API al microservizio per ottenere i valori hash
-    const response = await fetch('http://localhost:8080/ecommerce/checkout/v1/integrities/npg');
-    const { hashes, crossOriginDomain } = await response.json();
-    
-    const integrityValue = hashes.map(({ value }) => value).join(' ');
-    
-    const elementScriptNpg = document.createElement("script");
-    const urlScriptNpg = window._env_.CHECKOUT_NPG_SDK_URL;
-    
-    elementScriptNpg.setAttribute("src", urlScriptNpg);
-    elementScriptNpg.setAttribute("type", "text/javascript");
-    elementScriptNpg.setAttribute("charset", "UTF-8");
-    elementScriptNpg.onerror = (e) => { 
-        /* Log + logica retry + strategie spiegate nel catch sottostante */
-        console.log("Errore dopo aver recuperato gli hash:", e)
+    const response = await fetch(integrityUrl);
+    if (!response.ok) {
+      throw new Error(`Integrity endpoint returned HTTP ${response.status}`);
+    }
+    const { integrityHash } = await response.json();
+
+    const script = document.createElement("script");
+    script.setAttribute("src", sdkUrl);
+    script.setAttribute("type", "text/javascript");
+    script.setAttribute("charset", "UTF-8");
+    script.setAttribute("integrity", integrityHash);
+    // ff SRI validation fails (hash mismatch or network error), fall back to loading without integrity
+    script.onerror = () => {
+      console.error("NPG SDK integrity check failed, loading without SRI");
+      loadWithoutIntegrity();
     };
-    elementScriptNpg.setAttribute("integrity", integrityValue);
-    elementScriptNpg.setAttribute("crossorigin", crossOriginDomain);
-    
-    document.head.appendChild(elementScriptNpg);
+    document.head.appendChild(script);
   } catch (error) {
-    console.error("Errore nel caricamento dello script NPG con integrità:", error);
-    // Log verso ELK RUM (o equivalente, vedi sezione relativa)
-    // Non mostrato: logiche di retry
-    // Opzione 1: Strategia bloccante: redirect in pagina errore dedicata con possibilità di retry guidato
-    // Opzione 2: Strategia permissiva: caricamento senza controllo di integrità
-    const fallbackElementScriptNpg = document.createElement("script");
-    fallbackElementScriptNpg.setAttribute("src", window._env_.CHECKOUT_NPG_SDK_URL);
-    fallbackElementScriptNpg.setAttribute("type", "text/javascript");
-    fallbackElementScriptNpg.setAttribute("charset", "UTF-8");
-    document.head.appendChild(fallbackElementScriptNpg);
+    console.error("Failed to fetch NPG SDK integrity hash:", error);
+    loadWithoutIntegrity();
   }
 };
 
