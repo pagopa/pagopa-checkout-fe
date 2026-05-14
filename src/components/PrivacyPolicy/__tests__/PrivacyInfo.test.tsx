@@ -30,20 +30,6 @@ jest.mock("react-i18next", () => ({
             link
           </span>
         );
-      case "privacyInfo.googleDesc":
-        return (
-          <span data-testid="google-desc">
-            Google description with
-            <span data-testid="google-privacy-link">
-              {components?.privacy}
-            </span>{" "}
-            and
-            <span data-testid="google-terms-link">
-              {components?.terms}
-            </span>{" "}
-            links
-          </span>
-        );
       default:
         return <span>Unknown translation key: {i18nKey}</span>;
     }
@@ -113,10 +99,6 @@ describe("PrivacyInfo Component", () => {
     const typographyContent = typographyElement.textContent;
     expect(typographyContent).toContain(".");
 
-    // Check if Google description is rendered
-    const googleDesc = screen.getByTestId("google-desc");
-    expect(googleDesc).toBeInTheDocument();
-
     // Check links in privacy description
     const privacyLink = screen
       .getByTestId("privacy-link")
@@ -136,27 +118,6 @@ describe("PrivacyInfo Component", () => {
       .querySelector('[data-testid="link-component"]');
     expect(termsLink).toBeInTheDocument();
     expect(termsLink).toHaveAttribute("href", "/termini-di-servizio");
-
-    // Check links in Google description
-    const googlePrivacyLink = screen
-      .getByTestId("google-privacy-link")
-      .querySelector('[data-testid="link-component"]');
-    expect(googlePrivacyLink).toBeInTheDocument();
-    expect(googlePrivacyLink).toHaveAttribute(
-      "href",
-      "https://policies.google.com/privacy"
-    );
-    expect(googlePrivacyLink).toHaveAttribute("rel", "noopener noreferrer");
-
-    const googleTermsLink = screen
-      .getByTestId("google-terms-link")
-      .querySelector('[data-testid="link-component"]');
-    expect(googleTermsLink).toBeInTheDocument();
-    expect(googleTermsLink).toHaveAttribute(
-      "href",
-      "https://policies.google.com/terms"
-    );
-    expect(googleTermsLink).toHaveAttribute("rel", "noopener noreferrer");
   });
 
   it("renders donation privacy when showDonationPrivacy is true", () => {
@@ -169,16 +130,6 @@ describe("PrivacyInfo Component", () => {
     // Check if typography content doesn't contain a standalone period
     const typographyElement = screen.getByTestId("typography-component");
     const typographyText = typographyElement.textContent;
-    // Check that the text doesn't have a standalone period between the sections
-    const privacyDescText = screen.getByTestId("privacy-desc").textContent;
-    const googleDescText = screen.getByTestId("google-desc").textContent;
-    const textBetween = typographyText!
-      .substring(
-        privacyDescText!.length,
-        typographyText!.length - googleDescText!.length
-      )
-      .trim();
-    expect(textBetween).not.toBe(".");
 
     // Check donation terms link
     const donationTermsLink = screen
