@@ -127,10 +127,6 @@ describe("PrivacyInfo Component", () => {
     const privacyDonation = screen.getByTestId("privacy-donation");
     expect(privacyDonation).toBeInTheDocument();
 
-    // Check if typography content doesn't contain a standalone period
-    const typographyElement = screen.getByTestId("typography-component");
-    const typographyText = typographyElement.textContent;
-
     // Check donation terms link
     const donationTermsLink = screen
       .getByTestId("donation-terms-link")
