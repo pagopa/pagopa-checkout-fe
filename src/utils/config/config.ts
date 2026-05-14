@@ -33,6 +33,7 @@ export const IConfig = t.interface({
   CHECKOUT_DONATIONS_URL: NonEmptyString,
   CHECKOUT_SURVEY_SHOW: t.boolean,
   CHECKOUT_NPG_SDK_URL: NonEmptyString,
+  CHECKOUT_NPG_SDK_INTEGRITY_URL: NonEmptyString,
   CHECKOUT_API_RETRY_NUMBERS: t.number,
   CHECKOUT_API_RETRY_DELAY: t.number,
   CHECKOUT_GDI_CHECK_TIMEOUT: t.number,
