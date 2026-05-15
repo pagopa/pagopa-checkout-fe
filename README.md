@@ -37,11 +37,13 @@ In order to build and run this project are required:
 
 The table below describes all the Environment variables needed by the application.
 
-| Variable name | Description | type |
-|----------------|-------------|------|
-|IO\_PAY\_PORTAL\_API\_HOST| api services | endpoint/string
-|IO\_PAY\_PORTAL\_API\_REQUEST\_TIMEOUT| request timeout | milliseconds
-|CHECKOUT_API_RETRY_NUMBERS_LINEAR| number of calls at regular intervals| number
+| Variable name                          | Description                                    | type            |
+|----------------------------------------|------------------------------------------------|-----------------|
+| IO\_PAY\_PORTAL\_API\_HOST             | api services                                   | endpoint/string |
+| IO\_PAY\_PORTAL\_API\_REQUEST\_TIMEOUT | request timeout                                | milliseconds    |
+| CHECKOUT_API_RETRY_NUMBERS_LINEAR      | number of calls at regular intervals           | number          |
+| CHECKOUT\_NPG\_SDK\_URL                | NPG SDK script URL (served via Front Door CDN) | endpoint/string |
+| CHECKOUT\_NPG\_SDK\_INTEGRITY\_URL     | APIM endpoint returning the NPG SDK SRI hash   | endpoint/string |
 
 ### Installation
 
