@@ -43,7 +43,8 @@ jest.mock("../../utils/config/config", () => ({
     CHECKOUT_DONATIONS_URL: "https://test.donations.url",
     CHECKOUT_SURVEY_SHOW: false,
     CHECKOUT_NPG_SDK_URL: "https://test.npg.sdk.url",
-    CHECKOUT_NPG_SDK_INTEGRITY_URL: "https://test.apim.host/checkout/npg/sdk/v1/resources/sri",
+    CHECKOUT_NPG_SDK_INTEGRITY_URL:
+      "https://test.apim.host/checkout/npg/sdk/v1/resources/sri",
     CHECKOUT_API_RETRY_NUMBERS: 10,
     CHECKOUT_API_RETRY_DELAY: 3000,
     CHECKOUT_GDI_CHECK_TIMEOUT: 5000,
