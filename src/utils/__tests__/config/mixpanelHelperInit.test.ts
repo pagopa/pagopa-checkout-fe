@@ -26,6 +26,7 @@ Object.defineProperty(global, "window", {
       CHECKOUT_DONATIONS_URL: "https://donations.com",
       CHECKOUT_SURVEY_SHOW: "1",
       CHECKOUT_NPG_SDK_URL: "https://sdk.npg.com",
+      CHECKOUT_NPG_SDK_INTEGRITY_URL: "https://pagopa.com/checkout/npg/sdk/v1/resources/sri",
       CHECKOUT_API_RETRY_NUMBERS: "10",
       CHECKOUT_API_RETRY_DELAY: "2000",
       CHECKOUT_GDI_CHECK_TIMEOUT: "5000",
