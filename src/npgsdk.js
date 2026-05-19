@@ -34,7 +34,7 @@ const loadNpgSDK = async () => {
     script.setAttribute("type", "text/javascript");
     script.setAttribute("charset", "UTF-8");
     script.setAttribute("integrity", integrityHash);
-    // ff SRI validation fails (hash mismatch or network error), fall back to loading without integrity
+    // if SRI validation fails (hash mismatch or network error), fall back to loading without integrity
     script.onerror = () => {
       console.error("NPG SDK integrity check failed, loading without SRI");
       loadWithoutIntegrity();
