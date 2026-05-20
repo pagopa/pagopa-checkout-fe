@@ -145,6 +145,7 @@ jest.mock("../../../utils/mixpanel/mixpanelTracker", () => ({
   getPaymentInfoFromSessionStorage: jest.fn(),
 }));
 
+// eslint-disable-next-line functional/immutable-data
 Object.defineProperty(navigator, "clipboard", {
   configurable: true,
   value: {
