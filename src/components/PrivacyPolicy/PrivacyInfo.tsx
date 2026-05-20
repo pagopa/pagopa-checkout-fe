@@ -45,6 +45,9 @@ export default function PrivacyInfo(props: { showDonationPrivacy?: boolean }) {
           ) : (
             ". "
           )}
+          <Trans
+            i18nKey="privacyInfo.googleDesc"
+          />
         </Typography>
       </Box>
     </>

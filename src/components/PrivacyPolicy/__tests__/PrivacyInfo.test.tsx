@@ -30,6 +30,12 @@ jest.mock("react-i18next", () => ({
             link
           </span>
         );
+      case "privacyInfo.googleDesc":
+        return (
+          <span data-testid="google-desc">
+            Form protetto tramite reCAPTCHA e Google.
+          </span>
+        );
       default:
         return <span>Unknown translation key: {i18nKey}</span>;
     }
@@ -98,6 +104,10 @@ describe("PrivacyInfo Component", () => {
     // Check for period using the typography content
     const typographyContent = typographyElement.textContent;
     expect(typographyContent).toContain(".");
+
+    // Check if Google description is rendered
+    const googleDesc = screen.getByTestId("google-desc");
+    expect(googleDesc).toBeInTheDocument();
 
     // Check links in privacy description
     const privacyLink = screen
