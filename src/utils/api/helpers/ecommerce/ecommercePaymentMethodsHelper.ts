@@ -50,7 +50,16 @@ import { MethodManagementEnum } from "../../../../../generated/definitions/payme
 import { evaluateFeatureFlag } from "../checkoutFeatureFlagsHelper";
 import { getUserDevice } from "../../../device/deviceDetection";
 import { getLanguage } from "../../../../utils/paymentMethods/paymentMethodsHelper";
-
+import {
+  getDataEntryTypeFromSessionStorage,
+  getPaymentInfoFromSessionStorage,
+} from "../../../mixpanel/mixpanelTracker";
+import { mixpanel } from "../../../mixpanel/mixpanelHelperInit";
+import {
+  MixpanelEventCategory,
+  MixpanelEventsId,
+  MixpanelPaymentPhase,
+} from "../../../mixpanel/mixpanelEvents";
 // ->Promise<Either<string,SessionPaymentMethodResponse>>
 export const retrieveCardData = async ({
   paymentId,
@@ -220,6 +229,18 @@ export const calculateFees = async ({
               if (myRes?.status === 200) {
                 onResponsePsp(myRes?.value);
               } else if (myRes?.status === 404) {
+                const paymentInfo = getPaymentInfoFromSessionStorage();
+                mixpanel.track(MixpanelEventsId.PSP_UNAVAILABLE, {
+                  EVENT_ID: MixpanelEventsId.PSP_UNAVAILABLE,
+                  EVENT_CATEGORY: MixpanelEventCategory.KO,
+                  reason: null,
+                  data_entry: getDataEntryTypeFromSessionStorage(),
+                  organization_name: paymentInfo?.paName,
+                  organization_fiscal_code: paymentInfo?.paFiscalCode,
+                  amount: paymentInfo?.amount,
+                  expiration_date: paymentInfo?.dueDate,
+                  payment_phase: MixpanelPaymentPhase.VERIFICA,
+                });
                 onPspNotFound();
               } else {
                 onError(ErrorsType.GENERIC_ERROR);

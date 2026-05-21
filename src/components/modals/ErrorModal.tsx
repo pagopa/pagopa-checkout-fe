@@ -141,24 +141,6 @@ function ErrorModal(props: {
         });
       }
     }
-    if (
-      !props.open &&
-      props.error === "" &&
-      props.errorId === "pspListErrorId"
-    ) {
-      const paymentInfo = getPaymentInfoFromSessionStorage();
-      mixpanel.track(MixpanelEventsId.PSP_UNAVAILABLE, {
-        EVENT_ID: MixpanelEventsId.PSP_UNAVAILABLE,
-        EVENT_CATEGORY: MixpanelEventCategory.KO,
-        reason: nodeFaultCodeDetails ? nodeFaultCodeDetails : null,
-        data_entry: getDataEntryTypeFromSessionStorage(),
-        organization_name: paymentInfo?.paName,
-        organization_fiscal_code: paymentInfo?.paFiscalCode,
-        amount: paymentInfo?.amount,
-        expiration_date: paymentInfo?.dueDate,
-        payment_phase: MixpanelPaymentPhase.VERIFICA,
-      });
-    }
   }, [props.open, nodeFaultCodeCategory, nodeFaultCodeDetails]);
 
   return (
