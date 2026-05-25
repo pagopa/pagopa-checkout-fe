@@ -476,7 +476,7 @@
     "title": "Die Behörde braucht länger als erwartet..."
   },
   "privacyInfo": {
-    "googleDesc": "Durch reCAPTCHA und Google (<privacy>Datenschutzrichtlinie</privacy> und <terms>Nutzungsbedingungen</terms>) geschütztes Formular.",
+    "googleDesc": "Formular geschützt durch reCAPTCHA und Google.",
     "privacyDesc": "Durch die weitere Nutzung des Dienstes erklärst du dich mit den <terms>Nutzungsbedingungen</terms> einverstanden und bestätigst, die <privacy>Hinweise zum Datenschutz</privacy> gelesen zu haben.",
     "privacyDonation": "zusätzlichen Nutzungsbedingungen des Spendendienstes zugunsten der Krisenhilfe für die Ukraine gelesen zu haben "
   },
