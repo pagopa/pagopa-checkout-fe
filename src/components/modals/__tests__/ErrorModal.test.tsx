@@ -11,8 +11,12 @@ import ErrorModal from "../ErrorModal";
 
 import { FaultCategoryEnum } from "../../../../generated/definitions/payment-ecommerce/FaultCategory";
 import { ErrorsType } from "../../../utils/errors/checkErrorsModel";
-import { paymentInfo } from "../../../routes/__tests__/_model";
+import { PaymentCategoryResponses } from "../../../utils/errors/errorsModel";
 import { mixpanel } from "../../../utils/mixpanel/mixpanelHelperInit";
+import {
+  getDataEntryTypeFromSessionStorage,
+  getPaymentInfoFromSessionStorage,
+} from "../../../utils/mixpanel/mixpanelTracker";
 import {
   MixpanelDataEntryType,
   MixpanelEventCategory,
@@ -47,19 +51,23 @@ jest.mock("react-i18next", () => ({
         "TIMEOUT.body": "The operation timed out",
         "STATUS_ERROR.title": "Status Error",
         "STATUS_ERROR.body": "There was an error checking the payment status",
+        "INVALID_QRCODE.title": "Invalid QR Code",
+        "INVALID_QRCODE.body": "The QR Code is invalid",
         "clipboard.copy": "Copy",
         "clipboard.copied": "Copied",
         "button.retry": "Retry",
         "button.close": "Close",
+        "button.help": "Help",
       };
+
       return translations[key] || key;
     },
   }),
 }));
 
-// Mock Material UI components
 jest.mock("@mui/material", () => {
   const actual = jest.requireActual("@mui/material");
+
   return {
     ...actual,
     useTheme: () => ({
@@ -71,79 +79,15 @@ jest.mock("@mui/material", () => {
   };
 });
 
-// Mock the PaymentCategoryResponses object
 jest.mock("../../../utils/errors/errorsModel", () => {
-  const { FaultCategoryEnum } = jest.requireActual(
-    "../../../../generated/definitions/payment-ecommerce/FaultCategory"
+  const { ErrorsType } = jest.requireActual(
+    "../../../utils/errors/checkErrorsModel"
   );
 
   return {
-    PaymentCategoryResponses: jest.fn(() => ({
-      [FaultCategoryEnum.GENERIC_ERROR]: {
-        title: "GENERIC_ERROR.title",
-        body: "GENERIC_ERROR.body",
-        buttons: [{ title: "button.close", action: undefined }],
-      },
-      [FaultCategoryEnum.PAYMENT_UNAVAILABLE]: {
-        title: "PAYMENT_UNAVAILABLE.title",
-        body: "PAYMENT_UNAVAILABLE.body",
-        buttons: [{ title: "button.close", action: undefined }],
-      },
-      [FaultCategoryEnum.PAYMENT_EXPIRED]: {
-        title: "PAYMENT_EXPIRED.title",
-        body: "PAYMENT_EXPIRED.body",
-        buttons: [{ title: "button.close", action: undefined }],
-      },
-      [FaultCategoryEnum.PAYMENT_DATA_ERROR]: {
-        title: "PAYMENT_DATA_ERROR.title",
-        body: "ErrorCodeDescription",
-        detail: true,
-        buttons: [{ title: "button.close", action: undefined }],
-      },
-      [FaultCategoryEnum.PAYMENT_DUPLICATED]: {
-        title: "PAYMENT_DUPLICATED.title",
-        body: "PAYMENT_DUPLICATED.body",
-        buttons: [{ title: "button.close", action: undefined }],
-      },
-      [FaultCategoryEnum.PAYMENT_UNKNOWN]: {
-        title: "PAYMENT_UNKNOWN.title",
-        body: "PAYMENT_UNKNOWN.body",
-        buttons: [{ title: "button.close", action: undefined }],
-      },
-      [FaultCategoryEnum.PAYMENT_CANCELED]: {
-        title: "PAYMENT_CANCELED.title",
-        body: "PAYMENT_CANCELED.body",
-        buttons: [{ title: "button.close", action: undefined }],
-      },
-      [FaultCategoryEnum.PAYMENT_ONGOING]: {
-        title: "PAYMENT_ONGOING.title",
-        body: "PAYMENT_ONGOING.body",
-        buttons: [{ title: "button.close", action: undefined }],
-      },
-      [FaultCategoryEnum.DOMAIN_UNKNOWN]: {
-        title: "DOMAIN_UNKNOWN.title",
-        body: "DOMAIN_UNKNOWN.body",
-        buttons: [{ title: "button.close", action: undefined }],
-      },
-      STATUS_ERROR: {
-        title: "STATUS_ERROR.title",
-        body: "STATUS_ERROR.body",
-        buttons: [
-          { title: "button.close", action: undefined },
-          { title: "button.retry", action: undefined },
-        ],
-      },
-      TIMEOUT: {
-        title: "TIMEOUT.title",
-        body: "TIMEOUT.body",
-        buttons: [
-          { title: "button.close", action: undefined },
-          { title: "button.retry", action: undefined },
-        ],
-      },
-    })),
+    PaymentCategoryResponses: jest.fn(),
     ErrorResponses: {
-      INVALID_QRCODE: {
+      [ErrorsType.INVALID_QRCODE]: {
         title: "INVALID_QRCODE.title",
         body: "INVALID_QRCODE.body",
         buttons: [{ title: "button.close" }, { title: "button.help" }],
@@ -168,15 +112,19 @@ jest.mock("../../FormButtons/ErrorButtons", () => ({
     buttonsDetail: Array<ErrorModalBtn>;
   }) => (
     <div data-testid="error-buttons">
-      {buttonsDetail.map((button, index) => (
-        <button
-          key={index}
-          onClick={button.action || handleClose}
-          data-testid={`button-${button.text || button.title}`}
-        >
-          {button.text || button.title}
-        </button>
-      ))}
+      {buttonsDetail.map((button, index) => {
+        const label = button.text || button.title || `button-${index}`;
+
+        return (
+          <button
+            key={`${label}-${index}`}
+            onClick={button.action || handleClose}
+            data-testid={`button-${label}`}
+          >
+            {label}
+          </button>
+        );
+      })}
     </div>
   ),
 }));
@@ -186,14 +134,6 @@ jest.mock("@mui/icons-material/CopyAll", () => ({
   default: () => <span data-testid="copy-icon">CopyIcon</span>,
 }));
 
-// Mock clipboard API
-// eslint-disable-next-line functional/immutable-data
-Object.assign(navigator, {
-  clipboard: {
-    writeText: jest.fn().mockImplementation(() => Promise.resolve()),
-  },
-});
-
 jest.mock("../../../utils/mixpanel/mixpanelHelperInit", () => ({
   mixpanel: {
     track: jest.fn(),
@@ -201,19 +141,110 @@ jest.mock("../../../utils/mixpanel/mixpanelHelperInit", () => ({
 }));
 
 jest.mock("../../../utils/mixpanel/mixpanelTracker", () => ({
-  getDataEntryTypeFromSessionStorage: jest.fn(() => "manual"),
-  getPaymentInfoFromSessionStorage: jest.fn(() => paymentInfo),
+  getDataEntryTypeFromSessionStorage: jest.fn(),
+  getPaymentInfoFromSessionStorage: jest.fn(),
 }));
+
+// eslint-disable-next-line functional/immutable-data
+Object.defineProperty(navigator, "clipboard", {
+  configurable: true,
+  value: {
+    writeText: jest.fn().mockResolvedValue(undefined),
+  },
+});
+
+const mockPaymentInfo = {
+  paName: "companyName",
+  paFiscalCode: "77777777777",
+  amount: 12000,
+  dueDate: "2021-07-31",
+};
+
+const mockedPaymentCategoryResponses =
+  PaymentCategoryResponses as unknown as jest.Mock;
+const mockedGetPaymentInfo =
+  getPaymentInfoFromSessionStorage as unknown as jest.Mock;
+const mockedGetDataEntryType =
+  getDataEntryTypeFromSessionStorage as unknown as jest.Mock;
+const mockedMixpanelTrack = mixpanel.track as jest.Mock;
+const mockedClipboardWriteText = navigator.clipboard.writeText as jest.Mock;
+
+const buildPaymentCategoryResponses = () => ({
+  [FaultCategoryEnum.GENERIC_ERROR]: {
+    title: "GENERIC_ERROR.title",
+    body: "GENERIC_ERROR.body",
+    buttons: [{ title: "button.close", action: undefined }],
+  },
+  [FaultCategoryEnum.PAYMENT_UNAVAILABLE]: {
+    title: "PAYMENT_UNAVAILABLE.title",
+    body: "PAYMENT_UNAVAILABLE.body",
+    buttons: [{ title: "button.close", action: undefined }],
+  },
+  [FaultCategoryEnum.PAYMENT_EXPIRED]: {
+    title: "PAYMENT_EXPIRED.title",
+    body: "PAYMENT_EXPIRED.body",
+    buttons: [{ title: "button.close", action: undefined }],
+  },
+  [FaultCategoryEnum.PAYMENT_DATA_ERROR]: {
+    title: "PAYMENT_DATA_ERROR.title",
+    body: "ErrorCodeDescription",
+    detail: true,
+    buttons: [{ title: "button.close", action: undefined }],
+  },
+  [FaultCategoryEnum.PAYMENT_DUPLICATED]: {
+    title: "PAYMENT_DUPLICATED.title",
+    body: "PAYMENT_DUPLICATED.body",
+    buttons: [{ title: "button.close", action: undefined }],
+  },
+  [FaultCategoryEnum.PAYMENT_UNKNOWN]: {
+    title: "PAYMENT_UNKNOWN.title",
+    body: "PAYMENT_UNKNOWN.body",
+    buttons: [{ title: "button.close", action: undefined }],
+  },
+  [FaultCategoryEnum.PAYMENT_CANCELED]: {
+    title: "PAYMENT_CANCELED.title",
+    body: "PAYMENT_CANCELED.body",
+    buttons: [{ title: "button.close", action: undefined }],
+  },
+  [FaultCategoryEnum.PAYMENT_ONGOING]: {
+    title: "PAYMENT_ONGOING.title",
+    body: "PAYMENT_ONGOING.body",
+    buttons: [{ title: "button.close", action: undefined }],
+  },
+  [FaultCategoryEnum.DOMAIN_UNKNOWN]: {
+    title: "DOMAIN_UNKNOWN.title",
+    body: "DOMAIN_UNKNOWN.body",
+    buttons: [{ title: "button.close", action: undefined }],
+  },
+  [ErrorsType.STATUS_ERROR]: {
+    title: "STATUS_ERROR.title",
+    body: "STATUS_ERROR.body",
+    buttons: [
+      { title: "button.close", action: undefined },
+      { title: "button.retry", action: undefined },
+    ],
+  },
+  [ErrorsType.TIMEOUT]: {
+    title: "TIMEOUT.title",
+    body: "TIMEOUT.body",
+    buttons: [
+      { title: "button.close", action: undefined },
+      { title: "button.retry", action: undefined },
+    ],
+  },
+});
 
 const getDialogAlert = () => {
   const dialogs = screen
     .getAllByRole("alert")
     .filter((el) => el.classList.contains("MuiDialog-root"));
+
   if (dialogs.length !== 1) {
     throw new Error(
       `Expected exactly 1 MuiDialog-root alert, got ${dialogs.length}`
     );
   }
+
   return dialogs[0];
 };
 
@@ -221,262 +252,236 @@ describe("ErrorModal Component", () => {
   const mockOnClose = jest.fn();
   const mockOnRetry = jest.fn();
 
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it("renders with generic error", () => {
+  const renderModal = (
+    props: Partial<React.ComponentProps<typeof ErrorModal>> = {}
+  ) =>
     render(
       <ErrorModal
         error={FaultCategoryEnum.GENERIC_ERROR}
         open={true}
         onClose={mockOnClose}
+        {...props}
       />
     );
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+
+    mockedPaymentCategoryResponses.mockImplementation(
+      buildPaymentCategoryResponses
+    );
+    mockedGetPaymentInfo.mockReturnValue(mockPaymentInfo);
+    mockedGetDataEntryType.mockReturnValue(MixpanelDataEntryType.MANUAL);
+  });
+
+  it("renders a generic error with buttons", () => {
+    renderModal();
 
     expect(screen.getByText("An error occurred")).toBeInTheDocument();
     expect(screen.getByText("Something went wrong")).toBeInTheDocument();
+    expect(screen.getByTestId("error-buttons")).toBeInTheDocument();
     expect(screen.getByTestId("button-button.close")).toBeInTheDocument();
   });
 
-  it("renders with payment unavailable error", () => {
-    render(
-      <ErrorModal
-        error={FaultCategoryEnum.PAYMENT_UNAVAILABLE}
-        open={true}
-        onClose={mockOnClose}
-      />
-    );
+  it("closes the modal when the close button is clicked", () => {
+    renderModal();
+
+    fireEvent.click(screen.getByTestId("button-button.close"));
+
+    expect(mockOnClose).toHaveBeenCalledTimes(1);
+  });
+
+  it("renders a known payment category without details", () => {
+    renderModal({ error: FaultCategoryEnum.PAYMENT_UNAVAILABLE });
 
     expect(screen.getByText("Payment Unavailable")).toBeInTheDocument();
     expect(
       screen.getByText("The payment service is currently unavailable")
     ).toBeInTheDocument();
-    expect(screen.getByTestId("button-button.close")).toBeInTheDocument();
+    expect(screen.queryByText("ErrorCodeDescription")).not.toBeInTheDocument();
   });
 
-  it("renders error details for payment data errors", () => {
-    const errorCode = `${FaultCategoryEnum.PAYMENT_DATA_ERROR}-INVALID_CARD_NUMBER`;
+  it("renders ErrorResponses errors instead of fault category responses", () => {
+    renderModal({ error: ErrorsType.INVALID_QRCODE });
 
-    render(<ErrorModal error={errorCode} open={true} onClose={mockOnClose} />);
+    expect(screen.getByText("Invalid QR Code")).toBeInTheDocument();
+    expect(screen.getByText("The QR Code is invalid")).toBeInTheDocument();
+    expect(screen.getByTestId("button-button.close")).toBeInTheDocument();
+    expect(screen.getByTestId("button-button.help")).toBeInTheDocument();
+  });
 
-    // Check if error details are shown
+  it("renders error details and forwards the detail to PaymentCategoryResponses", () => {
+    renderModal({
+      error: `${FaultCategoryEnum.PAYMENT_DATA_ERROR}-INVALID_CARD_NUMBER`,
+      errorId: "custom-error-id",
+    });
+
+    expect(screen.getByText("Payment Data Error")).toBeInTheDocument();
+    expect(screen.getByText("ErrorCodeDescription")).toBeInTheDocument();
+
     const dialog = getDialogAlert();
     const alertElement = within(dialog).getByRole("alert");
+    const alertTitle = within(alertElement).getByText("INVALID_CARD_NUMBER");
 
-    expect(alertElement).toBeInTheDocument();
-
-    // Look for the error code within the alert
-    const alertContent = within(alertElement).getByText("INVALID_CARD_NUMBER");
-    expect(alertContent).toBeInTheDocument();
-
-    // Check if copy button is shown
-    expect(screen.getByText("Copy")).toBeInTheDocument();
+    expect(alertTitle).toBeInTheDocument();
+    expect(alertTitle).toHaveAttribute("id", "custom-error-id");
     expect(screen.getByTestId("copy-icon")).toBeInTheDocument();
+    expect(mockedPaymentCategoryResponses).toHaveBeenCalledWith(
+      "INVALID_CARD_NUMBER"
+    );
   });
 
-  it("copies error code to clipboard when copy button is clicked", async () => {
-    const errorCode = `${FaultCategoryEnum.PAYMENT_DATA_ERROR}-INVALID_CARD_NUMBER`;
+  it("renders an empty detail area when the detailed category has no error code", () => {
+    renderModal({
+      error: FaultCategoryEnum.PAYMENT_DATA_ERROR,
+      errorId: "empty-error-id",
+    });
 
-    render(<ErrorModal error={errorCode} open={true} onClose={mockOnClose} />);
+    const dialog = getDialogAlert();
+    const alertElement = within(dialog).getByRole("alert");
+    const alertTitle = alertElement.querySelector(".MuiAlertTitle-root");
 
-    // Find and click the copy button
-    const copyButton = screen.getByText("Copy").closest("button");
-    fireEvent.click(copyButton!);
+    expect(screen.getByText("Payment Data Error")).toBeInTheDocument();
+    expect(screen.getByText("ErrorCodeDescription")).toBeInTheDocument();
+    expect(alertTitle).toHaveAttribute("id", "empty-error-id");
+    expect(alertTitle).toHaveTextContent("");
+  });
 
-    // Check if clipboard API was called with the correct error code
-    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
+  it("copies the error code to the clipboard and resets the tooltip on mouse leave", async () => {
+    renderModal({
+      error: `${FaultCategoryEnum.PAYMENT_DATA_ERROR}-INVALID_CARD_NUMBER`,
+    });
+
+    const copyButton = screen.getByRole("button", { name: "Copy" });
+
+    fireEvent.click(copyButton);
+
+    expect(mockedClipboardWriteText).toHaveBeenCalledWith(
       "INVALID_CARD_NUMBER"
     );
 
-    // Check if button has the "Copied" aria-label
     await waitFor(() => {
       expect(copyButton).toHaveAttribute("aria-label", "Copied");
     });
 
-    // Simulate mouse leave to reset the tooltip
-    fireEvent.mouseLeave(copyButton!);
+    fireEvent.mouseLeave(copyButton);
 
-    // Check if button has the "Copy" aria-label again
     await waitFor(() => {
       expect(copyButton).toHaveAttribute("aria-label", "Copy");
     });
   });
 
-  it("shows retry button for STATUS_ERROR errors and calls onRetry when clicked", () => {
-    // Render with STATUS_ERROR
-    render(
-      <ErrorModal
-        error="STATUS_ERROR"
-        open={true}
-        onClose={mockOnClose}
-        onRetry={mockOnRetry}
-      />
-    );
+  it("overrides the second STATUS_ERROR button with onRetry", () => {
+    renderModal({
+      error: ErrorsType.STATUS_ERROR,
+      onRetry: mockOnRetry,
+    });
 
-    // Check for status error title and body
     expect(screen.getByText("Status Error")).toBeInTheDocument();
     expect(
       screen.getByText("There was an error checking the payment status")
     ).toBeInTheDocument();
 
-    // Find and click the retry button
-    const retryButton = screen.getByTestId("button-button.retry");
-    fireEvent.click(retryButton);
+    fireEvent.click(screen.getByTestId("button-button.retry"));
 
-    // Check if onRetry was called
     expect(mockOnRetry).toHaveBeenCalledTimes(1);
+    expect(mockOnClose).not.toHaveBeenCalled();
+    expect(mockedMixpanelTrack).not.toHaveBeenCalled();
   });
 
-  it("shows retry button for TIMEOUT errors and calls onRetry when clicked", () => {
-    render(
-      <ErrorModal
-        error="TIMEOUT"
-        open={true}
-        onClose={mockOnClose}
-        onRetry={mockOnRetry}
-      />
-    );
+  it("overrides the second TIMEOUT button with onRetry", () => {
+    renderModal({
+      error: ErrorsType.TIMEOUT,
+      onRetry: mockOnRetry,
+    });
 
-    // Check for timeout error title and body
     expect(screen.getByText("Timeout Error")).toBeInTheDocument();
     expect(screen.getByText("The operation timed out")).toBeInTheDocument();
 
-    // Find and click the retry button
-    const retryButton = screen.getByTestId("button-button.retry");
-    fireEvent.click(retryButton);
+    fireEvent.click(screen.getByTestId("button-button.retry"));
 
-    // Check if onRetry was called
     expect(mockOnRetry).toHaveBeenCalledTimes(1);
+    expect(mockOnClose).not.toHaveBeenCalled();
   });
 
-  it("shows progress bar for POLLING_SLOW errors", () => {
-    render(
-      <ErrorModal
-        error={ErrorsType.POLLING_SLOW}
-        open={true}
-        onClose={mockOnClose}
-      />
-    );
+  it("uses onClose for STATUS_ERROR retry button when onRetry is not provided", () => {
+    renderModal({
+      error: ErrorsType.STATUS_ERROR,
+      onRetry: undefined,
+    });
 
-    // Check that buttons are not rendered when progress bar is shown
+    fireEvent.click(screen.getByTestId("button-button.retry"));
+
+    expect(mockOnClose).toHaveBeenCalledTimes(1);
+    expect(mockOnRetry).not.toHaveBeenCalled();
+  });
+
+  it("shows the progress bar and hides buttons for POLLING_SLOW", () => {
+    renderModal({ error: ErrorsType.POLLING_SLOW });
+
+    expect(screen.getByRole("progressbar")).toBeInTheDocument();
     expect(screen.queryByTestId("error-buttons")).not.toBeInTheDocument();
   });
 
-  it("applies custom styles when provided", () => {
-    const customStyle = { backgroundColor: "red" };
+  it("falls back to the configured generic response for unknown categories", () => {
+    renderModal({ error: "UNKNOWN_CATEGORY" });
 
-    render(
-      <ErrorModal
-        error={FaultCategoryEnum.GENERIC_ERROR}
-        open={true}
-        onClose={mockOnClose}
-        style={customStyle}
-      />
-    );
-  });
-
-  it("uses provided IDs for accessibility", () => {
-    render(
-      <ErrorModal
-        error={FaultCategoryEnum.GENERIC_ERROR}
-        open={true}
-        onClose={mockOnClose}
-        titleId="custom-title-id"
-        bodyId="custom-body-id"
-      />
-    );
-
-    // Check if IDs are applied correctly
-    const titleElement = screen.getByText("An error occurred");
-    expect(titleElement.id).toBe("custom-title-id");
-
-    const bodyElement = screen.getByText("Something went wrong");
-    expect(bodyElement.id).toBe("custom-body-id");
-  });
-
-  it("handles unknown error categories", () => {
-    render(
-      <ErrorModal error="UNKNOWN_CATEGORY" open={true} onClose={mockOnClose} />
-    );
-
-    // Should fall back to generic error
     expect(screen.getByText("An error occurred")).toBeInTheDocument();
     expect(screen.getByText("Something went wrong")).toBeInTheDocument();
+    expect(screen.getByTestId("button-button.close")).toBeInTheDocument();
+    expect(mockedMixpanelTrack).not.toHaveBeenCalled();
   });
 
-  it("provides error ID for error details", () => {
-    const errorCode = `${FaultCategoryEnum.PAYMENT_DATA_ERROR}-INVALID_CARD_NUMBER`;
+  it("falls back to hard-coded generic title/body and hides buttons when no generic response exists", () => {
+    mockedPaymentCategoryResponses.mockReturnValueOnce({});
 
-    render(
-      <ErrorModal
-        error={errorCode}
-        open={true}
-        onClose={mockOnClose}
-        errorId="custom-error-id"
-      />
-    );
+    renderModal({ error: "UNKNOWN_CATEGORY" });
 
-    // Check if error ID is applied correctly
+    expect(screen.getByText("An error occurred")).toBeInTheDocument();
+    expect(screen.getByText("Something went wrong")).toBeInTheDocument();
+    expect(screen.queryByTestId("error-buttons")).not.toBeInTheDocument();
+  });
+
+  it("applies custom style and accessibility ids", () => {
+    renderModal({
+      titleId: "custom-title-id",
+      bodyId: "custom-body-id",
+      style: { backgroundColor: "red" },
+    });
+
+    const titleElement = screen.getByText("An error occurred");
+    const bodyElement = screen.getByText("Something went wrong");
     const dialog = getDialogAlert();
-    const alertElement = within(dialog).getByRole("alert");
-    const errorTitle = within(alertElement).getByText("INVALID_CARD_NUMBER");
-    expect(errorTitle.id).toBe("custom-error-id");
+    const paper = dialog.querySelector(".MuiDialog-paper");
+
+    expect(titleElement).toHaveAttribute("id", "custom-title-id");
+    expect(bodyElement).toHaveAttribute("id", "custom-body-id");
+    expect(paper).toHaveStyle({ backgroundColor: "red" });
   });
 
-  it("closes the modal when close button is clicked", () => {
-    render(
-      <ErrorModal
-        error={FaultCategoryEnum.GENERIC_ERROR}
-        open={true}
-        onClose={mockOnClose}
-      />
-    );
+  it.each([
+    [FaultCategoryEnum.PAYMENT_DUPLICATED, MixpanelEventsId.PAYMENT_DUPLICATED],
+    [FaultCategoryEnum.PAYMENT_ONGOING, MixpanelEventsId.PAYMENT_ONGOING],
+    [FaultCategoryEnum.PAYMENT_EXPIRED, MixpanelEventsId.PAYMENT_EXPIRED],
+    [
+      FaultCategoryEnum.PAYMENT_UNAVAILABLE,
+      MixpanelEventsId.PAYMENT_UNAVAILABLE,
+    ],
+    [FaultCategoryEnum.PAYMENT_UNKNOWN, MixpanelEventsId.PAYMENT_UNKNOWN],
+    [FaultCategoryEnum.DOMAIN_UNKNOWN, MixpanelEventsId.DOMAIN_UNKNOWN],
+    [FaultCategoryEnum.PAYMENT_CANCELED, MixpanelEventsId.PAYMENT_CANCELED],
+    [FaultCategoryEnum.GENERIC_ERROR, MixpanelEventsId.GENERIC_ERROR],
+    [FaultCategoryEnum.PAYMENT_DATA_ERROR, MixpanelEventsId.PAYMENT_DATA_ERROR],
+  ])("tracks mixpanel event for %s", (faultCategory, expectedMixpanelEvent) => {
+    renderModal({ error: `${faultCategory}-DETAIL_CODE` });
 
-    // Find and click the close button
-    const closeButton = screen.getByTestId("button-button.close");
-    fireEvent.click(closeButton);
-
-    // Check if onClose was called
-    expect(mockOnClose).toHaveBeenCalledTimes(1);
-  });
-
-  it("handles error codes without details", () => {
-    render(
-      <ErrorModal
-        error={FaultCategoryEnum.PAYMENT_DATA_ERROR}
-        open={true}
-        onClose={mockOnClose}
-      />
-    );
-
-    // Check that the error alert is rendered
-    expect(screen.getByText("Payment Data Error")).toBeInTheDocument();
-    expect(screen.getByText("ErrorCodeDescription")).toBeInTheDocument();
-
-    // Check if there's an alert with no title content
-    const dialog = getDialogAlert();
-    const alertElement = within(dialog).getByRole("alert");
-    const emptyAlertTitle = within(alertElement).queryByRole("heading");
-
-    // If the component renders an empty heading for the alert title,
-    // we check that it exists but has no text content
-    if (emptyAlertTitle) {
-      expect(emptyAlertTitle.textContent).toBe("");
-    }
-  });
-
-  it("tracks mixpanel event when modal opens with a known error category", () => {
-    const errorCode = `${FaultCategoryEnum.PAYMENT_DUPLICATED}-DUPLICATE_CODE`;
-
-    render(<ErrorModal error={errorCode} open={true} onClose={mockOnClose} />);
-
-    expect(mixpanel.track).toHaveBeenCalledWith(
-      MixpanelEventsId.PAYMENT_DUPLICATED,
+    expect(mockedMixpanelTrack).toHaveBeenCalledTimes(1);
+    expect(mockedMixpanelTrack).toHaveBeenCalledWith(
+      expectedMixpanelEvent,
       expect.objectContaining({
-        EVENT_ID: MixpanelEventsId.PAYMENT_DUPLICATED,
+        EVENT_ID: expectedMixpanelEvent,
         EVENT_CATEGORY: MixpanelEventCategory.KO,
-        reason: "DUPLICATE_CODE",
+        reason: "DETAIL_CODE",
         data_entry: MixpanelDataEntryType.MANUAL,
         organization_name: "companyName",
         organization_fiscal_code: "77777777777",
@@ -486,16 +491,15 @@ describe("ErrorModal Component", () => {
       })
     );
   });
-  it("renders with INVALID_QRCODE custom error", () => {
-    render(
-      <ErrorModal
-        error={ErrorsType.INVALID_QRCODE}
-        open={true}
-        onClose={jest.fn()}
-      />
-    );
 
-    expect(screen.getByText("INVALID_QRCODE.title")).toBeInTheDocument();
-    expect(screen.getByText("INVALID_QRCODE.body")).toBeInTheDocument();
+  it("tracks mixpanel event with null reason when the fault category has no detail", () => {
+    renderModal({ error: FaultCategoryEnum.PAYMENT_EXPIRED });
+
+    expect(mockedMixpanelTrack).toHaveBeenCalledWith(
+      MixpanelEventsId.PAYMENT_EXPIRED,
+      expect.objectContaining({
+        reason: null,
+      })
+    );
   });
 });

@@ -30,6 +30,7 @@ export enum MixpanelEventsId {
   PAYMENT_DUPLICATED = "PAYMENT_DUPLICATED",
   GENERIC_ERROR = "GENERIC_ERROR",
   PAYMENT_UNKNOWN = "PAYMENT_UNKNOW",
+  PSP_UNAVAILABLE = "PSP_UNAVAILABLE",
 
   AUTH_ERROR = "AUTH_ERROR",
   INVALID_DATA = "INVALID_DATA",
@@ -45,6 +46,7 @@ export enum MixpanelEventsId {
   PSP_ERROR = "PSP_ERROR",
   BALANCE_LIMIT = "BALANCE_LIMIT",
   LIMIT_EXCEEDED = "LIMIT_EXCEEDED",
+  CVV_ERROR = "CVV_ERROR",
 
   CHK_LOGIN_REQUEST = "CHK_LOGIN_REQUEST",
   CHK_LOGIN_SUCCESS = "CHK_LOGIN_SUCCESS",
@@ -106,4 +108,5 @@ export const eventViewOutcomeMap: Partial<Record<ViewOutcomeEnum, string>> = {
   [ViewOutcomeEnum.LIMIT_EXCEEDED]: MixpanelEventsId.LIMIT_EXCEEDED,
   [ViewOutcomeEnum.INVALID_METHOD]: MixpanelEventsId.INVALID_METHOD,
   [ViewOutcomeEnum.TAKING_CHARGE]: MixpanelEventsId.TAKING_CHARGE,
+  [ViewOutcomeEnum.CVV_ERROR]: MixpanelEventsId.CVV_ERROR,
 };
