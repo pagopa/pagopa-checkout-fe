@@ -554,7 +554,9 @@ describe("PaymentChoicePage guest", () => {
     );
     await waitFor(() => {
       fireEvent.click(screen.getByText("paymentChoicePage.button"));
-      expect(navigate).toHaveBeenCalledWith(-1);
+      expect(navigate).toHaveBeenCalledWith("/inserisci-email", {
+        replace: true,
+      });
     });
   });
 
@@ -818,7 +820,9 @@ describe("PaymentChoicePage authenticated", () => {
       ).toBeVisible();
 
       fireEvent.click(screen.getByText("paymentChoicePage.button"));
-      expect(navigate).toHaveBeenCalledWith(-1);
+      expect(navigate).toHaveBeenCalledWith("/inserisci-email", {
+        replace: true,
+      });
     });
   });
 
