@@ -118,7 +118,8 @@ stages:
               pagopa_assets_cdn: 'https://assets.cdn.platform.pagopa.it/payment-methods'
               pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi'
               survey_show: 1
-              checkout_npg_sdk_url: 'https://stg-ta.nexigroup.com/monetaweb/resources/hfsdk.js'
+              checkout_npg_sdk_url: 'https://dev.checkout.pagopa.it/monetaweb/resources/hfsdk.js'
+              checkout_npg_sdk_integrity_url: 'https://api.dev.platform.pagopa.it/checkout/npg/sdk/v1/integrity'
               checkout_gdi_check_timeout: 20000
               checkout_version: "$(Build.SourceBranchName):$(Build.SourceVersion)"
 
@@ -257,7 +258,8 @@ stages:
               pagopa_assets_cdn: 'https://assets.cdn.platform.pagopa.it/payment-methods'
               pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi'
               survey_show: 1
-              checkout_npg_sdk_url: 'https://stg-ta.nexigroup.com/monetaweb/resources/hfsdk.js'
+              checkout_npg_sdk_url: 'https://uat.checkout.pagopa.it/monetaweb/resources/hfsdk.js'
+              checkout_npg_sdk_integrity_url: 'https://api.uat.platform.pagopa.it/checkout/npg/sdk/v1/integrity'
               checkout_version: "$(Build.SourceBranchName):$(Build.SourceVersion)"
               checkout_gdi_check_timeout: 20000
               
@@ -363,7 +365,8 @@ stages:
               pagopa_assets_cdn: 'https://assets.cdn.platform.pagopa.it/payment-methods'
               pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi'
               survey_show: 1
-              checkout_npg_sdk_url: 'https://xpay.nexigroup.com/monetaweb/resources/hfsdk.js'
+              checkout_npg_sdk_url: 'https://checkout.pagopa.it/monetaweb/resources/hfsdk.js'
+              checkout_npg_sdk_integrity_url: 'https://api.platform.pagopa.it/checkout/npg/sdk/v1/integrity'
               checkout_version: "$(Build.SourceBranchName):$(Build.SourceVersion)"
               checkout_gdi_check_timeout: 20000
 
