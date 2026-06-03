@@ -123,7 +123,7 @@ export default function PaymentPspListPage() {
           setLoading(false);
           // Just one? Select the PSP and proceed
           if (bundles.length === 1) {
-            setPspSelected(bundles[0]);
+            updateSelectedPSP(bundles[0]);
             navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
           } else {
             setPspList(bundles);

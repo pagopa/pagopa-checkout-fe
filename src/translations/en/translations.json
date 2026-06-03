@@ -476,7 +476,7 @@
     "title": "The payee is taking more time than usual..."
   },
   "privacyInfo": {
-    "googleDesc": "Form protected by reCAPTCHA and Google (<privacy>Privacy Policy</privacy> and <terms>Terms of Service</terms>).",
+    "googleDesc": "Form protected by reCAPTCHA and Google.",
     "privacyDesc": "By continuing you accept the service <terms>terms and conditions of use</terms> and confirm to have read the <privacy>Privacy Policy</privacy>",
     "privacyDonation": "Additional terms of the Donation service in favor of the emergency in Ukraine"
   },

@@ -109,6 +109,9 @@ describe("eventViewOutcomeMap", () => {
     expect(eventViewOutcomeMap[ViewOutcomeEnum.TAKING_CHARGE]).toBe(
       MixpanelEventsId.TAKING_CHARGE
     );
+    expect(eventViewOutcomeMap[ViewOutcomeEnum.CVV_ERROR]).toBe(
+      MixpanelEventsId.CVV_ERROR
+    );
   });
 
   test("should return undefined for unmapped ViewOutcomeEnum", () => {

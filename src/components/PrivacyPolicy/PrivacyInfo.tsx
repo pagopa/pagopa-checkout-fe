@@ -45,23 +45,7 @@ export default function PrivacyInfo(props: { showDonationPrivacy?: boolean }) {
           ) : (
             ". "
           )}
-          <Trans
-            i18nKey="privacyInfo.googleDesc"
-            components={{
-              privacy: (
-                <PrivacyLink
-                  rel="noopener noreferrer"
-                  href="https://policies.google.com/privacy"
-                />
-              ),
-              terms: (
-                <PrivacyLink
-                  rel="noopener noreferrer"
-                  href="https://policies.google.com/terms"
-                />
-              ),
-            }}
-          />
+          <Trans i18nKey="privacyInfo.googleDesc" />
         </Typography>
       </Box>
     </>
