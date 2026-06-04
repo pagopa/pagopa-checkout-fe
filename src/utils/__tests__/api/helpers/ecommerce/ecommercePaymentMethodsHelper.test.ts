@@ -25,6 +25,16 @@ import {
   npgSessionsFields,
   retrieveCardData,
 } from "../../../../api/helper";
+import {
+  getDataEntryTypeFromSessionStorage,
+  getPaymentInfoFromSessionStorage,
+} from "../../../../mixpanel/mixpanelTracker";
+import { mixpanel } from "../../../../mixpanel/mixpanelHelperInit";
+import {
+  MixpanelEventCategory,
+  MixpanelEventsId,
+  MixpanelPaymentPhase,
+} from "../../../../mixpanel/mixpanelEvents";
 
 jest.mock("../../../../config/config", () => ({
   getConfigOrThrow: jest.fn(() => mockApiConfig),
@@ -81,9 +91,29 @@ jest.mock("../../../../api/client", () => ({
   },
 }));
 
+jest.mock("../../../../mixpanel/mixpanelHelperInit", () => ({
+  mixpanel: {
+    track: jest.fn(),
+  },
+}));
+
+jest.mock("../../../../mixpanel/mixpanelTracker", () => ({
+  getDataEntryTypeFromSessionStorage: jest.fn(),
+  getPaymentInfoFromSessionStorage: jest.fn(),
+}));
+
 const mockOnResponse: jest.Mock = jest.fn();
 const mockOnError: jest.Mock = jest.fn();
 const mockPspNotFound: jest.Mock = jest.fn();
+
+const mixpanelPaymentInfoMock = {
+  paName: "Comune di Milano",
+  paFiscalCode: "12345678901",
+  amount: 1200,
+  dueDate: "2026-12-31",
+};
+
+const mixpanelDataEntryMock = "MANUAL";
 
 // helper function to create consistent session item mocks
 const createMockSessionItem = (overrides: Record<string, any> = {}) => {
@@ -265,8 +295,14 @@ describe("Ecommerce payment methods helper - calculateFees tests", () => {
     expect(mockOnError).toHaveBeenCalledWith(ErrorsType.GENERIC_ERROR);
   });
 
-  it("Should call onPspNotFound when api return 404", async () => {
+  it("Should track PSP_UNAVAILABLE and call onPspNotFound when api return 404", async () => {
     (getSessionItem as jest.Mock).mockReturnValue(sessionItemTransactionMock);
+    (getPaymentInfoFromSessionStorage as jest.Mock).mockReturnValue(
+      mixpanelPaymentInfoMock
+    );
+    (getDataEntryTypeFromSessionStorage as jest.Mock).mockReturnValue(
+      mixpanelDataEntryMock
+    );
     (
       apiPaymentEcommerceClientWithRetryV2.calculateFees as jest.Mock
     ).mockReturnValue(
@@ -276,6 +312,7 @@ describe("Ecommerce payment methods helper - calculateFees tests", () => {
         },
       })
     );
+
     await calculateFees({
       paymentId: "paymentId",
       bin: "bin",
@@ -283,6 +320,21 @@ describe("Ecommerce payment methods helper - calculateFees tests", () => {
       onPspNotFound: mockPspNotFound,
       onResponsePsp: mockOnResponse,
     });
+
+    expect(mixpanel.track).toHaveBeenCalledWith(
+      MixpanelEventsId.PSP_UNAVAILABLE,
+      {
+        EVENT_ID: MixpanelEventsId.PSP_UNAVAILABLE,
+        EVENT_CATEGORY: MixpanelEventCategory.KO,
+        reason: null,
+        data_entry: mixpanelDataEntryMock,
+        organization_name: mixpanelPaymentInfoMock.paName,
+        organization_fiscal_code: mixpanelPaymentInfoMock.paFiscalCode,
+        amount: mixpanelPaymentInfoMock.amount,
+        expiration_date: mixpanelPaymentInfoMock.dueDate,
+        payment_phase: MixpanelPaymentPhase.VERIFICA,
+      }
+    );
     expect(mockPspNotFound).toHaveBeenCalled();
   });
 });
@@ -694,8 +746,14 @@ describe("Ecommerce payment methods helper - getFees tests", () => {
     );
   });
 
-  it("Should call onPspNotFound when api return 404", async () => {
+  it("Should track PSP_UNAVAILABLE and call onPspNotFound when api return 404", async () => {
     (getSessionItem as jest.Mock).mockReturnValue(sessionItemTransactionMock);
+    (getPaymentInfoFromSessionStorage as jest.Mock).mockReturnValue(
+      mixpanelPaymentInfoMock
+    );
+    (getDataEntryTypeFromSessionStorage as jest.Mock).mockReturnValue(
+      mixpanelDataEntryMock
+    );
     (
       apiPaymentEcommerceClientWithRetryV2.calculateFees as jest.Mock
     ).mockReturnValue(
@@ -705,7 +763,23 @@ describe("Ecommerce payment methods helper - getFees tests", () => {
         },
       })
     );
+
     await getFees(mockOnResponse, mockPspNotFound, mockOnError, "bin");
+
+    expect(mixpanel.track).toHaveBeenCalledWith(
+      MixpanelEventsId.PSP_UNAVAILABLE,
+      {
+        EVENT_ID: MixpanelEventsId.PSP_UNAVAILABLE,
+        EVENT_CATEGORY: MixpanelEventCategory.KO,
+        reason: null,
+        data_entry: mixpanelDataEntryMock,
+        organization_name: mixpanelPaymentInfoMock.paName,
+        organization_fiscal_code: mixpanelPaymentInfoMock.paFiscalCode,
+        amount: mixpanelPaymentInfoMock.amount,
+        expiration_date: mixpanelPaymentInfoMock.dueDate,
+        payment_phase: MixpanelPaymentPhase.VERIFICA,
+      }
+    );
     expect(mockPspNotFound).toHaveBeenCalled();
   });
 
@@ -724,7 +798,8 @@ describe("Ecommerce payment methods helper - getFees tests", () => {
     await getFees(mockOnResponse, mockPspNotFound, mockOnError, "bin");
     expect(mockOnError).toHaveBeenCalledWith(ErrorsType.GENERIC_ERROR);
   });
-  it("SHould call onError with ErrorsType.GENERIC_ERROR when calculateFee returns 401", async () => {
+
+  it("Should call onError with ErrorsType.GENERIC_ERROR when calculateFee returns 401", async () => {
     (getSessionItem as jest.Mock).mockReturnValue(sessionItemTransactionMock);
     (
       apiPaymentEcommerceClientWithRetryV2.calculateFees as jest.Mock
