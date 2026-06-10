@@ -8,9 +8,11 @@ import * as T from "fp-ts/Task";
 import { pipe } from "fp-ts/function";
 import { DeferredPromise } from "@pagopa/ts-commons/lib/promises";
 import { Millisecond } from "@pagopa/ts-commons/lib/units";
-import { createCounter } from "../../utils/counter";
 import { ecommerceTransactionOutcome } from "../transactions/transactionHelper";
-import { exponetialPollingWithPromisePredicateFetch } from "../config/fetch";
+import {
+  exponentialPollingWithPromisePredicateFetch,
+  RetryDecision,
+} from "../config/fetch";
 import { getUrlParameter } from "../regex/urlUtilities";
 import { getConfigOrThrow } from "../config/config";
 import { getSessionItem, SessionItems } from "../storage/sessionStorage";
@@ -39,21 +41,43 @@ export const decodeToUUID = (base64: string) => {
   return hexToUuid(bytes.toString("hex")).replace(/-/g, "");
 };
 
-const counter = createCounter();
+const parseRetryAfterToMs = (
+  headerValue: string | null,
+  fallbackMs: number
+): number => {
+  if (!headerValue) {
+    return fallbackMs;
+  }
+
+  // Retry-After header in seconds
+  const seconds = Number(headerValue);
+  if (!Number.isNaN(seconds) && seconds >= 0) {
+    return Math.round(seconds * 1000);
+  }
+
+  // Retry-After header as date
+  const dateMs = Date.parse(headerValue);
+  if (!Number.isNaN(dateMs)) {
+    return Math.max(0, dateMs - Date.now());
+  }
+
+  return fallbackMs;
+};
 
 const ecommerceClientWithPollingV1: EcommerceClientV1 = createClientV1({
   baseUrl: config.CHECKOUT_PAGOPA_APIM_HOST,
-  fetchApi: exponetialPollingWithPromisePredicateFetch(
+  fetchApi: exponentialPollingWithPromisePredicateFetch(
     DeferredPromise<boolean>().e1,
     retries,
     delay,
     timeout,
-    async (r: Response): Promise<boolean> => {
-      counter.increment();
-
-      if (counter.getValue() === retries) {
-        counter.reset();
-        return false;
+    async (r: Response): Promise<boolean | RetryDecision> => {
+      if (r.status === 429) {
+        const retryAfterHeader = r.headers.get("Retry-After");
+        return {
+          retry: true,
+          retryAfterMs: parseRetryAfterToMs(retryAfterHeader, delay),
+        };
       }
 
       if (r.status === 404 || (r.status >= 500 && r.status < 600)) {
@@ -67,7 +91,6 @@ const ecommerceClientWithPollingV1: EcommerceClientV1 = createClientV1({
         return !isFinalStatus;
       }
 
-      counter.reset();
       return false;
     }
   ),

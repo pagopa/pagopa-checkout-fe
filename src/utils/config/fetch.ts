@@ -27,6 +27,17 @@ const API_TIMEOUT = getConfigOrThrow().CHECKOUT_API_TIMEOUT as Millisecond;
 const RETRY_NUMBERS_LINEAR = getConfigOrThrow()
   .CHECKOUT_API_RETRY_NUMBERS_LINEAR as number;
 
+export type RetryDecision = {
+  retry: boolean;
+  retryAfterMs?: number;
+};
+
+type RetryConditionResult = boolean | RetryDecision;
+
+const normalizeRetryConditionResult = (
+  value: RetryConditionResult
+): RetryDecision => (typeof value === "boolean" ? { retry: value } : value);
+
 export function retryingFetch(
   fetchApi: typeof fetch,
   timeout: Millisecond = API_TIMEOUT,
@@ -79,11 +90,12 @@ function retryLogicForTransientResponseError(
 // Handle error that occurs once or at unpredictable intervals.
 //
 function retryLogicOnPromisePredicate(
-  p: (r: Response) => Promise<boolean>,
+  p: (r: Response) => Promise<RetryConditionResult>,
   retryLogic: (
     t: RetriableTask<Error, Response>,
     shouldAbort?: Promise<boolean>
-  ) => TE.TaskEither<Error | "max-retries" | "retry-aborted", Response>
+  ) => TE.TaskEither<Error | "max-retries" | "retry-aborted", Response>,
+  onRetryDecision?: (decision: RetryDecision) => void
 ): typeof retryLogic {
   return (t: RetriableTask<Error, Response>, shouldAbort?: Promise<boolean>) =>
     retryLogic(
@@ -95,8 +107,17 @@ function retryLogicOnPromisePredicate(
               () => p(r),
               () => TransientError
             ),
-            TE.chain<Error | TransientError, boolean, Response>((d) =>
-              TE.fromEither(d ? E.left(TransientError) : E.right(r))
+            TE.map(normalizeRetryConditionResult),
+            TE.chain<Error | TransientError, RetryDecision, Response>(
+              (decision) => {
+                if (decision.retry) {
+                  onRetryDecision?.(decision);
+                }
+
+                return TE.fromEither(
+                  decision.retry ? E.left(TransientError) : E.right(r)
+                );
+              }
             )
           )
         )
@@ -114,7 +135,7 @@ export const constantPollingWithPromisePredicateFetch = (
   retries: number,
   delay: number,
   timeout: Millisecond = API_TIMEOUT,
-  condition: (r: Response) => Promise<boolean>
+  condition: (r: Response) => Promise<RetryConditionResult>
 ) => {
   // fetch client that can be aborted for timeout
   const abortableFetch = AbortableFetch((global as any).fetch);
@@ -136,12 +157,12 @@ export const constantPollingWithPromisePredicateFetch = (
   )(timeoutFetch as any);
 };
 
-export const exponetialPollingWithPromisePredicateFetch = (
+export const exponentialPollingWithPromisePredicateFetch = (
   shouldAbort: Promise<boolean>,
   retries: number,
   delay: number,
   timeout: Millisecond = API_TIMEOUT,
-  condition: (r: Response) => Promise<boolean>
+  condition: (r: Response) => Promise<RetryConditionResult>
 ) => {
   // fetch client that can be aborted for timeout
   const abortableFetch = AbortableFetch((global as any).fetch);
@@ -149,7 +170,14 @@ export const exponetialPollingWithPromisePredicateFetch = (
 
   // use a exponetial backoff
   /* eslint-disable functional/no-let */
+  let retryAfterOverrideMs: number | undefined;
   const variableBackoff = (attempt: number): Millisecond => {
+    if (retryAfterOverrideMs !== undefined) {
+      const computedDelay = Math.max(0, retryAfterOverrideMs);
+      retryAfterOverrideMs = undefined;
+      return computedDelay as Millisecond;
+    }
+
     const totalAttempts = attempt + 1;
     if (totalAttempts <= RETRY_NUMBERS_LINEAR) {
       return delay as Millisecond;
@@ -163,7 +191,12 @@ export const exponetialPollingWithPromisePredicateFetch = (
   // use to define transient errors
   const retryWithPromisePredicate = retryLogicOnPromisePredicate(
     condition,
-    retryLogic
+    retryLogic,
+    (decision) => {
+      if (decision.retryAfterMs !== undefined) {
+        retryAfterOverrideMs = decision.retryAfterMs;
+      }
+    }
   );
 
   return retriableFetch(
