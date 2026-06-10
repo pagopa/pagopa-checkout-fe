@@ -142,21 +142,28 @@ The app uses i18n for translations, in order to add a new one follow this steps:
    }
    ```
    
-   ## Polling
+## Polling
 
-   The function exponentialPollingWithPromisePredicateFetch uses the variableBackoff formula to calculate the polling intervals based on the attempt number:
+The function `exponentialPollingWithPromisePredicateFetch` computes the interval between retries using `variableBackoff`.
 
-   -  For attempts less than or equal to RETRY_NUMBERS_LINEAR, it returns a fixed delay.
+- For the first `CHECKOUT_API_RETRY_NUMBERS_LINEAR` retry attempts, it uses a fixed `delay` (`CHECKOUT_API_RETRY_DELAY`).
+- After that, the delay increases linearly (`delay * 2`, `delay * 3`, ...).
+- If a `429` response includes a `Retry-After` header, that value overrides the next retry delay.
 
-   -  For attempts greater than that, the delay increases linearly according to the formula.
+```ts
+const variableBackoff = (attempt: number): Millisecond => {
+   if (retryAfterOverrideMs !== undefined) {
+      const computedDelay = Math.max(0, retryAfterOverrideMs);
+      retryAfterOverrideMs = undefined;
+      return computedDelay as Millisecond;
+   }
 
-   - 
-   ```sh
-   const variableBackoff = (attempt: number): Millisecond => {
-      if (attempt <= RETRY_NUMBERS_LINEAR) {
-         return delay as Millisecond;
-      }
+   const totalAttempts = attempt + 1;
+   if (totalAttempts <= RETRY_NUMBERS_LINEAR) {
+      return delay as Millisecond;
+   }
 
-      return (delay * (attempt - RETRY_NUMBERS_LINEAR)) as Millisecond;
-   };
-   ```
+   const multiplier = totalAttempts - RETRY_NUMBERS_LINEAR + 1;
+   return (delay * multiplier) as Millisecond;
+};
+```
