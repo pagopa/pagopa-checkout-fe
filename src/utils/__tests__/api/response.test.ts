@@ -10,6 +10,9 @@ jest.mock("../../config/config", () => ({
     CHECKOUT_ENV: "test",
     CHECKOUT_PAGOPA_APIM_HOST: "https://mock-host",
     CHECKOUT_API_ECOMMERCE_BASEPATH: "/v1",
+    CHECKOUT_API_RETRY_DELAY: 200,
+    CHECKOUT_API_RETRY_NUMBERS: 3,
+    CHECKOUT_API_TIMEOUT: 1000,
   })),
 }));
 
@@ -97,6 +100,8 @@ describe("callServices", () => {
 });
 
 describe("response.ts polling predicate", () => {
+  type PredicateResult = boolean | { retry: boolean; retryAfterMs?: number };
+
   const mkRes = (status: number, isFinal: boolean) =>
     ({
       status,
@@ -104,6 +109,14 @@ describe("response.ts polling predicate", () => {
         return this;
       },
       json: async () => ({ isFinalStatus: isFinal }),
+    } as unknown as Response);
+
+  const mk429Res = (retryAfterHeader: string | null) =>
+    ({
+      status: 429,
+      headers: {
+        get: () => retryAfterHeader,
+      },
     } as unknown as Response);
 
   const getFreshPredicate = async () => {
@@ -115,7 +128,7 @@ describe("response.ts polling predicate", () => {
     } = require("../../config/fetch");
     return exponentialPollingWithPromisePredicateFetch.mock.calls[0][4] as (
       r: Response
-    ) => Promise<boolean>;
+    ) => Promise<PredicateResult>;
   };
 
   it("should return false immediately when status===200 and isFinalStatus is true", async () => {
@@ -145,5 +158,42 @@ describe("response.ts polling predicate", () => {
     await expect(predicate(mkRes(500, false))).resolves.toBe(true);
     await expect(predicate(mkRes(502, false))).resolves.toBe(true);
     await expect(predicate(mkRes(503, false))).resolves.toBe(true);
+  });
+
+  it("should parse Retry-After seconds on 429", async () => {
+    const predicate = await getFreshPredicate();
+    await expect(predicate(mk429Res("2"))).resolves.toEqual({
+      retry: true,
+      retryAfterMs: 2000,
+    });
+  });
+
+  it("should parse Retry-After date on 429", async () => {
+    const predicate = await getFreshPredicate();
+    const nowSpy = jest.spyOn(Date, "now").mockReturnValue(1000);
+    const retryAfterDate = "Thu, 01 Jan 1970 00:00:04 GMT";
+
+    await expect(predicate(mk429Res(retryAfterDate))).resolves.toEqual({
+      retry: true,
+      retryAfterMs: 3000,
+    });
+
+    nowSpy.mockRestore();
+  });
+
+  it("should fallback to configured delay when Retry-After is invalid", async () => {
+    const predicate = await getFreshPredicate();
+    await expect(predicate(mk429Res("not-a-valid-value"))).resolves.toEqual({
+      retry: true,
+      retryAfterMs: 200,
+    });
+  });
+
+  it("should fallback to configured delay when Retry-After is missing", async () => {
+    const predicate = await getFreshPredicate();
+    await expect(predicate(mk429Res(null))).resolves.toEqual({
+      retry: true,
+      retryAfterMs: 200,
+    });
   });
 });
