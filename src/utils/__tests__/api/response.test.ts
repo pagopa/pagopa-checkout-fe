@@ -1,7 +1,8 @@
 jest.mock("../../config/fetch", () => ({
   retryingFetch: jest.fn(() => jest.fn()),
   constantPollingWithPromisePredicateFetch: jest.fn(() => jest.fn()),
-  exponetialPollingWithPromisePredicateFetch: jest.fn((_) => jest.fn()),
+  exponentialPollingWithPromisePredicateFetch: jest.fn((_) => jest.fn()),
+  RetryDecision: {},
 }));
 
 jest.mock("../../config/config", () => ({
@@ -109,10 +110,10 @@ describe("response.ts polling predicate", () => {
     jest.resetModules();
     await import("../../api/response");
     const {
-      exponetialPollingWithPromisePredicateFetch,
+      exponentialPollingWithPromisePredicateFetch,
       /* eslint-disable-next-line @typescript-eslint/no-var-requires */
     } = require("../../config/fetch");
-    return exponetialPollingWithPromisePredicateFetch.mock.calls[0][4] as (
+    return exponentialPollingWithPromisePredicateFetch.mock.calls[0][4] as (
       r: Response
     ) => Promise<boolean>;
   };
