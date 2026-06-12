@@ -11,7 +11,7 @@ jest.mock("../../config/config", () => ({
     CHECKOUT_PAGOPA_APIM_HOST: "https://mock-host",
     CHECKOUT_API_ECOMMERCE_BASEPATH: "/v1",
     CHECKOUT_API_RETRY_DELAY: 200,
-    CHECKOUT_API_RETRY_NUMBERS: 3,
+    CHECKOUT_API_RETRY_NUMBERS: 4,
     CHECKOUT_API_TIMEOUT: 1000,
   })),
 }));

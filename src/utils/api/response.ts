@@ -8,6 +8,7 @@ import * as T from "fp-ts/Task";
 import { pipe } from "fp-ts/function";
 import { DeferredPromise } from "@pagopa/ts-commons/lib/promises";
 import { Millisecond } from "@pagopa/ts-commons/lib/units";
+import { createCounter } from "../../utils/counter";
 import { ecommerceTransactionOutcome } from "../transactions/transactionHelper";
 import {
   exponentialPollingWithPromisePredicateFetch,
@@ -41,6 +42,8 @@ export const decodeToUUID = (base64: string) => {
   return hexToUuid(bytes.toString("hex")).replace(/-/g, "");
 };
 
+const counter = createCounter();
+
 const parseRetryAfterToMs = (
   headerValue: string | null,
   fallbackMs: number
@@ -72,6 +75,13 @@ const ecommerceClientWithPollingV1: EcommerceClientV1 = createClientV1({
     delay,
     timeout,
     async (r: Response): Promise<boolean | RetryDecision> => {
+      counter.increment();
+
+      if (counter.getValue() === retries) {
+        counter.reset();
+        return false;
+      }
+
       if (r.status === 429) {
         const retryAfterHeader = r.headers.get("Retry-After");
         return {
@@ -91,6 +101,7 @@ const ecommerceClientWithPollingV1: EcommerceClientV1 = createClientV1({
         return !isFinalStatus;
       }
 
+      counter.reset();
       return false;
     }
   ),
