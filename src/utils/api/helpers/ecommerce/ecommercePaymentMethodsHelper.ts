@@ -10,6 +10,7 @@ import {
   apiPaymentEcommerceClientV2,
   apiPaymentEcommerceClientV3,
   apiPaymentEcommerceClientV4,
+  apiPaymentEcommerceAuthClientV1,
   apiPaymentEcommerceClientWithRetry,
   apiPaymentEcommerceClientWithRetryV2,
   apiPaymentEcommerceClientWithRetryV3,
@@ -347,7 +348,7 @@ export const getPaymentMethodHandler = async (onError: (e: string) => void) =>
                 body: buildPaymentInstrumentMethodHandlerSearchRequest(),
               }),
             (bearerAuth) =>
-              apiPaymentEcommerceClientV4.getAllPaymentMethodsAuth({
+              apiPaymentEcommerceAuthClientV1.getAllPaymentMethodsAuth({
                 "x-rpt-ids": getRptIdsFromSession(),
                 bearerAuth,
                 body: buildPaymentInstrumentMethodHandlerSearchRequest() as any as PaymentMethodsRequestAuthV1,
