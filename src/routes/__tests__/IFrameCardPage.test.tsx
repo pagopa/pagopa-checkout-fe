@@ -10,7 +10,7 @@ import {
 } from "../../utils/storage/sessionStorage";
 import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders";
 import { npgSessionsFields, retrieveCardData } from "../../utils/api/helper";
-import { CreateSessionResponse } from "../../../generated/definitions/payment-ecommerce-v3/CreateSessionResponse";
+import { CreateSessionResponse } from "../../../generated/definitions/payment-ecommerce-auth-v1/CreateSessionResponse";
 import { mixpanel } from "../../utils/mixpanel/mixpanelHelperInit";
 import {
   MixpanelEventCategory,

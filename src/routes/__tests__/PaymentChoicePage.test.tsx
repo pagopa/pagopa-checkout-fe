@@ -41,7 +41,7 @@ import PaymentChoicePage from "../../routes/PaymentChoicePage";
 import {
   apiPaymentEcommerceClient,
   apiPaymentEcommerceClientV2,
-  apiPaymentEcommerceClientV3,
+  apiPaymentEcommerceAuthClientV1,
   apiPaymentEcommerceClientWithRetryV2,
   apiWalletEcommerceClient,
 } from "../../utils/api/client";
@@ -143,9 +143,9 @@ jest.mock("../../utils/api/client", () => ({
   apiPaymentEcommerceClientWithRetryV2: {
     calculateFees: jest.fn(),
   },
-  apiPaymentEcommerceClientV3: {
-    getAllPaymentMethodsV3: jest.fn(),
-    newTransactionV3: jest.fn(),
+  apiPaymentEcommerceAuthClientV1: {
+    getAllPaymentMethodsAuth: jest.fn(),
+    newTransactionAuth: jest.fn(),
   },
   apiCheckoutFeatureFlags: {
     evaluateFeatureFlags: jest.fn(() =>
@@ -771,7 +771,7 @@ describe("PaymentChoicePage authenticated", () => {
       })
     );
     (
-      apiPaymentEcommerceClientV3.getAllPaymentMethodsV3 as jest.Mock
+      apiPaymentEcommerceAuthClientV1.getAllPaymentMethodsAuth as jest.Mock
     ).mockReturnValue(
       Promise.resolve({
         right: {
@@ -780,7 +780,7 @@ describe("PaymentChoicePage authenticated", () => {
         },
       })
     );
-    (apiPaymentEcommerceClientV3.newTransactionV3 as jest.Mock).mockReturnValue(
+    (apiPaymentEcommerceAuthClientV1.newTransactionAuth as jest.Mock).mockReturnValue(
       Promise.resolve({
         right: {
           status: 200,
@@ -1141,7 +1141,7 @@ describe("PaymentChoicePage authenticated", () => {
     );
 
     (
-      apiPaymentEcommerceClientV3.getAllPaymentMethodsV3 as jest.Mock
+      apiPaymentEcommerceAuthClientV1.getAllPaymentMethodsAuth as jest.Mock
     ).mockReturnValue(
       Promise.resolve({
         right: {

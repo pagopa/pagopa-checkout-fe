@@ -12,11 +12,10 @@ import {
 import {
   apiPaymentEcommerceClient,
   apiPaymentEcommerceClientV2,
-  apiPaymentEcommerceClientV3,
-  apiPaymentEcommerceClientV4,
+  apiPaymentEcommerceAuthClientV1,
   apiPaymentEcommerceClientWithRetry,
   apiPaymentEcommerceClientWithRetryV2,
-  apiPaymentEcommerceClientWithRetryV3,
+  apiPaymentEcommerceAuthClientWithRetryV1,
 } from "../../../../api/client";
 import {
   calculateFees,
@@ -63,10 +62,7 @@ jest.mock("../../../../api/client", () => ({
   apiPaymentEcommerceClientV2: {
     getAllPaymentMethods: jest.fn(),
   },
-  apiPaymentEcommerceClientV3: {
-    getAllPaymentMethodsV3: jest.fn(),
-  },
-  apiPaymentEcommerceClientV4: {
+  apiPaymentEcommerceAuthClientV1: {
     getAllPaymentMethodsAuth: jest.fn(),
   },
   apiPaymentEcommerceClientWithRetry: {
@@ -75,7 +71,7 @@ jest.mock("../../../../api/client", () => ({
   apiPaymentEcommerceClientWithRetryV2: {
     calculateFees: jest.fn(),
   },
-  apiPaymentEcommerceClientWithRetryV3: {
+  apiPaymentEcommerceAuthClientWithRetryV1: {
     createSessionV3: jest.fn(),
   },
   apiCheckoutFeatureFlags: {
@@ -344,9 +340,9 @@ describe("Ecommerce payment methods helper - getPaymentInstruments tests", () =>
     // Simulate presence of token in session (therefore V3 branch)
     (getSessionItem as jest.Mock).mockReturnValue("fake-auth-token");
 
-    // Simulate that getAllPaymentMethodsV3 returns an Either.left
+    // Simulate that getAllPaymentMethodsAuth returns an Either.left
     (
-      apiPaymentEcommerceClientV3.getAllPaymentMethodsV3 as jest.Mock
+      apiPaymentEcommerceAuthClientV1.getAllPaymentMethodsAuth as jest.Mock
     ).mockReturnValue(Promise.resolve(E.left(new Error("some error"))));
 
     await getPaymentInstruments({ amount: 100 }, mockOnError, mockOnResponse);
@@ -463,7 +459,7 @@ describe("Ecommerce payment methods helper - getPaymentInstruments tests", () =>
     ];
 
     (
-      apiPaymentEcommerceClientV3.getAllPaymentMethodsV3 as jest.Mock
+      apiPaymentEcommerceAuthClientV1.getAllPaymentMethodsAuth as jest.Mock
     ).mockReturnValue(
       Promise.resolve({
         right: {
@@ -492,7 +488,7 @@ describe("Ecommerce payment methods helper - getPaymentInstruments tests", () =>
       })
     );
     (
-      apiPaymentEcommerceClientV3.getAllPaymentMethodsV3 as jest.Mock
+      apiPaymentEcommerceAuthClientV1.getAllPaymentMethodsAuth as jest.Mock
     ).mockRejectedValue("Api error");
     await getPaymentInstruments(
       {
@@ -512,7 +508,7 @@ describe("Ecommerce payment methods helper - getPaymentInstruments tests", () =>
       })
     );
     (
-      apiPaymentEcommerceClientV3.getAllPaymentMethodsV3 as jest.Mock
+      apiPaymentEcommerceAuthClientV1.getAllPaymentMethodsAuth as jest.Mock
     ).mockReturnValue(
       Promise.resolve({
         right: {
@@ -577,7 +573,7 @@ describe("Ecommerce payment methods helper - getPaymentInstruments tests", () =>
       })
     );
     (
-      apiPaymentEcommerceClientV4.getAllPaymentMethodsAuth as jest.Mock
+      apiPaymentEcommerceAuthClientV1.getAllPaymentMethodsAuth as jest.Mock
     ).mockReturnValue(
       Promise.resolve({
         right: {
@@ -592,7 +588,7 @@ describe("Ecommerce payment methods helper - getPaymentInstruments tests", () =>
     expect(mockOnResponse).toHaveBeenCalledWith(paymentMethodsHandlerMock);
     expect(mockOnError).not.toHaveBeenCalled();
     expect(
-      apiPaymentEcommerceClientV4.getAllPaymentMethodsAuth
+      apiPaymentEcommerceAuthClientV1.getAllPaymentMethodsAuth
     ).toHaveBeenCalledWith({
       bearerAuth: "fake-token",
       body: expect.objectContaining({ totalAmount: 2000 }),
@@ -610,7 +606,7 @@ describe("Ecommerce payment methods helper - getPaymentInstruments tests", () =>
       })
     );
     (
-      apiPaymentEcommerceClientV4.getAllPaymentMethodsAuth as jest.Mock
+      apiPaymentEcommerceAuthClientV1.getAllPaymentMethodsAuth as jest.Mock
     ).mockReturnValue(Promise.resolve({ right: { status: 401 } }));
     await getPaymentInstruments({ amount: 1200 }, mockOnError, mockOnResponse);
 
@@ -669,7 +665,7 @@ describe("Ecommerce payment methods helper - getPaymentInstruments tests", () =>
       })
     );
     (
-      apiPaymentEcommerceClientV4.getAllPaymentMethodsAuth as jest.Mock
+      apiPaymentEcommerceAuthClientV1.getAllPaymentMethodsAuth as jest.Mock
     ).mockReturnValue(Promise.resolve({ right: { status: 500 } }));
 
     await getPaymentInstruments({ amount: 1 }, mockOnError, mockOnResponse);
@@ -698,7 +694,7 @@ describe("Ecommerce payment methods helper - npgSessionsFields tests", () => {
   it("Should call onResponse when api return correct value on v3 api", async () => {
     (getSessionItem as jest.Mock).mockReturnValue("authToken");
     (
-      apiPaymentEcommerceClientWithRetryV3.createSessionV3 as jest.Mock
+      apiPaymentEcommerceAuthClientWithRetryV1.createSessionAuth as jest.Mock
     ).mockReturnValue(
       Promise.resolve({
         right: {
@@ -714,7 +710,7 @@ describe("Ecommerce payment methods helper - npgSessionsFields tests", () => {
   it("Should call onError with ErrorsType.UNAUTHORIZED when api return 401 on v3 api", async () => {
     (getSessionItem as jest.Mock).mockReturnValue("authToken");
     (
-      apiPaymentEcommerceClientWithRetryV3.createSessionV3 as jest.Mock
+      apiPaymentEcommerceAuthClientWithRetryV1.createSessionAuth as jest.Mock
     ).mockReturnValue(
       Promise.resolve({
         right: {
