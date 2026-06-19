@@ -44,7 +44,7 @@ import {
   SortByEnum,
   SortOrderEnum,
 } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodsRequest";
-import { PaymentMethodsRequest as PaymentMethodsRequestV4 } from "../../../../../generated/definitions/payment-ecommerce-v4/PaymentMethodsRequest";
+import { PaymentMethodsRequest as PaymentMethodsRequestAuthV1 } from "../../../../../generated/definitions/payment-ecommerce-auth-v1/PaymentMethodsRequest";
 import { PaymentNoticeItem } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentNoticeItem";
 import { MethodManagementEnum } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 import { evaluateFeatureFlag } from "../checkoutFeatureFlagsHelper";
@@ -350,7 +350,7 @@ export const getPaymentMethodHandler = async (onError: (e: string) => void) =>
               apiPaymentEcommerceClientV4.getAllPaymentMethodsAuth({
                 "x-rpt-ids": getRptIdsFromSession(),
                 bearerAuth,
-                body: buildPaymentInstrumentMethodHandlerSearchRequest() as any as PaymentMethodsRequestV4,
+                body: buildPaymentInstrumentMethodHandlerSearchRequest() as any as PaymentMethodsRequestAuthV1,
               })
           )
         ),

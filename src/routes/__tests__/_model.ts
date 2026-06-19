@@ -25,13 +25,13 @@ import { PaymentMethodManagementTypeEnum } from "../../../generated/definitions/
 import { PaymentMethodResponse } from "../../../generated/definitions/payment-ecommerce/PaymentMethodResponse";
 import { PaymentMethodsResponse } from "../../../generated/definitions/payment-ecommerce/PaymentMethodsResponse";
 import { PaymentMethodStatusEnum } from "../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
-import { PaymentMethodManagementTypeEnum as PaymentMethodManagementTypeEnumV3 } from "../../../generated/definitions/payment-ecommerce-v3/PaymentMethodManagementType";
-import { PaymentMethodResponse as PaymentMethodResponseV3 } from "../../../generated/definitions/payment-ecommerce-v3/PaymentMethodResponse";
-import { PaymentMethodsResponse as PaymentMethodsResponseV3 } from "../../../generated/definitions/payment-ecommerce-v3/PaymentMethodsResponse";
-import { PaymentMethodStatusEnum as PaymentMethodStatusEnumV3 } from "../../../generated/definitions/payment-ecommerce-v3/PaymentMethodStatus";
+import { PaymentMethodManagementTypeEnum as PaymentMethodManagementTypeEnumV3 } from "../../../generated/definitions/payment-ecommerce-auth-v1/PaymentMethodManagementType";
+import { PaymentMethodResponse as PaymentMethodResponseV3 } from "../../../generated/definitions/payment-ecommerce-auth-v1/PaymentMethodResponse";
+import { PaymentMethodsResponse as PaymentMethodsResponseV3 } from "../../../generated/definitions/payment-ecommerce-auth-v1/PaymentMethodsResponse";
+import { PaymentMethodStatusEnum as PaymentMethodStatusEnumV3 } from "../../../generated/definitions/payment-ecommerce-auth-v1/PaymentMethodStatus";
 import { CalculateFeeResponse } from "../../../generated/definitions/payment-ecommerce-v2/CalculateFeeResponse";
 import { TransactionInfo } from "../../../generated/definitions/payment-ecommerce-v2/TransactionInfo";
-import { SendPaymentResultOutcomeEnum } from "../../../generated/definitions/payment-ecommerce-v3/NewTransactionResponse";
+import { SendPaymentResultOutcomeEnum } from "../../../generated/definitions/payment-ecommerce-auth-v1/NewTransactionResponse";
 import { WalletInfo } from "../../../generated/definitions/checkout-wallets-v1/WalletInfo";
 import { WalletStatusEnum } from "../../../generated/definitions/checkout-wallets-v1/WalletStatus";
 import { WalletApplicationInfo } from "../../../generated/definitions/checkout-wallets-v1/WalletApplicationInfo";

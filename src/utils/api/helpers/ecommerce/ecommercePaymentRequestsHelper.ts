@@ -8,7 +8,7 @@ import { Cart } from "features/payment/models/paymentModel";
 import { ErrorsType } from "../../../../utils/errors/checkErrorsModel";
 import {
   apiPaymentEcommerceClient,
-  apiPaymentEcommerceClientV3,
+  apiPaymentEcommerceAuthClientV1,
 } from "../../../../utils/api/client";
 import {
   getSessionItem,
@@ -42,7 +42,7 @@ export const getEcommercePaymentInfoTask = (
                 SessionItems.loginOriginPage,
                 `${location.pathname}${location.search}`
               );
-              return apiPaymentEcommerceClientV3.getPaymentRequestInfoV3({
+              return apiPaymentEcommerceAuthClientV1.getPaymentRequestInfoAuth({
                 rpt_id: rptId,
                 bearerAuth, // add auth token
               });
