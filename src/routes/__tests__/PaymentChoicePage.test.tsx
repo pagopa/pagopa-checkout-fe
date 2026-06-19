@@ -780,7 +780,9 @@ describe("PaymentChoicePage authenticated", () => {
         },
       })
     );
-    (apiPaymentEcommerceAuthClientV1.newTransactionAuth as jest.Mock).mockReturnValue(
+    (
+      apiPaymentEcommerceAuthClientV1.newTransactionAuth as jest.Mock
+    ).mockReturnValue(
       Promise.resolve({
         right: {
           status: 200,

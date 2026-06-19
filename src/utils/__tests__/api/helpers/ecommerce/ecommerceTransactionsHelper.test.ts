@@ -155,7 +155,9 @@ describe("Ecommerce transactions helper - activatePayment tests", () => {
   it("Should call onResponseActivate when api return correct value on v3 api", async () => {
     mockSetSessionForActivatePayment(true);
     (getRptIdsFromSession as jest.Mock).mockReturnValueOnce("rptIds");
-    (apiPaymentEcommerceAuthClientV1.newTransactionAuth as jest.Mock).mockReturnValue(
+    (
+      apiPaymentEcommerceAuthClientV1.newTransactionAuth as jest.Mock
+    ).mockReturnValue(
       Promise.resolve({
         right: {
           status: 200,
@@ -173,15 +175,15 @@ describe("Ecommerce transactions helper - activatePayment tests", () => {
         cardPaymentMethodMock.paymentMethodId,
         "orderId"
       );
-      expect(apiPaymentEcommerceAuthClientV1.newTransactionAuth).toHaveBeenCalledWith(
-        {
-          "x-rpt-ids": "rptIds",
-          bearerAuth: "authToken", // Check that the token was passed correctly
-          body: expect.anything(),
-          "x-client-id-from-client": "CHECKOUT",
-          "x-correlation-id": "correlationId",
-        }
-      );
+      expect(
+        apiPaymentEcommerceAuthClientV1.newTransactionAuth
+      ).toHaveBeenCalledWith({
+        "x-rpt-ids": "rptIds",
+        bearerAuth: "authToken", // Check that the token was passed correctly
+        body: expect.anything(),
+        "x-client-id-from-client": "CHECKOUT",
+        "x-correlation-id": "correlationId",
+      });
     });
   });
 
@@ -205,7 +207,9 @@ describe("Ecommerce transactions helper - activatePayment tests", () => {
 
   it("Should call onError with ErrorsType.GENERIC_ERROR when api return 5xx on v3 api", async () => {
     mockSetSessionForActivatePayment(true);
-    (apiPaymentEcommerceAuthClientV1.newTransactionAuth as jest.Mock).mockReturnValue(
+    (
+      apiPaymentEcommerceAuthClientV1.newTransactionAuth as jest.Mock
+    ).mockReturnValue(
       Promise.resolve({
         right: {
           status: 500,
@@ -227,7 +231,9 @@ describe("Ecommerce transactions helper - activatePayment tests", () => {
 
   it("Should call onError with ErrorsType.UNAUTHORIZED when api return 401 on v3 api", async () => {
     mockSetSessionForActivatePayment(true);
-    (apiPaymentEcommerceAuthClientV1.newTransactionAuth as jest.Mock).mockReturnValue(
+    (
+      apiPaymentEcommerceAuthClientV1.newTransactionAuth as jest.Mock
+    ).mockReturnValue(
       Promise.resolve({
         right: {
           status: 401,
