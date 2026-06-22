@@ -5,7 +5,6 @@ import {
   calculateFeeResponseMock,
   mockApiConfig,
   paymentMethodResponseMock,
-  paymentMethodsMock,
   postSessionResponseMock,
   sessionItemTransactionMock,
 } from "../../../../../utils/testing/testUtils";
@@ -72,7 +71,7 @@ jest.mock("../../../../api/client", () => ({
     calculateFees: jest.fn(),
   },
   apiPaymentEcommerceAuthClientWithRetryV1: {
-    createSessionV3: jest.fn(),
+    createSessionAuth: jest.fn(),
   },
   apiCheckoutFeatureFlags: {
     evaluateFeatureFlags: jest.fn(() =>
@@ -336,7 +335,8 @@ describe("Ecommerce payment methods helper - calculateFees tests", () => {
 });
 
 describe("Ecommerce payment methods helper - getPaymentInstruments tests", () => {
-  it("Should call onError with GENERIC_ERROR and onResponse with empty array when API returns status 500", async () => {
+  
+  it("Should call onError with STATUS_ERROR and onResponse with empty array when API returns status 500", async () => {
     // Simulate presence of token in session (therefore V3 branch)
     (getSessionItem as jest.Mock).mockReturnValue("fake-auth-token");
 
@@ -345,9 +345,9 @@ describe("Ecommerce payment methods helper - getPaymentInstruments tests", () =>
       apiPaymentEcommerceAuthClientV1.getAllPaymentMethodsAuth as jest.Mock
     ).mockReturnValue(Promise.resolve(E.left(new Error("some error"))));
 
-    await getPaymentInstruments({ amount: 100 }, mockOnError, mockOnResponse);
+    await getPaymentInstruments( mockOnError, mockOnResponse);
 
-    expect(mockOnError).toHaveBeenCalledWith(ErrorsType.GENERIC_ERROR);
+    expect(mockOnError).toHaveBeenCalledWith(ErrorsType.STATUS_ERROR);
     expect(mockOnResponse).toHaveBeenCalledWith([]);
   });
 
@@ -396,13 +396,11 @@ describe("Ecommerce payment methods helper - getPaymentInstruments tests", () =>
       })
     );
     await getPaymentInstruments(
-      {
-        amount: 1,
-      },
       mockOnError,
       mockOnResponse
     );
-    expect(mockOnResponse).toHaveBeenCalledWith(paymentMethodsMock);
+    expect(mockOnError).toHaveBeenCalledWith(ErrorsType.STATUS_ERROR);
+    expect(mockOnResponse).toHaveBeenCalledWith([]);
   });
 
   it("Should call onError with ErrorsType.STATUS_ERROR when api fail", async () => {
@@ -418,45 +416,22 @@ describe("Ecommerce payment methods helper - getPaymentInstruments tests", () =>
       apiPaymentEcommerceClient.getAllPaymentMethods as jest.Mock
     ).mockRejectedValue("Api error");
     await getPaymentInstruments(
-      {
-        amount: 1,
-      },
       mockOnError,
       mockOnResponse
     );
     expect(mockOnError).toHaveBeenCalledWith(ErrorsType.STATUS_ERROR);
   });
 
-  it("Should call onResponse when api return correct value on v3 api", async () => {
+  it("Should call onResponse when api return correct value on auth api v1", async () => {
     (getSessionItem as jest.Mock).mockImplementation(
       createMockSessionItem({
         authToken: "authToken",
-        enablePaymentMethodsHandler: false,
+        enablePaymentMethodsHandler: "true",
+        cart: {
+          paymentNotices: [{ amount: 2000, fiscalCode: "77777777777" }],
+        },
       })
     );
-
-    const mockApiResponse = [
-      {
-        id: "card-id",
-        name: "CARDS",
-        description: "Carte di Credito e Debito",
-        status: "ENABLED",
-        paymentTypeCode: "CP",
-        methodManagement: "ONBOARDABLE",
-        asset: undefined,
-        brandAssets: undefined,
-      },
-      {
-        id: "bancomatpay-id",
-        name: "BANCOMATPAY",
-        description: "BancomatPay",
-        status: "ENABLED",
-        paymentTypeCode: "BPAY",
-        methodManagement: "ONBOARDABLE",
-        asset: undefined,
-        brandAssets: undefined,
-      },
-    ];
 
     (
       apiPaymentEcommerceAuthClientV1.getAllPaymentMethodsAuth as jest.Mock
@@ -465,46 +440,46 @@ describe("Ecommerce payment methods helper - getPaymentInstruments tests", () =>
         right: {
           status: 200,
           value: {
-            paymentMethods: mockApiResponse,
+            paymentMethods: mockApiHandlerResponse,
           },
         },
       })
     );
     await getPaymentInstruments(
-      {
-        amount: 1,
-      },
       mockOnError,
       mockOnResponse
     );
-    expect(mockOnResponse).toHaveBeenCalledWith(paymentMethodsMock);
+    expect(mockOnResponse).toHaveBeenCalledWith(paymentMethodsHandlerMock);
   });
 
-  it("Should call onError with ErrorsType.STATUS_ERROR when api fail on v3 api", async () => {
+  it("Should call onError with ErrorsType.STATUS_ERROR when api fail on auth api v1", async () => {
     (getSessionItem as jest.Mock).mockImplementation(
       createMockSessionItem({
         authToken: "authToken",
-        enablePaymentMethodsHandler: false,
+        enablePaymentMethodsHandler: "true",
+        cart: {
+          paymentNotices: [{ amount: 1200, fiscalCode: "77777777777" }],
+        },
       })
     );
     (
       apiPaymentEcommerceAuthClientV1.getAllPaymentMethodsAuth as jest.Mock
     ).mockRejectedValue("Api error");
     await getPaymentInstruments(
-      {
-        amount: 1,
-      },
       mockOnError,
       mockOnResponse
     );
     expect(mockOnError).toHaveBeenCalledWith(ErrorsType.STATUS_ERROR);
   });
 
-  it("Should call onError with ErrorsType.UNAUTHORIZED when api return 401 on v3 api", async () => {
+  it("Should call onError with ErrorsType.UNAUTHORIZED when api return 401 on auth api v1", async () => {
     (getSessionItem as jest.Mock).mockImplementation(
       createMockSessionItem({
         authToken: "authToken",
-        enablePaymentMethodsHandler: false,
+        enablePaymentMethodsHandler: "true",
+        cart: {
+          paymentNotices: [{ amount: 1200, fiscalCode: "77777777777" }],
+        },
       })
     );
     (
@@ -517,9 +492,6 @@ describe("Ecommerce payment methods helper - getPaymentInstruments tests", () =>
       })
     );
     await getPaymentInstruments(
-      {
-        amount: 1,
-      },
       mockOnError,
       mockOnResponse
     );
@@ -548,7 +520,7 @@ describe("Ecommerce payment methods helper - getPaymentInstruments tests", () =>
       })
     );
 
-    await getPaymentInstruments({ amount: 1 }, mockOnError, mockOnResponse);
+    await getPaymentInstruments( mockOnError, mockOnResponse);
 
     expect(mockOnResponse).toHaveBeenCalledWith(paymentMethodsHandlerMock);
     expect(mockOnError).not.toHaveBeenCalled();
@@ -583,7 +555,7 @@ describe("Ecommerce payment methods helper - getPaymentInstruments tests", () =>
       })
     );
 
-    await getPaymentInstruments({ amount: 1 }, mockOnError, mockOnResponse);
+    await getPaymentInstruments( mockOnError, mockOnResponse);
 
     expect(mockOnResponse).toHaveBeenCalledWith(paymentMethodsHandlerMock);
     expect(mockOnError).not.toHaveBeenCalled();
@@ -608,7 +580,7 @@ describe("Ecommerce payment methods helper - getPaymentInstruments tests", () =>
     (
       apiPaymentEcommerceAuthClientV1.getAllPaymentMethodsAuth as jest.Mock
     ).mockReturnValue(Promise.resolve({ right: { status: 401 } }));
-    await getPaymentInstruments({ amount: 1200 }, mockOnError, mockOnResponse);
+    await getPaymentInstruments(mockOnError, mockOnResponse);
 
     expect(mockOnResponse).toHaveBeenCalledWith([]);
     expect(mockOnError).toHaveBeenCalledWith(ErrorsType.UNAUTHORIZED);
@@ -628,7 +600,7 @@ describe("Ecommerce payment methods helper - getPaymentInstruments tests", () =>
       apiPaymentEcommerceClientV2.getAllPaymentMethods as jest.Mock
     ).mockRejectedValue("API failed");
 
-    await getPaymentInstruments({ amount: 1 }, mockOnError, mockOnResponse);
+    await getPaymentInstruments( mockOnError, mockOnResponse);
 
     expect(mockOnResponse).toHaveBeenCalledWith([]);
     expect(mockOnError).toHaveBeenCalledWith(ErrorsType.STATUS_ERROR);
@@ -648,7 +620,7 @@ describe("Ecommerce payment methods helper - getPaymentInstruments tests", () =>
       apiPaymentEcommerceClientV2.getAllPaymentMethods as jest.Mock
     ).mockReturnValue(Promise.resolve(E.left(new Error("Either left"))));
 
-    await getPaymentInstruments({ amount: 1 }, mockOnError, mockOnResponse);
+    await getPaymentInstruments( mockOnError, mockOnResponse);
 
     expect(mockOnResponse).toHaveBeenCalledWith([]);
     expect(mockOnError).toHaveBeenCalledWith(ErrorsType.GENERIC_ERROR);
@@ -668,7 +640,7 @@ describe("Ecommerce payment methods helper - getPaymentInstruments tests", () =>
       apiPaymentEcommerceAuthClientV1.getAllPaymentMethodsAuth as jest.Mock
     ).mockReturnValue(Promise.resolve({ right: { status: 500 } }));
 
-    await getPaymentInstruments({ amount: 1 }, mockOnError, mockOnResponse);
+    await getPaymentInstruments( mockOnError, mockOnResponse);
 
     expect(mockOnResponse).toHaveBeenCalledWith([]);
     expect(mockOnError).not.toHaveBeenCalled();

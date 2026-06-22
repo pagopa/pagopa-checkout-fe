@@ -32,7 +32,7 @@ jest.mock("../../../../api/client", () => ({
     getPaymentRequestInfo: jest.fn(),
   },
   apiPaymentEcommerceAuthClientV1: {
-    getPaymentRequestInfoV3: jest.fn(),
+    getPaymentRequestInfoAuth: jest.fn(),
   },
 }));
 

@@ -51,7 +51,7 @@ jest.mock("../../../../api/client", () => ({
     newTransaction: jest.fn(),
   },
   apiPaymentEcommerceAuthClientV1: {
-    newTransactionV3: jest.fn(),
+    newTransactionAuth: jest.fn(),
   },
   apiPaymentEcommerceClientWithRetry: {
     requestTransactionAuthorization: jest.fn(),
