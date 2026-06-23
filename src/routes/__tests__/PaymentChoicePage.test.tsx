@@ -58,7 +58,7 @@ import { WalletTypeEnum } from "../../../generated/definitions/payment-ecommerce
 import {
   calculateFeeResponse,
   createSuccessGetPaymentMethodsV1,
-  //createSuccessGetPaymentMethodsV3,
+  // createSuccessGetPaymentMethodsV3,
   createSuccessGetWallets,
   createSuccessPostPaymentMethodsAuthV1,
   paymentInfo,
@@ -807,7 +807,7 @@ describe("PaymentChoicePage authenticated", () => {
     jest.spyOn(router, "useNavigate").mockImplementation(() => navigate);
   });
 
- /*  test("go back to history by 1 step when back button is clicked (authenticated flow)", async () => {
+  /*  test("go back to history by 1 step when back button is clicked (authenticated flow)", async () => {
     (getItemLocalStorage as jest.Mock).mockReturnValue("false");
 
     renderWithReduxProvider(
@@ -1135,22 +1135,25 @@ describe("PaymentChoicePage authenticated", () => {
   });
 
   it("should redirect to AUTH_EXPIRED when getPaymentMethods returns UNAUTHORIZED", async () => {
-   /* (getSessionItem as jest.Mock).mockImplementation((key) => {
+    /* (getSessionItem as jest.Mock).mockImplementation((key) => {
       if (key === SessionItems.enablePaymentMethodsHandler || key === SessionItems.authToken || key === SessionItems.enableWallet) {
         return "true";
       }
       return null;
     }); */
-   (getSessionItem as jest.Mock).mockImplementation((key) => {
-      if (key === SessionItems.enablePaymentMethodsHandler || key === SessionItems.authToken) {
+    (getSessionItem as jest.Mock).mockImplementation((key) => {
+      if (
+        key === SessionItems.enablePaymentMethodsHandler ||
+        key === SessionItems.authToken
+      ) {
         return "true";
       }
       if (key === SessionItems.paymentInfo) {
         return { amount: 1200, rptId: "77777777777302000100000009488" };
       }
       return null;
-    }); 
-    
+    });
+
     /* (
       apiPaymentEcommerceClientV2.getAllPaymentMethods as jest.Mock
     ).mockReturnValue(

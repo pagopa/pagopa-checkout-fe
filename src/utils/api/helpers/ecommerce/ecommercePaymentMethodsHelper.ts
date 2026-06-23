@@ -255,7 +255,6 @@ export const calculateFees = async ({
   )();
 };
 
-
 export const getPaymentMethodHandler = async (onError: (e: string) => void) =>
   pipe(
     TE.tryCatch(
