@@ -1,0 +1,74 @@
+parameters:
+  - name: npg_origin
+    type: string
+  - name: storage_account
+    type: string
+  - name: cdn_rg
+    type: string
+  - name: cdn_profile
+    type: string
+  - name: cdn_endpoint
+    type: string
+  - name: service_connection
+    type: string
+
+steps:
+  - checkout: none
+
+  - task: AzureCLI@2
+    displayName: 'Download, hash, and upload NPG SDK'
+    inputs:
+      azureSubscription: '${{ parameters.service_connection }}'
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: |
+        set -euo pipefail
+
+        SDK_URL="${{ parameters.npg_origin }}/monetaweb/resources/hfsdk.js"
+        echo "Downloading SDK from ${SDK_URL}"
+
+        HTTP_CODE=$(curl -sSL -w "%{http_code}" -o /tmp/hfsdk.js "${SDK_URL}")
+        if [ "${HTTP_CODE}" != "200" ]; then
+          echo "##vso[task.logissue type=error]SDK download failed with HTTP ${HTTP_CODE}"
+          exit 1
+        fi
+
+        FILE_SIZE=$(stat -c%s /tmp/hfsdk.js)
+        if [ "${FILE_SIZE}" -lt 1024 ]; then
+          echo "##vso[task.logissue type=error]SDK file suspiciously small (${FILE_SIZE} bytes)"
+          exit 1
+        fi
+        echo "SDK downloaded: ${FILE_SIZE} bytes"
+
+        HASH=$(openssl dgst -sha384 -binary /tmp/hfsdk.js | openssl base64 -A)
+        INTEGRITY="sha384-${HASH}"
+        echo "Computed integrity: ${INTEGRITY}"
+
+        echo "{\"integrityHash\":\"${INTEGRITY}\"}" > /tmp/hfsdk.integrity.json
+
+        echo "Uploading SDK to ${{ parameters.storage_account }}/npg/hfsdk.js"
+        az storage blob upload \
+          --account-name "${{ parameters.storage_account }}" \
+          --container-name '$web' \
+          --name "npg/hfsdk.js" \
+          --file /tmp/hfsdk.js \
+          --content-type "application/javascript" \
+          --overwrite
+
+        echo "Uploading integrity JSON to ${{ parameters.storage_account }}/npg/hfsdk.integrity.json"
+        az storage blob upload \
+          --account-name "${{ parameters.storage_account }}" \
+          --container-name '$web' \
+          --name "npg/hfsdk.integrity.json" \
+          --file /tmp/hfsdk.integrity.json \
+          --content-type "application/json" \
+          --overwrite
+
+        echo "Purging CDN for /npg/*"
+        az afd endpoint purge \
+          -g "${{ parameters.cdn_rg }}" \
+          --endpoint-name "${{ parameters.cdn_endpoint }}" \
+          --profile-name "${{ parameters.cdn_profile }}" \
+          --content-paths "/npg/*"
+
+        echo "Sync complete"

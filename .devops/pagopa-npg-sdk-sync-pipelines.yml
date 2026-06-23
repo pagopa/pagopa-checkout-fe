@@ -1,0 +1,33 @@
+# Azure DevOps pipeline to sync NPG SDK from Nexi to checkout CDN storage.
+# Runs every 10 minutes: downloads the SDK, computes SHA-384 integrity hash,
+# and uploads both to $web/npg/ on each environment's storage account.
+
+trigger: none
+pr: none
+
+schedules:
+  - cron: "*/10 * * * *"
+    displayName: "Sync NPG SDK every 10 minutes"
+    branches:
+      include:
+        - main
+    always: true
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+  - stage: Sync_DEV
+    dependsOn: []
+    jobs:
+      - job: sync_npg_sdk
+        displayName: 'Sync NPG SDK to DEV'
+        steps:
+          - template: azure-templates/sync-npg-sdk-steps.yml
+            parameters:
+              npg_origin: 'https://stg-ta.nexigroup.com'
+              storage_account: 'pagopadweucheckoutcdnsa'
+              cdn_rg: 'pagopa-d-checkout-fe-rg'
+              cdn_profile: 'pagopa-d-weu-checkout-cdn-profile'
+              cdn_endpoint: 'pagopa-d-weu-checkout-cdn-endpoint'
+              service_connection: 'DEV-PAGOPA-SERVICE-CONN'
