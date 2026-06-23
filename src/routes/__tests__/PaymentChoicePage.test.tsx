@@ -126,6 +126,7 @@ jest.mock("../../utils/paymentMethods/paymentMethodsHelper", () => ({
     }
     return "Unknown";
   }),
+  getLanguage: jest.fn(() => "IT"),
 }));
 
 // Create a Jest spy for navigation
@@ -1164,6 +1165,17 @@ describe("PaymentChoicePage authenticated", () => {
         },
       })
     ); */
+    /* (
+      buildPaymentInstrumentMethodHandlerSearchRequest as jest.Mock
+    ).mockReturnValue(
+      Promise.resolve({
+        right: {
+          status: 401,
+          value: {},
+        },
+      })
+    ); */
+
 
     (
       apiPaymentEcommerceAuthClientV1.getAllPaymentMethodsAuth as jest.Mock
