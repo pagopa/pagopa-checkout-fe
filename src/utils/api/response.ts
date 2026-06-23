@@ -98,9 +98,9 @@ const ecommerceClientWithPollingV1: EcommerceClientV1 = createClientV1({
         const { isFinalStatus } = (await r
           .clone()
           .json()) as TransactionOutcomeInfo;
-          if (isFinalStatus) {
-            counter.reset();
-          }
+        if (isFinalStatus) {
+          counter.reset();
+        }
         return !isFinalStatus;
       }
 
