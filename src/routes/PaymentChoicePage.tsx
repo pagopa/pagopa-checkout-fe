@@ -68,7 +68,8 @@ export default function PaymentChoicePage() {
 
   const getPaymentMethods = async () => {
     setInstrumentsLoading(true);
-    await getPaymentInstruments(onError, onResponse);
+    console.log("test1");
+    await getPaymentInstruments( onError, onResponse);
   };
 
   const getWallets = async () => {
@@ -114,6 +115,8 @@ export default function PaymentChoicePage() {
   };
 
   const onError = React.useCallback((m: string) => {
+    console.log("Payment instruments error:", m);
+    console.log("DEBUG: onError called with message m !== ErrorsType.UNAUTHORIZED :", m !== ErrorsType.UNAUTHORIZED);  
     pipe(
       m !== ErrorsType.UNAUTHORIZED,
       B.fold(
@@ -122,6 +125,7 @@ export default function PaymentChoicePage() {
             SessionItems.loginOriginPage,
             `${location.pathname}${location.search}`
           );
+          console.log();
           navigate(`/${CheckoutRoutes.AUTH_EXPIRED}`);
         },
         () => {
