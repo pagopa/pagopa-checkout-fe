@@ -22,6 +22,7 @@ Object.defineProperty(global, "window", {
       CHECKOUT_DONATIONS_URL: "https://donations.com",
       CHECKOUT_SURVEY_SHOW: "1",
       CHECKOUT_NPG_SDK_URL: "https://sdk.npg.com",
+      CHECKOUT_NPG_SDK_WEB_ORIGIN: "https://sdk.npg.com",
       CHECKOUT_API_RETRY_NUMBERS: "10",
       CHECKOUT_API_RETRY_DELAY: "2000",
       CHECKOUT_GDI_CHECK_TIMEOUT: "5000",
@@ -75,6 +76,7 @@ describe("Config Module", () => {
     expect(config.CHECKOUT_DONATIONS_URL).toBe("https://donations.com");
     expect(config.CHECKOUT_SURVEY_SHOW).toBe(true);
     expect(config.CHECKOUT_NPG_SDK_URL).toBe("https://sdk.npg.com");
+    expect(config.CHECKOUT_NPG_SDK_WEB_ORIGIN).toBe("https://sdk.npg.com");
     expect(config.CHECKOUT_API_RETRY_DELAY).toBe(2000);
     expect(config.CHECKOUT_GDI_CHECK_TIMEOUT).toBe(5000);
     expect(config.CHECKOUT_API_AUTH_SERVICE_BASEPATH_V1).toBe("/auth");
