@@ -46,29 +46,29 @@ steps:
 
         echo "{\"integrityHash\":\"${INTEGRITY}\"}" > /tmp/hfsdk.integrity.json
 
-        echo "Uploading SDK to ${{ parameters.storage_account }}/npg/hfsdk.js"
+        echo "Uploading SDK to ${{ parameters.storage_account }}/npg/sdk/hfsdk.js"
         az storage blob upload \
           --account-name "${{ parameters.storage_account }}" \
           --container-name '$web' \
-          --name "npg/hfsdk.js" \
+          --name "npg/sdk/hfsdk.js" \
           --file /tmp/hfsdk.js \
           --content-type "application/javascript" \
           --overwrite
 
-        echo "Uploading integrity JSON to ${{ parameters.storage_account }}/npg/hfsdk.integrity.json"
+        echo "Uploading integrity JSON to ${{ parameters.storage_account }}/npg/sdk/hfsdk.integrity.json"
         az storage blob upload \
           --account-name "${{ parameters.storage_account }}" \
           --container-name '$web' \
-          --name "npg/hfsdk.integrity.json" \
+          --name "npg/sdk/hfsdk.integrity.json" \
           --file /tmp/hfsdk.integrity.json \
           --content-type "application/json" \
           --overwrite
 
-        echo "Purging CDN for /npg/*"
+        echo "Purging CDN for /npg/sdk/*"
         az afd endpoint purge \
           -g "${{ parameters.cdn_rg }}" \
           --endpoint-name "${{ parameters.cdn_endpoint }}" \
           --profile-name "${{ parameters.cdn_profile }}" \
-          --content-paths "/npg/*"
+          --content-paths "/npg/sdk/*"
 
         echo "Sync complete"

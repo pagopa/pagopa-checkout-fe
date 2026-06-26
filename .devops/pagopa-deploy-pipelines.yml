@@ -118,8 +118,8 @@ stages:
               pagopa_assets_cdn: 'https://assets.cdn.platform.pagopa.it/payment-methods'
               pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi'
               survey_show: 1
-              checkout_npg_sdk_url: 'https://dev.checkout.pagopa.it/npg/hfsdk.js'
-              checkout_npg_sdk_integrity_url: 'https://dev.checkout.pagopa.it/npg/hfsdk.integrity.json'
+              checkout_npg_sdk_url: 'https://dev.checkout.pagopa.it/npg/sdk/hfsdk.js'
+              checkout_npg_sdk_integrity_url: 'https://dev.checkout.pagopa.it/npg/sdk/hfsdk.integrity.json'
               checkout_npg_sdk_web_origin: 'https://stg-ta.nexigroup.com'
               checkout_gdi_check_timeout: 20000
               checkout_version: "$(Build.SourceBranchName):$(Build.SourceVersion)"
@@ -148,7 +148,7 @@ stages:
               azureSubscription: 'DEV-PAGOPA-SERVICE-CONN'
               scriptLocation: inlineScript
               inlineScript: |
-                call az storage blob sync --container $web --account-name ${{ variables.DEV_STORAGE_ACCOUNT }} -s "$(Pipeline.Workspace)\Bundle_DEV" --exclude-path npg
+                call az storage blob sync --container $web --account-name ${{ variables.DEV_STORAGE_ACCOUNT }} -s "$(Pipeline.Workspace)\Bundle_DEV" --exclude-path npg/sdk
 
           - task: AzureCLI@1
             displayName: 'Purge CDN endpoint on DEV'
@@ -302,7 +302,7 @@ stages:
               azureSubscription: 'UAT-PAGOPA-SERVICE-CONN'
               scriptLocation: inlineScript
               inlineScript: |
-                call az storage blob sync --container $web --account-name ${{ variables.UAT_STORAGE_ACCOUNT }} -s "$(Pipeline.Workspace)\Bundle_UAT" --exclude-path npg
+                call az storage blob sync --container $web --account-name ${{ variables.UAT_STORAGE_ACCOUNT }} -s "$(Pipeline.Workspace)\Bundle_UAT" --exclude-path npg/sdk
 
           - task: AzureCLI@1
             displayName: 'Purge CDN endpoint on UAT'
@@ -409,7 +409,7 @@ stages:
               azureSubscription: 'PROD-PAGOPA-SERVICE-CONN'
               scriptLocation: inlineScript
               inlineScript: |
-                call az storage blob sync --container $web --account-name ${{ variables.PROD_STORAGE_ACCOUNT }} -s "$(Pipeline.Workspace)\Bundle" --exclude-path npg
+                call az storage blob sync --container $web --account-name ${{ variables.PROD_STORAGE_ACCOUNT }} -s "$(Pipeline.Workspace)\Bundle" --exclude-path npg/sdk
 
           - task: AzureCLI@1
             displayName: 'Purge CDN endpoint on PROD'

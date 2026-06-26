@@ -1,6 +1,6 @@
 # Azure DevOps pipeline to sync NPG SDK from Nexi to checkout CDN storage.
 # Runs every 10 minutes: downloads the SDK, computes SHA-384 integrity hash,
-# and uploads both to $web/npg/ on each environment's storage account.
+# and uploads both to $web/npg/sdk/ on each environment's storage account.
 
 trigger: none
 pr: none
