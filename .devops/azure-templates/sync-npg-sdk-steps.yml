@@ -65,6 +65,8 @@ steps:
           --overwrite
 
         echo "Purging CDN for /npg/sdk/*"
+        # keep working after the built-in cdn/afd commands are removed from az core.
+        az config set extension.use_dynamic_install=yes_without_prompt --only-show-errors
         az afd endpoint purge \
           -g "${{ parameters.cdn_rg }}" \
           --endpoint-name "${{ parameters.cdn_endpoint }}" \
