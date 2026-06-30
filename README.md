@@ -37,11 +37,13 @@ In order to build and run this project are required:
 
 The table below describes all the Environment variables needed by the application.
 
-| Variable name | Description | type |
-|----------------|-------------|------|
-|IO\_PAY\_PORTAL\_API\_HOST| api services | endpoint/string
-|IO\_PAY\_PORTAL\_API\_REQUEST\_TIMEOUT| request timeout | milliseconds
-|CHECKOUT_API_RETRY_NUMBERS_LINEAR| number of calls at regular intervals| number
+| Variable name                          | Description                                         | type            |
+|----------------------------------------|-----------------------------------------------------|-----------------|
+| IO\_PAY\_PORTAL\_API\_HOST             | api services                                        | endpoint/string |
+| IO\_PAY\_PORTAL\_API\_REQUEST\_TIMEOUT | request timeout                                     | milliseconds    |
+| CHECKOUT_API_RETRY_NUMBERS_LINEAR      | number of calls at regular intervals                | number          |
+| CHECKOUT_NPG_SDK_INTEGRITY_URL         | URL to the NPG SDK integrity hash JSON              | endpoint/string |
+| CHECKOUT_NPG_SDK_WEB_ORIGIN            | origin of the NPG iframe for postMessage validation | endpoint/string |
 
 ### Installation
 
