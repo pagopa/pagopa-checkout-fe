@@ -434,25 +434,24 @@ export function PaymentChoice(props: {
             />
           )}
 
-          {paymentMethodFilterState &&
-            paymentMethodFilterState.buyNowPayLater && (
-              <Chip
-                id="buyNowPayLaterChipFilter"
-                sx={{
-                  mt: 2,
-                  "&.MuiChip-root": {
-                    backgroundColor: "#E1F5FE",
-                    color: "#215C76",
-                  },
-                  "& .MuiChip-deleteIcon": {
-                    color: "#215C76",
-                  },
-                }}
-                label={t("paymentChoicePage.drawer.payByPlan")}
-                onDelete={handleDeleteBuyNowPayLater}
-                deleteIcon={<CancelSharp id="removeBuyNowPayLaterFilter" />}
-              />
-            )}
+          {paymentMethodFilterState && paymentMethodFilterState.buyNowPayLater && (
+            <Chip
+              id="buyNowPayLaterChipFilter"
+              sx={{
+                mt: 2,
+                "&.MuiChip-root": {
+                  backgroundColor: "#E1F5FE",
+                  color: "#215C76",
+                },
+                "& .MuiChip-deleteIcon": {
+                  color: "#215C76",
+                },
+              }}
+              label={t("paymentChoicePage.drawer.payByPlan")}
+              onDelete={handleDeleteBuyNowPayLater}
+              deleteIcon={<CancelSharp id="removeBuyNowPayLaterFilter" />}
+            />
+          )}
 
           <MethodComponentList
             methods={getFilteredPaymentMethods(paymentMethods.enabled)}

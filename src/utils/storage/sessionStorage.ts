@@ -141,7 +141,7 @@ const KEYS_TO_PRESERVE = [
 export const clearStorageAndMaintainAuthData = () => {
   const snapshot = Object.fromEntries(
     KEYS_TO_PRESERVE.map((k) => [k, sessionStorage.getItem(k)])
-  ) as Record<(typeof KEYS_TO_PRESERVE)[number], string | null>;
+  ) as Record<typeof KEYS_TO_PRESERVE[number], string | null>;
 
   sessionStorage.clear();
 
