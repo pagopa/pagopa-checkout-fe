@@ -24,6 +24,7 @@ import { CartRequestReturnUrls } from "../../../generated/definitions/payment-ec
 import { PaymentMethodManagementTypeEnum } from "../../../generated/definitions/payment-ecommerce/PaymentMethodManagementType";
 import { PaymentMethodResponse } from "../../../generated/definitions/payment-ecommerce/PaymentMethodResponse";
 import { PaymentMethodsResponse } from "../../../generated/definitions/payment-ecommerce/PaymentMethodsResponse";
+import { PaymentMethodsResponse as PaymentMethodsResponseV2, } from "../../../generated/definitions/payment-ecommerce-v2/PaymentMethodsResponse";
 import { PaymentMethodStatusEnum } from "../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
 import {
   PaymentMethodResponse as PaymentMethodResponseAuthV1,
@@ -281,6 +282,7 @@ export const createSuccessGetPaymentMethodsV1: PaymentMethodsResponse = {
   paymentMethods: [
     {
       asset: "https://assets.cdn.platform.pagopa.it/creditcard/generic.png",
+      paymentMethodAsset: "https://assets.cdn.platform.pagopa.it/creditcard/generic.png",
       brandAssets: cardBrandAssets,
       description: "Carte",
       id: "3ebea7a1-2e77-4a1b-ac1b-3aca0d67f813",
@@ -297,6 +299,7 @@ export const createSuccessGetPaymentMethodsV1: PaymentMethodsResponse = {
     } as PaymentMethodResponse,
     {
       asset: "https://assets.cdn.io.italia.it/logos/apps/paga-con-postepay.png",
+      paymentMethodAsset: "https://assets.cdn.io.italia.it/logos/apps/paga-con-postepay.png",
       description: "Paga con Postepay",
       id: "1c12349f-8133-42f3-ad96-7e6527d27a41",
       methodManagement: PaymentMethodManagementTypeEnum.REDIRECT,
@@ -312,6 +315,38 @@ export const createSuccessGetPaymentMethodsV1: PaymentMethodsResponse = {
     } as PaymentMethodResponse,
   ],
 };
+
+export const createSuccessPostPaymentMethodsV2: PaymentMethodsResponseV2 =
+  {
+    paymentMethods: [
+      {
+        description: { it: "Carte" },
+        id: "3ebea7a1-2e77-4a1b-ac1b-3aca0d67f813",
+        name: { it: "Carte" },
+        paymentTypeCode: "CP",
+        paymentMethodAsset:
+          "https://assets.cdn.platform.pagopa.it/creditcard/generic.png",
+        paymentMethodTypes: ["CARDS"],
+        validityDateFrom: new Date(),
+        methodManagement: MethodManagementEnumAuthV1.ONBOARDABLE,
+        status: StatusEnumAuthV1.ENABLED,
+      } as PaymentMethodResponseAuthV1,
+      {
+        description: { it: "Paga con Postepay" },
+        id: "1c12349f-8133-42f3-ad96-7e6527d27a41",
+        name: { it: "Paga con Poste Pay" },
+        paymentTypeCode: "RBPP",
+        paymentMethodAsset:
+          "https://assets.cdn.io.italia.it/logos/apps/paga-con-postepay.png",
+        paymentMethodTypes: ["APM"],
+        validityDateFrom: new Date(),
+        methodManagement: MethodManagementEnumAuthV1.REDIRECT,
+        status: StatusEnumAuthV1.ENABLED,
+      } as PaymentMethodResponseAuthV1,
+    ],
+  };
+
+
 
 /* export const createSuccessGetPaymentMethodsV3: PaymentMethodsResponseV3 = {
   paymentMethods: [

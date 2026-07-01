@@ -58,6 +58,7 @@ import { WalletTypeEnum } from "../../../generated/definitions/payment-ecommerce
 import {
   calculateFeeResponse,
   createSuccessGetPaymentMethodsV1,
+  createSuccessPostPaymentMethodsV2,
   // createSuccessGetPaymentMethodsV3,
   createSuccessGetWallets,
   createSuccessPostPaymentMethodsAuthV1,
@@ -141,6 +142,7 @@ jest.mock("../../utils/api/client", () => ({
   },
   apiPaymentEcommerceClientV2: {
     newTransaction: jest.fn(),
+    getAllPaymentMethods: jest.fn(),
   },
   apiPaymentEcommerceClientWithRetryV2: {
     calculateFees: jest.fn(),
@@ -183,7 +185,7 @@ jest.mock("../../utils/storage/sessionStorage", () => ({
     sessionPayment: "sessionPayment",
     transaction: "transaction",
     enableWallet: "enableWallet",
-    enablePaymentMethodsHandler: "true",
+    enablePaymentMethodsHandler: "enablePaymentMethodsHandler",
   },
 }));
 
@@ -507,6 +509,7 @@ describe("PaymentChoicePage guest", () => {
     // (localStorageMock.getItem as jest.Mock).mockReturnValue("true");
 
     (getSessionItem as jest.Mock).mockImplementation(mockGetSessionItemNoAuth);
+
     (
       apiWalletEcommerceClient.getCheckoutPaymentWalletsByIdUser as jest.Mock
     ).mockResolvedValue(
@@ -529,6 +532,17 @@ describe("PaymentChoicePage guest", () => {
       })
     );
 
+    (
+      apiPaymentEcommerceClientV2.getAllPaymentMethods as jest.Mock
+    ).mockReturnValue(
+      Promise.resolve({
+        right: {
+          status: 200,
+          value: createSuccessGetPaymentMethodsV1,
+        },
+      })
+    );
+
     (apiPaymentEcommerceClientV2.newTransaction as jest.Mock).mockReturnValue(
       Promise.resolve({
         right: {
@@ -537,6 +551,7 @@ describe("PaymentChoicePage guest", () => {
         },
       })
     );
+
     (
       apiPaymentEcommerceClientWithRetryV2.calculateFees as jest.Mock
     ).mockReturnValue(
@@ -574,21 +589,21 @@ describe("PaymentChoicePage guest", () => {
       // Query the input fields by their id
       fireEvent.click(
         screen.getByText(
-          createSuccessGetPaymentMethodsV1.paymentMethods![0].description
+          createSuccessPostPaymentMethodsV2.paymentMethods![0].description.it
         )
       );
     });
     expect(setSessionItem).toHaveBeenCalledWith(
       SessionItems.paymentMethodInfo,
       {
-        title: createSuccessGetPaymentMethodsV1.paymentMethods![0].description,
-        asset: createSuccessGetPaymentMethodsV1.paymentMethods![0].asset,
+        title: createSuccessPostPaymentMethodsV2.paymentMethods![0].description.it,
+        asset: createSuccessPostPaymentMethodsV2.paymentMethods![0].paymentMethodAsset,
       }
     );
     expect(setSessionItem).toHaveBeenCalledWith(SessionItems.paymentMethod, {
-      paymentMethodId: createSuccessGetPaymentMethodsV1.paymentMethods![0].id,
+      paymentMethodId: createSuccessPostPaymentMethodsV2.paymentMethods![0].id,
       paymentTypeCode:
-        createSuccessGetPaymentMethodsV1.paymentMethods![0].paymentTypeCode,
+        createSuccessPostPaymentMethodsV2.paymentMethods![0].paymentTypeCode,
     });
     expect(navigate).toHaveBeenCalledWith("/inserisci-carta");
   });
@@ -604,21 +619,21 @@ describe("PaymentChoicePage guest", () => {
       // Query the input fields by their id
       fireEvent.click(
         screen.getByText(
-          createSuccessGetPaymentMethodsV1.paymentMethods![1].description
+          createSuccessPostPaymentMethodsV2.paymentMethods![1].description.it
         )
       );
     });
     expect(setSessionItem).toHaveBeenCalledWith(
       SessionItems.paymentMethodInfo,
       {
-        title: createSuccessGetPaymentMethodsV1.paymentMethods![1].description,
-        asset: createSuccessGetPaymentMethodsV1.paymentMethods![1].asset,
+        title: createSuccessPostPaymentMethodsV2.paymentMethods![1].description.it,
+        asset: createSuccessPostPaymentMethodsV2.paymentMethods![1].paymentMethodAsset,
       }
     );
     expect(setSessionItem).toHaveBeenCalledWith(SessionItems.paymentMethod, {
-      paymentMethodId: createSuccessGetPaymentMethodsV1.paymentMethods![1].id,
+      paymentMethodId: createSuccessPostPaymentMethodsV2.paymentMethods![1].id,
       paymentTypeCode:
-        createSuccessGetPaymentMethodsV1.paymentMethods![1].paymentTypeCode,
+        createSuccessPostPaymentMethodsV2.paymentMethods![1].paymentTypeCode,
     });
     expect(navigate).toHaveBeenCalledWith("/riepilogo-pagamento");
   });
@@ -634,21 +649,21 @@ describe("PaymentChoicePage guest", () => {
       // Query the input fields by their id
       fireEvent.click(
         screen.getByText(
-          createSuccessGetPaymentMethodsV1.paymentMethods![1].description
+          createSuccessPostPaymentMethodsV2.paymentMethods![1].description.it
         )
       );
     });
     expect(setSessionItem).toHaveBeenCalledWith(
       SessionItems.paymentMethodInfo,
       {
-        title: createSuccessGetPaymentMethodsV1.paymentMethods![1].description,
-        asset: createSuccessGetPaymentMethodsV1.paymentMethods![1].asset,
+        title: createSuccessPostPaymentMethodsV2.paymentMethods![1].description.it,
+        asset: createSuccessPostPaymentMethodsV2.paymentMethods![1].paymentMethodAsset,
       }
     );
     expect(setSessionItem).toHaveBeenCalledWith(SessionItems.paymentMethod, {
-      paymentMethodId: createSuccessGetPaymentMethodsV1.paymentMethods![1].id,
+      paymentMethodId: createSuccessPostPaymentMethodsV2.paymentMethods![1].id,
       paymentTypeCode:
-        createSuccessGetPaymentMethodsV1.paymentMethods![1].paymentTypeCode,
+        createSuccessPostPaymentMethodsV2.paymentMethods![1].paymentTypeCode,
     });
     expect(navigate).toHaveBeenCalledWith("/lista-psp");
   });
@@ -670,13 +685,13 @@ describe("PaymentChoicePage guest", () => {
 
     expect(
       screen.getByText(
-        createSuccessGetPaymentMethodsV1.paymentMethods![0].description
+        createSuccessPostPaymentMethodsV2.paymentMethods![0].description.it
       )
     ).toBeInTheDocument();
 
     expect(
       screen.queryByText(
-        createSuccessGetPaymentMethodsV1.paymentMethods![1].description
+        createSuccessPostPaymentMethodsV2.paymentMethods![1].description.it
       )
     ).not.toBeInTheDocument();
   });
@@ -698,13 +713,13 @@ describe("PaymentChoicePage guest", () => {
 
     expect(
       screen.getByText(
-        createSuccessGetPaymentMethodsV1.paymentMethods![0].description
+        createSuccessPostPaymentMethodsV2.paymentMethods![0].description.it
       )
     ).toBeInTheDocument();
 
     expect(
       screen.queryByText(
-        createSuccessGetPaymentMethodsV1.paymentMethods![1].description
+        createSuccessPostPaymentMethodsV2.paymentMethods![1].description.it
       )
     ).not.toBeInTheDocument();
 
@@ -717,13 +732,13 @@ describe("PaymentChoicePage guest", () => {
 
     expect(
       screen.getByText(
-        createSuccessGetPaymentMethodsV1.paymentMethods![0].description
+        createSuccessPostPaymentMethodsV2.paymentMethods![0].description.it 
       )
     ).toBeInTheDocument();
 
     expect(
       screen.queryByText(
-        createSuccessGetPaymentMethodsV1.paymentMethods![1].description
+        createSuccessPostPaymentMethodsV2.paymentMethods![1].description.it
       )
     ).toBeInTheDocument();
   });
