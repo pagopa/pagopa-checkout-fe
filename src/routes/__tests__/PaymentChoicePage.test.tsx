@@ -596,8 +596,11 @@ describe("PaymentChoicePage guest", () => {
     expect(setSessionItem).toHaveBeenCalledWith(
       SessionItems.paymentMethodInfo,
       {
-        title: createSuccessPostPaymentMethodsV2.paymentMethods![0].description.it,
-        asset: createSuccessPostPaymentMethodsV2.paymentMethods![0].paymentMethodAsset,
+        title:
+          createSuccessPostPaymentMethodsV2.paymentMethods![0].description.it,
+        asset:
+          createSuccessPostPaymentMethodsV2.paymentMethods![0]
+            .paymentMethodAsset,
       }
     );
     expect(setSessionItem).toHaveBeenCalledWith(SessionItems.paymentMethod, {
@@ -626,8 +629,11 @@ describe("PaymentChoicePage guest", () => {
     expect(setSessionItem).toHaveBeenCalledWith(
       SessionItems.paymentMethodInfo,
       {
-        title: createSuccessPostPaymentMethodsV2.paymentMethods![1].description.it,
-        asset: createSuccessPostPaymentMethodsV2.paymentMethods![1].paymentMethodAsset,
+        title:
+          createSuccessPostPaymentMethodsV2.paymentMethods![1].description.it,
+        asset:
+          createSuccessPostPaymentMethodsV2.paymentMethods![1]
+            .paymentMethodAsset,
       }
     );
     expect(setSessionItem).toHaveBeenCalledWith(SessionItems.paymentMethod, {
@@ -656,8 +662,11 @@ describe("PaymentChoicePage guest", () => {
     expect(setSessionItem).toHaveBeenCalledWith(
       SessionItems.paymentMethodInfo,
       {
-        title: createSuccessPostPaymentMethodsV2.paymentMethods![1].description.it,
-        asset: createSuccessPostPaymentMethodsV2.paymentMethods![1].paymentMethodAsset,
+        title:
+          createSuccessPostPaymentMethodsV2.paymentMethods![1].description.it,
+        asset:
+          createSuccessPostPaymentMethodsV2.paymentMethods![1]
+            .paymentMethodAsset,
       }
     );
     expect(setSessionItem).toHaveBeenCalledWith(SessionItems.paymentMethod, {
@@ -732,7 +741,7 @@ describe("PaymentChoicePage guest", () => {
 
     expect(
       screen.getByText(
-        createSuccessPostPaymentMethodsV2.paymentMethods![0].description.it 
+        createSuccessPostPaymentMethodsV2.paymentMethods![0].description.it
       )
     ).toBeInTheDocument();
 
@@ -1190,7 +1199,6 @@ describe("PaymentChoicePage authenticated", () => {
         },
       })
     ); */
-
 
     (
       apiPaymentEcommerceAuthClientV1.getAllPaymentMethodsAuth as jest.Mock

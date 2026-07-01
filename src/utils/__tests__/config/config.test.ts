@@ -52,7 +52,9 @@ describe("Config Module", () => {
     expect(config.CHECKOUT_PM_API_BASEPATH).toBe("/api");
     expect(config.CHECKOUT_API_ECOMMERCE_BASEPATH).toBe("/ecommerce");
     expect(config.CHECKOUT_API_ECOMMERCE_BASEPATH_V2).toBe("/ecommerce/v2");
-    expect(config.CHECKOUT_API_ECOMMERCE_BASEPATH_AUTH_V1).toBe("/ecommerce/checkout/auth/v1");  
+    expect(config.CHECKOUT_API_ECOMMERCE_BASEPATH_AUTH_V1).toBe(
+      "/ecommerce/checkout/auth/v1"
+    );
     expect(config.CHECKOUT_API_FEATURE_FLAGS_BASEPATH).toBe("/features");
     expect(config.CHECKOUT_API_TIMEOUT).toBe(5000);
     expect(config.CHECKOUT_ENV).toBe("test");
