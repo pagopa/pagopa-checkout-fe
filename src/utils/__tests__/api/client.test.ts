@@ -31,6 +31,7 @@ describe("API Clients", () => {
     apiPaymentEcommerceClient,
     apiPaymentEcommerceClientV2,
     apiPaymentEcommerceAuthClientV1,
+    apiPaymentEcommerceAuthClientWithRetryV1,
     apiCheckoutFeatureFlags,
     apiPaymentEcommerceClientWithRetry,
     apiPaymentEcommerceClientWithRetryV2,
@@ -49,6 +50,10 @@ describe("API Clients", () => {
 
   it("should create apiPaymentEcommerceAuthClientV1 with correct configuration", () => {
     expect(apiPaymentEcommerceAuthClientV1).toBeDefined();
+  });
+
+  it("should create apiPaymentEcommerceAuthClientWithRetryV1 with correct configuration", () => {
+    expect(apiPaymentEcommerceAuthClientWithRetryV1).toBeDefined();
   });
 
   it("should create apiCheckoutFeatureFlags with correct configuration", () => {
