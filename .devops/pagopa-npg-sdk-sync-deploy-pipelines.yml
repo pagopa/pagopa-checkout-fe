@@ -1,6 +1,9 @@
 # Azure DevOps pipeline to sync NPG SDK from Nexi to checkout CDN storage.
-# Runs hourly: downloads the SDK, computes SHA-384 integrity hash,
-# and uploads both to $web/npg/sdk/ on each environment's storage account.
+# Runs hourly: downloads the SDK, computes its SHA-384 hash, and verifies it
+# against NPG's source-of-truth hash (fetched from the payment-methods-handler
+# integrity endpoint via APIM). Only on a match are the SDK and its integrity
+# JSON published to $web/npg/sdk/ on each environment's storage account; on a
+# mismatch the pipeline fails and the last-known-good stays served.
 
 trigger: none
 pr: none
@@ -26,6 +29,7 @@ stages:
           - template: azure-templates/sync-npg-sdk-steps.yml
             parameters:
               npg_origin: 'https://stg-ta.nexigroup.com'
+              integrity_endpoint: 'https://api.dev.platform.pagopa.it/checkout/npg/sdk/v1/integrity'
               storage_account: 'pagopadweucheckoutcdnsa'
               cdn_rg: 'pagopa-d-checkout-fe-rg'
               cdn_profile: 'pagopa-d-weu-checkout-cdn-profile'

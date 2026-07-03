@@ -1,6 +1,8 @@
 parameters:
   - name: npg_origin
     type: string
+  - name: integrity_endpoint
+    type: string
   - name: storage_account
     type: string
   - name: cdn_rg
@@ -34,15 +36,36 @@ steps:
         fi
 
         FILE_SIZE=$(stat -c%s /tmp/hfsdk.js)
-        if [ "${FILE_SIZE}" -lt 1024 ]; then
-          echo "##vso[task.logissue type=error]SDK file suspiciously small (${FILE_SIZE} bytes)"
-          exit 1
-        fi
         echo "SDK downloaded: ${FILE_SIZE} bytes"
 
         HASH=$(openssl dgst -sha384 -binary /tmp/hfsdk.js | openssl base64 -A)
         INTEGRITY="sha384-${HASH}"
         echo "Computed integrity: ${INTEGRITY}"
+
+        # Origin validation: compare the computed hash against NPG's own published hash,
+        # fetched from the payment-methods-handler integrity endpoint (exposed on APIM in
+        # the ecommerce-for-checkout group). The pipeline holds no NPG credential; the
+        # handler owns the npg-api-key and proxies NPG /build/integrity.
+        echo "Fetching source-of-truth integrity from ${{ parameters.integrity_endpoint }}"
+        SOT_CODE=$(curl -sSL -w "%{http_code}" -o /tmp/sot.json "${{ parameters.integrity_endpoint }}")
+        if [ "${SOT_CODE}" != "200" ]; then
+          echo "##vso[task.logissue type=error]Integrity endpoint call failed with HTTP ${SOT_CODE}"
+          exit 1
+        fi
+
+        SOT_INTEGRITY=$(jq -r '.integrityHash // .integrity // empty' /tmp/sot.json)
+        if [ -z "${SOT_INTEGRITY}" ]; then
+          echo "##vso[task.logissue type=error]Integrity endpoint returned no hash"
+          exit 1
+        fi
+        echo "Source-of-truth integrity: ${SOT_INTEGRITY}"
+
+        # Normalize the optional sha384- prefix on both sides before comparing.
+        if [ "${INTEGRITY#sha384-}" != "${SOT_INTEGRITY#sha384-}" ]; then
+          echo "##vso[task.logissue type=error]Integrity mismatch: computed ${INTEGRITY} vs source-of-truth ${SOT_INTEGRITY}. Not publishing; keeping last-known-good."
+          exit 1
+        fi
+        echo "Integrity verified against NPG source of truth"
 
         echo "{\"integrityHash\":\"${INTEGRITY}\"}" > /tmp/hfsdk.integrity.json
 
