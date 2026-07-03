@@ -19,6 +19,7 @@ const ecommerceBasepath = "/ecommerce/checkout/v1";
 const ecommerceBasepathV2 = "/ecommerce/checkout/v2";
 const ecommerceBasepathV3 = "/ecommerce/checkout/v3";
 const ecommerceBasepathV4 = "/ecommerce/checkout/v4";
+const ecommerceAuthBasepathV1 = "/ecommerce/checkout/auth/v1";
 const checkoutFeatureFlag = "/checkout/feature-flags/v1";
 const checkoutBasePathWallet = "/checkout/payment-wallet/v1"
 
@@ -36,6 +37,10 @@ module.exports = function (app) {
     }));
 
     app.use(createProxyMiddleware(ecommerceBasepathV3, {
+        target: apiHost,
+    }));
+
+    app.use(createProxyMiddleware(ecommerceAuthBasepathV1, {
         target: apiHost,
     }));
 
