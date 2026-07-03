@@ -3,6 +3,7 @@ describe("API Clients", () => {
     CHECKOUT_PAGOPA_APIM_HOST: "https://mock-host",
     CHECKOUT_API_ECOMMERCE_BASEPATH: "/v1",
     CHECKOUT_API_ECOMMERCE_BASEPATH_V2: "/v2",
+    CHECKOUT_API_ECOMMERCE_BASEPATH_AUTH_V1: "/auth/v1",
     CHECKOUT_API_FEATURE_FLAGS_BASEPATH: "/feature-flags",
     CHECKOUT_API_AUTH_SERVICE_BASEPATH_V1: "/auth-service",
     CHECKOUT_API_WALLET_BASEPATH_V1: "/v1",
@@ -29,6 +30,7 @@ describe("API Clients", () => {
   const {
     apiPaymentEcommerceClient,
     apiPaymentEcommerceClientV2,
+    apiPaymentEcommerceAuthClientV1,
     apiCheckoutFeatureFlags,
     apiPaymentEcommerceClientWithRetry,
     apiPaymentEcommerceClientWithRetryV2,
@@ -43,6 +45,10 @@ describe("API Clients", () => {
 
   it("should create apiPaymentEcommerceClientV2 with correct configuration", () => {
     expect(apiPaymentEcommerceClientV2).toBeDefined();
+  });
+
+  it("should create apiPaymentEcommerceAuthClientV1 with correct configuration", () => {
+    expect(apiPaymentEcommerceAuthClientV1).toBeDefined();
   });
 
   it("should create apiCheckoutFeatureFlags with correct configuration", () => {
