@@ -40,7 +40,7 @@ steps:
 
         HASH=$(openssl dgst -sha384 -binary /tmp/hfsdk.js | openssl base64 -A)
         INTEGRITY="sha384-${HASH}"
-        echo "Computed integrity: ${INTEGRITY}"
+        echo "Computed integrity: ${INTEGRITY:0:20}..."
 
         # Origin validation: compare the computed hash against NPG's own published hash,
         # fetched from the payment-methods-handler integrity endpoint (exposed on APIM in
@@ -58,7 +58,7 @@ steps:
           echo "##vso[task.logissue type=error]Integrity endpoint returned no hash"
           exit 1
         fi
-        echo "Source-of-truth integrity: ${SOT_INTEGRITY}"
+        echo "Source-of-truth integrity: ${SOT_INTEGRITY:0:20}..."
 
         # Normalize the optional sha384- prefix on both sides before comparing.
         if [ "${INTEGRITY#sha384-}" != "${SOT_INTEGRITY#sha384-}" ]; then
@@ -69,7 +69,7 @@ steps:
 
         echo "{\"integrityHash\":\"${INTEGRITY}\"}" > /tmp/hfsdk.integrity.json
 
-        echo "Uploading SDK to ${{ parameters.storage_account }}/npg/sdk/hfsdk.js"
+        echo "Uploading SDK to checkout CDN storage (npg/sdk/hfsdk.js)"
         az storage blob upload \
           --account-name "${{ parameters.storage_account }}" \
           --container-name '$web' \
@@ -78,7 +78,7 @@ steps:
           --content-type "application/javascript" \
           --overwrite
 
-        echo "Uploading integrity JSON to ${{ parameters.storage_account }}/npg/sdk/hfsdk.integrity.json"
+        echo "Uploading integrity JSON to checkout CDN storage (npg/sdk/hfsdk.integrity.json)"
         az storage blob upload \
           --account-name "${{ parameters.storage_account }}" \
           --container-name '$web' \
