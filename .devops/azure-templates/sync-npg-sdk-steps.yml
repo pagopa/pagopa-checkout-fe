@@ -40,7 +40,7 @@ steps:
 
         HASH=$(openssl dgst -sha384 -binary /tmp/hfsdk.js | openssl base64 -A)
         INTEGRITY="sha384-${HASH}"
-        echo "Computed integrity: ${INTEGRITY:0:20}..."
+        echo "Computed integrity: ${INTEGRITY}"
 
         # Origin validation: compare the computed hash against NPG's own published hash,
         # fetched from the payment-methods-handler integrity endpoint (exposed on APIM in
@@ -58,7 +58,7 @@ steps:
           echo "##vso[task.logissue type=error]Integrity endpoint returned no hash"
           exit 1
         fi
-        echo "Source-of-truth integrity: ${SOT_INTEGRITY:0:20}..."
+        echo "Source-of-truth integrity: ${SOT_INTEGRITY}"
 
         # Normalize the optional sha384- prefix on both sides before comparing.
         if [ "${INTEGRITY#sha384-}" != "${SOT_INTEGRITY#sha384-}" ]; then
