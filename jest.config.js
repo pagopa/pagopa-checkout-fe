@@ -56,6 +56,6 @@ module.exports = {
     "<rootDir>/src/utils/testing",
     "index.ts",
   ],
-
+  coverageProvider: 'babel',
   coverageDirectory: "<rootDir>/coverage/",
 };

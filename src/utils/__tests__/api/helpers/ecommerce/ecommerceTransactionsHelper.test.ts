@@ -152,7 +152,7 @@ describe("Ecommerce transactions helper - activatePayment tests", () => {
     });
   });
 
-  it("Should call onResponseActivate when api return correct value on v3 api", async () => {
+  it("Should call onResponseActivate when api return correct value on auth v1 api", async () => {
     mockSetSessionForActivatePayment(true);
     (getRptIdsFromSession as jest.Mock).mockReturnValueOnce("rptIds");
     (
@@ -187,7 +187,7 @@ describe("Ecommerce transactions helper - activatePayment tests", () => {
     });
   });
 
-  it("Should call onError with ErrorsType.GENERIC_ERROR when api fail on v3 api", async () => {
+  it("Should call onError with ErrorsType.GENERIC_ERROR when api fail on auth v1 api", async () => {
     mockSetSessionForActivatePayment(true);
     (
       apiPaymentEcommerceAuthClientV1.newTransactionAuth as jest.Mock
@@ -205,7 +205,7 @@ describe("Ecommerce transactions helper - activatePayment tests", () => {
     });
   });
 
-  it("Should call onError with ErrorsType.GENERIC_ERROR when api return 5xx on v3 api", async () => {
+  it("Should call onError with ErrorsType.GENERIC_ERROR when api return 5xx on auth v1 api", async () => {
     mockSetSessionForActivatePayment(true);
     (
       apiPaymentEcommerceAuthClientV1.newTransactionAuth as jest.Mock
@@ -229,7 +229,7 @@ describe("Ecommerce transactions helper - activatePayment tests", () => {
     });
   });
 
-  it("Should call onError with ErrorsType.UNAUTHORIZED when api return 401 on v3 api", async () => {
+  it("Should call onError with ErrorsType.UNAUTHORIZED when api return 401 on auth v1 api", async () => {
     mockSetSessionForActivatePayment(true);
     (
       apiPaymentEcommerceAuthClientV1.newTransactionAuth as jest.Mock
