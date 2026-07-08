@@ -161,7 +161,8 @@ stages:
 
         - script: |
             yarn generate
-            yarn test:coverage --watchAll=false
+            export NODE_OPTIONS="--max-old-space-size=4096"
+            yarn test:coverage --watchAll=false --runInBand
           displayName: 'Unit tests execution'
 
         - script: yarn lint

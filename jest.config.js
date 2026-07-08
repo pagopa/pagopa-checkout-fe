@@ -1,8 +1,6 @@
 module.exports = {
   preset: "ts-jest",
   testEnvironment: "jsdom",
-  maxWorkers: process.env.CI ? "50%" : "100%",
-  workerIdleMemoryLimit: process.env.CI ? "512MB" : undefined,
 
   testPathIgnorePatterns: [
     "dist",
