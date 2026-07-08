@@ -160,34 +160,9 @@ stages:
               sonar.cpd.exclusions=src/**/__tests__/**,src/**/__test__/**,__mocks__/**,/src/utils/testing/**,src/__integration_tests__/**,
 
         - script: |
-            echo "Agent machine diagnostics"
-            uname -a
-            echo "CPU cores:"
-            nproc
-            echo "Memory summary:"
-            free -h
-            echo "Meminfo key values:"
-            grep -E 'MemTotal|MemAvailable|SwapTotal|SwapFree' /proc/meminfo
-            echo "Disk summary:"
-            df -h
-            echo "Node version:"
-            node -v
-            echo "CI env: $CI"
-            echo "NODE_OPTIONS before export: $NODE_OPTIONS"
-            node -e "console.log('Node heap limit MB (before export):', Math.round(require('v8').getHeapStatistics().heap_size_limit / 1024 / 1024));"
-            export NODE_OPTIONS="--max-old-space-size=6144"
-            echo "NODE_OPTIONS after export: $NODE_OPTIONS"
-            node -e "console.log('Node heap limit MB (after export):', Math.round(require('v8').getHeapStatistics().heap_size_limit / 1024 / 1024));"
-          displayName: 'Diagnostics: CI resources and Node heap'
-
-        - script: |
             yarn generate
-            node -e "console.log('Node heap limit MB in Unit tests execution step:', Math.round(require('v8').getHeapStatistics().heap_size_limit / 1024 / 1024));"
             yarn test:coverage --watchAll=false --runInBand
           displayName: 'Unit tests execution'
-          env:
-            CI: 'true'
-            NODE_OPTIONS: '--max-old-space-size=6144'
 
         - script: yarn lint
           displayName: 'Lint execution'

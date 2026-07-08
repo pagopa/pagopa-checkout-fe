@@ -38,7 +38,6 @@ module.exports = {
   collectCoverageFrom: [
     "src/**/*.ts",
     "src/**/*.tsx",
-    "!<rootDir>/src/**/*.d.ts",
     "!<rootDir>/src/index.ts",
     "!<rootDir>/src/instrumentation.ts",
     "!<rootDir>/src/__tests__/**/*",
@@ -57,6 +56,6 @@ module.exports = {
     "<rootDir>/src/utils/testing",
     "index.ts",
   ],
-  coverageProvider: "v8",
+
   coverageDirectory: "<rootDir>/coverage/",
 };
