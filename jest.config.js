@@ -38,6 +38,7 @@ module.exports = {
   collectCoverageFrom: [
     "src/**/*.ts",
     "src/**/*.tsx",
+    "!<rootDir>/src/**/*.d.ts",
     "!<rootDir>/src/index.ts",
     "!<rootDir>/src/instrumentation.ts",
     "!<rootDir>/src/__tests__/**/*",

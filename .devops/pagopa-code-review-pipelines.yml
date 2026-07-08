@@ -175,16 +175,18 @@ stages:
             echo "CI env: $CI"
             echo "NODE_OPTIONS before export: $NODE_OPTIONS"
             node -e "console.log('Node heap limit MB (before export):', Math.round(require('v8').getHeapStatistics().heap_size_limit / 1024 / 1024));"
-            export NODE_OPTIONS="--max-old-space-size=4096"
+            export NODE_OPTIONS="--max-old-space-size=5120"
             echo "NODE_OPTIONS after export: $NODE_OPTIONS"
             node -e "console.log('Node heap limit MB (after export):', Math.round(require('v8').getHeapStatistics().heap_size_limit / 1024 / 1024));"
           displayName: 'Diagnostics: CI resources and Node heap'
 
         - script: |
             yarn generate
-            export NODE_OPTIONS="--max-old-space-size=4096"
             yarn test:coverage --watchAll=false --runInBand
           displayName: 'Unit tests execution'
+          env:
+            CI: 'true'
+            NODE_OPTIONS: '--max-old-space-size=5120'
 
         - script: yarn lint
           displayName: 'Lint execution'
