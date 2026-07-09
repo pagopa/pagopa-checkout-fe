@@ -120,8 +120,6 @@ steps:
       CHECKOUT_DONATIONS_URL=${{ parameters.donations_url }} \
       CHECKOUT_API_ECOMMERCE_BASEPATH=${{ parameters.api_ecommerce_basepath }} \
       CHECKOUT_API_ECOMMERCE_BASEPATH_V2=${{ parameters.api_ecommerce_basepath_v2 }} \
-      CHECKOUT_API_ECOMMERCE_BASEPATH_V3=${{ parameters.api_ecommerce_basepath_v3 }} \
-      CHECKOUT_API_ECOMMERCE_BASEPATH_V4=${{ parameters.api_ecommerce_basepath_v4 }} \
       CHECKOUT_API_ECOMMERCE_BASEPATH_AUTH_V1=${{ parameters.api_ecommerce_basepath_auth_v1 }} \
       CHECKOUT_API_FEATURE_FLAGS_BASEPATH=${{ parameters.checkout_feature_flags_basepath }} \
       CHECKOUT_PAGOPA_ASSETS_CDN=${{ parameters.pagopa_assets_cdn }} \
