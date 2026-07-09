@@ -25,6 +25,7 @@ jest.mock("../../../../../utils/config/config", () => ({
     CHECKOUT_PM_API_BASEPATH: "/api",
     CHECKOUT_API_ECOMMERCE_BASEPATH: "/ecommerce",
     CHECKOUT_API_ECOMMERCE_BASEPATH_V2: "/ecommerce/v2",
+    CHECKOUT_API_ECOMMERCE_BASEPATH_AUTH_V1: "/ecommerce/checkout/auth/v1",
     CHECKOUT_API_FEATURE_FLAGS_BASEPATH: "/feature-flags",
     CHECKOUT_API_TIMEOUT: 10000,
     CHECKOUT_ENV: "test",

@@ -59,7 +59,6 @@ import {
   calculateFeeResponse,
   createSuccessGetPaymentMethodsV1,
   createSuccessPostPaymentMethodsV2,
-  // createSuccessGetPaymentMethodsV3,
   createSuccessGetWallets,
   createSuccessPostPaymentMethodsAuthV1,
   paymentInfo,
