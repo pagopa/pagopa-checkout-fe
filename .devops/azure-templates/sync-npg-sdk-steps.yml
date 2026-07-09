@@ -101,7 +101,7 @@ steps:
           --content-paths "/npg/sdk/*"
 
         # Success heartbeat: emit a NpgSdkSyncSuccess customEvent to App Insights.
-        # No heartbeat in the last 2h => the sync has stopped or is
+        # No heartbeat in the last 3h => the sync has stopped or is
         # failing => the served SDK/hash may be stale. Reached only after a full
         # successful run. Best-effort: a telemetry hiccup must never fail an otherwise-good publish.
         echo "Emitting sync-success heartbeat to App Insights"
