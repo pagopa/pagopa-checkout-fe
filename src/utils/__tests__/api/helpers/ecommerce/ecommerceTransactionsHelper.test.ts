@@ -154,7 +154,7 @@ describe("Ecommerce transactions helper - activatePayment tests", () => {
 
   it("Should call onResponseActivate when api return correct value on auth v1 api", async () => {
     mockSetSessionForActivatePayment(true);
-    (getRptIdsFromSession as jest.Mock).mockReturnValueOnce("rptIds");
+    (getRptIdsFromSession as jest.Mock).mockReturnValue("rptIds");
     (
       apiPaymentEcommerceAuthClientV1.newTransactionAuth as jest.Mock
     ).mockReturnValue(

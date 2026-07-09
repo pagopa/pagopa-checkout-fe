@@ -647,7 +647,7 @@ describe("Ecommerce payment methods helper - npgSessionsFields tests", () => {
     expect(mockOnResponse).toHaveBeenCalledWith(postSessionResponseMock);
   });
 
-  it("Should call onResponse when api return correct value on v3 api", async () => {
+  it("Should call onResponse when api return correct value on auth v1 api", async () => {
     (getSessionItem as jest.Mock).mockReturnValue("authToken");
     (
       apiPaymentEcommerceAuthClientWithRetryV1.createSessionAuth as jest.Mock
@@ -663,7 +663,7 @@ describe("Ecommerce payment methods helper - npgSessionsFields tests", () => {
     expect(mockOnResponse).toHaveBeenCalledWith(postSessionResponseMock);
   });
 
-  it("Should call onError with ErrorsType.UNAUTHORIZED when api return 401 on v3 api", async () => {
+  it("Should call onError with ErrorsType.UNAUTHORIZED when api return 401 on auth v1 api", async () => {
     (getSessionItem as jest.Mock).mockReturnValue("authToken");
     (
       apiPaymentEcommerceAuthClientWithRetryV1.createSessionAuth as jest.Mock

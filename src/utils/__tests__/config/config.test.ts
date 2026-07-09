@@ -6,8 +6,6 @@ Object.defineProperty(global, "window", {
       CHECKOUT_PM_API_BASEPATH: "/api",
       CHECKOUT_API_ECOMMERCE_BASEPATH: "/ecommerce",
       CHECKOUT_API_ECOMMERCE_BASEPATH_V2: "/ecommerce/v2",
-      CHECKOUT_API_ECOMMERCE_BASEPATH_V3: "/ecommerce/v3",
-      CHECKOUT_API_ECOMMERCE_BASEPATH_V4: "/ecommerce/v4",
       CHECKOUT_API_ECOMMERCE_BASEPATH_AUTH_V1: "/ecommerce/checkout/auth/v1",
       CHECKOUT_API_FEATURE_FLAGS_BASEPATH: "/features",
       CHECKOUT_API_TIMEOUT: "5000",

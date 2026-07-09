@@ -108,7 +108,7 @@ describe("Ecommerce payment requests helper - getEcommercePaymentInfoTask tests"
     );
   });
 
-  it("Should return paymentInfo when api return correct value on v3 api", async () => {
+  it("Should return paymentInfo when api return correct value on auth v1 api", async () => {
     (getSessionItem as jest.Mock).mockReturnValue("authToken");
     (
       apiPaymentEcommerceAuthClientV1.getPaymentRequestInfoAuth as jest.Mock
@@ -129,7 +129,7 @@ describe("Ecommerce payment requests helper - getEcommercePaymentInfoTask tests"
     expect(result).toEqual(E.right(getPaymentRequestInfoResponseMock));
   });
 
-  it("Should return error when api fail on v3 api", async () => {
+  it("Should return error when api fail on auth v1 api", async () => {
     (getSessionItem as jest.Mock).mockReturnValue("authToken");
     (
       apiPaymentEcommerceAuthClientV1.getPaymentRequestInfoAuth as jest.Mock
@@ -147,7 +147,7 @@ describe("Ecommerce payment requests helper - getEcommercePaymentInfoTask tests"
     );
   });
 
-  it("Should return ErrorsType.GENERIC_ERROR when api return 5xx on v3 api", async () => {
+  it("Should return ErrorsType.GENERIC_ERROR when api return 5xx on auth v1 api", async () => {
     (getSessionItem as jest.Mock).mockReturnValue("authToken");
     (
       apiPaymentEcommerceAuthClientV1.getPaymentRequestInfoAuth as jest.Mock
@@ -175,7 +175,7 @@ describe("Ecommerce payment requests helper - getEcommercePaymentInfoTask tests"
     );
   });
 
-  it("Should return SESSION_EXPIRED when api return 401 on v3 api", async () => {
+  it("Should return SESSION_EXPIRED when api return 401 on auth v1 api", async () => {
     (getSessionItem as jest.Mock).mockReturnValue("authToken");
     (
       apiPaymentEcommerceAuthClientV1.getPaymentRequestInfoAuth as jest.Mock
