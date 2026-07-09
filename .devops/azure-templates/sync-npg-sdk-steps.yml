@@ -13,6 +13,10 @@ parameters:
     type: string
   - name: service_connection
     type: string
+  - name: app_insights_name
+    type: string
+  - name: app_insights_rg
+    type: string
 
 steps:
   - checkout: none
@@ -95,5 +99,27 @@ steps:
           --endpoint-name "${{ parameters.cdn_endpoint }}" \
           --profile-name "${{ parameters.cdn_profile }}" \
           --content-paths "/npg/sdk/*"
+
+        # Success heartbeat: emit a NpgSdkSyncSuccess customEvent to App Insights.
+        # No heartbeat in the last 2h => the sync has stopped or is
+        # failing => the served SDK/hash may be stale. Reached only after a full
+        # successful run. Best-effort: a telemetry hiccup must never fail an otherwise-good publish.
+        echo "Emitting sync-success heartbeat to App Insights"
+        AI_CONN=$(az monitor app-insights component show \
+          --app "${{ parameters.app_insights_name }}" \
+          -g "${{ parameters.app_insights_rg }}" \
+          --query connectionString -o tsv 2>/dev/null || true)
+        if [ -n "${AI_CONN}" ]; then
+          IKEY=$(printf '%s' "${AI_CONN}" | sed -n 's/.*InstrumentationKey=\([^;]*\).*/\1/p')
+          INGEST=$(printf '%s' "${AI_CONN}" | sed -n 's/.*IngestionEndpoint=\([^;]*\).*/\1/p')
+          HEARTBEAT_TIME=$(date -u +%Y-%m-%dT%H:%M:%S.000Z)
+          curl -sS -X POST "${INGEST}v2/track" \
+            -H 'Content-Type: application/json' \
+            -d "{\"name\":\"Microsoft.ApplicationInsights.Event\",\"time\":\"${HEARTBEAT_TIME}\",\"iKey\":\"${IKEY}\",\"data\":{\"baseType\":\"EventData\",\"baseData\":{\"ver\":2,\"name\":\"NpgSdkSyncSuccess\",\"properties\":{\"integrity\":\"${INTEGRITY}\"}}}}" \
+            >/dev/null && echo "Heartbeat emitted" \
+            || echo "##vso[task.logissue type=warning]Heartbeat emit failed (sync itself succeeded)"
+        else
+          echo "##vso[task.logissue type=warning]Could not resolve App Insights connection string; heartbeat skipped (sync itself succeeded)"
+        fi
 
         echo "Sync complete"

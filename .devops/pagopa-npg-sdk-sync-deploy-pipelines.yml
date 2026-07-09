@@ -35,3 +35,5 @@ stages:
               cdn_profile: 'pagopa-d-weu-checkout-cdn-profile'
               cdn_endpoint: 'pagopa-d-weu-checkout-cdn-endpoint'
               service_connection: 'DEV-PAGOPA-SERVICE-CONN'
+              app_insights_name: 'pagopa-d-appinsights'
+              app_insights_rg: 'pagopa-d-monitor-rg'
