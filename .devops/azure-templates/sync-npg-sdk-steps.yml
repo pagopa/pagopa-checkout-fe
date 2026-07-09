@@ -105,6 +105,9 @@ steps:
         # failing => the served SDK/hash may be stale. Reached only after a full
         # successful run. Best-effort: a telemetry hiccup must never fail an otherwise-good publish.
         echo "Emitting sync-success heartbeat to App Insights"
+        # disable xtrace so the App Insights connection string / instrumentation
+        # key are never echoed to the log
+        set +x
         AI_CONN=$(az monitor app-insights component show \
           --app "${{ parameters.app_insights_name }}" \
           -g "${{ parameters.app_insights_rg }}" \
@@ -113,11 +116,14 @@ steps:
           IKEY=$(printf '%s' "${AI_CONN}" | sed -n 's/.*InstrumentationKey=\([^;]*\).*/\1/p')
           INGEST=$(printf '%s' "${AI_CONN}" | sed -n 's/.*IngestionEndpoint=\([^;]*\).*/\1/p')
           HEARTBEAT_TIME=$(date -u +%Y-%m-%dT%H:%M:%S.000Z)
-          curl -sS -X POST "${INGEST}v2/track" \
-            -H 'Content-Type: application/json' \
-            -d "{\"name\":\"Microsoft.ApplicationInsights.Event\",\"time\":\"${HEARTBEAT_TIME}\",\"iKey\":\"${IKEY}\",\"data\":{\"baseType\":\"EventData\",\"baseData\":{\"ver\":2,\"name\":\"NpgSdkSyncSuccess\",\"properties\":{\"integrity\":\"${INTEGRITY}\"}}}}" \
-            >/dev/null && echo "Heartbeat emitted" \
+          # build the payload in a temp file so the instrumentation key never lands in the
+          # process arguments (argv)
+          printf '{"name":"Microsoft.ApplicationInsights.Event","time":"%s","iKey":"%s","data":{"baseType":"EventData","baseData":{"ver":2,"name":"NpgSdkSyncSuccess","properties":{"integrity":"%s"}}}}' \
+            "${HEARTBEAT_TIME}" "${IKEY}" "${INTEGRITY}" > /tmp/hb.json
+          curl -sS -X POST "${INGEST}v2/track" -H 'Content-Type: application/json' -d @/tmp/hb.json >/dev/null \
+            && echo "Heartbeat emitted" \
             || echo "##vso[task.logissue type=warning]Heartbeat emit failed (sync itself succeeded)"
+          rm -f /tmp/hb.json
         else
           echo "##vso[task.logissue type=warning]Could not resolve App Insights connection string; heartbeat skipped (sync itself succeeded)"
         fi
