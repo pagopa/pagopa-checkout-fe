@@ -20,7 +20,7 @@ import { ErrorsType } from "../../../../utils/errors/checkErrorsModel";
 import {
   apiPaymentEcommerceClient,
   apiPaymentEcommerceClientV2,
-  apiPaymentEcommerceClientV3,
+  apiPaymentEcommerceAuthClientV1,
   apiPaymentEcommerceClientWithRetry,
 } from "../../../../utils/api/client";
 import { NewTransactionResponse } from "../../../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
@@ -162,7 +162,7 @@ const activePaymentTask = (
                 SessionItems.loginOriginPage,
                 `${location.pathname}${location.search}`
               );
-              return apiPaymentEcommerceClientV3.newTransactionV3({
+              return apiPaymentEcommerceAuthClientV1.newTransactionAuth({
                 "x-rpt-ids": getRptIdsFromSession(),
                 bearerAuth, // add auth token
                 ...payload,

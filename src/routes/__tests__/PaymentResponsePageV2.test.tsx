@@ -14,7 +14,7 @@ import { getConfigOrThrow } from "../../utils/config/config";
 import * as reduxHooks from "../../redux/hooks/hooks";
 import { removeLoggedUser } from "../../redux/slices/loggedUser";
 import { resetThreshold } from "../../redux/slices/threshold";
-import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce-v3/NewTransactionResponse";
+import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce-auth-v1/NewTransactionResponse";
 import { mixpanel } from "../../utils/mixpanel/mixpanelHelperInit";
 import {
   eventViewOutcomeMap,

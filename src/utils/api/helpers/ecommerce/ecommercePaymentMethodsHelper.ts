@@ -4,15 +4,13 @@ import { pipe } from "fp-ts/lib/function";
 import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
 import featureFlags from "../../../../utils/featureFlags";
-import { getEnumFromString } from "../../../../utils/enum/enumerationUtils";
 import {
   apiPaymentEcommerceClient,
   apiPaymentEcommerceClientV2,
-  apiPaymentEcommerceClientV3,
-  apiPaymentEcommerceClientV4,
+  apiPaymentEcommerceAuthClientV1,
   apiPaymentEcommerceClientWithRetry,
   apiPaymentEcommerceClientWithRetryV2,
-  apiPaymentEcommerceClientWithRetryV3,
+  apiPaymentEcommerceAuthClientWithRetryV1,
 } from "../../../../utils/api/client";
 import { ErrorsType } from "../../../../utils/errors/checkErrorsModel";
 import {
@@ -44,9 +42,8 @@ import {
   SortByEnum,
   SortOrderEnum,
 } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodsRequest";
-import { PaymentMethodsRequest as PaymentMethodsRequestV4 } from "../../../../../generated/definitions/payment-ecommerce-v4/PaymentMethodsRequest";
+import { PaymentMethodsRequest as PaymentMethodsRequestAuthV1 } from "../../../../../generated/definitions/payment-ecommerce-auth-v1/PaymentMethodsRequest";
 import { PaymentNoticeItem } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentNoticeItem";
-import { MethodManagementEnum } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 import { evaluateFeatureFlag } from "../checkoutFeatureFlagsHelper";
 import { getUserDevice } from "../../../device/deviceDetection";
 import { getLanguage } from "../../../../utils/paymentMethods/paymentMethodsHelper";
@@ -258,82 +255,6 @@ export const calculateFees = async ({
   )();
 };
 
-const getPaymentMethods = async (
-  query: {
-    amount: number;
-  },
-  onError: (e: string) => void
-) =>
-  pipe(
-    TE.tryCatch(
-      () =>
-        pipe(
-          getSessionItem(SessionItems.authToken) as string,
-          O.fromNullable,
-          O.fold(
-            () => apiPaymentEcommerceClient.getAllPaymentMethods(query),
-            (bearerAuth) =>
-              apiPaymentEcommerceClientV3.getAllPaymentMethodsV3({
-                "x-rpt-ids": getRptIdsFromSession(),
-                bearerAuth,
-                ...query,
-              })
-          )
-        ),
-      () => {
-        onError(ErrorsType.STATUS_ERROR);
-        return E.toError;
-      }
-    ),
-    TE.fold(
-      () => async () => {
-        onError(ErrorsType.STATUS_ERROR);
-        return [];
-      },
-      (myResExt) => async () =>
-        pipe(
-          myResExt,
-          E.fold(
-            () => {
-              onError(ErrorsType.GENERIC_ERROR);
-              return [];
-            },
-            (myRes) => {
-              switch (myRes.status) {
-                case 200:
-                  return myRes.value.paymentMethods?.map(
-                    (p) =>
-                      ({
-                        id: p.id,
-                        name: {
-                          IT: p.name,
-                        },
-                        description: {
-                          IT: p.description,
-                        },
-                        status: p.status,
-                        paymentTypeCode: p.paymentTypeCode,
-                        methodManagement: getEnumFromString(
-                          MethodManagementEnum,
-                          p.methodManagement
-                        ),
-                        feeRange: undefined,
-                        asset: p.asset,
-                        brandAsset: p.brandAssets,
-                      } as PaymentInstrumentsType)
-                  );
-                case 401:
-                  onError(ErrorsType.UNAUTHORIZED);
-                  return [];
-                default:
-                  return [];
-              }
-            }
-          )
-        )
-    )
-  )();
-
 export const getPaymentMethodHandler = async (onError: (e: string) => void) =>
   pipe(
     TE.tryCatch(
@@ -347,10 +268,10 @@ export const getPaymentMethodHandler = async (onError: (e: string) => void) =>
                 body: buildPaymentInstrumentMethodHandlerSearchRequest(),
               }),
             (bearerAuth) =>
-              apiPaymentEcommerceClientV4.getAllPaymentMethodsAuth({
+              apiPaymentEcommerceAuthClientV1.getAllPaymentMethodsAuth({
                 "x-rpt-ids": getRptIdsFromSession(),
                 bearerAuth,
-                body: buildPaymentInstrumentMethodHandlerSearchRequest() as any as PaymentMethodsRequestV4,
+                body: buildPaymentInstrumentMethodHandlerSearchRequest() as any as PaymentMethodsRequestAuthV1,
               })
           )
         ),
@@ -524,9 +445,6 @@ const evaluatePaymentMethodHandlerEnabledFF = async (): Promise<boolean> => {
 };
 
 export const getPaymentInstruments = async (
-  query: {
-    amount: number;
-  },
   onError: (e: string) => void,
   onResponse: (data: Array<PaymentInstrumentsType>) => void
 ) => {
@@ -535,7 +453,10 @@ export const getPaymentInstruments = async (
     O.fromNullable,
     O.filter((ff) => ff),
     O.foldW(
-      () => getPaymentMethods(query, onError),
+      () => {
+        onError(ErrorsType.STATUS_ERROR);
+        return [];
+      },
       () => getPaymentMethodHandler(onError)
     )
   );
@@ -568,7 +489,7 @@ export const npgSessionsFields = async (
                 ...payload,
               }),
             (bearerAuth) =>
-              apiPaymentEcommerceClientWithRetryV3.createSessionV3({
+              apiPaymentEcommerceAuthClientWithRetryV1.createSessionAuth({
                 "x-rpt-ids": getRptIdsFromSession(),
                 bearerAuth,
                 ...payload,

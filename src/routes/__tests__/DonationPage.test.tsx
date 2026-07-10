@@ -15,6 +15,7 @@ jest.mock("../../utils/api/helper", () => ({
   getDonationEntityList: jest.fn(),
 }));
 jest.mock("../../redux/hooks/hooks");
+jest.mock("react-qr-code", () => () => <div data-testid="qr-code" />);
 
 const mockStore = configureStore({
   reducer: {

@@ -37,7 +37,7 @@ import {
   clearSessionItem,
 } from "../../utils/storage/sessionStorage";
 import { UserInfoResponse } from "../../../generated/definitions/checkout-auth-service-v1/UserInfoResponse";
-import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce-v3/NewTransactionResponse";
+import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce-auth-v1/NewTransactionResponse";
 import { CancelPayment } from "../../components/modals/CancelPayment";
 import { mixpanel } from "../../utils/mixpanel/mixpanelHelperInit";
 import {

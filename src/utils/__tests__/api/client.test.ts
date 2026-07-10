@@ -3,8 +3,7 @@ describe("API Clients", () => {
     CHECKOUT_PAGOPA_APIM_HOST: "https://mock-host",
     CHECKOUT_API_ECOMMERCE_BASEPATH: "/v1",
     CHECKOUT_API_ECOMMERCE_BASEPATH_V2: "/v2",
-    CHECKOUT_API_ECOMMERCE_BASEPATH_V3: "/v3",
-    CHECKOUT_API_ECOMMERCE_BASEPATH_V4: "/v4",
+    CHECKOUT_API_ECOMMERCE_BASEPATH_AUTH_V1: "/auth/v1",
     CHECKOUT_API_FEATURE_FLAGS_BASEPATH: "/feature-flags",
     CHECKOUT_API_AUTH_SERVICE_BASEPATH_V1: "/auth-service",
     CHECKOUT_API_WALLET_BASEPATH_V1: "/v1",
@@ -31,11 +30,11 @@ describe("API Clients", () => {
   const {
     apiPaymentEcommerceClient,
     apiPaymentEcommerceClientV2,
-    apiPaymentEcommerceClientV3,
+    apiPaymentEcommerceAuthClientV1,
+    apiPaymentEcommerceAuthClientWithRetryV1,
     apiCheckoutFeatureFlags,
     apiPaymentEcommerceClientWithRetry,
     apiPaymentEcommerceClientWithRetryV2,
-    apiPaymentEcommerceClientWithRetryV3,
     apiCheckoutAuthServiceClientV1,
     apiCheckoutAuthServiceClientAuthTokenV1,
     apiCheckoutAuthServiceWithRetryV1,
@@ -49,8 +48,12 @@ describe("API Clients", () => {
     expect(apiPaymentEcommerceClientV2).toBeDefined();
   });
 
-  it("should create apiPaymentEcommerceClientV3 with correct configuration", () => {
-    expect(apiPaymentEcommerceClientV3).toBeDefined();
+  it("should create apiPaymentEcommerceAuthClientV1 with correct configuration", () => {
+    expect(apiPaymentEcommerceAuthClientV1).toBeDefined();
+  });
+
+  it("should create apiPaymentEcommerceAuthClientWithRetryV1 with correct configuration", () => {
+    expect(apiPaymentEcommerceAuthClientWithRetryV1).toBeDefined();
   });
 
   it("should create apiCheckoutFeatureFlags with correct configuration", () => {
@@ -63,10 +66,6 @@ describe("API Clients", () => {
 
   it("should create apiPaymentEcommerceClientWithRetryV2 with correct configuration", () => {
     expect(apiPaymentEcommerceClientWithRetryV2).toBeDefined();
-  });
-
-  it("should create apiPaymentEcommerceClientWithRetryV3 with correct configuration", () => {
-    expect(apiPaymentEcommerceClientWithRetryV3).toBeDefined();
   });
 
   it("should create apiCheckoutAuthServiceClientV1 with correct configuration", () => {

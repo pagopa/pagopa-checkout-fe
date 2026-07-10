@@ -2,9 +2,8 @@ import { Millisecond } from "@pagopa/ts-commons/lib/units";
 import { DeferredPromise } from "@pagopa/ts-commons/lib/promises";
 import { createClient as creatWalletClient } from "../../../generated/definitions/checkout-wallets-v1/client";
 import { createClient as createEcommerceClient } from "../../../generated/definitions/payment-ecommerce/client";
-import { createClient as createEcommerceClientV3 } from "../../../generated/definitions/payment-ecommerce-v3/client";
 import { createClient as createEcommerceClientV2 } from "../../../generated/definitions/payment-ecommerce-v2/client";
-import { createClient as createEcommerceClientV4 } from "../../../generated/definitions/payment-ecommerce-v4/client";
+import { createClient as createEcommerceAuthClientV1 } from "../../../generated/definitions/payment-ecommerce-auth-v1/client";
 import { createClient as createAuthServiceClient } from "../../../generated/definitions/checkout-auth-service-v1/client";
 import { createClient as createCheckoutFeatureFlagsClient } from "../../../generated/definitions/checkout-feature-flags/client";
 
@@ -48,18 +47,27 @@ export const apiPaymentEcommerceClientV2 = createEcommerceClientV2({
 /**
  * Api client for payment ecommerce API V3 (authenticated client)
  */
-export const apiPaymentEcommerceClientV3 = createEcommerceClientV3({
+/* export const apiPaymentEcommerceClientV3 = createEcommerceClientV3({
   baseUrl: conf.CHECKOUT_PAGOPA_APIM_HOST,
   basePath: conf.CHECKOUT_API_ECOMMERCE_BASEPATH_V3 as string,
   fetchApi: retryingFetch(fetch, conf.CHECKOUT_API_TIMEOUT as Millisecond, 3),
-});
+}); */
 
 /**
  * Api client for payment ecommerce API V4
  */
-export const apiPaymentEcommerceClientV4 = createEcommerceClientV4({
+/* export const apiPaymentEcommerceClientV4 = createEcommerceClientV4({
   baseUrl: conf.CHECKOUT_PAGOPA_APIM_HOST,
   basePath: conf.CHECKOUT_API_ECOMMERCE_BASEPATH_V4 as string,
+  fetchApi: retryingFetch(fetch, conf.CHECKOUT_API_TIMEOUT as Millisecond, 3),
+}); */
+
+/**
+ * Api client for payment ecommerce authenticated API V1 (authenticated client)
+ */
+export const apiPaymentEcommerceAuthClientV1 = createEcommerceAuthClientV1({
+  baseUrl: conf.CHECKOUT_PAGOPA_APIM_HOST,
+  basePath: conf.CHECKOUT_API_ECOMMERCE_BASEPATH_AUTH_V1 as string,
   fetchApi: retryingFetch(fetch, conf.CHECKOUT_API_TIMEOUT as Millisecond, 3),
 });
 
@@ -105,7 +113,7 @@ export const apiPaymentEcommerceClientWithRetryV2 = createEcommerceClientV2({
 /**
  * Api client for ecommerce API calculate fee with retry execution
  */
-export const apiPaymentEcommerceClientWithRetryV3 = createEcommerceClientV3({
+/* export const apiPaymentEcommerceClientWithRetryV3 = createEcommerceClientV3({
   baseUrl: conf.CHECKOUT_PAGOPA_APIM_HOST,
   basePath: conf.CHECKOUT_API_ECOMMERCE_BASEPATH_V3 as string,
   fetchApi: constantPollingWithPromisePredicateFetch(
@@ -115,8 +123,23 @@ export const apiPaymentEcommerceClientWithRetryV3 = createEcommerceClientV3({
     conf.CHECKOUT_API_TIMEOUT as Millisecond,
     async (r: Response): Promise<boolean> => r.status > 499
   ),
-});
+}); */
 
+/**
+ * Api client for ecommerce API calculate fee with retry execution
+ */
+export const apiPaymentEcommerceAuthClientWithRetryV1 =
+  createEcommerceAuthClientV1({
+    baseUrl: conf.CHECKOUT_PAGOPA_APIM_HOST,
+    basePath: conf.CHECKOUT_API_ECOMMERCE_BASEPATH_AUTH_V1 as string,
+    fetchApi: constantPollingWithPromisePredicateFetch(
+      DeferredPromise<boolean>().e1,
+      retries,
+      delay,
+      conf.CHECKOUT_API_TIMEOUT as Millisecond,
+      async (r: Response): Promise<boolean> => r.status > 499
+    ),
+  });
 /**
  * Api client for checkout auth service API V1
  */
