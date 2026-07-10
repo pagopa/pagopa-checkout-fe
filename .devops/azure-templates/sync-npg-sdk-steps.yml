@@ -101,14 +101,13 @@ steps:
           --content-paths "/npg/sdk/*"
 
         # Success heartbeat: emit a NpgSdkSyncSuccess customEvent to App Insights.
-        # No heartbeat in the last 3h => the sync has stopped or is
-        # failing => the served SDK/hash may be stale. Reached only after a full
-        # successful run. Best-effort: a telemetry hiccup must never fail an otherwise-good publish.
+        # No heartbeat in the last 3h => the sync has stopped or is failing
         echo "Emitting sync-success heartbeat to App Insights"
         # disable xtrace so the App Insights connection string / instrumentation
         # key are never echoed to the log
         set +x
-        AI_CONN=$(az monitor app-insights component show \
+        # bounded with timeout so a hung ARM call can never stall the pipeline
+        AI_CONN=$(timeout 30 az monitor app-insights component show \
           --app "${{ parameters.app_insights_name }}" \
           -g "${{ parameters.app_insights_rg }}" \
           --query connectionString -o tsv 2>/dev/null || true)
@@ -116,14 +115,29 @@ steps:
           IKEY=$(printf '%s' "${AI_CONN}" | sed -n 's/.*InstrumentationKey=\([^;]*\).*/\1/p')
           INGEST=$(printf '%s' "${AI_CONN}" | sed -n 's/.*IngestionEndpoint=\([^;]*\).*/\1/p')
           HEARTBEAT_TIME=$(date -u +%Y-%m-%dT%H:%M:%S.000Z)
-          # build the payload in a temp file so the instrumentation key never lands in the
-          # process arguments (argv)
+          # payload + response go to unpredictable temp files (mktemp). Keeping the
+          # iKey in the payload file means it never lands in the process args (argv).
+          HB_PAYLOAD=$(mktemp)
+          HB_RESP=$(mktemp)
           printf '{"name":"Microsoft.ApplicationInsights.Event","time":"%s","iKey":"%s","data":{"baseType":"EventData","baseData":{"ver":2,"name":"NpgSdkSyncSuccess","properties":{"integrity":"%s"}}}}' \
-            "${HEARTBEAT_TIME}" "${IKEY}" "${INTEGRITY}" > /tmp/hb.json
-          curl -sS -X POST "${INGEST}v2/track" -H 'Content-Type: application/json' -d @/tmp/hb.json >/dev/null \
-            && echo "Heartbeat emitted" \
-            || echo "##vso[task.logissue type=warning]Heartbeat emit failed (sync itself succeeded)"
-          rm -f /tmp/hb.json
+            "${HEARTBEAT_TIME}" "${IKEY}" "${INTEGRITY}" > "${HB_PAYLOAD}"
+          # -o sends the body to a file (never stdout); -w prints only the HTTP
+          # status; connect/max timeouts guarantee the call cannot hang the job.
+          HB_CODE=$(curl -sS -o "${HB_RESP}" -w '%{http_code}' \
+            --connect-timeout 10 --max-time 30 \
+            -X POST "${INGEST}v2/track" -H 'Content-Type: application/json' \
+            -d @"${HB_PAYLOAD}" || true)
+          # itemsAccepted is the authoritative "did it land" signal - a 200 alone is
+          # not enough (App Insights can 200 with itemsAccepted:0). The v2/track
+          # response never contains the iKey, so these fields are safe to log.
+          HB_ACCEPTED=$(sed -n 's/.*"itemsAccepted":\([0-9][0-9]*\).*/\1/p' "${HB_RESP}")
+          HB_ERRORS=$(sed -n 's/.*\("errors":\[[^]]*\]\).*/\1/p' "${HB_RESP}")
+          rm -f "${HB_PAYLOAD}" "${HB_RESP}"
+          if [ "${HB_ACCEPTED:-0}" -ge 1 ]; then
+            echo "Heartbeat emitted (HTTP ${HB_CODE:-000}, itemsAccepted=${HB_ACCEPTED})"
+          else
+            echo "##vso[task.logissue type=warning]Heartbeat NOT accepted by App Insights (HTTP ${HB_CODE:-000}, itemsAccepted=${HB_ACCEPTED:-0}) ${HB_ERRORS}; sync itself succeeded."
+          fi
         else
           echo "##vso[task.logissue type=warning]Could not resolve App Insights connection string; heartbeat skipped (sync itself succeeded)"
         fi
