@@ -37,3 +37,21 @@ stages:
               service_connection: 'DEV-PAGOPA-SERVICE-CONN'
               app_insights_name: 'pagopa-d-appinsights'
               app_insights_rg: 'pagopa-d-monitor-rg'
+
+  - stage: Sync_UAT
+    dependsOn: []
+    jobs:
+      - job: sync_npg_sdk
+        displayName: 'Sync NPG SDK to UAT'
+        steps:
+          - template: azure-templates/sync-npg-sdk-steps.yml
+            parameters:
+              npg_origin: 'https://stg-ta.nexigroup.com'
+              integrity_endpoint: 'https://api.uat.platform.pagopa.it/checkout/npg/sdk/v1/integrity'
+              storage_account: 'pagopauweucheckoutcdnsa'
+              cdn_rg: 'pagopa-u-checkout-fe-rg'
+              cdn_profile: 'pagopa-u-weu-checkout-cdn-profile'
+              cdn_endpoint: 'pagopa-u-weu-checkout-cdn-endpoint'
+              service_connection: 'UAT-PAGOPA-SERVICE-CONN'
+              app_insights_name: 'pagopa-u-appinsights'
+              app_insights_rg: 'pagopa-u-monitor-rg'
