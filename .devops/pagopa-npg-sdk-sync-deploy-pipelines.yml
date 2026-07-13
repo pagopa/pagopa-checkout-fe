@@ -55,3 +55,21 @@ stages:
               service_connection: 'UAT-PAGOPA-SERVICE-CONN'
               app_insights_name: 'pagopa-u-appinsights'
               app_insights_rg: 'pagopa-u-monitor-rg'
+
+  - stage: Sync_PROD
+    dependsOn: []
+    jobs:
+      - job: sync_npg_sdk
+        displayName: 'Sync NPG SDK to PROD'
+        steps:
+          - template: azure-templates/sync-npg-sdk-steps.yml
+            parameters:
+              npg_origin: 'https://xpay.nexigroup.com'
+              integrity_endpoint: 'https://api.platform.pagopa.it/checkout/npg/sdk/v1/integrity'
+              storage_account: 'pagopapweucheckoutcdnsa'
+              cdn_rg: 'pagopa-p-checkout-fe-rg'
+              cdn_profile: 'pagopa-p-weu-checkout-cdn-profile'
+              cdn_endpoint: 'pagopa-p-weu-checkout-cdn-endpoint'
+              service_connection: 'PROD-PAGOPA-SERVICE-CONN'
+              app_insights_name: 'pagopa-p-appinsights'
+              app_insights_rg: 'pagopa-p-monitor-rg'
