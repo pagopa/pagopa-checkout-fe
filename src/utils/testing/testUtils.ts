@@ -1,6 +1,6 @@
 import { PaymentInstrumentsType } from "../../features/payment/models/paymentModel";
 import { PaymentMethodStatusEnum } from "../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
-import { RptId } from "../../../generated/definitions/payment-ecommerce-v3/RptId";
+import { RptId } from "../../../generated/definitions/payment-ecommerce-auth-v1/RptId";
 import { MethodManagementEnum } from "../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 
 export const paymentMethodsMock: Array<PaymentInstrumentsType> = [

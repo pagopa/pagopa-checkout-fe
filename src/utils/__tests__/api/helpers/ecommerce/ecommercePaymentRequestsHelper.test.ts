@@ -1,6 +1,6 @@
 import { pipe } from "fp-ts/function";
 import * as E from "fp-ts/Either";
-import { RptId } from "../../../../../../generated/definitions/payment-ecommerce-v3/RptId";
+import { RptId } from "../../../../../../generated/definitions/payment-ecommerce-auth-v1/RptId";
 import {
   getCartResponseMock,
   getPaymentRequestInfoResponseMock,
@@ -8,7 +8,7 @@ import {
 } from "../../../../../utils/testing/testUtils";
 import {
   apiPaymentEcommerceClient,
-  apiPaymentEcommerceClientV3,
+  apiPaymentEcommerceAuthClientV1,
 } from "../../../../api/client";
 import { getCarts, getEcommercePaymentInfoTask } from "../../../../api/helper";
 import { ErrorsType } from "../../../../errors/checkErrorsModel";
@@ -31,8 +31,8 @@ jest.mock("../../../../api/client", () => ({
     GetCarts: jest.fn(),
     getPaymentRequestInfo: jest.fn(),
   },
-  apiPaymentEcommerceClientV3: {
-    getPaymentRequestInfoV3: jest.fn(),
+  apiPaymentEcommerceAuthClientV1: {
+    getPaymentRequestInfoAuth: jest.fn(),
   },
 }));
 
@@ -108,10 +108,10 @@ describe("Ecommerce payment requests helper - getEcommercePaymentInfoTask tests"
     );
   });
 
-  it("Should return paymentInfo when api return correct value on v3 api", async () => {
+  it("Should return paymentInfo when api return correct value on auth v1 api", async () => {
     (getSessionItem as jest.Mock).mockReturnValue("authToken");
     (
-      apiPaymentEcommerceClientV3.getPaymentRequestInfoV3 as jest.Mock
+      apiPaymentEcommerceAuthClientV1.getPaymentRequestInfoAuth as jest.Mock
     ).mockReturnValue(
       Promise.resolve({
         right: {
@@ -129,10 +129,10 @@ describe("Ecommerce payment requests helper - getEcommercePaymentInfoTask tests"
     expect(result).toEqual(E.right(getPaymentRequestInfoResponseMock));
   });
 
-  it("Should return error when api fail on v3 api", async () => {
+  it("Should return error when api fail on auth v1 api", async () => {
     (getSessionItem as jest.Mock).mockReturnValue("authToken");
     (
-      apiPaymentEcommerceClientV3.getPaymentRequestInfoV3 as jest.Mock
+      apiPaymentEcommerceAuthClientV1.getPaymentRequestInfoAuth as jest.Mock
     ).mockRejectedValue("Api error");
     const result = await pipe(
       getEcommercePaymentInfoTask(
@@ -147,10 +147,10 @@ describe("Ecommerce payment requests helper - getEcommercePaymentInfoTask tests"
     );
   });
 
-  it("Should return ErrorsType.GENERIC_ERROR when api return 5xx on v3 api", async () => {
+  it("Should return ErrorsType.GENERIC_ERROR when api return 5xx on auth v1 api", async () => {
     (getSessionItem as jest.Mock).mockReturnValue("authToken");
     (
-      apiPaymentEcommerceClientV3.getPaymentRequestInfoV3 as jest.Mock
+      apiPaymentEcommerceAuthClientV1.getPaymentRequestInfoAuth as jest.Mock
     ).mockReturnValue(
       Promise.resolve({
         right: {
@@ -175,10 +175,10 @@ describe("Ecommerce payment requests helper - getEcommercePaymentInfoTask tests"
     );
   });
 
-  it("Should return SESSION_EXPIRED when api return 401 on v3 api", async () => {
+  it("Should return SESSION_EXPIRED when api return 401 on auth v1 api", async () => {
     (getSessionItem as jest.Mock).mockReturnValue("authToken");
     (
-      apiPaymentEcommerceClientV3.getPaymentRequestInfoV3 as jest.Mock
+      apiPaymentEcommerceAuthClientV1.getPaymentRequestInfoAuth as jest.Mock
     ).mockReturnValue(
       Promise.resolve({
         right: {

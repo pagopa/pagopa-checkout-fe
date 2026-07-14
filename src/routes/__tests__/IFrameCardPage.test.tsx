@@ -10,7 +10,7 @@ import {
 } from "../../utils/storage/sessionStorage";
 import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders";
 import { npgSessionsFields, retrieveCardData } from "../../utils/api/helper";
-import { CreateSessionResponse } from "../../../generated/definitions/payment-ecommerce-v3/CreateSessionResponse";
+import { CreateSessionResponse } from "../../../generated/definitions/payment-ecommerce-auth-v1/CreateSessionResponse";
 import { mixpanel } from "../../utils/mixpanel/mixpanelHelperInit";
 import {
   MixpanelEventCategory,
@@ -27,8 +27,7 @@ jest.mock("../../utils/config/config", () => ({
     CHECKOUT_PM_API_BASEPATH: "/api",
     CHECKOUT_API_ECOMMERCE_BASEPATH: "/ecommerce",
     CHECKOUT_API_ECOMMERCE_BASEPATH_V2: "/ecommerce/v2",
-    CHECKOUT_API_ECOMMERCE_BASEPATH_V3: "/ecommerce/v3",
-    CHECKOUT_API_ECOMMERCE_BASEPATH_V4: "/ecommerce/v4",
+    CHECKOUT_API_ECOMMERCE_BASEPATH_AUTH_V1: "/ecommerce/checkout/v1",
     CHECKOUT_API_FEATURE_FLAGS_BASEPATH: "/feature-flags",
     CHECKOUT_API_TIMEOUT: 10000,
     CHECKOUT_ENV: "test",

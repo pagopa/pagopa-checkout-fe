@@ -395,16 +395,13 @@ describe("Checkout authentication tests", () => {
     expect(isPaymentMethodsPresents).toBeTruthy();
   });
 
-  it.each([
-    [false, "legacy v1/v3 API"],
-    [true, "new v2/v4 API"]
-  ])("Should redirect to auth-expired page receiving 401 from get payment-methods with enablePaymentMethodsHandler=%s (%s)", async (enableFlag, description) => {
-    await page.evaluate((flag) => {
+  it("Should redirect to auth-expired page receiving 401 from get payment-methods with enablePaymentMethodsHandler=true (auth v1 api)", async () => {
+    await page.evaluate(() => {
       //set item into sessionStorage for pass the route Guard
       sessionStorage.setItem('useremail', 'email');
       sessionStorage.setItem('authToken', 'auth-token-value');
-      sessionStorage.setItem('enablePaymentMethodsHandler', flag.toString());
-    }, enableFlag);
+      sessionStorage.setItem('enablePaymentMethodsHandler', 'true');
+    });
 
     //set flow error case
     await fillPaymentNotificationForm(KORPTIDs.FAIL_UNAUTHORIZED_401, OKPaymentInfo.VALID_FISCAL_CODE);
@@ -562,13 +559,13 @@ describe("Checkout authentication tests", () => {
     expect(apiNotContainsXRptIdCount).toBe(expectedCount);
   });
 
-  it("Should invoke checkout v3/v4 api with x-rpt-ids header", async () => {
+  it("Should invoke checkout auth/v1 api with x-rpt-ids header", async () => {
     let expectedCount = 3; // payment-methods - sessions - transaction
     let apiContainsXRptIdCount = 0;
     
     page.on("request", async (request) => {
       const url = request.url();
-      if (url.includes("checkout/v3") || url.includes("checkout/v4")) {
+      if (url.includes("checkout/auth/v1")) {
         const headers = await request.headers();
         if(headers['x-rpt-ids'] != null)
           apiContainsXRptIdCount ++
