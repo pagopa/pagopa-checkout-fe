@@ -1,0 +1,75 @@
+# Azure DevOps pipeline to sync NPG SDK from Nexi to checkout CDN storage.
+# Runs hourly: downloads the SDK, computes its SHA-384 hash, and verifies it
+# against NPG's source-of-truth hash (fetched from the payment-methods-handler
+# integrity endpoint via APIM). Only on a match are the SDK and its integrity
+# JSON published to $web/npg/sdk/ on each environment's storage account; on a
+# mismatch the pipeline fails and the last-known-good stays served.
+
+trigger: none
+pr: none
+
+schedules:
+  - cron: "0 * * * *"
+    displayName: "Sync NPG SDK hourly"
+    branches:
+      include:
+        - main
+    always: true
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+  - stage: Sync_DEV
+    dependsOn: []
+    jobs:
+      - job: sync_npg_sdk
+        displayName: 'Sync NPG SDK to DEV'
+        steps:
+          - template: azure-templates/sync-npg-sdk-steps.yml
+            parameters:
+              npg_origin: 'https://stg-ta.nexigroup.com'
+              integrity_endpoint: 'https://api.dev.platform.pagopa.it/checkout/npg/sdk/v1/integrity'
+              storage_account: 'pagopadweucheckoutcdnsa'
+              cdn_rg: 'pagopa-d-checkout-fe-rg'
+              cdn_profile: 'pagopa-d-weu-checkout-cdn-profile'
+              cdn_endpoint: 'pagopa-d-weu-checkout-cdn-endpoint'
+              service_connection: 'DEV-PAGOPA-SERVICE-CONN'
+              app_insights_name: 'pagopa-d-appinsights'
+              app_insights_rg: 'pagopa-d-monitor-rg'
+
+  - stage: Sync_UAT
+    dependsOn: []
+    jobs:
+      - job: sync_npg_sdk
+        displayName: 'Sync NPG SDK to UAT'
+        steps:
+          - template: azure-templates/sync-npg-sdk-steps.yml
+            parameters:
+              npg_origin: 'https://stg-ta.nexigroup.com'
+              integrity_endpoint: 'https://api.uat.platform.pagopa.it/checkout/npg/sdk/v1/integrity'
+              storage_account: 'pagopauweucheckoutcdnsa'
+              cdn_rg: 'pagopa-u-checkout-fe-rg'
+              cdn_profile: 'pagopa-u-weu-checkout-cdn-profile'
+              cdn_endpoint: 'pagopa-u-weu-checkout-cdn-endpoint'
+              service_connection: 'UAT-PAGOPA-SERVICE-CONN'
+              app_insights_name: 'pagopa-u-appinsights'
+              app_insights_rg: 'pagopa-u-monitor-rg'
+
+  - stage: Sync_PROD
+    dependsOn: []
+    jobs:
+      - job: sync_npg_sdk
+        displayName: 'Sync NPG SDK to PROD'
+        steps:
+          - template: azure-templates/sync-npg-sdk-steps.yml
+            parameters:
+              npg_origin: 'https://xpay.nexigroup.com'
+              integrity_endpoint: 'https://api.platform.pagopa.it/checkout/npg/sdk/v1/integrity'
+              storage_account: 'pagopapweucheckoutcdnsa'
+              cdn_rg: 'pagopa-p-checkout-fe-rg'
+              cdn_profile: 'pagopa-p-weu-checkout-cdn-profile'
+              cdn_endpoint: 'pagopa-p-weu-checkout-cdn-endpoint'
+              service_connection: 'PROD-PAGOPA-SERVICE-CONN'
+              app_insights_name: 'pagopa-p-appinsights'
+              app_insights_rg: 'pagopa-p-monitor-rg'

@@ -145,7 +145,7 @@ stages:
               azureSubscription: 'DEV-PAGOPA-SERVICE-CONN'
               scriptLocation: inlineScript
               inlineScript: |
-                call az storage blob sync --container $web --account-name ${{ variables.DEV_STORAGE_ACCOUNT }} -s "$(Pipeline.Workspace)\Bundle_DEV"
+                call az storage blob sync --container $web --account-name ${{ variables.DEV_STORAGE_ACCOUNT }} -s "$(Pipeline.Workspace)\Bundle_DEV" --exclude-path npg/sdk
 
           - task: AzureCLI@1
             displayName: 'Purge CDN endpoint on DEV'
@@ -297,7 +297,7 @@ stages:
               azureSubscription: 'UAT-PAGOPA-SERVICE-CONN'
               scriptLocation: inlineScript
               inlineScript: |
-                call az storage blob sync --container $web --account-name ${{ variables.UAT_STORAGE_ACCOUNT }} -s "$(Pipeline.Workspace)\Bundle_UAT"
+                call az storage blob sync --container $web --account-name ${{ variables.UAT_STORAGE_ACCOUNT }} -s "$(Pipeline.Workspace)\Bundle_UAT" --exclude-path npg/sdk
 
           - task: AzureCLI@1
             displayName: 'Purge CDN endpoint on UAT'
@@ -402,7 +402,7 @@ stages:
               azureSubscription: 'PROD-PAGOPA-SERVICE-CONN'
               scriptLocation: inlineScript
               inlineScript: |
-                call az storage blob sync --container $web --account-name ${{ variables.PROD_STORAGE_ACCOUNT }} -s "$(Pipeline.Workspace)\Bundle"
+                call az storage blob sync --container $web --account-name ${{ variables.PROD_STORAGE_ACCOUNT }} -s "$(Pipeline.Workspace)\Bundle" --exclude-path npg/sdk
 
           - task: AzureCLI@1
             displayName: 'Purge CDN endpoint on PROD'
