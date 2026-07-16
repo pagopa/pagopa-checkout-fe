@@ -68,7 +68,7 @@ export default function PaymentChoicePage() {
 
   const getPaymentMethods = async () => {
     setInstrumentsLoading(true);
-    await getPaymentInstruments({ amount }, onError, onResponse);
+    await getPaymentInstruments(onError, onResponse);
   };
 
   const getWallets = async () => {

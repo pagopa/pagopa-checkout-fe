@@ -6,8 +6,7 @@ Object.defineProperty(global, "window", {
       CHECKOUT_PM_API_BASEPATH: "/api",
       CHECKOUT_API_ECOMMERCE_BASEPATH: "/ecommerce",
       CHECKOUT_API_ECOMMERCE_BASEPATH_V2: "/ecommerce/v2",
-      CHECKOUT_API_ECOMMERCE_BASEPATH_V3: "/ecommerce/v3",
-      CHECKOUT_API_ECOMMERCE_BASEPATH_V4: "/ecommerce/v4",
+      CHECKOUT_API_ECOMMERCE_BASEPATH_AUTH_V1: "/ecommerce/auth/v1",
       CHECKOUT_API_FEATURE_FLAGS_BASEPATH: "/features",
       CHECKOUT_API_TIMEOUT: "5000",
       CHECKOUT_ENV: "test",
@@ -48,7 +47,7 @@ const generateExpectedDelays = (
 import { Millisecond } from "@pagopa/ts-commons/lib/units";
 import {
   constantPollingWithPromisePredicateFetch,
-  exponetialPollingWithPromisePredicateFetch,
+  exponentialPollingWithPromisePredicateFetch,
   retryingFetch,
 } from "../../config/fetch";
 
@@ -173,7 +172,7 @@ describe("retryingFetch", () => {
 
     const shouldAbort = Promise.resolve(false);
 
-    const fetchWithRetry = exponetialPollingWithPromisePredicateFetch(
+    const fetchWithRetry = exponentialPollingWithPromisePredicateFetch(
       shouldAbort,
       2, // max retries
       100, // initial delay (will backoff after 1st retry)
@@ -189,7 +188,7 @@ describe("retryingFetch", () => {
   });
 });
 
-describe("exponetialPollingWithPromisePredicateFetch backoff behavior", () => {
+describe("exponentialPollingWithPromisePredicateFetch backoff behavior", () => {
   beforeAll(() => {
     jest.useFakeTimers(); // legacy timers
   });
@@ -225,7 +224,7 @@ describe("exponetialPollingWithPromisePredicateFetch backoff behavior", () => {
 
     (global as any).fetch = fetchMock;
 
-    const fetchWithRetry = exponetialPollingWithPromisePredicateFetch(
+    const fetchWithRetry = exponentialPollingWithPromisePredicateFetch(
       shouldAbort,
       3,
       10,
@@ -247,5 +246,52 @@ describe("exponetialPollingWithPromisePredicateFetch backoff behavior", () => {
 
     expect(response.status).toBe(200);
     expect(fetchMock).toHaveBeenCalledTimes(expectedDelays.length);
+  });
+
+  it("should honor retryAfterMs override without adding extra backoff", async () => {
+    const condition = jest
+      .fn()
+      .mockResolvedValueOnce({ retry: true, retryAfterMs: 50 })
+      .mockResolvedValueOnce(false);
+
+    const shouldAbort = Promise.resolve(false);
+
+    const callTimes: Array<number> = [];
+    const fetchMock = jest
+      .fn()
+      .mockImplementationOnce(() => {
+        callTimes.push(Date.now());
+        return Promise.resolve(mockResponse503);
+      })
+      .mockImplementationOnce(() => {
+        callTimes.push(Date.now());
+        return Promise.resolve(mockResponse200);
+      });
+
+    (global as any).fetch = fetchMock;
+
+    const fetchWithRetry = exponentialPollingWithPromisePredicateFetch(
+      shouldAbort,
+      2,
+      10,
+      1000 as Millisecond,
+      condition
+    );
+
+    const promise = fetchWithRetry("https://api.example.com");
+
+    await jest.advanceTimersByTimeAsync(0);
+    expect(callTimes.length).toBe(1);
+
+    await jest.advanceTimersByTimeAsync(49);
+    expect(callTimes.length).toBe(1);
+
+    await jest.advanceTimersByTimeAsync(1);
+    expect(callTimes.length).toBe(2);
+
+    const response = await promise;
+
+    expect(response.status).toBe(200);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 });
