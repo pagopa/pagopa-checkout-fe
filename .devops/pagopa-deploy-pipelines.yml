@@ -113,63 +113,7 @@ resources:
 
 
 stages:
-  - stage: Prepare_artifact_dev
-    condition: and(succeeded(), eq(${{parameters.DEV_DEPLOY}}, true))
-    dependsOn: []
-    jobs:
-      - job: make_build
-        pool:
-          vmImage: 'ubuntu-22.04'
-        steps:
-          - template: templates/node-job-setup/template.yaml@pagopaCommons
-            parameters:
-              # On the assumption that this stage is executed only when Relase stage is,
-              #  with this parameter we set the reference the deploy script must pull changes from.
-              # The branch/tag name is calculated from the source branch
-              #  ex: Build.SourceBranch=refs/heads/release/pagopa-porting --> release/pagopa-porting
-              #  ex: Build.SourceBranch=refs/tags/v1.2.3-RELEASE --> v1.2.3-RELEASE
-              gitReference: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/tags/', ''), 'refs/heads/', '') }}
-
-          # Update the meta robots tag in src/index.html to prevent indexing in dev environment
-          - script: |
-              sed -i 's/<meta name="robots" content="index, follow">/<meta name="robots" content="noindex, nofollow">/' src/index.html
-              echo "Modified robots meta tag in src/index.html"
-              grep -n "robots" src/index.html
-            displayName: 'Update robots meta tag'
-
-          - template: azure-templates/setup-env.yml
-            parameters:
-              pagopa_apim_host: $(CHECKOUT_API_HOST_DEV)
-              polling_activation_interval: 6000
-              polling_activation_attempts: 16
-              env: 'DEV'
-              recaptcha_site_key: $(CHECKOUT_CAPTCHA_ID_DEV)
-              api_payment_transactions_basepath: '/api/checkout/payment-transactions/v1'
-              api_timeout: 10000
-              api_payment_activations_basepath: '/checkout/payments/v1'
-              pm_host: 'https://api.dev.platform.pagopa.it/payment-manager'
-              pm_api_basepath: '/pp-restapi/v4'
-              donations_url: 'https://api.dev.platform.pagopa.it/donations/api/v1/availabledonations'
-              api_ecommerce_basepath: '/ecommerce/checkout/v1'
-              api_ecommerce_basepath_v2: '/ecommerce/checkout/v2'
-              api_ecommerce_basepath_auth_v1: '/ecommerce/checkout/auth/v1'
-              api_checkout_wallet_basepath_v1: '/checkout/payment-wallet/v1'
-              checkout_feature_flags_basepath: '/checkout/feature-flags/v1'
-              checkout_auth_service_basepath_v1: '/checkout/auth-service/v1'
-              pagopa_assets_cdn: 'https://assets.cdn.platform.pagopa.it/payment-methods'
-              pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi'
-              survey_show: 1
-              checkout_npg_sdk_url: 'https://stg-ta.nexigroup.com/monetaweb/resources/hfsdk.js'
-              checkout_gdi_check_timeout: 20000
-              checkout_version: "$(Build.SourceBranchName):$(Build.SourceVersion)"
-
-          - script: |
-              yarn build
-            displayName: 'Build'
-
-          - publish: $(System.DefaultWorkingDirectory)/dist
-            artifact: Bundle_DEV
-
+  
   # Testing phase: for now we are just testing the template integration, after we will activate the tests
   # after the deployment on DEV.
   - template: templates/qa-tas/tas-integration-test.yml@tas
