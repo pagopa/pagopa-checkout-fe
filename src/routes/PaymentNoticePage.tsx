@@ -87,7 +87,7 @@ export default function PaymentNoticePage() {
   );
 
   const onCancel = () => {
-    navigate(-1);
+    navigate(`/${CheckoutRoutes.ROOT}`);
   };
 
   React.useEffect(() => {
