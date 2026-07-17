@@ -173,7 +173,6 @@ stages:
   # Testing phase: for now we are just testing the template integration, after we will activate the tests
   # after the deployment on DEV.
   - template: templates/qa-tas/tas-integration-test.yml@tas
-    displayName: 'Run TAS integration tests on DEV'
     parameters:
       testType:           ${{ parameters.testType }}
       suite:              ${{ parameters.suite }}
