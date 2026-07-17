@@ -49,6 +49,7 @@ describe("npgsdk loader", () => {
     const script = getNpgScript();
     expect(script).not.toBeNull();
     expect(script?.getAttribute("integrity")).toBe("sha384-abc123");
+    expect(script?.getAttribute("crossorigin")).toBe("anonymous");
     expect((global as any).fetch).toHaveBeenCalledWith(INTEGRITY_URL);
   });
 
