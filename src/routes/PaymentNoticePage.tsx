@@ -86,10 +86,6 @@ export default function PaymentNoticePage() {
     [ref]
   );
 
-  const onCancel = () => {
-    navigate("/");
-  };
-
   React.useEffect(() => {
     mixpanel.track(MixpanelEventsId.CHK_PAYMENT_NOTICE_MANUAL_ENTRY, {
       EVENT_ID: MixpanelEventsId.CHK_PAYMENT_NOTICE_MANUAL_ENTRY,
@@ -119,7 +115,7 @@ export default function PaymentNoticePage() {
         </Button>
         <Box sx={{ mt: 6 }}>
           <PaymentNoticeForm
-            onCancel={onCancel}
+            onCancel={() => navigate("/")}
             onSubmit={onSubmit}
             defaultValues={noticeInfo}
             loading={loading}
