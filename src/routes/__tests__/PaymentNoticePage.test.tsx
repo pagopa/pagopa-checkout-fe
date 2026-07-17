@@ -198,7 +198,8 @@ describe("PaymentNotice", () => {
     );
 
     // Trigger the form submission. This could be changed to match your button querying method.
-    const cancelButton = container.querySelector("#paymentNoticeButtonCancel") ||
+    const cancelButton =
+      container.querySelector("#paymentNoticeButtonCancel") ||
       screen.getByText("paymentNoticePage.formButtons.cancel");
     fireEvent.click(cancelButton);
 
