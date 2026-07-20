@@ -27,6 +27,13 @@ parameters:
     displayName: "TAS repo branch/tag"
     type: string
     default: main
+  - name: test_tas
+    displayName: 'Run TAS tests'
+    type: boolean
+    default: True
+    values:
+      - False
+      - True
   
 variables:
   NODE_VERSION: 18.17.1
@@ -84,7 +91,7 @@ resources:
 stages:
   
   - stage: Prepare_artifact_dev
-    condition: and(succeeded(), eq(${{parameters.DEV_DEPLOY}}, true))
+    condition: and(succeeded(), eq(${{parameters.DEV_DEPLOY}}, true), eq(${{parameters.test_tas}}, false))
     dependsOn: []
     jobs:
       - job: make_build
@@ -141,6 +148,7 @@ stages:
             artifact: Bundle_DEV
 
   - stage: Deploy_DEV_pagoPA
+    condition: eq(${{parameters.test_tas}}, false)
     dependsOn:
       - Prepare_artifact_dev
     jobs:
@@ -168,6 +176,7 @@ stages:
                 call az ${{ variables.CDN_TYPE }} endpoint purge -g ${{ variables.DEV_CDN_RG }} ${{ variables.ENDPOINT_FLAG }} ${{ variables.DEV_CDN_ENDPOINT }} --profile-name ${{ variables.DEV_CDN_PROFILE }} --content-paths "/*"
 
   - stage: End_to_End_Tests_DEV
+    condition: eq(${{parameters.test_tas}}, false)
     dependsOn:
       - Deploy_DEV_pagoPA
     pool:
@@ -217,6 +226,7 @@ stages:
             displayName: 'Skip release bundle'
   # Prepare Artifact
   - stage: Prepare_artifact_uat
+    condition: eq(${{parameters.test_tas}}, false)
     dependsOn:
       - Release
     jobs:
@@ -274,6 +284,7 @@ stages:
             artifact: Bundle_UAT
 
   - stage: UAT_Deploy_approval
+    condition: eq(${{parameters.test_tas}}, false)
     dependsOn:
       - Prepare_artifact_uat
     jobs:
@@ -288,6 +299,7 @@ stages:
             onTimeout: 'skip'
 
   - stage: Deploy_UAT_pagoPA
+    condition: eq(${{parameters.test_tas}}, false)
     dependsOn:
       - UAT_Deploy_approval
     jobs:
@@ -315,6 +327,7 @@ stages:
                 call az ${{ variables.CDN_TYPE }} endpoint purge -g ${{ variables.UAT_CDN_RG }} ${{ variables.ENDPOINT_FLAG }} ${{ variables.UAT_CDN_ENDPOINT }} --profile-name ${{ variables.UAT_CDN_PROFILE }} --content-paths "/*"
 
   - stage: End_to_End_Tests_UAT
+    condition: eq(${{parameters.test_tas}}, false)
     dependsOn:
       - Deploy_UAT_pagoPA
     pool:
@@ -444,6 +457,7 @@ stages:
             artifact: Bundle
 
   - stage: UAT_to_PROD_promotion
+    condition: eq(${{parameters.test_tas}}, false)
     dependsOn:
       - Prepare_artifact_prod
     jobs:
@@ -458,6 +472,7 @@ stages:
             onTimeout: 'skip'
 
   - stage: Deploy_PROD_pagoPA
+    condition: eq(${{parameters.test_tas}}, false)
     dependsOn:
       - UAT_to_PROD_promotion
     jobs:
