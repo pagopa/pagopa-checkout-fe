@@ -27,7 +27,7 @@ parameters:
     displayName: "TAS repo branch/tag"
     type: string
     #testing value
-    default: test-add-stages-dependecies-AD-templeate
+    default: main
   - name: test_tas
     displayName: 'Run TAS tests'
     type: boolean
