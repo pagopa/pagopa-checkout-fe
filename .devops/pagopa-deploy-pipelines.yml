@@ -23,42 +23,11 @@ parameters:
       - minor
       - patch
     default: minor
-  - name: testType
-    displayName: "Test category"
-    type: string
-    default: integration
-    values: [integration, e2e, api]
-  - name: suite
-    displayName: "Test suite"
-    type: string
-    default: tas_pass
-  - name: environment
-    displayName: "Target environment"
-    type: string
-    default: uat
-    values: [dev, uat]
-  - name: mode
-    displayName: "Invocation mode"
-    type: string
-    default: async
-    values: [sync, async, raw]
   - name: ref
     displayName: "TAS repo branch/tag"
     type: string
     default: main
-  - name: tags
-    displayName: "Behave tag expression (e.g. @runnable, @e2e); empty = workflow default (@runnable)"
-    type: string
-    default: ""
-  - name: verifyOrchestrator
-    displayName: "Verify tas_orchestrator.py SHA-256 integrity (recommended)"
-    type: boolean
-    default: true
-  - name: publishTests
-    displayName: "Publish JUnit results to the 'Tests' tab (sync only)"
-    type: boolean
-    default: true
-
+  
 variables:
   NODE_VERSION: 18.17.1
   YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
@@ -114,86 +83,102 @@ resources:
 
 stages:
   
-  # Testing phase: for now we are just testing the template integration, after we will activate the tests
-  # after the deployment on DEV.
-  - template: templates/qa-tas/tas-integration-test.yml@tas
-    parameters:
-      testType:           ${{ parameters.testType }}
-      suite:              ${{ parameters.suite }}
-      environment:        ${{ parameters.environment }}
-      mode:               ${{ parameters.mode }}
-      ref:                ${{ parameters.ref }}
-      verifyOrchestrator: ${{ parameters.verifyOrchestrator }}
-      publishTests:       ${{ parameters.publishTests }}
-      # Behave tag filter. Leave empty to keep the workflow default (@runnable,
-      # used by the integration suites). Override to target other suites, e.g.
-      # set 'tags: @e2e' to run the e2e checkout suite (testType: e2e).
-      tags:               ${{ parameters.tags }}
-      # GitHub PAT forwarded to the orchestrator as GITHUB_TOKEN. Source it
-      # from a SECRET pipeline variable (here 'INTEGRATION_TEST_PAT') so it is
-      # masked in the logs — do not paste the raw token into this file.
-      githubToken:        $(CHECKOUT_TAS_GITHUB_TOKEN)
-      # Optional overrides — exposed inline because they are typically
-      # set-once-and-forget (not toggled from the portal at run-time):
-      # pythonVersion: "3.11"
-      # poolVmImage:   "ubuntu-latest"
-      # testRunTitle:  ""                # default — auto-generated as "TAS — <suite> / <env> (<ref>)"
-      #
-      # Supply-chain integrity, pinned mode (true SRI). When set, the sidecar
-      # verification is replaced by a check against this explicit digest.
-      # Compute it once against the version you trust and bake it in:
-      #   curl -sSfL https://raw.githubusercontent.com/pagopa/pagopa-platform-integration-test/refs/tags/v1/scripts/tas_orchestrator.py | sha256sum
-      # orchestratorSha256: "a68b6c43c98517352c6d182df4a97b67e33a94ed79ae56949b1f6e6a179b5fe1"
+  - stage: Prepare_artifact_dev
+    condition: and(succeeded(), eq(${{parameters.DEV_DEPLOY}}, true))
+    dependsOn: []
+    jobs:
+      - job: make_build
+        pool:
+          vmImage: 'ubuntu-22.04'
+        steps:
+          - template: templates/node-job-setup/template.yaml@pagopaCommons
+            parameters:
+              # On the assumption that this stage is executed only when Relase stage is,
+              #  with this parameter we set the reference the deploy script must pull changes from.
+              # The branch/tag name is calculated from the source branch
+              #  ex: Build.SourceBranch=refs/heads/release/pagopa-porting --> release/pagopa-porting
+              #  ex: Build.SourceBranch=refs/tags/v1.2.3-RELEASE --> v1.2.3-RELEASE
+              gitReference: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/tags/', ''), 'refs/heads/', '') }}
 
-  # Create a relase
-  # Activated when ONE OF these are met:
-  # - is on branch main
-  # - is a tag in the form v{version}-RELEASE
+          # Update the meta robots tag in src/index.html to prevent indexing in dev environment
+          - script: |
+              sed -i 's/<meta name="robots" content="index, follow">/<meta name="robots" content="noindex, nofollow">/' src/index.html
+              echo "Modified robots meta tag in src/index.html"
+              grep -n "robots" src/index.html
+            displayName: 'Update robots meta tag'
 
-  #- stage: Deploy_DEV_pagoPA
-  #  dependsOn:
-  #    - Prepare_artifact_dev
-  #  jobs:
-  #    - job: 'deploy'
-  #      steps:
-  #        - checkout: none
+          - template: azure-templates/setup-env.yml
+            parameters:
+              pagopa_apim_host: $(CHECKOUT_API_HOST_DEV)
+              polling_activation_interval: 6000
+              polling_activation_attempts: 16
+              env: 'DEV'
+              recaptcha_site_key: $(CHECKOUT_CAPTCHA_ID_DEV)
+              api_payment_transactions_basepath: '/api/checkout/payment-transactions/v1'
+              api_timeout: 10000
+              api_payment_activations_basepath: '/checkout/payments/v1'
+              pm_host: 'https://api.dev.platform.pagopa.it/payment-manager'
+              pm_api_basepath: '/pp-restapi/v4'
+              donations_url: 'https://api.dev.platform.pagopa.it/donations/api/v1/availabledonations'
+              api_ecommerce_basepath: '/ecommerce/checkout/v1'
+              api_ecommerce_basepath_v2: '/ecommerce/checkout/v2'
+              api_ecommerce_basepath_auth_v1: '/ecommerce/checkout/auth/v1'
+              api_checkout_wallet_basepath_v1: '/checkout/payment-wallet/v1'
+              checkout_feature_flags_basepath: '/checkout/feature-flags/v1'
+              checkout_auth_service_basepath_v1: '/checkout/auth-service/v1'
+              pagopa_assets_cdn: 'https://assets.cdn.platform.pagopa.it/payment-methods'
+              pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi'
+              survey_show: 1
+              checkout_npg_sdk_url: 'https://stg-ta.nexigroup.com/monetaweb/resources/hfsdk.js'
+              checkout_gdi_check_timeout: 20000
+              checkout_version: "$(Build.SourceBranchName):$(Build.SourceVersion)"
 
-  #        - download: current
-  #          artifact: Bundle_DEV
+          - script: |
+              yarn build
+            displayName: 'Build'
 
-  #        - task: AzureCLI@1
-  #          displayName: 'Sync checkout storage on DEV'
-  #          inputs:
-  #            azureSubscription: 'DEV-PAGOPA-SERVICE-CONN'
-  #            scriptLocation: inlineScript
-  #            inlineScript: |
-  #              call az storage blob sync --container $web --account-name ${{ variables.DEV_STORAGE_ACCOUNT }} -s "$(Pipeline.Workspace)\Bundle_DEV"
+          - publish: $(System.DefaultWorkingDirectory)/dist
+            artifact: Bundle_DEV
 
-  #        - task: AzureCLI@1
-  #          displayName: 'Purge CDN endpoint on DEV'
-  #          inputs:
-  #            azureSubscription: 'DEV-PAGOPA-SERVICE-CONN'
-  #            scriptLocation: inlineScript
-  #            inlineScript: |
-  #              call az ${{ variables.CDN_TYPE }} endpoint purge -g ${{ variables.DEV_CDN_RG }} ${{ variables.ENDPOINT_FLAG }} ${{ variables.DEV_CDN_ENDPOINT }} --profile-name ${{ variables.DEV_CDN_PROFILE }} --content-paths "/*"
+  - stage: Deploy_DEV_pagoPA
+    dependsOn:
+      - Prepare_artifact_dev
+    jobs:
+      - job: 'deploy'
+        steps:
+          - checkout: none
 
-  #- stage: End_to_End_Tests_DEV
-  #  dependsOn:
-  #    - Deploy_DEV_pagoPA
-  #  pool:
-  #    vmImage: 'ubuntu-22.04'
-  #  jobs:
-  #    - job: e2e_tests
-  #      steps:
-  #        - template: .devops/azure-templates/e2e-tests.yaml@checkoutTests
-  #          parameters:
-  #            ENVIRONMENT: DEV
-  #            CHECKOUT_RESOURCE_REPO_NAME: checkoutTests
-  
-  # Create a relase
-  # Activated when ONE OF these are met:
-  # - is on branch main
-  # - is a tag in the form v{version}-RELEASE
+          - download: current
+            artifact: Bundle_DEV
+
+          - task: AzureCLI@1
+            displayName: 'Sync checkout storage on DEV'
+            inputs:
+              azureSubscription: 'DEV-PAGOPA-SERVICE-CONN'
+              scriptLocation: inlineScript
+              inlineScript: |
+                call az storage blob sync --container $web --account-name ${{ variables.DEV_STORAGE_ACCOUNT }} -s "$(Pipeline.Workspace)\Bundle_DEV"
+
+          - task: AzureCLI@1
+            displayName: 'Purge CDN endpoint on DEV'
+            inputs:
+              azureSubscription: 'DEV-PAGOPA-SERVICE-CONN'
+              scriptLocation: inlineScript
+              inlineScript: |
+                call az ${{ variables.CDN_TYPE }} endpoint purge -g ${{ variables.DEV_CDN_RG }} ${{ variables.ENDPOINT_FLAG }} ${{ variables.DEV_CDN_ENDPOINT }} --profile-name ${{ variables.DEV_CDN_PROFILE }} --content-paths "/*"
+
+  - stage: End_to_End_Tests_DEV
+    dependsOn:
+      - Deploy_DEV_pagoPA
+    pool:
+      vmImage: 'ubuntu-22.04'
+    jobs:
+      - job: e2e_tests
+        steps:
+          - template: .devops/azure-templates/e2e-tests.yaml@checkoutTests
+            parameters:
+              ENVIRONMENT: DEV
+              CHECKOUT_RESOURCE_REPO_NAME: checkoutTests
 
   - stage: Release
     dependsOn: []
@@ -341,6 +326,71 @@ stages:
             parameters:
               ENVIRONMENT: UAT
               CHECKOUT_RESOURCE_REPO_NAME: checkoutTests
+
+  # Run TAS e2e tests on UAT
+  - template: templates/qa-tas/tas-integration-test.yml@tas
+    dependsOn:
+      - Deploy_UAT_pagoPA
+    parameters:
+      testType:           e2e
+      suite:              tas_pass
+      environment:        uat
+      mode:               async
+      ref:                ${{ parameters.ref }}
+      verifyOrchestrator: true
+      publishTests:       true
+      # Behave tag filter. Leave empty to keep the workflow default (@runnable,
+      # used by the integration suites). Override to target other suites, e.g.
+      # set 'tags: @e2e' to run the e2e checkout suite (testType: e2e).
+      tags:               '@e2e'
+      # GitHub PAT forwarded to the orchestrator as GITHUB_TOKEN. Source it
+      # from a SECRET pipeline variable (here 'INTEGRATION_TEST_PAT') so it is
+      # masked in the logs — do not paste the raw token into this file.
+      githubToken:        $(CHECKOUT_TAS_GITHUB_TOKEN)
+      # Optional overrides — exposed inline because they are typically
+      # set-once-and-forget (not toggled from the portal at run-time):
+      # pythonVersion: "3.11"
+      # poolVmImage:   "ubuntu-latest"
+      # testRunTitle:  ""                # default — auto-generated as "TAS — <suite> / <env> (<ref>)"
+      #
+      # Supply-chain integrity, pinned mode (true SRI). When set, the sidecar
+      # verification is replaced by a check against this explicit digest.
+      # Compute it once against the version you trust and bake it in:
+      #   curl -sSfL https://raw.githubusercontent.com/pagopa/pagopa-platform-integration-test/refs/tags/v1/scripts/tas_orchestrator.py | sha256sum
+      # orchestratorSha256: "a68b6c43c98517352c6d182df4a97b67e33a94ed79ae56949b1f6e6a179b5fe1"
+
+  # Run TAS integration tests on UAT
+  - template: templates/qa-tas/tas-integration-test.yml@tas
+    dependsOn:
+      - Deploy_UAT_pagoPA
+    parameters:
+      testType:           integration
+      suite:              tas_pass
+      environment:        uat
+      mode:               async
+      ref:                ${{ parameters.ref }}
+      verifyOrchestrator: true
+      publishTests:       true
+      # Behave tag filter. Leave empty to keep the workflow default (@runnable,
+      # used by the integration suites). Override to target other suites, e.g.
+      # set 'tags: @e2e' to run the e2e checkout suite (testType: e2e).
+      tags:               '@runnable'
+      # GitHub PAT forwarded to the orchestrator as GITHUB_TOKEN. Source it
+      # from a SECRET pipeline variable (here 'INTEGRATION_TEST_PAT') so it is
+      # masked in the logs — do not paste the raw token into this file.
+      githubToken:        $(CHECKOUT_TAS_GITHUB_TOKEN)
+      # Optional overrides — exposed inline because they are typically
+      # set-once-and-forget (not toggled from the portal at run-time):
+      # pythonVersion: "3.11"
+      # poolVmImage:   "ubuntu-latest"
+      # testRunTitle:  ""                # default — auto-generated as "TAS — <suite> / <env> (<ref>)"
+      #
+      # Supply-chain integrity, pinned mode (true SRI). When set, the sidecar
+      # verification is replaced by a check against this explicit digest.
+      # Compute it once against the version you trust and bake it in:
+      #   curl -sSfL https://raw.githubusercontent.com/pagopa/pagopa-platform-integration-test/refs/tags/v1/scripts/tas_orchestrator.py | sha256sum
+      # orchestratorSha256: "a68b6c43c98517352c6d182df4a97b67e33a94ed79ae56949b1f6e6a179b5fe1"
+
 
     # Prepare Artifact
   - stage: Prepare_artifact_prod
