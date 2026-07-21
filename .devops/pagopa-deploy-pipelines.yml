@@ -341,86 +341,70 @@ stages:
               ENVIRONMENT: UAT
               CHECKOUT_RESOURCE_REPO_NAME: checkoutTests
 
-  # Run TAS e2e tests on UAT
-  - stage: "E2E TAS tests on UAT"
-    displayName: "E2E TAS tests on UAT"
-    dependsOn:
-      - Deploy_UAT_pagoPA
-    condition: eq(${{parameters.test_tas}}, true)
-    jobs:
-      - job: e2e_tests
-        steps:
-        - template: templates/qa-tas/tas-integration-test.yml@tas
-          parameters:
-            testType:           e2e
-            suite:              tas_pass
-            environment:        uat
-            mode:               async
-            ref:                ${{ parameters.ref }}
-            verifyOrchestrator: true
-            publishTests:       true
-            # Behave tag filter. Leave empty to keep the workflow default (@runnable,
-            # used by the integration suites). Override to target other suites, e.g.
-            # set 'tags: @e2e' to run the e2e checkout suite (testType: e2e).
-            tags:               '@e2e'
-            # GitHub PAT forwarded to the orchestrator as GITHUB_TOKEN. Source it
-            # from a SECRET pipeline variable (here 'INTEGRATION_TEST_PAT') so it is
-            # masked in the logs — do not paste the raw token into this file.
-            githubToken:        $(CHECKOUT_TAS_GITHUB_TOKEN)
-            # Optional overrides — exposed inline because they are typically
-            # set-once-and-forget (not toggled from the portal at run-time):
-            # pythonVersion: "3.11"
-            # poolVmImage:   "ubuntu-latest"
-            # testRunTitle:  ""                # default — auto-generated as "TAS — <suite> / <env> (<ref>)"
-            #
-            # Supply-chain integrity, pinned mode (true SRI). When set, the sidecar
-            # verification is replaced by a check against this explicit digest.
-            # Compute it once against the version you trust and bake it in:
-            #   curl -sSfL https://raw.githubusercontent.com/pagopa/pagopa-platform-integration-test/refs/tags/v1/scripts/tas_orchestrator.py | sha256sum
-            # orchestratorSha256: "a68b6c43c98517352c6d182df4a97b67e33a94ed79ae56949b1f6e6a179b5fe1"
-            # Testing parameter for setting dependecy to other stages
-            #dependsOnStages: ['Deploy_UAT_pagoPA']
+  # Run TAS e2e tests in UAT
+  - template: templates/qa-tas/tas-integration-test.yml@tas
+    parameters:
+      testType:           e2e
+      suite:              tas_pass
+      environment:        uat
+      mode:               async
+      ref:                ${{ parameters.ref }}
+      verifyOrchestrator: true
+      publishTests:       true
+      # Behave tag filter. Leave empty to keep the workflow default (@runnable,
+      # used by the integration suites). Override to target other suites, e.g.
+      # set 'tags: @e2e' to run the e2e checkout suite (testType: e2e).
+      tags:               '@e2e'
+      # GitHub PAT forwarded to the orchestrator as GITHUB_TOKEN. Source it
+      # from a SECRET pipeline variable (here 'INTEGRATION_TEST_PAT') so it is
+      # masked in the logs — do not paste the raw token into this file.
+      githubToken:        $(CHECKOUT_TAS_GITHUB_TOKEN)
+      # Optional overrides — exposed inline because they are typically
+      # set-once-and-forget (not toggled from the portal at run-time):
+      # pythonVersion: "3.11"
+      # poolVmImage:   "ubuntu-latest"
+      # testRunTitle:  ""                # default — auto-generated as "TAS — <suite> / <env> (<ref>)"
+      #
+      # Supply-chain integrity, pinned mode (true SRI). When set, the sidecar
+      # verification is replaced by a check against this explicit digest.
+      # Compute it once against the version you trust and bake it in:
+      #   curl -sSfL https://raw.githubusercontent.com/pagopa/pagopa-platform-integration-test/refs/tags/v1/scripts/tas_orchestrator.py | sha256sum
+      # orchestratorSha256: "a68b6c43c98517352c6d182df4a97b67e33a94ed79ae56949b1f6e6a179b5fe1"
+      # Testing parameter for setting dependecy to other stages
+      #dependsOnStages: ['Deploy_UAT_pagoPA']
 
 
-  # Run TAS e2e tests on UAT
-  - stage: "Integration TAS tests on UAT"
-    displayName: "Integration TAS tests on UAT"
-    dependsOn:
-      - Deploy_UAT_pagoPA
-    condition: eq(${{parameters.test_tas}}, true)
-    jobs:
-      - job: e2e_tests
-        steps:
-        - template: templates/qa-tas/tas-integration-test.yml@tas
-          parameters:
-            testType:           integration
-            suite:              tas_pass
-            environment:        uat
-            mode:               async
-            ref:                ${{ parameters.ref }}
-            verifyOrchestrator: true
-            publishTests:       true
-            # Behave tag filter. Leave empty to keep the workflow default (@runnable,
-            # used by the integration suites). Override to target other suites, e.g.
-            # set 'tags: @e2e' to run the e2e checkout suite (testType: e2e).
-            tags:               '@runnable'
-            # GitHub PAT forwarded to the orchestrator as GITHUB_TOKEN. Source it
-            # from a SECRET pipeline variable (here 'INTEGRATION_TEST_PAT') so it is
-            # masked in the logs — do not paste the raw token into this file.
-            githubToken:        $(CHECKOUT_TAS_GITHUB_TOKEN)
-            # Optional overrides — exposed inline because they are typically
-            # set-once-and-forget (not toggled from the portal at run-time):
-            # pythonVersion: "3.11"
-            # poolVmImage:   "ubuntu-latest"
-            # testRunTitle:  ""                # default — auto-generated as "TAS — <suite> / <env> (<ref>)"
-            #
-            # Supply-chain integrity, pinned mode (true SRI). When set, the sidecar
-            # verification is replaced by a check against this explicit digest.
-            # Compute it once against the version you trust and bake it in:
-            #   curl -sSfL https://raw.githubusercontent.com/pagopa/pagopa-platform-integration-test/refs/tags/v1/scripts/tas_orchestrator.py | sha256sum
-            # orchestratorSha256: "a68b6c43c98517352c6d182df4a97b67e33a94ed79ae56949b1f6e6a179b5fe1"
-            # Testing parameter for setting dependecy to other stages
-            #dependsOnStages: ['Deploy_UAT_pagoPA']
+  # Run TAS integration tests in UAT
+  - template: templates/qa-tas/tas-integration-test.yml@tas
+    parameters:
+      testType:           integration
+      suite:              tas_pass
+      environment:        uat
+      mode:               async
+      ref:                ${{ parameters.ref }}
+      verifyOrchestrator: true
+      publishTests:       true
+      # Behave tag filter. Leave empty to keep the workflow default (@runnable,
+      # used by the integration suites). Override to target other suites, e.g.
+      # set 'tags: @e2e' to run the e2e checkout suite (testType: e2e).
+      tags:               '@runnable'
+      # GitHub PAT forwarded to the orchestrator as GITHUB_TOKEN. Source it
+      # from a SECRET pipeline variable (here 'INTEGRATION_TEST_PAT') so it is
+      # masked in the logs — do not paste the raw token into this file.
+      githubToken:        $(CHECKOUT_TAS_GITHUB_TOKEN)
+      # Optional overrides — exposed inline because they are typically
+      # set-once-and-forget (not toggled from the portal at run-time):
+      # pythonVersion: "3.11"
+      # poolVmImage:   "ubuntu-latest"
+      # testRunTitle:  ""                # default — auto-generated as "TAS — <suite> / <env> (<ref>)"
+      #
+      # Supply-chain integrity, pinned mode (true SRI). When set, the sidecar
+      # verification is replaced by a check against this explicit digest.
+      # Compute it once against the version you trust and bake it in:
+      #   curl -sSfL https://raw.githubusercontent.com/pagopa/pagopa-platform-integration-test/refs/tags/v1/scripts/tas_orchestrator.py | sha256sum
+      # orchestratorSha256: "a68b6c43c98517352c6d182df4a97b67e33a94ed79ae56949b1f6e6a179b5fe1"
+      # Testing parameter for setting dependecy to other stages
+      #dependsOnStages: ['Deploy_UAT_pagoPA']
 
     # Prepare Artifact
   
