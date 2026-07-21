@@ -107,7 +107,9 @@ export default function PaymentEmailPage() {
   }, []);
 
   const onCancel = () =>
-    cancelUrl ? window.location.replace(cancelUrl) : navigate(-1);
+    cancelUrl
+      ? window.location.replace(cancelUrl)
+      : navigate(`/${CheckoutRoutes.DATI_PAGAMENTO}`);
 
   return (
     <>
