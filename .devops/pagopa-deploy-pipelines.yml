@@ -203,7 +203,7 @@ stages:
           parameters:
             testType:           e2e
             suite:              tas_pass
-            environment:        uat
+            environment:        dev
             mode:               async
             ref:                ${{ parameters.ref }}
             verifyOrchestrator: true
@@ -241,7 +241,7 @@ stages:
           parameters:
             testType:           integration
             suite:              tas_pass
-            environment:        uat
+            environment:        dev
             mode:               async
             ref:                ${{ parameters.ref }}
             verifyOrchestrator: true
@@ -250,7 +250,7 @@ stages:
             # Behave tag filter. Leave empty to keep the workflow default (@runnable,
             # used by the integration suites). Override to target other suites, e.g.
             # set 'tags: @e2e' to run the e2e checkout suite (testType: e2e).
-            tags:               '@runnable'
+            tags:               '@e2e'
             # GitHub PAT forwarded to the orchestrator as GITHUB_TOKEN. Source it
             # from a SECRET pipeline variable (here 'INTEGRATION_TEST_PAT') so it is
             # masked in the logs — do not paste the raw token into this file.
@@ -425,7 +425,7 @@ stages:
 
   # Run TAS e2e tests in UAT
   - stage: TAS_tests
-    condition: eq(${{parameters.test_tas}}, true)
+    condition: eq(${{parameters.test_tas}}, false)
     dependsOn:
       - Deploy_UAT_pagoPA
     pool:
