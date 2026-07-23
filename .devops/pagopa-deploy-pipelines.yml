@@ -342,7 +342,7 @@ stages:
               CHECKOUT_RESOURCE_REPO_NAME: checkoutTests
 
   # Run TAS e2e tests in UAT
-  - stage: TAS tests
+  - stage: TAS_tests
     condition: eq(${{parameters.test_tas}}, true)
     #dependsOn:
     #  - Deploy_UAT_pagoPA
