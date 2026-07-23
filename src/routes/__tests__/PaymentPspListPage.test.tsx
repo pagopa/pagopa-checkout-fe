@@ -151,7 +151,42 @@ describe("PaymentPspListPage", () => {
     jest.mocked(setThreshold).mockClear();
   });
 
-  test("should navigate to scegli-metodo clicking on back button", () => {
+  test("should navigate to inserisci-carta clicking on back button when payment type is CP", () => {
+    (
+      apiPaymentEcommerceClientWithRetryV2.calculateFees as jest.Mock
+    ).mockReturnValue(
+      Promise.resolve({
+        right: {
+          status: 200,
+          value: calculateFeeResponse,
+        },
+      })
+    );
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <PaymentPspListPage />
+      </MemoryRouter>
+    );
+    act(() => {
+      const goBack = screen.getByText("paymentPspListPage.formButtons.back");
+      fireEvent.click(goBack);
+    });
+    expect(navigate).toHaveBeenCalledWith("/inserisci-carta");
+  });
+
+  test("should navigate to scegli-metodo clicking on back button when payment type is not CP", () => {
+    (getSessionItem as jest.Mock).mockImplementation((item: SessionItems) => {
+      switch (item) {
+        case "paymentMethod":
+          return { paymentMethodId: "bpay-id", paymentTypeCode: "BPAY" };
+        case "paymentMethodInfo":
+          return paymentMethodInfo;
+        case "transaction":
+          return transaction;
+        default:
+          return undefined;
+      }
+    });
     (
       apiPaymentEcommerceClientWithRetryV2.calculateFees as jest.Mock
     ).mockReturnValue(

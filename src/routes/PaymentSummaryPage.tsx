@@ -144,7 +144,9 @@ export default function PaymentSummaryPage() {
         disabledSubmit={false}
         handleSubmit={onSubmit}
         handleCancel={() =>
-          navigate(`/${CheckoutRoutes.INSERISCI_DATI_AVVISO}`)
+          navigate(`/${CheckoutRoutes.INSERISCI_DATI_AVVISO}`, {
+            replace: true,
+          })
         }
       />
       <InformationModal

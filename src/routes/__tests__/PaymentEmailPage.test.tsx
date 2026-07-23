@@ -168,7 +168,7 @@ describe("PaymentEmailPage", () => {
     await act(async () => {
       fireEvent.click(screen.getByText("paymentEmailPage.formButtons.back"));
     });
-    expect(navigate).toHaveBeenCalledWith("/dati-pagamento");
+    expect(navigate).toHaveBeenCalledWith("/dati-pagamento", { replace: true });
   });
 
   test("should track mixpanel screen view on mount", async () => {
