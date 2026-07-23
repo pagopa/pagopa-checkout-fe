@@ -111,11 +111,9 @@ describe("qrCodeValidation function", () => {
   it("Should reject invalid QR code formats", () => {
     expect(qrCodeValidation("INVALID|DATA|SHOULD|FAIL")).toBe(false);
     expect(qrCodeValidation("")).toBe(false);
-    expect(
-      qrCodeValidation("PAGOPA|002|302039502020500000|77777777777|")
-    ).toBe(false);
-    expect(
-      qrCodeValidation("PAGOPA|002|12345|77777777777|12000")
-    ).toBe(false);
+    expect(qrCodeValidation("PAGOPA|002|302039502020500000|77777777777|")).toBe(
+      false
+    );
+    expect(qrCodeValidation("PAGOPA|002|12345|77777777777|12000")).toBe(false);
   });
 });
