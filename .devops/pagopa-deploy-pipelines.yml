@@ -28,13 +28,6 @@ parameters:
     type: string
     #testing value
     default: main
-  - name: test_tas
-    displayName: 'Run TAS tests'
-    type: boolean
-    default: True
-    values:
-      - False
-      - True
   
 variables:
   NODE_VERSION: 18.17.1
@@ -92,7 +85,7 @@ resources:
 stages:
   
   - stage: Prepare_artifact_dev
-    condition: and(succeeded(), eq(${{parameters.DEV_DEPLOY}}, true), eq(${{parameters.test_tas}}, false))
+    condition: and(succeeded(), eq(${{parameters.DEV_DEPLOY}}, true))
     dependsOn: []
     jobs:
       - job: make_build
@@ -149,7 +142,6 @@ stages:
             artifact: Bundle_DEV
 
   - stage: Deploy_DEV_pagoPA
-    condition: eq(${{parameters.test_tas}}, false)
     dependsOn:
       - Prepare_artifact_dev
     jobs:
@@ -177,7 +169,6 @@ stages:
                 call az ${{ variables.CDN_TYPE }} endpoint purge -g ${{ variables.DEV_CDN_RG }} ${{ variables.ENDPOINT_FLAG }} ${{ variables.DEV_CDN_ENDPOINT }} --profile-name ${{ variables.DEV_CDN_PROFILE }} --content-paths "/*"
 
   - stage: End_to_End_Tests_DEV
-    condition: eq(${{parameters.test_tas}}, false)
     dependsOn:
       - Deploy_DEV_pagoPA
     pool:
@@ -191,9 +182,8 @@ stages:
               CHECKOUT_RESOURCE_REPO_NAME: checkoutTests
 
   - stage: TAS_tests_DEV
-    condition: eq(${{parameters.test_tas}}, true)
-    #dependsOn:
-    #  - Deploy_UAT_pagoPA
+    dependsOn:
+      - Deploy_DEV_pagoPA
     pool:
       vmImage: 'ubuntu-latest'
     jobs:
@@ -309,7 +299,6 @@ stages:
             displayName: 'Skip release bundle'
   # Prepare Artifact
   - stage: Prepare_artifact_uat
-    condition: eq(${{parameters.test_tas}}, false)
     dependsOn:
       - Release
     jobs:
@@ -367,7 +356,6 @@ stages:
             artifact: Bundle_UAT
 
   - stage: UAT_Deploy_approval
-    condition: eq(${{parameters.test_tas}}, false)
     dependsOn:
       - Prepare_artifact_uat
     jobs:
@@ -382,7 +370,6 @@ stages:
             onTimeout: 'skip'
 
   - stage: Deploy_UAT_pagoPA
-    condition: eq(${{parameters.test_tas}}, false)
     dependsOn:
       - UAT_Deploy_approval
     jobs:
@@ -410,7 +397,6 @@ stages:
                 call az ${{ variables.CDN_TYPE }} endpoint purge -g ${{ variables.UAT_CDN_RG }} ${{ variables.ENDPOINT_FLAG }} ${{ variables.UAT_CDN_ENDPOINT }} --profile-name ${{ variables.UAT_CDN_PROFILE }} --content-paths "/*"
 
   - stage: End_to_End_Tests_UAT
-    condition: eq(${{parameters.test_tas}}, false)
     dependsOn:
       - Deploy_UAT_pagoPA
     pool:
@@ -422,89 +408,6 @@ stages:
             parameters:
               ENVIRONMENT: UAT
               CHECKOUT_RESOURCE_REPO_NAME: checkoutTests
-
-  # Run TAS e2e tests in UAT
-  - stage: TAS_tests
-    condition: eq(${{parameters.test_tas}}, false)
-    dependsOn:
-      - Deploy_UAT_pagoPA
-    pool:
-      vmImage: 'ubuntu-latest'
-    jobs:
-      - job: Run_TAS_tests
-        steps:
-        - template: templates/qa-tas/tas-integration-test.yml@tas
-          parameters:
-            testType:           e2e
-            suite:              tas_pass
-            environment:        uat
-            mode:               async
-            ref:                ${{ parameters.ref }}
-            verifyOrchestrator: true
-            publishTests:       true
-            stepName:           TAS_E2E
-            # Behave tag filter. Leave empty to keep the workflow default (@runnable,
-            # used by the integration suites). Override to target other suites, e.g.
-            # set 'tags: @e2e' to run the e2e checkout suite (testType: e2e).
-            tags:               '@e2e'
-            # GitHub PAT forwarded to the orchestrator as GITHUB_TOKEN. Source it
-            # from a SECRET pipeline variable (here 'INTEGRATION_TEST_PAT') so it is
-            # masked in the logs — do not paste the raw token into this file.
-            githubToken:        $(CHECKOUT_TAS_GITHUB_TOKEN)
-            # Optional overrides — exposed inline because they are typically
-            # set-once-and-forget (not toggled from the portal at run-time):
-            # pythonVersion: "3.11"
-            # poolVmImage:   "ubuntu-latest"
-            # testRunTitle:  ""                # default — auto-generated as "TAS — <suite> / <env> (<ref>)"
-            #
-            # Supply-chain integrity, pinned mode (true SRI). When set, the sidecar
-            # verification is replaced by a check against this explicit digest.
-            # Compute it once against the version you trust and bake it in:
-            #   curl -sSfL https://raw.githubusercontent.com/pagopa/pagopa-platform-integration-test/refs/tags/v1/scripts/tas_orchestrator.py | sha256sum
-            # orchestratorSha256: "a68b6c43c98517352c6d182df4a97b67e33a94ed79ae56949b1f6e6a179b5fe1"
-            # Testing parameter for setting dependecy to other stages
-            #dependsOnStages: ['Deploy_UAT_pagoPA']
-
-        # TO DO for the template used:
-        # - modify the name of the stage to be a parameter configurable from the pipeline,
-        #   we can use the same template multiple times because the name of the stage is static
-        #   and Azure DevOps does not allow to have multiple stages with the same name in a pipeline.
-        # - Change the template to use only jobs and not stages, this let us to use dependsOn parameter 
-        # Run TAS integration tests in UAT
-        - template: templates/qa-tas/tas-integration-test.yml@tas
-          parameters:
-            testType:           integration
-            suite:              tas_pass
-            environment:        uat
-            mode:               async
-            ref:                ${{ parameters.ref }}
-            verifyOrchestrator: true
-            publishTests:       true
-            stepName:           TAS_INTEGRATION
-            # Behave tag filter. Leave empty to keep the workflow default (@runnable,
-            # used by the integration suites). Override to target other suites, e.g.
-            # set 'tags: @e2e' to run the e2e checkout suite (testType: e2e).
-            tags:               '@runnable'
-            # GitHub PAT forwarded to the orchestrator as GITHUB_TOKEN. Source it
-            # from a SECRET pipeline variable (here 'INTEGRATION_TEST_PAT') so it is
-            # masked in the logs — do not paste the raw token into this file.
-            githubToken:        $(CHECKOUT_TAS_GITHUB_TOKEN)
-            # Optional overrides — exposed inline because they are typically
-            # set-once-and-forget (not toggled from the portal at run-time):
-            # pythonVersion: "3.11"
-            # poolVmImage:   "ubuntu-latest"
-            # testRunTitle:  ""                # default — auto-generated as "TAS — <suite> / <env> (<ref>)"
-            #
-            # Supply-chain integrity, pinned mode (true SRI). When set, the sidecar
-            # verification is replaced by a check against this explicit digest.
-            # Compute it once against the version you trust and bake it in:
-            #   curl -sSfL https://raw.githubusercontent.com/pagopa/pagopa-platform-integration-test/refs/tags/v1/scripts/tas_orchestrator.py | sha256sum
-            # orchestratorSha256: "a68b6c43c98517352c6d182df4a97b67e33a94ed79ae56949b1f6e6a179b5fe1"
-            # Testing parameter for setting dependecy to other stages
-            #dependsOnStages: ['Deploy_UAT_pagoPA']
-
-          # Prepare Artifact
-  
   
   - stage: Prepare_artifact_prod
     dependsOn:
@@ -557,7 +460,6 @@ stages:
             artifact: Bundle
 
   - stage: UAT_to_PROD_promotion
-    condition: eq(${{parameters.test_tas}}, false)
     dependsOn:
       - Prepare_artifact_prod
     jobs:
@@ -572,7 +474,6 @@ stages:
             onTimeout: 'skip'
 
   - stage: Deploy_PROD_pagoPA
-    condition: eq(${{parameters.test_tas}}, false)
     dependsOn:
       - UAT_to_PROD_promotion
     jobs:
