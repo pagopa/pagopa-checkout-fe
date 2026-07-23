@@ -349,7 +349,7 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
     jobs:
-      - job: Run TAS tests
+      - job: Run_TAS_tests
         steps:
         - template: templates/qa-tas/tas-integration-test.yml@tas
           parameters:
