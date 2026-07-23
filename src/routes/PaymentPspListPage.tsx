@@ -250,11 +250,7 @@ export default function PaymentPspListPage() {
             disabledSubmit={!submitEnabled}
             handleSubmit={onSubmit}
             handleCancel={() => {
-              navigate(
-                paymentMethod?.paymentTypeCode === "CP"
-                  ? `/${CheckoutRoutes.INSERISCI_CARTA}`
-                  : `/${CheckoutRoutes.SCEGLI_METODO}`
-              );
+              navigate(`/${CheckoutRoutes.SCEGLI_METODO}`);
             }}
           />
         </form>
