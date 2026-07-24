@@ -93,18 +93,30 @@ describe("qrCodeValidation function", () => {
     ).toBe(true);
   });
 
-  it("Should reject QR codes with zero amount", () => {
+  it("Should accept valid QR codes with leading zeros in amount", () => {
+    expect(
+      qrCodeValidation("PAGOPA|002|302039502020500000|77777777777|01")
+    ).toBe(true);
+    expect(
+      qrCodeValidation("PAGOPA|002|302039502020500000|77777777777|007")
+    ).toBe(true);
+    expect(
+      qrCodeValidation("PAGOPA|002|302039502020500000|77777777777|0001")
+    ).toBe(true);
+    expect(
+      qrCodeValidation("PAGOPA|002|302039502020500000|77777777777|00005")
+    ).toBe(true);
+  });
+
+  it("Should reject QR codes with zero-only amount", () => {
     expect(
       qrCodeValidation("PAGOPA|002|302039502020500000|77777777777|0")
     ).toBe(false);
-  });
-
-  it("Should reject QR codes with leading zeros in amount", () => {
     expect(
-      qrCodeValidation("PAGOPA|002|302039502020500000|77777777777|01")
+      qrCodeValidation("PAGOPA|002|302039502020500000|77777777777|00")
     ).toBe(false);
     expect(
-      qrCodeValidation("PAGOPA|002|302039502020500000|77777777777|007")
+      qrCodeValidation("PAGOPA|002|302039502020500000|77777777777|000")
     ).toBe(false);
   });
 
