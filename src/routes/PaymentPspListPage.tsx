@@ -16,7 +16,7 @@ import { PaymentPspListAlert } from "../features/payment/components/PaymentAlert
 import { PspOrderingModel, sortBy } from "../utils/SortUtil";
 import { PaymentPspListSortingDrawer } from "../features/payment/components/PaymentPspList/PaymentPspListSortingDrawer";
 import { PaymentPSPListGrid } from "../features/payment/components/PaymentPspList/PaymentPspListGrid";
-import { calculateFees } from "../utils/api/helper";
+import { calculateFees, retrieveCardData } from "../utils/api/helper";
 import { ErrorsType } from "../utils/errors/checkErrorsModel";
 import ErrorModal from "../components/modals/ErrorModal";
 import CheckoutLoader from "../components/PageContent/CheckoutLoader";
@@ -172,16 +172,34 @@ export default function PaymentPspListPage() {
 
     setPspSelected(undefined);
 
-    void calculateFees({
-      paymentId: paymentMethod?.paymentMethodId,
-      bin: sessionPaymentMethodResponse?.bin,
-      walletId: paymentMethod?.walletId,
-      walletType: paymentMethod?.walletType,
-      pspId: paymentMethod?.pspId,
-      onError,
-      onPspNotFound,
-      onResponsePsp: onPspListSuccessResponse,
-    });
+    const requestPspFees = (bin?: string) => {
+      void calculateFees({
+        paymentId: paymentMethod?.paymentMethodId,
+        bin,
+        walletId: paymentMethod?.walletId,
+        walletType: paymentMethod?.walletType,
+        pspId: paymentMethod?.pspId,
+        onError,
+        onPspNotFound,
+        onResponsePsp: onPspListSuccessResponse,
+      });
+    };
+
+    const isNewCard =
+      paymentMethod?.paymentTypeCode === "CP" && !paymentMethod?.walletId;
+
+    if (isNewCard) {
+      void retrieveCardData({
+        paymentId: paymentMethod?.paymentMethodId,
+        orderId: getSessionItem(SessionItems.orderId) as string,
+        onError,
+        onResponseSessionPaymentMethod: (resp) => {
+          requestPspFees(resp?.bin);
+        },
+      });
+    } else {
+      requestPspFees(sessionPaymentMethodResponse?.bin);
+    }
   }, []);
 
   return (
