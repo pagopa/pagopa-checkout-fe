@@ -186,7 +186,9 @@ export default function PaymentPspListPage() {
     };
 
     const isNewCard =
-      paymentMethod?.paymentTypeCode === "CP" && !paymentMethod?.walletId;
+      localStorage.getItem(SessionItems.enablePspPage) === "true" &&
+      paymentMethod?.paymentTypeCode === "CP" &&
+      !paymentMethod?.walletId;
 
     if (isNewCard) {
       void retrieveCardData({
