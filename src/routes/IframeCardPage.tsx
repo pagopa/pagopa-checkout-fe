@@ -17,6 +17,7 @@ import {
   MixpanelPaymentPhase,
 } from "../utils/mixpanel/mixpanelEvents";
 import InformationModal from "../components/modals/InformationModal";
+import { CheckoutRoutes } from "./models/routeModel";
 
 export default function IFrameCardPage() {
   const navigate = useNavigate();
@@ -39,7 +40,7 @@ export default function IFrameCardPage() {
     });
   }, []);
 
-  const onCancel = () => navigate(-1);
+  const onCancel = () => navigate(`/${CheckoutRoutes.SCEGLI_METODO}`);
   return (
     <PageContainer title="inputCardPage.title">
       <Button
