@@ -86,7 +86,9 @@ export const handleSessionPaymentMethodResponse = (
   );
 };
 
-export const retrievePaymentSessionFn = (deps: RetrievePaymentSessionDeps) => {
+export const retrievePaymentSessionFn = async (
+  deps: RetrievePaymentSessionDeps
+) => {
   const {
     paymentMethodId,
     orderId,
@@ -97,19 +99,14 @@ export const retrievePaymentSessionFn = (deps: RetrievePaymentSessionDeps) => {
     setLoading,
   } = deps;
 
-  // When enablePspPage is active, skip getFees here and let
-  // PaymentPspListPage handle it to avoid a duplicate POST /fees call
-  if (localStorage.getItem(SessionItems.enablePspPage) === "true") {
-    setLoading(false);
-    navigate(`/${CheckoutRoutes.LISTA_PSP}`);
-    return;
-  }
-
-  void retrieveCardData({
+  await retrieveCardData({
     paymentId: paymentMethodId,
     orderId,
     onError,
     onResponseSessionPaymentMethod: (resp) => {
+      if (localStorage.getItem(SessionItems.enablePspPage) === "true") {
+        return;
+      }
       handleSessionPaymentMethodResponse(
         resp,
         onError,
@@ -118,6 +115,11 @@ export const retrievePaymentSessionFn = (deps: RetrievePaymentSessionDeps) => {
       );
     },
   });
+
+  if (localStorage.getItem(SessionItems.enablePspPage) === "true") {
+    setLoading(false);
+    navigate(`/${CheckoutRoutes.LISTA_PSP}`);
+  }
 };
 
 // eslint-disable-next-line sonarjs/cognitive-complexity

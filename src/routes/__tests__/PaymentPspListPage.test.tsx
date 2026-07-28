@@ -3,10 +3,7 @@ import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { fireEvent, act, screen, waitFor } from "@testing-library/react";
 import * as router from "react-router";
-import {
-  apiPaymentEcommerceClient,
-  apiPaymentEcommerceClientWithRetryV2,
-} from "../../utils/api/client";
+import { apiPaymentEcommerceClientWithRetryV2 } from "../../utils/api/client";
 import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders";
 import PaymentPspListPage from "../PaymentPspListPage";
 import {
@@ -78,9 +75,6 @@ jest.mock("../../utils/api/client", () => ({
   apiPaymentEcommerceClientWithRetryV2: {
     calculateFees: jest.fn(),
   },
-  apiPaymentEcommerceClient: {
-    getSessionPaymentMethod: jest.fn(),
-  },
 }));
 
 jest.mock("../../utils/mixpanel/mixpanelHelperInit", () => ({
@@ -119,8 +113,6 @@ const mockGetSessionItem = (item: SessionItems) => {
       return paymentInfo;
     case "sessionPayment":
       return sessionPayment;
-    case "orderId":
-      return "test-order-id";
     default:
       return undefined;
   }
@@ -138,7 +130,6 @@ jest.mock("../../utils/storage/sessionStorage", () => ({
     useremail: "useremail",
     paymentInfo: "paymentInfo",
     sessionPayment: "sessionPayment",
-    orderId: "orderId",
   },
 }));
 
@@ -157,14 +148,6 @@ describe("PaymentPspListPage", () => {
     (
       apiPaymentEcommerceClientWithRetryV2.calculateFees as jest.Mock
     ).mockReset();
-    (
-      apiPaymentEcommerceClient.getSessionPaymentMethod as jest.Mock
-    ).mockReset();
-    (
-      apiPaymentEcommerceClient.getSessionPaymentMethod as jest.Mock
-    ).mockResolvedValue({
-      right: { status: 200, value: sessionPayment },
-    });
     jest.mocked(setThreshold).mockClear();
   });
 
