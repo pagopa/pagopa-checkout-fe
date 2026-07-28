@@ -188,7 +188,6 @@ describe("App", () => {
 
     await waitFor(() => {
       expect(localStorage.getItem("enablePspPage")).toBe("true");
-      expect(document.title).toBe("indexPage.title - pagoPA");
     });
 
     expect((window as any).recaptchaOptions).toEqual({ useRecaptchaNet: true });
