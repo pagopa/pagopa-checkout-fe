@@ -17,7 +17,7 @@ export function digitValidation(text: string) {
 }
 
 export function qrCodeValidation(code: string) {
-  return /^[a-zA-Z]{6}(\|[0-9]{3})(\|[0-9]{18})(\|[0-9]{11})(\|(?!0+$)[0-9]{1,11})$/.test(
+  return /^[a-zA-Z]{6}(\|[0-9]{3})(\|[0-9]{18})(\|[0-9]{11})(\|[0-9]{2,11})$/.test(
     code
   );
 }

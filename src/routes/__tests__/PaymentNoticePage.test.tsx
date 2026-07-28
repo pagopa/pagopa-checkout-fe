@@ -190,22 +190,19 @@ describe("PaymentNotice", () => {
     });
   });
 
-  test("Should call navigate to root when click back button", async () => {
-    const { container } = renderWithReduxProvider(
+  test("Should call navigate with -1 when click back button", async () => {
+    renderWithReduxProvider(
       <MemoryRouter>
         <PaymentNotice />
       </MemoryRouter>
     );
 
     // Trigger the form submission. This could be changed to match your button querying method.
-    const cancelButton =
-      container.querySelector("#paymentNoticeButtonCancel") ||
-      screen.getByText("paymentNoticePage.formButtons.cancel");
-    fireEvent.click(cancelButton);
+    fireEvent.click(screen.getByText("paymentNoticePage.formButtons.cancel"));
 
     // Wait for the API call to resolve and the navigation to occur.
     await waitFor(() => {
-      expect(navigate).toHaveBeenCalledWith("/");
+      expect(navigate).toHaveBeenCalledWith(-1);
     });
   });
 

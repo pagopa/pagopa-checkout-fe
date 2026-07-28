@@ -153,10 +153,7 @@ export default function PaymentChoicePage() {
     onCancelResponse();
   }, []);
 
-  const handleBackNavigate = React.useCallback(
-    () => navigate(`/${CheckoutRoutes.INSERISCI_EMAIL}`, { replace: true }),
-    []
-  );
+  const handleBackNavigate = React.useCallback(() => navigate(-1), []);
 
   const handleCloseModal = React.useCallback(
     () => setCancelModalOpen(false),
