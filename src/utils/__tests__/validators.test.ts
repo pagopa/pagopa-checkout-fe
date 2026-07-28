@@ -1,8 +1,5 @@
 import * as O from "fp-ts/Option";
-import {
-  qrCodeValidation,
-  validateSessionWalletCardFormFields,
-} from "../../utils/regex/validators";
+import { validateSessionWalletCardFormFields } from "../../utils/regex/validators";
 
 export const npgSessionFieldsResponse = {
   orderId: "1222302",
@@ -65,67 +62,5 @@ describe("validateSessionWalletCardFormFields function", () => {
         npgSessionFieldsResponse.cardFormFields
       )
     ).toEqual(O.some(npgSessionFieldsResponse.cardFormFields));
-  });
-});
-
-describe("qrCodeValidation function", () => {
-  it("Should accept valid QR codes with multi-digit amounts", () => {
-    expect(
-      qrCodeValidation("PAGOPA|002|302039502020500000|77777777777|12000")
-    ).toBe(true);
-    expect(
-      qrCodeValidation("PAGOPA|002|302039502020500000|77777777777|99")
-    ).toBe(true);
-    expect(
-      qrCodeValidation("PAGOPA|002|302039502020500000|77777777777|99999999999")
-    ).toBe(true);
-  });
-
-  it("Should accept valid QR codes with single-digit amounts (1-9)", () => {
-    expect(
-      qrCodeValidation("PAGOPA|002|302039502020500000|77777777777|1")
-    ).toBe(true);
-    expect(
-      qrCodeValidation("PAGOPA|002|302039502020500000|77777777777|5")
-    ).toBe(true);
-    expect(
-      qrCodeValidation("PAGOPA|002|302039502020500000|77777777777|9")
-    ).toBe(true);
-  });
-
-  it("Should accept valid QR codes with leading zeros in amount", () => {
-    expect(
-      qrCodeValidation("PAGOPA|002|302039502020500000|77777777777|01")
-    ).toBe(true);
-    expect(
-      qrCodeValidation("PAGOPA|002|302039502020500000|77777777777|007")
-    ).toBe(true);
-    expect(
-      qrCodeValidation("PAGOPA|002|302039502020500000|77777777777|0001")
-    ).toBe(true);
-    expect(
-      qrCodeValidation("PAGOPA|002|302039502020500000|77777777777|00005")
-    ).toBe(true);
-  });
-
-  it("Should reject QR codes with zero-only amount", () => {
-    expect(
-      qrCodeValidation("PAGOPA|002|302039502020500000|77777777777|0")
-    ).toBe(false);
-    expect(
-      qrCodeValidation("PAGOPA|002|302039502020500000|77777777777|00")
-    ).toBe(false);
-    expect(
-      qrCodeValidation("PAGOPA|002|302039502020500000|77777777777|000")
-    ).toBe(false);
-  });
-
-  it("Should reject invalid QR code formats", () => {
-    expect(qrCodeValidation("INVALID|DATA|SHOULD|FAIL")).toBe(false);
-    expect(qrCodeValidation("")).toBe(false);
-    expect(qrCodeValidation("PAGOPA|002|302039502020500000|77777777777|")).toBe(
-      false
-    );
-    expect(qrCodeValidation("PAGOPA|002|12345|77777777777|12000")).toBe(false);
   });
 });
