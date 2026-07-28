@@ -151,7 +151,7 @@ describe("PaymentPspListPage", () => {
     jest.mocked(setThreshold).mockClear();
   });
 
-  test("should navigate to scegli-metodo clicking on back button", () => {
+  test("should call navigate -1 clicking on back button", () => {
     (
       apiPaymentEcommerceClientWithRetryV2.calculateFees as jest.Mock
     ).mockReturnValue(
@@ -171,7 +171,7 @@ describe("PaymentPspListPage", () => {
       const goBack = screen.getByText("paymentPspListPage.formButtons.back");
       fireEvent.click(goBack);
     });
-    expect(navigate).toHaveBeenCalledWith("/scegli-metodo");
+    expect(navigate).toHaveBeenCalledWith(-1);
   });
 
   test("should call navigate riepilogo-pagamento clicking on submit button after select psp", async () => {

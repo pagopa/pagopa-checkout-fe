@@ -143,11 +143,7 @@ export default function PaymentSummaryPage() {
         idCancel="paymentSummaryButtonBack"
         disabledSubmit={false}
         handleSubmit={onSubmit}
-        handleCancel={() =>
-          navigate(`/${CheckoutRoutes.INSERISCI_DATI_AVVISO}`, {
-            replace: true,
-          })
-        }
+        handleCancel={() => navigate(-1)}
       />
       <InformationModal
         title={t("paymentSummaryPage.dialog.title")}
