@@ -99,12 +99,15 @@ export const retrievePaymentSessionFn = async (
     setLoading,
   } = deps;
 
+  const isPspPageEnabled =
+    localStorage.getItem(SessionItems.enablePspPage) === "true";
+
   await retrieveCardData({
     paymentId: paymentMethodId,
     orderId,
     onError,
     onResponseSessionPaymentMethod: (resp) => {
-      if (localStorage.getItem(SessionItems.enablePspPage) === "true") {
+      if (isPspPageEnabled) {
         return;
       }
       handleSessionPaymentMethodResponse(
@@ -116,7 +119,7 @@ export const retrievePaymentSessionFn = async (
     },
   });
 
-  if (localStorage.getItem(SessionItems.enablePspPage) === "true") {
+  if (isPspPageEnabled) {
     setLoading(false);
     navigate(`/${CheckoutRoutes.LISTA_PSP}`);
   }
