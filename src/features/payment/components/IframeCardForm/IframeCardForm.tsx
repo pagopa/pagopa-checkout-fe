@@ -108,6 +108,18 @@ export const retrievePaymentSessionFn = async (
     onError,
     onResponseSessionPaymentMethod: (resp) => {
       if (isPspPageEnabled) {
+        pipe(
+          SessionPaymentMethodResponse.decode(resp),
+          O.fromEither,
+          O.chain((r) => O.fromNullable(r.bin)),
+          O.fold(
+            () => onError(ErrorsType.GENERIC_ERROR),
+            () => {
+              setLoading(false);
+              navigate(`/${CheckoutRoutes.LISTA_PSP}`);
+            }
+          )
+        );
         return;
       }
       handleSessionPaymentMethodResponse(
@@ -118,11 +130,6 @@ export const retrievePaymentSessionFn = async (
       );
     },
   });
-
-  if (isPspPageEnabled) {
-    setLoading(false);
-    navigate(`/${CheckoutRoutes.LISTA_PSP}`);
-  }
 };
 
 // eslint-disable-next-line sonarjs/cognitive-complexity

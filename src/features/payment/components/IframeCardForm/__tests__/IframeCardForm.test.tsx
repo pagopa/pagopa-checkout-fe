@@ -991,6 +991,36 @@ describe("retrievePaymentSessionFn", () => {
     expect(mockNavigate).toHaveBeenCalledWith(`/${CheckoutRoutes.LISTA_PSP}`);
   });
 
+  it("should call onError and NOT navigate to LISTA_PSP when enablePspPage is true but retrieveCardData fails", async () => {
+    localStorageMock.setItem("enablePspPage", "true");
+
+    (helper.retrieveCardData as jest.Mock).mockImplementation(
+      ({ onError, onResponseSessionPaymentMethod }) => {
+        onError(ErrorsType.CONNECTION);
+        onResponseSessionPaymentMethod({});
+      }
+    );
+
+    const mockOnError = jest.fn();
+    const mockSetLoading = jest.fn();
+
+    await retrievePaymentSessionFn({
+      paymentMethodId: "pm123",
+      orderId: "order123",
+      onError: mockOnError,
+      onSuccess: jest.fn(),
+      onPspNotFound: jest.fn(),
+      navigate: mockNavigate,
+      setLoading: mockSetLoading,
+    });
+
+    expect(helper.retrieveCardData).toHaveBeenCalled();
+    expect(mockOnError).toHaveBeenCalledWith(ErrorsType.GENERIC_ERROR);
+    expect(mockNavigate).not.toHaveBeenCalledWith(
+      `/${CheckoutRoutes.LISTA_PSP}`
+    );
+  });
+
   it("should call retrieveCardData and getFees when enablePspPage is false", () => {
     localStorageMock.setItem("enablePspPage", "false");
 
