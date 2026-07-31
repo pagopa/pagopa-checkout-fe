@@ -1,7 +1,6 @@
 /* eslint-disable sonarjs/cognitive-complexity */
 import CssBaseline from "@mui/material/CssBaseline";
 import React, { useContext } from "react";
-import { useTranslation } from "react-i18next";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import * as TE from "fp-ts/TaskEither";
 import { pipe } from "fp-ts/function";
@@ -48,7 +47,6 @@ import featureFlags from "./utils/featureFlags";
 import { useFeatureFlagsAll } from "./hooks/useFeatureFlags";
 
 export function App() {
-  const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
   const fixedFooterPages = [
@@ -132,8 +130,6 @@ export function App() {
     checkThemeDarkMode();
   }, []);
 
-  // eslint-disable-next-line functional/immutable-data
-  document.title = t("app.title");
   // eslint-disable-next-line functional/immutable-data
   (window as any).recaptchaOptions = {
     useRecaptchaNet: true,
