@@ -86,7 +86,9 @@ export const handleSessionPaymentMethodResponse = (
   );
 };
 
-export const retrievePaymentSessionFn = (deps: RetrievePaymentSessionDeps) => {
+export const retrievePaymentSessionFn = async (
+  deps: RetrievePaymentSessionDeps
+) => {
   const {
     paymentMethodId,
     orderId,
@@ -97,19 +99,29 @@ export const retrievePaymentSessionFn = (deps: RetrievePaymentSessionDeps) => {
     setLoading,
   } = deps;
 
-  // When enablePspPage is active, skip getFees here and let
-  // PaymentPspListPage handle it to avoid a duplicate POST /fees call
-  if (localStorage.getItem(SessionItems.enablePspPage) === "true") {
-    setLoading(false);
-    navigate(`/${CheckoutRoutes.LISTA_PSP}`);
-    return;
-  }
+  const isPspPageEnabled =
+    localStorage.getItem(SessionItems.enablePspPage) === "true";
 
-  void retrieveCardData({
+  await retrieveCardData({
     paymentId: paymentMethodId,
     orderId,
     onError,
     onResponseSessionPaymentMethod: (resp) => {
+      if (isPspPageEnabled) {
+        pipe(
+          SessionPaymentMethodResponse.decode(resp),
+          O.fromEither,
+          O.chain((r) => O.fromNullable(r.bin)),
+          O.fold(
+            () => onError(ErrorsType.GENERIC_ERROR),
+            () => {
+              setLoading(false);
+              navigate(`/${CheckoutRoutes.LISTA_PSP}`);
+            }
+          )
+        );
+        return;
+      }
       handleSessionPaymentMethodResponse(
         resp,
         onError,
