@@ -167,6 +167,7 @@ jest.mock("../../utils/api/client", () => ({
 jest.mock("../../utils/storage/sessionStorage", () => ({
   getSessionItem: jest.fn(),
   setSessionItem: jest.fn(),
+  clearSessionItem: jest.fn(),
   getReCaptchaKey: jest.fn(),
   getRptIdsFromSession: jest.fn(),
   SessionItems: {
@@ -181,7 +182,7 @@ jest.mock("../../utils/storage/sessionStorage", () => ({
     paymentMethod: "paymentMethod",
     orderId: "orderId",
     correlationId: "correlationId",
-    sessionPayment: "sessionPayment",
+    sessionPaymentMethod: "sessionPayment",
     transaction: "transaction",
     enableWallet: "enableWallet",
     enablePaymentMethodsHandler: "enablePaymentMethodsHandler",
