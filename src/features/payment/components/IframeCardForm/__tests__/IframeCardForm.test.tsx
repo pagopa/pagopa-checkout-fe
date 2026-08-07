@@ -958,12 +958,24 @@ describe("retrievePaymentSessionFn", () => {
     localStorageMock.clear();
   });
 
-  it("should navigate to LISTA_PSP and skip retrieveCardData when enablePspPage is true", () => {
+  it("should await retrieveCardData, skip getFees, and navigate to LISTA_PSP when enablePspPage is true", async () => {
     localStorageMock.setItem("enablePspPage", "true");
+
+    (helper.retrieveCardData as jest.Mock).mockImplementation(
+      ({ onResponseSessionPaymentMethod }) => {
+        onResponseSessionPaymentMethod({
+          sessionId: "session123",
+          bin: "123456",
+          lastFourDigits: "9876",
+          expiringDate: "1230",
+          brand: "VISA",
+        });
+      }
+    );
 
     const mockSetLoading = jest.fn();
 
-    retrievePaymentSessionFn({
+    await retrievePaymentSessionFn({
       paymentMethodId: "pm123",
       orderId: "order123",
       onError: jest.fn(),
@@ -973,10 +985,76 @@ describe("retrievePaymentSessionFn", () => {
       setLoading: mockSetLoading,
     });
 
+    expect(helper.retrieveCardData).toHaveBeenCalled();
+    expect(helper.getFees).not.toHaveBeenCalled();
     expect(mockSetLoading).toHaveBeenCalledWith(false);
     expect(mockNavigate).toHaveBeenCalledWith(`/${CheckoutRoutes.LISTA_PSP}`);
-    expect(helper.retrieveCardData).not.toHaveBeenCalled();
-    expect(helper.getFees).not.toHaveBeenCalled();
+  });
+
+  it("should NOT navigate to LISTA_PSP when enablePspPage is true and retrieveCardData reports a connection/server error", async () => {
+    localStorageMock.setItem("enablePspPage", "true");
+
+    (helper.retrieveCardData as jest.Mock).mockImplementation(
+      ({ onError, onResponseSessionPaymentMethod }) => {
+        onError(ErrorsType.CONNECTION);
+        onResponseSessionPaymentMethod({});
+      }
+    );
+
+    const mockOnError = jest.fn();
+    const mockSetLoading = jest.fn();
+
+    await retrievePaymentSessionFn({
+      paymentMethodId: "pm123",
+      orderId: "order123",
+      onError: mockOnError,
+      onSuccess: jest.fn(),
+      onPspNotFound: jest.fn(),
+      navigate: mockNavigate,
+      setLoading: mockSetLoading,
+    });
+
+    expect(helper.retrieveCardData).toHaveBeenCalled();
+    expect(mockOnError).toHaveBeenCalledWith(ErrorsType.CONNECTION);
+    expect(mockOnError).toHaveBeenCalledWith(ErrorsType.GENERIC_ERROR);
+    expect(mockNavigate).not.toHaveBeenCalledWith(
+      `/${CheckoutRoutes.LISTA_PSP}`
+    );
+  });
+
+  it("should NOT navigate to LISTA_PSP when enablePspPage is true and the response has no bin", async () => {
+    localStorageMock.setItem("enablePspPage", "true");
+
+    (helper.retrieveCardData as jest.Mock).mockImplementation(
+      ({ onResponseSessionPaymentMethod }) => {
+        onResponseSessionPaymentMethod({
+          sessionId: "session123",
+          lastFourDigits: "9876",
+          expiringDate: "1230",
+          brand: "VISA",
+        });
+      }
+    );
+
+    const mockOnError = jest.fn();
+    const mockSetLoading = jest.fn();
+
+    await retrievePaymentSessionFn({
+      paymentMethodId: "pm123",
+      orderId: "order123",
+      onError: mockOnError,
+      onSuccess: jest.fn(),
+      onPspNotFound: jest.fn(),
+      navigate: mockNavigate,
+      setLoading: mockSetLoading,
+    });
+
+    expect(helper.retrieveCardData).toHaveBeenCalled();
+    expect(mockOnError).toHaveBeenCalledWith(ErrorsType.GENERIC_ERROR);
+    expect(mockSetLoading).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalledWith(
+      `/${CheckoutRoutes.LISTA_PSP}`
+    );
   });
 
   it("should call retrieveCardData and getFees when enablePspPage is false", () => {
@@ -1000,7 +1078,7 @@ describe("retrievePaymentSessionFn", () => {
 
     const mockOnSuccess = jest.fn();
 
-    retrievePaymentSessionFn({
+    void retrievePaymentSessionFn({
       paymentMethodId: "pm123",
       orderId: "order123",
       onError: jest.fn(),
@@ -1036,7 +1114,7 @@ describe("retrievePaymentSessionFn", () => {
     const mockOnSuccess = jest.fn();
     const mockSetLoading = jest.fn();
 
-    retrievePaymentSessionFn({
+    void retrievePaymentSessionFn({
       paymentMethodId: "pm123",
       orderId: "order123",
       onError: jest.fn(),
@@ -1065,7 +1143,7 @@ describe("retrievePaymentSessionFn", () => {
 
     const mockOnError = jest.fn();
 
-    retrievePaymentSessionFn({
+    void retrievePaymentSessionFn({
       paymentMethodId: "pm123",
       orderId: "order123",
       onError: mockOnError,
@@ -1099,7 +1177,7 @@ describe("retrievePaymentSessionFn", () => {
 
     const mockOnError = jest.fn();
 
-    retrievePaymentSessionFn({
+    void retrievePaymentSessionFn({
       paymentMethodId: "pm123",
       orderId: "order123",
       onError: mockOnError,
@@ -1136,7 +1214,7 @@ describe("retrievePaymentSessionFn", () => {
       }
     );
 
-    retrievePaymentSessionFn({
+    void retrievePaymentSessionFn({
       paymentMethodId: "pm123",
       orderId: "order123",
       onError: jest.fn(),
@@ -1173,7 +1251,7 @@ describe("retrievePaymentSessionFn", () => {
       }
     );
 
-    retrievePaymentSessionFn({
+    void retrievePaymentSessionFn({
       paymentMethodId: "pm123",
       orderId: "order123",
       onError: mockOnError,
