@@ -85,6 +85,8 @@ stages:
     dependsOn: []
     jobs:
       - job: make_build
+        variables:
+          PUPPETEER_SKIP_DOWNLOAD: 'true'
         steps:
         - template: templates/node-job-setup/template.yaml@pagopaCommons
 
@@ -111,11 +113,15 @@ stages:
     dependsOn: []
     jobs:
       - job: lint
+        variables:
+          PUPPETEER_SKIP_DOWNLOAD: 'true'
         steps:
         - template: templates/node-job-setup/template.yaml@pagopaCommons
         - script: yarn lint
           displayName: 'Lint'
       - job: danger
+        variables:
+          PUPPETEER_SKIP_DOWNLOAD: 'true'
         condition:
           and(
             succeeded(),
@@ -135,6 +141,8 @@ stages:
     dependsOn: []
     jobs:
       - job: run_unit_tests
+        variables:
+          PUPPETEER_SKIP_DOWNLOAD: 'true'
         steps:
         - template: templates/node-job-setup/template.yaml@pagopaCommons
 
