@@ -25,7 +25,7 @@ function ClickableFieldContainer(props: {
   onClick?: () => void;
   sx?: SxProps<Theme>;
   itemSx?: SxProps;
-  variant?: "body2" | "sidenav";
+  variant?: "body2" | "sidenav" | "h2";
   disabled?: boolean;
   loading?: boolean;
   dataTestId?: string;
