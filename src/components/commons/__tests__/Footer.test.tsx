@@ -58,7 +58,6 @@ describe("Footer", () => {
     const logo = document.querySelector('img[alt="pagoPA"]');
     expect(logo).toBeInTheDocument();
     expect(logo).toHaveAttribute("alt", "pagoPA");
-    expect(logo).toHaveAttribute("aria-hidden", "true");
   });
 
   it("applies fixed styling when current page is in fixedPages", () => {
