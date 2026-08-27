@@ -89,8 +89,6 @@ stages:
     dependsOn: []
     jobs:
       - job: make_build
-        variables:
-          PUPPETEER_SKIP_DOWNLOAD: 'true'
         pool:
           vmImage: 'ubuntu-22.04'
         steps:
@@ -305,8 +303,6 @@ stages:
       - Release
     jobs:
       - job: make_build
-        variables:
-          PUPPETEER_SKIP_DOWNLOAD: 'true'
         pool:
           vmImage: 'ubuntu-22.04'
         steps:
@@ -418,8 +414,6 @@ stages:
       - Deploy_UAT_pagoPA
     jobs:
       - job: make_build
-        variables:
-          PUPPETEER_SKIP_DOWNLOAD: 'true'
         pool:
           vmImage: 'ubuntu-22.04'
         steps:
