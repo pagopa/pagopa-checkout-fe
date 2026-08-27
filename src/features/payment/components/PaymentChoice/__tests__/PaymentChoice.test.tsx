@@ -65,7 +65,7 @@ jest.mock("../../../../../utils/storage/sessionStorage", () => ({
   SessionItems: {
     paymentMethodInfo: "paymentMethodInfo",
     paymentMethod: "paymentMethod",
-    sessionPaymentMethod: "sessionPayment", 
+    sessionPaymentMethod: "sessionPayment",
     orderId: "orderId",
     correlationId: "correlationId",
     enablePspPage: "enablePspPage",
