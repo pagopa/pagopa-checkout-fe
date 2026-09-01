@@ -130,7 +130,9 @@ stages:
               pagopa_assets_cdn: 'https://assets.cdn.platform.pagopa.it/payment-methods'
               pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi'
               survey_show: 1
-              checkout_npg_sdk_url: 'https://stg-ta.nexigroup.com/monetaweb/resources/hfsdk.js'
+              checkout_npg_sdk_url: 'https://assets.cdn.platform.pagopa.it/npg-uat/hfsdk.js'
+              checkout_npg_sdk_integrity_url: 'https://assets.cdn.platform.pagopa.it/npg-uat/hfsdk.integrity.json'
+              checkout_npg_sdk_web_origin: 'https://stg-ta.nexigroup.com'
               checkout_gdi_check_timeout: 20000
               checkout_version: "$(Build.SourceBranchName):$(Build.SourceVersion)"
 
@@ -344,7 +346,9 @@ stages:
               pagopa_assets_cdn: 'https://assets.cdn.platform.pagopa.it/payment-methods'
               pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi'
               survey_show: 1
-              checkout_npg_sdk_url: 'https://stg-ta.nexigroup.com/monetaweb/resources/hfsdk.js'
+              checkout_npg_sdk_url: 'https://assets.cdn.platform.pagopa.it/npg-uat/hfsdk.js'
+              checkout_npg_sdk_integrity_url: 'https://assets.cdn.platform.pagopa.it/npg-uat/hfsdk.integrity.json'
+              checkout_npg_sdk_web_origin: 'https://stg-ta.nexigroup.com'
               checkout_version: "$(Build.SourceBranchName):$(Build.SourceVersion)"
               checkout_gdi_check_timeout: 20000
               
@@ -448,7 +452,9 @@ stages:
               pagopa_assets_cdn: 'https://assets.cdn.platform.pagopa.it/payment-methods'
               pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi'
               survey_show: 1
-              checkout_npg_sdk_url: 'https://xpay.nexigroup.com/monetaweb/resources/hfsdk.js'
+              checkout_npg_sdk_url: 'https://assets.cdn.platform.pagopa.it/npg-prod/hfsdk.js'
+              checkout_npg_sdk_integrity_url: 'https://assets.cdn.platform.pagopa.it/npg-prod/hfsdk.integrity.json'
+              checkout_npg_sdk_web_origin: 'https://xpay.nexigroup.com'
               checkout_version: "$(Build.SourceBranchName):$(Build.SourceVersion)"
               checkout_gdi_check_timeout: 20000
 
