@@ -25,7 +25,8 @@ function ClickableFieldContainer(props: {
   onClick?: () => void;
   sx?: SxProps<Theme>;
   itemSx?: SxProps;
-  variant?: "body2" | "sidenav" | "h2";
+  variant?: "body2" | "sidenav";
+  titleComponent?: React.ElementType;
   disabled?: boolean;
   loading?: boolean;
   dataTestId?: string;
@@ -94,7 +95,7 @@ function ClickableFieldContainer(props: {
             >
               <Typography
                 variant={props.variant}
-                component="div"
+                component={props.titleComponent || "div"}
                 sx={
                   props.disabled ? { color: theme.palette.text.disabled } : {}
                 }
