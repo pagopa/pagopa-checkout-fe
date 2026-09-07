@@ -373,28 +373,36 @@ stages:
     dependsOn:
       - UAT_Deploy_approval
     jobs:
+      # TEMP: original deploy job disabled for TAS_tests_UAT stage testing, restore before merging
+      # - job: 'deploy'
+      #   steps:
+      #     - checkout: none
+      #
+      #     - download: current
+      #       artifact: Bundle_UAT
+      #
+      #     - task: AzureCLI@1
+      #       displayName: 'Sync checkout storage on UAT'
+      #       inputs:
+      #         azureSubscription: 'UAT-PAGOPA-SERVICE-CONN'
+      #         scriptLocation: inlineScript
+      #         inlineScript: |
+      #           call az storage blob sync --container $web --account-name ${{ variables.UAT_STORAGE_ACCOUNT }} -s "$(Pipeline.Workspace)\Bundle_UAT"
+      #
+      #     - task: AzureCLI@1
+      #       displayName: 'Purge CDN endpoint on UAT'
+      #       inputs:
+      #         azureSubscription: 'UAT-PAGOPA-SERVICE-CONN'
+      #         scriptLocation: inlineScript
+      #         inlineScript: |
+      #           call az ${{ variables.CDN_TYPE }} endpoint purge -g ${{ variables.UAT_CDN_RG }} ${{ variables.ENDPOINT_FLAG }} ${{ variables.UAT_CDN_ENDPOINT }} --profile-name ${{ variables.UAT_CDN_PROFILE }} --content-paths "/*"
       - job: 'deploy'
+        pool:
+          vmImage: 'ubuntu-22.04'
         steps:
           - checkout: none
-
-          - download: current
-            artifact: Bundle_UAT
-
-          - task: AzureCLI@1
-            displayName: 'Sync checkout storage on UAT'
-            inputs:
-              azureSubscription: 'UAT-PAGOPA-SERVICE-CONN'
-              scriptLocation: inlineScript
-              inlineScript: |
-                call az storage blob sync --container $web --account-name ${{ variables.UAT_STORAGE_ACCOUNT }} -s "$(Pipeline.Workspace)\Bundle_UAT"
-
-          - task: AzureCLI@1
-            displayName: 'Purge CDN endpoint on UAT'
-            inputs:
-              azureSubscription: 'UAT-PAGOPA-SERVICE-CONN'
-              scriptLocation: inlineScript
-              inlineScript: |
-                call az ${{ variables.CDN_TYPE }} endpoint purge -g ${{ variables.UAT_CDN_RG }} ${{ variables.ENDPOINT_FLAG }} ${{ variables.UAT_CDN_ENDPOINT }} --profile-name ${{ variables.UAT_CDN_PROFILE }} --content-paths "/*"
+          - script: echo "TEMP no-op deploy job for TAS_tests_UAT stage testing"
+            displayName: 'No-op deploy (TAS test)'
 
   - stage: End_to_End_Tests_UAT
     dependsOn:
