@@ -418,8 +418,8 @@ stages:
               CHECKOUT_RESOURCE_REPO_NAME: checkoutTests
   
   - stage: TAS_tests_UAT
-    dependsOn:
-      - Deploy_UAT_pagoPA
+    #dependsOn:
+    #  - Deploy_UAT_pagoPA
     pool:
       vmImage: 'ubuntu-latest'
     jobs:
