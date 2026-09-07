@@ -420,6 +420,7 @@ stages:
   - stage: TAS_tests_UAT
     #dependsOn:
     #  - Deploy_UAT_pagoPA
+    condition: eq(${{ parameters.UAT_PROD_DEPLOY }}, true)  # TO-DO : remove it, just for testing purposes
     pool:
       vmImage: 'ubuntu-latest'
     jobs:
