@@ -164,6 +164,9 @@ stages:
             yarn test:coverage --watchAll=false
           displayName: 'Unit tests execution'
 
+        - script: yarn test:translations
+          displayName: 'Translations validation tests'
+
         - script: yarn lint
           displayName: 'Lint execution'
 
