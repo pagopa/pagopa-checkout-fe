@@ -124,7 +124,7 @@ export default function PaymentPspListPage() {
           // Just one? Select the PSP and proceed
           if (bundles.length === 1) {
             updateSelectedPSP(bundles[0]);
-            navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`,  { replace: true });
+            navigate(`/${CheckoutRoutes.RIEPILOGO_PAGAMENTO}`);
           } else {
             setPspList(bundles);
             setOriginalPspList(bundles);
@@ -250,7 +250,7 @@ export default function PaymentPspListPage() {
             disabledSubmit={!submitEnabled}
             handleSubmit={onSubmit}
             handleCancel={() => {
-              navigate(`/${CheckoutRoutes.SCEGLI_METODO}`);
+              navigate(`/${CheckoutRoutes.SCEGLI_METODO}`,  { replace: true });
             }}
           />
         </form>
