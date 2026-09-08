@@ -5,15 +5,24 @@ import deTranslation from "../de/translations.json";
 import slTranslation from "../sl/translations.json";
 
 function getKeysFlat(obj: any, parentKey = ''): string[] {
-  let keys: string[] = [];
+  const keys: string[] = [];
+
   for (const key in obj) {
     const composedKey = parentKey ? `${parentKey}.${key}` : key;
-    if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
-      keys = [...keys, ...getKeysFlat(obj[key], composedKey)];
+
+    if (
+      typeof obj[key] === 'object' &&
+      obj[key] !== null &&
+      !Array.isArray(obj[key])
+    ) {
+      getKeysFlat(obj[key], composedKey).forEach((nestedKey) => {
+        keys.push(nestedKey);
+      });
     } else {
       keys.push(composedKey);
     }
   }
+
   return keys;
 }
 
