@@ -115,7 +115,7 @@ export default function PaymentNoticePage() {
         </Button>
         <Box sx={{ mt: 6 }}>
           <PaymentNoticeForm
-            onCancel={() => navigate(`/${CheckoutRoutes.ROOT}`)}
+            onCancel={() => navigate(`/${CheckoutRoutes.ROOT}`,  { replace: true })}
             onSubmit={onSubmit}
             defaultValues={noticeInfo}
             loading={loading}
