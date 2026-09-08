@@ -169,7 +169,7 @@ describe("IFrameCardPage", () => {
       fireEvent.click(back);
     });
 
-    expect(navigate).toHaveBeenCalledWith(-1);
+    expect(navigate).toHaveBeenCalledWith("/scegli-metodo");
   });
 
   // Cannot retrieve field from npg
@@ -208,7 +208,7 @@ describe("IFrameCardPage", () => {
       fireEvent.click(submit);
     });
 
-    expect(navigate).toHaveBeenCalledWith(-1);
+    expect(navigate).toHaveBeenCalledWith("/scegli-metodo");
   });
 
   test("should track mixpanel screen view on mount", async () => {
