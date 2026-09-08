@@ -40,7 +40,7 @@ export default function IFrameCardPage() {
     });
   }, []);
 
-  const onCancel = () => navigate(`/${CheckoutRoutes.SCEGLI_METODO}`);
+  const onCancel = () => navigate(`/${CheckoutRoutes.SCEGLI_METODO}`, { replace: true });
   return (
     <PageContainer title="inputCardPage.title">
       <Button
