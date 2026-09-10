@@ -82,6 +82,7 @@ export default function PaymentQrPage() {
             alignItems: "center",
             justifyContent: "start",
             mt: 2,
+            backgroundColor: "#FFFFF5",
           }}
         >
           <Box

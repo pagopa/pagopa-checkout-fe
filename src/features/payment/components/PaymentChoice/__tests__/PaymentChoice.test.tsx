@@ -15,6 +15,7 @@ import { PaymentInstrumentsType } from "../../../models/paymentModel";
 import { PaymentMethodStatusEnum } from "../../../../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
 import "whatwg-fetch";
 import * as helperModule from "../../../../../utils/api/helper";
+import * as sessionStorageModule from "../../../../../utils/storage/sessionStorage";
 import * as transactionsErrorHelperModule from "../../../../../utils/api/transactionsErrorHelper";
 import { MethodManagementEnum } from "../../../../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
 import { WalletInfo } from "../../../../../../generated/definitions/checkout-wallets-v1/WalletInfo";
@@ -64,6 +65,7 @@ jest.mock("../../../../../utils/storage/sessionStorage", () => ({
   SessionItems: {
     paymentMethodInfo: "paymentMethodInfo",
     paymentMethod: "paymentMethod",
+    sessionPaymentMethod: "sessionPayment",
     orderId: "orderId",
     correlationId: "correlationId",
     enablePspPage: "enablePspPage",
@@ -71,8 +73,11 @@ jest.mock("../../../../../utils/storage/sessionStorage", () => ({
   },
   getSessionItem: jest.fn(),
   setSessionItem: jest.fn(),
+  clearSessionItem: jest.fn(),
   getReCaptchaKey: jest.fn(() => "mock-recaptcha-key"),
 }));
+const mockedClearSessionItem =
+  sessionStorageModule.clearSessionItem as jest.Mock;
 
 // Mock navigate function
 const mockNavigate = jest.fn();
@@ -602,6 +607,11 @@ describe("PaymentChoice", () => {
 
     // Should navigate to the card payment route
     expect(mockNavigate).toHaveBeenCalledWith("/card-payment");
+
+    // Should drop any bin left over from a previously selected card
+    expect(mockedClearSessionItem).toHaveBeenCalledWith(
+      sessionStorageModule.SessionItems.sessionPaymentMethod
+    );
   });
 
   it("should handle non-credit card payment method click", async () => {
@@ -635,6 +645,11 @@ describe("PaymentChoice", () => {
 
     // Click on the PayPal payment method
     fireEvent.click(getByText("PayPal"));
+
+    // Should drop any bin left over from a previously selected card
+    expect(mockedClearSessionItem).toHaveBeenCalledWith(
+      sessionStorageModule.SessionItems.sessionPaymentMethod
+    );
 
     expect(mockedRecaptchaTransaction).toHaveBeenCalled();
 
@@ -924,6 +939,11 @@ describe("PaymentChoice", () => {
     });
 
     fireEvent.click(getByText(cardWalletDescription));
+
+    // Should drop any bin left over from a previously selected card
+    expect(mockedClearSessionItem).toHaveBeenCalledWith(
+      sessionStorageModule.SessionItems.sessionPaymentMethod
+    );
 
     expect(mockedRecaptchaTransaction).toHaveBeenCalledTimes(1);
 
