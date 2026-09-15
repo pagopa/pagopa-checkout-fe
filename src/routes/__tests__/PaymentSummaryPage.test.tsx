@@ -87,7 +87,9 @@ describe("PaymentSummaryPage", () => {
       expect(submit).toBeEnabled();
       fireEvent.click(back!);
     });
-    expect(navigate).toHaveBeenCalledWith(-1);
+    expect(navigate).toHaveBeenCalledWith("/inserisci-dati-avviso", {
+      replace: true,
+    });
   });
   test("click back goes to inserisci dati avviso page", () => {
     const { container } = renderWithReduxProvider(
