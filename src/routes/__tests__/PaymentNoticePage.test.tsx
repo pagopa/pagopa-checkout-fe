@@ -205,7 +205,7 @@ describe("PaymentNotice", () => {
 
     // Wait for the API call to resolve and the navigation to occur.
     await waitFor(() => {
-      expect(navigate).toHaveBeenCalledWith("/");
+      expect(navigate).toHaveBeenCalledWith("/", { replace: true });
     });
   });
 

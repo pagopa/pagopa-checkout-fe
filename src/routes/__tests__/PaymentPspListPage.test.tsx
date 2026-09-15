@@ -171,7 +171,7 @@ describe("PaymentPspListPage", () => {
       const goBack = screen.getByText("paymentPspListPage.formButtons.back");
       fireEvent.click(goBack);
     });
-    expect(navigate).toHaveBeenCalledWith("/scegli-metodo");
+    expect(navigate).toHaveBeenCalledWith("/scegli-metodo", { replace: true });
   });
 
   test("should call navigate riepilogo-pagamento clicking on submit button after select psp", async () => {
