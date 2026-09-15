@@ -344,7 +344,8 @@
       },
       "title": "Which operator do you want to use for payment?",
       "pspNameAccessibilityLabel": "Ordina in ordine alfabetico per nome del gestore",
-      "taxFeeAccessibilityLabel": "Ordina per l'importo di commissione più basso"
+      "taxFeeAccessibilityLabel": "Ordina per l'importo di commissione più basso",
+      "selectPspAccessibilityLabel": "Select {{pspName}} as payment provider"
     },
     "email": "Send the result to:",
     "modal": {
