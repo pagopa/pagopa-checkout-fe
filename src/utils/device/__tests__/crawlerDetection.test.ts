@@ -4,6 +4,7 @@ describe("isCrawler", () => {
   const originalUserAgent = navigator.userAgent;
 
   const setUserAgent = (value: string) => {
+    // eslint-disable-next-line functional/immutable-data
     Object.defineProperty(navigator, "userAgent", {
       value,
       configurable: true,
