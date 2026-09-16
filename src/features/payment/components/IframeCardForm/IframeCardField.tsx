@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { theme } from "@pagopa/mui-italia";
 import { Field } from "../../../../../generated/definitions/payment-ecommerce/Field";
 import { FieldId, IdFields } from "./types";
 
@@ -96,7 +97,7 @@ export function IframeCardField(props: Props) {
           role="presentation"
           visibility={isValid === false ? "visible" : "hidden"}
         >
-          <ErrorOutlineIcon sx={{ mr: 2.5 }} color="error" />
+          <ErrorOutlineIcon sx={{ mr: 2.5, color: theme.palette.error.dark }} />
         </Box>
       </Box>
       {(errorMessage || errorCode) && (
