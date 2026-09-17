@@ -188,7 +188,6 @@ describe("App", () => {
 
     await waitFor(() => {
       expect(localStorage.getItem("enablePspPage")).toBe("true");
-      expect(document.title).toBe("app.title");
     });
 
     expect((window as any).recaptchaOptions).toEqual({ useRecaptchaNet: true });

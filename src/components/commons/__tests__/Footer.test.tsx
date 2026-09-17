@@ -55,10 +55,9 @@ describe("Footer", () => {
     ).toBeInTheDocument();
     expect(screen.getByTitle("mainPage.footer.pagoPA")).toBeInTheDocument();
 
-    const logo = document.querySelector('img[alt="pagoPA"]');
+    const logo = document.querySelector('img[alt="PagoPA logo"]');
     expect(logo).toBeInTheDocument();
-    expect(logo).toHaveAttribute("alt", "pagoPA");
-    expect(logo).toHaveAttribute("aria-hidden", "true");
+    expect(logo).toHaveAttribute("alt", "PagoPA logo");
   });
 
   it("applies fixed styling when current page is in fixedPages", () => {

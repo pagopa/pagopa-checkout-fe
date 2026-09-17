@@ -107,9 +107,8 @@ export default function Footer(props: { fixedPages: Array<string> }) {
       >
         <img
           src={pagopaLogo}
-          alt="pagoPA"
+          alt="PagoPA logo"
           style={{ width: "60px", height: "17px" }}
-          aria-hidden="true"
         />
       </Link>
     </Box>

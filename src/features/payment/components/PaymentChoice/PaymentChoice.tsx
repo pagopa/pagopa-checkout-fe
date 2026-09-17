@@ -35,6 +35,7 @@ import { PaymentMethodRoutes } from "../../../../routes/models/paymentMethodRout
 import { getFees, recaptchaTransaction } from "../../../../utils/api/helper";
 import {
   SessionItems,
+  clearSessionItem,
   getReCaptchaKey,
   getSessionItem,
   setSessionItem,
@@ -195,6 +196,7 @@ export function PaymentChoice(props: {
   const handleClickOnMethod = async (method: PaymentInstrumentsType) => {
     if (!loading) {
       const { paymentTypeCode, id: paymentMethodId } = method;
+      clearSessionItem(SessionItems.sessionPaymentMethod);
       setSessionItem(SessionItems.paymentMethodInfo, {
         title: getMethodDescriptionForCurrentLanguage(method),
         asset: method.asset || "",
@@ -216,6 +218,7 @@ export function PaymentChoice(props: {
 
   // eslint-disable-next-line no-console
   const handleClickOnMethodWallet = async (method: WalletInfo) => {
+    clearSessionItem(SessionItems.sessionPaymentMethod);
     setSessionItem(SessionItems.paymentMethodInfo, {
       title: getDescriptionWallet(method),
       asset: method.paymentMethodAsset || "",

@@ -347,7 +347,7 @@ export default function PaymentCheckPage() {
           borderBottomColor: "divider",
         }}
       >
-        <Typography variant="h6" component={"div"} pr={2}>
+        <Typography variant="h6" component="h1" pr={2}>
           {t("paymentCheckPage.total")}
         </Typography>
         {pspUpdateLoading ? (
@@ -361,6 +361,7 @@ export default function PaymentCheckPage() {
       <ClickableFieldContainer
         title="paymentCheckPage.creditCard"
         icon={<CreditCardIcon sx={{ color: "text.primary" }} />}
+        titleComponent="h2"
         clickable={false}
         sx={{ borderBottom: "", mt: 2 }}
         itemSx={{ pl: 0, pr: 0, gap: 2 }}
@@ -404,6 +405,7 @@ export default function PaymentCheckPage() {
         title="paymentCheckPage.transaction"
         icon={<LocalOfferIcon sx={{ color: "text.primary" }} />}
         clickable={false}
+        titleComponent="h2"
         sx={{ borderBottom: "", mt: 2 }}
         itemSx={{ pl: 0, pr: 0, gap: 2 }}
         endAdornment={
