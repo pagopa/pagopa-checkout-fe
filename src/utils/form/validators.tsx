@@ -10,7 +10,7 @@ export const getFormValidationIcon = (
 ) =>
   touched ? (
     error ? (
-      <Close sx={{ mr: 1 }} color="error" />
+      <Close sx={{ mr: 1, color: "#BB4A4A" }} />
     ) : (
       <Check sx={{ mr: 1, color: "green" }} />
     )
@@ -21,7 +21,7 @@ export const getFormErrorIcon = (
   error: boolean | undefined
 ) => {
   if (touched && error) {
-    return <ErrorOutlineIcon sx={{ mr: 1 }} color="error" />;
+    return <ErrorOutlineIcon sx={{ mr: 1, color: "#BB4A4A" }} />;
   }
   return undefined;
 };
