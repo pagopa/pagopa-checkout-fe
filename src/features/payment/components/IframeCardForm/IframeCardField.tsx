@@ -11,7 +11,6 @@ import {
 } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { theme } from "@pagopa/mui-italia";
 import { Field } from "../../../../../generated/definitions/payment-ecommerce/Field";
 import { FieldId, IdFields } from "./types";
 

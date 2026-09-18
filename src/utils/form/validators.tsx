@@ -2,7 +2,6 @@ import Check from "@mui/icons-material/Check";
 import Close from "@mui/icons-material/Close";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import React from "react";
-import { theme } from "@pagopa/mui-italia";
 import { digitValidation } from "../regex/validators";
 
 export const getFormValidationIcon = (
