@@ -97,7 +97,7 @@ export function IframeCardField(props: Props) {
           role="presentation"
           visibility={isValid === false ? "visible" : "hidden"}
         >
-          <ErrorOutlineIcon sx={{ mr: 2.5, color: theme.palette.error.dark }} />
+          <ErrorOutlineIcon sx={{ mr: 2.5, color: "#BB4A4A" }} />
         </Box>
       </Box>
       {(errorMessage || errorCode) && (

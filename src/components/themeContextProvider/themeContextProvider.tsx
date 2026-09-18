@@ -38,7 +38,7 @@ const themeLight = createTheme({
           marginTop: 0,
           height: 0,
           "&.Mui-error": {
-            color: theme.palette.error.dark,
+            color: "#BB4A4A",
           },
         },
       },
