@@ -1,10 +1,9 @@
 /* eslint-disable functional/immutable-data, no-underscore-dangle */
 /**
- * Tests for the NPG SDK SRI loader (src/npgsdk.js).
- *
- * The loader self-invokes on import: it fetches the integrity hash JSON and,
- * only on success, appends a <script> carrying the `integrity` attribute.
- * There is no permissive fallback -> on any failure the SDK must NOT be appended.
+ * Tests for the NPG SDK loader (src/npgsdk.js), which self-invokes on import.
+ * SRI mode (integrity URL set): load only on a successful hash fetch, with
+ * `integrity`; no permissive fallback. Legacy mode (URL empty/missing): load
+ * with no integrity.
  */
 
 const SDK_URL = "https://checkout.example.it/npg/hfsdk.js";
@@ -85,5 +84,32 @@ describe("npgsdk loader", () => {
     await flushPromises();
 
     expect(getNpgScript()).toBeNull();
+  });
+
+  describe("legacy mode (no integrity URL configured)", () => {
+    it("loads the SDK without integrity when the integrity URL is an empty string", async () => {
+      (window as any)._env_.CHECKOUT_NPG_SDK_INTEGRITY_URL = "";
+      (global as any).fetch = jest.fn();
+
+      loadModule();
+      await flushPromises();
+
+      const script = getNpgScript();
+      expect(script).not.toBeNull();
+      expect(script?.getAttribute("integrity")).toBeNull();
+      expect(script?.getAttribute("crossorigin")).toBeNull();
+      expect((global as any).fetch).not.toHaveBeenCalled();
+    });
+
+    it("loads the SDK without integrity when the integrity URL is not configured at all", async () => {
+      delete (window as any)._env_.CHECKOUT_NPG_SDK_INTEGRITY_URL;
+      (global as any).fetch = jest.fn();
+
+      loadModule();
+      await flushPromises();
+
+      expect(getNpgScript()).not.toBeNull();
+      expect((global as any).fetch).not.toHaveBeenCalled();
+    });
   });
 });

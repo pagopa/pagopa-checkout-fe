@@ -1,22 +1,31 @@
 /**
- * NPG SDK loader with Subresource Integrity (SRI) check.
+ * NPG SDK loader, with two modes selected by CHECKOUT_NPG_SDK_INTEGRITY_URL:
  *
- * Self-hosted model: the NPG SDK is served from a pagoPA-controlled CDN (the
- * platform CDN), together with its integrity hash (published atomically by a
- * scheduled job). This loader fetches the published hash and loads the SDK with
- * the `integrity` attribute set, for PCI SAQ-A compliance. The SDK is served
- * cross-origin (platform CDN vs the checkout host), so the script is loaded
- * with `crossorigin="anonymous"`: the browser cannot validate SRI on a
- * cross-origin resource fetched without CORS.
- *
- * No permissive fallback: SDK and hash are aligned by construction, so a hash
- * mismatch should never happen in normal operation. If the hash cannot be
- * fetched or SRI validation fails, the SDK is intentionally NOT loaded without
- * integrity -> a payment must never proceed with an unvalidated SDK.
+ * - set: fetch the published hash and load the SDK with `integrity` +
+ *   `crossorigin="anonymous"` (the SDK is self-hosted on the platform CDN,
+ *   cross-origin, so SRI needs CORS). Fail closed: no hash, no SDK, because a
+ *   payment must never run with an unvalidated SDK.
+ * - empty: load the SDK with no integrity, as before the SRI implementation. 
+ *   Needed while an env is still on the Nexi origin, which publishes no hash and sends
+ *   no CORS. TEMPORARY: remove once every environment is on the platform CDN.
  */
+const buildScript = (sdkUrl) => {
+  const script = document.createElement("script");
+  script.setAttribute("src", sdkUrl);
+  script.setAttribute("type", "text/javascript");
+  script.setAttribute("charset", "UTF-8");
+  return script;
+};
+
 const loadNpgSDK = async () => {
   const sdkUrl = window._env_.CHECKOUT_NPG_SDK_URL;
   const integrityUrl = window._env_.CHECKOUT_NPG_SDK_INTEGRITY_URL;
+
+  // Legacy mode -> no SRI enabled, load the SDK without integrity
+  if (!integrityUrl) {
+    document.head.appendChild(buildScript(sdkUrl));
+    return;
+  }
 
   try {
     const response = await fetch(integrityUrl);
@@ -28,14 +37,9 @@ const loadNpgSDK = async () => {
       throw new Error("Integrity hash missing from response");
     }
 
-    const script = document.createElement("script");
-    script.setAttribute("src", sdkUrl);
-    script.setAttribute("type", "text/javascript");
-    script.setAttribute("charset", "UTF-8");
+    const script = buildScript(sdkUrl);
     script.setAttribute("integrity", integrityHash);
-    // Cross-origin load from the platform CDN: SRI can only be validated with CORS.
     script.setAttribute("crossorigin", "anonymous");
-    // SRI validation failure or load error: the SDK simply stays unloaded so no payment can use it.
     script.onerror = () => {
       console.error(
         "NPG SDK failed to load or failed SRI validation; SDK not loaded"
