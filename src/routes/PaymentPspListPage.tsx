@@ -208,6 +208,7 @@ export default function PaymentPspListPage() {
           }}
         >
           <Typography
+            id="psp-list-operator-label"
             component="div"
             typography="body2"
             display="block"
@@ -240,6 +241,7 @@ export default function PaymentPspListPage() {
             pspList={pspList}
             currentSelectedPsp={pspSelected}
             onPspSelected={updateSelectedPSP}
+            ariaLabelledBy="psp-list-operator-label"
           />
 
           <FormButtons
