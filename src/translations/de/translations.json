@@ -145,6 +145,7 @@
     "body": "Es ist keine Belastung erfolgt.",
     "button": "Schließen",
     "helpButton": "Brauchst du Hilfe?",
+    "learnMoreButton": "Mehr erfahren",
     "title": "Ein unvorhergesehener Fehler ist aufgetreten"
   },
   "mainPage": {
@@ -343,8 +344,8 @@
         "name": "Anbieter"
       },
       "title": "Über welchen Anbieter möchtest du zahlen?",
-      "pspNameAccessibilityLabel": "Ordina in ordine alfabetico per nome del gestore",
-      "taxFeeAccessibilityLabel": "Ordina per l'importo di commissione più basso"
+      "pspNameAccessibilityLabel": "Alphabetisch nach dem Namen des Anbieters sortieren",
+      "taxFeeAccessibilityLabel": "Nach der niedrigsten Gebühr sortieren"
     },
     "email": "Sende Bestätigung an:",
     "modal": {
@@ -375,17 +376,17 @@
     "feeSingle": "Gebühr: {{value}}",
     "filterLabel": "Methode suchen",
     "noPaymentMethodsAvailable": "Kein Ergebnis gefunden. Versuch es mit einem anderen Begriff.",
-    "filterButton": "Filtra",
+    "filterButton": "Filtern",
     "drawer": {
-      "title": "Filtra Metodi",
-      "byType": "Per tipo",
-      "byFunc": "Per funzionalità",
-      "card": "Carta",
-      "balance": "Conto Corrente",
-      "appApm": "App e altri metodi",
-      "payByPlan": "Pagamento a rate",
-      "showResults": "Mostra risultati",
-      "remove": "Cancella tutti i filtri"
+      "title": "Zahlungsarten filtern",
+      "byType": "Nach Typ",
+      "byFunc": "Nach Funktionalität",
+      "card": "Karte",
+      "balance": "Bankkonto",
+      "appApm": "Apps und andere Methoden",
+      "payByPlan": "Ratenzahlung",
+      "showResults": "Ergebnisse anzeigen",
+      "remove": "Alle Filter löschen"
     }
   },
   "paymentMethods": {
@@ -441,7 +442,9 @@
         "amount": "Nach Betrag"
       },
       "showResults": "Anwenden"
-    }
+    },
+    "myBankAlertTitle": "Findest du deine Bank nicht",
+    "myBankAlertBody": "Keine Sorge: Du wählst sie in den nächsten Schritten aus."
   },
   "paymentQrPage": {
     "camBlocked": "Wir benötigen deine Erlaubnis zum Zugriff auf die Kamera. In den Datenschutzeinstellungen deines Internetbrowsers kannst du die Auswahl ändern",
