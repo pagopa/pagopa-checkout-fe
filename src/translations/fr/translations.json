@@ -34,7 +34,7 @@
     }
   },
   "authExpiredPage": {
-    "title": "La tua sessione è scaduta",
+    "title": "Votre session a expiré",
     "body": "Connectez-vous pour reprendre la session, ou continuez sans vous connecter ",
     "buttons": {
       "login": "Connectez-vous",
@@ -145,6 +145,7 @@
     "body": "Aucun débit n’a été effectué.",
     "button": "Fermer",
     "helpButton": "Pouvons-nous vous aider ?",
+    "learnMoreButton": "En savoir plus",
     "title": "Une erreur inattendue s’est produite"
   },
   "mainPage": {
@@ -160,7 +161,7 @@
       "login": "Connectez-vous",
       "logout": "Se déconnecter",
       "detail": {
-        "detailButton": "Apri riepilogo pagamento",
+        "detailButton": "Ouvrir le résumé du paiement",
         "detailFC": "Code fiscal organisme créancier",
         "detailIUV": "Code IUV",
         "detailAmount": "Total partiel",
@@ -343,8 +344,8 @@
         "name": "Opérateur"
       },
       "title": "Avec quel opérateur voulez-vous payer ?",
-      "pspNameAccessibilityLabel": "Ordina in ordine alfabetico per nome del gestore",
-      "taxFeeAccessibilityLabel": "Ordina per l'importo di commissione più basso"
+      "pspNameAccessibilityLabel": "Trier par ordre alphabétique selon le nom de l’opérateur",
+      "taxFeeAccessibilityLabel": "Trier selon le montant de la commission le plus bas"
     },
     "email": "Envoyer le résultat à:",
     "modal": {
@@ -375,17 +376,17 @@
     "feeSingle": "Commission: {{value}}",
     "filterLabel": "Rechercher un moyen",
     "noPaymentMethodsAvailable": "Aucun résultat trouvé. Essayez avec un autre mot-clé.",
-    "filterButton": "Filtra",
+    "filterButton": "Filtrer",
     "drawer": {
-      "title": "Filtra Metodi",
-      "byType": "Per tipo",
-      "byFunc": "Per funzionalità",
-      "card": "Carta",
-      "balance": "Conto Corrente",
-      "appApm": "App e altri metodi",
-      "payByPlan": "Pagamento a rate",
-      "showResults": "Mostra risultati",
-      "remove": "Cancella tutti i filtri"
+      "title": "Filtrer les méthodes",
+      "byType": "Par type",
+      "byFunc": "Par fonctionnalités",
+      "card": "Carte",
+      "balance": "Compte bancaire",
+      "appApm": "Applications et autres méthodes",
+      "payByPlan": "Paiement en plusieurs fois",
+      "showResults": "Afficher les résultats",
+      "remove": "Effacer tous les filtres"
     }
   },
   "paymentMethods": {
@@ -443,7 +444,7 @@
       "showResults": "Appliquer"
     },
     "myBankAlertTitle": "Vous ne trouvez pas votre banque ?",
-    "myBankAlertBody": "Pas d'inquiétude : vous pourrez la sélectionner lors des prochaines étapeshgh."
+    "myBankAlertBody": "Pas d'inquiétude : vous pourrez la sélectionner lors des prochaines étapes."
   },
   "paymentQrPage": {
     "camBlocked": "Nous avons besoin de votre autorisation pour utiliser l’appareil photo. Pour modifier votre choix, visitez les paramètre Confidentialité de votre navigateur",
@@ -507,6 +508,11 @@
       "submitButton": "Se déconnecter",
       "cancelButton": "Non, rester connecté"
     }
+  },
+  "ScheduledMaintenanceBanner": {
+    "titleKey": "Maintenance programmée",
+    "bodyKey": "Le paiement ne sera pas possible de 00:01 à 03:00 le 18 juillet 2025.",
+    "linkTextKey": "Plus d'informations"
   },
   "maintenancePage": {
     "title": "Nous travaillons pour vous",

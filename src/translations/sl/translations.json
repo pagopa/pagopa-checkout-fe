@@ -145,6 +145,7 @@
     "body": "Noben znesek ni bil zaračunan.",
     "button": "Zapri",
     "helpButton": "Potrebujete pomoč?",
+    "learnMoreButton": "Izvedite več",
     "title": "Prišlo je do nepričakovane napake"
   },
   "mainPage": {
@@ -160,7 +161,7 @@
       "login": "Prijava",
       "logout": "Izhod",
       "detail": {
-        "detailButton": "Apri riepilogo pagamento",
+        "detailButton": "Odpri povzetek plačila",
         "detailFC": "Davčna številka upnika",
         "detailIUV": "IUV Koda",
         "detailAmount": "Vmesni seštevek",
@@ -343,8 +344,8 @@
         "name": "Ponudnik"
       },
       "title": "Pri katerem ponudniku želite plačevati?",
-      "pspNameAccessibilityLabel": "Ordina in ordine alfabetico per nome del gestore",
-      "taxFeeAccessibilityLabel": "Ordina per l'importo di commissione più basso"
+      "pspNameAccessibilityLabel": "Razvrsti po imenu ponudnika po abecednem vrstnem redu",
+      "taxFeeAccessibilityLabel": "Razvrsti po najnižji proviziji"
     },
     "email": "Rezultat pošlji na:",
     "modal": {
@@ -375,17 +376,17 @@
     "feeSingle": "Provizija: {{value}}",
     "filterLabel": "Poišči metodo",
     "noPaymentMethodsAvailable": "Ni rezultatov. Poskusite z drugo ključno besedo.",
-    "filterButton": "Filtra",
+    "filterButton": "Filtriraj",
     "drawer": {
-      "title": "Filtra Metodi",
-      "byType": "Per tipo",
-      "byFunc": "Per funzionalità",
-      "card": "Carta",
-      "balance": "Conto Corrente",
-      "appApm": "App e altri metodi",
-      "payByPlan": "Pagamento a rate",
-      "showResults": "Mostra risultati",
-      "remove": "Cancella tutti i filtri"
+      "title": "Filtriraj načine plačila",
+      "byType": "Po vrsti",
+      "byFunc": "Po funkcionalnosti",
+      "card": "Kartica",
+      "balance": "Bančni račun",
+      "appApm": "Aplikacije in drugi načini",
+      "payByPlan": "Obročno plačilo",
+      "showResults": "Prikaži rezultate",
+      "remove": "Počisti vse filtre"
     }
   },
   "paymentMethods": {
