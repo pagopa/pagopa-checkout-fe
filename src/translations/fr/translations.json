@@ -386,7 +386,7 @@
       "appApm": "Applications et autres méthodes",
       "payByPlan": "Paiement en plusieurs fois",
       "showResults": "Afficher les résultats",
-      "remove": "*Effacer tous les filtres"
+      "remove": "Effacer tous les filtres"
     }
   },
   "paymentMethods": {
