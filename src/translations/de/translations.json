@@ -443,7 +443,7 @@
       },
       "showResults": "Anwenden"
     },
-    "myBankAlertTitle": "Findest du deine Bank nicht?"
+    "myBankAlertTitle": "Findest du deine Bank nicht?",
     "myBankAlertBody": "Keine Sorge: Du wählst sie in den nächsten Schritten aus."
   },
   "paymentQrPage": {
