@@ -5,9 +5,9 @@
  *   `crossorigin="anonymous"` (the SDK is self-hosted on the platform CDN,
  *   cross-origin, so SRI needs CORS). Fail closed: no hash, no SDK, because a
  *   payment must never run with an unvalidated SDK.
- * - empty: load the SDK with no integrity, as before the SRI implementation. 
- *   Needed while an env is still on the Nexi origin, which publishes no hash and sends
- *   no CORS. TEMPORARY: remove once every environment is on the platform CDN.
+ * - empty: load the SDK from Nexi with no integrity (Nexi publishes no hash and
+ *   sends no CORS). To disable SRI: blank the integrity URL, restore 
+ *   the Nexi SDK URL and redeploy
  */
 const buildScript = (sdkUrl) => {
   const script = document.createElement("script");
