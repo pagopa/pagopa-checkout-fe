@@ -55,6 +55,7 @@ jest.mock("@pagopa/mui-italia", () => ({
       background: { paper: "#fff", default: "#fff" },
       action: { active: "#000000" },
       common: { white: "#ffffff" },
+      error: { main: "#FE6666", dark: "#D85757" },
     },
     components: {
       MuiAlert: { styleOverrides: { outlined: {} } },
@@ -66,6 +67,7 @@ jest.mock("@pagopa/mui-italia", () => ({
       action: { active: "#ffffff" },
       common: { white: "#ffffff" },
       text: { primary: "#ffffff", secondary: "#5C6F82" },
+      error: { main: "#FE6666", dark: "#D85757" },
     },
     components: {
       MuiAlert: { styleOverrides: { outlined: {} } },
