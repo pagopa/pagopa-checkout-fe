@@ -344,7 +344,7 @@
         "name": "Operator"
       },
       "title": "Which operator do you want to use for payment?",
-      "selectPspAccessibilityLabel": "Select {{pspName}} as payment provider"
+      "selectPspAccessibilityLabel": "Select {{pspName}} as payment provider",
       "pspNameAccessibilityLabel": "Sort alphabetically by provider name",
       "taxFeeAccessibilityLabel": "Sort by lowest fee amount"
     },
