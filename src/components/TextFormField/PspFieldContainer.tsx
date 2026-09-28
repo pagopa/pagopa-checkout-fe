@@ -1,6 +1,6 @@
 /* eslint-disable functional/immutable-data */
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { Box, SxProps, Typography } from "@mui/material";
+import { Box, ButtonBase, SxProps, Theme, Typography } from "@mui/material";
 import React from "react";
 
 function PspFieldContainer(props: {
@@ -8,32 +8,29 @@ function PspFieldContainer(props: {
   body: string | number | undefined;
   flexDirection?: "row" | "column";
   bodyVariant?: "body2" | "sidenav";
-  sx?: SxProps;
+  sx?: SxProps<Theme>;
   endAdornment?: React.ReactNode;
   onClick: () => void;
+  ariaLabel?: string;
 }) {
-  const defaultStyle = {
+  const defaultStyle: SxProps<Theme> = {
     display: "flex",
+    width: "100%",
     justifyContent: "space-between",
     alignItems: "center",
     borderBottom: "1px solid",
     borderBottomColor: "divider",
     pt: 2,
     pb: 2,
+    textAlign: "left",
+    ...props.sx,
   };
 
   return (
-    <Box
-      sx={{ ...defaultStyle, ...props.sx }}
+    <ButtonBase
+      sx={defaultStyle}
       onClick={props.onClick}
-      onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
-        if (e.key === "Enter") {
-          e.preventDefault();
-          // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-          !!props.onClick && props.onClick();
-        }
-      }}
-      tabIndex={0}
+      aria-label={props.ariaLabel}
     >
       <Box
         sx={{
@@ -71,7 +68,7 @@ function PspFieldContainer(props: {
         </Box>
       </Box>
       {props.endAdornment}
-    </Box>
+    </ButtonBase>
   );
 }
 

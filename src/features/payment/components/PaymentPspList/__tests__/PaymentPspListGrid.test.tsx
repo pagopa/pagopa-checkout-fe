@@ -154,7 +154,7 @@ describe("PaymentPSPListGrid", () => {
       </ThemeProvider>
     );
 
-    await user.click(screen.getByLabelText("PSP Two"));
+    await user.click(screen.getByRole("radio", { name: /PSP Two/ }));
 
     expect(onPspSelectedMock).toHaveBeenCalledTimes(1);
     expect(onPspSelectedMock).toHaveBeenCalledWith(mockPspList[1]);
@@ -271,10 +271,9 @@ describe("PaymentPSPListGrid", () => {
 
     await user.tab();
     await user.keyboard("{Enter}");
-    expect(screen.getByLabelText("PSP One")).toBeChecked();
+    expect(screen.getByRole("radio", { name: /PSP One/ })).toBeChecked();
 
-    await user.tab();
-    await user.keyboard(" ");
-    expect(screen.getByLabelText("PSP Two")).toBeChecked();
+    await user.keyboard("{ArrowDown}");
+    expect(screen.getByRole("radio", { name: /PSP Two/ })).toBeChecked();
   });
 });
