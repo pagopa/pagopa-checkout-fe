@@ -145,6 +145,7 @@
     "body": "No amount was charged.",
     "button": "Close",
     "helpButton": "Do you need help?",
+    "learnMoreButton": "Learn More",
     "title": "An unexpected error occurred"
   },
   "mainPage": {
@@ -160,7 +161,7 @@
       "login": "Sign in",
       "logout": "Log out",
       "detail": {
-        "detailButton": "Apri riepilogo pagamento",
+        "detailButton": "Open payment summary",
         "detailFC": "Payee tax code",
         "detailIUV": "IUV code",
         "detailAmount": "Subtotal",
@@ -343,8 +344,8 @@
         "name": "Operator"
       },
       "title": "Which operator do you want to use for payment?",
-      "pspNameAccessibilityLabel": "Ordina in ordine alfabetico per nome del gestore",
-      "taxFeeAccessibilityLabel": "Ordina per l'importo di commissione più basso"
+      "pspNameAccessibilityLabel": "Sort alphabetically by provider name",
+      "taxFeeAccessibilityLabel": "Sort by lowest fee amount"
     },
     "email": "Send the result to:",
     "modal": {
@@ -375,17 +376,17 @@
     "feeSingle": "Fee: {{value}}",
     "filterLabel": "Search a method",
     "noPaymentMethodsAvailable": "No results found. Try with another keyword.",
-    "filterButton": "Filtra",
+    "filterButton": "Filter",
     "drawer": {
-      "title": "Filtra Metodi",
-      "byType": "Per tipo",
-      "byFunc": "Per funzionalità",
-      "card": "Carta",
-      "balance": "Conto Corrente",
-      "appApm": "App e altri metodi",
-      "payByPlan": "Pagamento a rate",
-      "showResults": "Mostra risultati",
-      "remove": "Cancella tutti i filtri"
+      "title": "Filter Methods",
+      "byType": "By type",
+      "byFunc": "By features",
+      "card": "Card",
+      "balance": "Bank account",
+      "appApm": "App and other methods",
+      "payByPlan": "Installment payment",
+      "showResults": "Show results",
+      "remove": "Clear all filters"
     }
   },
   "paymentMethods": {
@@ -441,7 +442,9 @@
         "amount": "By amount"
       },
       "showResults": "Apply"
-    }
+    },
+    "myBankAlertTitle": "Can't find your bank?",
+    "myBankAlertBody": "Don't worry: you'll select it in the next steps."
   },
   "paymentQrPage": {
     "camBlocked": "We need your consent to use the camera. To change your selection, go to your browser’s privacy settings",
