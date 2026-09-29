@@ -70,6 +70,8 @@
     "@babel/core": "^7.28.6",
     "@babel/plugin-transform-modules-commonjs": "^7.17.7",
     "@babel/preset-env": "^7.28.6",
+    "@parcel/packager-raw-url": "2.3.2",
+    "@parcel/transformer-jsonld": "2.3.2",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
