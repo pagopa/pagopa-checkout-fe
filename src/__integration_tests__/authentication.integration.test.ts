@@ -33,15 +33,46 @@ jest.retryTimes(3);
 page.setDefaultNavigationTimeout(30000);
 page.setDefaultTimeout(30000);
 
+// TEMP PIDM-939 debug: on a navigation timeout, log the requests still in flight
+const pendingRequests = new Map();
+// CI logs are public: never print query strings or fragments (session ids, tokens)
+const withoutQuery = (url) => url.split(/[?#]/)[0];
+page.on("request", (req) => pendingRequests.set(req, { start: Date.now(), status: "no response" }));
+page.on("response", (res) => {
+  const entry = pendingRequests.get(res.request());
+  if (entry) entry.status = `HTTP ${res.status()}, body pending`;
+});
+page.on("requestfinished", (req) => pendingRequests.delete(req));
+page.on("requestfailed", (req) => pendingRequests.delete(req));
+
+const gotoWithDebug = async (url) => {
+  const start = Date.now();
+  try {
+    await page.goto(url, { waitUntil: "networkidle0" });
+  } catch (e) {
+    console.log(`[DEBUG] ${new Date().toISOString()} goto ${withoutQuery(url)} failed after ${Date.now() - start} ms: ${e.message}`);
+    console.log(`[DEBUG] ${pendingRequests.size} request(s) in flight:`);
+    for (const [req, { start: reqStart, status }] of pendingRequests) {
+      console.log(`[DEBUG]   ${Date.now() - reqStart} ms, ${status}, ${req.method()} ${req.resourceType()} ${withoutQuery(req.url())}`);
+    }
+    const readyState = await Promise.race([
+      page.evaluate(() => document.readyState),
+      new Promise((resolve) => setTimeout(() => resolve("evaluate timed out"), 5000))
+    ]).catch((err) => `evaluate failed: ${err.message}`);
+    console.log(`[DEBUG] document.readyState: ${readyState}, url: ${withoutQuery(page.url())}`);
+    throw e;
+  }
+};
+
 beforeAll(async () => {
-  await page.goto(URL.CHECKOUT_URL, { waitUntil: "networkidle0" });
+  await gotoWithDebug(URL.CHECKOUT_URL);
   await page.setViewport({ width: 1200, height: 907 });
 });
 
 beforeEach(async () => {
   await page.evaluate(() => sessionStorage.clear());
   await page.deleteCookie({name:'mockFlow'});
-  await page.goto(URL.CHECKOUT_URL, { waitUntil: "networkidle0" });
+  await gotoWithDebug(URL.CHECKOUT_URL);
 });
 
 describe("Checkout authentication tests", () => {

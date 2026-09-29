@@ -345,8 +345,9 @@ stages:
           displayName: 'export envs from .env.development'
           workingDirectory: pagopa-checkout-fe
 
+        # TEMP PIDM-939 debug: FE log in the job temp dir (wiped after the job), printed at the end
         - script: |
-            yarn dev &
+            yarn dev > $(Agent.TempDirectory)/fe-dev.log 2>&1 &
           displayName: 'Start checkout FE'
           workingDirectory: pagopa-checkout-fe
 
@@ -354,8 +355,28 @@ stages:
           displayName: 'Wait for backend to be up and running'
           workingDirectory: pagopa-checkout-fe
 
+        # TEMP PIDM-939 debug: is the bundle served, not only index.html?
+        - script: |
+            date -u
+            curl -s -o $(Agent.TempDirectory)/index.debug.html -w 'index.html: HTTP %{http_code} %{size_download} B %{time_total} s\n' --max-time 60 http://localhost:1234/
+            for s in $(grep -o 'src="[^"]*"' $(Agent.TempDirectory)/index.debug.html | cut -d'"' -f2 | grep -v '^http'); do
+              curl -s -o /dev/null -w "$s: HTTP %{http_code} %{size_download} B %{time_total} s\n" --max-time 60 "http://localhost:1234/${s#/}"
+            done
+            curl -s -o /dev/null -w 'NPG SDK: HTTP %{http_code} %{size_download} B %{time_total} s\n' --max-time 30 "$(grep '^CHECKOUT_NPG_SDK_URL=' .env.development | cut -d= -f2-)"
+            date -u
+          displayName: 'DEBUG curl FE bundle'
+          workingDirectory: pagopa-checkout-fe
+
         - script: yarn test:authentication-integration
           displayName: 'Authentication integration tests exec'
+          workingDirectory: pagopa-checkout-fe
+
+        # env.sh dumps the CHECKOUT_* env: drop every NAME=value line
+        - script: |
+            echo "===== FE dev server log (NAME=value lines removed) ====="
+            grep -Ev '^[A-Za-z_][A-Za-z0-9_]*=' $(Agent.TempDirectory)/fe-dev.log
+          displayName: 'DEBUG print FE log'
+          condition: always()
           workingDirectory: pagopa-checkout-fe
 
         - task: PublishTestResults@2
@@ -401,13 +422,26 @@ stages:
           displayName: 'export envs from .env.development'
           workingDirectory: pagopa-checkout-fe
 
+        # TEMP PIDM-939 debug: FE log in the job temp dir (wiped after the job), printed at the end
         - script: |
-            yarn dev &
+            yarn dev > $(Agent.TempDirectory)/fe-dev.log 2>&1 &
           displayName: 'Start checkout FE'
           workingDirectory: pagopa-checkout-fe
 
         - script: while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:1234)" != "200" ]]; do sleep 5; done
           displayName: 'Wait for backend to be up and running'
+          workingDirectory: pagopa-checkout-fe
+
+        # TEMP PIDM-939 debug: is the bundle served, not only index.html?
+        - script: |
+            date -u
+            curl -s -o $(Agent.TempDirectory)/index.debug.html -w 'index.html: HTTP %{http_code} %{size_download} B %{time_total} s\n' --max-time 60 http://localhost:1234/
+            for s in $(grep -o 'src="[^"]*"' $(Agent.TempDirectory)/index.debug.html | cut -d'"' -f2 | grep -v '^http'); do
+              curl -s -o /dev/null -w "$s: HTTP %{http_code} %{size_download} B %{time_total} s\n" --max-time 60 "http://localhost:1234/${s#/}"
+            done
+            curl -s -o /dev/null -w 'NPG SDK: HTTP %{http_code} %{size_download} B %{time_total} s\n' --max-time 30 "$(grep '^CHECKOUT_NPG_SDK_URL=' .env.development | cut -d= -f2-)"
+            date -u
+          displayName: 'DEBUG curl FE bundle'
           workingDirectory: pagopa-checkout-fe
 
         - script: yarn test:payment-responsepageV2
@@ -416,6 +450,14 @@ stages:
 
         - script: yarn test:feature-flags-integration
           displayName: 'Feature flags integration tests exec'
+          workingDirectory: pagopa-checkout-fe
+
+        # env.sh dumps the CHECKOUT_* env: drop every NAME=value line
+        - script: |
+            echo "===== FE dev server log (NAME=value lines removed) ====="
+            grep -Ev '^[A-Za-z_][A-Za-z0-9_]*=' $(Agent.TempDirectory)/fe-dev.log
+          displayName: 'DEBUG print FE log'
+          condition: always()
           workingDirectory: pagopa-checkout-fe
 
         - task: PublishTestResults@2
