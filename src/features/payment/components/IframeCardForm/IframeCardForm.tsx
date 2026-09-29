@@ -216,7 +216,7 @@ export default function IframeCardForm(props: Props) {
     const onMessage = (event: MessageEvent) => {
       const config = getConfigOrThrow();
       // the card form iframe is still hosted by Nexi, so its postMessage
-      // origin is the NPG web origin, not the SDK script URL (now same-origin)
+      // origin is the NPG web origin, not the SDK script URL's (platform CDN)
       const npgWebOrigin = config.CHECKOUT_NPG_SDK_WEB_ORIGIN;
 
       if (event.origin !== npgWebOrigin) {
