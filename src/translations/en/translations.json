@@ -345,7 +345,7 @@
       },
       "title": "Which operator do you want to use for payment?",
       "pspNameAccessibilityLabel": "Sort alphabetically by provider name",
-      "taxFeeAccessibilityLabel": "Sort by lowest fee amount"
+      "taxFeeAccessibilityLabel": "Sort from the lowest fee amount"
     },
     "email": "Send the result to:",
     "modal": {
