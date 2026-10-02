@@ -88,6 +88,7 @@ describe("Config Module", () => {
   });
 
   it("should use default values when retry environment variables are not set", async () => {
+    // eslint-disable-next-line no-underscore-dangle
     const env = { ...(window as any)._env_ };
 
     delete env.CHECKOUT_API_RETRY_NUMBERS;
@@ -95,7 +96,7 @@ describe("Config Module", () => {
     delete env.CHECKOUT_API_RETRY_NUMBERS_LINEAR;
     delete env.CHECKOUT_API_CLIENT_RETRY_NUMBERS;
     delete env.CHECKOUT_API_CLIENT_RETRY_DELAY;
-
+    // eslint-disable-next-line no-underscore-dangle
     (window as any)._env_ = env;
 
     jest.resetModules();
@@ -111,6 +112,7 @@ describe("Config Module", () => {
   });
 
   it("should correctly parse CHECKOUT_API_RETRY_NUMBERS_LINEAR", async () => {
+    // eslint-disable-next-line no-underscore-dangle
     (window as any)._env_.CHECKOUT_API_RETRY_NUMBERS_LINEAR = "4";
 
     jest.resetModules();
@@ -122,6 +124,7 @@ describe("Config Module", () => {
   });
 
   it("should throw when configuration is invalid", async () => {
+    // eslint-disable-next-line no-underscore-dangle
     (window as any)._env_ = {
       CHECKOUT_PM_HOST: "",
     };
