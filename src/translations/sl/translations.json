@@ -345,7 +345,7 @@
       },
       "title": "Pri katerem ponudniku želite plačevati?",
       "pspNameAccessibilityLabel": "Razvrsti po imenu ponudnika po abecednem vrstnem redu",
-      "taxFeeAccessibilityLabel": "Razvrsti po najnižji proviziji"
+      "taxFeeAccessibilityLabel": "Razvrsti od najnižje provizije navzgor"
     },
     "email": "Rezultat pošlji na:",
     "modal": {

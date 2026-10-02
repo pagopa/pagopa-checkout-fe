@@ -345,7 +345,7 @@
       },
       "title": "Über welchen Anbieter möchtest du zahlen?",
       "pspNameAccessibilityLabel": "Alphabetisch nach dem Namen des Anbieters sortieren",
-      "taxFeeAccessibilityLabel": "Nach der niedrigsten Gebühr sortieren"
+      "taxFeeAccessibilityLabel": "Von der niedrigsten Gebühr aufsteigend sortieren"
     },
     "email": "Sende Bestätigung an:",
     "modal": {

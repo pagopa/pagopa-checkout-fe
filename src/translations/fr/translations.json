@@ -345,7 +345,7 @@
       },
       "title": "Avec quel opérateur voulez-vous payer ?",
       "pspNameAccessibilityLabel": "Trier par ordre alphabétique selon le nom de l’opérateur",
-      "taxFeeAccessibilityLabel": "Trier selon le montant de la commission le plus bas"
+      "taxFeeAccessibilityLabel": "Trier à partir du montant de commission le plus bas"
     },
     "email": "Envoyer le résultat à:",
     "modal": {

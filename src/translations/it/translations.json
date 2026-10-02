@@ -345,7 +345,7 @@
       },
       "title": "Con quale gestore vuoi pagare?",
       "pspNameAccessibilityLabel": "Ordina in ordine alfabetico per nome del gestore",
-      "taxFeeAccessibilityLabel": "Ordina per l'importo di commissione più basso"
+      "taxFeeAccessibilityLabel": "Ordina dall'importo di commissione più basso"
     },
     "email": "Invia esito a:",
     "modal": {
