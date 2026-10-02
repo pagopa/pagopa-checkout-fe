@@ -165,7 +165,7 @@ function ErrorModal(props: {
       <DialogTitle
         id={props.titleId}
         variant="h6"
-        component={"h1"}
+        component={"h2"}
         sx={{ p: 0, mb: 2 }}
       >
         {t(title)}
