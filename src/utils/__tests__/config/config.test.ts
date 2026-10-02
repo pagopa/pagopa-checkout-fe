@@ -86,4 +86,50 @@ describe("Config Module", () => {
     expect(config.CHECKOUT_API_CLIENT_RETRY_NUMBERS).toBe(3);
     expect(config.CHECKOUT_API_CLIENT_RETRY_DELAY).toBe(500);
   });
+
+  it("should use default values when retry environment variables are not set", async () => {
+    const env = { ...(window as any)._env_ };
+
+    delete env.CHECKOUT_API_RETRY_NUMBERS;
+    delete env.CHECKOUT_API_RETRY_DELAY;
+    delete env.CHECKOUT_API_RETRY_NUMBERS_LINEAR;
+    delete env.CHECKOUT_API_CLIENT_RETRY_NUMBERS;
+    delete env.CHECKOUT_API_CLIENT_RETRY_DELAY;
+
+    (window as any)._env_ = env;
+
+    jest.resetModules();
+
+    const { getConfigOrThrow } = await import("../../config/config");
+    const config = getConfigOrThrow();
+
+    expect(config.CHECKOUT_API_RETRY_NUMBERS).toBe(10);
+    expect(config.CHECKOUT_API_RETRY_DELAY).toBe(3000);
+    expect(config.CHECKOUT_API_RETRY_NUMBERS_LINEAR).toBe(5);
+    expect(config.CHECKOUT_API_CLIENT_RETRY_NUMBERS).toBe(5);
+    expect(config.CHECKOUT_API_CLIENT_RETRY_DELAY).toBe(2000);
+  });
+
+  it("should correctly parse CHECKOUT_API_RETRY_NUMBERS_LINEAR", async () => {
+    (window as any)._env_.CHECKOUT_API_RETRY_NUMBERS_LINEAR = "4";
+
+    jest.resetModules();
+
+    const { getConfigOrThrow } = await import("../../config/config");
+    const config = getConfigOrThrow();
+
+    expect(config.CHECKOUT_API_RETRY_NUMBERS_LINEAR).toBe(4);
+  });
+
+  it("should throw when configuration is invalid", async () => {
+    (window as any)._env_ = {
+      CHECKOUT_PM_HOST: "",
+    };
+
+    jest.resetModules();
+
+    const { getConfigOrThrow } = await import("../../config/config");
+
+    expect(() => getConfigOrThrow()).toThrow("Invalid configuration");
+  });
 });
