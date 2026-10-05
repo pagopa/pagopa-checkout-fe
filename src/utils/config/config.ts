@@ -38,6 +38,8 @@ export const IConfig = t.interface({
   CHECKOUT_API_AUTH_SERVICE_BASEPATH_V1: NonEmptyString,
   CHECKOUT_API_RETRY_NUMBERS_LINEAR: t.number,
   CHECKOUT_API_WALLET_BASEPATH_V1: NonEmptyString,
+  CHECKOUT_API_CLIENT_RETRY_NUMBERS: t.number,
+  CHECKOUT_API_CLIENT_RETRY_DELAY: t.number,
 });
 
 // eslint-disable-next-line no-underscore-dangle
@@ -119,6 +121,24 @@ const errorOrConfig: t.Validation<IConfig> = IConfig.decode({
         10
       )
     : 5,
+  // eslint-disable-next-line no-underscore-dangle
+  CHECKOUT_API_CLIENT_RETRY_NUMBERS: (window as any)._env_
+    .CHECKOUT_API_CLIENT_RETRY_NUMBERS
+    ? parseInt(
+        // eslint-disable-next-line no-underscore-dangle
+        (window as any)._env_.CHECKOUT_API_CLIENT_RETRY_NUMBERS,
+        10
+      )
+    : 5,
+  // eslint-disable-next-line no-underscore-dangle
+  CHECKOUT_API_CLIENT_RETRY_DELAY: (window as any)._env_
+    .CHECKOUT_API_CLIENT_RETRY_DELAY
+    ? parseInt(
+        // eslint-disable-next-line no-underscore-dangle
+        (window as any)._env_.CHECKOUT_API_CLIENT_RETRY_DELAY,
+        10
+      )
+    : 2000,
 });
 
 /**
