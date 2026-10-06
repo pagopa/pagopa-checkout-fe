@@ -26,6 +26,8 @@ Object.defineProperty(global, "window", {
       CHECKOUT_GDI_CHECK_TIMEOUT: "5000",
       CHECKOUT_API_AUTH_SERVICE_BASEPATH_V1: "/auth",
       CHECKOUT_API_WALLET_BASEPATH_V1: "/checkout/payment-wallet/v1",
+      CHECKOUT_API_CLIENT_RETRY_NUMBERS: "3",
+      CHECKOUT_API_CLIENT_RETRY_DELAY: "500",
     },
   },
   writable: true,
@@ -81,5 +83,56 @@ describe("Config Module", () => {
     expect(config.CHECKOUT_API_WALLET_BASEPATH_V1).toBe(
       "/checkout/payment-wallet/v1"
     );
+    expect(config.CHECKOUT_API_CLIENT_RETRY_NUMBERS).toBe(3);
+    expect(config.CHECKOUT_API_CLIENT_RETRY_DELAY).toBe(500);
+  });
+
+  it("should use default values when retry environment variables are not set", async () => {
+    // eslint-disable-next-line no-underscore-dangle
+    const env = { ...(window as any)._env_ };
+
+    delete env.CHECKOUT_API_RETRY_NUMBERS;
+    delete env.CHECKOUT_API_RETRY_DELAY;
+    delete env.CHECKOUT_API_RETRY_NUMBERS_LINEAR;
+    delete env.CHECKOUT_API_CLIENT_RETRY_NUMBERS;
+    delete env.CHECKOUT_API_CLIENT_RETRY_DELAY;
+    // eslint-disable-next-line no-underscore-dangle
+    (window as any)._env_ = env;
+
+    jest.resetModules();
+
+    const { getConfigOrThrow } = await import("../../config/config");
+    const config = getConfigOrThrow();
+
+    expect(config.CHECKOUT_API_RETRY_NUMBERS).toBe(10);
+    expect(config.CHECKOUT_API_RETRY_DELAY).toBe(3000);
+    expect(config.CHECKOUT_API_RETRY_NUMBERS_LINEAR).toBe(5);
+    expect(config.CHECKOUT_API_CLIENT_RETRY_NUMBERS).toBe(5);
+    expect(config.CHECKOUT_API_CLIENT_RETRY_DELAY).toBe(2000);
+  });
+
+  it("should correctly parse CHECKOUT_API_RETRY_NUMBERS_LINEAR", async () => {
+    // eslint-disable-next-line no-underscore-dangle
+    (window as any)._env_.CHECKOUT_API_RETRY_NUMBERS_LINEAR = "4";
+
+    jest.resetModules();
+
+    const { getConfigOrThrow } = await import("../../config/config");
+    const config = getConfigOrThrow();
+
+    expect(config.CHECKOUT_API_RETRY_NUMBERS_LINEAR).toBe(4);
+  });
+
+  it("should throw when configuration is invalid", async () => {
+    // eslint-disable-next-line no-underscore-dangle
+    (window as any)._env_ = {
+      CHECKOUT_PM_HOST: "",
+    };
+
+    jest.resetModules();
+
+    const { getConfigOrThrow } = await import("../../config/config");
+
+    expect(() => getConfigOrThrow()).toThrow("Invalid configuration");
   });
 });
