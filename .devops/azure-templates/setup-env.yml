@@ -102,6 +102,14 @@ parameters:
   - name: 'api_ecommerce_basepath_auth_v1'
     type: string
     default: ''
+  
+  - name: 'checkout_api_client_retry_numbers'
+    type: number
+    default: 5
+
+  - name: 'checkout_api_client_retry_delay'
+    type: number
+    default: 2000
 
 steps:
 - bash: |
@@ -131,6 +139,8 @@ steps:
       CHECKOUT_AUTH_SERVICE_HOST=${{ parameters.checkout_auth_service_host }} \
       CHECKOUT_API_AUTH_SERVICE_BASEPATH_V1=${{ parameters.checkout_auth_service_basepath_v1 }} \
       CHECKOUT_API_WALLET_BASEPATH_V1=${{ parameters.api_checkout_wallet_basepath_v1 }} \
+      CHECKOUT_API_CLIENT_RETRY_NUMBERS=${{ parameters.checkout_api_client_retry_numbers }} \
+      CHECKOUT_API_CLIENT_RETRY_DELAY=${{ parameters.checkout_api_client_retry_delay }} \
       bash env.sh
 
   displayName: 'Populate environment file'
