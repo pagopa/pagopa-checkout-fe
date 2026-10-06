@@ -18,12 +18,13 @@ export default function PageContainer(props: {
       // For search engine crawlers, always render the document title in the
       // default site language (Italian) so that search results are not shown
       // in the crawler navigator language. Real users keep their own language.
-      const title = isCrawler()
-        ? i18n.getFixedT(fallbackLang)(props.title)
-        : t(props.title);
+      const title =
+        isCrawler() && i18n?.getFixedT
+          ? i18n.getFixedT(fallbackLang)(props.title)
+          : t(props.title);
       (document.title as any) = title + " - pagoPA";
     }
-  }, [props.title, i18n.language, t]);
+  }, [props.title, i18n?.language, t]);
 
   return (
     <Box mt={3} mb={6} aria-live="polite">
