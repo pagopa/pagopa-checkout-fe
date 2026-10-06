@@ -3,6 +3,12 @@ import "@testing-library/jest-dom";
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import PageContainer from "../PageContainer";
+import { isCrawler } from "../../../utils/device/crawlerDetection";
+
+// Mock crawler detection
+jest.mock("../../../utils/device/crawlerDetection", () => ({
+  isCrawler: jest.fn(() => false),
+}));
 
 // Mock the useTranslation hook and Trans component
 jest.mock("react-i18next", () => ({
@@ -10,6 +16,10 @@ jest.mock("react-i18next", () => ({
     t: (key: string) =>
       // Simple translation function that returns the key with a prefix
       `Translated: ${key}`,
+    i18n: {
+      // getFixedT returns a translator that simulates the Italian (fallback) translation
+      getFixedT: (_lang: string) => (key: string) => `Italian: ${key}`,
+    },
   }),
   Trans: ({
     i18nKey,
@@ -102,6 +112,8 @@ describe("PageContainer Component", () => {
     // Reset document.title before each test
     // eslint-disable-next-line functional/immutable-data
     document.title = originalDocumentTitle;
+    // Default: not a crawler
+    (isCrawler as jest.Mock).mockReturnValue(false);
   });
 
   it("renders correctly with minimal props", () => {
@@ -221,5 +233,21 @@ describe("PageContainer Component", () => {
     // Update the title prop
     rerender(<PageContainer title="page.title.updated" />);
     expect(document.title).toBe("Translated: page.title.updated - pagoPA");
+  });
+
+  it("sets document title in the browser language for real users", () => {
+    (isCrawler as jest.Mock).mockReturnValue(false);
+    render(<PageContainer title="page.title" />);
+
+    // Real user: title uses the standard translation (browser language)
+    expect(document.title).toBe("Translated: page.title - pagoPA");
+  });
+
+  it("sets document title in Italian (fallback) for search engine crawlers", () => {
+    (isCrawler as jest.Mock).mockReturnValue(true);
+    render(<PageContainer title="page.title" />);
+
+    // Crawler: title is forced to the fallback (Italian) translation
+    expect(document.title).toBe("Italian: page.title - pagoPA");
   });
 });
