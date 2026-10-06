@@ -344,6 +344,7 @@
         "name": "Ponudnik"
       },
       "title": "Pri katerem ponudniku želite plačevati?",
+      "selectPspAccessibilityLabel": "Izberite {{pspName}} kot ponudnika plačilnih storitev",
       "pspNameAccessibilityLabel": "Razvrsti po imenu ponudnika po abecednem vrstnem redu",
       "taxFeeAccessibilityLabel": "Razvrsti po najnižji proviziji"
     },

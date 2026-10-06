@@ -344,6 +344,7 @@
         "name": "Anbieter"
       },
       "title": "Über welchen Anbieter möchtest du zahlen?",
+      "selectPspAccessibilityLabel": "{{pspName}} als Zahlungsanbieter auswählen",
       "pspNameAccessibilityLabel": "Alphabetisch nach dem Namen des Anbieters sortieren",
       "taxFeeAccessibilityLabel": "Nach der niedrigsten Gebühr sortieren"
     },

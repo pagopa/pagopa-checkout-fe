@@ -129,7 +129,7 @@ describe("PaymentPSPListGridItem", () => {
       </ThemeProvider>
     );
 
-    expect(screen.getByLabelText("Test PSP")).toHaveAttribute(
+    expect(screen.getByRole("radio", { name: /Test PSP/ })).toHaveAttribute(
       "id",
       `psp-radio-${String(mockPspItem.idPsp)}`
     );

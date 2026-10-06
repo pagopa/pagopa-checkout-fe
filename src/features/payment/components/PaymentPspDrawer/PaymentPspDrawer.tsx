@@ -103,6 +103,12 @@ export const PaymentPspDrawer = (props: {
                 bodyVariant="body2"
                 image={pspImagePath(psp.abi)}
                 body={psp.pspBusinessName}
+                ariaLabel={t(
+                  "paymentCheckPage.drawer.selectPspAccessibilityLabel",
+                  {
+                    pspName: psp.pspBusinessName,
+                  }
+                )}
                 sx={{
                   ...styles.pspContainerStyle,
                   cursor: "pointer",
