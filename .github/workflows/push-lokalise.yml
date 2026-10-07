@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - main
+  pull_request: #TODO remove, used for test GHA
+    branches:
+      - main
+    types: [ opened, synchronize, labeled, unlabeled, reopened, edited ]
   #only trigger on changes to the Italian locale files
     paths:
       - src/test_translations/it/**
