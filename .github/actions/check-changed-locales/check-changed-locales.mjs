@@ -44,6 +44,21 @@ const LOCALES_DIR = "src/test_translations";
 const RAW_SOURCE = Symbol("rawSource");
 
 /**
+ * Whether this runtime supports the 3rd `context` argument in `JSON.parse`
+ * revivers (needed to preserve the original raw source text of each leaf).
+ *
+ * @returns {boolean}
+ */
+function isJsonParseSourceContextSupported() {
+  let supported = false;
+  JSON.parse("0", (_key, _value, context) => {
+    supported = context?.source === "0";
+    return 0;
+  });
+  return supported;
+}
+
+/**
  * Reads a CLI flag value (e.g. `--base origin/main`).
  *
  * @param {string} flag
@@ -55,6 +70,7 @@ function readFlag(flag) {
 }
 
 const baseRef = readFlag("--base") ?? process.env.BASE_REF ?? "origin/main";
+const jsonParseSourceContextSupported = isJsonParseSourceContextSupported();
 
 /**
  * Runs a git command and returns its trimmed stdout.
@@ -90,6 +106,11 @@ function keepSource(_key, value, context) {
  * @returns {unknown}
  */
 function parseWithSource(content) {
+  if (!jsonParseSourceContextSupported) {
+    throw new Error(
+      "This check requires a Node.js runtime that supports `JSON.parse` reviver source context (Node.js >= 22)."
+    );
+  }
   return JSON.parse(content, keepSource);
 }
 
