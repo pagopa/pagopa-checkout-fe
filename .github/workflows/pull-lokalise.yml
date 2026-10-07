@@ -1,0 +1,77 @@
+name: Pull locales from Lokalise
+on:
+  #manual trigger only
+  workflow_dispatch:
+concurrency:
+  #avoid multiple jobs running simultaneously
+  group: lokalise-pull
+  cancel-in-progress: false
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  pull-locales:
+    runs-on: ubuntu-latest
+    environment: lokalise
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Pull from Lokalise
+        uses: lokalise/lokalise-pull-action@2a9bba5071f83a2b8ac0a8b59c740e73cc1453a7 #v5.4.0
+        with:
+          api_token: ${{ secrets.LOKALISE_API_TOKEN }}
+          project_id: ${{ secrets.LOKALISE_PROJECT_ID }}
+          translations_path: |
+            src/test_translations
+          base_lang: it
+          file_format: json
+          file_ext: json
+          always_pull_base: true
+          pr_title: "chore: Update translations from Lokalise"
+          pr_labels: 🤖 automatic,translations
+          pr_body: |
+            <!--- Please always add a PR description as if nobody knows anything about the context these changes come from. -->
+            <!--- Even if we are all from our internal team, we may not be on the same page. -->
+            <!--- Write this PR as you were contributing to a public OSS project, where nobody knows you and you have to earn their trust. -->
+            <!--- This will improve our projects in the long run! Thanks. -->
+
+            #### List of Changes
+            Synchronize translations with Lokalise remote translations
+            <!--- Describe your changes in detail -->
+
+            #### Motivation and Context
+            This ensures that the latest translations from Lokalise are always available in the project.
+            <!--- Why is this change required? What problem does it solve? -->
+
+            #### How Has This Been Tested?
+
+            <!--- Please describe in detail how you tested your changes. -->
+            <!--- Include details of your testing environment, tests ran to see how -->
+            <!--- your change affects other areas of the code, etc. -->
+
+            #### Screenshots (if appropriate):
+
+            #### Types of changes
+
+            <!--- What types of changes does your code introduce? Put an `x` in all the boxes that apply: -->
+
+            - [ ] Bug fix (non-breaking change which fixes an issue)
+            - [x] New feature (non-breaking change which adds functionality)
+            - [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
+
+            #### Checklist:
+
+            <!--- Go over all the following points, and put an `x` in all the boxes that apply. -->
+            <!--- If you're unsure about any of these, don't hesitate to ask. We're here to help! -->
+
+            - [ ] My change requires a change to the documentation.
+            - [ ] I have updated the documentation accordingly.
+
+          git_user_name: "github-actions[bot]"
+          git_user_email: "github-actions[bot]@users.noreply.github.com"
+          additional_params: |
+            indentation: 2sp
+            placeholder_format: i18n
+            export_sort: a_z
+            replace_breaks: false
+            add_newline_eof: true

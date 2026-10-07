@@ -1,0 +1,35 @@
+name: Push locales to Lokalise
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  #only trigger on changes to the Italian locale files
+    paths:
+      - src/test_translations/it/**
+concurrency:
+  #avoid multiple jobs running simultaneously, run each pr merge sequentially
+  group: lokalise-push
+  cancel-in-progress: false
+permissions:
+  contents: read
+jobs:
+  push-locale:
+    runs-on: ubuntu-latest
+    environment: lokalise
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Push to Lokalise
+        uses: lokalise/lokalise-push-action@eec27af68d869ae40ca76d798a4b9887c0918e59 #v5.6.0
+        with:
+          api_token: ${{ secrets.LOKALISE_API_TOKEN }}
+          project_id: ${{ secrets.LOKALISE_PROJECT_ID }}
+          base_lang: it
+          translations_path: |
+            src/test_translations
+          name_pattern: translations.json
+          file_ext: json
+          additional_params: |
+            cleanup_mode: true
+            replace_modified: false
