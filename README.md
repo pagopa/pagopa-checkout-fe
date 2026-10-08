@@ -42,6 +42,8 @@ The table below describes all the Environment variables needed by the applicatio
 |IO\_PAY\_PORTAL\_API\_HOST| api services | endpoint/string
 |IO\_PAY\_PORTAL\_API\_REQUEST\_TIMEOUT| request timeout | milliseconds
 |CHECKOUT_API_RETRY_NUMBERS_LINEAR| number of calls at regular intervals| number
+|CHECKOUT\_API\_CLIENT\_RETRY\_NUMBERS| max number of retries for API clients with constant polling retry (default `5`) | number
+|CHECKOUT\_API\_CLIENT\_RETRY\_DELAY| delay between two retries for API clients with constant polling retry (default `2000`) | milliseconds
 
 ### Installation
 
