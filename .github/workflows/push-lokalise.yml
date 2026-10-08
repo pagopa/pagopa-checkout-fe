@@ -32,7 +32,7 @@ jobs:
           base_lang: it
           translations_path: |
             src/test_translations
-          name_pattern: translations.json
+          name_pattern: "**/translations.json"
           file_ext: json
           additional_params: |
             cleanup_mode: true
