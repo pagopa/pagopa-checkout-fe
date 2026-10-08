@@ -26,7 +26,7 @@ jobs:
           api_token: ${{ secrets.LOKALISE_API_TOKEN }}
           project_id: ${{ secrets.LOKALISE_PROJECT_ID }}
           translations_path: |
-            src/test_translations
+            src/translations
           base_lang: it
           file_format: json
           file_ext: json

@@ -6,7 +6,7 @@
  *
  * ## Business rule
  *
- * Locale files under `src/test_translations/**` are the source of truth that
+ * Locale files under `src/translations/**` are the source of truth that
  * gets synced with Lokalise. Contributors are allowed to:
  *
  * - Add a brand new key
@@ -38,7 +38,7 @@
 import { execFileSync } from "node:child_process";
 
 /** Root that contains every localized bundle we want to protect. */
-const LOCALES_DIR = "src/test_translations";
+const LOCALES_DIR = "src/translations";
 
 /** Marks a parsed leaf value wrapped together with its raw JSON source text. */
 const RAW_SOURCE = Symbol("rawSource");

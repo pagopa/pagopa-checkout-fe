@@ -6,7 +6,7 @@ on:
       - main
   #only trigger on changes to the Italian locale files
     paths:
-      - src/test_translations/it/**
+      - src/translations/it/**
 concurrency:
   #avoid multiple jobs running simultaneously, run each pr merge sequentially
   group: lokalise-push
@@ -27,7 +27,7 @@ jobs:
           project_id: ${{ secrets.LOKALISE_PROJECT_ID }}
           base_lang: it
           translations_path: |
-            src/test_translations
+            src/translations
           file_ext: json
           additional_params: |
             cleanup_mode: true
