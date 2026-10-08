@@ -2,10 +2,6 @@ name: Pull locales from Lokalise
 on:
   #manual trigger only
   workflow_dispatch:
-  pull_request: #TODO remove, used for test GHA
-    branches:
-      - main
-    types: [ opened, synchronize, labeled, unlabeled, reopened, edited ]
 concurrency:
   #avoid multiple jobs running simultaneously
   group: lokalise-pull
