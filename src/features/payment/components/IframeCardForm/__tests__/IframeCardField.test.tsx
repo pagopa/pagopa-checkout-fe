@@ -230,6 +230,8 @@ describe("IframeCardField Component", () => {
 
     const label = screen.getByText("Card Number");
     expect(label).toHaveAttribute("aria-hidden", "true");
+    expect(label).not.toHaveAttribute("for");
+    expect(label).not.toHaveAttribute("id");
   });
 
   it("sets correct ARIA attributes for error message", () => {
