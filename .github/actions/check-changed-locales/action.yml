@@ -1,18 +1,11 @@
 name: Check Changed Locales
 description: "Allow only locale key additions/removals in PRs. Existing locale values must not change manually."
 
-inputs:
-  github_token:
-    required: true
-    description: The github token used to read PR metadata
-
 runs:
   using: "composite"
   steps:
     - name: Checkout Repo
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      with:
-        fetch-depth: 0
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
