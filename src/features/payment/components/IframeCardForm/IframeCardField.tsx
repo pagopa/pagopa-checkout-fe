@@ -84,12 +84,7 @@ export function IframeCardField(props: Props) {
         {label}
       </InputLabel>
       <Box sx={styles.box} aria-busy={!isAllFieldsLoaded}>
-        <iframe
-          aria-label={label + " " + t("inputCardPage.formFields.required")}
-          id={`frame_${id}`}
-          seamless
-          style={styles.iframe}
-        />
+        <iframe id={`frame_${id}`} seamless style={styles.iframe} />
         <Box
           style={styles.fieldStatusIcon}
           role="presentation"
