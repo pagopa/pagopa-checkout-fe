@@ -230,6 +230,7 @@ describe("IframeCardField Component", () => {
 
     const label = screen.getByText("Card Number");
     expect(label).toHaveAttribute("aria-hidden", "true");
+    expect(label.tagName).toBe("SPAN");
     expect(label).not.toHaveAttribute("for");
     expect(label).not.toHaveAttribute("id");
   });

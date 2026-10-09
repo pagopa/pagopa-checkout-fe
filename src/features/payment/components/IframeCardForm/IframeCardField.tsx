@@ -74,7 +74,13 @@ export function IframeCardField(props: Props) {
 
   const InnerComponent = (
     <FormControl sx={styles.formControl}>
-      <InputLabel sx={styles.label} aria-hidden={true} margin="dense" shrink>
+      <InputLabel
+        component="span"
+        sx={styles.label}
+        aria-hidden={true}
+        margin="dense"
+        shrink
+      >
         {label}
       </InputLabel>
       <Box sx={styles.box} aria-busy={!isAllFieldsLoaded}>
