@@ -1,5 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 import PspFieldContainer from "../PspFieldContainer";
 
@@ -32,37 +33,48 @@ describe("PspFieldContainer", () => {
     expect(screen.getByText("123")).toBeInTheDocument();
   });
 
+  it("exposes the row as a native button for assistive technologies", () => {
+    render(<PspFieldContainer {...mockProps} />);
+
+    expect(screen.getByRole("button")).toBeInTheDocument();
+  });
+
+  it("applies the provided ariaLabel as the accessible name", () => {
+    render(
+      <PspFieldContainer {...mockProps} ariaLabel="Seleziona Test Body" />
+    );
+
+    expect(
+      screen.getByRole("button", { name: "Seleziona Test Body" })
+    ).toBeInTheDocument();
+  });
+
   it("calls onClick when clicked", () => {
     render(<PspFieldContainer {...mockProps} />);
 
-    const container = screen
-      .getByText("Test Body")
-      .closest('div[tabindex="0"]');
-    fireEvent.click(container!);
+    fireEvent.click(screen.getByRole("button"));
 
     expect(mockProps.onClick).toHaveBeenCalledTimes(1);
   });
 
-  it("calls onClick when Enter key is pressed", () => {
+  it("calls onClick when Enter key is pressed", async () => {
+    const user = userEvent.setup();
     render(<PspFieldContainer {...mockProps} />);
 
-    const container = screen
-      .getByText("Test Body")
-      .closest('div[tabindex="0"]');
-    fireEvent.keyDown(container!, { key: "Enter" });
+    screen.getByRole("button").focus();
+    await user.keyboard("{Enter}");
 
     expect(mockProps.onClick).toHaveBeenCalledTimes(1);
   });
 
-  it("does not call onClick when other keys are pressed", () => {
+  it("calls onClick when Space key is pressed", async () => {
+    const user = userEvent.setup();
     render(<PspFieldContainer {...mockProps} />);
 
-    const container = screen
-      .getByText("Test Body")
-      .closest('div[tabindex="0"]');
-    fireEvent.keyDown(container!, { key: "Space" });
+    screen.getByRole("button").focus();
+    await user.keyboard(" ");
 
-    expect(mockProps.onClick).not.toHaveBeenCalled();
+    expect(mockProps.onClick).toHaveBeenCalledTimes(1);
   });
 
   it("renders with row flexDirection", () => {
