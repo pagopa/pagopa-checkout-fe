@@ -344,6 +344,7 @@
         "name": "Opérateur"
       },
       "title": "Avec quel opérateur voulez-vous payer ?",
+      "selectPspAccessibilityLabel": "Sélectionner {{pspName}} comme prestataire de paiement",
       "pspNameAccessibilityLabel": "Trier par ordre alphabétique selon le nom de l’opérateur",
       "taxFeeAccessibilityLabel": "Trier selon le montant de la commission le plus bas"
     },
