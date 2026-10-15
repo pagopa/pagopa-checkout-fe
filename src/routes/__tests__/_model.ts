@@ -299,7 +299,8 @@ export const createSuccessGetPaymentMethodsV1: PaymentMethodsResponse = {
       status: PaymentMethodStatusEnum.ENABLED,
     } as PaymentMethodResponse,
     {
-      asset: "https://assets.cdn.platform.pagopa.it/logos/apps/paga-con-postepay.png",
+      asset:
+        "https://assets.cdn.platform.pagopa.it/logos/apps/paga-con-postepay.png",
       paymentMethodAsset:
         "https://assets.cdn.platform.pagopa.it/logos/apps/paga-con-postepay.png",
       description: "Paga con Postepay",
