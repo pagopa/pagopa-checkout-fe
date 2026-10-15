@@ -162,15 +162,13 @@ function ErrorModal(props: {
       onClose={props.onClose}
       aria-live="assertive"
     >
-      <DialogTitle sx={{ p: 0 }}>
-        <Typography
-          id={props.titleId}
-          variant="h6"
-          component={"h1"}
-          sx={{ mb: 2 }}
-        >
-          {t(title)}
-        </Typography>
+      <DialogTitle
+        id={props.titleId}
+        variant="h6"
+        component={"h2"}
+        sx={{ p: 0, mb: 2 }}
+      >
+        {t(title)}
       </DialogTitle>
       <DialogContent sx={{ p: 0 }}>
         <Typography id={props.bodyId} variant="body1" component={"div"}>
