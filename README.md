@@ -143,6 +143,21 @@ The app uses i18n for translations, in order to add a new one follow this steps:
       //here
    }
    ```
+
+   Translations are handled in Lokalise, this mean that developers should handle translations keys only by adding new keys or deleting old ones.
+   
+   Translations values are not allow to be modified directly in translations file: content should be synchronized by Lokalise through the `Pull locales from Lokalise` action manual run. There is only an allowed exception that is when a new key is created (see below)
+
+   Every merged pr synchronize italian language file with Lokalise where Content Designer can perform translations and ping back developers team to pull uldated translations.
+
+   ### Create new key
+
+   During development of newly pages try to reuse existing keys, if any.
+
+   New keys should be add to italian language file only -> once pr is merged those new keys will be pushed automatically to Lokalise so that Contend Designers can perform and validate translations.
+
+   There is no need to have all translations ready to go in all languages, italian is the only mandatory one (take translations from figma/task specifications)
+   
    
 ## Polling
 
