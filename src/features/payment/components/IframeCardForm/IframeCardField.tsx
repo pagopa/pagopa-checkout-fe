@@ -75,28 +75,22 @@ export function IframeCardField(props: Props) {
   const InnerComponent = (
     <FormControl sx={styles.formControl}>
       <InputLabel
+        component="span"
         sx={styles.label}
         aria-hidden={true}
         margin="dense"
         shrink
-        htmlFor={id}
-        id={label}
       >
         {label}
       </InputLabel>
       <Box sx={styles.box} aria-busy={!isAllFieldsLoaded}>
-        <iframe
-          aria-label={label + " " + t("inputCardPage.formFields.required")}
-          id={`frame_${id}`}
-          seamless
-          style={styles.iframe}
-        />
+        <iframe id={`frame_${id}`} seamless style={styles.iframe} />
         <Box
           style={styles.fieldStatusIcon}
           role="presentation"
           visibility={isValid === false ? "visible" : "hidden"}
         >
-          <ErrorOutlineIcon sx={{ mr: 2.5 }} color="error" />
+          <ErrorOutlineIcon sx={{ mr: 2.5, color: "#BB4A4A" }} />
         </Box>
       </Box>
       {(errorMessage || errorCode) && (
