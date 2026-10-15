@@ -185,8 +185,6 @@ export const PspListSortLabel = ({
       sx={{ cursor: "pointer" }}
       component="div"
       padding="none"
-      aria-label={ariaLabel}
-      role="button"
       onClick={() =>
         onClick({
           fieldName,
@@ -196,6 +194,7 @@ export const PspListSortLabel = ({
     >
       {children}
       <TableSortLabel
+        aria-label={ariaLabel}
         onKeyUp={handleKeyUp}
         onFocus={handleFocus}
         onBlur={handleBlur}
