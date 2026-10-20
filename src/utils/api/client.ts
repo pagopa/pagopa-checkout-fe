@@ -14,8 +14,8 @@ import {
 } from "../config/fetch";
 
 const conf = getConfigOrThrow();
-const retries: number = 10;
-const delay: number = 1000;
+const retries: number = conf.CHECKOUT_API_CLIENT_RETRY_NUMBERS;
+const delay: number = conf.CHECKOUT_API_CLIENT_RETRY_DELAY;
 
 /**
  * Api client for payment ecommerce API V1

@@ -76,7 +76,8 @@ resources:
     - repository: checkout-be-mock
       type: github
       name: pagopa/pagopa-checkout-be-mock
-      ref: master
+      # temp for tests, to revert before merge
+      ref: CHK-5044-sri-hash-integration
       endpoint: 'io-azure-devops-github-ro'
 
 stages:

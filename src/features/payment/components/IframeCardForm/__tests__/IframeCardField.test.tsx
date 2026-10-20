@@ -13,9 +13,6 @@ jest.mock("@mui/icons-material/ErrorOutline", () => ({
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string, options?: any) => {
-      if (key === "inputCardPage.formFields.required") {
-        return "required";
-      }
       if (key.startsWith("errorMessageNPG.")) {
         return options?.defaultValue || "Fallback error message";
       }
@@ -226,10 +223,13 @@ describe("IframeCardField Component", () => {
     );
 
     const iframe = container.querySelector(`#frame_${defaultProps.id}`);
-    expect(iframe).toHaveAttribute("aria-label", "Card Number required");
+    expect(iframe).not.toHaveAttribute("aria-label");
 
     const label = screen.getByText("Card Number");
     expect(label).toHaveAttribute("aria-hidden", "true");
+    expect(label.tagName).toBe("SPAN");
+    expect(label).not.toHaveAttribute("for");
+    expect(label).not.toHaveAttribute("id");
   });
 
   it("sets correct ARIA attributes for error message", () => {
