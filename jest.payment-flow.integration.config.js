@@ -1,6 +1,6 @@
 module.exports = {
   preset: "jest-puppeteer",
-  testRegex: "./paymentflow.integration.test\\.ts$",
+  testRegex: String.raw`./paymentflow.integration.test\.ts$`,
   reporters: [
       'default',
       [ 'jest-junit', {
