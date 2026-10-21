@@ -216,7 +216,7 @@ stages:
           displayName: 'Setup deps for mock'
 
         - script: |
-            nohup yarn start &
+            nohup yarn start > $(Agent.TempDirectory)/mock.log 2>&1 &
           displayName: 'Start backend mock'
           workingDirectory: pagopa-checkout-be-mock
 
@@ -230,7 +230,7 @@ stages:
           workingDirectory: pagopa-checkout-fe
 
         - script: |
-            yarn dev &
+            yarn dev > $(Agent.TempDirectory)/fe.log 2>&1 &
           displayName: 'Start checkout FE'
           workingDirectory: pagopa-checkout-fe
 
@@ -245,6 +245,12 @@ stages:
         - script: yarn test:outcome-polling-integration
           displayName: 'Outcome polling integration tests exec'
           workingDirectory: pagopa-checkout-fe
+
+        - script: |
+            echo "=== mock log ==="; cat $(Agent.TempDirectory)/mock.log || true
+            echo "=== fe log ==="; cat $(Agent.TempDirectory)/fe.log || true
+          displayName: 'Dump mock and fe logs'
+          condition: always()
 
         - task: PublishTestResults@2
           displayName: 'Publish integration tests results from Jest tests'
@@ -276,7 +282,7 @@ stages:
           displayName: 'Setup deps for mock'
 
         - script: |
-            nohup yarn start &
+            nohup yarn start > $(Agent.TempDirectory)/mock.log 2>&1 &
           displayName: 'Start backend mock'
           workingDirectory: pagopa-checkout-be-mock
 
@@ -290,7 +296,7 @@ stages:
           workingDirectory: pagopa-checkout-fe
 
         - script: |
-            yarn dev &
+            yarn dev > $(Agent.TempDirectory)/fe.log 2>&1 &
           displayName: 'Start checkout FE'
           workingDirectory: pagopa-checkout-fe
 
@@ -305,6 +311,12 @@ stages:
         - script: yarn test:npg-sri-hash-check-integration
           displayName: 'NPG SRI hash check integration tests exec'
           workingDirectory: pagopa-checkout-fe
+
+        - script: |
+            echo "=== mock log ==="; cat $(Agent.TempDirectory)/mock.log || true
+            echo "=== fe log ==="; cat $(Agent.TempDirectory)/fe.log || true
+          displayName: 'Dump mock and fe logs'
+          condition: always()
 
         - task: PublishTestResults@2
           displayName: 'Publish integration tests results from Jest tests'
@@ -336,7 +348,7 @@ stages:
           displayName: 'Setup deps for mock'
 
         - script: |
-            nohup yarn start &
+            nohup yarn start > $(Agent.TempDirectory)/mock.log 2>&1 &
           displayName: 'Start backend mock'
           workingDirectory: pagopa-checkout-be-mock
 
@@ -350,7 +362,7 @@ stages:
           workingDirectory: pagopa-checkout-fe
 
         - script: |
-            yarn dev &
+            yarn dev > $(Agent.TempDirectory)/fe.log 2>&1 &
           displayName: 'Start checkout FE'
           workingDirectory: pagopa-checkout-fe
 
@@ -361,6 +373,12 @@ stages:
         - script: yarn test:authentication-integration
           displayName: 'Authentication integration tests exec'
           workingDirectory: pagopa-checkout-fe
+
+        - script: |
+            echo "=== mock log ==="; cat $(Agent.TempDirectory)/mock.log || true
+            echo "=== fe log ==="; cat $(Agent.TempDirectory)/fe.log || true
+          displayName: 'Dump mock and fe logs'
+          condition: always()
 
         - task: PublishTestResults@2
           displayName: 'Publish integration tests results from Jest tests'
@@ -392,7 +410,7 @@ stages:
           displayName: 'Setup deps for mock'
 
         - script: |
-            nohup yarn start &
+            nohup yarn start > $(Agent.TempDirectory)/mock.log 2>&1 &
           displayName: 'Start backend mock'
           workingDirectory: pagopa-checkout-be-mock
 
@@ -406,7 +424,7 @@ stages:
           workingDirectory: pagopa-checkout-fe
 
         - script: |
-            yarn dev &
+            yarn dev > $(Agent.TempDirectory)/fe.log 2>&1 &
           displayName: 'Start checkout FE'
           workingDirectory: pagopa-checkout-fe
 
@@ -421,6 +439,12 @@ stages:
         - script: yarn test:feature-flags-integration
           displayName: 'Feature flags integration tests exec'
           workingDirectory: pagopa-checkout-fe
+
+        - script: |
+            echo "=== mock log ==="; cat $(Agent.TempDirectory)/mock.log || true
+            echo "=== fe log ==="; cat $(Agent.TempDirectory)/fe.log || true
+          displayName: 'Dump mock and fe logs'
+          condition: always()
 
         - task: PublishTestResults@2
           displayName: 'Publish integration tests results from Jest tests'
