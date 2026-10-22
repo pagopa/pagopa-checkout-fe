@@ -1,6 +1,6 @@
 module.exports = {
   preset: 'ts-jest',
-  testRegex: './test-translations\\.spec\\.ts$',
+  testRegex: String.raw`./test-translations\.spec\.ts$`,
   testEnvironment: 'node',
   globals: {
     'ts-jest': {
