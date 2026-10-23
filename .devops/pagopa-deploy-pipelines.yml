@@ -128,7 +128,7 @@ stages:
               checkout_feature_flags_basepath: '/checkout/feature-flags/v1'
               checkout_auth_service_basepath_v1: '/checkout/auth-service/v1'
               pagopa_assets_cdn: 'https://assets.cdn.platform.pagopa.it/payment-methods'
-              pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi'
+              pagopa_logos_cdn: 'https://assets.cdn.platform.pagopa.it/logos/abi'
               survey_show: 1
               # SRI active. No npg-dev folder: DEV reads npg-uat.
               npg_sdk_url: 'https://assets.cdn.platform.pagopa.it/npg-uat/hfsdk.js'
@@ -345,7 +345,7 @@ stages:
               checkout_feature_flags_basepath: '/checkout/feature-flags/v1'
               checkout_auth_service_basepath_v1: '/checkout/auth-service/v1'
               pagopa_assets_cdn: 'https://assets.cdn.platform.pagopa.it/payment-methods'
-              pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi'
+              pagopa_logos_cdn: 'https://assets.cdn.platform.pagopa.it/logos/abi'
               survey_show: 1
               # SRI active
               npg_sdk_url: 'https://assets.cdn.platform.pagopa.it/npg-uat/hfsdk.js'
@@ -526,7 +526,7 @@ stages:
               checkout_feature_flags_basepath: '/checkout/feature-flags/v1'
               checkout_auth_service_basepath_v1: '/checkout/auth-service/v1'
               pagopa_assets_cdn: 'https://assets.cdn.platform.pagopa.it/payment-methods'
-              pagopa_logos_cdn: 'https://assets.cdn.io.italia.it/logos/abi'
+              pagopa_logos_cdn: 'https://assets.cdn.platform.pagopa.it/logos/abi'
               survey_show: 1
               # SRI not active yet: PROD is activated by a separate task, by repointing
               # this pair to assets.cdn.platform.pagopa.it/npg-prod/.

@@ -299,9 +299,10 @@ export const createSuccessGetPaymentMethodsV1: PaymentMethodsResponse = {
       status: PaymentMethodStatusEnum.ENABLED,
     } as PaymentMethodResponse,
     {
-      asset: "https://assets.cdn.io.italia.it/logos/apps/paga-con-postepay.png",
+      asset:
+        "https://assets.cdn.platform.pagopa.it/logos/apps/paga-con-postepay.png",
       paymentMethodAsset:
-        "https://assets.cdn.io.italia.it/logos/apps/paga-con-postepay.png",
+        "https://assets.cdn.platform.pagopa.it/logos/apps/paga-con-postepay.png",
       description: "Paga con Postepay",
       id: "1c12349f-8133-42f3-ad96-7e6527d27a41",
       methodManagement: PaymentMethodManagementTypeEnum.REDIRECT,
@@ -338,7 +339,7 @@ export const createSuccessPostPaymentMethodsV2: PaymentMethodsResponseV2 = {
       name: { it: "Paga con Poste Pay" },
       paymentTypeCode: "RBPP",
       paymentMethodAsset:
-        "https://assets.cdn.io.italia.it/logos/apps/paga-con-postepay.png",
+        "https://assets.cdn.platform.pagopa.it/logos/apps/paga-con-postepay.png",
       paymentMethodTypes: ["APM"],
       validityDateFrom: new Date(),
       methodManagement: MethodManagementEnumAuthV1.REDIRECT,
@@ -366,7 +367,7 @@ export const createSuccessPostPaymentMethodsV2: PaymentMethodsResponseV2 = {
       status: PaymentMethodStatusEnumV3.ENABLED,
     } as PaymentMethodResponseV3,
     {
-      asset: "https://assets.cdn.io.italia.it/logos/apps/paga-con-postepay.png",
+      asset: "https://assets.cdn.platform.pagopa.it/logos/apps/paga-con-postepay.png",
       description: "Paga con Postepay",
       id: "1c12349f-8133-42f3-ad96-7e6527d27a41",
       methodManagement: PaymentMethodManagementTypeEnumV3.REDIRECT,
@@ -404,7 +405,7 @@ export const createSuccessPostPaymentMethodsAuthV1: PaymentMethodsResponseAuthV1
         name: { it: "Paga con Poste Pay" },
         paymentTypeCode: "RBPP",
         paymentMethodAsset:
-          "https://assets.cdn.io.italia.it/logos/apps/paga-con-postepay.png",
+          "https://assets.cdn.platform.pagopa.it/logos/apps/paga-con-postepay.png",
         paymentMethodTypes: ["APM"],
         validityDateFrom: new Date(),
         methodManagement: MethodManagementEnumAuthV1.REDIRECT,
