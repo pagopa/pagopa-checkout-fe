@@ -1,5 +1,5 @@
 import React from "react";
-import { Alert, AlertTitle, Box, Link } from "@mui/material";
+import { Alert, AlertTitle, Box } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
 export function ScheduledMaintenanceBanner() {
