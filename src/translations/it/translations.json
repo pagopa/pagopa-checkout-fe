@@ -510,9 +510,9 @@
       "cancelButton": "Annulla"
     }
   },
-  "ScheduledMaintenanceBanner": {
+    "ScheduledMaintenanceBanner": {
     "titleKey": "Manutenzione programmata",
-    "bodyKey": "Non sarà possibile pagare dalle ore 00:01 alle ore 03:00 del 18 luglio 2025.",
+    "bodyKey": "Martedì 27 ottobre potrebbero verificarsi temporanei disservizi o brevi indisponibilità per attività di manutenzione.",
     "linkTextKey": "Maggiori informazioni"
   },
   "maintenancePage": {
