@@ -1,0 +1,33 @@
+name: Check PR
+
+# Controls when the workflow will run
+on:
+  pull_request:
+    branches:
+      - main
+    types: [ opened, synchronize, labeled, unlabeled, reopened, edited ]
+
+
+permissions:
+  pull-requests: write
+
+jobs:
+
+  check_size:
+    runs-on: ubuntu-latest
+    name: Check Size
+    steps:
+      - name: Check PR Size
+        uses: pagopa/github-actions-template/check-pr-size@3fae741d94bcb9873f2447e95cc4ddea6f77be4d
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+  
+  check_changed_locales:
+    runs-on: ubuntu-latest
+    name: Check Changed Locales
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Check Changed Locales
+        uses: ./.github/actions/check-changed-locales
