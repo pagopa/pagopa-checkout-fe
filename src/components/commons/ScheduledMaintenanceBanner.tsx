@@ -15,7 +15,8 @@ export function ScheduledMaintenanceBanner() {
           },
         }}
       >
-        {t("ScheduledMaintenanceBanner.bodyKey")}
+        {/*{t("ScheduledMaintenanceBanner.bodyKey")} waiting for translations*/}
+        Il 27 ottobre potrebbero verificarsi temporanei disservizi per interventi di manutenzione.
         <Box mt={1}>
           <Link
             href="https://status.platform.pagopa.it/it/maintenance/619923" // TODO: understand whether the status page link is dynamic, in order to move it to the environment configuration.
