@@ -1,5 +1,5 @@
 import React from "react";
-import { Alert, AlertTitle, Box } from "@mui/material";
+import { Alert, AlertTitle, Box, Link } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
 export function ScheduledMaintenanceBanner() {
@@ -10,13 +10,22 @@ export function ScheduledMaintenanceBanner() {
       <Box
         component="div"
         sx={{
-          maxWidth: "450px",
-          whiteSpace: "normal",
-          overflowWrap: "break-word",
+          "@media (max-width: 1024px)": {
+            whiteSpace: "normal",
+          },
         }}
       >
-        Il 27 ottobre potrebbero verificarsi temporanei disservizi per
-        interventi di manutenzione.
+        {t("ScheduledMaintenanceBanner.bodyKey")}
+        <Box mt={1}>
+          <Link
+            href="https://status.platform.pagopa.it/it/maintenance/619923" // TODO: understand whether the status page link is dynamic, in order to move it to the environment configuration.
+            target="_blank"
+            rel="noreferrer"
+            sx={{ fontWeight: 600 }}
+          >
+            {t("ScheduledMaintenanceBanner.linkTextKey")}
+          </Link>
+        </Box>
       </Box>
     </Alert>
   );
