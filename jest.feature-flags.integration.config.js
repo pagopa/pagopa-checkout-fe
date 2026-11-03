@@ -1,6 +1,6 @@
 module.exports = {
   preset: "jest-puppeteer",
-  testRegex: "./featureFlags.integration.test\\.ts$",
+  testRegex: String.raw`./featureFlags.integration.test\.ts$`,
   reporters: [
     "default",
     [
