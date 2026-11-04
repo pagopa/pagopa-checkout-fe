@@ -12,7 +12,7 @@
     "editCard": "Karteninformationen ändern",
     "editDonation": "Spendenorganisation ändern",
     "editPsp": "Zahlungsdienstleister ändern",
-    "informationDialog": "Informationen über den zu zahlenden Betrag",
+    "informationDialog": "Informationen zu den Kommissionsgebühren",
     "informationLink": "Weitere Informationen zum Programm",
     "languageMenu": "Eingestellte Sprache",
     "loading": "Laden...",
@@ -344,8 +344,9 @@
         "name": "Anbieter"
       },
       "title": "Über welchen Anbieter möchtest du zahlen?",
+      "selectPspAccessibilityLabel": "{{pspName}} als Zahlungsanbieter auswählen",
       "pspNameAccessibilityLabel": "Alphabetisch nach dem Namen des Anbieters sortieren",
-      "taxFeeAccessibilityLabel": "Nach der niedrigsten Gebühr sortieren"
+      "taxFeeAccessibilityLabel": "Von der niedrigsten Gebühr aufsteigend sortieren"
     },
     "email": "Sende Bestätigung an:",
     "modal": {

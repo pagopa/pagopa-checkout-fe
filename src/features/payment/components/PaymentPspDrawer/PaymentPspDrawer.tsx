@@ -103,6 +103,12 @@ export const PaymentPspDrawer = (props: {
                 bodyVariant="body2"
                 image={pspImagePath(psp.abi)}
                 body={psp.pspBusinessName}
+                ariaLabel={t(
+                  "paymentCheckPage.drawer.selectPspAccessibilityLabel",
+                  {
+                    pspName: psp.pspBusinessName,
+                  }
+                )}
                 sx={{
                   ...styles.pspContainerStyle,
                   cursor: "pointer",
@@ -179,8 +185,6 @@ export const PspListSortLabel = ({
       sx={{ cursor: "pointer" }}
       component="div"
       padding="none"
-      aria-label={ariaLabel}
-      role="button"
       onClick={() =>
         onClick({
           fieldName,
@@ -190,6 +194,7 @@ export const PspListSortLabel = ({
     >
       {children}
       <TableSortLabel
+        aria-label={ariaLabel}
         onKeyUp={handleKeyUp}
         onFocus={handleFocus}
         onBlur={handleBlur}

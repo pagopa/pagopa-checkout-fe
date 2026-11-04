@@ -46,7 +46,6 @@ export const PaymentPSPListGridItem = ({
       <FormControlLabel
         value={radioValue}
         labelPlacement="start"
-        tabIndex={0}
         sx={{
           m: 0,
           mt: "10px",
@@ -88,10 +87,8 @@ export const PaymentPSPListGridItem = ({
         }}
         control={
           <Radio
-            tabIndex={-1}
             inputProps={{
               id: inputId,
-              "aria-label": pspItem.pspBusinessName ?? "PSP",
             }}
             icon={
               <RadioButtonUnchecked data-testid="psp-radio-button-unchecked" />

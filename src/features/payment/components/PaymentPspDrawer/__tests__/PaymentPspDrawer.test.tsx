@@ -11,6 +11,10 @@ jest.mock("react-i18next", () => ({
         "paymentCheckPage.drawer.body": "Choose a payment service provider",
         "paymentCheckPage.drawer.header.name": "Name",
         "paymentCheckPage.drawer.header.amount": "Amount",
+        "paymentCheckPage.drawer.pspNameAccessibilityLabel":
+          "Sort alphabetically by provider name",
+        "paymentCheckPage.drawer.taxFeeAccessibilityLabel":
+          "Sort from the lowest fee amount",
       };
       return translations[key] || key;
     },
@@ -125,6 +129,29 @@ describe("PaymentPspDrawer Component", () => {
     // Check for the header labels within the Box
     expect(screen.getByText("Name")).toBeInTheDocument();
     expect(screen.getByText("Amount")).toBeInTheDocument();
+  });
+
+  it("renders descriptive aria-labels on the sort buttons", () => {
+    render(
+      <ThemeProvider theme={mockTheme}>
+        <PaymentPspDrawer
+          open={true}
+          onClose={jest.fn()}
+          loading={false}
+          pspList={mockPspList}
+          onSelect={jest.fn()}
+        />
+      </ThemeProvider>
+    );
+
+    expect(
+      screen.getByRole("button", {
+        name: "Sort alphabetically by provider name",
+      })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Sort from the lowest fee amount" })
+    ).toBeInTheDocument();
   });
 
   it("renders loading state correctly", () => {
@@ -579,7 +606,7 @@ describe("PspListSortLabel Component - sorting", () => {
       jest.clearAllMocks();
     });
 
-    it("renders the correct aria-label on the TableCell", () => {
+    it("renders the aria-label on the focusable sort control", () => {
       render(
         <PspListSortLabel
           id="test-sort"
@@ -595,11 +622,13 @@ describe("PspListSortLabel Component - sorting", () => {
         </PspListSortLabel>
       );
 
-      const tableCell = screen.getByText("Test Label").closest("div");
+      const tableCell = screen.getByText("Test Label");
+      const sortLabel = screen.getByRole("button");
 
-      if (tableCell) {
-        expect(tableCell).toHaveAttribute("aria-label", "Sort by PSP name");
-      }
+      expect(sortLabel).toHaveAttribute("aria-label", "Sort by PSP name");
+      expect(sortLabel).toHaveAttribute("tabindex", "0");
+      expect(tableCell).not.toHaveAttribute("aria-label");
+      expect(tableCell).not.toHaveAttribute("role", "button");
     });
 
     it("allows querying by aria-label", () => {
@@ -618,10 +647,11 @@ describe("PspListSortLabel Component - sorting", () => {
         </PspListSortLabel>
       );
 
-      const element = screen.getByLabelText("Sort by PSP name");
+      const element = screen.getByRole("button", {
+        name: "Sort by PSP name",
+      });
 
       expect(element).toBeInTheDocument();
-      expect(element).toHaveAttribute("role", "button");
     });
   });
 });

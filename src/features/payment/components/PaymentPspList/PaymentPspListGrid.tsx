@@ -7,6 +7,7 @@ interface PSPGridProps {
   pspList: Array<Bundle>;
   onPspSelected: (psp: Bundle) => void;
   currentSelectedPsp?: Bundle;
+  ariaLabelledBy?: string;
 }
 
 const getPspValue = (psp: Bundle, index: number) =>
@@ -16,6 +17,7 @@ export const PaymentPSPListGrid = ({
   pspList,
   onPspSelected,
   currentSelectedPsp,
+  ariaLabelledBy,
 }: PSPGridProps) => {
   const selectedId = (() => {
     if (currentSelectedPsp == null) {
@@ -31,6 +33,7 @@ export const PaymentPSPListGrid = ({
   return (
     <RadioGroup
       name="psp-selector"
+      aria-labelledby={ariaLabelledBy}
       value={selectedId}
       onChange={(_, value) => {
         const found = pspList.find(
