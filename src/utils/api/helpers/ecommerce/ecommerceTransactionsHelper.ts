@@ -56,7 +56,6 @@ export const activatePayment = async ({
     | undefined;
   const paymentInfo = getSessionItem(SessionItems.paymentInfo) as
     | PaymentInfoModel
-    | PaymentInfoModel
     | undefined;
   const userEmail = getSessionItem(SessionItems.useremail) as
     | string

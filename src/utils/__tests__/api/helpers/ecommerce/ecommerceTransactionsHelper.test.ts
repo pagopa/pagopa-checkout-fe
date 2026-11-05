@@ -27,6 +27,7 @@ import { ErrorsType } from "../../../../errors/checkErrorsModel";
 import {
   getRptIdsFromSession,
   getSessionItem,
+  setSessionItem,
 } from "../../../../storage/sessionStorage";
 import { NewTransactionResponse } from "../../../../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 
@@ -40,6 +41,7 @@ jest.mock("../../../../storage/sessionStorage", () => ({
   getRptIdsFromSession: jest.fn(),
   SessionItems: {
     authToken: "authToken",
+    cart: "cart",
   },
 }));
 
@@ -273,6 +275,59 @@ describe("Ecommerce transactions helper - activatePayment tests", () => {
         cardPaymentMethodMock.paymentMethodId,
         "orderId"
       );
+    });
+  });
+
+  it("Should override carts fields with info from activate response", async () => {
+    mockSetSessionForActivatePayment(false, getCartResponseMock);
+    const cartFirstPaymentNotice = getCartResponseMock.paymentNotices[0];
+    (apiPaymentEcommerceClientV2.newTransaction as jest.Mock).mockReturnValue(
+      Promise.resolve({
+        right: {
+          status: 200,
+          value: {
+            ...transactionResponseMock,
+            payments: [
+              {
+                ...transactionResponseMock.payments[0],
+                rptId: cartFirstPaymentNotice.fiscalCode
+                  .toString()
+                  .concat(cartFirstPaymentNotice.noticeNumber),
+                amount: cartFirstPaymentNotice.amount + 1000,
+                reason:
+                  cartFirstPaymentNotice.description + " - updated reason",
+                companyName:
+                  cartFirstPaymentNotice.description + " - updated company",
+                creditorReferenceId: "creditorRef - updated value",
+              },
+            ],
+          },
+        },
+      })
+    );
+    await activatePayment({
+      token: "token",
+      onResponseActivate: mockOnResponse,
+      onErrorActivate: mockOnError,
+    });
+    await waitFor(() => {
+      expect(mockOnResponse).toHaveBeenCalled();
+    });
+    const cartCall = (setSessionItem as jest.Mock).mock.calls.find(
+      ([key]) => key === "cart"
+    );
+    const [updated, untouched] = cartCall[1].paymentNotices;
+    expect(updated).toMatchObject({
+      amount: 2000,
+      description: "test1 - updated reason",
+      companyName: "test1 - updated company",
+      creditorReferenceId: "creditorRef - updated value",
+    });
+    // notices without a matching payment keep their original values
+    expect(untouched).toMatchObject({
+      amount: 2000,
+      description: "test2",
+      companyName: "test2",
     });
   });
 });
