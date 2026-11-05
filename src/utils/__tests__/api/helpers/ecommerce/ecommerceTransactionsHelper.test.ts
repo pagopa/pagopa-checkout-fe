@@ -294,11 +294,9 @@ describe("Ecommerce transactions helper - activatePayment tests", () => {
                   .toString()
                   .concat(cartFirstPaymentNotice.noticeNumber),
                 amount: cartFirstPaymentNotice.amount + 1000,
-                reason:
-                  cartFirstPaymentNotice.description + " - updated reason",
-                companyName:
-                  cartFirstPaymentNotice.description + " - updated company",
-                creditorReferenceId: "creditorRef - updated value",
+                reason: ` ${cartFirstPaymentNotice.description} - updated reason`,
+                companyName: ` ${cartFirstPaymentNotice.description} - updated company`,
+                creditorReferenceId: ` ${cartFirstPaymentNotice.creditorReferenceId} - updated creditor reference`,
               },
             ],
           },
@@ -321,7 +319,7 @@ describe("Ecommerce transactions helper - activatePayment tests", () => {
       amount: 2000,
       description: "test1 - updated reason",
       companyName: "test1 - updated company",
-      creditorReferenceId: "creditorRef - updated value",
+      creditorReferenceId: "creditorRef1 - updated creditor reference",
     });
     // notices without a matching payment keep their original values
     expect(untouched).toMatchObject({
