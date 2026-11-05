@@ -294,9 +294,9 @@ describe("Ecommerce transactions helper - activatePayment tests", () => {
                   .toString()
                   .concat(cartFirstPaymentNotice.noticeNumber),
                 amount: cartFirstPaymentNotice.amount + 1000,
-                reason: ` ${cartFirstPaymentNotice.description} - updated reason`,
-                companyName: ` ${cartFirstPaymentNotice.description} - updated company`,
-                creditorReferenceId: ` ${cartFirstPaymentNotice.creditorReferenceId} - updated creditor reference`,
+                reason: `${cartFirstPaymentNotice.description} - updated reason`,
+                companyName: `${cartFirstPaymentNotice.description} - updated company`,
+                creditorReferenceId: `${cartFirstPaymentNotice.creditorReferenceId} - updated creditor reference`,
               },
             ],
           },
