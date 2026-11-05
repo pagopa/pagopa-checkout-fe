@@ -1,4 +1,7 @@
-import { PaymentInstrumentsType } from "../../features/payment/models/paymentModel";
+import {
+  Cart,
+  PaymentInstrumentsType,
+} from "../../features/payment/models/paymentModel";
 import { PaymentMethodStatusEnum } from "../../../generated/definitions/payment-ecommerce/PaymentMethodStatus";
 import { RptId } from "../../../generated/definitions/payment-ecommerce-auth-v1/RptId";
 import { MethodManagementEnum } from "../../../generated/definitions/payment-ecommerce-v2/PaymentMethodResponse";
@@ -165,7 +168,7 @@ export const getPaymentRequestInfoResponseMock = {
   rptId: "77777777777302012387654312300",
 };
 
-export const getCartResponseMock = {
+export const getCartResponseMock: Cart = {
   emailNotice: "myemail@mail.it",
   idCart: "ecCartIdExample",
   paymentNotices: [
@@ -175,6 +178,7 @@ export const getCartResponseMock = {
       description: "test1",
       fiscalCode: "77777777777",
       noticeNumber: "302012387654312300",
+      creditorReferenceId: "creditorRef1",
     },
     {
       amount: 2000,
@@ -182,6 +186,7 @@ export const getCartResponseMock = {
       description: "test2",
       fiscalCode: "77777777777",
       noticeNumber: "302012387654312301",
+      creditorReferenceId: "creditorRef2",
     },
     {
       amount: 3000,
@@ -189,6 +194,7 @@ export const getCartResponseMock = {
       description: "test3",
       fiscalCode: "77777777777",
       noticeNumber: "302012387654312302",
+      creditorReferenceId: "creditorRef3",
     },
     {
       amount: 4000,
@@ -196,6 +202,7 @@ export const getCartResponseMock = {
       description: "test4",
       fiscalCode: "77777777777",
       noticeNumber: "302012387654312303",
+      creditorReferenceId: "creditorRef4",
     },
     {
       amount: 5000,
@@ -203,6 +210,7 @@ export const getCartResponseMock = {
       description: "test5",
       fiscalCode: "77777777777",
       noticeNumber: "302012387654312304",
+      creditorReferenceId: "creditorRef5",
     },
   ],
   returnUrls: {
