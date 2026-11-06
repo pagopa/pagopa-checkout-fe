@@ -9,6 +9,7 @@ import {
   Cart,
   PaymentFormFields,
   PaymentMethod,
+  PaymentInfo as PaymentInfoModel,
 } from "../../../../features/payment/models/paymentModel";
 import {
   getRptIdsFromSession,
@@ -26,7 +27,7 @@ import {
 import { NewTransactionResponse } from "../../../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
 import { callRecaptcha } from "../recaptchaHelper";
 import { PaymentRequestsGetResponse } from "../../../../../generated/definitions/payment-ecommerce/PaymentRequestsGetResponse";
-import { PaymentInfo } from "../../../../../generated/definitions/payment-ecommerce/PaymentInfo";
+import { PaymentInfo as PaymentInfoDto } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentInfo";
 import { PaymentNoticeInfo } from "../../../../../generated/definitions/payment-ecommerce/PaymentNoticeInfo";
 import { RptId } from "../../../../../generated/definitions/payment-ecommerce/RptId";
 import { AmountEuroCents } from "../../../../../generated/definitions/payment-ecommerce/AmountEuroCents";
@@ -54,7 +55,7 @@ export const activatePayment = async ({
     | PaymentFormFields
     | undefined;
   const paymentInfo = getSessionItem(SessionItems.paymentInfo) as
-    | PaymentInfo
+    | PaymentInfoModel
     | undefined;
   const userEmail = getSessionItem(SessionItems.useremail) as
     | string
@@ -187,21 +188,12 @@ const activePaymentTask = (
                   | Cart
                   | undefined;
                 const paymentInfo = getSessionItem(SessionItems.paymentInfo) as
-                  | PaymentInfo
+                  | PaymentInfoModel
                   | undefined;
                 if (cartInfo !== undefined) {
-                  const rptIdAmountMap = new Map(
+                  const paymentInfoDtoMap = new Map(
                     responseType.value.payments.map(
-                      (p) => [p.rptId, p.amount] as [RptId, AmountEuroCents]
-                    )
-                  );
-                  const creditorReferenceMap = new Map(
-                    responseType.value.payments.map(
-                      (p) =>
-                        [p.rptId, p.creditorReferenceId] as [
-                          RptId,
-                          string | undefined
-                        ]
+                      (p) => [p.rptId, p] as [RptId, PaymentInfoDto]
                     )
                   );
 
@@ -209,13 +201,19 @@ const activePaymentTask = (
                     (paymentNotice) => {
                       const rptId =
                         `${paymentNotice.fiscalCode}${paymentNotice.noticeNumber}` as RptId;
-                      const updatedAmount = rptIdAmountMap.get(rptId);
-                      const creditorId = creditorReferenceMap.get(rptId);
-
+                      const updatedAmount =
+                        paymentInfoDtoMap.get(rptId)?.amount;
+                      const creditorId =
+                        paymentInfoDtoMap.get(rptId)?.creditorReferenceId;
+                      const reason = paymentInfoDtoMap.get(rptId)?.reason;
+                      const companyName =
+                        paymentInfoDtoMap.get(rptId)?.companyName;
                       return {
                         ...paymentNotice,
                         creditorReferenceId: creditorId,
                         amount: updatedAmount ?? paymentNotice.amount,
+                        description: reason ?? paymentNotice.description,
+                        companyName: companyName ?? paymentNotice.companyName,
                       };
                     }
                   );
