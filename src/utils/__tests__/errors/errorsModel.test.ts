@@ -1,4 +1,4 @@
-import { FaultCategoryEnum } from "../../../../generated/definitions/payment-ecommerce/FaultCategory";
+import { FaultCategoryEnum } from "../../errors/faultCategory";
 import {
   PaymentCategoryResponses,
   ErrorModalBtn,
