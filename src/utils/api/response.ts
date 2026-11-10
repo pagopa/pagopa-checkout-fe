@@ -17,7 +17,7 @@ import {
 import { getUrlParameter } from "../regex/urlUtilities";
 import { getConfigOrThrow } from "../config/config";
 import { getSessionItem, SessionItems } from "../storage/sessionStorage";
-import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
+import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce-v2/NewTransactionResponse";
 import {
   createClient as createClientV1,
   Client as EcommerceClientV1,

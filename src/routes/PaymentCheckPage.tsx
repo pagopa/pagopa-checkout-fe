@@ -52,7 +52,7 @@ import {
 } from "../utils/storage/sessionStorage";
 import { PaymentPspDrawer } from "../features/payment/components/PaymentPspDrawer/PaymentPspDrawer";
 import disclaimerIcon from "../assets/images/disclaimer.svg";
-import { NewTransactionResponse } from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
+import { NewTransactionResponse } from "../../generated/definitions/payment-ecommerce-v2/NewTransactionResponse";
 import { Bundle } from "../../generated/definitions/payment-ecommerce/Bundle";
 import { CalculateFeeResponse } from "../../generated/definitions/payment-ecommerce/CalculateFeeResponse";
 import { SessionPaymentMethodResponse } from "../../generated/definitions/payment-ecommerce/SessionPaymentMethodResponse";

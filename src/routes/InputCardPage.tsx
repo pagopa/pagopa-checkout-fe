@@ -24,7 +24,7 @@ import {
   SessionItems,
   setSessionItem,
 } from "../utils/storage/sessionStorage";
-import { NewTransactionResponse } from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
+import { NewTransactionResponse } from "../../generated/definitions/payment-ecommerce-v2/NewTransactionResponse";
 import { CalculateFeeResponse } from "../../generated/definitions/payment-ecommerce/CalculateFeeResponse";
 import { Bundle } from "../../generated/definitions/payment-ecommerce/Bundle";
 import { onErrorActivate } from "../utils/api/transactionsErrorHelper";

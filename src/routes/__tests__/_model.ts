@@ -13,13 +13,9 @@ import {
   NewTransactionResponse as NewTransactionResponseV2,
   ClientIdEnum as ClientIdEnumV2,
 } from "../../../generated/definitions/payment-ecommerce-v2/NewTransactionResponse";
-import {
-  NewTransactionResponse as NewTransactionResponseV3,
-  ClientIdEnum as ClientIdEnumV3,
-} from "../../../generated/definitions/payment-ecommerce-v2/NewTransactionResponse";
-import { RptId } from "../../../generated/definitions/payment-ecommerce/RptId";
+import { RptId } from "../../../generated/definitions/payment-ecommerce-v2/RptId";
 import { SessionPaymentMethodResponse } from "../../../generated/definitions/payment-ecommerce/SessionPaymentMethodResponse";
-import { TransactionStatusEnum } from "../../../generated/definitions/payment-ecommerce/TransactionStatus";
+import { TransactionStatusEnum } from "../../../generated/definitions/payment-ecommerce-v2/TransactionStatus";
 import { CartRequestReturnUrls } from "../../../generated/definitions/payment-ecommerce/CartRequest";
 import { PaymentMethodManagementTypeEnum } from "../../../generated/definitions/payment-ecommerce/PaymentMethodManagementType";
 import { PaymentMethodResponse } from "../../../generated/definitions/payment-ecommerce/PaymentMethodResponse";
@@ -33,44 +29,12 @@ import {
 } from "../../../generated/definitions/payment-ecommerce-auth-v1/PaymentMethodResponse";
 import { PaymentMethodsResponse as PaymentMethodsResponseAuthV1 } from "../../../generated/definitions/payment-ecommerce-auth-v1/PaymentMethodsResponse";
 import { CalculateFeeResponse } from "../../../generated/definitions/payment-ecommerce-v2/CalculateFeeResponse";
-import { TransactionInfo } from "../../../generated/definitions/payment-ecommerce-v2/TransactionInfo";
-import { SendPaymentResultOutcomeEnum } from "../../../generated/definitions/payment-ecommerce-auth-v1/NewTransactionResponse";
 import { WalletInfo } from "../../../generated/definitions/checkout-wallets-v1/WalletInfo";
 import { WalletStatusEnum } from "../../../generated/definitions/checkout-wallets-v1/WalletStatus";
 import { WalletApplicationInfo } from "../../../generated/definitions/checkout-wallets-v1/WalletApplicationInfo";
 import { WalletClientStatusEnum } from "../../../generated/definitions/checkout-wallets-v1/WalletClientStatus";
 import { WalletInfoDetails } from "../../../generated/definitions/checkout-wallets-v1/WalletInfoDetails";
 import { WalletId } from "../../../generated/definitions/checkout-wallets-v1/WalletId";
-
-export const transactionInfoOK: TransactionInfo = {
-  transactionId: "6f7d9be5fbb94ca29bf55972321783e7",
-  payments: [
-    {
-      paymentToken: "1fb8539bdbc94123849a21be8eead8dd",
-      rptId: "77777777777302000100000009488" as RptId,
-      reason: "TARI/TEFA 2021",
-      amount: 12000 as AmountEuroCents,
-      transferList: [
-        {
-          digitalStamp: true,
-          paFiscalCode: "00000000000",
-          transferAmount: 100 as AmountEuroCents,
-          transferCategory: "transfCat0",
-        },
-      ],
-      isAllCCP: false,
-    },
-  ],
-  status: TransactionStatusEnum.NOTIFIED_OK,
-  nodeInfo: {
-    sendPaymentResultOutcome: SendPaymentResultOutcomeEnum.OK,
-  },
-  gatewayInfo: {
-    gateway: "NPG",
-    authorizationStatus: "OK",
-    authorizationCode: "000",
-  },
-};
 
 export const transaction: NewTransactionResponseV2 = {
   transactionId: "6f7d9be5fbb94ca29bf55972321783e7",
@@ -93,30 +57,6 @@ export const transaction: NewTransactionResponseV2 = {
     },
   ],
   clientId: ClientIdEnumV2.CHECKOUT,
-  authToken: "token",
-};
-
-export const transactionV3: NewTransactionResponseV3 = {
-  transactionId: "6f7d9be5fbb94ca29bf55972321783e7",
-  status: TransactionStatusEnum.ACTIVATED,
-  payments: [
-    {
-      paymentToken: "1fb8539bdbc94123849a21be8eead8dd",
-      rptId: "77777777777302000100000009488" as RptId,
-      reason: "TARI/TEFA 2021",
-      amount: 12000 as AmountEuroCents,
-      transferList: [
-        {
-          digitalStamp: true,
-          paFiscalCode: "00000000000",
-          transferAmount: 100 as AmountEuroCents,
-          transferCategory: "transfCat0",
-        },
-      ],
-      isAllCCP: false,
-    },
-  ],
-  clientId: ClientIdEnumV3.CHECKOUT,
   authToken: "token",
 };
 

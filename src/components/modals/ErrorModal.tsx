@@ -22,7 +22,7 @@ import {
   PaymentCategoryResponses,
 } from "../../utils/errors/errorsModel";
 import { ErrorButtons } from "../FormButtons/ErrorButtons";
-import { FaultCategoryEnum } from "../../../generated/definitions/payment-ecommerce/FaultCategory";
+import { FaultCategoryEnum } from "../../utils/errors/faultCategory";
 import {
   MixpanelEventCategory,
   MixpanelEventsId,
