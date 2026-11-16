@@ -11,7 +11,9 @@ function PspFieldContainer(props: {
   sx?: SxProps<Theme>;
   endAdornment?: React.ReactNode;
   onClick: () => void;
+  id?: string;
   ariaLabel?: string;
+  ariaLabelledBy?: string;
 }) {
   const defaultStyle: SxProps<Theme> = {
     display: "flex",
@@ -23,14 +25,21 @@ function PspFieldContainer(props: {
     pt: 2,
     pb: 2,
     textAlign: "left",
+    "&.Mui-focusVisible": {
+      outline: "2px solid",
+      outlineColor: "primary.main",
+      outlineOffset: "2px",
+    },
     ...props.sx,
   };
 
   return (
     <ButtonBase
+      id={props.id}
       sx={defaultStyle}
       onClick={props.onClick}
       aria-label={props.ariaLabel}
+      aria-labelledby={props.ariaLabelledBy}
     >
       <Box
         sx={{

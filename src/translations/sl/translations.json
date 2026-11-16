@@ -344,9 +344,17 @@
         "name": "Ponudnik"
       },
       "title": "Pri katerem ponudniku želite plačevati?",
-      "selectPspAccessibilityLabel": "Izberite {{pspName}} kot ponudnika plačilnih storitev",
-      "pspNameAccessibilityLabel": "Razvrsti po imenu ponudnika po abecednem vrstnem redu",
-      "taxFeeAccessibilityLabel": "Razvrsti od najnižje provizije navzgor"
+      "selectPspAccessibilityHint": "Izberite kot ponudnika plačilnih storitev",
+      "sortByNameAccessibilityLabel": {
+        "inactive": "Ponudnik: razvrsti po abecedi naraščajoče",
+        "asc": "Ponudnik: razvrščeno po abecedi naraščajoče. Aktivirajte za obrnitev",
+        "desc": "Ponudnik: razvrščeno po abecedi padajoče. Aktivirajte za obrnitev"
+      },
+      "sortByFeeAccessibilityLabel": {
+        "inactive": "Provizija: razvrsti od najnižjega zneska",
+        "asc": "Provizija: razvrščeno od najnižjega zneska. Aktivirajte za obrnitev",
+        "desc": "Provizija: razvrščeno od najvišjega zneska. Aktivirajte za obrnitev"
+      }
     },
     "email": "Rezultat pošlji na:",
     "modal": {

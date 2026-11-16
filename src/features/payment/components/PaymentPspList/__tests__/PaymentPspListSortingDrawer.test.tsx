@@ -91,6 +91,19 @@ describe("PaymentPspListSortingDrawer", () => {
     ).toBeInTheDocument();
   });
 
+  it("uses the drawer title as accessible name of the radio group", () => {
+    render(
+      <ThemeProvider theme={theme}>
+        <PaymentPspListSortingDrawer {...defaultProps} />
+      </ThemeProvider>
+    );
+
+    expect(screen.getByRole("radiogroup", { name: "Sort" })).toHaveAttribute(
+      "aria-labelledby",
+      "sort-psp-list-drawer-title"
+    );
+  });
+
   it("initializes with correct sorting type based on provided model - Name", () => {
     const nameSortingModel: PspOrderingModel = {
       fieldName: "pspBusinessName",

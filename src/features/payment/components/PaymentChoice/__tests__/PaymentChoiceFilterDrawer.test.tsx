@@ -60,6 +60,25 @@ describe("PaymentChoiceFilterDrawer Component", () => {
     expect(screen.getByText("A rate")).toBeInTheDocument();
   });
 
+  it("uses the drawer title as accessible name of the radio group", () => {
+    render(
+      <PaymentChoiceFilterDrawer
+        open={true}
+        onClose={jest.fn()}
+        onSelect={jest.fn()}
+        paymentMethodFilterModel={{
+          paymentType: undefined,
+          buyNowPayLater: false,
+        }}
+      />
+    );
+
+    expect(screen.getByRole("radiogroup", { name: "Titolo" })).toHaveAttribute(
+      "aria-labelledby",
+      "paymentChoiceDrawer-title"
+    );
+  });
+
   it("calls onSelect when type card is clicked", () => {
     const mockOnSelect = jest.fn();
 

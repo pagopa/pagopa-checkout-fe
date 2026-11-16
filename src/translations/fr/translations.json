@@ -344,9 +344,17 @@
         "name": "Opérateur"
       },
       "title": "Avec quel opérateur voulez-vous payer ?",
-      "selectPspAccessibilityLabel": "Sélectionner {{pspName}} comme prestataire de paiement",
-      "pspNameAccessibilityLabel": "Trier par ordre alphabétique selon le nom de l’opérateur",
-      "taxFeeAccessibilityLabel": "Trier à partir du montant de commission le plus bas"
+      "selectPspAccessibilityHint": "Sélectionner comme prestataire de paiement",
+      "sortByNameAccessibilityLabel": {
+        "inactive": "Opérateur : trier par ordre alphabétique croissant",
+        "asc": "Opérateur : ordre alphabétique croissant. Activer pour inverser",
+        "desc": "Opérateur : ordre alphabétique décroissant. Activer pour inverser"
+      },
+      "sortByFeeAccessibilityLabel": {
+        "inactive": "Frais : trier à partir du montant le plus bas",
+        "asc": "Frais : triés à partir du montant le plus bas. Activer pour inverser",
+        "desc": "Frais : triés à partir du montant le plus élevé. Activer pour inverser"
+      }
     },
     "email": "Envoyer le résultat à:",
     "modal": {

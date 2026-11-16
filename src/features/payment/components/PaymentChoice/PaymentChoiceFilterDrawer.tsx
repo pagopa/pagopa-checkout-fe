@@ -86,7 +86,11 @@ export const PaymentChoiceFilterDrawer = (props: {
           width: useSmallDevice() ? "auto" : "400px",
         }}
       >
-        <Typography variant="h6" component={"div"}>
+        <Typography
+          id="paymentChoiceDrawer-title"
+          variant="h6"
+          component={"div"}
+        >
           {t("paymentChoicePage.drawer.title")}
         </Typography>
 
@@ -100,7 +104,7 @@ export const PaymentChoiceFilterDrawer = (props: {
           </Typography>
           <RadioGroup
             tabIndex={0}
-            aria-label="paymentChoiceDrawer-options"
+            aria-labelledby="paymentChoiceDrawer-title"
             name="paymentChoiceDrawer-options"
             value={paymentMethodFilter.paymentType || ""}
             onChange={handlePaymentMethodFilterChanging}

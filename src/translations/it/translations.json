@@ -344,9 +344,17 @@
         "name": "Gestore"
       },
       "title": "Con quale gestore vuoi pagare?",
-      "pspNameAccessibilityLabel": "Ordina in ordine alfabetico per nome del gestore",
-      "taxFeeAccessibilityLabel": "Ordina dall'importo di commissione più basso",
-      "selectPspAccessibilityLabel": "Seleziona {{pspName}} come gestore di pagamento"
+      "sortByNameAccessibilityLabel": {
+        "inactive": "Gestore: ordina in ordine alfabetico crescente",
+        "asc": "Gestore: ordine alfabetico crescente. Attiva per invertire",
+        "desc": "Gestore: ordine alfabetico decrescente. Attiva per invertire"
+      },
+      "sortByFeeAccessibilityLabel": {
+        "inactive": "Commissione: ordina dall'importo più basso",
+        "asc": "Commissione: ordinato dall'importo più basso. Attiva per invertire",
+        "desc": "Commissione: ordinato dall'importo più alto. Attiva per invertire"
+      },
+      "selectPspAccessibilityHint": "Seleziona come gestore"
     },
     "email": "Invia esito a:",
     "modal": {
