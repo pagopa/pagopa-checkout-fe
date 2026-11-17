@@ -11,6 +11,7 @@ import { CustomDrawer } from "../../../../components/modals/CustomDrawer";
 import SkeletonFieldContainer from "../../../../components/Skeletons/SkeletonFieldContainer";
 import PspFieldContainer from "../../../../components/TextFormField/PspFieldContainer";
 import { moneyFormat } from "../../../../utils/form/formatters";
+import { visuallyHidden } from "../../../../utils/style/visuallyHidden";
 import { Bundle } from "../../../../../generated/definitions/payment-ecommerce/Bundle";
 import {
   PspField,
@@ -132,7 +133,7 @@ export const PaymentPspDrawer = (props: {
                 }}
                 endAdornment={
                   <Box sx={{ display: "flex", alignItems: "center" }}>
-                    <Box component="span" sx={styles.visuallyHidden}>
+                    <Box component="span" sx={visuallyHidden}>
                       {t("paymentCheckPage.drawer.header.amount")}
                     </Box>
                     <Typography
@@ -249,16 +250,5 @@ const styles = {
     borderRadius: 2,
     px: 3,
     mb: 2,
-  },
-  visuallyHidden: {
-    border: 0,
-    clip: "rect(0 0 0 0)",
-    height: "1px",
-    margin: "-1px",
-    overflow: "hidden",
-    padding: 0,
-    position: "absolute",
-    whiteSpace: "nowrap",
-    width: "1px",
   },
 };
