@@ -344,9 +344,17 @@
         "name": "Anbieter"
       },
       "title": "Über welchen Anbieter möchtest du zahlen?",
-      "selectPspAccessibilityLabel": "{{pspName}} als Zahlungsanbieter auswählen",
-      "pspNameAccessibilityLabel": "Alphabetisch nach dem Namen des Anbieters sortieren",
-      "taxFeeAccessibilityLabel": "Von der niedrigsten Gebühr aufsteigend sortieren"
+      "selectPspAccessibilityHint": "Als Zahlungsanbieter auswählen",
+      "sortByNameAccessibilityLabel": {
+        "inactive": "Anbieter: alphabetisch aufsteigend sortieren",
+        "asc": "Anbieter: alphabetisch aufsteigend sortiert. Aktivieren zum Umkehren",
+        "desc": "Anbieter: alphabetisch absteigend sortiert. Aktivieren zum Umkehren"
+      },
+      "sortByFeeAccessibilityLabel": {
+        "inactive": "Gebühr: ab der niedrigsten Gebühr sortieren",
+        "asc": "Gebühr: ab der niedrigsten Gebühr sortiert. Aktivieren zum Umkehren",
+        "desc": "Gebühr: ab der höchsten Gebühr sortiert. Aktivieren zum Umkehren"
+      }
     },
     "email": "Sende Bestätigung an:",
     "modal": {

@@ -1,12 +1,8 @@
 /* eslint-disable functional/immutable-data */
-import {
-  Box,
-  TableCell,
-  TableSortLabel,
-  Typography,
-  useTheme,
-} from "@mui/material";
-import React, { FocusEvent, useState } from "react";
+import { Box, TableSortLabel, Typography, useTheme } from "@mui/material";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import UnfoldMoreIcon from "@mui/icons-material/UnfoldMore";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
@@ -15,6 +11,7 @@ import { CustomDrawer } from "../../../../components/modals/CustomDrawer";
 import SkeletonFieldContainer from "../../../../components/Skeletons/SkeletonFieldContainer";
 import PspFieldContainer from "../../../../components/TextFormField/PspFieldContainer";
 import { moneyFormat } from "../../../../utils/form/formatters";
+import { visuallyHidden } from "../../../../utils/style/visuallyHidden";
 import { Bundle } from "../../../../../generated/definitions/payment-ecommerce/Bundle";
 import {
   PspField,
@@ -34,6 +31,9 @@ const pspImagePath = (abi: string | undefined): string =>
     ),
     O.getOrElse(() => "")
   );
+
+const PSP_SELECT_HINT_ID = "psp-select-hint";
+const pspButtonId = (index: number) => `psp-button-${index}`;
 
 export const PaymentPspDrawer = (props: {
   open: boolean;
@@ -70,7 +70,17 @@ export const PaymentPspDrawer = (props: {
             fieldName="pspBusinessName"
             onClick={setSortingOrd}
             orderingModel={sortingOrd}
-            ariaLabel={t("paymentCheckPage.drawer.pspNameAccessibilityLabel")}
+            ariaLabels={{
+              inactive: t(
+                "paymentCheckPage.drawer.sortByNameAccessibilityLabel.inactive"
+              ),
+              asc: t(
+                "paymentCheckPage.drawer.sortByNameAccessibilityLabel.asc"
+              ),
+              desc: t(
+                "paymentCheckPage.drawer.sortByNameAccessibilityLabel.desc"
+              ),
+            }}
           >
             {t("paymentCheckPage.drawer.header.name")}
           </PspListSortLabel>
@@ -79,7 +89,15 @@ export const PaymentPspDrawer = (props: {
             fieldName="taxPayerFee"
             onClick={setSortingOrd}
             orderingModel={sortingOrd}
-            ariaLabel={t("paymentCheckPage.drawer.taxFeeAccessibilityLabel")}
+            ariaLabels={{
+              inactive: t(
+                "paymentCheckPage.drawer.sortByFeeAccessibilityLabel.inactive"
+              ),
+              asc: t("paymentCheckPage.drawer.sortByFeeAccessibilityLabel.asc"),
+              desc: t(
+                "paymentCheckPage.drawer.sortByFeeAccessibilityLabel.desc"
+              ),
+            }}
           >
             {t("paymentCheckPage.drawer.header.amount")}
           </PspListSortLabel>
@@ -99,16 +117,12 @@ export const PaymentPspDrawer = (props: {
             .map((psp, index) => (
               <PspFieldContainer
                 key={index}
+                id={pspButtonId(index)}
                 titleVariant="sidenav"
                 bodyVariant="body2"
                 image={pspImagePath(psp.abi)}
                 body={psp.pspBusinessName}
-                ariaLabel={t(
-                  "paymentCheckPage.drawer.selectPspAccessibilityLabel",
-                  {
-                    pspName: psp.pspBusinessName,
-                  }
-                )}
+                ariaLabelledBy={`${pspButtonId(index)} ${PSP_SELECT_HINT_ID}`}
                 sx={{
                   ...styles.pspContainerStyle,
                   cursor: "pointer",
@@ -118,21 +132,29 @@ export const PaymentPspDrawer = (props: {
                   },
                 }}
                 endAdornment={
-                  <Typography
-                    id={"psp_" + index.toString()}
-                    className="pspFeeValue"
-                    variant={"button"}
-                    color="primary"
-                    component={"div"}
-                  >
-                    {moneyFormat(psp.taxPayerFee || 0)}
-                  </Typography>
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <Box component="span" sx={visuallyHidden}>
+                      {t("paymentCheckPage.drawer.header.amount")}
+                    </Box>
+                    <Typography
+                      id={"psp_" + index.toString()}
+                      className="pspFeeValue"
+                      variant={"button"}
+                      color="primary"
+                      component={"div"}
+                    >
+                      {moneyFormat(psp.taxPayerFee || 0)}
+                    </Typography>
+                  </Box>
                 }
                 onClick={() => {
                   onSelect(psp);
                 }}
               />
             ))}
+      <span id={PSP_SELECT_HINT_ID} hidden>
+        {t("paymentCheckPage.drawer.selectPspAccessibilityHint")}
+      </span>
     </CustomDrawer>
   );
 };
@@ -143,7 +165,7 @@ type PspListSortLabelProps = {
   onClick: (sortingOrd: PspOrderingModel) => void;
   orderingModel: PspOrderingModel;
   children: React.ReactNode;
-  ariaLabel?: string;
+  ariaLabels?: Record<"inactive" | "asc" | "desc", string>;
 };
 
 export const PspListSortLabel = ({
@@ -152,58 +174,62 @@ export const PspListSortLabel = ({
   onClick,
   orderingModel,
   children,
-  ariaLabel,
+  ariaLabels,
 }: PspListSortLabelProps) => {
-  const direction = orderingModel.direction === "asc" ? "desc" : "asc";
-  const [isMouseOver, setIsMouseOver] = useState(false);
-
-  const handleFocus = (event: FocusEvent<HTMLSpanElement>) => {
-    if (!isMouseOver && event.currentTarget.parentElement) {
-      event.currentTarget.parentElement.style.outline = "2px solid #0073E6";
-    }
-  };
-
-  const handleBlur = (event: FocusEvent<HTMLSpanElement>) => {
-    if (event.currentTarget.parentElement) {
-      event.currentTarget.parentElement.style.outline = "none";
-    }
-  };
-
-  const handleKeyUp = (event: React.KeyboardEvent<HTMLSpanElement>) => {
-    if (event.key === "Enter") {
-      onClick({
-        fieldName,
-        direction,
-      });
-    }
-  };
+  const theme = useTheme();
+  const active = orderingModel.fieldName === fieldName;
+  const nextDirection =
+    active && orderingModel.direction === "asc" ? "desc" : "asc";
+  const ariaLabel = ariaLabels?.[active ? orderingModel.direction : "inactive"];
 
   return (
-    <TableCell
+    <TableSortLabel
       id={id}
-      sortDirection={orderingModel.direction}
-      sx={{ cursor: "pointer" }}
-      component="div"
-      padding="none"
+      component="button"
+      type="button"
+      aria-label={ariaLabel}
+      active={active}
+      direction={active ? orderingModel.direction : "asc"}
+      IconComponent={active ? ArrowDownwardIcon : UnfoldMoreIcon}
       onClick={() =>
         onClick({
           fieldName,
-          direction,
+          direction: nextDirection,
         })
       }
+      sx={{
+        border: "none",
+        background: "none",
+        p: 0.5,
+        font: "inherit",
+        color: theme.palette.text.primary,
+        "& .MuiTableSortLabel-icon": {
+          opacity: 1,
+          color: theme.palette.text.secondary,
+        },
+        "&:hover, &:focus": {
+          color: theme.palette.text.primary,
+        },
+        "&:hover .MuiTableSortLabel-icon, &:focus .MuiTableSortLabel-icon": {
+          opacity: 1,
+        },
+        "&.Mui-active": {
+          color: theme.palette.primary.main,
+          fontWeight: theme.typography.fontWeightBold,
+        },
+        "&.Mui-active .MuiTableSortLabel-icon": {
+          color: theme.palette.primary.main,
+        },
+        "&.Mui-focusVisible": {
+          outline: "2px solid",
+          outlineColor: theme.palette.primary.main,
+          outlineOffset: "2px",
+          borderRadius: 1,
+        },
+      }}
     >
       {children}
-      <TableSortLabel
-        aria-label={ariaLabel}
-        onKeyUp={handleKeyUp}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        onMouseEnter={() => setIsMouseOver(true)}
-        onMouseLeave={() => setIsMouseOver(false)}
-        direction={orderingModel.direction}
-        active={orderingModel.fieldName === fieldName}
-      />
-    </TableCell>
+    </TableSortLabel>
   );
 };
 

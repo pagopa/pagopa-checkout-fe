@@ -842,7 +842,7 @@ describe("PSP list tests", () => {
     expect(Array.isArray(resultMessage)).toBe(true);
     expect(resultMessage.length > 0).toBe(true);
     for (let i = 0; i < resultMessage.length - 1; i++) {
-      expect(resultMessage[i].localeCompare(resultMessage[i + 1])).toBeGreaterThanOrEqual(0);
+      expect(resultMessage[i].localeCompare(resultMessage[i + 1])).toBeLessThanOrEqual(0);
     }
     await new Promise((r) => setTimeout(r, 500));
     await cancelPaymentAction();

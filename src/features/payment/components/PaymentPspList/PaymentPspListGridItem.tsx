@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import { RadioButtonChecked, RadioButtonUnchecked } from "@mui/icons-material";
 import { Bundle } from "../../../../../generated/definitions/payment-ecommerce/Bundle";
 import { moneyFormat } from "../../../../utils/form/formatters";
+import { visuallyHidden } from "../../../../utils/style/visuallyHidden";
 import pspUserOnUsIcon from "../../../../assets/images/psp-user-on-us.svg";
 
 const styles = {
@@ -107,6 +108,9 @@ export const PaymentPSPListGridItem = ({
           <Grid container>
             <Grid item xs={9}>
               <Box>
+                <Box component="span" sx={visuallyHidden}>
+                  {`${t("paymentPspListPage.operator")} `}
+                </Box>
                 <Typography variant="sidenav" className="pspFeeName">
                   {pspItem.pspBusinessName}
                 </Typography>

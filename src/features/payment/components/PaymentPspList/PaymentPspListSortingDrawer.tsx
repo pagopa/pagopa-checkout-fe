@@ -96,7 +96,11 @@ export const PaymentPspListSortingDrawer = (props: {
           width: useSmallDevice() ? "auto" : "400px",
         }}
       >
-        <Typography variant="h6" component={"div"}>
+        <Typography
+          id="sort-psp-list-drawer-title"
+          variant="h6"
+          component={"div"}
+        >
           {t("paymentPspListPage.sort")}
         </Typography>
 
@@ -113,7 +117,7 @@ export const PaymentPspListSortingDrawer = (props: {
         >
           <RadioGroup
             tabIndex={0}
-            aria-label="sorting-options"
+            aria-labelledby="sort-psp-list-drawer-title"
             name="sorting-options"
             value={sortingType}
             onChange={handleSortingTypeChange}

@@ -49,6 +49,28 @@ describe("PspFieldContainer", () => {
     ).toBeInTheDocument();
   });
 
+  it("builds the accessible name from its own content plus an external hint via aria-labelledby", () => {
+    render(
+      <>
+        <PspFieldContainer
+          {...mockProps}
+          id="psp-button-0"
+          ariaLabelledBy="psp-button-0 psp-select-hint"
+          endAdornment={<div>0,50 €</div>}
+        />
+        <span id="psp-select-hint" hidden>
+          Seleziona come gestore
+        </span>
+      </>
+    );
+
+    const button = screen.getByRole("button", {
+      name: "Test Body 0,50 € Seleziona come gestore",
+    });
+    expect(button).toHaveAttribute("id", "psp-button-0");
+    expect(button).not.toHaveAttribute("aria-label");
+  });
+
   it("calls onClick when clicked", () => {
     render(<PspFieldContainer {...mockProps} />);
 

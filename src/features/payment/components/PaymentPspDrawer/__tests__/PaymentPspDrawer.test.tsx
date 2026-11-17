@@ -11,10 +11,20 @@ jest.mock("react-i18next", () => ({
         "paymentCheckPage.drawer.body": "Choose a payment service provider",
         "paymentCheckPage.drawer.header.name": "Name",
         "paymentCheckPage.drawer.header.amount": "Amount",
-        "paymentCheckPage.drawer.pspNameAccessibilityLabel":
-          "Sort alphabetically by provider name",
-        "paymentCheckPage.drawer.taxFeeAccessibilityLabel":
-          "Sort from the lowest fee amount",
+        "paymentCheckPage.drawer.sortByNameAccessibilityLabel.inactive":
+          "Name: sort ascending",
+        "paymentCheckPage.drawer.sortByNameAccessibilityLabel.asc":
+          "Name: sorted ascending. Activate to reverse",
+        "paymentCheckPage.drawer.sortByNameAccessibilityLabel.desc":
+          "Name: sorted descending. Activate to reverse",
+        "paymentCheckPage.drawer.sortByFeeAccessibilityLabel.inactive":
+          "Amount: sort from lowest",
+        "paymentCheckPage.drawer.sortByFeeAccessibilityLabel.asc":
+          "Amount: sorted from lowest. Activate to reverse",
+        "paymentCheckPage.drawer.sortByFeeAccessibilityLabel.desc":
+          "Amount: sorted from highest. Activate to reverse",
+        "paymentCheckPage.drawer.selectPspAccessibilityHint":
+          "Select as payment provider",
       };
       return translations[key] || key;
     },
@@ -126,12 +136,20 @@ describe("PaymentPspDrawer Component", () => {
       screen.getByText("Choose a payment service provider")
     ).toBeInTheDocument();
 
-    // Check for the header labels within the Box
-    expect(screen.getByText("Name")).toBeInTheDocument();
-    expect(screen.getByText("Amount")).toBeInTheDocument();
+    // Check for the header labels inside the sort buttons
+    expect(
+      screen.getByRole("button", {
+        name: "Name: sort ascending",
+      })
+    ).toHaveTextContent("Name");
+    expect(
+      screen.getByRole("button", {
+        name: "Amount: sorted from lowest. Activate to reverse",
+      })
+    ).toHaveTextContent("Amount");
   });
 
-  it("renders descriptive aria-labels on the sort buttons", () => {
+  it("labels each PSP button with its own content plus the selection hint", () => {
     render(
       <ThemeProvider theme={mockTheme}>
         <PaymentPspDrawer
@@ -144,14 +162,75 @@ describe("PaymentPspDrawer Component", () => {
       </ThemeProvider>
     );
 
-    expect(
-      screen.getByRole("button", {
-        name: "Sort alphabetically by provider name",
-      })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Sort from the lowest fee amount" })
-    ).toBeInTheDocument();
+    const pspContainers = screen.getAllByTestId("psp-field-container");
+    pspContainers.forEach((container, index) => {
+      expect(container).toHaveAttribute("id", `psp-button-${index}`);
+      expect(container).toHaveAttribute(
+        "ariaLabelledBy",
+        `psp-button-${index} psp-select-hint`
+      );
+      expect(container).not.toHaveAttribute("ariaLabel");
+    });
+
+    const hint = document.getElementById("psp-select-hint");
+    expect(hint).toHaveTextContent("Select as payment provider");
+    expect(hint).toHaveAttribute("hidden");
+
+    expect(screen.getAllByText("Amount")).toHaveLength(mockPspList.length + 1);
+  });
+
+  it("updates the sort buttons aria-label according to the sorting state", () => {
+    render(
+      <ThemeProvider theme={mockTheme}>
+        <PaymentPspDrawer
+          open={true}
+          onClose={jest.fn()}
+          loading={false}
+          pspList={mockPspList}
+          onSelect={jest.fn()}
+        />
+      </ThemeProvider>
+    );
+
+    const nameButton = screen.getByRole("button", {
+      name: "Name: sort ascending",
+    });
+    const feeButton = screen.getByRole("button", {
+      name: "Amount: sorted from lowest. Activate to reverse",
+    });
+
+    fireEvent.click(feeButton);
+    expect(feeButton).toHaveAccessibleName(
+      "Amount: sorted from highest. Activate to reverse"
+    );
+    expect(nameButton).toHaveAccessibleName("Name: sort ascending");
+
+    fireEvent.click(nameButton);
+    expect(nameButton).toHaveAccessibleName(
+      "Name: sorted ascending. Activate to reverse"
+    );
+    expect(feeButton).toHaveAccessibleName("Amount: sort from lowest");
+
+    fireEvent.click(nameButton);
+    expect(nameButton).toHaveAccessibleName(
+      "Name: sorted descending. Activate to reverse"
+    );
+  });
+
+  it("does not use aria-sort on the sort buttons", () => {
+    const { container } = render(
+      <ThemeProvider theme={mockTheme}>
+        <PaymentPspDrawer
+          open={true}
+          onClose={jest.fn()}
+          loading={false}
+          pspList={mockPspList}
+          onSelect={jest.fn()}
+        />
+      </ThemeProvider>
+    );
+
+    expect(container.querySelector("[aria-sort]")).toBeNull();
   });
 
   it("renders loading state correctly", () => {
@@ -272,7 +351,9 @@ describe("PaymentPspDrawer Component", () => {
     );
 
     // Find and click the sort by name label
-    const sortByNameButton = screen.getByText("Name").closest("div");
+    const sortByNameButton = screen.getByRole("button", {
+      name: "Name: sort ascending",
+    });
     fireEvent.click(sortByNameButton!);
 
     // Check that both PSPs are in the list after sorting
@@ -316,7 +397,9 @@ describe("PaymentPspDrawer Component", () => {
     );
 
     // Find and click the sort by fee label
-    const sortByFeeButton = screen.getByText("Amount").closest("div");
+    const sortByFeeButton = screen.getByRole("button", {
+      name: "Amount: sorted from lowest. Activate to reverse",
+    });
     fireEvent.click(sortByFeeButton!);
 
     // Check that all PSPs are in the list after sorting
@@ -343,7 +426,9 @@ describe("PaymentPspDrawer Component", () => {
     screen.getAllByTestId("psp-field-container");
 
     // Then find and click the sort by name label to change sorting
-    const sortByNameButton = screen.getByText("Name").closest("div");
+    const sortByNameButton = screen.getByRole("button", {
+      name: "Name: sort ascending",
+    });
     fireEvent.click(sortByNameButton!);
 
     // Then find and click it again to reverse the sort order
@@ -364,88 +449,104 @@ describe("PspListSortLabel Component", () => {
       direction: "asc" as const,
     },
     children: "Test Label",
+    ariaLabels: {
+      inactive: "Sort by PSP name",
+      asc: "Sorted by PSP name ascending",
+      desc: "Sorted by PSP name descending",
+    },
   };
 
-  it("renders correctly with active state", () => {
-    render(<PspListSortLabel {...defaultProps} />);
-
-    expect(screen.getByText("Test Label")).toBeInTheDocument();
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
-  it("calls onClick with toggled direction when clicked", () => {
+  it("renders a native button with the label as content", () => {
     render(<PspListSortLabel {...defaultProps} />);
 
-    const tableCell = screen.getByText("Test Label").closest("div");
-    fireEvent.click(tableCell!);
+    const button = screen.getByRole("button", {
+      name: "Sorted by PSP name ascending",
+    });
+    expect(button.tagName).toBe("BUTTON");
+    expect(button).toHaveAttribute("type", "button");
+    expect(button).toHaveAttribute("id", "test-sort");
+    expect(button).toHaveTextContent("Test Label");
+  });
 
+  it("calls onClick with toggled direction when clicked while active", () => {
+    const { rerender } = render(<PspListSortLabel {...defaultProps} />);
+
+    fireEvent.click(screen.getByRole("button"));
     expect(mockOnClick).toHaveBeenCalledWith({
       fieldName: "pspBusinessName",
-      direction: "desc", // Toggled from 'asc'
+      direction: "desc",
     });
-  });
 
-  it("handles keyboard Enter key", () => {
-    render(<PspListSortLabel {...defaultProps} />);
-
-    // Find the actual element that should receive the keyUp event
-    const sortLabel = screen.getByText("Test Label").nextElementSibling;
-    if (sortLabel) {
-      fireEvent.keyUp(sortLabel, { key: "Enter" });
-
-      expect(mockOnClick).toHaveBeenCalledWith({
-        fieldName: "pspBusinessName",
-        direction: "desc",
-      });
-    }
-  });
-
-  it("handles focus events", () => {
-    render(<PspListSortLabel {...defaultProps} />);
-
-    // Find the TableSortLabel element
-    const sortLabel = screen.getByText("Test Label").nextElementSibling;
-
-    if (sortLabel) {
-      // Trigger focus event
-      fireEvent.focus(sortLabel);
-
-      // Trigger blur event
-      fireEvent.blur(sortLabel);
-
-      // No assertions needed, we're just ensuring code coverage
-    }
-  });
-
-  it("handles mouse events", () => {
-    render(<PspListSortLabel {...defaultProps} />);
-
-    // Find the TableSortLabel element
-    const sortLabel = screen.getByText("Test Label").nextElementSibling;
-
-    if (sortLabel) {
-      // Trigger mouseEnter event
-      fireEvent.mouseEnter(sortLabel);
-
-      // Trigger mouseLeave event
-      fireEvent.mouseLeave(sortLabel);
-
-      // No assertions needed, we're just ensuring code coverage
-    }
-  });
-
-  it("renders with different ordering model", () => {
-    // Test with different orderingModel to ensure coverage
-    render(
+    rerender(
       <PspListSortLabel
         {...defaultProps}
-        orderingModel={{
-          fieldName: "taxPayerFee" as const,
-          direction: "desc" as const,
-        }}
+        orderingModel={{ fieldName: "pspBusinessName", direction: "desc" }}
       />
     );
 
-    expect(screen.getByText("Test Label")).toBeInTheDocument();
+    expect(screen.getByRole("button")).toHaveAccessibleName(
+      "Sorted by PSP name descending"
+    );
+    fireEvent.click(screen.getByRole("button"));
+    expect(mockOnClick).toHaveBeenLastCalledWith({
+      fieldName: "pspBusinessName",
+      direction: "asc",
+    });
+  });
+
+  it("sorts ascending on first activation when not active", () => {
+    render(
+      <PspListSortLabel
+        {...defaultProps}
+        orderingModel={{ fieldName: "taxPayerFee", direction: "asc" }}
+      />
+    );
+
+    const button = screen.getByRole("button");
+    expect(button).toHaveAccessibleName("Sort by PSP name");
+    fireEvent.click(button);
+    expect(mockOnClick).toHaveBeenCalledWith({
+      fieldName: "pspBusinessName",
+      direction: "asc",
+    });
+  });
+
+  it("shows the arrow icon and active state when it is the current sorting", () => {
+    render(<PspListSortLabel {...defaultProps} />);
+
+    const button = screen.getByRole("button");
+    expect(button).toHaveClass("Mui-active");
+    expect(screen.getByTestId("ArrowDownwardIcon")).toBeInTheDocument();
+    expect(screen.queryByTestId("UnfoldMoreIcon")).not.toBeInTheDocument();
+  });
+
+  it("always shows a neutral sort icon when it is not the current sorting", () => {
+    render(
+      <PspListSortLabel
+        {...defaultProps}
+        orderingModel={{ fieldName: "taxPayerFee", direction: "desc" }}
+      />
+    );
+
+    const button = screen.getByRole("button");
+    expect(button).not.toHaveClass("Mui-active");
+    expect(screen.getByTestId("UnfoldMoreIcon")).toBeInTheDocument();
+    expect(screen.queryByTestId("ArrowDownwardIcon")).not.toBeInTheDocument();
+  });
+
+  it("does not remove the focus outline via inline style", () => {
+    render(<PspListSortLabel {...defaultProps} />);
+
+    const button = screen.getByRole("button");
+    fireEvent.focus(button);
+    expect(button.getAttribute("style") ?? "").not.toContain("outline");
+    expect(button.parentElement?.getAttribute("style") ?? "").not.toContain(
+      "outline"
+    );
   });
 });
 
@@ -495,163 +596,5 @@ describe("pspImagePath utility", () => {
 
     const pspContainer = screen.getByTestId("psp-field-container");
     expect(pspContainer).toHaveAttribute("image", "");
-  });
-});
-
-describe("PspListSortLabel Component - sorting", () => {
-  const mockOnClick = jest.fn();
-
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it("handles different directions in orderingModel", () => {
-    // Test with asc direction
-    const { rerender } = render(
-      <PspListSortLabel
-        id="test-sort"
-        fieldName="pspBusinessName"
-        onClick={mockOnClick}
-        orderingModel={{
-          fieldName: "pspBusinessName",
-          direction: "asc",
-        }}
-      >
-        Test Label
-      </PspListSortLabel>
-    );
-
-    // Click to toggle direction
-    const tableCell = screen.getByText("Test Label").closest("div");
-    if (tableCell) {
-      fireEvent.click(tableCell);
-
-      expect(mockOnClick).toHaveBeenCalledWith({
-        fieldName: "pspBusinessName",
-        direction: "desc",
-      });
-    }
-
-    // Rerender with desc direction
-    rerender(
-      <PspListSortLabel
-        id="test-sort"
-        fieldName="pspBusinessName"
-        onClick={mockOnClick}
-        orderingModel={{
-          fieldName: "pspBusinessName",
-          direction: "desc",
-        }}
-      >
-        Test Label
-      </PspListSortLabel>
-    );
-
-    // Click again to toggle back to asc
-    if (tableCell) {
-      fireEvent.click(tableCell);
-
-      expect(mockOnClick).toHaveBeenCalledWith({
-        fieldName: "pspBusinessName",
-        direction: "asc",
-      });
-    }
-  });
-
-  it("handles mouse events with focus state", () => {
-    render(
-      <PspListSortLabel
-        id="test-sort"
-        fieldName="pspBusinessName"
-        onClick={mockOnClick}
-        orderingModel={{
-          fieldName: "pspBusinessName",
-          direction: "asc",
-        }}
-      >
-        Test Label
-      </PspListSortLabel>
-    );
-
-    // Find the TableSortLabel element by looking for the span inside the div
-    const tableCellDiv = screen.getByText("Test Label").closest("div");
-    const sortLabelElement = tableCellDiv?.querySelector("span");
-
-    if (sortLabelElement) {
-      // Simulate mouse enter
-      fireEvent.mouseEnter(sortLabelElement);
-
-      // Simulate focus while mouse is over
-      fireEvent.focus(sortLabelElement);
-
-      // Simulate mouse leave
-      fireEvent.mouseLeave(sortLabelElement);
-
-      // Simulate focus when mouse is not over
-      fireEvent.focus(sortLabelElement);
-
-      // Simulate blur
-      fireEvent.blur(sortLabelElement);
-
-      // Simulate keyUp event with Enter key
-      fireEvent.keyUp(sortLabelElement, { key: "Enter" });
-
-      expect(mockOnClick).toHaveBeenCalled();
-    }
-  });
-  describe("PspListSortLabel Component - ariaLabel", () => {
-    const mockOnClick = jest.fn();
-
-    beforeEach(() => {
-      jest.clearAllMocks();
-    });
-
-    it("renders the aria-label on the focusable sort control", () => {
-      render(
-        <PspListSortLabel
-          id="test-sort"
-          fieldName="pspBusinessName"
-          onClick={mockOnClick}
-          orderingModel={{
-            fieldName: "pspBusinessName",
-            direction: "asc",
-          }}
-          ariaLabel="Sort by PSP name"
-        >
-          Test Label
-        </PspListSortLabel>
-      );
-
-      const tableCell = screen.getByText("Test Label");
-      const sortLabel = screen.getByRole("button");
-
-      expect(sortLabel).toHaveAttribute("aria-label", "Sort by PSP name");
-      expect(sortLabel).toHaveAttribute("tabindex", "0");
-      expect(tableCell).not.toHaveAttribute("aria-label");
-      expect(tableCell).not.toHaveAttribute("role", "button");
-    });
-
-    it("allows querying by aria-label", () => {
-      render(
-        <PspListSortLabel
-          id="test-sort"
-          fieldName="pspBusinessName"
-          onClick={mockOnClick}
-          orderingModel={{
-            fieldName: "pspBusinessName",
-            direction: "asc",
-          }}
-          ariaLabel="Sort by PSP name"
-        >
-          Test Label
-        </PspListSortLabel>
-      );
-
-      const element = screen.getByRole("button", {
-        name: "Sort by PSP name",
-      });
-
-      expect(element).toBeInTheDocument();
-    });
   });
 });

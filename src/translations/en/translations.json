@@ -344,9 +344,17 @@
         "name": "Operator"
       },
       "title": "Which operator do you want to use for payment?",
-      "selectPspAccessibilityLabel": "Select {{pspName}} as payment provider",
-      "pspNameAccessibilityLabel": "Sort alphabetically by provider name",
-      "taxFeeAccessibilityLabel": "Sort from the lowest fee amount"
+      "selectPspAccessibilityHint": "Select as payment provider",
+      "sortByNameAccessibilityLabel": {
+        "inactive": "Operator: sort alphabetically, ascending",
+        "asc": "Operator: sorted alphabetically, ascending. Activate to reverse",
+        "desc": "Operator: sorted alphabetically, descending. Activate to reverse"
+      },
+      "sortByFeeAccessibilityLabel": {
+        "inactive": "Fee: sort from the lowest amount",
+        "asc": "Fee: sorted from the lowest amount. Activate to reverse",
+        "desc": "Fee: sorted from the highest amount. Activate to reverse"
+      }
     },
     "email": "Send the result to:",
     "modal": {

@@ -134,4 +134,24 @@ describe("PaymentPSPListGridItem", () => {
       `psp-radio-${String(mockPspItem.idPsp)}`
     );
   });
+
+  it("prefixes the PSP name with a screen-reader-only operator label", () => {
+    render(
+      <ThemeProvider theme={theme}>
+        <PaymentPSPListGridItem
+          isSelected={false}
+          pspItem={mockPspItem}
+          radioValue={String(mockPspItem.idPsp)}
+        />
+      </ThemeProvider>
+    );
+    expect(
+      screen.getByRole("radio", {
+        name: /^paymentPspListPage\.operator Test PSP/,
+      })
+    ).toBeInTheDocument();
+    expect(document.querySelector(".pspFeeName")).toHaveTextContent(
+      /^Test PSP$/
+    );
+  });
 });
