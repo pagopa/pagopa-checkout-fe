@@ -4,7 +4,6 @@ import { pipe } from "fp-ts/function";
 import * as O from "fp-ts/Option";
 import { Box, Button, CircularProgress } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import ReCAPTCHA from "react-google-recaptcha";
 import { ErrorBlock } from "../components/PageContent/ErrorBlock";
 import { onBrowserUnload } from "../utils/eventListeners";
 import PageContainer from "../components/PageContent/PageContainer";
@@ -12,7 +11,6 @@ import ko from "../assets/images/response-umbrella.svg";
 import {
   clearSessionItem,
   getAndClearSessionItem,
-  getReCaptchaKey,
   getSessionItem,
   SessionItems,
   setSessionItem,
@@ -33,7 +31,6 @@ export default function AuthCallback() {
   const dispatch = useAppDispatch();
   const [searchParams, _] = useSearchParams();
   const [loading, setLoading] = React.useState(true);
-  const ref = React.useRef<ReCAPTCHA>(null);
   const authCode = searchParams.get("code");
   const state = searchParams.get("state");
   // we need the feature flag to be enabled to allow the user to actually see
@@ -44,7 +41,6 @@ export default function AuthCallback() {
     setLoading(false);
     window.removeEventListener("beforeunload", onBrowserUnload);
     clearSessionItem(SessionItems.authToken);
-    ref.current?.reset();
   };
 
   const onLoginResponse = (authorizationUrl: string) => {
@@ -61,20 +57,13 @@ export default function AuthCallback() {
     }
   };
 
-  const onLogin = async (recaptchaRef: ReCAPTCHA) => {
+  const onLogin = async () => {
     window.addEventListener("beforeunload", onBrowserUnload);
     setLoading(true);
     await proceedToLogin({
-      recaptchaRef,
       onError,
       onResponse: onLoginResponse,
     });
-  };
-
-  const handleClickOnLogin = async () => {
-    if (ref.current) {
-      await onLogin(ref.current);
-    }
   };
 
   // navigate to last page from session storage
@@ -128,13 +117,6 @@ export default function AuthCallback() {
 
   return (
     <PageContainer>
-      <Box display="none">
-        <ReCAPTCHA
-          ref={ref}
-          size="invisible"
-          sitekey={getReCaptchaKey() as string}
-        />
-      </Box>
       {loading && (
         <Box
           display="flex"
@@ -160,7 +142,7 @@ export default function AuthCallback() {
                   type="button"
                   variant="contained"
                   id="auth-retry-button"
-                  onClick={handleClickOnLogin}
+                  onClick={onLogin}
                   style={{ height: "100%", minHeight: 45 }}
                 >
                   {t("authCallbackPage.buttons.retry")}

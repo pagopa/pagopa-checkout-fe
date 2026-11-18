@@ -43,20 +43,6 @@ jest.mock("react-i18next", () => ({
   }) => <span data-testid="mocked-trans">{i18nKey || "no-key"}</span>,
 }));
 
-jest.mock("react-google-recaptcha", () => ({
-  __esModule: true,
-  default: React.forwardRef((_, ref) => {
-    React.useImperativeHandle(ref, () => ({
-      reset: jest.fn(),
-      execute: jest.fn(),
-      executeAsync: jest.fn(() => "token"),
-    }));
-    return (
-      <div ref={ref as React.RefObject<HTMLDivElement>} data-test="recaptcha" />
-    );
-  }),
-}));
-
 jest.mock("../../../utils/api/helper", () => ({
   proceedToLogin: jest.fn(),
   retrieveUserInfo: jest.fn(),
@@ -68,7 +54,6 @@ jest.mock("../../../utils/storage/sessionStorage", () => ({
   getSessionItem: jest.fn(),
   clearSessionItem: jest.fn(),
   setSessionItem: jest.fn(),
-  getReCaptchaKey: jest.fn(),
   SessionItems: {
     paymentInfo: "paymentInfo",
     noticeInfo: "rptId",
