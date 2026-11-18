@@ -1,7 +1,6 @@
 import { Box } from "@mui/material";
 import cardValidator from "card-validator";
 import React from "react";
-import ReCAPTCHA from "react-google-recaptcha";
 import { useNavigate } from "react-router-dom";
 import * as O from "fp-ts/Option";
 import * as E from "fp-ts/Either";
@@ -19,7 +18,6 @@ import { activatePayment, calculateFees } from "../utils/api/helper";
 import { InputCardFormFields } from "../features/payment/models/paymentModel";
 import { ErrorsType } from "../utils/errors/checkErrorsModel";
 import {
-  getReCaptchaKey,
   getSessionItem,
   SessionItems,
   setSessionItem,
@@ -38,7 +36,6 @@ export default function InputCardPage() {
   const [wallet] = React.useState<InputCardFormFields>();
   const [hideCancelButton, setHideCancelButton] = React.useState(false);
   const [pspNotFoundModal, setPspNotFoundModalOpen] = React.useState(false);
-  const ref = React.useRef<ReCAPTCHA>(null);
   const dispatch = useAppDispatch();
 
   React.useEffect(() => {
@@ -58,13 +55,11 @@ export default function InputCardPage() {
     setLoading(false);
     setError(m);
     setErrorModalOpen(true);
-    ref.current?.reset();
   };
 
   const onPspNotFound = () => {
     setLoading(false);
     setPspNotFoundModalOpen(true);
-    ref.current?.reset();
   };
 
   const onResponseActivate = (bin: string) =>
@@ -120,12 +115,6 @@ export default function InputCardPage() {
         pan: wallet.number,
       };
       setLoading(true);
-      const recaptchaResponse = await ref.current?.executeAsync();
-      const token = pipe(
-        recaptchaResponse,
-        O.fromNullable,
-        O.getOrElse(() => "")
-      );
       const transactionId = (
         getSessionItem(SessionItems.transaction) as
           | NewTransactionResponse
@@ -137,7 +126,6 @@ export default function InputCardPage() {
         void onResponseActivate(bin);
       } else {
         await activatePayment({
-          token,
           onResponseActivate,
           onErrorActivate: (faultCodeCategory, faultCodeDetail) =>
             onErrorActivate(
@@ -149,7 +137,7 @@ export default function InputCardPage() {
         });
       }
     },
-    [ref, error]
+    [error]
   );
 
   const onRetry = React.useCallback(() => {
@@ -222,13 +210,6 @@ export default function InputCardPage() {
           </Box>
         </InformationModal>
       )}
-      <Box display="none">
-        <ReCAPTCHA
-          ref={ref}
-          size="invisible"
-          sitekey={getReCaptchaKey() as string}
-        />
-      </Box>
     </PageContainer>
   );
 }

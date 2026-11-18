@@ -3,7 +3,6 @@ import * as O from "fp-ts/Option";
 import * as B from "fp-ts/boolean";
 import { pipe } from "fp-ts/function";
 import React from "react";
-import ReCAPTCHA from "react-google-recaptcha";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { getConfigOrThrow } from "../../../../utils/config/config";
@@ -14,9 +13,9 @@ import ErrorModal from "../../../../components/modals/ErrorModal";
 import { useAppDispatch } from "../../../../redux/hooks/hooks";
 import { CheckoutRoutes } from "../../../../routes/models/routeModel";
 import {
+  activatePayment,
   getFees,
   npgSessionsFields,
-  recaptchaTransaction,
   retrieveCardData,
 } from "../../../../utils/api/helper";
 import createBuildConfig from "../../../../utils/buildConfig";
@@ -24,7 +23,6 @@ import { ErrorsType } from "../../../../utils/errors/checkErrorsModel";
 import { clearNavigationEvents } from "../../../../utils/eventListeners";
 import {
   SessionItems,
-  getReCaptchaKey,
   setSessionItem,
 } from "../../../../utils/storage/sessionStorage";
 import { setThreshold } from "../../../../redux/slices/threshold";
@@ -145,7 +143,6 @@ export default function IframeCardForm(props: Props) {
   );
   const [formStatus, setFormStatus] =
     React.useState<FormStatus>(initialFieldsState);
-  const ref = React.useRef<ReCAPTCHA>(null);
   const dispatch = useAppDispatch();
 
   const [buildInstance, setBuildInstance] = React.useState();
@@ -159,7 +156,6 @@ export default function IframeCardForm(props: Props) {
     setLoading(false);
     setError(m);
     setErrorModalOpen(true);
-    ref.current?.reset();
   };
 
   const onNpgSessionsError = (m: string) => {
@@ -188,7 +184,6 @@ export default function IframeCardForm(props: Props) {
   const onPspNotFound = () => {
     setLoading(false);
     setPspNotFoundModalOpen(true);
-    ref.current?.reset();
   };
 
   const retrievePaymentSession = (paymentMethodId: string, orderId: string) =>
@@ -247,19 +242,16 @@ export default function IframeCardForm(props: Props) {
         setSessionItem(SessionItems.correlationId, body.correlationId);
         setForm(body);
         const onReadyForPayment = () => {
-          if (ref.current) {
-            void recaptchaTransaction({
-              recaptchaRef: ref.current,
-              onSuccess: retrievePaymentSession,
-              onError: (faultCodeCategory, faultCodeDetail) =>
-                onErrorActivate(
-                  faultCodeCategory,
-                  faultCodeDetail,
-                  onError,
-                  navigate
-                ),
-            });
-          }
+          void activatePayment({
+            onResponseActivate: retrievePaymentSession,
+            onErrorActivate: (faultCodeCategory, faultCodeDetail) =>
+              onErrorActivate(
+                faultCodeCategory,
+                faultCodeDetail,
+                onError,
+                navigate
+              ),
+          });
         };
 
         const onPaymentComplete = () => {
@@ -390,13 +382,6 @@ export default function IframeCardForm(props: Props) {
           hideCancel={hideCancel}
         />
       </form>
-      <Box display="none">
-        <ReCAPTCHA
-          ref={ref}
-          size="invisible"
-          sitekey={getReCaptchaKey() as string}
-        />
-      </Box>
       {!!errorModalOpen && (
         <ErrorModal
           error={error}

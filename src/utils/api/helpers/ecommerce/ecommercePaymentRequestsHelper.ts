@@ -21,8 +21,7 @@ import { FaultCategoryEnum } from "../../../errors/faultCategory";
 import { NodeFaultCode } from "./nodeFaultCode";
 
 export const getEcommercePaymentInfoTask = (
-  rptId: RptId,
-  recaptchaResponse: string
+  rptId: RptId
 ): TE.TaskEither<NodeFaultCode, PaymentRequestsGetResponse> =>
   pipe(
     TE.tryCatch(
@@ -34,7 +33,6 @@ export const getEcommercePaymentInfoTask = (
             () =>
               apiPaymentEcommerceClient.getPaymentRequestInfo({
                 rpt_id: rptId,
-                recaptchaResponse,
               }),
             (bearerAuth) => {
               // init API invocation page to handle return url in case of 401

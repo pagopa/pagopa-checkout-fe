@@ -4,7 +4,6 @@ import * as E from "fp-ts/Either";
 import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
 import { flow, pipe } from "fp-ts/lib/function";
-import ReCAPTCHA from "react-google-recaptcha";
 import {
   Cart,
   PaymentFormFields,
@@ -25,7 +24,6 @@ import {
   apiPaymentEcommerceClientWithRetry,
 } from "../../../../utils/api/client";
 import { NewTransactionResponse } from "../../../../../generated/definitions/payment-ecommerce-v2/NewTransactionResponse";
-import { callRecaptcha } from "../recaptchaHelper";
 import { PaymentRequestsGetResponse } from "../../../../../generated/definitions/payment-ecommerce/PaymentRequestsGetResponse";
 import { PaymentInfo as PaymentInfoDto } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentInfo";
 import { PaymentNoticeInfo } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentNoticeInfo";
@@ -40,11 +38,9 @@ import { Bundle } from "../../../../../generated/definitions/payment-ecommerce/B
 import { NodeFaultCode } from "./nodeFaultCode";
 
 export const activatePayment = async ({
-  token,
   onResponseActivate,
   onErrorActivate,
 }: {
-  token: string;
   onResponseActivate: (paymentMethodId: string, orderId: string) => void;
   onErrorActivate: (
     faultCodeCategory: string,
@@ -83,7 +79,6 @@ export const activatePayment = async ({
             response.amount,
             userEmail || "",
             rptId,
-            token,
             orderId,
             correlationId,
             cartClientId,
@@ -103,31 +98,10 @@ export const activatePayment = async ({
   );
 };
 
-export const recaptchaTransaction = async ({
-  recaptchaRef,
-  onSuccess,
-  onError,
-}: {
-  recaptchaRef: ReCAPTCHA;
-  onSuccess: (paymentMethodId: string, orderId: string) => void;
-  onError: (
-    faultCodeCategory: string,
-    faultCodeDetail: string | undefined
-  ) => void;
-}) => {
-  const token = await callRecaptcha(recaptchaRef, true);
-  await activatePayment({
-    token,
-    onResponseActivate: onSuccess,
-    onErrorActivate: onError,
-  });
-};
-
 const activePaymentTask = (
   amountSinglePayment: AmountEuroCents,
   userEmail: string,
   rptId: RptId,
-  recaptchaResponse: string,
   orderId: string,
   correlationId: string,
   cartClientId: string,
@@ -152,11 +126,7 @@ const activePaymentTask = (
           getSessionItem(SessionItems.authToken) as string,
           O.fromNullable,
           O.fold(
-            () =>
-              apiPaymentEcommerceClientV2.newTransaction({
-                ...payload,
-                recaptchaResponse,
-              }),
+            () => apiPaymentEcommerceClientV2.newTransaction(payload),
             (bearerAuth) => {
               // init API invocation page to handle return url in case of 401
               setSessionItem(

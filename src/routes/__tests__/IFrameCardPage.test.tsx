@@ -4,7 +4,6 @@ import { MemoryRouter } from "react-router-dom";
 import { act, fireEvent, screen, waitFor } from "@testing-library/react";
 import IFrameCardPage from "../../routes/IframeCardPage";
 import {
-  getReCaptchaKey,
   getSessionItem,
   SessionItems,
 } from "../../utils/storage/sessionStorage";
@@ -62,7 +61,7 @@ jest.mock("react-router-dom", () => ({
   useNavigate: () => navigate,
 }));
 
-// Mock translations and recaptcha
+// Mock translations
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
   Trans: ({
@@ -78,7 +77,6 @@ jest.mock("react-i18next", () => ({
 jest.mock("../../utils/storage/sessionStorage", () => ({
   getSessionItem: jest.fn(),
   setSessionItem: jest.fn(),
-  getReCaptchaKey: jest.fn(),
   SessionItems: {
     transaction: "transaction",
   },
@@ -152,7 +150,6 @@ const createSessionResponse: CreateSessionResponse = {
 describe("IFrameCardPage", () => {
   beforeEach(() => {
     (getSessionItem as jest.Mock).mockImplementation(mockGetSessionItem);
-    (getReCaptchaKey as jest.Mock).mockImplementation(() => "recaptchaSiteKey");
     (retrieveCardData as jest.Mock).mockImplementation(() => sessionPayment);
     (npgSessionsFields as jest.Mock).mockImplementation(
       () => createSessionResponse
