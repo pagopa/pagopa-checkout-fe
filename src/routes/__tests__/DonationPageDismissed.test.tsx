@@ -10,7 +10,7 @@ jest.mock("../../utils/config/config", () => ({
   CHECKOUT_API_RETRY_NUMBERS: 5,
 }));
 
-// Mock translations and recaptcha
+// Mock translations
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
   Trans: ({

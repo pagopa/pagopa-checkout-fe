@@ -54,7 +54,7 @@ jest.mock("../../redux/slices/threshold.ts", () => ({
   }),
 }));
 
-// Mock translations and recaptcha
+// Mock translations
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
   Trans: ({

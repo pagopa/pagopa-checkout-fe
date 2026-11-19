@@ -36,7 +36,6 @@ jest.mock("../../../../../utils/config/config", () => ({
     CHECKOUT_API_PAYMENT_TRANSACTIONS_BASEPATH: "/transactions",
     CHECKOUT_POLLING_ACTIVATION_INTERVAL: 10000,
     CHECKOUT_POLLING_ACTIVATION_ATTEMPTS: 5,
-    CHECKOUT_RECAPTCHA_SITE_KEY: "test-recaptcha-key",
     CHECKOUT_DONATIONS_URL: "https://test.donations.url",
     CHECKOUT_SURVEY_SHOW: false,
     CHECKOUT_NPG_SDK_URL: "https://test.npg.sdk.url",

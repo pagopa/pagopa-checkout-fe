@@ -13,7 +13,6 @@ import {
   PaymentMethod,
   PaymentMethodInfo,
 } from "../../features/payment/models/paymentModel";
-import { getConfigOrThrow } from "../config/config";
 
 export enum SessionItems {
   paymentInfo = "paymentInfo",
@@ -178,7 +177,3 @@ export const getRptIdsFromSession = () =>
     ),
     O.getOrElse(() => "")
   );
-
-export function getReCaptchaKey() {
-  return getConfigOrThrow().CHECKOUT_RECAPTCHA_SITE_KEY;
-}

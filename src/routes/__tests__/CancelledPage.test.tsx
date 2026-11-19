@@ -13,7 +13,7 @@ import "jest-location-mock";
 import { checkLogout } from "../../utils/api/helper";
 import { cart } from "./_model";
 
-// Mock translations and recaptcha
+// Mock translations
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
   Trans: ({
