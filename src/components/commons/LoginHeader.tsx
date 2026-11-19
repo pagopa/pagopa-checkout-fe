@@ -5,7 +5,6 @@ import { Logout } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import { RootLinkType } from "@pagopa/mui-italia";
 import { HeaderAccount } from "@pagopa/mui-italia/components/HeaderAccount";
-import ReCAPTCHA from "react-google-recaptcha";
 import { Box } from "@mui/material";
 import { pipe } from "fp-ts/function";
 import * as E from "fp-ts/Either";
@@ -30,7 +29,6 @@ import ErrorModal from "../../components/modals/ErrorModal";
 import CheckoutLoader from "../../components/PageContent/CheckoutLoader";
 import { CheckoutRoutes } from "../../routes/models/routeModel";
 import {
-  getReCaptchaKey,
   getSessionItem,
   SessionItems,
   setSessionItem,
@@ -69,7 +67,6 @@ export default function LoginHeader() {
   const maintenanceEnabled = useAppSelector(
     selectMaintenanceEnabled
   ).maintenanceEnabled;
-  const ref = React.useRef<ReCAPTCHA>(null);
   const [loading, setLoading] = React.useState(false);
   const [isLoginButtonReady, setLoginButtonReady] = React.useState(false);
   const [error, setError] = React.useState("");
@@ -94,7 +91,6 @@ export default function LoginHeader() {
     hideLoading();
     setError(m);
     setErrorModalOpen(true);
-    ref.current?.reset();
   };
 
   const onResponse = (authorizationUrl: string) => {
@@ -116,20 +112,14 @@ export default function LoginHeader() {
     }
   };
 
-  const onLogin = async (recaptchaRef: ReCAPTCHA) => {
+  const onLogin = async () => {
     setLoading(true);
     mixpanel.track(MixpanelEventsId.CHK_LOGIN_REQUEST, {
       EVENT_ID: MixpanelEventsId.CHK_LOGIN_REQUEST,
       EVENT_CATEGORY: MixpanelEventCategory.TECH,
       page: window.location.pathname,
     });
-    await proceedToLogin({ recaptchaRef, onError, onResponse });
-  };
-
-  const handleClickOnLogin = async () => {
-    if (ref.current) {
-      await onLogin(ref.current);
-    }
+    await proceedToLogin({ onError, onResponse });
   };
 
   const checkTransactionAndHandleLogout = async () => {
@@ -243,16 +233,9 @@ export default function LoginHeader() {
         enableLogin={showLoginButton()}
         enableAssistanceButton={false}
         onAssistanceClick={() => {}} // eslint-disable-line @typescript-eslint/no-empty-function
-        onLogin={handleClickOnLogin}
+        onLogin={onLogin}
         translationsMap={{ logIn: t("mainPage.header.login") }}
       />
-      <Box display="none">
-        <ReCAPTCHA
-          ref={ref}
-          size="invisible"
-          sitekey={getReCaptchaKey() as string}
-        />
-      </Box>
       <UserLogout
         open={userSessionLogoutModalOpen}
         onCancel={() => setUserSessionLogoutModalOpen(false)}
