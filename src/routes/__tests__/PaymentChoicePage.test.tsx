@@ -67,7 +67,7 @@ import {
   sessionPayment,
   transaction,
 } from "./_model";
-// Mock translations and recaptcha
+// Mock translations
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string) => key,
@@ -168,7 +168,6 @@ jest.mock("../../utils/storage/sessionStorage", () => ({
   getSessionItem: jest.fn(),
   setSessionItem: jest.fn(),
   clearSessionItem: jest.fn(),
-  getReCaptchaKey: jest.fn(),
   getRptIdsFromSession: jest.fn(),
   SessionItems: {
     authToken: "authToken",
@@ -198,20 +197,6 @@ jest.mock("../../utils/mixpanel/mixpanelHelperInit", () => ({
 jest.mock("../../utils/mixpanel/mixpanelTracker", () => ({
   getFlowFromSessionStorage: jest.fn(() => "cart"),
   getPaymentInfoFromSessionStorage: jest.fn(() => paymentInfo),
-}));
-
-jest.mock("react-google-recaptcha", () => ({
-  __esModule: true,
-  default: React.forwardRef((_, ref) => {
-    React.useImperativeHandle(ref, () => ({
-      reset: jest.fn(),
-      execute: jest.fn(),
-      executeAsync: jest.fn(() => "token"),
-    }));
-    return (
-      <div ref={ref as React.RefObject<HTMLDivElement>} data-test="recaptcha" />
-    );
-  }),
 }));
 
 jest.mock("../../utils/eventListeners", () => ({

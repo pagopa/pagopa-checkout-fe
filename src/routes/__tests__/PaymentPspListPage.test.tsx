@@ -121,7 +121,6 @@ const mockGetSessionItem = (item: SessionItems) => {
 jest.mock("../../utils/storage/sessionStorage", () => ({
   getSessionItem: jest.fn(),
   setSessionItem: jest.fn(),
-  getReCaptchaKey: jest.fn(),
   SessionItems: {
     paymentMethod: "paymentMethod",
     paymentMethodInfo: "paymentMethodInfo",

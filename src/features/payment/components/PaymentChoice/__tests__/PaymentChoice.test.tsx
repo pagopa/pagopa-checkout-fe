@@ -32,10 +32,9 @@ type GetFeesFunction = (
   bin?: string | undefined
 ) => Promise<void>;
 
-type RecaptchaTransactionFunction = (options: {
-  recaptchaRef: any; // Using ReCAPTCHA type if available
-  onSuccess: (paymentMethodId: string, orderId: string) => void;
-  onError: (
+type ActivatePaymentFunction = (options: {
+  onResponseActivate: (paymentMethodId: string, orderId: string) => void;
+  onErrorActivate: (
     faultCodeCategory: string,
     faultCodeDetail: string | undefined
   ) => void;
@@ -44,14 +43,14 @@ type RecaptchaTransactionFunction = (options: {
 // Mock the helper module
 jest.mock("../../../../../utils/api/helper", () => ({
   getFees: jest.fn(),
-  recaptchaTransaction: jest.fn(() => Promise.resolve()),
+  activatePayment: jest.fn(() => Promise.resolve()),
 }));
 
 // Create typed mocks
 const mockedGetFees =
   helperModule.getFees as jest.MockedFunction<GetFeesFunction>;
-const mockedRecaptchaTransaction =
-  helperModule.recaptchaTransaction as jest.MockedFunction<RecaptchaTransactionFunction>;
+const mockedActivatePayment =
+  helperModule.activatePayment as jest.MockedFunction<ActivatePaymentFunction>;
 
 // Mock error helper
 jest.mock("../../../../../utils/api/transactionsErrorHelper", () => ({
@@ -74,7 +73,6 @@ jest.mock("../../../../../utils/storage/sessionStorage", () => ({
   getSessionItem: jest.fn(),
   setSessionItem: jest.fn(),
   clearSessionItem: jest.fn(),
-  getReCaptchaKey: jest.fn(() => "mock-recaptcha-key"),
 }));
 const mockedClearSessionItem =
   sessionStorageModule.clearSessionItem as jest.Mock;
@@ -94,24 +92,6 @@ jest.mock("../../../../../redux/hooks/hooks", () => ({
 // Mock i18next
 jest.mock("i18next", () => ({
   t: (key: string) => key,
-}));
-
-// Mock ReCAPTCHA
-jest.mock("react-google-recaptcha", () => ({
-  __esModule: true,
-  default: React.forwardRef((_, ref) => {
-    React.useImperativeHandle(ref, () => ({
-      reset: jest.fn(),
-      execute: jest.fn(),
-      executeAsync: jest.fn(() => "token"),
-    }));
-    return (
-      <div
-        ref={ref as React.RefObject<HTMLDivElement>}
-        data-testid="recaptcha"
-      />
-    );
-  }),
 }));
 
 // Mock route models
@@ -428,11 +408,6 @@ describe("PaymentChoice", () => {
   });
 
   it("should render payment methods when loading is false", async () => {
-    // Mock the useRef to immediately set the ref
-    jest.spyOn(React, "useRef").mockImplementation(() => ({
-      current: { execute: jest.fn(), reset: jest.fn() },
-    }));
-
     renderWithRouterAndRedux(
       <PaymentChoice
         amount={100}
@@ -455,11 +430,6 @@ describe("PaymentChoice", () => {
   });
 
   it("should render filtered payment methods when input text in filter box", async () => {
-    // Mock the useRef to immediately set the ref
-    jest.spyOn(React, "useRef").mockImplementation(() => ({
-      current: { execute: jest.fn(), reset: jest.fn() },
-    }));
-
     const result = renderWithRouterAndRedux(
       <PaymentChoice
         amount={100}
@@ -496,11 +466,6 @@ describe("PaymentChoice", () => {
   });
 
   it("should render all payment methods when input text clear icon is clicked", async () => {
-    // Mock the useRef to immediately set the ref
-    jest.spyOn(React, "useRef").mockImplementation(() => ({
-      current: { execute: jest.fn(), reset: jest.fn() },
-    }));
-
     const result = renderWithRouterAndRedux(
       <PaymentChoice
         amount={100}
@@ -548,11 +513,6 @@ describe("PaymentChoice", () => {
   });
 
   it("should show no result string when filter doesn't match any payment methods name", async () => {
-    // Mock the useRef to immediately set the ref
-    jest.spyOn(React, "useRef").mockImplementation(() => ({
-      current: { execute: jest.fn(), reset: jest.fn() },
-    }));
-
     const result = renderWithRouterAndRedux(
       <PaymentChoice
         amount={100}
@@ -584,11 +544,6 @@ describe("PaymentChoice", () => {
   });
 
   it("should handle credit card payment method click", async () => {
-    // Mock the useRef to immediately set the ref
-    jest.spyOn(React, "useRef").mockImplementation(() => ({
-      current: { execute: jest.fn(), reset: jest.fn() },
-    }));
-
     const { getByText } = renderWithRouterAndRedux(
       <PaymentChoice
         amount={100}
@@ -620,15 +575,10 @@ describe("PaymentChoice", () => {
       return Promise.resolve();
     });
 
-    mockedRecaptchaTransaction.mockImplementation(({ onSuccess }) => {
-      onSuccess("payment_method_id", "order_id");
+    mockedActivatePayment.mockImplementation(({ onResponseActivate }) => {
+      onResponseActivate("payment_method_id", "order_id");
       return Promise.resolve();
     });
-
-    // Mock the useRef to immediately set the ref
-    jest.spyOn(React, "useRef").mockImplementation(() => ({
-      current: { execute: jest.fn(), reset: jest.fn() },
-    }));
 
     const { getByText } = renderWithRouterAndRedux(
       <PaymentChoice
@@ -651,7 +601,7 @@ describe("PaymentChoice", () => {
       sessionStorageModule.SessionItems.sessionPaymentMethod
     );
 
-    expect(mockedRecaptchaTransaction).toHaveBeenCalled();
+    expect(mockedActivatePayment).toHaveBeenCalled();
 
     // Should navigate to the PayPal payment route
     await waitFor(() => {
@@ -666,16 +616,11 @@ describe("PaymentChoice", () => {
   });
 
   it("should show error modal when error occurs", async () => {
-    // Mock recaptchaTransaction to trigger an error
-    mockedRecaptchaTransaction.mockImplementation(({ onError }) => {
-      onError("GENERIC_ERROR", "Something went wrong");
+    // Mock activatePayment to trigger an error
+    mockedActivatePayment.mockImplementation(({ onErrorActivate }) => {
+      onErrorActivate("GENERIC_ERROR", "Something went wrong");
       return Promise.resolve();
     });
-
-    // Mock the useRef to immediately set the ref
-    jest.spyOn(React, "useRef").mockImplementation(() => ({
-      current: { execute: jest.fn(), reset: jest.fn() },
-    }));
 
     const { getByText } = renderWithRouterAndRedux(
       <PaymentChoice
@@ -718,16 +663,11 @@ describe("PaymentChoice", () => {
       return Promise.resolve();
     });
 
-    // Also ensure recaptchaTransaction calls its success callback
-    mockedRecaptchaTransaction.mockImplementationOnce(({ onSuccess }) => {
-      onSuccess("pmId", "orderId");
+    // Also ensure activatePayment calls its success callback
+    mockedActivatePayment.mockImplementationOnce(({ onResponseActivate }) => {
+      onResponseActivate("pmId", "orderId");
       return Promise.resolve();
     });
-
-    // Mock the useRef to immediately set the ref
-    jest.spyOn(React, "useRef").mockImplementation(() => ({
-      current: { execute: jest.fn(), reset: jest.fn() },
-    }));
 
     renderWithRouterAndRedux(
       <PaymentChoice
@@ -762,24 +702,6 @@ describe("PaymentChoice", () => {
     });
   });
 
-  it("should render ReCAPTCHA component", async () => {
-    // Mock the useRef to immediately set the ref
-    jest.spyOn(React, "useRef").mockImplementation(() => ({
-      current: { execute: jest.fn(), reset: jest.fn() },
-    }));
-
-    renderWithRouterAndRedux(
-      <PaymentChoice
-        amount={100}
-        paymentInstruments={samplePaymentInstruments}
-        loading={false}
-      />
-    );
-
-    // ReCAPTCHA should be in the document
-    expect(screen.getByTestId("recaptcha")).toBeInTheDocument();
-  });
-
   it("should navigate to PSP list when enablePspPage is true", async () => {
     // Reset all mocks
     jest.clearAllMocks();
@@ -787,9 +709,9 @@ describe("PaymentChoice", () => {
     // Set localStorage item
     localStorage.setItem("enablePspPage", "true");
 
-    // Mock recaptchaTransaction to ensure it works correctly
-    mockedRecaptchaTransaction.mockImplementation(({ onSuccess }) => {
-      onSuccess("pmId", "oId");
+    // Mock activatePayment to ensure it works correctly
+    mockedActivatePayment.mockImplementation(({ onResponseActivate }) => {
+      onResponseActivate("pmId", "oId");
       return Promise.resolve();
     });
 
@@ -798,14 +720,6 @@ describe("PaymentChoice", () => {
       onSuccess(true);
       return Promise.resolve();
     });
-
-    // Mock the useRef to immediately set the ref
-    jest.spyOn(React, "useRef").mockImplementation(() => ({
-      current: {
-        execute: jest.fn().mockResolvedValue("token"),
-        reset: jest.fn(),
-      },
-    }));
 
     renderWithRouterAndRedux(
       <PaymentChoice
@@ -843,11 +757,6 @@ describe("PaymentChoice", () => {
   });
 
   it("should track payment method choice with mixpanel", async () => {
-    // Mock the useRef to immediately set the ref
-    jest.spyOn(React, "useRef").mockImplementation(() => ({
-      current: { execute: jest.fn(), reset: jest.fn() },
-    }));
-
     const { getByText } = renderWithRouterAndRedux(
       <PaymentChoice
         amount={100}
@@ -883,10 +792,6 @@ describe("PaymentChoice", () => {
   });
 
   it("should render wallets ", async () => {
-    jest.spyOn(React, "useRef").mockImplementation(() => ({
-      current: { execute: jest.fn(), reset: jest.fn() },
-    }));
-
     renderWithRouterAndRedux(
       <PaymentChoice
         amount={100}
@@ -913,14 +818,10 @@ describe("PaymentChoice", () => {
       return Promise.resolve();
     });
 
-    mockedRecaptchaTransaction.mockImplementation(({ onSuccess }) => {
-      onSuccess("pmId", "orderId");
+    mockedActivatePayment.mockImplementation(({ onResponseActivate }) => {
+      onResponseActivate("pmId", "orderId");
       return Promise.resolve();
     });
-
-    jest.spyOn(React, "useRef").mockImplementation(() => ({
-      current: { execute: jest.fn(), reset: jest.fn() },
-    }));
 
     const cardWallet = sampleWallets.find((w) => w.details?.type === "CARDS")!;
     const cardWalletDescription = getDescriptionWallet(cardWallet);
@@ -945,7 +846,7 @@ describe("PaymentChoice", () => {
       sessionStorageModule.SessionItems.sessionPaymentMethod
     );
 
-    expect(mockedRecaptchaTransaction).toHaveBeenCalledTimes(1);
+    expect(mockedActivatePayment).toHaveBeenCalledTimes(1);
 
     expect(mockedGetFees).toHaveBeenCalledWith(
       expect.any(Function),
@@ -963,15 +864,11 @@ describe("PaymentChoice", () => {
     });
   });
 
-  it("should show error modal if recaptchaTransaction fails on wallet click", async () => {
-    mockedRecaptchaTransaction.mockImplementation(({ onError }) => {
-      onError("GENERIC_ERROR", "Something went wrong");
+  it("should show error modal if activatePayment fails on wallet click", async () => {
+    mockedActivatePayment.mockImplementation(({ onErrorActivate }) => {
+      onErrorActivate("GENERIC_ERROR", "Something went wrong");
       return Promise.resolve();
     });
-
-    jest.spyOn(React, "useRef").mockImplementation(() => ({
-      current: { execute: jest.fn(), reset: jest.fn() },
-    }));
 
     const cardWalletDescription = getDescriptionWallet(sampleWallets[0]);
 
@@ -1009,8 +906,8 @@ describe("PaymentChoice", () => {
     // Set enablePspPage to "false" (non-null, non-"true" value)
     localStorage.setItem("enablePspPage", "false");
 
-    mockedRecaptchaTransaction.mockImplementation(({ onSuccess }) => {
-      onSuccess("pmId", "orderId");
+    mockedActivatePayment.mockImplementation(({ onResponseActivate }) => {
+      onResponseActivate("pmId", "orderId");
       return Promise.resolve();
     });
 
@@ -1018,13 +915,6 @@ describe("PaymentChoice", () => {
       onSuccess(true);
       return Promise.resolve();
     });
-
-    jest.spyOn(React, "useRef").mockImplementation(() => ({
-      current: {
-        execute: jest.fn().mockResolvedValue("token"),
-        reset: jest.fn(),
-      },
-    }));
 
     renderWithRouterAndRedux(
       <PaymentChoice
@@ -1042,7 +932,7 @@ describe("PaymentChoice", () => {
     fireEvent.click(screen.getByText("PayPal"));
 
     await waitFor(() => {
-      expect(mockedRecaptchaTransaction).toHaveBeenCalled();
+      expect(mockedActivatePayment).toHaveBeenCalled();
       expect(mockedGetFees).toHaveBeenCalled();
     });
 
@@ -1058,17 +948,10 @@ describe("PaymentChoice", () => {
     // Set enablePspPage to "true"
     localStorage.setItem("enablePspPage", "true");
 
-    mockedRecaptchaTransaction.mockImplementation(({ onSuccess }) => {
-      onSuccess("pmId", "orderId");
+    mockedActivatePayment.mockImplementation(({ onResponseActivate }) => {
+      onResponseActivate("pmId", "orderId");
       return Promise.resolve();
     });
-
-    jest.spyOn(React, "useRef").mockImplementation(() => ({
-      current: {
-        execute: jest.fn().mockResolvedValue("token"),
-        reset: jest.fn(),
-      },
-    }));
 
     renderWithRouterAndRedux(
       <PaymentChoice
@@ -1086,7 +969,7 @@ describe("PaymentChoice", () => {
     fireEvent.click(screen.getByText("PayPal"));
 
     await waitFor(() => {
-      expect(mockedRecaptchaTransaction).toHaveBeenCalled();
+      expect(mockedActivatePayment).toHaveBeenCalled();
     });
 
     // Should navigate to psp-list and NOT call getFees

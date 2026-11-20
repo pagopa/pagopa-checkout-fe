@@ -1,6 +1,5 @@
 /* eslint-disable sonarjs/no-identical-functions */
 import { waitFor } from "@testing-library/react";
-import ReCAPTCHA from "react-google-recaptcha";
 import { Cart } from "features/payment/models/paymentModel";
 import {
   cardPaymentMethodMock,
@@ -21,7 +20,6 @@ import {
   activatePayment,
   cancelPayment,
   proceedToPayment,
-  recaptchaTransaction,
 } from "../../../../api/helper";
 import { ErrorsType } from "../../../../errors/checkErrorsModel";
 import {
@@ -58,10 +56,6 @@ jest.mock("../../../../api/client", () => ({
   apiPaymentEcommerceClientWithRetry: {
     requestTransactionAuthorization: jest.fn(),
   },
-}));
-
-jest.mock("../../../../api/helpers/recaptchaHelper", () => ({
-  callRecaptcha: jest.fn(() => "recaptchaToken"),
 }));
 
 // Mock getSessionItem sequentially
@@ -102,7 +96,6 @@ describe("Ecommerce transactions helper - activatePayment tests", () => {
       })
     );
     await activatePayment({
-      token: "token",
       onResponseActivate: mockOnResponse,
       onErrorActivate: mockOnError,
     });
@@ -112,6 +105,9 @@ describe("Ecommerce transactions helper - activatePayment tests", () => {
         "orderId"
       );
     });
+    expect(apiPaymentEcommerceClientV2.newTransaction).toHaveBeenCalledWith(
+      expect.not.objectContaining({ recaptchaResponse: expect.anything() })
+    );
   });
 
   it("Should call onError with ErrorsType.GENERIC_ERROR when api fail", async () => {
@@ -120,7 +116,6 @@ describe("Ecommerce transactions helper - activatePayment tests", () => {
       "Api error"
     );
     await activatePayment({
-      token: "token",
       onResponseActivate: mockOnResponse,
       onErrorActivate: mockOnError,
     });
@@ -142,7 +137,6 @@ describe("Ecommerce transactions helper - activatePayment tests", () => {
       })
     );
     await activatePayment({
-      token: "token",
       onResponseActivate: mockOnResponse,
       onErrorActivate: mockOnError,
     });
@@ -168,7 +162,6 @@ describe("Ecommerce transactions helper - activatePayment tests", () => {
       })
     );
     await activatePayment({
-      token: "token",
       onResponseActivate: mockOnResponse,
       onErrorActivate: mockOnError,
     });
@@ -195,7 +188,6 @@ describe("Ecommerce transactions helper - activatePayment tests", () => {
       apiPaymentEcommerceAuthClientV1.newTransactionAuth as jest.Mock
     ).mockRejectedValue("Api error");
     await activatePayment({
-      token: "token",
       onResponseActivate: mockOnResponse,
       onErrorActivate: mockOnError,
     });
@@ -219,7 +211,6 @@ describe("Ecommerce transactions helper - activatePayment tests", () => {
       })
     );
     await activatePayment({
-      token: "token",
       onResponseActivate: mockOnResponse,
       onErrorActivate: mockOnError,
     });
@@ -243,7 +234,6 @@ describe("Ecommerce transactions helper - activatePayment tests", () => {
       })
     );
     await activatePayment({
-      token: "token",
       onResponseActivate: mockOnResponse,
       onErrorActivate: mockOnError,
     });
@@ -266,7 +256,6 @@ describe("Ecommerce transactions helper - activatePayment tests", () => {
       })
     );
     await activatePayment({
-      token: "token",
       onResponseActivate: mockOnResponse,
       onErrorActivate: mockOnError,
     });
@@ -304,7 +293,6 @@ describe("Ecommerce transactions helper - activatePayment tests", () => {
       })
     );
     await activatePayment({
-      token: "token",
       onResponseActivate: mockOnResponse,
       onErrorActivate: mockOnError,
     });
@@ -326,49 +314,6 @@ describe("Ecommerce transactions helper - activatePayment tests", () => {
       amount: 2000,
       description: "test2",
       companyName: "test2",
-    });
-  });
-});
-
-describe("Ecommerce transactions helper - recaptchaTransaction tests", () => {
-  it("Should call onSuccess when api return correct value", async () => {
-    mockSetSessionForActivatePayment(false);
-    (apiPaymentEcommerceClientV2.newTransaction as jest.Mock).mockReturnValue(
-      Promise.resolve({
-        right: {
-          status: 200,
-          value: transactionResponseMock,
-        },
-      })
-    );
-    await recaptchaTransaction({
-      recaptchaRef: {} as ReCAPTCHA,
-      onSuccess: mockOnResponse,
-      onError: mockOnError,
-    });
-    await waitFor(() => {
-      expect(mockOnResponse).toHaveBeenCalledWith(
-        cardPaymentMethodMock.paymentMethodId,
-        "orderId"
-      );
-    });
-  });
-
-  it("Should call onError with ErrorsType.GENERIC_ERROR when activate payment fail", async () => {
-    mockSetSessionForActivatePayment(false);
-    (apiPaymentEcommerceClientV2.newTransaction as jest.Mock).mockRejectedValue(
-      "Api error"
-    );
-    await recaptchaTransaction({
-      recaptchaRef: {} as ReCAPTCHA,
-      onSuccess: mockOnResponse,
-      onError: mockOnError,
-    });
-    await waitFor(() => {
-      expect(mockOnError).toHaveBeenCalledWith(
-        ErrorsType.GENERIC_ERROR,
-        undefined
-      );
     });
   });
 });

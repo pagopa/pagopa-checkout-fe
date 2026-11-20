@@ -1,6 +1,5 @@
 import { Box, Button, Typography } from "@mui/material";
 import React from "react";
-import ReCAPTCHA from "react-google-recaptcha";
 import { useNavigate } from "react-router-dom";
 import { pipe } from "fp-ts/lib/function";
 import * as O from "fp-ts/Option";
@@ -25,7 +24,6 @@ import { PaymentMethod } from "../features/payment/models/paymentModel";
 import { useAppDispatch } from "../redux/hooks/hooks";
 import { setThreshold } from "../redux/slices/threshold";
 import {
-  getReCaptchaKey,
   getSessionItem,
   SessionItems,
   setSessionItem,
@@ -49,7 +47,6 @@ export default function PaymentPspListPage() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const ref = React.useRef<ReCAPTCHA>(null);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [submitEnabled, setSubmitEnabled] = React.useState(false);
   const [error, setError] = React.useState("");
@@ -317,13 +314,6 @@ export default function PaymentPspListPage() {
           onSelect={updatePspSorting}
         />
       </PageContainer>
-      <Box display="none">
-        <ReCAPTCHA
-          ref={ref}
-          size="invisible"
-          sitekey={getReCaptchaKey() as string}
-        />
-      </Box>
     </>
   );
 }
