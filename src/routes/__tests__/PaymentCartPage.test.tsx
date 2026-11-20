@@ -8,7 +8,7 @@ import { renderWithReduxProvider } from "../../utils/testing/testRenderProviders
 import PaymentCartPage from "../PaymentCartPage";
 import { cart } from "./_model";
 
-// Mock translations and recaptcha
+// Mock translations
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
   Trans: ({
@@ -19,20 +19,6 @@ jest.mock("react-i18next", () => ({
     components?: Array<any>;
     children?: React.ReactNode;
   }) => <span data-testid="mocked-trans">{i18nKey || "no-key"}</span>,
-}));
-
-jest.mock("react-google-recaptcha", () => ({
-  __esModule: true,
-  default: React.forwardRef((_, ref) => {
-    React.useImperativeHandle(ref, () => ({
-      reset: jest.fn(),
-      execute: jest.fn(),
-      executeAsync: jest.fn(() => "token"),
-    }));
-    return (
-      <div ref={ref as React.RefObject<HTMLDivElement>} data-test="recaptcha" />
-    );
-  }),
 }));
 
 // Create a Jest spy for navigation
@@ -48,7 +34,6 @@ jest.mock("react-router-dom", () => ({
 jest.mock("../../utils/storage/sessionStorage", () => ({
   getSessionItem: jest.fn(),
   setSessionItem: jest.fn(),
-  getReCaptchaKey: jest.fn(),
   SessionItems: {
     cart: "cart",
   },

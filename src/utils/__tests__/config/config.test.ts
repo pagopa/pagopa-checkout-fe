@@ -17,7 +17,6 @@ Object.defineProperty(global, "window", {
       CHECKOUT_API_PAYMENT_TRANSACTIONS_BASEPATH: "/transactions",
       CHECKOUT_POLLING_ACTIVATION_INTERVAL: "2000",
       CHECKOUT_POLLING_ACTIVATION_ATTEMPTS: "3",
-      CHECKOUT_RECAPTCHA_SITE_KEY: "recaptcha-key",
       CHECKOUT_DONATIONS_URL: "https://donations.com",
       CHECKOUT_SURVEY_SHOW: "1",
       CHECKOUT_NPG_SDK_URL: "https://sdk.npg.com",
@@ -74,7 +73,6 @@ describe("Config Module", () => {
     );
     expect(config.CHECKOUT_POLLING_ACTIVATION_INTERVAL).toBe(2000);
     expect(config.CHECKOUT_POLLING_ACTIVATION_ATTEMPTS).toBe(3);
-    expect(config.CHECKOUT_RECAPTCHA_SITE_KEY).toBe("recaptcha-key");
     expect(config.CHECKOUT_DONATIONS_URL).toBe("https://donations.com");
     expect(config.CHECKOUT_SURVEY_SHOW).toBe(true);
     expect(config.CHECKOUT_NPG_SDK_URL).toBe("https://sdk.npg.com");

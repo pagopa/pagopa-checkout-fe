@@ -37,7 +37,7 @@ jest.mock("../../utils/config/config", () =>
   })
 );
 
-// Mock translations and recaptcha
+// Mock translations
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
   Trans: ({

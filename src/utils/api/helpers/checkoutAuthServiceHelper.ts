@@ -2,7 +2,6 @@ import * as E from "fp-ts/Either";
 import { constVoid, pipe } from "fp-ts/lib/function";
 import * as O from "fp-ts/Option";
 import * as TE from "fp-ts/TaskEither";
-import ReCAPTCHA from "react-google-recaptcha";
 import { ErrorsType } from "../../../utils/errors/checkErrorsModel";
 import {
   getRptIdsFromSession,
@@ -21,36 +20,24 @@ import {
   MixpanelEventCategory,
   MixpanelEventsId,
 } from "../../mixpanel/mixpanelEvents";
-import { callRecaptcha } from "./recaptchaHelper";
 
 export const proceedToLogin = async ({
-  recaptchaRef,
   onError,
   onResponse,
 }: {
-  recaptchaRef: ReCAPTCHA;
   onError: (e: string) => void;
   onResponse: (r: any) => void;
 }) => {
-  const token = await callRecaptcha(recaptchaRef, true);
   await pipe(
-    O.fromNullable(token),
-    TE.fromOption(() => {
-      onError(ErrorsType.GENERIC_ERROR);
-      return E.toError;
-    }),
-    TE.chain((token) =>
-      TE.tryCatch(
-        () =>
-          apiCheckoutAuthServiceClientV1.authLogin({
-            recaptcha: token,
-            "x-rpt-ids": getRptIdsFromSession(),
-          }),
-        (_e) => {
-          onError(ErrorsType.CONNECTION);
-          return E.toError;
-        }
-      )
+    TE.tryCatch(
+      () =>
+        apiCheckoutAuthServiceClientV1.authLogin({
+          "x-rpt-ids": getRptIdsFromSession(),
+        }),
+      (_e) => {
+        onError(ErrorsType.CONNECTION);
+        return E.toError;
+      }
     ),
     TE.fold(
       (_r) => async () => {

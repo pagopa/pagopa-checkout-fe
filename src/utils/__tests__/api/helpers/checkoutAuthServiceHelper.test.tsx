@@ -1,4 +1,3 @@
-import ReCAPTCHA from "react-google-recaptcha";
 import { mockApiConfig } from "../../../../utils/testing/testUtils";
 import {
   apiCheckoutAuthServiceClientAuthTokenV1,
@@ -13,7 +12,6 @@ import {
   retrieveUserInfo,
 } from "../../../api/helper";
 import { ErrorsType } from "../../../../utils/errors/checkErrorsModel";
-import { callRecaptcha } from "../../../../utils/api/helpers/recaptchaHelper";
 import { getSessionItem } from "../../../../utils/storage/sessionStorage";
 import {
   MixpanelEventCategory,
@@ -46,10 +44,6 @@ jest.mock("../../../api/client", () => ({
   },
 }));
 
-jest.mock("../../../api/helpers/recaptchaHelper", () => ({
-  callRecaptcha: jest.fn(() => "recaptchaToken"),
-}));
-
 jest.mock("../../../mixpanel/mixpanelHelperInit", () => ({
   mixpanel: {
     track: jest.fn(),
@@ -76,11 +70,13 @@ describe("Checkout auth service helper - proceedToLogin tests", () => {
       })
     );
     await proceedToLogin({
-      recaptchaRef: {} as ReCAPTCHA,
       onError: mockOnError,
       onResponse: mockOnResponse,
     });
     expect(mockOnResponse).toHaveBeenCalledWith(urlRedirect);
+    expect(apiCheckoutAuthServiceClientV1.authLogin).toHaveBeenCalledWith(
+      expect.not.objectContaining({ recaptcha: expect.anything() })
+    );
   });
 
   it("Should call onError with ErrorsType.SERVER when api fail", async () => {
@@ -88,7 +84,6 @@ describe("Checkout auth service helper - proceedToLogin tests", () => {
       "Api error"
     );
     await proceedToLogin({
-      recaptchaRef: {} as ReCAPTCHA,
       onError: mockOnError,
       onResponse: mockOnResponse,
     });
@@ -104,17 +99,6 @@ describe("Checkout auth service helper - proceedToLogin tests", () => {
       })
     );
     await proceedToLogin({
-      recaptchaRef: {} as ReCAPTCHA,
-      onError: mockOnError,
-      onResponse: mockOnResponse,
-    });
-    expect(mockOnError).toHaveBeenCalledWith(ErrorsType.GENERIC_ERROR);
-  });
-
-  it("Should call onError with ErrorsType.GENERIC_ERROR when recaptcha fail", async () => {
-    (callRecaptcha as jest.Mock).mockReturnValue(Promise.resolve(null));
-    await proceedToLogin({
-      recaptchaRef: {} as ReCAPTCHA,
       onError: mockOnError,
       onResponse: mockOnResponse,
     });
