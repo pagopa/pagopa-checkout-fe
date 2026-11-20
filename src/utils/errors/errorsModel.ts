@@ -1,4 +1,3 @@
-import { FaultCategory } from "../../../generated/definitions/payment-ecommerce/FaultCategory";
 import { mixpanel } from "../mixpanel/mixpanelHelperInit";
 import {
   MixpanelEventCategory,
@@ -8,6 +7,7 @@ import {
   getDataEntryTypeFromSessionStorage,
   getPaymentInfoFromSessionStorage,
 } from "../mixpanel/mixpanelTracker";
+import { FaultCategory, FaultCategoryEnum } from "./faultCategory";
 import { ErrorsType } from "./checkErrorsModel";
 
 const HELPDESK_URL: string =
@@ -60,7 +60,9 @@ export const PaymentCategoryResponses = (
           sendMixpanelPaymentErrorHelpEvent(errorCodeDetail);
           window
             .open(
-              `${HELPDESK_URL}${errorCodeDetail ?? "DOMAIN_UNKNOWN"}`,
+              `${HELPDESK_URL}${
+                errorCodeDetail ?? FaultCategoryEnum.DOMAIN_UNKNOWN
+              }`,
               "_blank"
             )
             ?.focus();
@@ -81,7 +83,9 @@ export const PaymentCategoryResponses = (
           sendMixpanelPaymentErrorHelpEvent(errorCodeDetail);
           window
             .open(
-              `${HELPDESK_URL}${errorCodeDetail ?? "PAYMENT_UNAVAILABLE"}`,
+              `${HELPDESK_URL}${
+                errorCodeDetail ?? FaultCategoryEnum.PAYMENT_UNAVAILABLE
+              }`,
               "_blank"
             )
             ?.focus();
@@ -102,7 +106,9 @@ export const PaymentCategoryResponses = (
           sendMixpanelPaymentErrorHelpEvent(errorCodeDetail);
           window
             .open(
-              `${HELPDESK_URL}${errorCodeDetail ?? "PAYMENT_DATA_ERROR"}`,
+              `${HELPDESK_URL}${
+                errorCodeDetail ?? FaultCategoryEnum.PAYMENT_DATA_ERROR
+              }`,
               "_blank"
             )
             ?.focus();
@@ -127,7 +133,9 @@ export const PaymentCategoryResponses = (
           sendMixpanelPaymentErrorHelpEvent(errorCodeDetail);
           window
             .open(
-              `${HELPDESK_URL}${errorCodeDetail ?? "GENERIC_ERROR"}`,
+              `${HELPDESK_URL}${
+                errorCodeDetail ?? FaultCategoryEnum.GENERIC_ERROR
+              }`,
               "_blank"
             )
             ?.focus();

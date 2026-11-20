@@ -23,7 +23,7 @@ import {
 } from "../utils/storage/sessionStorage";
 import { ViewOutcomeEnum } from "../utils/transactions/TransactionResultUtil";
 import { Cart } from "../features/payment/models/paymentModel";
-import { NewTransactionResponse } from "../../generated/definitions/payment-ecommerce/NewTransactionResponse";
+import { NewTransactionResponse } from "../../generated/definitions/payment-ecommerce-v2/NewTransactionResponse";
 import { resetThreshold } from "../redux/slices/threshold";
 import {
   getDataEntryTypeFromSessionStorage,

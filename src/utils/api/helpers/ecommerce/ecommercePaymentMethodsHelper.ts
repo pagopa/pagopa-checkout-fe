@@ -27,7 +27,7 @@ import {
   SessionItems,
   setSessionItem,
 } from "../../../../utils/storage/sessionStorage";
-import { NewTransactionResponse } from "../../../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
+import { NewTransactionResponse } from "../../../../../generated/definitions/payment-ecommerce-v2/NewTransactionResponse";
 import {
   CalculateFeeRequest,
   WalletTypeEnum,

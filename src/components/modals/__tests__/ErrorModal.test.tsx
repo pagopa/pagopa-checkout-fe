@@ -9,7 +9,7 @@ import {
 } from "@testing-library/react";
 import ErrorModal from "../ErrorModal";
 
-import { FaultCategoryEnum } from "../../../../generated/definitions/payment-ecommerce/FaultCategory";
+import { FaultCategoryEnum } from "../../../utils/errors/faultCategory";
 import { ErrorsType } from "../../../utils/errors/checkErrorsModel";
 import { PaymentCategoryResponses } from "../../../utils/errors/errorsModel";
 import { mixpanel } from "../../../utils/mixpanel/mixpanelHelperInit";

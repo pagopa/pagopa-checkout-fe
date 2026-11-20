@@ -29,7 +29,7 @@ import {
   getSessionItem,
   setSessionItem,
 } from "../../../../storage/sessionStorage";
-import { NewTransactionResponse } from "../../../../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
+import { NewTransactionResponse } from "../../../../../../generated/definitions/payment-ecommerce-v2/NewTransactionResponse";
 
 jest.mock("../../../../config/config", () => ({
   getConfigOrThrow: jest.fn(() => mockApiConfig),

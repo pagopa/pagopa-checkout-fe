@@ -5,7 +5,7 @@ import React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
-import { RptId } from "../../generated/definitions/payment-ecommerce/RptId";
+import { RptId } from "../../generated/definitions/payment-ecommerce-v2/RptId";
 import notification from "../assets/images/payment-notice-pagopa.png";
 import ErrorModal from "../components/modals/ErrorModal";
 import InformationModal from "../components/modals/InformationModal";

@@ -16,8 +16,8 @@ import {
   setSessionItem,
 } from "../../../../utils/storage/sessionStorage";
 import { PaymentRequestsGetResponse } from "../../../../../generated/definitions/payment-ecommerce/PaymentRequestsGetResponse";
-import { RptId } from "../../../../../generated/definitions/payment-ecommerce/RptId";
-import { FaultCategoryEnum } from "../../../../../generated/definitions/payment-ecommerce/FaultCategory";
+import { RptId } from "../../../../../generated/definitions/payment-ecommerce-v2/RptId";
+import { FaultCategoryEnum } from "../../../errors/faultCategory";
 import { NodeFaultCode } from "./nodeFaultCode";
 
 export const getEcommercePaymentInfoTask = (

@@ -24,14 +24,14 @@ import {
   apiPaymentEcommerceAuthClientV1,
   apiPaymentEcommerceClientWithRetry,
 } from "../../../../utils/api/client";
-import { NewTransactionResponse } from "../../../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
+import { NewTransactionResponse } from "../../../../../generated/definitions/payment-ecommerce-v2/NewTransactionResponse";
 import { callRecaptcha } from "../recaptchaHelper";
 import { PaymentRequestsGetResponse } from "../../../../../generated/definitions/payment-ecommerce/PaymentRequestsGetResponse";
 import { PaymentInfo as PaymentInfoDto } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentInfo";
-import { PaymentNoticeInfo } from "../../../../../generated/definitions/payment-ecommerce/PaymentNoticeInfo";
-import { RptId } from "../../../../../generated/definitions/payment-ecommerce/RptId";
+import { PaymentNoticeInfo } from "../../../../../generated/definitions/payment-ecommerce-v2/PaymentNoticeInfo";
+import { RptId } from "../../../../../generated/definitions/payment-ecommerce-v2/RptId";
 import { AmountEuroCents } from "../../../../../generated/definitions/payment-ecommerce/AmountEuroCents";
-import { FaultCategoryEnum } from "../../../../../generated/definitions/payment-ecommerce/FaultCategory";
+import { FaultCategoryEnum } from "../../../errors/faultCategory";
 import {
   LanguageEnum,
   RequestAuthorizationRequest,

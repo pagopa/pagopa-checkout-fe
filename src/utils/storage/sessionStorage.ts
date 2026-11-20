@@ -2,7 +2,7 @@ import { JwtUser } from "@pagopa/mui-italia";
 import * as O from "fp-ts/Option";
 import { pipe } from "fp-ts/function";
 import { Bundle } from "../../../generated/definitions/payment-ecommerce/Bundle";
-import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce/NewTransactionResponse";
+import { NewTransactionResponse } from "../../../generated/definitions/payment-ecommerce-v2/NewTransactionResponse";
 import { SessionPaymentMethodResponse } from "../../../generated/definitions/payment-ecommerce/SessionPaymentMethodResponse";
 import {
   Cart,
