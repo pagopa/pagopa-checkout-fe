@@ -161,6 +161,8 @@ export const getUserButton = async () => {
 export const tryLoginWithAuthCallbackError = async (noticeCode, fiscalCode) => {
   //flow test error
   await fillPaymentNotificationForm(noticeCode, fiscalCode);
+  //Verify sets the mockFlow cookie read by the auth endpoints: wait for it before login
+  await page.waitForSelector("#paymentSummaryButtonPay", { visible: true });
   console.log("MockFlow set with noticeCode: " + noticeCode);
 
   //Login
