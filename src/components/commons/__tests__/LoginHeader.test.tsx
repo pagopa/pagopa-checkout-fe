@@ -18,6 +18,7 @@ import {
   MixpanelEventCategory,
   MixpanelEventsId,
 } from "../../../utils/mixpanel/mixpanelEvents";
+import { transaction } from "../../../routes/__tests__/_model";
 
 const tMock = jest.fn((key: string) => {
   const translations: Record<string, string> = {
@@ -227,6 +228,41 @@ describe("LoginHeader", () => {
     expect(logoutConfirmButton).toBeVisible();
     fireEvent.click(logoutConfirmButton);
     expect(logoutUser).toHaveBeenCalled();
+  });
+
+  it("Shows cancel payment modal on logout with an active transaction", async () => {
+    const userInfo: UserInfoResponse = {
+      familyName: "Rossi",
+      name: "Mario",
+    };
+    (getSessionItem as jest.Mock).mockImplementation((item) => {
+      switch (item) {
+        case "authToken":
+          return "authToken";
+        case "transaction":
+          return transaction;
+        default:
+          return undefined;
+      }
+    });
+    (retrieveUserInfo as jest.Mock).mockImplementation(({ onResponse }) => {
+      onResponse(userInfo);
+    });
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <LoginHeader />
+      </MemoryRouter>
+    );
+    fireEvent.click(
+      await screen.findByText(`${userInfo.name} ${userInfo.familyName}`)
+    );
+    fireEvent.click(screen.getByTestId("LogoutIcon"));
+    expect(
+      await screen.findByText("paymentCheckPage.modal.cancelTitle")
+    ).toBeVisible();
+    expect(
+      screen.queryByText("userSession.logoutModal.title")
+    ).not.toBeInTheDocument();
   });
 
   it("tracks CHK_LOGIN_REQUEST mixpanel event on login attempt", async () => {
