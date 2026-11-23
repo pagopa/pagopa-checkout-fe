@@ -162,6 +162,7 @@ describe("Checkout authentication tests", () => {
   ])("Should show error receiving 5xx from post auth token for language [%s]", async (lang, translation) => {
     await selectLanguage(lang);
     await fillPaymentNotificationForm(KORPTIDs.POST_AUTH_TOKEN_FAILS, OKPaymentInfo.VALID_FISCAL_CODE);
+    await page.waitForSelector("#paymentSummaryButtonPay", { visible: true });
 
     await clickLoginButton();
 
