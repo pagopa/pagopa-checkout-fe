@@ -1,6 +1,5 @@
 /* eslint-disable sonarjs/cognitive-complexity */
 import React from "react";
-import ReCAPTCHA from "react-google-recaptcha";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidV4 } from "uuid";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
@@ -32,11 +31,10 @@ import CheckoutLoader from "../../../../components/PageContent/CheckoutLoader";
 import ClickableFieldContainer from "../../../../components/TextFormField/ClickableFieldContainer";
 import { useAppDispatch } from "../../../../redux/hooks/hooks";
 import { PaymentMethodRoutes } from "../../../../routes/models/paymentMethodRoutes";
-import { getFees, recaptchaTransaction } from "../../../../utils/api/helper";
+import { activatePayment, getFees } from "../../../../utils/api/helper";
 import {
   SessionItems,
   clearSessionItem,
-  getReCaptchaKey,
   getSessionItem,
   setSessionItem,
 } from "../../../../utils/storage/sessionStorage";
@@ -58,8 +56,7 @@ export function PaymentChoice(props: {
   wallets?: Array<WalletInfo>;
   loading?: boolean;
 }) {
-  const ref = React.useRef<ReCAPTCHA>(null);
-  const [loading, setLoading] = React.useState(true);
+  const [loading, setLoading] = React.useState(false);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
   const [drawerOpen, setDrawerOpen] = React.useState(false);
@@ -75,12 +72,6 @@ export function PaymentChoice(props: {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  React.useEffect(() => {
-    if (ref.current) {
-      setLoading(false);
-    }
-  }, [ref.current]);
-
   const resetPaymentMethodFilter = () => {
     setPaymentMethodFilter("");
   };
@@ -89,13 +80,11 @@ export function PaymentChoice(props: {
     setLoading(false);
     setError(m);
     setErrorModalOpen(true);
-    ref.current?.reset();
   };
 
   const onPspNotFound = () => {
     setLoading(false);
     setPspNotFoundModalOpen(true);
-    ref.current?.reset();
   };
 
   const onSuccess = (
@@ -125,10 +114,7 @@ export function PaymentChoice(props: {
     }
   };
 
-  const onApmChoice = async (
-    recaptchaRef: ReCAPTCHA,
-    onSuccess: (belowThreshold: boolean) => void
-  ) => {
+  const onApmChoice = async (onSuccess: (belowThreshold: boolean) => void) => {
     // TODO uuid module dependency and
     // the orderId and correlationId setSession below
     // must be removed once the transaction API
@@ -137,9 +123,8 @@ export function PaymentChoice(props: {
     setSessionItem(SessionItems.orderId, "orderId");
     setSessionItem(SessionItems.correlationId, uuidV4());
     setLoading(true);
-    await recaptchaTransaction({
-      recaptchaRef,
-      onSuccess: async () => {
+    await activatePayment({
+      onResponseActivate: async () => {
         // When enablePspPage is active, skip getFees here and let
         // PaymentPspListPage handle it to avoid a duplicate POST /fees call
         if (localStorage.getItem(SessionItems.enablePspPage) === "true") {
@@ -149,7 +134,7 @@ export function PaymentChoice(props: {
         }
         await getFees(onSuccess, onPspNotFound, onError);
       },
-      onError: (faultCodeCategory, faultCodeDetail) =>
+      onErrorActivate: (faultCodeCategory, faultCodeDetail) =>
         onErrorActivate(faultCodeCategory, faultCodeDetail, onError, navigate),
     });
   };
@@ -206,8 +191,8 @@ export function PaymentChoice(props: {
         paymentMethodId,
         paymentTypeCode,
       });
-      if (paymentTypeCode !== "CP" && ref.current) {
-        await onApmChoice(ref.current, (belowThreshold: boolean) =>
+      if (paymentTypeCode !== "CP") {
+        await onApmChoice((belowThreshold: boolean) =>
           onSuccess(paymentTypeCode, false, belowThreshold)
         );
       } else {
@@ -245,13 +230,9 @@ export function PaymentChoice(props: {
       pspId,
     });
 
-    if (ref.current) {
-      await onApmChoice(ref.current, (belowThreshold: boolean) =>
-        onSuccess(paymentTypeCode, true, belowThreshold)
-      );
-    } else {
-      onSuccess(paymentTypeCode, true);
-    }
+    await onApmChoice((belowThreshold: boolean) =>
+      onSuccess(paymentTypeCode, true, belowThreshold)
+    );
   };
 
   const paymentMethods = React.useMemo(
@@ -481,13 +462,6 @@ export function PaymentChoice(props: {
         </Stack>
       )}
 
-      <Box display="none">
-        <ReCAPTCHA
-          ref={ref}
-          size="invisible"
-          sitekey={getReCaptchaKey() as string}
-        />
-      </Box>
       {!!errorModalOpen && (
         <ErrorModal
           error={error}

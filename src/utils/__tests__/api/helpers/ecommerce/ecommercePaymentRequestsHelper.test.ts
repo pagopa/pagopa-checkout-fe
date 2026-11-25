@@ -56,12 +56,14 @@ describe("Ecommerce payment requests helper - getEcommercePaymentInfoTask tests"
       })
     );
     const result = await pipe(
-      getEcommercePaymentInfoTask(
-        "77777777777302011511243515601" as RptId,
-        "recaptchaToken"
-      )
+      getEcommercePaymentInfoTask("77777777777302011511243515601" as RptId)
     )();
     expect(result).toEqual(E.right(getPaymentRequestInfoResponseMock));
+    expect(
+      apiPaymentEcommerceClient.getPaymentRequestInfo
+    ).toHaveBeenCalledWith({
+      rpt_id: "77777777777302011511243515601",
+    });
   });
 
   it("Should return error when api fail", async () => {
@@ -69,10 +71,7 @@ describe("Ecommerce payment requests helper - getEcommercePaymentInfoTask tests"
       apiPaymentEcommerceClient.getPaymentRequestInfo as jest.Mock
     ).mockRejectedValue("Api error");
     const result = await pipe(
-      getEcommercePaymentInfoTask(
-        "77777777777302011511243515601" as RptId,
-        "recaptchaToken"
-      )
+      getEcommercePaymentInfoTask("77777777777302011511243515601" as RptId)
     )();
     expect(result).toEqual(
       E.left({
@@ -95,10 +94,7 @@ describe("Ecommerce payment requests helper - getEcommercePaymentInfoTask tests"
       })
     );
     const result = await pipe(
-      getEcommercePaymentInfoTask(
-        "77777777777302011511243515601" as RptId,
-        "recaptchaToken"
-      )
+      getEcommercePaymentInfoTask("77777777777302011511243515601" as RptId)
     )();
     expect(result).toEqual(
       E.left({
@@ -121,10 +117,7 @@ describe("Ecommerce payment requests helper - getEcommercePaymentInfoTask tests"
       })
     );
     const result = await pipe(
-      getEcommercePaymentInfoTask(
-        "77777777777302011511243515601" as RptId,
-        "recaptchaToken"
-      )
+      getEcommercePaymentInfoTask("77777777777302011511243515601" as RptId)
     )();
     expect(result).toEqual(E.right(getPaymentRequestInfoResponseMock));
   });
@@ -135,10 +128,7 @@ describe("Ecommerce payment requests helper - getEcommercePaymentInfoTask tests"
       apiPaymentEcommerceAuthClientV1.getPaymentRequestInfoAuth as jest.Mock
     ).mockRejectedValue("Api error");
     const result = await pipe(
-      getEcommercePaymentInfoTask(
-        "77777777777302011511243515601" as RptId,
-        "recaptchaToken"
-      )
+      getEcommercePaymentInfoTask("77777777777302011511243515601" as RptId)
     )();
     expect(result).toEqual(
       E.left({
@@ -162,10 +152,7 @@ describe("Ecommerce payment requests helper - getEcommercePaymentInfoTask tests"
       })
     );
     const result = await pipe(
-      getEcommercePaymentInfoTask(
-        "77777777777302011511243515601" as RptId,
-        "recaptchaToken"
-      )
+      getEcommercePaymentInfoTask("77777777777302011511243515601" as RptId)
     )();
     expect(result).toEqual(
       E.left({
@@ -190,10 +177,7 @@ describe("Ecommerce payment requests helper - getEcommercePaymentInfoTask tests"
       })
     );
     const result = await pipe(
-      getEcommercePaymentInfoTask(
-        "77777777777302011511243515601" as RptId,
-        "recaptchaToken"
-      )
+      getEcommercePaymentInfoTask("77777777777302011511243515601" as RptId)
     )();
     expect(result).toEqual(
       E.left({
