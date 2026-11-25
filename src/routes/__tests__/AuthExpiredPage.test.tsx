@@ -19,7 +19,7 @@ jest.mock("react-router-dom", () => ({
   useNavigate: () => navigate,
 }));
 
-// Mock translations and recaptcha
+// Mock translations
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
   Trans: ({

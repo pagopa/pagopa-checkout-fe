@@ -443,7 +443,6 @@ interface Translation {
     title: string;
   };
   privacyInfo: {
-    googleDesc: string;
     privacyDesc: string;
     privacyDonation: string;
   };

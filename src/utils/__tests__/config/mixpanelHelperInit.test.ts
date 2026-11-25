@@ -21,7 +21,6 @@ Object.defineProperty(global, "window", {
       CHECKOUT_API_PAYMENT_TRANSACTIONS_BASEPATH: "/transactions",
       CHECKOUT_POLLING_ACTIVATION_INTERVAL: "2000",
       CHECKOUT_POLLING_ACTIVATION_ATTEMPTS: "3",
-      CHECKOUT_RECAPTCHA_SITE_KEY: "recaptcha-key",
       CHECKOUT_DONATIONS_URL: "https://donations.com",
       CHECKOUT_SURVEY_SHOW: "1",
       CHECKOUT_NPG_SDK_URL: "https://sdk.npg.com",

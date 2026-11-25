@@ -130,11 +130,6 @@ export function App() {
     checkThemeDarkMode();
   }, []);
 
-  // eslint-disable-next-line functional/immutable-data
-  (window as any).recaptchaOptions = {
-    useRecaptchaNet: true,
-  };
-
   const maintenanceEnabled = useAppSelector(
     selectMaintenanceEnabled
   ).maintenanceEnabled;

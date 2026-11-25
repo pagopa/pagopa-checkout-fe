@@ -36,10 +36,6 @@ parameters:
     type: string
     default: ''
 
-  - name: 'recaptcha_site_key'
-    type: string
-    default: ''
-
   - name: 'donations_url'
     type: string
     default: ''
@@ -132,7 +128,6 @@ steps:
       CHECKOUT_POLLING_ACTIVATION_INTERVAL=${{ parameters.polling_activation_interval }} \
       CHECKOUT_POLLING_ACTIVATION_ATTEMPTS=${{ parameters.polling_activation_attempts }} \
       CHECKOUT_ENV=${{ parameters.env }} \
-      CHECKOUT_RECAPTCHA_SITE_KEY=${{ parameters.recaptcha_site_key }} \
       CHECKOUT_DONATIONS_URL=${{ parameters.donations_url }} \
       CHECKOUT_API_ECOMMERCE_BASEPATH=${{ parameters.api_ecommerce_basepath }} \
       CHECKOUT_API_ECOMMERCE_BASEPATH_V2=${{ parameters.api_ecommerce_basepath_v2 }} \
