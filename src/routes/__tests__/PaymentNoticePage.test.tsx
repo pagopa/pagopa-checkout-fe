@@ -19,7 +19,7 @@ import {
 } from "../../utils/mixpanel/mixpanelEvents";
 import { paymentInfo, rptId } from "./_model";
 
-// Mock translations and recaptcha
+// Mock translations
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
   Trans: ({
@@ -30,20 +30,6 @@ jest.mock("react-i18next", () => ({
     components?: Array<any>;
     children?: React.ReactNode;
   }) => <span data-testid="mocked-trans">{i18nKey || "no-key"}</span>,
-}));
-
-jest.mock("react-google-recaptcha", () => ({
-  __esModule: true,
-  default: React.forwardRef((_, ref) => {
-    React.useImperativeHandle(ref, () => ({
-      reset: jest.fn(),
-      execute: jest.fn(),
-      executeAsync: jest.fn(() => "token"),
-    }));
-    return (
-      <div ref={ref as React.RefObject<HTMLDivElement>} data-test="recaptcha" />
-    );
-  }),
 }));
 
 jest.mock("../../utils/mixpanel/mixpanelHelperInit", () => ({
@@ -83,7 +69,6 @@ jest.mock("../../utils/api/helper", () => ({
 jest.mock("../../utils/storage/sessionStorage", () => ({
   getSessionItem: jest.fn(),
   setSessionItem: jest.fn(),
-  getReCaptchaKey: jest.fn(),
   SessionItems: {
     authToken: "authToken",
     loginOriginPage: "loginOriginPage",
@@ -141,8 +126,7 @@ describe("PaymentNotice", () => {
     // Wait for the API call to resolve and the navigation to occur.
     await waitFor(() => {
       expect(getEcommercePaymentInfoTask).toHaveBeenCalledWith(
-        "77777777777302016723749670000",
-        "token"
+        "77777777777302016723749670000"
       );
       expect(navigate).toHaveBeenCalledWith("/autenticazione-scaduta");
     });
@@ -245,8 +229,7 @@ describe("PaymentNotice", () => {
     // Wait for the API call to resolve and the navigation to occur.
     await waitFor(() => {
       expect(getEcommercePaymentInfoTask).toHaveBeenCalledWith(
-        rptId.cf + rptId.billCode,
-        "token"
+        rptId.cf + rptId.billCode
       );
       expect(setSessionItem).toHaveBeenCalledWith(
         SessionItems.paymentInfo,

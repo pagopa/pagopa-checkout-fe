@@ -142,20 +142,6 @@ const mockIframeFieldCardNumber = () => {
   expect(screen.getByTestId("iframe-field-CARD_NUMBER")).toBeInTheDocument();
 };
 
-jest.mock("react-google-recaptcha", () => ({
-  __esModule: true,
-  default: React.forwardRef((_props, ref) => {
-    React.useImperativeHandle(ref, () => ({
-      reset: jest.fn(),
-      execute: jest.fn(),
-      executeAsync: jest.fn().mockResolvedValue("recaptcha-token"),
-    }));
-    return (
-      <div ref={ref as React.RefObject<HTMLDivElement>} data-test="recaptcha" />
-    );
-  }),
-}));
-
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string) => key,
@@ -237,9 +223,9 @@ jest.mock("../IframeCardField", () => ({
 }));
 
 jest.mock("../../../../../utils/api/helper", () => ({
+  activatePayment: jest.fn(),
   getFees: jest.fn(),
   npgSessionsFields: jest.fn(),
-  recaptchaTransaction: jest.fn(),
   retrieveCardData: jest.fn(),
 }));
 
@@ -254,7 +240,6 @@ jest.mock("../../../../../utils/storage/sessionStorage", () => ({
     loginOriginPage: "loginOriginPage",
     enablePspPage: "enablePspPage",
   },
-  getReCaptchaKey: jest.fn(() => "recaptcha-key"),
   setSessionItem: jest.fn(),
 }));
 
@@ -426,10 +411,10 @@ describe("IframeCardForm", () => {
       }
     );
 
-    // Mock recaptcha transaction
-    (helper.recaptchaTransaction as jest.Mock).mockImplementation(
-      ({ onSuccess }) => {
-        onSuccess("payment123", "order123");
+    // Mock activatePayment
+    (helper.activatePayment as jest.Mock).mockImplementation(
+      ({ onResponseActivate }) => {
+        onResponseActivate("payment123", "order123");
       }
     );
 
@@ -552,10 +537,10 @@ describe("IframeCardForm", () => {
       }
     );
 
-    // Mock recaptchaTransaction to call onSuccess which triggers retrievePaymentSession
-    (helper.recaptchaTransaction as jest.Mock).mockImplementation(
-      ({ onSuccess }) => {
-        onSuccess("payment123", "order123");
+    // Mock activatePayment to call onResponseActivate which triggers retrievePaymentSession
+    (helper.activatePayment as jest.Mock).mockImplementation(
+      ({ onResponseActivate }) => {
+        onResponseActivate("payment123", "order123");
       }
     );
 

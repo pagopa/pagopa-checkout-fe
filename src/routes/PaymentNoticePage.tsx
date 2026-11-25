@@ -2,7 +2,6 @@ import { Box, Button } from "@mui/material";
 import { pipe } from "fp-ts/function";
 import * as TE from "fp-ts/TaskEither";
 import React from "react";
-import ReCAPTCHA from "react-google-recaptcha";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { RptId } from "../../generated/definitions/payment-ecommerce-v2/RptId";
@@ -16,7 +15,6 @@ import { PaymentFormFields } from "../features/payment/models/paymentModel";
 import { useSmallDevice } from "../hooks/useSmallDevice";
 import { getEcommercePaymentInfoTask } from "../utils/api/helper";
 import {
-  getReCaptchaKey,
   getSessionItem,
   SessionItems,
   setSessionItem,
@@ -37,7 +35,6 @@ export default function PaymentNoticePage() {
     | PaymentFormFields
     | undefined;
 
-  const ref = React.useRef<ReCAPTCHA>(null);
   const [modalOpen, setModalOpen] = React.useState(false);
   const [errorModalOpen, setErrorModalOpen] = React.useState(false);
   const [error, setError] = React.useState("");
@@ -59,32 +56,25 @@ export default function PaymentNoticePage() {
     setLoading(false);
     setError(`${faultCodeCategory}-${faultCodeDetail}`);
     setErrorModalOpen(true);
-    ref.current?.reset();
   };
 
-  const onSubmit = React.useCallback(
-    async (notice: PaymentFormFields) => {
-      const rptId: RptId = `${notice.cf}${notice.billCode}` as RptId;
-      setLoading(true);
-      const token = await ref.current?.executeAsync();
+  const onSubmit = React.useCallback(async (notice: PaymentFormFields) => {
+    const rptId: RptId = `${notice.cf}${notice.billCode}` as RptId;
+    setLoading(true);
 
-      await pipe(
-        getEcommercePaymentInfoTask(rptId, token || ""),
-        TE.mapLeft((err) =>
-          onError(err.faultCodeCategory, err.faultCodeDetail)
-        ),
-        TE.map((paymentInfo) => {
-          setSessionItem(SessionItems.paymentInfo, paymentInfo);
-          setSessionItem(SessionItems.noticeInfo, notice);
-          navigate(
-            `/${CheckoutRoutes.DATI_PAGAMENTO}`,
-            rptid ? { replace: true } : {}
-          );
-        })
-      )();
-    },
-    [ref]
-  );
+    await pipe(
+      getEcommercePaymentInfoTask(rptId),
+      TE.mapLeft((err) => onError(err.faultCodeCategory, err.faultCodeDetail)),
+      TE.map((paymentInfo) => {
+        setSessionItem(SessionItems.paymentInfo, paymentInfo);
+        setSessionItem(SessionItems.noticeInfo, notice);
+        navigate(
+          `/${CheckoutRoutes.DATI_PAGAMENTO}`,
+          rptid ? { replace: true } : {}
+        );
+      })
+    )();
+  }, []);
 
   React.useEffect(() => {
     mixpanel.track(MixpanelEventsId.CHK_PAYMENT_NOTICE_MANUAL_ENTRY, {
@@ -148,13 +138,6 @@ export default function PaymentNoticePage() {
           errorId="verifyPaymentErrorId"
         />
       </PageContainer>
-      <Box display="none">
-        <ReCAPTCHA
-          ref={ref}
-          size="invisible"
-          sitekey={getReCaptchaKey() as string}
-        />
-      </Box>
     </>
   );
 }
