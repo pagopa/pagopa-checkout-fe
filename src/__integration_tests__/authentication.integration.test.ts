@@ -47,15 +47,15 @@ beforeEach(async () => {
 describe("Checkout authentication tests", () => {
   it("Should correclty invoke the login flow when clicking login or retry", async () => {
 
-    // keep track
-    let successfullLogins = 0;
+    // keep track of distinct urls: page.goto fires framenavigated twice
+    const callbackUrls = new Set();
 
     // Listen for frame navigation (URL change)
     // when the login is completed we will be redirected to BASE_CALLBACK_URL
     page.on('framenavigated', async (frame) => {
       const url = frame.url();
       if(url.startsWith(URL.BASE_CALLBACK_URL)){
-        successfullLogins++;
+        callbackUrls.add(url);
       }
     });
 
@@ -71,6 +71,10 @@ describe("Checkout authentication tests", () => {
     console.log("Login button click");
 
     await loginBtn.click();
+    // wait for the login to complete and return to the origin page
+    await page.waitForFunction(
+      `sessionStorage.getItem('authToken') && !sessionStorage.getItem('loginOriginPage') && location.href === '${URL.PAGE_LOGIN_COMEBACK_URL}'`
+    );
     const urlAfterSuccessfullLogin = await page.evaluate(() => location.href);
 
     // now navigate to callback url (and force error with bad parameters)
@@ -91,7 +95,7 @@ describe("Checkout authentication tests", () => {
     // one from login button
     // one from navigating to the auth-callback page to retry
     // one from retry button
-    expect(successfullLogins).toBe(3);
+    expect(callbackUrls.size).toBe(3);
 
     // verify successfull login brings back to correct page
     expect(urlAfterSuccessfullLogin).toBe(URL.PAGE_LOGIN_COMEBACK_URL);
@@ -158,6 +162,7 @@ describe("Checkout authentication tests", () => {
   ])("Should show error receiving 5xx from post auth token for language [%s]", async (lang, translation) => {
     await selectLanguage(lang);
     await fillPaymentNotificationForm(KORPTIDs.POST_AUTH_TOKEN_FAILS, OKPaymentInfo.VALID_FISCAL_CODE);
+    await page.waitForSelector("#paymentSummaryButtonPay", { visible: true });
 
     await clickLoginButton();
 

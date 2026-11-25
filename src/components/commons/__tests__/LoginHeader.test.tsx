@@ -18,6 +18,7 @@ import {
   MixpanelEventCategory,
   MixpanelEventsId,
 } from "../../../utils/mixpanel/mixpanelEvents";
+import { transaction } from "../../../routes/__tests__/_model";
 
 const tMock = jest.fn((key: string) => {
   const translations: Record<string, string> = {
@@ -43,20 +44,6 @@ jest.mock("react-i18next", () => ({
   }) => <span data-testid="mocked-trans">{i18nKey || "no-key"}</span>,
 }));
 
-jest.mock("react-google-recaptcha", () => ({
-  __esModule: true,
-  default: React.forwardRef((_, ref) => {
-    React.useImperativeHandle(ref, () => ({
-      reset: jest.fn(),
-      execute: jest.fn(),
-      executeAsync: jest.fn(() => "token"),
-    }));
-    return (
-      <div ref={ref as React.RefObject<HTMLDivElement>} data-test="recaptcha" />
-    );
-  }),
-}));
-
 jest.mock("../../../utils/api/helper", () => ({
   proceedToLogin: jest.fn(),
   retrieveUserInfo: jest.fn(),
@@ -68,7 +55,6 @@ jest.mock("../../../utils/storage/sessionStorage", () => ({
   getSessionItem: jest.fn(),
   clearSessionItem: jest.fn(),
   setSessionItem: jest.fn(),
-  getReCaptchaKey: jest.fn(),
   SessionItems: {
     paymentInfo: "paymentInfo",
     noticeInfo: "rptId",
@@ -242,6 +228,41 @@ describe("LoginHeader", () => {
     expect(logoutConfirmButton).toBeVisible();
     fireEvent.click(logoutConfirmButton);
     expect(logoutUser).toHaveBeenCalled();
+  });
+
+  it("Shows cancel payment modal on logout with an active transaction", async () => {
+    const userInfo: UserInfoResponse = {
+      familyName: "Rossi",
+      name: "Mario",
+    };
+    (getSessionItem as jest.Mock).mockImplementation((item) => {
+      switch (item) {
+        case "authToken":
+          return "authToken";
+        case "transaction":
+          return transaction;
+        default:
+          return undefined;
+      }
+    });
+    (retrieveUserInfo as jest.Mock).mockImplementation(({ onResponse }) => {
+      onResponse(userInfo);
+    });
+    renderWithReduxProvider(
+      <MemoryRouter>
+        <LoginHeader />
+      </MemoryRouter>
+    );
+    fireEvent.click(
+      await screen.findByText(`${userInfo.name} ${userInfo.familyName}`)
+    );
+    fireEvent.click(screen.getByTestId("LogoutIcon"));
+    expect(
+      await screen.findByText("paymentCheckPage.modal.cancelTitle")
+    ).toBeVisible();
+    expect(
+      screen.queryByText("userSession.logoutModal.title")
+    ).not.toBeInTheDocument();
   });
 
   it("tracks CHK_LOGIN_REQUEST mixpanel event on login attempt", async () => {
